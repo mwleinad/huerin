@@ -1,0 +1,111 @@
+<?php
+
+include_once('../init.php');
+include_once('../config.php');
+include_once(DOC_ROOT.'/libraries.php');
+
+switch($_POST["type"])
+{
+	case "addCategory": 
+				
+		$smarty->assign("DOC_ROOT", DOC_ROOT);
+		$smarty->display(DOC_ROOT.'/templates/boxes/add-contract-category-popup.tpl');
+				
+		break;	
+
+	case "editCategory":
+			
+		$contCat->setContCatId($_POST['id']);
+		$info = $contCat->Info();
+			
+		$smarty->assign("info", $info);
+		$smarty->assign("DOC_ROOT", DOC_ROOT);
+		$smarty->display(DOC_ROOT.'/templates/boxes/edit-contract-category-popup.tpl');
+		
+		break;
+		
+	case "saveAddCategory":				
+		
+		$contCat->setName($_POST['name']);
+		
+		if($_POST['active'])
+			$contCat->setActive(1);
+		else
+			$contCat->setActive(0);
+				
+		if(!$contCat->Save())
+		{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		else
+		{
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			echo "[#]";
+			$contCat->setActive(0);
+			$result = $contCat->Enumerate();
+			$categories = $util->EncodeResult($result);
+			$smarty->assign("categories", $categories);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/contract-category.tpl');
+		}		
+		
+		break;
+		
+	case "saveEditCategory":	 	
+		
+		$contCat->setContCatId($_POST['id']);			
+		$contCat->setName($_POST['name']);
+		
+		if($_POST['active'])
+			$contCat->setActive(1);
+		else
+			$contCat->setActive(0);
+			
+		if(!$contCat->Update())
+		{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		else
+		{
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			echo "[#]";
+			$contCat->setActive(0);
+			$result = $contCat->Enumerate();
+			$categories = $util->EncodeResult($result);
+			$smarty->assign("categories", $categories);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/contract-category.tpl');
+		}
+			
+		break;
+	
+	case 'deleteCategory':
+		
+		$contCat->setContCatId($_POST['id']);	
+				
+		if(!$contCat->Delete())
+		{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		else
+		{
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			echo "[#]";
+			$contCat->setActive(0);
+			$result = $contCat->Enumerate();
+			$categories = $util->EncodeResult($result);
+			$smarty->assign("categories", $categories);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/contract-category.tpl');
+		}
+			
+		break;
+}
+
+?>

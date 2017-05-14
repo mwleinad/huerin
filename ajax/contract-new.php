@@ -1,0 +1,374 @@
+<?php
+
+include_once('../init.php');
+include_once('../config.php');
+include_once(DOC_ROOT.'/libraries.php');
+
+session_start();
+
+switch($_POST["action"])
+{		
+	case "edit":
+	case "save":
+
+		if($_POST["type"] == "Persona Moral")
+		{
+			$_POST['regimenId'] = $_POST['regimenIdMoral'];
+		}
+			//new
+			$contract->setType($_POST['type']);
+			$contract->setRfc($_POST['rfc']);
+			$contract->setSociedadId($_POST['sociedadId']);
+			$contract->setRegimenId($_POST['regimenId']);
+			$contract->setNombreComercial($_POST['nombreComercial']);
+			$contract->setDireccionComercial($_POST['direccionComercial']);
+			$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
+			$contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
+			$contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
+			$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
+			$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
+			$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
+			$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
+			$contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
+			$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
+			$contract->setClaveFiel($_POST['claveFiel']);
+			$contract->setClaveCiec($_POST['claveCiec']);
+			$contract->setClaveIdse($_POST['claveIdse']);
+			$contract->setClaveIsn($_POST['claveIsn']);
+						
+			$contract->setDireccionComercial($_POST['direccionComercial']);
+			//$contract->setColoniaComercial($_POST['coloniaComercial']);
+			//$contract->setMunicipioComercial($_POST['municipioComercial']);
+			//$contract->setEstadoComercial($_POST['estadoComercial']);
+
+			$contract->setName($_POST['name']);
+			$contract->setAddress($_POST['address']);
+			//$contract->setCpComercial($_POST['cpComercial']);
+			$contract->setCpAddress($_POST['cpAddress']);
+			$validation = $contract->Validate();
+												
+			if($validation)
+			{				
+				echo "ok[#]";
+			}
+			else
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
+			}
+						
+		break;
+				
+	case 'loadDocGral':
+						
+			$contSubcatId = $_POST['contSubcatId'];
+			
+			echo 'ok[#]';
+			
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			
+			if($contSubcatId == 1 || $contSubcatId == 3)
+				$smarty->display(DOC_ROOT.'/templates/lists/enumStatusProm.tpl');
+			else
+				$smarty->display(DOC_ROOT.'/templates/lists/enumStatusDef.tpl');
+			echo '[#]';
+			
+		break;
+	
+	case 'loadCities':
+			
+			$stateId = $_POST['stateId'];
+			
+			$city->setStateId($stateId);
+			$cities = $city->Enumerate();
+			$cities = $util->EncodeResult($cities);
+			
+			echo 'ok[#]';
+						
+			$smarty->assign("cities", $cities);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/enumCity.tpl');
+			
+		break;
+	
+	case 'loadCitiesC':
+			
+			$stateId = $_POST['stateId'];
+			
+			$city->setStateId($stateId);
+			$cities = $city->Enumerate();
+			$cities = $util->EncodeResult($cities);
+			
+			echo 'ok[#]';
+						
+			$smarty->assign("cities", $cities);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/enumCityC.tpl');
+				
+		break;
+	
+	case 'addProrrogaDiv':
+			
+			$docGralId = $_POST['docGralId'];			
+			$resProrroga = $_SESSION['prorroga'][$docGralId];			
+			
+			$f['d'] = date('j');
+			$f['m'] = date('n');
+			$f['y'] = date('Y');
+			
+			$smarty->assign("f", $f);
+			$smarty->assign('docGralId', $docGralId);
+			$smarty->assign("resProrroga", $resProrroga);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/boxes/add-prorroga-popup.tpl');
+			
+		break;
+	
+	case 'saveAddProrroga':
+			
+			$docGralId = $_POST['docGralId'];
+			$contract->setYear($_POST['year']);
+			
+			$fecha = $_POST['year'].'-'.$_POST['month'].'-'.$_POST['day'];
+			
+			$contract->setDocGralId($docGralId);
+			$contract->setFechaProrroga($fecha);
+			
+			if(!$contract->SaveProrrogaTemp())
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+			
+				echo "ok[#]";
+				
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				
+				echo "[#]";
+				
+				$resProrroga = $_SESSION['prorroga'][$docGralId];
+				
+				$smarty->assign('docGralId', $docGralId);
+				$smarty->assign("resProrroga", $resProrroga);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/prorroga.tpl');
+				
+				echo '[#]';
+				
+				if($resProrroga){
+					echo '<b>Prorrogas:</b><br>';
+					foreach($resProrroga as $res)
+						echo $util->setFormatDate($res).'<br>';
+				}
+			
+			}
+			
+		break;
+	
+	case 'deleteProrroga':
+			
+			$k = $_POST['k'];
+			$docGralId = $_POST['docGralId'];
+						
+			if(!$contract->DeleteProrrogaTemp($k, $docGralId))
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+			
+				echo "ok[#]";
+				
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				
+				echo "[#]";
+				
+				$resProrroga = $_SESSION['prorroga'][$docGralId];
+				
+				$smarty->assign('docGralId', $docGralId);
+				$smarty->assign("resProrroga", $resProrroga);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/prorroga.tpl');
+				
+				echo '[#]';
+				
+				if($resProrroga){
+					echo '<b>Prorrogas:</b><br>';
+					foreach($resProrroga as $res)
+						echo $util->setFormatDate($res).'<br>';
+				}
+			
+			}
+			
+		break;
+	
+	case 'addDocsDiv':
+			
+			$docBasicId = $_POST['docBasicId'];			
+			$resDocs = $_SESSION['docs'][$docBasicId];			
+			
+			$docBasic->setDocBasicId($docBasicId);
+			$infD = $docBasic->Info();
+			
+			$f['d'] = date('j');
+			$f['m'] = date('n');
+			$f['y'] = date('Y');
+			
+			$smarty->assign("f", $f);
+			$smarty->assign('titInfo', $infD['info']);
+			$smarty->assign('docBasicId', $docBasicId);			
+			$smarty->assign("resDocs", $resDocs);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/boxes/add-docs-popup.tpl');
+			
+		break;
+	
+	case 'saveAddDocs':
+			
+			$docBasicId = $_POST['docBasicId'];
+			$contract->setYear($_POST['year']);
+			
+			$fecha = $_POST['year'].'-'.$_POST['month'].'-'.$_POST['day'];
+			
+			$contract->setDocBasicId($docBasicId);
+			$contract->setFechaDoc($fecha);
+			$contract->setDesc($_POST['des']);
+			
+			if(!$contract->SaveDocTemp())
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+			
+				echo "ok[#]";
+				
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				
+				echo "[#]";
+				
+				$resDocs = $_SESSION['docs'][$docBasicId];
+				
+				$docBasic->setDocBasicId($docBasicId);
+				$infD = $docBasic->Info();
+				
+				$smarty->assign('titInfo', $infD['info']);
+				$smarty->assign('docBasicId', $docBasicId);
+				$smarty->assign("resDocs", $resDocs);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/docs.tpl');
+				
+				echo '[#]';
+				
+				foreach($resDocs as $key => $res){
+					if($key != 0)
+						echo $util->setFormatDate($res['fecha']).'<br>';
+				}
+				
+				echo '[#]';
+				
+				foreach($resDocs as $key => $res){
+					if($key != 0)
+						echo $res['desc'].'<br>';
+				}
+			
+			}
+						
+		break;
+	
+	case 'deleteDocs':
+			
+			$k = $_POST['k'];
+			$docBasicId = $_POST['docBasicId'];
+						
+			if(!$contract->DeleteDocsTemp($k, $docBasicId))
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+			
+				echo "ok[#]";
+				
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				
+				echo "[#]";
+				
+				$resDocs = $_SESSION['docs'][$docBasicId];
+				
+				$docBasic->setDocBasicId($docBasicId);
+				$infD = $docBasic->Info();
+				
+				$smarty->assign('titInfo', $infD['info']);
+				$smarty->assign('docBasicId', $docBasicId);
+				$smarty->assign("resDocs", $resDocs);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/docs.tpl');
+				
+				echo '[#]';
+				
+				foreach($resDocs as $key => $res){
+					if($key != 0)
+						echo $util->setFormatDate($res['fecha']).'<br>';
+				}
+				
+				echo '[#]';
+				
+				foreach($resDocs as $key => $res){
+					if($key != 0)
+						echo $res['desc'].'<br>';
+				}
+			
+			}
+			
+		break;
+	
+	case 'getDocsList':
+			
+			$docBasicId = $_SESSION['docId'];
+			
+			echo $docBasicId;
+			echo '[#]';
+			
+			$resDocs = $_SESSION['docs'][$docBasicId];
+			
+			if(!$resDocs)
+				$resDocs = array();
+			
+			foreach($resDocs as $key => $res){
+				if($key != 0)
+					echo $util->setFormatDate($res['fecha']).'<br>';
+			}
+			
+			echo '[#]';
+			
+			foreach($resDocs as $key => $res){
+				if($key != 0)
+					echo $res['desc'].'<br>';
+			}
+			
+			echo '[#]';
+			
+			foreach($resDocs as $key => $res){
+				if($res['archivo']){
+					
+					$folder = ($res['edit'] == 1) ? 'archivos' : 'temp';					
+									
+					echo '<a href="'.WEB_ROOT.'/'.$folder.'/'.$res['archivo'].'" target="_blank">
+						  <img src="'.WEB_ROOT.'/images/icons/file.png" border="0" />
+						  </a>';
+				}
+				echo '<br>';
+			}
+			
+			
+		break;
+	
+		
+}
+?>
