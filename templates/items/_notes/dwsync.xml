@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dwsync>
+<file name="customer-base.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130384427701046742" remote="130384424570000000" Dst="-1" />
+<file name="tipoRequerimiento-base.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525177759973" remote="130344677610000000" Dst="-1" />
+<file name="tipoRequerimiento-header.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525177700006" remote="130344677610000000" Dst="-1" />
+<file name="servicios-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130904420817007717" remote="130904414720000000" Dst="1" />
+<file name="servicios-header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130687693601119334" remote="130687691700000000" Dst="-1" />
+<file name="personal-header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017618109468461" remote="131017609800000000" Dst="1" />
+<file name="personal-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017618679745091" remote="131017610320000000" Dst="1" />
+<file name="avisos-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130974462152985092" remote="130974454730000000" Dst="1" />
+<file name="archivosDepa-header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130992836179024734" remote="130992828350000000" Dst="1" />
+<file name="archivosDepa-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034895487138534" remote="131034886660000000" Dst="2" />
+<file name="contract-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131023758358227201" remote="131023713840000000" Dst="2" />
+<file name="cfdi_base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998741288107665" remote="130998733400000000" Dst="1" />
+<file name="cfdi_header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998741546651980" remote="130998733610000000" Dst="1" />
+<file name="cxc_base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998707975495990" remote="130998700040000000" Dst="1" />
+<file name="cfdiPagos_header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998841161331531" remote="130998833260000000" Dst="1" />
+<file name="cfdiPagos_base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998850418761284" remote="130998842480000000" Dst="1" />
+<file name="pendientes-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010936466516597" remote="131010928240000000" Dst="1" />
+<file name="pendientes-header.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010915380606661" remote="131010907150000000" Dst="1" />
+<file name="customer-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131023719365774937" remote="131023674850000000" Dst="2" />
+<file name="archivo-base.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034892485754417" remote="131034883660000000" Dst="2" />
+</dwsync>

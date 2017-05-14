@@ -1,0 +1,1 @@
+<a href="{if !preg_match("/^http/i",$link)}{$url}/{/if}{$link}"{if $target} target="{$target}"{/if}>{$name}</a>

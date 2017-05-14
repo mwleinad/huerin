@@ -1,0 +1,1 @@
+<span class="spanResultPages" id="spanIdResultPages{$name}" style="cursor:pointer">{$name}</span>

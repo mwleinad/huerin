@@ -1,0 +1,73 @@
+ <div align="center"  id="divForm">
+ 
+<form name="frmSearch" id="frmSearch" action="" method="post">
+<input type="hidden" name="type" id="type" value="search" />
+<input type="hidden" name="correo" id="correo" value="" />
+<input type="hidden" name="texto" id="texto" value="" />
+<input type="hidden" name="cliente" id="cliente" value="0" />
+<table width="500" align="center">
+<tr style="background-color:#CCC; width:700px">
+    <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de Busqueda</b></td>
+</tr>
+<tr>
+    <td align="center">Cliente o Razon social</td>
+    <td align="center">Responsable</td>
+    <td align="center">Incluir subordinados</td>
+    <td align="center">Facturador</td>
+</tr>
+<tr>	
+    <td align="center">
+    	<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
+          <div id="loadingDivDatosFactura"></div>
+					<div style="position:relative">
+         		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
+        	 	</div>
+         	</div>
+		</td>
+        <td align="center">
+    	<select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
+      	{if $User.roleId=="1"}
+		<option value="0" selected="selected">Todos...</option>
+		{/if}
+        {foreach from=$personals item=personal}
+      	<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
+        {/foreach}
+      </select>  
+		</td>    
+		<td align="center">
+			<input name="deep" id="deep" type="checkbox"/>
+		</td>  
+    	<td align="center">
+			<select id="facturador" class="largeInput" name="facturador">
+                    <option value="0">Todos</option>
+                    <option value="BHSC">BHSC Contadores SC</option>
+                    <option value="Huerin">Braun Huerin SC</option>
+                    <option value="Braun">Jacobo Braun</option>
+                    <option value="Efectivo">Efectivo</option>
+			</select>
+		</td>
+    <td align="center">
+        <select name="year" id="year"  class="smallInput" style="width: 80px; min-width: 80px">
+            <option value="2012" {if $year == "2012"} selected="selected" {/if}>2012</option>
+            <option value="2013" {if $year == "2013"} selected="selected" {/if}>2013</option>
+            <option value="2014" {if $year == "2014"} selected="selected" {/if}>2014</option>
+            <option value="2015" {if $year == "2015"} selected="selected" {/if}>2015</option>
+            <option value="2016" {if $year == "2016"} selected="selected" {/if}>2016</option>
+            <option value="2017" {if $year == "2017"} selected="selected" {/if}>2017</option>
+            <option value="2018" {if $year == "2018"} selected="selected" {/if}>2018</option>
+            <option value="2019" {if $year == "2019"} selected="selected" {/if}>2010</option>
+            <option value="2020" {if $year == "2020"} selected="selected" {/if}>2020</option>
+        </select>
+
+    </td>
+</tr>
+<tr>
+    <td align="center" colspan="4">
+        <div style="margin-left:400px">
+        <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
+        </div>
+    </td>
+</tr>
+</table>
+</form>
+</div>

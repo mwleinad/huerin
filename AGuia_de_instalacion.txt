@@ -1,0 +1,18 @@
+Pasos a seguir:
+
+1. Crear una Base de Datos limpia (sin tablas) en su gestor de BD.
+
+2. Importar el archivo avantikads_roqueni.sql a la BD creada.
+
+3. Descomprimir el archivo "html.rar" al directorio donde será instalado.
+
+4. Editar el archivo "RUTA/config.php" donde RUTA es la dirección donde instalo el sistema. En este archivo se debe actualizar los datos de la BD, y las rutas de instalación del sistema.
+
+DOC_ROOT: Ruta dentro del servidor donde se encuentra instalado el sistema.
+WEB_ROOT: Url de accceso al sistema. Debe ser del tipo http://...
+
+5. Editar el archivo "RUTA/javascript/clearbox.js" linea 26
+   Reemplazar la sig. dirección "http://avantikads.com/roqueni" por la url del sistema.
+
+6. Editar el archivo "RUTA/javascript/functions.js" linea 4
+   Reemplazar la sig. dirección "http://avantikads.com/roqueni/" por la url del sistema. Con la ultima "/" agregada.

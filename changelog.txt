@@ -1,0 +1,261 @@
+v1.07 septiembre 17 2014
+11611	[BUG] Un supervisor que puede ver los demÃ¡s apartados como catalogos y cxc esto no lo deberÃ­a de poder ver
+11618	[BUG] El reporte de archivos permanentes todavia jala la informacion de los clientes inactivos, esto no deberÃ­a de ser solo neceisto a los activos
+11660	[BUG] En la secciÃ³n de cuentas por cobrar, lo que pasa es que quieren buscar a un cliente y jala a otro totalmente diferente.
+11680	[BUG] Reporte de Doc. Permanente siguen mostrando clientes inactivos.
+11694	[SOP] RevisiÃ³n de los bugs enviados por Jacobo para ver si se corrigieron con los actualizaciones que se subieron a producciÃ³n.
+11695	[BUG] En el reporte de ingresos no funciona el boton de subordinados ejemplo jose alberto
+11728	[SOP] Checando error en los filtros de Doc. Permanente y Archivos Permanente
+11729	[SOP] Subir cambios a producciÃ³n de las tareas No. 11618, 11660, 11680.
+11807	[SOP] Checar error en reporte anual, las casillas se marcan como completo tardio cuando deben ser completos.
+11811	[MOD] Al agregar los archivos dentro de los workflows se suben 2 veces.
+11814	[MOD]permisos los Supervisores, contadores y Auxiliares no puedan modificar o borrar los documentos y los archivos permanentes
+11826	[BUG][REV]cuando agrego archivo a los workfloes y le doy enviar desaparecen los tres botones checar
+11876	[BUG] Error al cargar los documentos en servicios, no carga los workflows.
+11901	[BUG] ERROR DEL WORK FLOW
+11916	[MOD]Tengo un error con el servicio de RIF se supone que este debe ser bimestral pero nos aparece mensual nos podrÃ­an ayudar.
+12012	[BUG] Los filtros en los reportes  todavia no estan correctos Ejemplo cxc
+12013	[BUG] Los colores en los reportes  no estan correctos lo suben en tiempo y se marca como que esta atrasado
+12054	[BUG] Me sale este error cuando modifico algun cliente
+12055	[BUG] Estan mal los colores en el reporte anual
+12061	[BUG] Siguen mal los filtros de documentaciÃ³n permanente
+12066	[BUG] Corregir error al exportar el reporte de ingresos a excel. Las columnas de numeros estÃ¡n como cadena.
+12068	[BUG] Como supervisor y pueden ver todos los apartados y reportes que no deberÃ­an de poder ver
+12135	[SOP] Subir cambios de huerin realizados en esta semana.
+12182	[BUG] Se volvieron a borrar los datos de la razÃ³n social de erez
+12183	[MOD] Al iniciar sesiÃ³n, eliminar las otras sesiones activas que se encuentren antes de crear la nueva.
+12186	[SOP] RevisiÃ³n de los colores de los status que estÃ©n bien, en los workflows y los reportes.
+12194	[SOP] Checar error al editar una razÃ³n social, colocar comillas simples y dobles para ver si no trunca el query al actualizar el registro.
+12195	[MOD] Al editar una razÃ³n social, enviar por correo el query ejecutado.
+12209	[BUG][REV]CXC>>filtro folio no filtra checar
+12210	[BUG][REV]CXC>>filtro de meso no filtra checar y en el filtro de estatus no filtra bien las pagadas y los adeudos checar
+12254	[SOP][12210] Checar error dentro del filtro.
+12255	[BUG] Cuando quieren subir Workflow se cargan mÃ¡s de una vez
+12256	[BUG] En documentos permanentes no esta filtrando los clientes.
+12257	[BUG] Se sigue emitiendo las factura de los servicios aun cuando no le ponemos la fecha de inicio de Operaciones.
+12258	[BUG] En los reportes de Documentos Permanentes quiero ver el reporte de todo su equipo solo me aparecen sus empresas y no la de los demÃ¡s
+12259	[BUG] No puedo borrar los documentos permanentes cuando se supone que si lo puedo hacer
+12261	[MOD]No puedo borrar los documentos permanentes cuando se supone que si lo puedo hacer y en la sesiÃ³n de Jacobo Huerin tampoco puedo me ayudan por favor.
+12289	[SOP] Subir tareas a producciÃ³n 8540 y 8548
+12374	[BUG][REV]Entre a la plataforma como Auxiliar y note que ellos pueden crear Razones Sociales cuando no deberÃ­an hacerlo esto solo tiene que estar con los Gerentes y Asistentes
+12430	[SOP] Checar reporte de servicios RIFS no estÃ¡ generando bimestralmente.
+12435	[SOP] Checando errores del sistema con Lizbeth
+12475	[SOP] Checando contratos y la forma en como se relacionan los responsables con los subordinados.
+12476	[MOD] Cambiar la forma en cÃ³mo se obtienen los contratos, checando los subordinados y responsables.
+12489	[BUG] Corregir la bÃºsqueda de archivos permanentes, de acuerdo al responsable y los subordinados.
+12490	[BUG] Corregir la bÃºsqueda de documentos permanentes, de acuerdo al responsable y los subordinados
+12493	[BUG] Al checar archivos cargados dentro del contrato, hay un tipo de archivo que no se reconoce.
+12495	[MOD] Cambiar permisos para ver requerimientos dentro de los contratos.
+12509	[BUG] en el servicio de facturaciÃ³n, en el cliente RICARDO FASTLICHT BARABAK dimos de alta el servicio de FacturaciÃ³n hace dos dÃ­as y no aparece la opciÃ³n para subir informaciÃ³n en los Workflow
+12530	[BUG] Corregir el cron de report-servicio.php ya que estÃ¡ mandando el siguiente errror:
+12538	[SOP] Configurar server xampp para poder acceder al phpmyadmin remotamente.
+12554	[BUG] En la sesiÃ³n de Supervisor quiero ver los reportes de Servicios incluyendo subordinados y me saca a todo el despacho y eso estÃ¡ mal
+12607	[SOP] Checar error la clase customer, al enumerar los clientes y los contratos.
+12616	[SOP] Subir tarea 12554 y checar que funcione bien en producciÃ³n.
+12677	[BUG] En reporte de servicio anual
+12690	[MOD] Tenemos un arazon social que ya esta dada de baja pero en el reporte aun aparese y se pone en rojo
+12718	[BUG] No se estÃ¡n generando las facturas automÃ¡ticas de algunas empresas.
+12723	[BUG] Reporte de Servicios de tipo RIF, no funciona. Los workflows no estÃ¡n bien en las fechas.
+12890	[SOP] Checando tareas pendientes y cambios realizados en sistema con Jony.
+
+
+v1.06 julio 21 2014
+8845	[SOP] En el sistema de produccion hacer lo sigueinte	"Existen dos clientes dados de alta en el sistema en produccion:
+a) Marissa Hernandez
+b) Yoshua Sirquin
+
+El cliente MARISSA HERNANDEZ tiene registrada 6 razones sociales que ya tienen servicios e informacion cargada
+El cliente YOSHUA SIRQUIN tiene registradas 14 razones socales que ya tienen servicios e informacion cargada
+
+Lo que hay que hacer es cambiar las 6 razones sociales de MARISSA a YOSHUA, pero que no afecte la informacion que ya tenian estas 6 razones sociales, que todo siga igual solo en la BD hay que asignarlas al cliente YOSHUA"
+11611	[BUG] Un supervisor que puede ver los demÃ¡s apartados como catalogos y cxc esto no lo deberÃ­a de poder ver	"Te mando la imagen de un supervisor que puede ver los demÃ¡s apartados como catalogos y cxc esto no lo deberÃ­a de poder ver
+
+ Te lo encargo mucho"
+11660	[BUG] En la secciÃ³n de cuentas por cobrar, lo que pasa es que quieren buscar a un cliente y jala a otro totalmente diferente.	
+11618	[BUG] El reporte de archivos permanentes todavia jala la informacion de los clientes inactivos, esto no deberÃ­a de ser solo neceisto a los activos	"El reporte de archivos permanentes todavia jala la informacion de los clientes inactivos, esto no deberÃ­a de ser solo neceisto a los activos
+
+ 
+
+Ejemplo archivo adjunto cliente diego Brun Fernandez, el primero de la lista"
+
+
+v1.05 julio 18 2014
+11009	[BUG][REV]clientes>>rason social>>inactivos y activos si le das guardar sale un error	0	0	
+10990	[MOD] Quitar el correo que se envia cada que se modifica un cliente (comentar el codigo por si despues se requiere)	0.5	0	
+11008	[BUG][REV]clientes>>inactivos y activos sale caracteres especiales checar	0.5	0	
+11366	[BUG] en el reporte de archivos perminantes y de documentacion quitar el filtro de "Facturador"	0.5	0	
+11379	[MOD] QUE TODAS LAS FACTURAS QUE SE GENEREN EN EL SISTEMA (MANUALES Y AUTOMATICAS), NO SE ENVIEN A LOS CLEINTES, VER DESCRIPCION	0.5	0	"1) POR EL MOMENTO QUE TODAS LAS FACTURAS QUE SE GENEREN AUTOMATICAS O MANUALES LLEGUEN AL MAIL: jmponce@braunhuerin.com.mx Y QUE NO LLEGUEN A LOS CLEINTES
+COMENTAR ESA PARTE PORUQE ESTO ES ALGO TEMPORAL"
+11492	[SOP] Subir cambios al server de desarrollo y testearlo. Lo realizado el fin de semana.	0.5	0	
+11365	[BUG] En el reprote de ingresos no funciona la casilla de subordinados	0.5	0	
+9916	[MOD] La facturacion automatica, hacer lo sigueitne	3	0	"1) Checar que los servicios bimestrales, anuales, etc, la facturacion se haga bien cada periodo
+2) Si un cliente tiene dos o mas servicios se puede que solo se haga una factura por razon social?, que la factura traiga en conceptos la info de cada servicio con su costo y que se haga una que agrupe todos los servicios de esa razon social de ese mes (si es un bimestral y un mensual que el mes 1 tenga en concepto: Servicio A --- $100 y Servicio B --- $200 total --- $300, en el mes 2 que tenga: Servicio A --- $100  total --- $100 y asi)
+Total		6	6	
+
+
+v1.04 Julio 8 2014
+9234	[MOD] Cunado desactivas una razon social de un cliente que la puedas encontrar desde cleintes inactivos (ahi que solo te salga las razones sociales canceladas)	
+9556	[BUG] En la exportacion a excel y pdf de los reportes de archivos y documetnos ponerle colores	
+9656	[SOP] checar los siguientes errores en produccion	"EVENTAE: ya se habÃ­a dado de alta el workflow desde hace mucho y todavÃ­a no aparece
+OPERADORA COSTUCENTER: en enero ya esta todos los pasos completo y en el reporte anual sigue apareciendo en rojo
+ASOCIACION MEXICANA DE APOYO AL DEPORTE ADAPTADO A PERSONAS: En enero ya estaba todo completo y sigue en amarillo el reporte
+
+--------
+El primero te metes y no tiene ningun paso en su workflow
+El segundo me meti y cheque el servicio de conta de enero y esta rojo cunado su wprkflow esta verde (adjunto imagen)
+El tercero sigue teniendo el problema, me meti al reporte anual y por ejemplo el servicio CERO esta en amarillo pero ya tiene todo verde"
+9912	[MOD] Revisar que todos los reportes tengan exportacion a EXCEL y PDF (con los colores), ahorita el mensual, CxC, documentacon y archivos no tiene a PDF)	
+10821	[SOP] entrando con el usuario de contador de nominas ahernandez se supone que solo puedo ver mis clientes y los clientes de mi auxiliar	Hola les confirmo que entrando con el usuario de contador de nominas ahernandez se supone que solo puedo ver mis clientes y los clientes de mi auxiliar, el problema es que aparece esta pantalla con todos los clientes y sin razones sociales, ejemplo en esta pantalla Alejandra Arrechedera
+10822	[SOP] Existe una razÃ³n social que se llama Mariana Taramasco ella tiene como responsable de contabilidad a Karina Arias, la cual es auxiliar de Nora Lilia Melo	"Existe una razÃ³n social que se llama Mariana Taramasco ella tiene como responsable de contabilidad a Karina Arias, la cual es auxiliar de Nora Lilia Melo
+
+Pero al entrar como Nora en la parte de clientes buscando esta razÃ³n social no le permite verla, y lo cuioros es que el en apartado de reportes si la permite ver"
+10823	[MOD] cambio en la plataforma cuando un supervisor en este caso el Usuario â€œrogeliozâ€ quiere ver un cliente de algÃºn integrante de su equipo no le permite verlo	Necesitamos que por favor hagan un cambio en la plataforma cuando un supervisor en este caso el Usuario â€œrogeliozâ€ quiere ver un cliente de algÃºn integrante de su equipo no le permite verlo si no le pone quien es el responsable lo que necesitamos es que en el filtro de Responsable aparte del nombre de los integrantes de ese equipo tambiÃ©n diga todos mis subordinados para que no pase esto.
+10939	[NEW] Agregar que se pueda exporatr de excel los clientes (REPORTE QUE LE PIDIO JACOBO A DANIEL POR TELEFONO)	
+10941	[BUG] El cliente MARCOS COHEN, se dio de alta el servicio en marzo y en el moduloo de servicios en la lista de workflow sale desde enero	
+10942	[BUG] Agregar el filtro de responsable en los filtros (como estaba antes, solo sale el usuario y sus subordinados), y agregar la opcion de todos (solo salen los que puede ver)	
+10943	[BUG] En la pantalla de inicio cuando agregan una noticia si dan doble clic se agrega dos veces	
+10946	[MOD] EN la pantalla de inicio en la tabla de noticias poner la opcion para eliminar una noticia solamente a socio y asistente	
+
+
+v1.03 Junio 26 2014
+9233	[MOD] En las facturas que se generan en automatico cambiar el metodo de pago de NO IDENTIFICADO a "NO APLICA"	
+9555	[BUG] En todos los usuarios deben aparecer los botones de exportar a excel y PDF	
+9661	[BUG][TASK]filtros de cada pagina checar	"reporte de cuentas por cobrar cliente con razÃ³n social responsable casilla incluir subordinados facturador
+reporte de documentaciÃ³n permanente	cliente con razÃ³n social responsable casilla incluir subordinados	
+Reporte de archivos permanentes"
+9738	[BUG] Los filtros no permiten buscar bien los cleintes (checar que si este abriendo el autocomplete, encuentre lo que debe segun si esta activo/inactivo y los permisos)	
+9776	[MOD] En los workflows agregar los sigueinte	"1) En donde te sale el workflow cuando te metes a una tarea
+2) En los pasos de la tarea que ya estan hechas (las que ya tienen algun archivo) que te permita borrar el archivo SOLAMENTE A USUARIOS: ASISTENTE Y SOCIO
+3) Si lo borras y se queda vacio que el paso se ponga como incompleto otra vez"
+9911	[MOD] Cuando le das clic al logo de braunhuerin en la parte de arriba que te mande a la pantalla de inicio	
+9913	[MOD] En Catalogos > contadores, hacer el sigueinte cambio	1) Cuando lo das de alta (en el formulario), cambiar el campo "Sueldo mensual" por "Fecha ingreso" y cambiar el textbox por un datepicker (dd/mm/aaaa)
+9914	[BUG] En Cliente > Activos/Inactivos, cunado filtras por un responsable aparecen inactivos y revisar que funcionen bien los filtros	
+9915	[BUG] En Reportes > Reporte CxC, el filtro de facturador no sirve bien, si selecciono BraunHuerin me salen algunos de Efectivo	
+9917	[NEW] En Reportes, agregar el "Reporte de ingresos", hacer lo que esta en la descripcion	"1) Agregar filtros de busqueda;
+-a) Cleinte (autocomplete como siempre, solo aparecen los clientes que puede ver el usuario)
+-b) Razon social (autocomplete como siempre, solo aparecen los clientes que puede ver el usuario)
+-c) Responsable (lista de el usuario y sus subordinados, como en los demas reportes)
+-d) Incluir subordinados (como en los demas)
+-e) Departamento (dropdown, cmo en los demas reportes)
+
+2) Poner una tabla con las columnas;
+-a) Cliente (nombre del cleitne)
+-b) Razon social (nombre de la razon social)
+-c) Servicio (nombre del servicio)
+-d) Periodo (periodicidad del servicio: mensual, bimestral, anual, etc)
+-e) Costo por periodo (costo del servicio en el periodo (el costo que se ingresa del servicio))
+-f) Costo mensual (el costo por periodo dividido para sacarlo mensual, si es anual /12, si es bimestral /2, etc)
+-g) Auxiliar (nombre del auxiliar que lleva el cleinte (si no tiene dejar en blanco))
+-h) Contador (nombre del contador que lleva el cleinte (si no tiene dejar en blanco), es el contador que tiene asigando el auxiliar)
+-i) Supervisor (nombre del auxiliar que lleva el cleinte (si no tiene dejar en blanco), es el supervisor que tiene asignado el contador)
+-j) Gerente (nombre del gerente que lleva el cleinte (si no tiene dejar en blanco), es el gerente que tiene asigando el supervisor)
+
+3) En la tabla, hasta abajo poner una fila de totales en las columans: Costo por periodo y costo mensual
+
+4) Cuando te metes al reporte y buscas algo que te aparezca la lista de los clientes y razones sociales ocn la informacion de cada servicio que tiene asigando (segun los filtros), este reporte es para ver segun lo que seleccionaste en los filtros los clientes con cada servicio que tienen y como es el organigrama que maneja cada servicio (quien es el auxiliar, contador, etc) y el costo mensual de ese servicio"
+10056	[MOD] EN los filtros de busqeuda que te deje bucar un cliente sin escoger un responsable	
+10057	[BUG] Revisar que el cron sirva bien porque no se estan actualizando los colores en los reportes	
+10273	[BUG] El cliente EUROGARMENT tiene un servicio anual que deberia de ser 1 mes al aÃ±o y sale en dos	
+10358	[BUG] En la pantalla principal donde salen las noticias, los ultimos dos si descargas el archivo te abre un archivo con puras letras	
+10386	[9661][BUG] Corregir filtros de bÃºsqueda en Reportes > Reporte CxC	
+10413	[9661][BUG] Corregir filtros de bÃºsqueda en Reportes > Rep. de DocumentaciÃ³n Perm.	
+10415	[9661][BUG] Corregir filtros de bÃºsqueda en Reportes > Rep. de Archivos Perm.	
+10419	[BUG][REV]no puedo entrar a huerin en desarrollo me sale un error	"Warning: mysql_connect(): Access denied for user 'root'@'localhost' (using password: NO) in /var/www/html/huerin_test/classes/db.class.php on line 87 Warning: mysql_select_db() expects parameter 2 to be resource, boolean given in /var/www/html/huerin_test/classes/db.class.php on line 88 
+Access denied for user 'root'@'localhost' (using password: NO)"
+10443	[BUG][REV]clientes>>activos/inactvos>>el filtro de busqueda responsable no filtra	
+10444	[BUG][REV]REPORTE>>REPORTE CXC>>filtro facturador>>cuando buscar por efectivo el no muestra el nombre de de efectivo en el campo de facturador en la tabla checar	
+10445	[BUG][REV]en la pantala principal al descargas los archivo el exel no se be bien checar	
+10446	[BUG][REV]reportes>>reporte de documentos>>en el filtro de busqueda razon social no busca algunos ejemplo:DIEGO BRUN FERNANDEZ	
+10447	[BUG][REV]reportes>>reporte archivos permanentes>>en el filtro de busqueda razon social no busca algunos ejemplo:DIEGO BRUN FERNANDEZ	
+10466	[BUG] En la pantalla de inicio en la tabla de noticias no esta adjuntando el archivo (en urgente y en normal)	
+10467	[BUG] Que no tengas que seleccionar un responsable para buscar un cleinte (ahorita para buscar un cliente tienes que seleccionar responsable)	"es en todos los filtros
+[12:13:20 p. m.] Jonathan I: cuando entras con la cuenta de algun responsable
+[12:13:33 p. m.] Jonathan I: si quieres buscar a un cliente necesitas llenar tambine el filtro de responsable"
+10638	[BUG] SE ESTA BORRANDO NFORMACION DE CLEINTES, VER DESCRIPCION	"si te metes a clientes y buscas un cliente por ejemplo ALEJANDRE te aparece, te metes a sus razones sociales y APARECEN EN BLANCO, tienes que editar y volver a poner la infromacion
+PORQUE SE ESTA BORRANDO LA INFORMACION??"
+10772	[NEW] hacer exportacion especial de clientes a excel ( con todos los campos) , clientes y razones sociales	
+10837	[BUG] Corregir cron para que actualice bien los colores de los workflows de servicios.	
+10861	[BUG][REV]clientes>>el exel sale con caracteres especiales chacar	
+
+
+version 1.02 Mayo 13 2014
+8437	[BUG] En reportes anual y mensual hay algunos que salen en febreor y marzo en blanco (ya deberia de poner el color hasta abril)	
+8624	[MOD] Activar la funcionaldad para enviar alertas por correo a los contadores asignados cunado una fecha de la clave FIEL esta por vencer	
+8845	[SOP] En el sistema de produccion hacer lo sigueinte	"Existen dos clientes dados de alta en el sistema en produccion:
+a) Marissa Hernandez
+b) Yoshua Sirquin
+
+El cliente MARISSA HERNANDEZ tiene registrada 6 razones sociales que ya tienen servicios e informacion cargada
+El cliente YOSHUA SIRQUIN tiene registradas 14 razones socales que ya tienen servicios e informacion cargada
+
+Lo que hay que hacer es cambiar las 6 razones sociales de MARISSA a YOSHUA, pero que no afecte la informacion que ya tenian estas 6 razones sociales, que todo siga igual solo en la BD hay que asignarlas al cliente YOSHUA"
+8935	[BUG][REV]catalago>>servicio>>cuando actives o desactives un workflow que te mande al clientes que le editaste	
+9070	[SOP] Entre con el usuario mrodriguez contraseÃ±a mrodriguez1 y me aparece estos clientes como vivos y son pruebas de ustedes me los quitas por favor	"esto hay que borrarlo directo de producion
+braunhuerin.dyndns.org:8080"
+9071	[BUG] sale utf_8_encode warning cuando agregas nuevo cliente.	
+9100	[BUG][REV]clientes>>al agregar cliente hay campo requerido que si no le pones nada t deja agregar	
+9155	[MOD] en clientesas >lista activos e inactivos hacer lo que esta en descripcion:	"1.- los clientes que no tengan ningun contrato debn aparecer en la columna razon social con un ceor ahora esta colocando 1.-sin embargo no tiene razones sociales
+2.- cuando le das en filtro  cliente  o razon social te aparece una gran lista hay que limitarlo a 15
+3.- Al filtrar  por responsable de cuenta deben de seguir apareciendo los que no tengan razon social(osea debe listarte los registros del responsable de cuenta que elejiste pero tambien debe listarte los que no tiene razon social )"
+
+
+version 1.01 Mayo 07 2014
+8436	[BUG] En reportes anual y mensual, no te enseÃ±a todos los departamentos aunque en el filtro le pongas todos en departamento	
+8440	[NEW] En la pantalla de inicio agregar lo sigueinte	"En la pantalla de inicio se tiene que agregar una tabla en donde se van poniendo boletines y avisos.
+
+
+	Cunado entras al sistema, en la pantalla de inicio agregar una tabla con las sigueintes columans
+	
+		 Usuario
+		 Fecha
+		 Aviso
+		 Acciones
+	
+	
+	Arriba poner un boton ""Agregar aviso"", cunado le das clic que te abra un formulario con los campos
+	
+		 Aviso (textbox grande)
+		 Prioridad (dropdown: normal / importante)
+		 Archivo (campo para subir un archivo)
+	
+	
+	Cuando le das guardar que te lo agregue en la tabla, siguiendo estos puntos
+	
+		 En la tabla se tienen que agregar el mas nuevo hasta arriba y poner una paginacion para uqe te muestre solo 15 registros
+		 En la talba ponerlo segun
+		
+			Usuario: el nombre del usuario que lo puso
+			Fecha: La fecha en que se puso
+			Aviso: el texto con el aviso (ponerlo completo) - si la prioridad es importante poner la letra en ROJO
+			Acciones: si se adjunto un archivo poner un icono para bajar el archivo
+		
+		
+	
+	
+
+
+*no se puede editar ni borrar, se van acomodando por orden (el ultimo hasta arriba) y te aparecen solo 15 los demas los vez con una paginacion"
+8518	[NEW] poner mismo filtro que esta en reportes en servicios	
+8609	[BUG][REV]catalagos>>contadores >>hay caracteres especiales	
+8622	[MOD] En Reportes > Reporte de archivos y reporte de docuemntacion hacer el sigueinte cambio	1) Cambiar el diseÃ±o de las columans para que salgan una a lado de la otra y ya no dos por columans
+8623	[BUG] En reportes > reporte de archivos y reporte de documentacion, no se exporta bien a excel	
+8791	[BUG][REV]clientes>>al agregar sale un error	
+8792	[BUG][REV]en todo el sistema>>archivo exel y pdf no descargan	
+8807	[NEW] agregar link para descargar el changelog.txt que diga "Ver Ultimos Cambios" hasta abajo (en el footer) el changelog.txt estara ubicado siempre en la carpeta root del proyecto	
+8828	[BUG][REV]catalago>>regimnes>>aliniar los iconos de acciones y ponerle nombre	
+8829	[BUG][REV]catalago>>regimenes al agregar poner requerido el campo que te pide y ponerlo en espaÃ±ol	
+8830	[BUG][REV]catalago>>tipo de sociedad>>ponerle nombre a iconos y ponerle nombre campo acciones	
+8831	[BUG][REV]catalago>>tipo de sociedad al agregar poner requerido los campos que pide	
+8832	[BUG][REV]catalago>>tipo de servicio,tipo de documento,deptos>>en la tabla pornerle arriba el nombre de acciones y alo iconos de acciones pornele nombre y al agregar campo requerido marcarlo	
+8833	[BUG][REV]catalago>>tipo de requerimiento>>en la tabla pricipal ponerle nombre en la seccion de acciones y tambien pornerle nombre a los iconos y al agregar poner campos requridos que pide	
+8834	[BUG][REV]catalago>>tipo de archivo>>en la tabla poner seccion nombre acciones y agregarle nombre a los iconos y al agregar el campo que requiere esta mal	
+8835	[BUG][REV]catalago>>impuesto,obligaciones>>al agregar y eliminar el mensaje dise editar esta mal,poner campos requerido  y en la tabla poner seccion acciones y nombre a los iconos	
+8836	[BUG][REV]servicio>>al momento de no encontrar el cliente dise en el filtro buscar por cliente y razon social no response text	
+8837	[BUG][REV}servicio>>no tiene el loading	
+8838	[BUG][REV]facturacion>>el iva no lo agrega	
+8839	[BUG][REV]catalago>>tipo de servicio>>acciones >ver descripcion abajo	
+8889	[MOD]reportes>>Quitar el icono del PDF  donde al dar click aparece el siguiente error :	You don't have permission to access /huerin_test/<br /><font size='1'><table class='xdebug-error xe-warning' dir='ltr' border='1' cellspacing='0' cellpadding='1'><tr><th align='left' bgcolor=' on this server.
+8894	[Otros]Demasiado lento el internet  y el sistema	
+8899	[BUG][REV]clientes>>en la tabla principal el formato de fecha esta mal	
+8900	[BUG][REV]clientes>>cuando agregas un cliente activo tambien aparece en inactivo y biceversa y se agregan dos veces	
+8901	[BUG][REV]catalago>>regiemenes en exportar pdf y exel salen concarecteres rraros en todo el sistema	
