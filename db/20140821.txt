@@ -1,0 +1,7 @@
+INSERT INTO `huerin`.`tipoArchivo` (
+`tipoArchivoId` ,
+`descripcion`
+)
+VALUES (
+'8', 'CODIGO BARRA BIDIMENSIONAL'
+);
