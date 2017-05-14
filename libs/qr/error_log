@@ -1,0 +1,6 @@
+[23-Jan-2011 17:41:10] PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so' - /usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so: undefined symbol: empty_string in Unknown on line 0
+[23-Jan-2011 17:41:10] PHP Deprecated:  Directive 'magic_quotes_gpc' is deprecated in PHP 5.3 and greater in Unknown on line 0
+[23-Jan-2011 17:41:21] PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so' - /usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so: undefined symbol: empty_string in Unknown on line 0
+[23-Jan-2011 17:41:21] PHP Deprecated:  Directive 'magic_quotes_gpc' is deprecated in PHP 5.3 and greater in Unknown on line 0
+[23-Jan-2011 17:44:38] PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so' - /usr/local/php4/lib/php/extensions/no-debug-zts-20020429/eaccelerator.so: undefined symbol: empty_string in Unknown on line 0
+[23-Jan-2011 17:44:38] PHP Deprecated:  Directive 'magic_quotes_gpc' is deprecated in PHP 5.3 and greater in Unknown on line 0
