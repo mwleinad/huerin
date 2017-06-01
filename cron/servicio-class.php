@@ -54,7 +54,7 @@ class Servicio extends Contract
 		return $this->servicioId;
 	}
 	
-	public function CreateServiceInstances(
+	public function CreateServiceInstances()
 	{	$cont=0;
 		$init = microtime();
 		$result = $this->EnumerateActive();

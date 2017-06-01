@@ -101,6 +101,8 @@ include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
 include_once(DOC_ROOT."/classes/cfdi.class.php");
 
+include_once(DOC_ROOT."/classes/archivos.class.php");
+
 
 
 $db = new DB;
@@ -170,6 +172,8 @@ $balance = new Balance;
 
 $xmlTransform = new XmlTransform;
 $cfdi = new Cfdi;
+
+$archivos = new Archivos();
 
 
 $smarty = new Smarty;
