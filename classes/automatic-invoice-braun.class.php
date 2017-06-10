@@ -175,7 +175,7 @@ class AutomaticInvoiceBraun extends Comprobante
 				"estado" => $value["estadoAddress"],
 				"localidad" => $value["municipioAddress"],
 				"referencia" => "",
-				"pais" => $value["paisAddress"],
+				"pais" => "Mexico",
 				"email" => $value["emailContactoAdministrativo"],
 				"telefono" => $value["telefonoContactoAdministrativo"],
 				"password" => ""

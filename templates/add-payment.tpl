@@ -1,7 +1,7 @@
 <div class="grid_16" id="content">
     
   <div class="grid_9">
-  <h1 class="catalogos">Agregar Pagos</h1>
+  <h1 class="catalogos">Agregar Pagos | <a href="{$WEB_ROOT}/cxc">Regresar</a></h1>
   </div>
   
   <div class="clear">

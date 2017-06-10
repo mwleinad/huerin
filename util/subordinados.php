@@ -15,4 +15,4 @@
 
    	$personal->setPersonalId($_GET["usuario"]);
    	$subordinados = $personal->Subordinados();
-		print_r($subordinados);
+print_r($subordinados);

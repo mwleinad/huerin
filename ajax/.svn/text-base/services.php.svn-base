@@ -1,0 +1,147 @@
+<?php
+include_once('../init.php');
+include_once('../config.php');
+include_once(DOC_ROOT.'/libraries.php');
+switch($_POST["type"])
+{
+	case "updateCuentas":
+		$cuentas = $contract->Enumerate($_POST["customerId"]);
+		?>
+			<select id="cuenta" name="cuenta" class="largeInput">
+      <?php foreach($cuentas as $cuenta){ ?>
+          <option value="<?php echo $cuenta["contractId"]?>"><?php echo $cuenta["name"]?></option>
+      <?php } ?>    
+          </select>    
+    <?php
+
+		break;
+	case "buscarServiciosActivos":
+		$servicios = $servicio->EnumerateActive($_POST["customerId"], $_POST["contractId"], $_POST["rfc"]);
+		$smarty->assign("rfc", urlencode($_POST["rfc"]));
+		$smarty->assign("servicios", $servicios);
+		$smarty->display(DOC_ROOT.'/templates/lists/servicios_activos.tpl');
+		break;
+	case "updateCosto": 
+			$tipoServicio->setTipoServicioId($_POST["id"]);
+			$servicio = $tipoServicio->Info();
+			
+			if($servicio["costo"] == 0)
+			{
+				echo $servicio["costoUnico"];
+			}
+			else
+			{
+				echo $servicio["costo"];
+			}
+		
+		break;	
+	case "addServicio": 
+			
+			$tiposDeServicio = $tipoServicio->EnumerateAll();
+			$smarty->assign("tiposDeServicio", $tiposDeServicio);
+			$smarty->assign("contractId", $_POST["id"]);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/boxes/add-servicio-popup.tpl');
+		
+		break;	
+		
+	case "saveAddServicio":
+			$servicio->setContractId($_POST['contractId']);
+			$servicio->setTipoServicioId($_POST['tipoServicioId']);			
+			$servicio->setCosto($_POST['costo']);
+			$servicio->setInicioFactura($_POST['inicioFactura']);
+			$servicio->setInicioOperaciones($_POST['inicioOperaciones']);
+			if(!$servicio->Save())
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+				echo "ok[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				echo "[#]";
+				
+				//echo $_POST['contractId'];
+				$contract->setContractId($_POST['contractId']);
+				$info = $contract->Info();
+				
+				$contract->setCustomerId($info["customerId"]);
+				$resContracts = $contract->Enumerate($info["customerId"]);
+				
+				$empleados = $personal->Enumerate();			
+				$empleados = $util->EncodeResult($empleados);
+				$smarty->assign("empleados", $empleados);
+		
+				$smarty->assign("contracts", $resContracts);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
+			}
+			
+		break;
+		
+	case "deleteService":
+			
+			$servicio->setServicioId($_POST['servicioId']);
+			if($servicio->Delete())
+			{
+				echo "ok[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
+				echo "[#]";
+				$servicio->setContractId($_POST['contractId']);
+				$servicios = $servicio->Enumerate();
+		
+				$smarty->assign("servicios", $servicios);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
+			}
+			
+		break;
+		
+	case "editServicio":
+	 
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$servicio->setServicioId($_POST['servicioId']);
+			$myServicio = $servicio->Info();
+			
+			$tiposDeServicio = $tipoServicio->EnumerateAll();
+			$smarty->assign("tiposDeServicio", $tiposDeServicio);
+			
+			$info = $util->EncodeRow($myServicio);
+			
+			$smarty->assign("post", $info);
+			$smarty->display(DOC_ROOT.'/templates/boxes/edit-servicio-popup.tpl');
+		
+		break;
+		
+	case "saveEditServicio":
+			$servicio->setServicioId($_POST['customerId']);
+			$servicio->setTipoServicioId($_POST['tipoServicioId']);			
+			$servicio->setCosto($_POST['costo']);
+			$servicio->setInicioFactura($_POST['inicioFactura']);
+			$servicio->setInicioOperaciones($_POST['inicioOperaciones']);
+			$servicio->setServicioId($_POST['servicioId']);
+			$myServicio = $servicio->Info();
+			
+			if(!$servicio->Edit())
+			{
+				echo "fail[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			}
+			else
+			{
+				echo "ok[#]";
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+				echo "[#]";
+				$servicio->setContractId($myServicio['contractId']);
+				$servicios = $servicio->Enumerate();
+		
+				$smarty->assign("servicios", $servicios);
+				$smarty->assign("DOC_ROOT", DOC_ROOT);
+				$smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
+			}
+			
+		break;
+		
+}
+?>

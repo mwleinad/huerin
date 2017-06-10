@@ -42,22 +42,8 @@
 <file name="report-obligaciones.php" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130286598667745874" remote="130380141590000000" Dst="-1" />
 <file name="report-servicio-mensual.php" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130373813024638678" remote="130380141610000000" Dst="-1" />
 <file name="requerimiento.php" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525155967162" remote="130380141620000000" Dst="-1" />
-<file name="report-servicio.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131095407821259019" remote="131095398080000000" Dst="2" />
+<file name="report-servicio.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130699727611238917" remote="130699725580000000" Dst="-1" />
 <file name="report-ingresos.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130700680956265925" remote="130700678940000000" Dst="-1" />
 <file name="manage-facturas.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130804255524893636" remote="130804251260000000" Dst="2" />
 <file name="suggest_customer.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130820627027611200" remote="130820622620000000" Dst="2" />
-<file name="services.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130915873633325255" remote="130915867350000000" Dst="1" />
-<file name="suggest_customer_catalog.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131023747098819927" remote="131023702570000000" Dst="2" />
-<file name="customer.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131023742103828134" remote="131023697580000000" Dst="2" />
-<file name="usuario.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130916769756879658" remote="130916763430000000" Dst="1" />
-<file name="personal.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131089393871147923" remote="131089384270000000" Dst="2" />
-<file name="homepage.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010948912575353" remote="131010940680000000" Dst="1" />
-<file name="archivos.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130992857111857596" remote="130992849290000000" Dst="1" />
-<file name="cfdi.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998716219663302" remote="130998708280000000" Dst="1" />
-<file name="cfdiPagos.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998843544861648" remote="130998835610000000" Dst="1" />
-<file name="report-cobranza-ejercicio.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131012466725636438" remote="131012458520000000" Dst="1" />
-<file name="report-cobranza-ejercicio-new.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034912301901309" remote="131034903470000000" Dst="2" />
-<file name="cxc.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131055939341056281" remote="131055930110000000" Dst="2" />
-<file name="report-servicio-mensual.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131084119210000000" remote="131084109660000000" Dst="2" />
-<file name="report-servicio-auditoria.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131084137794367501" remote="131084128240000000" Dst="2" />
 </dwsync>

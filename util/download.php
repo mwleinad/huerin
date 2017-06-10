@@ -17,6 +17,6 @@ header('Content-type:'.$mime);
 //echo $_GET["file"];
 $_GET["file"] = str_replace(WEB_ROOT,"", $_GET["file"]);
 //echo DOC_ROOT."/".$_GET["file"];
-readfile(urldecode(WEB_ROOT."/".$_GET["file"]));
+readfile(urldecode(DOC_ROOT."/".$_GET["file"]));
 
 ?>

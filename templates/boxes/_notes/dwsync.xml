@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dwsync>
-<file name="add-tipoRequerimiento-popup.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525189391008" remote="130344677130000000" Dst="-1" />
-<file name="edit-tipoRequerimiento-popup.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525189330998" remote="130344677140000000" Dst="-1" />
-<file name="historial-servicio-popup.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130904428144178820" remote="130904422030000000" Dst="1" />
-<file name="add-archivos-popup.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130987379723141831" remote="130987372030000000" Dst="1" />
-<file name="edit-archivos-popup.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130992837153278990" remote="130992829340000000" Dst="1" />
-<file name="add-pendiente-popup.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010883654684283" remote="131010875430000000" Dst="1" />
-<file name="add-historialPendiente-popup.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010935410000000" remote="131010927180000000" Dst="1" />
-<file name="report-walmart-status-new.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034904866034486" remote="131034896080000000" Dst="2" />
+<file name="add-tipoRequerimiento-popup.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525189391008" remote="130344677130000000" />
+<file name="edit-tipoRequerimiento-popup.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525189330998" remote="130344677140000000" />
 </dwsync>

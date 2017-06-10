@@ -1,0 +1,1885 @@
+<?php 
+
+session_start();
+
+class Contract extends Main
+{
+	private $facturador;
+	public function setFacturador($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, 'Facturador');
+		$this->facturador = $value;
+	}
+
+	private $auxiliarCuenta;
+	public function setAuxiliarCuenta($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->auxiliarCuenta = $value;
+	}
+
+	private $encargadoCuenta;
+	public function setEncargadoCuenta($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->encargadoCuenta = $value;
+	}
+
+	private $responsableCuenta;
+	public function setResponsableCuenta($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->responsableCuenta = $value;
+	}
+
+	private $permisos;
+	public function setPermisos($value,$firsValue)
+	{
+		$this->permisos ="1,".$firsValue."-".implode("-",array_filter($value));
+	}
+	
+	private $noExtComercial;
+	public function setNoExtComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, 'No Ext Comercial');
+		$this->noExtComercial = $value;
+	}		
+
+	private $noIntComercial;
+	public function setNoIntComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, 'No Int Comercial');
+		$this->noIntComercial = $value;
+	}		
+
+	private $coloniaComercial;
+	public function setColoniaComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Colonia Comercial');
+		$this->coloniaComercial = $value;
+	}		
+
+	private $municipioComercial;
+	public function setMunicipioComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Municipio Comercial');
+		$this->municipioComercial = $value;
+	}		
+
+	private $estadoComercial;
+	public function setEstadoComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Estado Comercial');
+		$this->estadoComercial = $value;
+	}		
+
+	private $noExtAddress;
+	public function setNoExtAddress($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, 'No Ext Address');
+		$this->noExtAddress = $value;
+	}		
+
+	private $noIntAddress;
+	public function setNoIntAddress($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, 'No Int Address');
+		$this->noIntAddress = $value;
+	}		
+
+	private $coloniaAddress;
+	public function setColoniaAddress($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Colonia Address');
+		$this->coloniaAddress = $value;
+	}		
+
+	private $municipioAddress;
+	public function setMunicipioAddress($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Municipio Address');
+		$this->municipioAddress = $value;
+	}		
+
+	private $estadoAddress;
+	public function setEstadoAddress($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Estado Address');
+		$this->estadoAddress = $value;
+	}		
+
+	private $type;
+	public function setType($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Tipo'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Tipo');
+		$this->type = $value;
+	}		
+
+	private $sociedadId;
+	public function setSociedadId($value)
+	{
+		if($this->type == "Persona Moral")
+		{
+			if($this->Util()->ValidateRequireField($value, 'Sociedad'))
+				$this->Util()->ValidateInteger($value);
+		}
+		$this->sociedadId = $value;
+	}		
+
+	private $regimenId;
+	public function setRegimenId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Regimen'))
+			$this->Util()->ValidateInteger($value);
+		$this->regimenId = $value;
+	}		
+
+	private $telefono;
+	public function setTelefono($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Telefono');
+		$this->telefono = $value;
+	}		
+
+	private $nombreComercial;
+	public function setNombreComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Nombre Comercial');
+		$this->nombreComercial = $value;
+	}		
+
+	private $direccionComercial;
+	public function setDireccionComercial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Direccion Comercial');
+		$this->direccionComercial = $value;
+	}		
+
+	private $nameContactoAdministrativo;
+	public function setNameContactoAdministrativo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Nombre Contacto Administrativo');
+		$this->nameContactoAdministrativo = $value;
+	}		
+
+	private $emailContactoAdministrativo;
+	public function setEmailContactoAdministrativo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Email Contacto Administrativo');
+		$this->emailContactoAdministrativo = $value;
+	}		
+
+	private $telefonoContactoAdministrativo;
+	public function setTelefonoContactoAdministrativo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Telefono Contacto Administrativo');
+		$this->telefonoContactoAdministrativo = $value;
+	}		
+
+	private $nameContactoContabilidad;
+	public function setNameContactoContabilidad($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Nombre Contacto Contabilidad');
+		$this->nameContactoContabilidad = $value;
+	}		
+
+	private $emailContactoContabilidad;
+	public function setEmailContactoContabilidad($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Email Contacto Contabilidad');
+		$this->emailContactoContabilidad = $value;
+	}		
+
+	private $telefonoContactoContabilidad;
+	public function setTelefonoContactoContabilidad($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Telefono Contacto Contabilidad');
+		$this->telefonoContactoContabilidad = $value;
+	}		
+
+	private $nameContactoDirectivo;
+	public function setNameContactoDirectivo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Nombre Contacto Directivo');
+		$this->nameContactoDirectivo = $value;
+	}		
+
+	private $emailContactoDirectivo;
+	public function setEmailContactoDirectivo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Email Contacto Directivo');
+		$this->emailContactoDirectivo = $value;
+	}		
+
+	private $telefonoContactoDirectivo;
+	public function setTelefonoContactoDirectivo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Telefono Contacto Directivo');
+		$this->telefonoContactoDirectivo = $value;
+	}		
+
+	private $telefonoCelularDirectivo;
+	public function setTelefonoCelularDirectivo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Telefono Celular Directivo');
+		$this->telefonoCelularDirectivo = $value;
+	}		
+
+	private $claveCiec;
+	public function setClaveCiec($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Clave Ciec');
+		$this->claveCiec = $value;
+	}		
+
+	private $claveFiel;
+	public function setClaveFiel($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Clave Fiel');
+		$this->claveFiel = $value;
+	}		
+
+	private $claveIdse;
+	public function setClaveIdse($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Clave Idse');
+		$this->claveIdse = $value;
+	}		
+
+	private $claveIsn;
+	public function setClaveIsn($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Clave Isn');
+		$this->claveIsn = $value;
+	}		
+
+	private $contractId;
+	private $customerId;
+	private $wallmartId;
+	private $personalId;
+	private $name;
+	private $folio;
+	private $stateId;
+	private $cityId;
+	private $address;
+	private $superficie;
+	private $superficieA;
+	private $montoRenta;
+	private $contCatId;
+	private $contSubcatId;
+	private $subtype;
+	private $status;
+	private $docsBasic;
+	private $docsSellado;
+	private $docsGral;
+	private $fechaFirmado;
+	private $cartaCump;
+	private $fechaCartaCump;
+	private $arrendatario;
+	private $arrendador;
+	private $partes;
+	private $year;
+	private $fechaProrroga;
+	private $docGralId;
+	private $docBasicId;
+	private $fechaDoc;
+	private $desc;
+	private $observaciones;
+	
+	//Arrendamiento
+	private $ubicacion;	
+	private $fechaSolicitud;
+	private $fechaEnvio;
+	private $respProy;
+	private $respProyWal;
+	private $propAcreditada;
+	private $titPropiedad;
+	private $dictamen;
+	private $firma;
+	private $fechaFirma;
+	private $plazoPromesa;
+	private $plazoArrendamiento;
+	private $cobrado;
+	private $fechaCobrado;
+	private $empresaFirmo;
+	private $actaEntrega;
+	private $inmuebleEntregado;
+	private $fechaInmEnt;
+	
+	//Subcontrol para Certificados de Libertad de Gravamen
+	private $certLibGrav;
+	private $noCertificados;
+	private $ubicacionRpp;
+	private $nomTramitaCert;
+	private $fechaSolCert;
+	private $derechosCert;
+	private $honorariosCert;
+	private $fechaEntCert;
+	private $resCert;
+	private $comentarios;
+	private $comentario;
+	private $certEnviado;
+	private $fechaCertEnv;
+	
+	//CompraVenta				
+	private $persona;
+	private $edoCivil;
+	private $actaMat;
+	private $conDiv;
+	private $constitutiva;
+	private $modEstatutos;
+	private $poder;
+	private $rfc;
+	private $predial;
+	private $fechaPredial;
+	private $agua;
+	private $fechaAgua;
+	private $titProp;
+	private $subdivInm;
+	private $cuandoDivInm;				
+	private $fraccionamiento;
+	private $descInm;
+	private $autFracc;
+	private $autEnajenacion;
+	private $transHas;
+	private $licConst;
+	private $munObras;
+	private $usoSuelo;
+	private $usoSueloEsp;
+	private $agenda;
+	private $precio;
+	private $comparativa;
+	private $construcciones;
+	private $certificaciones;
+	private $avaluo;
+	private $notario;
+	private $proyEscritura;
+	private $fechaProyEsc;
+	private $proyEscrAprobado;
+	private $calculoIsr;
+	private $fechaCalcIsr;
+	private $calculoIva;
+	private $fechaCalcIva;
+	private $cheques;
+	private $fechaCheques;
+	private $fechaCompVta;
+	private $fechaPagoImp;
+	private $calcImpDer;
+	private $copiaCertEsc;
+	private $avaluoCatastral;
+	private $ultPagoPredial;
+	private $boletaAgua;
+	private $inmProvSubdiv;
+	private $factNotaria;
+	private $pagoImpWal;
+	private $fechaImpWal;
+	private $compPagoImpNot;
+	private $fechaImpNot;
+	private $pagoHonorarios;
+	private $fechaHonorarios;
+	private $pagoPteWal;
+	private $descPagoPteWal;
+	private $escRpp;
+	private $fechaEscRpp;
+	private $firmaContWal;
+		
+	private $cpComercial;	
+	public function setCpComercial($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'CP Recoleccion'))
+			$this->Util()->ValidateString($value, $max_chars=5, $minChars = 5, 'CP Recoleccion');
+		$this->cpComercial = $value;
+	}
+
+	private $cpAddress;	
+	public function setCpAddress($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'CP Fiscal'))
+			$this->Util()->ValidateString($value, $max_chars=5, $minChars = 5, 'CP Fiscal');
+		$this->cpAddress = $value;
+	}
+		
+		
+	public function setContractId($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->contractId = $value;
+	}
+
+	public function getContractId()
+	{
+		return $this->contractId;
+	}
+	
+	public function setCustomerId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Cliente'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Cliente');
+		$this->customerId = $value;
+	}
+	
+	public function setWallmartId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Responsable del are&aacute; de cierres'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Responsable del are&aacute; de cierres');
+		$this->wallmartId = $value;
+	}
+	
+	public function setPersonalId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Responsable del proyecto por parte de Roqueñi Straffon S.C.'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Responsable del proyecto por parte de Roqueñi Straffon S.C.');
+		$this->personalId = $value;
+	}
+
+	public function setName($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Razon Social'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Razon Social');
+		$this->name = $value;
+	}
+	
+	public function setFolio($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Folio'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Folio');
+		$this->folio = $value;
+	}
+	
+	public function setContCatId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Tipo de Contrato'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Tipo de Contrato');
+		$this->contCatId = $value;
+	}
+	
+	public function setContSubcatId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Tipo de Subcontrato'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Tipo de Subcontrato');
+		$this->contSubcatId = $value;
+	}
+	
+	public function setSubtype($value)
+	{
+		$this->subtype = $value;	
+	}
+	
+	public function setStatus($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Estatus'))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, 'Estatus');
+		$this->status = $value;
+	}
+	
+	public function setObservaciones($value)
+	{
+		$this->observaciones = $value;
+	}
+	
+	public function setDocsBasic($value)
+	{
+		$this->docsBasic = $value;
+	}
+	
+	public function setDocsSellado($value)
+	{
+		$this->docsSellado = $value;
+	}
+	
+	public function setDocsGral($value)
+	{
+		$this->docsGral = $value;
+	}	
+	
+	public function setYear($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'A&ntilde;o'))
+			$this->year = $value;
+	}
+	
+	public function setFechaProrroga($value)
+	{
+		//if($value < date('Y-m-d'))
+			//$this->Util()->setError(10056, "error");
+		$this->fechaProrroga = $value;
+	}
+	
+	public function setFechaDoc($value)
+	{
+		if($value > date('Y-m-d'))
+			$this->Util()->setError(10054, "error");
+		$this->fechaDoc = $value;
+	}
+	
+	public function setDocGralId($value)
+	{
+		$this->docGralId = $value;
+	}
+	
+	public function setDocBasicId($value)
+	{
+		$this->docBasicId = $value;
+	}
+	
+	public function setDesc($value)
+	{
+		$this->desc = $value;
+	}
+	
+	//Varios
+	
+	public function setUbicacion($value)
+	{
+		$this->ubicacion = $value;
+	}
+	
+	public function setStateId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Estado'))
+			$this->stateId = $value;
+	}
+	
+	public function setCityId($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Municipio'))
+			$this->cityId = $value;
+	}
+	
+	public function setAddress($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Calle'))
+			$this->address = $value;
+	}
+	
+	public function setFechaSolicitud($value)
+	{
+		$this->fechaSolicitud = $value;
+	}
+	
+	public function setRespProy($value)
+	{
+		$this->respProy = $value;
+	}
+	
+	public function setRespProyWal($value)
+	{
+		$this->respProyWal = $value;
+	}
+	
+	public function setSuperficie($value)
+	{
+		$this->superficie = $value;
+	}
+	
+	public function setSuperficieA($value)
+	{
+		$this->superficieA = $value;
+	}
+	
+	public function setMontoRenta($value)
+	{
+		if(trim($value) != '')
+			if($this->Util()->ValidateDecimal($value))
+				$this->montoRenta = $value;
+	}
+	
+	public function setFechaFirmado($value)
+	{
+		if($this->status == 'firmado')
+			if($this->Util()->ValidateRequireField($value, 'Fecha Firma del Contrato'))			
+				$this->fechaFirmado = $value;
+	}
+	
+	public function setCartaCump($value)
+	{
+		$this->cartaCump = $value;
+	}
+	
+	public function setFechaCartaCump($value)
+	{
+		if($this->cartaCump)
+			if($this->Util()->ValidateRequireField($value, 'Fecha de Envio Carta de Cumplimiento'))			
+				$this->fechaCartaCump = $value;
+	}
+	
+	public function setArrendador($value)
+	{		
+		$this->arrendador = $value;
+	}
+	
+	public function setArrendatario($value)
+	{		
+		$this->arrendatario = $value;
+	}
+	
+	public function setPartes($value)
+	{
+		$this->partes = $value;
+	}
+	
+	//Arrendamiento
+		
+	public function setFechaEnvio($value)
+	{
+		$this->fechaEnvio = $value;
+	}
+		
+	public function setPropAcreditada($value)
+	{
+		$this->propAcreditada = $value;
+	}
+	
+	public function setTitPropiedad($value)
+	{
+		$this->titPropiedad = $value;
+	}
+	
+	public function setDictamen($value)
+	{
+		$this->dictamen = $value;
+	}
+	
+	public function setFirma($value)
+	{
+		$this->firma = $value;
+	}
+	
+	public function setFechaFirma($value)
+	{
+		if($this->firma == 'firmado')
+			if($this->Util()->ValidateRequireField($value, 'Fecha Firma del Contrato'))			
+				$this->fechaFirma = $value;
+	}
+	
+	public function setPlazoPromesa($value)
+	{
+		$this->plazoPromesa = $value;
+	}
+	
+	public function setPlazoArrendamiento($value)
+	{
+		$this->plazoArrendamiento = $value;
+	}
+	
+	public function setCobrado($value)
+	{
+		$this->cobrado = $value;
+	}
+	
+	public function setFechaCobrado($value)
+	{
+		if($this->cobrado)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Cobrado'))			
+				$this->fechaCobrado = $value;
+	}
+	
+	public function setEmpresaFirmo($value)
+	{
+		$this->empresaFirmo = $value;
+	}
+	
+	public function setActaEntrega($value)
+	{
+		$this->actaEntrega = $value;
+	}
+	
+	public function setInmuebleEntregado($value)
+	{
+		$this->inmuebleEntregado = $value;
+	}
+	
+	public function setFechaInmEnt($value)
+	{
+		if($this->inmuebleEntregado)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Inmueble Entregado'))			
+				$this->fechaInmEnt = $value;
+	}
+	
+	//Subcontrol para Certificados de Libertad de Gravamen
+	
+	public function setCertLibGrav($value)
+	{
+		$this->certLibGrav = $value;
+	}
+	
+	public function setNoCertificados($value)
+	{
+		$this->noCertificados = $value;
+	}
+	
+	public function setUbicacionRpp($value)
+	{
+		$this->ubicacionRpp = $value;
+	}
+	public function setNomTramitaCert($value)
+	{
+		$this->nomTramitaCert = $value;
+	}
+	
+	public function setFechaSolCert($value)
+	{
+		$this->fechaSolCert = $value;
+	}
+	
+	public function setDerechosCert($value)
+	{
+		$this->derechosCert = $value;
+	}
+	
+	public function setHonorariosCert($value)
+	{
+		$this->honorariosCert = $value;
+	}
+	
+	public function setFechaEntCert($value)
+	{
+		$this->fechaEntCert = $value;
+	}
+	
+	public function setResCert($value)
+	{
+		$this->resCert = $value;
+	}
+	
+	public function setComentarios($value)
+	{
+		$this->comentarios = $value;
+	}
+	
+	public function setComentario($value)
+	{
+		if($this->Util()->ValidateRequireField($value, 'Comentario en Resultado del Certificado'))
+			$this->comentario = $value;
+	}
+	
+	public function setCertEnviado($value)
+	{
+		$this->certEnviado = $value;
+	}
+	
+	public function setFechaCertEnv($value)
+	{
+		if($this->certEnviado)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Envio de Certificado a Walmart'))
+				$this->fechaCertEnv = $value;
+	}
+	
+	//CompraVenta
+		
+	public function setPersona($value)
+	{
+		$this->persona = $value;
+	}
+	
+	public function setEdoCivil($value)
+	{
+		$this->edoCivil = $value;
+	}
+	
+	public function setActaMat($value)
+	{
+		$this->actaMat = $value;
+	}
+	
+	public function setConDiv($value)
+	{
+		$this->conDiv = $value;
+	}
+	
+	public function setConstitutiva($value)
+	{
+		$this->constitutiva = $value;
+	}
+	
+	public function setModEstatutos($value)
+	{
+		$this->modEstatutos = $value;
+	}
+	
+	public function setPoder($value)
+	{
+		$this->poder = $value;
+	}
+	
+	public function setRfc($value)
+	{
+		$value = str_replace(" ", "", $value);
+		$value = str_replace("-", "", $value);
+		$value = strtoupper($value);
+		if($this->Util()->ValidateRequireField($value, 'RFC'))
+			$this->Util()->ValidateString($value, $max_chars=13, $minChars = 11, 'RFC');
+
+		$value = str_replace("&amp;", "&", $value);
+		
+		$this->rfc = $value;
+	}
+	
+	public function setPredial($value)
+	{
+		$this->predial = $value;
+	}
+	
+	public function setFechaPredial($value)
+	{
+		if($this->predial)
+			if($this->Util()->ValidateRequireField($value, 'Predial Pagado hasta'))
+				$this->fechaPredial = $value;
+	}
+	
+	public function setAgua($value)
+	{
+		$this->agua = $value;
+	}
+	
+	public function setFechaAgua($value)
+	{
+		if($this->agua == 1)
+			if($this->Util()->ValidateRequireField($value, 'Agua Pagado hasta'))
+				$this->fechaAgua = $value;
+	}
+		
+	public function setTitProp($value)
+	{
+		$this->titProp = $value;
+	}
+	
+	public function setSubdivInm($value)
+	{
+		$this->subdivInm = $value;
+	}
+	
+	public function setCuandoDivInm($value)
+	{
+		$this->cuandoDivInm = $value;
+	}
+	
+	public function setFraccionamiento($value)
+	{
+		$this->fraccionamiento = $value;
+	}
+	
+	public function setDescInm($value)
+	{
+		$this->descInm = $value;
+	}
+	
+	public function setAutFracc($value)
+	{
+		$this->autFracc = $value;
+	}
+	
+	public function setAutEnajenacion($value)
+	{
+		$this->autEnajenacion = $value;
+	}
+	
+	public function setTransHas($value)
+	{
+		$this->transHas = $value;
+	}
+	
+	public function setLicConst($value)
+	{
+		$this->licConst = $value;
+	}
+	
+	public function setMunObras($value)
+	{
+		$this->munObras = $value;
+	}
+	
+	public function setUsoSuelo($value)
+	{
+		$this->usoSuelo = $value;
+	}
+	
+	public function setUsoSueloEsp($value)
+	{
+		$this->usoSueloEsp = $value;
+	}
+	
+	public function setAgenda($value)
+	{
+		$this->agenda = $value;
+	}
+	
+	public function setPrecio($value)
+	{
+		$this->precio = $value;
+	}
+	
+	public function setComparativa($value)
+	{
+		$this->comparativa = $value;
+	}
+	
+	public function setConstrucciones($value)
+	{
+		$this->construcciones = $value;
+	}
+	
+	public function setCertificaciones($value)
+	{
+		$this->certificaciones = $value;
+	}
+	
+	public function setAvaluo($value)
+	{
+		$this->avaluo = $value;
+	}
+	
+	public function setNotario($value)
+	{
+		$this->notario = $value;
+	}
+	
+	public function setProyEscritura($value)
+	{
+		$this->proyEscritura = $value;
+	}
+	
+	public function setFechaProyEsc($value)
+	{
+		if($this->proyEscritura == 1 || $this->proyEscritura == 2)
+			if($this->Util()->ValidateRequireField($value, 'Proyecto de Escritura Fecha de envio'))
+				$this->fechaProyEsc = $value;
+	}
+	
+	public function setProyEscrAprobado($value)
+	{
+		$this->proyEscrAprobado = $value;
+	}
+	
+	public function setCalculoIsr($value)
+	{
+		$this->calculoIsr = $value;
+	}
+	
+	public function setFechaCalcIsr($value)
+	{
+		if($this->calculoIsr == 3)
+			if($this->Util()->ValidateRequireField($value, 'Calculo ISR Fecha de envio'))
+				$this->fechaCalcIsr = $value;
+	}
+	
+	public function setCalculoIva($value)
+	{
+		$this->calculoIva = $value;
+	}
+	
+	public function setFechaCalcIva($value)
+	{
+		if($this->calculoIva == 3)
+			if($this->Util()->ValidateRequireField($value, 'Calculo IVA Fecha de envio'))
+				$this->fechaCalcIva = $value;
+	}
+	
+	public function setCheques($value)
+	{
+		$this->cheques = $value;
+	}
+	
+	public function setFechaCheques($value)
+	{
+		if($this->cheques == 2)
+			if($this->Util()->ValidateRequireField($value, 'Cheques Fecha de solicitud'))
+				$this->fechaCheques = $value;
+	}
+	
+	public function setFechaCompVta($value)
+	{
+		$this->fechaCompVta = $value;
+	}
+	
+	public function setFechaCVta($value)
+	{
+		if($this->fechaCompVta == 'firmado')
+			if($this->Util()->ValidateRequireField($value, 'Fecha Celebraci&oacute;n CompraVenta'))
+				$this->fechaCVta = $value;
+	}
+	
+	public function setFechaPagoImp($value)
+	{
+		$this->fechaPagoImp = $value;
+	}
+	
+	public function setCalcImpDer($value)
+	{
+		$this->calcImpDer = $value;
+	}
+	
+	public function setCopiaCertEsc($value)
+	{
+		$this->copiaCertEsc = $value;
+	}
+	
+	public function setAvaluoCatastral($value)
+	{
+		$this->avaluoCatastral = $value;
+	}
+	
+	public function setUltPagoPredial($value)
+	{
+		$this->ultPagoPredial = $value;
+	}
+	
+	public function setBoletaAgua($value)
+	{
+		$this->boletaAgua = $value;
+	}
+	
+	public function setInmProvSubdiv($value)
+	{
+		$this->inmProvSubdiv = $value;
+	}
+	
+	public function setFactNotaria($value)
+	{
+		$this->factNotaria = $value;
+	}
+	
+	public function setPagoImpWal($value)
+	{
+		$this->pagoImpWal = $value;
+	}
+	
+	public function setFechaImpWal($value)
+	{
+		if($this->pagoImpWal == 1)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Pago de Imp. y Der. por Walmart a la Notaria'))
+				$this->fechaImpWal = $value;
+	}
+	
+	public function setCompPagoImpNot($value)
+	{
+		$this->compPagoImpNot = $value;
+	}
+	
+	public function setFechaImpNot($value)
+	{
+		if($this->compPagoImpNot == 1)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Comprobacion del pago de impuestos'))
+				$this->fechaImpNot = $value;
+	}
+	
+	public function setPagoHonorarios($value)
+	{
+		$this->pagoHonorarios = $value;
+	}
+	
+	public function setFechaHonorarios($value)
+	{
+		if($this->pagoHonorarios == 1)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Pago de Honorarios'))
+				$this->fechaHonorarios = $value;
+	}
+	
+	public function setPagoPteWal($value)
+	{
+		$this->pagoPteWal = $value;
+	}
+	
+	public function setDescPagoPteWal($value)
+	{
+		$this->descPagoPteWal = $value;
+	}
+	
+	public function setEscRpp($value)
+	{
+		$this->escRpp = $value;
+	}
+	
+	public function setFechaEscRpp($value)
+	{
+		if($this->escRpp == 1)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Escritura entregada a Walmart'))
+				$this->fechaEscRpp = $value;
+	}
+	
+	public function setFechaCobradoC($value)
+	{
+		if($this->cobrado == 1)
+			if($this->Util()->ValidateRequireField($value, 'Fecha Cobrado'))
+				$this->fechaCobrado = $value;
+	}
+		
+	public function setFirmaContWal($value)
+	{
+		$this->firmaContWal = $value;
+	}
+		
+	public function Enumerate($id = 0)
+	{
+		global $User;
+		if($id)
+		{
+			$add = "WHERE contract.customerId = '".$id."'";
+		}
+										
+		$sql = "SELECT *, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta, contract.responsableCuenta AS responsableCuenta FROM 
+					contract
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
+				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId		
+				".$add."							
+				ORDER BY 
+					contract.name ASC";
+					
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		
+		foreach($result as $key => $value)
+		{
+			$sql = "SELECT * FROM 
+						servicio
+					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+					WHERE contractId = '".$value["contractId"]."' AND servicio.status = 'activo'					
+					ORDER BY 
+						tipoServicio.nombreServicio ASC";
+						
+			$this->Util()->DB()->setQuery($sql);
+			$result[$key]["servicios"] = $this->Util()->DB()->GetResult();
+			$result[$key]["noServicios"] = count($result[$key]["servicios"]);
+			
+				$showContract = false;
+
+				$user = new User;
+				$user->setUserId($value["responsableCuenta"]);
+				$userInfo = $user->Info();
+
+				if(
+					$User["userId"] == $value["responsableCuenta"] || 
+					$userInfo["jefeContador"] == $User["userId"] || 
+					$userInfo["jefeSupervisor"] == $User["userId"] || 
+					$userInfo["jefeGerente"] == $User["userId"] || 
+					$userInfo["jefeSocio"] == $User["userId"]
+				)
+				{
+					$showContract = true;
+				}
+				if($showContract === false && $User["roleId"] > 2)
+				{
+					unset($result[$key]);
+				}
+		}
+		return $result;
+	}
+	
+	public function EnumerateByUser($userId)
+	{								
+		$sql = "SELECT 
+					* 
+				FROM 
+					contract
+				WHERE
+					personalId = ".$userId."
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+				
+		return $result;
+	}
+	
+	public function Search($sql)
+	{								
+		$sql = "SELECT 
+					* 
+				FROM 
+					contract							
+				WHERE
+					1 ".$sql."
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+				
+		return $result;
+	}
+	
+	public function Info()
+	{
+		$this->Util()->DB()->setQuery("SELECT *, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta, contract.responsableCuenta AS responsableCuenta, contract.auxiliarCuenta AS auxiliarCuenta FROM contract 
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
+				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId		
+			WHERE contractId = '".$this->contractId."'");
+		$row = $this->Util()->DB()->GetRow();
+		return $row;
+	}
+	
+	public function InfoArrendamiento()
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM contract_arrendamiento WHERE contractId = '".$this->contractId."'");
+		$row = $this->Util()->DB()->GetRow();
+		return $row;
+	}
+	
+	public function InfoCompraVenta()
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM contract_compraventa WHERE contractId = '".$this->contractId."'");
+		$row = $this->Util()->DB()->GetRow();
+		return $row;
+	}
+
+
+	public function Save()
+	{
+		//if($this->Util()->PrintErrors()){ return 0; }
+
+		$this->Util()->DB()->setQuery("
+			INSERT INTO
+				contract
+			(
+				customerId,
+				address,
+				type,
+				sociedadId,
+				`name`,
+				regimenId,
+				telefono,
+				nombreComercial,
+				direccionComercial,
+				nameContactoAdministrativo,
+				emailContactoAdministrativo,
+				telefonoContactoAdministrativo,
+				nameContactoContabilidad,
+				emailContactoContabilidad,
+				telefonoContactoContabilidad,
+				nameContactoDirectivo,
+				emailContactoDirectivo,
+				telefonoContactoDirectivo,
+				telefonoCelularDirectivo,
+				claveCiec,
+				claveFiel,
+				claveIdse,
+				rfc,
+				noExtComercial,
+				noIntComercial,
+				coloniaComercial,
+				municipioComercial,
+				estadoComercial,
+				noExtAddress,
+				noIntAddress,
+				coloniaAddress,
+				municipioAddress,
+				estadoAddress,
+				cpAddress,
+				cpComercial,
+				encargadoCuenta,
+				responsableCuenta,
+				permisos,
+				auxiliarCuenta,
+				facturador,
+				claveIsn
+			)
+			VALUES
+			(
+				'".$this->customerId."',
+				'".$this->address."',
+				'".$this->type."',
+				'".$this->sociedadId."',
+				'".$this->name."',
+				'".$this->regimenId."',
+				'".$this->telefono."',
+				'".$this->nombreComercial."',
+				'".$this->direccionComercial."',
+				'".$this->nameContactoAdministrativo."',
+				'".$this->emailContactoAdministrativo."',
+				'".$this->telefonoContactoAdministrativo."',
+				'".$this->nameContactoContabilidad."',
+				'".$this->emailContactoContabilidad."',
+				'".$this->telefonoContactoContabilidad."',
+				'".$this->nameContactoDirectivo."',
+				'".$this->emailContactoDirectivo."',
+				'".$this->telefonoContactoDirectivo."',
+				'".$this->telefonoCelularDirectivo."',
+				'".$this->claveCiec."',
+				'".$this->claveFiel."',
+				'".$this->claveIdse."',
+				'".$this->rfc."',
+				'".$this->noExtComercial."',
+				'".$this->noIntComercial."',
+				'".$this->coloniaComercial."',
+				'".$this->municipioComercial."',
+				'".$this->estadoComercial."',
+				'".$this->noExtAddress."',
+				'".$this->noIntAddress."',
+				'".$this->coloniaAddress."',
+				'".$this->municipioAddress."',
+				'".$this->estadoAddress."',
+				'".$this->cpAddress."',
+				'".$this->cpComercial."',
+				'".$this->encargadoCuenta."',
+				'".$this->responsableCuenta."',
+				'".$this->permisos."',
+				'".$this->auxiliarCuenta."',
+				'".$this->facturador."',
+				'".$this->claveIsn."')"
+		);
+		
+		//echo $this->Util()->DB()->query;
+		$contractId = $this->Util()->DB()->InsertData();
+		foreach($_FILES as $key => $file)
+		{
+			if($key == "cerFiel" || $key == "keyFiel" || $key == "reqFiel")
+			{
+				$folder = DOC_ROOT."/fieles/";
+			}
+
+			if($key == "cerSellos" || $key == "keySellos" || $key == "reqSellos")
+			{
+				$folder = DOC_ROOT."/sellos/";
+			}
+
+			if($key == "idse1" || $key == "idse2" || $key == "idse3")
+			{
+				$folder = DOC_ROOT."/idse/";
+			}
+			
+			$target_path = $folder . basename( $_FILES[$key]['name']); 
+			
+			if(move_uploaded_file($_FILES[$key]['tmp_name'], $target_path)) {
+				$this->Util()->DB()->setQuery("UPDATE contract SET ".$key." = '".$target_path."' WHERE contractId = '".$contractId."'");
+				$this->Util()->DB()->UpdateData();
+					
+			}
+						
+		}
+//		$this->Util()->DB()->InsertData();
+		
+		$this->Util()->setError(10029, "complete");
+		$this->Util()->PrintErrors();
+		
+		return $contractId;
+	}
+	
+	public function Update()
+	{
+		//if($this->Util()->PrintErrors()){ return false; }
+		$this->Util()->DB()->setQuery("
+			UPDATE
+				contract
+			SET				
+				sociedadId = '".$this->sociedadId."',
+				rfc = '".$this->rfc."',
+				regimenId = '".$this->regimenId."',
+				telefono = '".$this->telefono."',
+				address = '".$this->address."',
+				`name` = '".$this->name."',
+				nombreComercial = '".$this->nombreComercial."',
+				direccionComercial = '".$this->direccionComercial."',
+				nameContactoAdministrativo = '".$this->nameContactoAdministrativo."',
+				emailContactoAdministrativo = '".$this->emailContactoAdministrativo."',
+				telefonoContactoAdministrativo = '".$this->telefonoContactoAdministrativo."',
+				nameContactoContabilidad = '".$this->nameContactoContabilidad."',
+				emailContactoContabilidad = '".$this->emailContactoContabilidad."',
+				telefonoContactoContabilidad = '".$this->telefonoContactoContabilidad."',
+				nameContactoDirectivo = '".$this->nameContactoDirectivo."',
+				emailContactoDirectivo = '".$this->emailContactoDirectivo."',
+				telefonoContactoDirectivo = '".$this->telefonoContactoDirectivo."',
+				telefonoCelularDirectivo = '".$this->telefonoCelularDirectivo."',
+				claveCiec = '".$this->claveCiec."',
+				claveFiel = '".$this->claveFiel."',
+				claveIdse = '".$this->claveIdse."',
+				noExtComercial = '".$this->noExtComercial."',
+				noIntComercial = '".$this->noIntComercial."',
+				coloniaComercial = '".$this->coloniaComercial."',
+				municipioComercial = '".$this->municipioComercial."',
+				estadoComercial = '".$this->estadoComercial."',
+				noExtAddress = '".$this->noExtAddress."',
+				noIntAddress = '".$this->noIntAddress."',
+				coloniaAddress = '".$this->coloniaAddress."',
+				municipioAddress = '".$this->municipioAddress."',
+				estadoAddress = '".$this->estadoAddress."',
+				cpAddress = '".$this->cpAddress."',
+				cpComercial = '".$this->cpComercial."',
+				encargadoCuenta = '".$this->encargadoCuenta."',
+				responsableCuenta = '".$this->responsableCuenta."',
+				permisos = '".$this->permisos."',
+				auxiliarCuenta = '".$this->auxiliarCuenta."',
+				facturador = '".$this->facturador."',
+				claveIsn = '".$this->claveIsn."'
+			WHERE contractId = '".$this->contractId."'");
+		$this->Util()->DB()->UpdateData();
+		$this->Util()->setError(10030, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+	
+	public function SaveProrrogaTemp()
+	{
+		if($this->Util()->PrintErrors()){ return 0; }
+			
+		$_SESSION['prorroga'][$this->docGralId][] = $this->fechaProrroga;;
+		
+		$this->Util()->setError(10038, "complete");
+		$this->Util()->PrintErrors();
+		
+		return true;
+	}
+	
+	
+	
+	public function SavePartes(){
+		
+		//Borramos los documentos anteriores
+		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				contract_partes
+			WHERE
+				contractId = '".$this->contractId."'");
+		$this->Util()->DB()->DeleteData();
+		
+		//Insertamos los nuevos documentos
+		foreach($this->partes as $val){
+						
+			$this->Util()->DB()->setQuery("
+				INSERT INTO
+					contract_partes
+				(
+					contractId,
+					name
+				)
+				VALUES
+				(
+					'".$this->contractId."',					
+					'".utf8_decode($val)."'
+				)
+			");
+			
+			if(trim($val) != '')
+				$this->Util()->DB()->InsertData();
+			
+		}//foreach
+		
+	}
+	
+	public function SaveDocsBasic(){
+		
+		//Borramos los documentos anteriores
+		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				contract_docbasic
+			WHERE
+				contractId = '".$this->contractId."'");
+		$this->Util()->DB()->DeleteData();
+		
+		//Insertamos los nuevos documentos
+		foreach($this->docsBasic as $val){
+			
+			$fecha = '';
+			if($val['fecha'])
+				$fecha = date('Y-m-d',strtotime($val['fecha']));
+			
+			$fechaRec = '';
+			if($val['fechaRec'])
+				$fechaRec = date('Y-m-d',strtotime($val['fechaRec']));
+			
+			$this->Util()->DB()->setQuery("
+				INSERT INTO
+					contract_docbasic
+				(
+					contractId,
+					docBasicId,
+					fecha,
+					fechaRec,					
+					aplica,
+					descripcion
+				)
+				VALUES
+				(
+					'".$this->contractId."',
+					'".$val['docBasicId']."',
+					'".$fecha."',
+					'".$fechaRec."',					
+					'".$val['aplica']."',
+					'".utf8_decode($val['descripcion'])."'
+				)
+			");
+			
+			$this->Util()->DB()->InsertData();
+			
+		}//foreach
+		
+	}
+	
+	public function SaveDocsSellado(){
+		
+		//Borramos los documentos anteriores
+		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				contract_docsellado
+			WHERE
+				contractId = '".$this->contractId."'");
+		$this->Util()->DB()->DeleteData();
+		
+		//Insertamos los nuevos documentos
+		foreach($this->docsSellado as $val){
+			
+			$fecha = '';
+			if($val['fecha'])
+				$fecha = date('Y-m-d',strtotime($val['fecha']));
+			
+			$fechaRec = '';
+			if($val['fechaRec'])
+				$fechaRec = date('Y-m-d',strtotime($val['fechaRec']));
+			
+			$this->Util()->DB()->setQuery("
+				INSERT INTO
+					contract_docsellado
+				(
+					contractId,
+					docSelladoId,
+					fecha,
+					fechaRec,
+					enviado,
+					archivo
+				)
+				VALUES
+				(
+					'".$this->contractId."',
+					'".$val['docSelladoId']."',
+					'".$fecha."',
+					'".$fechaRec."',
+					'".$val['enviado']."',
+					'".$val['archivo']."'
+				)
+			");
+			
+			$this->Util()->DB()->InsertData();
+			
+			$origen = DOC_ROOT.'/temp/'.$val['archivo'];
+			$destino = DOC_ROOT.'/archivos/'.$val['archivo'];
+			
+			if (@copy($origen,$destino))
+				@unlink($origen);
+			
+		}//foreach
+		
+	}
+	
+	public function SaveDocsGral(){
+		
+		//Borramos los documentos anteriores
+		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				contract_docgral
+			WHERE
+				contractId = '".$this->contractId."'");
+		$this->Util()->DB()->DeleteData();
+		
+		//Insertamos los nuevos documentos		
+		foreach($this->docsGral as $key => $val){
+			
+			$fecha = '';
+			if($val['fecha'])
+				$fecha = date('Y-m-d',strtotime($val['fecha']));
+			
+			$fechaRec = '';
+			if($val['fechaRec'])
+				$fechaRec = date('Y-m-d',strtotime($val['fechaRec']));
+			
+			$this->Util()->DB()->setQuery("
+				INSERT INTO
+					contract_docgral
+				(
+					contractId,
+					cartaCump,
+					docGralId,
+					fecha,
+					fechaRec,
+					aplica,
+					descripcion
+				)
+				VALUES
+				(
+					'".$this->contractId."',
+					'".$val['cartaCump']."',
+					'".$val['docGralId']."',
+					'".$fecha."',
+					'".$fechaRec."',
+					'".$val['aplica']."',
+					'".utf8_decode($val['descripcion'])."'
+				)
+			");
+			
+			$this->Util()->DB()->InsertData();
+			
+		}//foreach
+		
+	}
+	
+	public function Delete()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$info = $this->Info();
+		if($info["activo"] == 'Si')
+		{
+			$active = 'No';
+			$complete = "La razon social fue dada de baja correctamente";
+		}
+		else
+		{
+			$active = 'Si';
+			$complete = "La razon social fue dada de alta correctamente";
+		}
+		
+
+		$this->Util()->DB()->setQuery("
+			UPDATE contract
+			SET activo = '".$active."'
+			WHERE
+				contractId = '".$this->contractId."'");
+		$this->Util()->DB()->DeleteData();
+		
+		$this->Util()->setError(10031, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+	
+	public function GetNameById(){
+			
+		$sql = 'SELECT 
+					name
+				FROM 
+					contract 
+				WHERE 
+					contractId = '.$this->contractId;
+		
+		$this->Util()->DB()->setQuery($sql);
+		
+		return $this->Util()->DB()->GetSingle();
+		
+	}
+	
+	public function LoadProrroga(){
+		
+		$_SESSION['prorroga'] = array();
+		
+		$sql = 'SELECT 
+					docGralId 
+				FROM 
+					docgral_prorroga 
+				WHERE 
+					contractId = '.$this->contractId.'
+				GROUP BY
+					docGralId';		
+		$this->Util()->DB()->setQuery($sql);		
+		$result = $this->Util()->DB()->GetResult();
+		
+		foreach($result as $res){
+			
+			$docGralId = $res['docGralId'];
+			
+			$sql = 'SELECT 
+						fecha 
+					FROM 
+						docgral_prorroga
+					WHERE
+						contractId = '.$this->contractId.'
+					AND
+						docGralId = '.$docGralId;
+			$this->Util()->DB()->setQuery($sql);		
+			$resFechas = $this->Util()->DB()->GetResult();
+			
+			foreach($resFechas as $val)			
+				$_SESSION['prorroga'][$docGralId][] = $val['fecha'];
+							
+		}	
+		
+	}
+	
+	public function LoadDocs(){
+		
+		$_SESSION['docs'] = array();
+		
+		$sql = 'SELECT 
+					docBasicId 
+				FROM 
+					docbasic_docs 
+				WHERE 
+					contractId = '.$this->contractId.'
+				GROUP BY
+					docBasicId';		
+		$this->Util()->DB()->setQuery($sql);		
+		$result = $this->Util()->DB()->GetResult();
+		
+		foreach($result as $res){
+			
+			$docBasicId = $res['docBasicId'];
+			
+			$sql = 'SELECT 
+						fecha, description, archivo 
+					FROM 
+						docbasic_docs
+					WHERE
+						contractId = '.$this->contractId.'
+					AND
+						docBasicId = '.$docBasicId.'
+					ORDER BY
+						dbDocId ASC';
+			$this->Util()->DB()->setQuery($sql);		
+			$resDocs = $this->Util()->DB()->GetResult();
+			
+			foreach($resDocs as $val){
+						
+				$card['fecha'] = $val['fecha'];
+				$card['desc'] = $val['description'];
+				$card['archivo'] = $val['archivo'];
+				$card['edit'] = 1;
+				
+				$_SESSION['docs'][$docBasicId][] = $card;
+			}
+							
+		}	
+		
+	}
+	
+	function getLastProrroga($contractId, $docGralId){
+		
+		$sql = 'SELECT fecha 
+				FROM docgral_prorroga 
+				WHERE contractId = '.$contractId.'
+				AND docGralId = '.$docGralId.'
+				ORDER BY dgProId DESC
+				LIMIT 1';
+		$this->Util()->DB()->setQuery($sql);		
+		$fecha = $this->Util()->DB()->GetSingle();
+		
+		return $fecha;
+	}
+	
+	function GetStatusOblig(){
+		
+		global $docGral;
+		global $util;
+		
+		$docsEnt = array();
+				
+		$contractId = $this->contractId;
+								
+		//Obtenemos los Documentos Generales - Obligaciones
+		$resDGral = $docGral->Enumerate();
+		
+		$statusOb = 3;
+		
+		foreach($resDGral as $val){
+			
+			$card = $val;
+			
+			$sql = 'SELECT 
+						fecha, fechaRec, cartaCump
+					FROM 
+						contract_docgral 
+					WHERE
+						aplica = "1"
+					AND 
+						contractId = "'.$contractId.'"
+					AND
+						docGralId = "'.$val['docGralId'].'"';
+			$util->DB()->setQuery($sql);
+			$row = $util->DB()->GetRow();
+			
+			if($row){			
+				//Checamos si existe Prorroga
+				$fechaProrroga = $this->getLastProrroga($contractId, $val['docGralId']);
+				if($fechaProrroga){
+					$row['fecha'] = $fechaProrroga;				
+				}
+			}
+			
+			if($row['fecha']){
+				
+				$mesEnt = $util->GetMonthByKey(date('n',strtotime($row['fecha'])));
+				$mesEnt = substr($mesEnt,0,3);
+				
+				$card['fechaEnt'] = date('d',strtotime($row['fecha'])).' '.strtoupper($mesEnt).' '.date('Y',strtotime($row['fecha']));	
+				$fecha = $row['fecha'];
+								
+			}
+			
+			if($row['fechaRec']){
+				
+				$mesRec = $util->GetMonthByKey(date('n',strtotime($row['fechaRec'])));
+				$mesRec = substr($mesRec,0,3);
+				
+				$card['fechaRec'] = date('d',strtotime($row['fechaRec'])).' '.strtoupper($mesRec).' '.date('Y',strtotime($row['fechaRec']));	
+				$fecha = $row['fechaRec'];
+			}
+					
+			if($fecha){
+				$mes = $util->GetMonthByKey(date('n',strtotime($fecha)));
+				$mes = substr($mes,0,3);
+				$card['mes'] = $mes.' '.date('y',strtotime($fecha));
+			}
+			
+			if($row['fechaRec'])
+				$status = 'Entregado';
+			else		
+				$status = $util->GetStatusByDate($fecha);	
+			
+						
+			if($row){
+				
+				if($status == 'Entregado'){
+					$statusOb = 1;
+				}elseif($status == 'Futuro' || $status == 'Proximo' || $status == 'Retrasado'){
+					$statusOb = 2;
+					break;
+				}
+								
+			}
+			
+		}//foreach
+				
+		return $statusOb;
+		
+	}
+
+	public function Validate()
+	{
+		if($this->Util()->PrintErrors()){ return 0; }
+		
+		return 1;
+	}
+	
+	public function Suggest($value)
+	{
+		$this->Util()->DB()->setQuery("SELECT contract.*, customer.nameContact FROM contract
+		LEFT JOIN customer ON customer.customerId = contract.customerId 
+		WHERE contract.name LIKE '%".$value."%' OR contract.rfc LIKE '%".$value."%' OR customer.nameContact LIKE '%".$value."%' ORDER BY customer.nameContact ASC, contract.name ASC LIMIT 10");
+		$this->Util()->DB()->query;
+		$row = $this->Util()->DB()->GetResult();
+		
+		return $row;
+	}
+	
+	public function UsuariosConPermiso($permisos, $extraId)
+	{
+		$permisos = explode("-", $permisos);
+
+		foreach($permisos as $permiso)
+		{
+			list($depa,$resp) = explode(",",$permiso);
+			if($resp)
+			{
+				$misPermisos[$depa] = $resp;
+			}
+		}
+	
+		if(count($misPermisos) == 0)
+		{
+			$misPermisos[1] = $extraId;
+		}
+		return $misPermisos;
+
+	}
+}
+
+?>

@@ -1,0 +1,2 @@
+
+Parse error: syntax error, unexpected '{', expecting '&' or variable (T_VARIABLE) in /opt/lampp/htdocs/cron/servicio-class.php on line 58

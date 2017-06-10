@@ -11,7 +11,14 @@
    	$personal->setPersonalId($_GET["usuario"]);
    	$subordinados = $personal->Subordinados();
 		echo count($subordinados);
-		print_r($subordinados);		
+		print_r($subordinados);
+
+		foreach($subordinados as $subordinado) {
+			$util->DB()->setQuery("SELECT personalId, name FROM personal
+		WHERE personalId = '".$subordinado["personalId"]."'");
+			$persona = $util->DB()->GetRow();
+			print_r($persona);
+		}
 		
 		$jefes = $personal->jefes($_GET["usuario"]);
 		print_r($jefes);

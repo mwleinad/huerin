@@ -11,7 +11,7 @@ if(document.location.hostname == "braunhuerin.dyndns.org" || document.location.h
 }
 else
 {
-	var webRoot = document.location.hostname + "/huerin_test";
+	var webRoot = document.location.hostname;
 }
 
 var WEB_ROOT = "http://" + webRoot; 

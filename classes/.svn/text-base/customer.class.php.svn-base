@@ -1,0 +1,831 @@
+<?php 
+
+class Customer extends Main
+{
+	private $customerId;
+	private $name;
+	private $phone;
+	private $email;	
+	private $active;
+	private $password;
+
+	public function setPassword($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Password");
+		$this->password = $value;
+	}
+
+	public function getPassword($value)
+	{
+		return $this->password;
+	}
+
+	private $fechaAlta;
+	public function setFechaAlta($value)
+	{
+		if($this->Util()->ValidateRequireField($value, "Fecha Alta"))
+			$value = $this->Util()->FormatDateMySql($value);
+		$this->fechaAlta = $value;
+	}
+
+	private $encargadoCuenta;
+	public function setEncargadoCuenta($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->encargadoCuenta = $value;
+	}
+
+	private $responsableCuenta;
+	public function setResponsableCuenta($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->responsableCuenta = $value;
+	}
+
+	private $nameContact;
+	public function setNameContact($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Nombre Contacto");
+		$this->nameContact = $value;
+	}
+
+	public function getNameContact($value)
+	{
+		return $this->nameContact;
+	}
+
+	private $street;
+	public function setStreet($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Calle");
+		$this->street = $value;
+	}
+
+	public function getStreet($value)
+	{
+		return $this->street;
+	}
+	
+	
+	private $numExt;
+	public function setNumExt($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Numero Exterior");
+		$this->numExt = $value;
+	}
+
+	public function getNumExt($value)
+	{
+		return $this->numExt;
+	}
+	
+	private $numInt;
+	public function setNumInt($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Numero Interior");
+		$this->numInt = $value;
+	}
+
+	public function getNumInt($value)
+	{
+		return $this->numInt;
+	}
+	
+	private $colony;
+	public function setColony($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Colonia");
+		$this->colony = $value;
+	}
+
+	public function getColony($value)
+	{
+		return $this->colony;
+	}
+	
+	private $city;
+	public function setCity($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Ciudad");
+		$this->city = $value;
+	}
+
+	public function getCity($value)
+	{
+		return $this->city;
+	}
+	
+	private $state;
+	public function setState($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Estado");
+		$this->state = $value;
+	}
+
+	public function getState($value)
+	{
+		return $this->state;
+	}
+
+	public function setCustomerId($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->customerId = $value;
+	}
+
+	public function setName($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Nombre");
+		$this->name = $value;
+	}
+	
+	public function setPhone($value)
+	{
+		$this->phone = $value;
+	}
+	
+	public function setEmail($value)
+	{
+		$this->email = $value;
+	}
+		
+	public function setActive($value)
+	{
+		$this->active = $value;		
+	}
+
+	public function Search($tipo = "subordinado", $type = "")
+	{
+		global $User;
+		
+		if($User['departamentoId']!="1")
+		{
+		$depto=$User['departamentoId'];
+		}
+		
+		if($this->active)
+		{
+			$sqlActive = " AND active = '1'";
+		}
+		if($type)
+		{
+			if($type == "Inactivo" || $type == "Inactivos")
+			{
+				$add = " AND customer.active = '0'";
+			}
+			else
+			{
+				$add = " AND customer.active = '1'";
+			}
+		}
+//		$_POST["valur"] = $_POST["valur"];
+		$sql = "SELECT 
+					customer.* 
+				FROM 
+					customer
+				LEFT JOIN contract ON contract.customerId = customer.customerId
+				LEFT JOIN servicio ON servicio.contractId=contract.contractId
+				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId=servicio.tipoServicioId AND tipoServicio.departamentoId='".$depto."'
+				WHERE 1 
+				".$add."
+				AND (
+					nameContact LIKE '%".$_POST["valur"]."%' || 
+					((contract.name LIKE '%".$_POST["valur"]."%' ||
+					contract.rfc LIKE '%".$_POST["valur"]."%') && contract.activo = 'Si')
+				)				
+				".$sqlActive."
+				GROUP BY customerId	
+				ORDER BY 
+					nameContact ASC
+";
+//				LIMIT 20";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		foreach($result as $key => $val)
+		{
+			//$result[$key]["nameContact"] = utf8_encode($result[$key]["nameContact"]);			
+			$sql = "SELECT 
+						* 
+					FROM 
+						contract WHERE customerId = '".$val["customerId"]."'
+					ORDER BY 
+						name ASC";
+			
+			$this->Util()->DB()->setQuery($sql);
+			$result[$key]["contracts"] = $this->Util()->DB()->GetResult();
+			$result[$key]["servicios"] = count($result[$key]["contracts"]);
+			
+			//de todas las cuentas, revisar si al menos una esta asignada a nosotros
+				$showCliente = false;
+				$result[$key]["servicios"] = 0;
+				foreach($result[$key]["contracts"] as $keyContract => $value)
+				{
+					//checar subordinados o encargados
+					$user = new User;
+					$user->setUserId($value["responsableCuenta"]);
+					$userInfo = $user->Info();
+					if($tipo == "propio")
+					{
+						if($User["userId"] == $value["responsableCuenta"])
+						{
+							$showCliente = true;
+							$result[$key]["servicios"]++;
+						}
+					}
+					else
+					{
+						if(
+							($User["userId"] == $value["responsableCuenta"] || 
+							$userInfo["jefeContador"] == $User["userId"] || 
+							$userInfo["jefeSupervisor"] == $User["userId"] || 
+							$userInfo["jefeGerente"] == $User["userId"] || 
+							$userInfo["jefeSocio"] == $User["userId"]) ||
+							$User["roleId"] < 2
+						)
+						{
+							$showCliente = true;
+							$result[$key]["servicios"]++;
+						}
+					}
+				}
+				
+				if($showCliente === false && $User["roleId"] > 2)
+				{
+					unset($result[$key]);
+				}
+		}
+//		print_r($result);
+		return $result;
+	}
+
+	public function Enumerate($type = "subordinado", $customerId = 0, $tipo = "")
+	{
+		global $User, $page;
+		//print_r($_POST);
+		if($this->active)
+			$sqlActive = " AND active = '1' ";
+		
+		if($customerId)
+		{
+			$add = " AND customerId = '".$customerId."' ";
+			if($page == "report-servicio")
+			{
+				$User["roleId"] = 1;
+			}
+		}
+		
+		if($tipo == "Activos")
+		{
+			$addActivo = " AND active = '1' ";
+		}
+		elseif($tipo == "Inactivos")
+		{
+			$addActivo = " AND active = '0' ";
+		}
+		else
+		{
+			$addActivo = " AND active = '1' ";
+		}
+		
+		$sql = "SELECT 
+					* 
+				FROM 
+					customer
+				WHERE 1 	
+				".$sqlActive."				
+				".$add."
+				".$addActivo."
+				ORDER BY 
+					nameContact ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		
+		$count = 0;
+		foreach($result as $key => $val)
+		{
+			$sql = "SELECT
+						contract.*
+					FROM 
+						contract
+						WHERE customerId = '".$val["customerId"]."' AND activo = 'Si'
+					ORDER BY 
+						name ASC";
+			
+			$this->Util()->DB()->setQuery($sql);
+			$result[$key]["contracts"] = $this->Util()->DB()->GetResult();
+			$result[$key]["servicios"] = count($result[$key]["contracts"]);
+
+			//de todas las cuentas, revisar si al menos una esta asignada a nosotros
+				$showCliente = false;
+				$result[$key]["servicios"] = 0;
+//				echo "<pre>";
+				foreach($result[$key]["contracts"] as $keyContract => $value)
+				{
+					$contract = new Contract;
+					$conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
+
+					//checar servicios del contrato para saber si lo debemos mostrar o no
+					$this->Util()->DB->setQuery("
+						SELECT servicioId, nombreServicio, departamentoId FROM servicio 
+						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+						WHERE contractId = '".$value["contractId"]."' AND servicio.status = 'activo'					
+					ORDER BY nombreServicio ASC");
+					$serviciosContrato = $this->Util()->DB()->GetResult();
+					
+					$user = new User;
+					//agregar o no agregar servicio a arreglo de contratos?
+					foreach($serviciosContrato as $servicio)
+					{
+						//$conPermiso = $result[$key]["contracts"][$keyContract]['permisos'];
+						$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
+
+//						$user->setUserId($responsableId);
+						$user->setUserId($value["responsableCuenta"]);
+						$userInfo = $user->Info();
+						$result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
+						
+						if($type == "propio")
+						{
+							$subordinadosPermiso = array( 
+								$User["userId"]);
+						}
+						else
+						{
+							$personal = new Personal;
+							$personal->setPersonalId($User["userId"]);
+							$subordinados = $personal->Subordinados();
+							//echo $User["userId"];
+							//print_r($subordinados);
+							$subordinadosPermiso = array();
+							foreach($subordinados as $sub)
+							{
+								array_push($subordinadosPermiso, $sub["personalId"]);
+							}
+							array_push($subordinadosPermiso, $User["userId"]);
+						}
+						
+						//si es usuario de contabilidad
+						if($User["departamentoId"] == SERVICIO_CONTABILIDAD)
+						{
+							//print_r($value);
+							foreach($subordinadosPermiso as $usuarioPermiso)
+							{
+								if(in_array($usuarioPermiso, $conPermiso))
+								{
+									$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+									break;
+								}
+							}
+						}
+						elseif($User["departamentoId"] != SERVICIO_CONTABILIDAD)
+						{
+							//echo $User["departamentoId"];
+							$encontrado = false;
+							//print_r($conPermiso);
+							foreach($subordinadosPermiso as $usuarioPermiso)
+							{
+								foreach($conPermiso as $departamentoId => $usuarioId)
+								{
+									if($departamentoId == $servicio["departamentoId"] && $usuarioPermiso == $usuarioId && $User["departamentoId"] == $servicio["departamentoId"])
+									{
+										$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+										$encontrado = true;
+										break;
+									}
+									
+								}//foreach
+								
+								if($encontrado === true)
+								{
+									break;
+								}
+							}
+						}
+						elseif($User["roleId"] == 1 || $User["roleId"] == 4)
+						{
+							$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+						}
+
+					}
+					
+					if(count($result[$key]["contracts"][$keyContract]['instanciasServicio']) > 0)
+					{
+						$showCliente = true;
+						$result[$key]["servicios"]++;
+					}
+					else
+					{
+						unset($result[$key]["contracts"][$keyContract]);
+					}
+
+				}
+
+				if(($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio"))
+				{
+					unset($result[$key]);
+				}
+
+				
+				//$result[$key]["phone"] = str_replace("/", " ", $result[$key]["phone"]);
+				//$result[$key]["email"] = str_replace("/", " ", $result[$key]["email"]);
+		}
+//		echo count($result);
+		//echo "<pre>";
+		//print_r($result);
+		//echo "</pre>";
+		return $result;
+	}
+
+	public function EnumerateNameOnly($type = "subordinado", $customerId = 0, $tipo = "")
+	{
+		global $User;
+		//print_r($_POST);
+		if($this->active)
+			$sqlActive = " AND active = '1' ";
+		
+		if($customerId)
+		{
+			$add = " AND customerId = '".$customerId."' ";
+		}
+		
+		if($tipo == "Activos")
+		{
+			$addActivo = " AND active = '1' ";
+		}
+		elseif($tipo == "Inactivos")
+		{
+			$addActivo = " AND active = '0' ";
+		}
+		else
+		{
+			$addActivo = " AND active = '1' ";
+		}
+		
+		$sql = "SELECT 
+					customerId, nameContact 
+				FROM 
+					customer
+				WHERE 1 	
+				".$sqlActive."				
+				".$add."
+				".$addActivo."
+				ORDER BY 
+					nameContact ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		
+		$count = 0;
+		foreach($result as $key => $val)
+		{
+			$sql = "SELECT 
+						contractId,  responsableCuenta, name
+					FROM 
+						contract WHERE customerId = '".$val["customerId"]."' AND activo = 'Si'
+					ORDER BY 
+						name ASC";
+			
+			$this->Util()->DB()->setQuery($sql);
+			$result[$key]["contracts"] = $this->Util()->DB()->GetResult();
+			$result[$key]["servicios"] = count($result[$key]["contracts"]);
+
+			//de todas las cuentas, revisar si al menos una esta asignada a nosotros
+				$showCliente = false;
+				$result[$key]["servicios"] = 0;
+				foreach($result[$key]["contracts"] as $keyContract => $value)
+				{
+					//checar subordinados o encargados
+					$user = new User;
+					$user->setUserId($value["responsableCuenta"]);
+					$userInfo = $user->Info();
+					if($type == "propio")
+					{
+						if($User["userId"] == $value["responsableCuenta"])
+						{
+							$showCliente = true;
+							$result[$key]["servicios"]++;
+						}
+						elseif($User["roleId"] == 4)
+						{
+							$showCliente = true;
+							$result[$key]["servicios"]++;
+						}
+					}
+					else
+					{
+						if(
+							($User["userId"] == $value["responsableCuenta"] || 
+							$userInfo["jefeContador"] == $User["userId"] || 
+							$userInfo["jefeSupervisor"] == $User["userId"] || 
+							$userInfo["jefeGerente"] == $User["userId"] || 
+							$userInfo["jefeSocio"] == $User["userId"]) ||
+							($User["roleId"] > 20 && $User["roleId"] < 40)
+						)
+						{
+							$showCliente = true;
+							$result[$key]["servicios"]++;
+						}
+					}
+				}
+
+				if(($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio"))
+				{
+					unset($result[$key]);
+				}
+				
+				//$result[$key]["phone"] = str_replace("/", " ", $result[$key]["phone"]);
+				//$result[$key]["email"] = str_replace("/", " ", $result[$key]["email"]);
+		}
+//		echo count($result);
+//		print_r($result);
+		return $result;
+	}
+	
+	public function Info()
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM customer WHERE customerId = '".$this->customerId."'");
+		$this->Util()->DB()->query;
+		$row = $this->Util()->DB()->GetRow();
+		
+			$sql = "SELECT * FROM 
+						personal WHERE personalId = '".$row["encargadoCuenta"]."'";
+			
+			$this->Util()->DB()->setQuery($sql);
+			$row["encargadoCuentaData"] = $this->Util()->DB()->GetRow();
+
+			$sql = "SELECT * FROM 
+						personal WHERE personalId = '".$row["responsableCuenta"]."'";
+			$row["responsableCuentaData"] = $this->Util()->DB()->GetRow();
+
+			$row["fechaMysql"] = $this->Util()->FormatDateMysql($row["fechaAlta"]);
+		
+		return $row;
+	}
+
+	public function InfobyName($name)
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM customer WHERE nameContact LIKE '%".$name."%'");
+		$row = $this->Util()->DB()->GetRow();
+		
+			$sql = "SELECT * FROM 
+						personal WHERE personalId = '".$row["encargadoCuenta"]."'";
+			
+			$this->Util()->DB()->setQuery($sql);
+			$row["encargadoCuentaData"] = $this->Util()->DB()->GetRow();
+
+			$sql = "SELECT * FROM 
+						personal WHERE personalId = '".$row["responsableCuenta"]."'";
+			$row["responsableCuentaData"] = $this->Util()->DB()->GetRow();
+
+			$row["fechaMysql"] = $this->Util()->FormatDateMysql($row["fechaAlta"]);
+		
+		return $row;
+	}
+
+
+	public function Edit()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			UPDATE
+				customer
+			SET				
+				`name` = '".$this->name."',
+				phone = '".$this->phone."',
+				email = '".$this->email."',				
+				nameContact = '".$this->nameContact."',				
+				password = '".$this->password."',				
+				encargadoCuenta = '".$this->encargadoCuenta."',				
+				responsableCuenta = '".$this->responsableCuenta."',				
+				fechaAlta = '".$this->fechaAlta."',				
+				active = '".$this->active."'
+			WHERE customerId = '".$this->customerId."'");
+			echo $this->Util()->DB()->query;
+		$this->Util()->DB()->UpdateData();
+
+		$this->Util()->setError(10046, "complete", "El cliente fue Actualizado correctamente");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Save()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			INSERT INTO
+				customer
+			(
+				`name`,				
+				phone,
+				email,				
+				nameContact,				
+				password,				
+				responsableCuenta,				
+				encargadoCuenta,				
+				fechaAlta,				
+				active
+		)
+		VALUES
+		(
+				'".$this->name."',				
+				'".$this->phone."',
+				'".$this->email."',				
+				'".$this->nameContact."',				
+				'".$this->password."',				
+				'".$this->responsableCuenta."',				
+				'".$this->encargadoCuenta."',				
+				'".$this->fechaAlta."',				
+				'".$this->active."'
+		);");
+		$this->Util()->DB()->InsertData();
+		$this->Util()->setError(10045, "complete", "El cliente fue agregado correctamente.");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Delete()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+/*		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				customer
+			WHERE
+				customerId = '".$this->customerId."'");
+*/
+		
+		$info = $this->Info();
+		
+		if($info["active"] == '1')
+		{
+			$active = 0;
+			$complete = "El cliente fue dado de baja correctamente";
+		}
+		else
+		{
+			$active = 1;
+			$complete = "El cliente fue dado de alta correctamente";
+		}
+		
+		$this->Util()->DB()->setQuery("
+			UPDATE 
+				customer
+			SET 
+				active = '".$active."'	
+			WHERE
+				customerId = '".$this->customerId."'");
+		$this->Util()->DB()->DeleteData();
+				
+		$this->Util()->setError(10047, "complete", $complete);
+		$this->Util()->PrintErrors();
+		return true;
+	}
+	
+	public function GetNameById(){
+			
+		$sql = 'SELECT 
+					name
+				FROM 
+					customer 
+				WHERE 
+					customerId = '.$this->customerId;
+		
+		$this->Util()->DB()->setQuery($sql);
+		
+		return $this->Util()->DB()->GetSingle();
+		
+	}
+	
+	public function Suggest($value,$tipo="")
+	{
+		global $User;
+		
+		if($tipo == "Activos")
+		{
+			$activevalue = "1";
+		}
+		elseif($tipo == "Inactivos")
+		{
+			$activevalue = "0";
+		}
+		else
+		{
+		$activevalue = "1";
+		}
+		
+		
+		if(strlen($value) < 3)
+		{
+			return;
+		}
+		$this->Util()->DB()->setQuery("SELECT contract.*, customer.nameContact, customer.customerId AS customerId FROM customer
+		LEFT JOIN contract ON customer.customerId = contract.customerId 
+		WHERE customer.active = '".$activevalue."'
+		AND (
+			((contract.name LIKE '%".$value."%' OR 
+			contract.rfc LIKE '%".$value."%') AND contract.activo = 'Si') 
+			OR customer.nameContact LIKE '%".$value."%'
+		) ORDER BY customer.nameContact ASC, contract.name ASC LIMIT 10");
+/*		$this->Util()->DB()->setQuery("SELECT contract.*, customer.nameContact FROM contract
+		LEFT JOIN customer ON customer.customerId = contract.customerId 
+		WHERE customer.active = '1' AND (contract.name LIKE '%".$value."%' OR contract.rfc LIKE '%".$value."%' OR customer.nameContact LIKE '%".$value."%') ORDER BY customer.nameContact ASC, contract.name ASC LIMIT 10");
+*/		
+//echo $this->Util()->DB()->query;
+		$result = $this->Util()->DB()->GetResult();
+		foreach($result as $key => $value)
+		{
+			if($User['departamentoId']!="1" && $User["roleId"]!=1) //filtro departamento
+			{
+				$this->Util()->DB()->setQuery("SELECT departamentoId 
+												FROM tipoServicio,servicio 
+												WHERE tipoServicio.tipoServicioId=servicio.tipoServicioId 
+												AND servicio.contractId='".$value['contractId']."'");
+				$deps=$this->Util()->DB()->GetSingle();
+				
+				$show=false;
+				$show=($deps==$User['departamentoId'])?true:false;
+				
+				if($show===false)
+				{
+					unset($result[$key]);
+					continue;
+				}
+			}
+			$user = new User;
+			$user->setUserId($value["responsableCuenta"]);
+			$userInfo = $user->Info();
+			if($User["roleId"] > 2 && 
+				($User["userId"] != $value["responsableCuenta"] && 
+				$userInfo["jefeContador"] != $User["userId"] && 
+				$userInfo["jefeSupervisor"] != $User["userId"] && 
+				$userInfo["jefeGerente"] != $User["userId"] && 
+				$userInfo["jefeSocio"] != $User["userId"])
+			)
+			{
+				unset($result[$key]);
+				continue;
+			}
+			
+		}
+		return $result;
+	}	
+
+	public function SuggestCustomer($value)
+	{
+		global $User;
+		
+		$this->Util()->DB()->setQuery("SELECT customer.nameContact, customer.customerId, contract.responsableCuenta FROM customer
+		LEFT JOIN contract ON contract.customerId = customer.customerId 
+		WHERE customer.active = '1' AND (contract.name LIKE '%".$value."%' OR contract.rfc LIKE '%".$value."%' OR customer.nameContact LIKE '%".$value."%')  GROUP BY customer.customerId ORDER BY customer.nameContact ASC LIMIT 10");
+		$result = $this->Util()->DB()->GetResult();
+
+		foreach($result as $key => $value)
+		{
+			$user = new User;
+			$user->setUserId($value["responsableCuenta"]);
+			$userInfo = $user->Info();
+			if($User["roleId"] > 2 && 
+				($User["userId"] != $value["responsableCuenta"] && 
+				$userInfo["jefeContador"] != $User["userId"] && 
+				$userInfo["jefeSupervisor"] != $User["userId"] && 
+				$userInfo["jefeGerente"] != $User["userId"] && 
+				$userInfo["jefeSocio"] != $User["userId"])
+			)
+			{
+				unset($result[$key]);
+				continue;
+			}
+		}
+		
+		return $result;
+	}	
+
+	public function DeleteInactivos(){
+			
+		$sql = "DELETE 
+				FROM 
+					customer 
+				WHERE 
+					active = '0'";
+		$this->Util()->DB()->setQuery($sql);
+
+		$result = $this->Util()->DB()->DeleteData();
+
+		$sql = "DELETE 
+				FROM 
+					contract 
+				WHERE 
+					activo = 'No'";
+		$this->Util()->DB()->setQuery($sql);
+
+		$result = $this->Util()->DB()->DeleteData();
+		
+	}
+	
+}
+
+?>

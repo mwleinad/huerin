@@ -14,7 +14,7 @@ if (!isset($_SESSION))
 
 ini_set("display_errors", 0); 
 
-date_default_timezone_set('America/Los_Angeles');
+date_default_timezone_set('America/Mexico_City');
 header('Content-type: text/html; charset=utf-8');
 
 mb_internal_encoding('UTF-8');

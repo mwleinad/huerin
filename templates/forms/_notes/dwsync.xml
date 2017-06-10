@@ -1,31 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dwsync>
-<file name="edit-customer.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130317865791707733" remote="130317864120000000" Dst="-1" />
-<file name="add-personal.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198602392" remote="130344622640000000" Dst="-1" />
-<file name="search-report-documentacion-permanente.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482901335345286" remote="130482902540000000" Dst="-1" />
-<file name="search-report-archivos-permanente.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482900761193876" remote="130482902600000000" Dst="-1" />
-<file name="add-tipoRequerimiento.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198902428" remote="130344677420000000" Dst="-1" />
-<file name="edit-tipoRequerimiento.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198822442" remote="130344677420000000" Dst="-1" />
-<file name="edit-personal.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130432999511803197" remote="130432995040000000" Dst="-1" />
-<file name="search-report-servicio.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482902417484624" remote="130482902180000000" Dst="-1" />
-<file name="search-report-servicio-mensual.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482901930660722" remote="130482902390000000" Dst="-1" />
-<file name="search-report-ingresos.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482901611382239" remote="130482902470000000" Dst="-1" />
-<file name="search-customer.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130482900585448166" remote="130482902660000000" Dst="-1" />
-<file name="cxc-busqueda.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131055914500796829" remote="131055905320000000" Dst="2" />
-<file name="edit-personal.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131089392974421548" remote="131089387710000000" Dst="2" />
-<file name="add-personal.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131089390581561696" remote="131089380980000000" Dst="2" />
-<file name="add-archivos.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130987381413263870" remote="130987373720000000" Dst="1" />
-<file name="edit-archivos.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130992845853724930" remote="130992838030000000" Dst="1" />
-<file name="cfdi-busqueda.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998714032229841" remote="130998706100000000" Dst="1" />
-<file name="cfdiPagos-busqueda.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130998836186588149" remote="130998831890000000" Dst="1" />
-<file name="search-report-servicio-bono.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131003070891193058" remote="131003062860000000" Dst="1" />
-<file name="add-pendiente.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010891944928851" remote="131010883720000000" Dst="1" />
-<file name="add-comentarioPendiente.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131010951330780939" remote="131010943100000000" Dst="1" />
-<file name="search-report-cobranza-ejercicio.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131012432916054731" remote="131012424640000000" Dst="1" />
-<file name="requerimientos.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034890270372274" remote="131034881590000000" Dst="2" />
-<file name="documentos.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131065090449035248" remote="131065081000000000" Dst="2" />
-<file name="archivos.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131065090901312330" remote="131065081440000000" Dst="2" />
-<file name="search-report-cobranza-ejercicio-new.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131034904499968690" remote="131034895750000000" Dst="2" />
-<file name="search-report-servicio-auditoria.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131084120894679466" remote="131084111440000000" Dst="2" />
-<file name="search-report-servicio.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131095379367913760" remote="131095369630000000" Dst="2" />
+<file name="edit-customer.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130317865791707733" remote="130317864120000000" />
+<file name="add-personal.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198602392" remote="130344622640000000" />
+<file name="search-report-documentacion-permanente.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198962413" remote="130344625790000000" />
+<file name="search-report-archivos-permanente.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198512480" remote="130344639380000000" />
+<file name="add-tipoRequerimiento.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198902428" remote="130344677420000000" />
+<file name="edit-tipoRequerimiento.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130344525198822442" remote="130344677420000000" />
+<file name="edit-personal.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130350825353889347" remote="130354898740000000" />
 </dwsync>

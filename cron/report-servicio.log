@@ -1,0 +1,3 @@
+PHP Fatal error:  Allowed memory size of -2147483648 bytes exhausted (tried to allocate 44 bytes) in /var/www/html/pdf/include/style.cls.php on line 729
+
+Fatal error: Allowed memory size of -2147483648 bytes exhausted (tried to allocate 44 bytes) in /var/www/html/pdf/include/style.cls.php on line 729

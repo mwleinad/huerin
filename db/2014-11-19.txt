@@ -1,2 +1,0 @@
-ALTER TABLE `tipoServicio` ADD `costoVisual` DECIMAL( 10, 2 ) NOT NULL ,
-ADD `mostrarCostoVisual` ENUM( '0', '1' ) NOT NULL DEFAULT '0';

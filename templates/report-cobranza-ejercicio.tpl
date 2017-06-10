@@ -33,7 +33,7 @@
 
 			<div class="portlet-content nopadding borderGray" id="contenido">
 				<div style="text-align:center"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
-				{include file="lists/report-cobranza-ejercicio.tpl"}
+				{include file="lists/report-bonos.tpl"}
 			</div>
 
 			<div style="clear:both"></div>
