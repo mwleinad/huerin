@@ -1,3 +1,4 @@
+/nbproject/private/
 /archivos
 /documentos
 /empresas
@@ -8,3 +9,8 @@
 /temp
 /payments
 /db
+/.sync
+/.idea
+config.php
+javascript/js-config.js
+/.svn
