@@ -205,8 +205,6 @@ switch($_POST["type"])
 				$log->setOldValue(serialize($myServicio));
 				$log->setNewValue(serialize($newServicio));
 				$log->Save();
-				
-				
 			
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');

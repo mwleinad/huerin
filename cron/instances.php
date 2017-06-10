@@ -43,7 +43,7 @@ else
 
 	$time = date("d-m-Y").' a las '.date('H:i:s');
 	$entry = "Cron ejecutado desde ".$timeStart." el $time Hrs.";
-	$file = DOC_ROOT."/cron/instances.txt";
+	$file = DOC_ROOT."/cron/facturas.txt";
 	$open = fopen($file,"w");
 
 	if ( $open ) {		

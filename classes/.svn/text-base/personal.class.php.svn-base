@@ -1,0 +1,483 @@
+<?php 
+
+class Personal extends Main
+{
+	private $personalId;
+	private $name;
+	private $phone;
+	private $email;	
+	private $username;
+	private $passwd;
+	private $active;
+	
+	private $ext;
+	public function setExt($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Extension");
+		$this->ext = $value;
+	}
+	
+	private $celphone;
+	public function setCelphone($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Celular");
+		$this->celphone = $value;
+	}
+
+	private $skype;
+	public function setSkype($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Skype");
+		$this->skype = $value;
+	}
+
+	private $puesto;
+	public function setPuesto($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Puesto");
+		$this->puesto = $value;
+	}
+
+	private $horario;
+	public function setHorario($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Horario");
+		$this->horario = $value;
+	}
+	
+	private $sueldo;
+	public function setSueldo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Sueldo");
+		$this->sueldo = $value;
+	}
+
+	private $grupo;
+	public function setGrupo($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Grupo");
+		$this->grupo = $value;
+	}
+
+	private $computadora;
+	public function setComputadora($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Computadora");
+		$this->computadora = $value;
+	}
+
+	
+	public function setPersonalId($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->personalId = $value;
+	}
+
+	public function setName($value)
+	{
+		if($this->Util()->ValidateRequireField($value, "Nombre"))
+			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Nombre");
+		$this->name = $value;
+	}
+	
+	public function setPhone($value)
+	{
+		$this->phone = $value;
+	}
+	
+	public function setEmail($value)
+	{
+		$this->email = $value;
+	}
+	
+	public function setUsername($value)
+	{
+		$this->username = $value;
+	}
+	
+	public function setPasswd($value)
+	{
+		$this->passwd = $value;
+	}
+		
+	public function setActive($value)
+	{
+		$this->active = $value;		
+	}
+
+	
+	
+	var $tipoPersonal;
+	public function setTipoPersonal($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Tipo Personal");
+		$this->tipoPersonal = $value;
+	}
+
+		var $departamentoId;
+	public function setDepartamentoId($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->departamentoId = $value;
+	}
+	
+	var $jefeContador;
+	public function setJefeContador($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->jefeContador = $value;
+	}
+
+	var $jefeSupervisor;
+	public function setJefeSupervisor($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->jefeSupervisor = $value;
+	}
+
+	var $jefeGerente;
+	public function setJefeGerente($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->jefeGerente = $value;
+	}
+
+	var $jefeSocio;
+	public function setJefeSocio($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->jefeSocio = $value;
+	}
+	
+
+	public function Enumerate()
+	{
+		global $infoUser;
+		
+		if($infoUser['tipoPersonal']!="Socio")
+			$filtroPersonal= "AND personalId='".$infoUser['personalId']."' OR 
+					jefeSocio='".$infoUser['personalId']."' OR jefeGerente='".$infoUser['personalId']."' 
+					OR jefeContador='".$infoUser['personalId']."' OR jefeSupervisor='".$infoUser['personalId']."' ";
+		
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					personal WHERE 1
+				".$filtroPersonal.$sqlActive."				
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+				
+		return $result;
+	}
+
+	public function ListDepartamentos()
+	{
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					departamentos		
+				ORDER BY 
+					departamento ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		
+		foreach($result as $key => $res)
+		{
+			$result[$key]["departamento"] = $result[$key]["departamento"];
+		}
+				
+		return $result;
+	}
+	
+	public function ListContadores()
+	{
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					personal
+				WHERE tipoPersonal = 'Contador'
+				".$sqlActive."				
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		
+		foreach($result as $key => $res)
+		{
+			$result[$key]["name"] = $result[$key]["name"];
+		}
+				
+		return $result;
+	}
+
+	public function ListSupervisores()
+	{
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					personal
+				WHERE tipoPersonal = 'Supervisor'
+				".$sqlActive."				
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+
+		foreach($result as $key => $res)
+		{
+			$result[$key]["name"] = $result[$key]["name"];
+		}
+				
+		return $result;
+	}
+
+	public function ListGerentes()
+	{
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					personal
+				WHERE tipoPersonal = 'Gerente'
+				".$sqlActive."				
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+
+		foreach($result as $key => $res)
+		{
+			$result[$key]["name"] = $result[$key]["name"];
+		}
+				
+		return $result;
+	}
+
+	public function ListSocios()
+	{
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+						
+		$sql = "SELECT 
+					* 
+				FROM 
+					personal
+				WHERE tipoPersonal = 'Socio'
+				".$sqlActive."				
+				ORDER BY 
+					name ASC";
+		
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+				
+		foreach($result as $key => $res)
+		{
+			$result[$key]["name"] = $result[$key]["name"];
+		}
+
+		return $result;
+	}
+	
+	public function Info()
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = '".$this->personalId."'");
+		$row = $this->Util()->DB()->GetRow();
+		return $row;
+	}
+
+	public function Edit()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			UPDATE
+				personal
+			SET				
+				`name` = '".$this->name."',
+				phone = '".$this->phone."',
+				email = '".$this->email."',
+				username = '".$this->username."',
+				passwd = '".$this->passwd."',				
+				ext = '".$this->ext."',				
+				celphone = '".$this->celphone."',				
+				skype = '".$this->skype."',				
+				puesto = '".$this->puesto."',				
+				horario = '".$this->horario."',				
+				sueldo = '".$this->sueldo."',				
+				grupo = '".$this->grupo."',				
+				computadora = '".$this->computadora."',				
+				tipoPersonal = '".$this->tipoPersonal."',				
+				departamentoId = '".$this->departamentoId."',				
+				jefeContador = '".$this->jefeContador."',				
+				jefeSupervisor = '".$this->jefeSupervisor."',				
+				jefeGerente = '".$this->jefeGerente."',				
+				jefeSocio = '".$this->jefeSocio."',				
+				active = '".$this->active."'
+			WHERE personalId = '".$this->personalId."'");
+		$this->Util()->DB()->UpdateData();
+
+		$this->Util()->setError(10049, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Save()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			INSERT INTO
+				personal
+			(
+				`name`,				
+				phone,
+				email,
+				username,
+				passwd,				
+				ext,				
+				celphone,				
+				skype,				
+				puesto,				
+				horario,				
+				sueldo,				
+				grupo,				
+				computadora,				
+				tipoPersonal,				
+				departamentoId,				
+				jefeContador,				
+				jefeSupervisor,				
+				jefeGerente,				
+				jefeSocio,				
+				active
+		)
+		VALUES
+		(
+				'".$this->name."',				
+				'".$this->phone."',
+				'".$this->email."',
+				'".$this->username."',
+				'".$this->passwd."',				
+				'".$this->ext."',				
+				'".$this->celphone."',				
+				'".$this->skype."',				
+				'".$this->puesto."',				
+				'".$this->horario."',				
+				'".$this->sueldo."',				
+				'".$this->grupo."',				
+				'".$this->computadora."',				
+				'".$this->tipoPersonal."',				
+				'".$this->departamentoId."',				
+				'".$this->jefeContador."',				
+				'".$this->jefeSupervisor."',				
+				'".$this->jefeGerente."',				
+				'".$this->jefeSocio."',				
+				'".$this->active."'
+		);");
+		$this->Util()->DB()->InsertData();
+		$this->Util()->setError(10048, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Delete()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			DELETE FROM
+				personal
+			WHERE
+				personalId = '".$this->personalId."'");
+		$this->Util()->DB()->DeleteData();
+				
+		$this->Util()->setError(10050, "complete", "Has eliminado al Contador satisfactoriamente");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+	
+	public function GetNameById(){
+			
+		$sql = 'SELECT 
+					name
+				FROM 
+					personal 
+				WHERE 
+					personalId = '.$this->personalId;
+		
+		$this->Util()->DB()->setQuery($sql);
+		
+		return $this->Util()->DB()->GetSingle();
+		
+	}
+	
+	function Restrict()
+	{
+		global $infoUser, $page;
+
+		$restricted = array();
+		
+		switch($infoUser["tipoPersonal"])
+		{
+			case "Asistente":
+			case "Recepcion":
+				$restricted  = array(
+					"personal",
+					"regimen",
+					"sociedad",
+					"tipoServicio",
+					"tipoDocumento",
+					"tipoArchivo",
+					"impuesto",
+					"obligacion",
+				);
+				break;
+		}
+		
+		if(in_array($page, $restricted))
+		{
+			header("Location:".WEB_ROOT);
+		}
+	}
+	
+	function Subordinados()
+	{
+		$info = $this->Info();
+		
+		$subordinados = array();
+		$sql = "SELECT 
+					personalId
+				FROM 
+					personal 
+				WHERE 
+					jefeSocio = '".$this->personalId."' OR
+					jefeSupervisor = '".$this->personalId."' OR
+					jefeGerente = '".$this->personalId."' OR
+					jefeContador = '".$this->personalId."'";
+		$this->Util()->DB()->setQuery($sql);
+		$subordinados = $this->Util()->DB()->GetResult();
+		
+		return $subordinados;
+	}
+	
+}
+
+?>

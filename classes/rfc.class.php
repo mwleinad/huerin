@@ -70,7 +70,7 @@ class Rfc extends Empresa
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT COUNT(*) FROM rfc WHERE rfc ='".$value."'");
 		$rfc = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
 		
-		if($rfc && ($value != 'BCO160224ECA' || $value != 'BHU120320CQ1' || $value != 'BABJ701019LD7'))
+		if($rfc && ($value != 'BCO160224ECA' && $value != 'BHU120320CQ1' && $value != 'BABJ701019LD7'))
 		{
 			return $this->Util()->setError(10042, "error", "", "RFC");
 		}

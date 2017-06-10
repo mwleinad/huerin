@@ -24,4 +24,5 @@
 			unset($contratos[$key]);
 		}
 	}
+	print_r($contratos);
 ?>

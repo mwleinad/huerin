@@ -1,0 +1,161 @@
+<pre>  <table border="1" width="600">
+  <tr>
+  <td>Concepto</td>
+  <td>Braun Huerin SC</td>
+  <td>Jacobo Braun</td>
+	  <td>BHSC</td>
+  <td>Total</td>
+  </tr>
+  <tr>
+  <td>Clientes Totales</td>
+  <td>N/A</td>
+  <td>N/A</td>
+	  <td>N/A</td>
+  <td>856</td>
+  </tr>
+
+  <tr>
+  <td>Clientes Activos</td>
+  <td>N/A</td>
+  <td>N/A</td>
+  <td><b>486</b></td>
+  </tr>
+
+  <tr>
+  <td>Clientes Inactivos</td>
+  <td>N/A</td>
+  <td>N/A</td>
+	  <td>N/A</td>
+  <td>370</td>
+  </tr>
+		
+  <tr>
+  <td>Clientes sin Factura 13</td>
+  <td>N/A</td>
+  <td>N/A</td>
+	  <td>N/A</td>
+  <td>37</td>
+  </tr>
+		
+  <tr>
+  <td>Clientes sin Razones Sociales</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+	  <td>1</td>
+  </tr>
+
+	  <tr>
+  <td>Clientes Activos MENOS Clientes ACTIVOS sin Razones Sociales</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+  <td><b>448</b></td>
+  </tr>
+
+  <tr>
+  <td>Razones Sociales Totales</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+  <td><b>929</b></td>
+  </tr>
+
+  <tr>
+  <td>Razones Sociales Activas</td>
+  <td>1</td>
+  <td>24</td>
+	  <td>722</td>
+  <td><b>775</b></td>
+  </tr>
+
+  <tr>
+  <td>Razones Sociales Inactivas</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+  <td>154</td>
+  </tr>
+
+  <tr>
+  <td>Servicios Totales de Razones Sociales Activos</td>
+  <td><b>1</b></td>
+  <td><b>96</b></td>
+	  <td><b>2694</b></td>
+  <td><b>2791</b></td>
+  </tr>
+
+  <tr>
+  <td>Servicios Activos</td>
+  <td>1</td>
+  <td>63</td>
+	  <td>2211</td>
+  <td><b>2275</b></td>
+  </tr>
+
+  <tr>
+  <td>Servicios Inactivos</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+  <td>516</td>
+  </tr>
+
+  <tr>
+  <td>Servicios con Costo == 0</td>
+  <td></td>
+  <td></td>
+  <td>1432</td>
+  </tr>
+  <tr>
+  <td>Servicios con Costo > 0</td>
+  <td>1</td>
+  <td>25</td>
+	  <td>817</td>
+  <td><b>26</b></td>
+  </tr>
+
+  <tr>
+  <td>Inicio Factura Posterior a Fecha</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  </tr>
+  <tr>
+  <td>Inicio de Factura Correcto</td>
+  <td>1</td>
+  <td>19</td>
+	  <td>692</td>
+  <td><b>712</b></td>
+  </tr>
+  <tr>
+  <td>Sin Instancia de Servicio</td>
+  <td>1</td>
+  <td>19</td>
+	  <td>692</td>
+  <td>712</td>
+  </tr>
+  <tr>
+  <td>Con Instancia de Servicio (Facturas teoricas)</td>
+  <td><b>0</b></td>
+  <td><b>0</b></td>
+	  <td><b>0</b></td>
+  <td><b>0</b></td>
+  </tr>
+	
+  <tr>
+  <td>Facturadas</td>
+  <td></td>
+  <td></td>
+	  <td></td>
+  <td>0</td>
+  </tr>
+  <tr>
+  <td>Por Facturar</td>
+  <td><b>0</b></td>
+  <td><b>0</b></td>
+	  <td><b>0</b></td>
+  <td><b>0</b></td>
+  </tr>
+  </table>
+<br>Script ejecutado en -0.071233 Milisegundos

@@ -11,8 +11,7 @@ else
 {
 	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
-exit;
-
+//exit;
 	define('DOC_ROOT', $docRoot);
 //echo DOC_ROOT;
 	include_once(DOC_ROOT.'/init.php');
@@ -38,7 +37,7 @@ exit;
 		$db->UpdateData();
 		echo "Enviado Comprobante numero:".$factura["comprobanteId"];
 		echo "<br>";
-		exit();
+//		exit();
 	}
 	echo "Cron Completado Satisfactoriamente";
 

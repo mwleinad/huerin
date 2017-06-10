@@ -6,19 +6,9 @@
 <file name="update-class-workflow.php" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130435262468333471" remote="130435257950000000" Dst="-1" />
 <file name="facturas-cron.txt" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130354849520000000" remote="130354849520000000" Dst="-1" />
 <file name="create13.php" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130314251860488590" remote="130317676400000000" Dst="-1" />
-<file name="facturas.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131053256218989960" remote="131053247070000000" Dst="2" />
+<file name="facturas.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130803344931778540" remote="130803340670000000" Dst="2" />
 <file name="send-comprobantes.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130776958980000000" remote="130776958980000000" Dst="2" />
 <file name="send-comprobantes.log" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130700088010000000" remote="130700088010000000" Dst="-1" />
 <file name="send_comprobantes.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130384148180000000" remote="130384148180000000" Dst="2" />
 <file name="send-comprobantes.txt" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130776102010000000" remote="130776102010000000" Dst="2" />
-<file name="create13.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130934856170000000" remote="130934856170000000" Dst="1" />
-<file name="facturasRif.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130992831859590829" remote="130992824040000000" Dst="1" />
-<file name="reporteSemanalGerente.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017625070987951" remote="131017616710000000" Dst="1" />
-<file name="reporteSemanal.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="130857763740000000" remote="130857763740000000" Dst="1" />
-<file name="reporteSemanalSocio.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017625129288321" remote="131017616770000000" Dst="1" />
-<file name="reporteSemanalAuxiliar.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017624944939955" remote="131017616590000000" Dst="1" />
-<file name="reporteSemanalContador.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017625011502899" remote="131017616650000000" Dst="1" />
-<file name="reporteSemanalSupervisor.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131017625186069213" remote="131017616820000000" Dst="1" />
-<file name="facturasdiario.txt" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131065104160000000" remote="131065104160000000" Dst="2" />
-<file name="update-class-workflow.php" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131065160676379038" remote="131065151210000000" Dst="2" />
 </dwsync>

@@ -124,8 +124,7 @@ switch($_POST["type"])
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
 				echo "[#]";
-				$resCustomer = $customer->SuggestCustomerCatalog("", "subordinado", 0, $_SESSION["tipoMod"]); 			
-//				$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
+				$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
 //				$resCustomers = $customer->Enumerate();
 				$customers = $resCustomers;
 				
@@ -194,9 +193,7 @@ switch($_POST["type"])
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo "[#]";
-  			$resCustomer = $customer->SuggestCustomerCatalog("", "subordinado", 0, $_POST["tipo"]); 			
-
-	//			$resCustomers = $customer->Search("subordinado", $_POST["tipo"]);
+				$resCustomers = $customer->Search("subordinado", $_POST["tipo"]);
 
 //				$resCustomers = $customer->Enumerate();
 				$customers = $resCustomers;

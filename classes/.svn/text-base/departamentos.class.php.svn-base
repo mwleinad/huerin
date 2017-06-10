@@ -1,0 +1,106 @@
+<?php 
+
+class Departamentos extends Main
+{
+	private $departamentoId;
+	private $departamento;
+
+	public function setDepartamentoId($value)
+	{
+		$this->Util()->ValidateInteger($value);
+		$this->departamentoId = $value;
+	}
+
+	public function getDepartamentoId()
+	{
+		return $this->departamentoId;
+	}
+
+	public function setDepartamento($value)
+	{
+		$this->Util()->ValidateString($value, 10000, 1, 'departamento');
+		$this->departamento = $value;
+	}
+
+	public function getDepartamento()
+	{
+		return $this->departamento;
+	}
+
+	public function Enumerate()
+	{
+		global $infoUser;
+		
+		if($infoUser['departamentoId']!="1")
+		$filtroDepto=' WHERE departamentoId="'.$infoUser['departamentoId'].'" ';
+				
+		$this->Util()->DB()->setQuery('SELECT * FROM departamentos '.$filtroDepto.' ORDER BY departamentoId ASC '.$sql_add);
+		$result = $this->Util()->DB()->GetResult();
+		return $result;
+	}
+
+	public function Info()
+	{
+		$this->Util()->DB()->setQuery("SELECT * FROM departamentos WHERE departamentoId = '".$this->departamentoId."'");
+		$row = $this->Util()->DB()->GetRow();
+		return $row;
+	}
+
+	public function Edit()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			UPDATE
+				departamentos
+			SET
+				`departamentoId` = '".$this->departamentoId."',
+				`departamento` = '".$this->departamento."'
+			WHERE departamentoId = '".$this->departamentoId."'");
+		$this->Util()->DB()->UpdateData();
+
+		$this->Util()->setError(1, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Save()
+	{
+		if($this->Util()->PrintErrors()){ return false; }
+
+		$this->Util()->DB()->setQuery("
+			INSERT INTO
+				departamentos
+			(
+				`departamentoId`,
+				`departamento`
+		)
+		VALUES
+		(
+				'".$this->departamentoId."',
+				'".$this->departamento."'
+		);");
+		$this->Util()->DB()->InsertData();
+		$this->Util()->setError(2, "complete");
+		$this->Util()->PrintErrors();
+		return true;
+	}
+
+	public function Delete()
+	{
+			if($this->Util()->PrintErrors()){ return false; }
+
+			$this->Util()->DB()->setQuery("
+				DELETE FROM
+					departamentos
+				WHERE
+					departamentoId = '".$this->departamentoId."'");
+			$this->Util()->DB()->DeleteData();
+			$this->Util()->setError(3, "complete");
+			$this->Util()->PrintErrors();
+		return true;
+	}
+
+}
+
+?>

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dwsync>
-<file name="submenu.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130350825350578934" remote="130354895070000000" Dst="-1" />
-<file name="main.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130336842793112841" remote="130354875220000000" Dst="-1" />
-<file name="submenu.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131084120013173718" remote="131084110470000000" Dst="2" />
-<file name="main.tpl" server="braunhuerin.dyndns.org:60022//var/www/html/" local="131023712791079085" remote="131023668260000000" Dst="2" />
+<file name="submenu.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130350825350578934" remote="130354895070000000" />
+<file name="main.tpl" server="braunhuerin.dyndns.org:60022//opt/lampp/htdocs/" local="130336842793112841" remote="130354875220000000" />
 </dwsync>

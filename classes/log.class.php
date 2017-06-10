@@ -46,13 +46,6 @@ class Log extends Util
 				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";								
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
-		
-		$sqlQuery = "SELECT name, email FROM personal WHERE personalId IN (".$ids.")";
-		$this->Util()->DB()->setQuery($sqlQuery);
-		$personal = $this->Util()->DB()->GetResult();
-		
-
-		
 	
 		return true;				
 	}

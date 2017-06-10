@@ -4,7 +4,7 @@
 			<input type="hidden" id="tipoRequerimientoId" name="tipoRequerimientoId" value="{$post.tipoRequerimientoId}"/>
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">* Nombre del Requerimiento:</div><input name="nombre" id="nombre" type="text" value="{$post.nombre}" size="50"/>
+				<div style="width:30%;float:left">Nombre del Requerimiento:</div><input name="nombre" id="nombre" type="text" value="{$post.nombre}" size="50"/>
 			</div>
 			<div style="clear:both"></div>
 			<hr />

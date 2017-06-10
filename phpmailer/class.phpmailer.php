@@ -590,7 +590,7 @@ class PHPMailer {
 	  $this->SentMIMEMessage = '';
       $this->SetError($e->getMessage());
       if ($this->exceptions) {
-        throw $e;
+        //throw $e;
       }
       return false;
     }
@@ -652,6 +652,8 @@ class PHPMailer {
 
   protected function PostSend() {
     try {
+			echo $this->Mailer;
+			exit();
       // Choose the mailer and send through it
       switch($this->Mailer) {
         case 'sendmail':

@@ -7,6 +7,3 @@
 </table>
 
 <br />
-{if count($notices.pages)}
-	{include file="{$DOC_ROOT}/templates/lists/pages.tpl" pages=$notices.pages}
-{/if}

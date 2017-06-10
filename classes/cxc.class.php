@@ -187,9 +187,7 @@ class CxC extends Producto
 			$arr2=$this->SearchCuentasPorCobrar($values);
 			$values['facturador']="Efectivo";
 			$arr3=$this->SearchCuentasPorCobrar($values);
-			$values['facturador']="BHSC";
-			$arr4=$this->SearchCuentasPorCobrar($values);
-			$data=array_merge_recursive($arr1,$arr2,$arr3, $arr4);
+			$data=array_merge_recursive($arr1,$arr2,$arr3);
 
 			return $data;
 		}
@@ -209,7 +207,6 @@ class CxC extends Producto
 					{
 						case "15": $facturador = "Huerin"; break;
 						case "20": $facturador = "Braun"; break;
-						case "21": $facturador = "BHSC"; break;
 						default: $facturador = "Efectivo";
 					}
 					if($values['facturador'] != "Huerin")

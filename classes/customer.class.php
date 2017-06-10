@@ -1330,7 +1330,7 @@ class Customer extends Main
 			customer.phone, customer.email, customer.password,customer.active 
 						FROM customer
 			LEFT JOIN contract ON contract.customerId = customer.customerId	
-						WHERE 1 ".$sqlActive." ".$add." ".$addActivo." ".$addWhere." AND customer.customerId = 449
+						WHERE 1 ".$sqlActive." ".$add." ".$addActivo." ".$addWhere."
 			GROUP BY customerId 	
 						ORDER BY nameContact ASC 
 			".$addLimite."";

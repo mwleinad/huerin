@@ -92,7 +92,7 @@ class SMTP {
     $this->error = null;
     $this->helo_rply = null;
 
-    $this->do_debug = 0;
+    $this->do_debug = 1;
   }
 
   /////////////////////////////////////////////////
@@ -113,6 +113,8 @@ class SMTP {
    * @return bool
    */
   public function Connect($host, $port = 0, $tval = 30) {
+		echo "jere";
+		exit();
     // set the error val to null so there is no confusion
     $this->error = null;
 
@@ -134,6 +136,8 @@ class SMTP {
                                  $errstr,  // error message if any
                                  $tval);   // give up after ? secs
     // verify we connected properly
+		print_r($this->smtp_conn);
+		echo "jre";
     if(empty($this->smtp_conn)) {
       $this->error = array("error" => "Failed to connect to server",
                            "errno" => $errno,

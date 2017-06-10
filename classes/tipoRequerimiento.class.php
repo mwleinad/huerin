@@ -18,7 +18,7 @@ class TipoRequerimiento extends Main
 
 	public function setNombre($value)
 	{
-		$this->Util()->ValidateString($value, 10000, 1, '<br> Nombre del requerimiento');
+		$this->Util()->ValidateString($value, 10000, 1, 'nombre');
 		$this->nombre = $value;
 	}
 

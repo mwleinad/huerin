@@ -1,0 +1,175 @@
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/qr/qrconfig.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/qr/tools/merged_config.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_disableconfigbooleanize.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_disableconfigoverwrite.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_enableconfigoverwrite.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_enableconfigreadhidden.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_internal_config_file_compiler.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_getconfigdir.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_isconfigreadhidden.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_get_config_vars.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_internal_configfileparser.php ...
+    public $minor; /* The user-supplied minor token value.  This
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_clear_config.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_internal_configfilelexer.php ...
+                    // extract sub-patterns for passing to lex function
+                    // extract sub-patterns for passing to lex function
+                    // extract sub-patterns for passing to lex function
+                    // extract sub-patterns for passing to lex function
+                    // extract sub-patterns for passing to lex function
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_isconfigoverwrite.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_internal_config.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_enableconfigbooleanize.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_disableconfigreadhidden.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_setconfigdir.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_method_isconfigbooleanize.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/sysplugins/smarty_internal_compile_config_load.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/libs/graph/src/jpg-config.inc.php ...
+// (Set to '' will give the default group for the 'PHP-user')
+// Please note that the Apache user must be a member of the
+// (Set to '' will give the default persmissions for the 'PHP-user')
+// Set this define to false to bypass the reading of the cache and always
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/pdf/dompdf_config.custom.inc.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/pdf/dompdf_config.inc.php ...
+ * If DOMPDF_FONT_DIR identical to DOMPDF_FONT_CACHE or user executing DOMPDF from the CLI,
+ * Windows users should use something like this:
+ * This allows anonymous users to download legally doubtful internet content which on
+        // Class::staticMethod callback format, although call_user_func doesn't 
+    // Be polite and ensure that userland autoload gets retained
+// ### End of user-configurable options ###
+ * allowing remote access to dompdf.php or on allowing remote html code to be passed to
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/xampp/config.php ...
+	define('SQL_PASSWORD', '');
+	define('SQL_PASSWORD', 'admonavanti');
+define('SMTP_PASS','');
+------------------------------------------
+# Finding passwords in /opt/lampp/htdocs/config.php ...
+define('SQL_PASSWORD', $sqlPass);
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/examples/config.manyhosts.inc.php ...
+    $cfg['Servers'][$i]['controluser']      = 'pma';
+    $cfg['Servers'][$i]['user']     = '';
+    $cfg['Servers'][$i]['controlpass']      = 'pmapass';
+    $cfg['Servers'][$i]['password'] = '';
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/setup/frames/config.inc.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/setup/config.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/config.default.php ...
+ * MySQL control user settings (this user must have read-only
+ * access to the "mysql/user" and "mysql/db" tables). The controluser is also
+ * @global string $cfg['Servers'][$i]['controluser']
+$cfg['Servers'][$i]['controluser'] = '';
+ * MySQL control user settings (this user must have read-only
+ * access to the "mysql/user" and "mysql/db" tables). The controluser is also
+ * MySQL user
+ * @global string $cfg['Servers'][$i]['user']
+$cfg['Servers'][$i]['user'] = 'root';
+ * URL where to redirect user to login for 'signon' authentication method
+ * URL where to redirect user after logout
+ * table to store user preferences
+ *     SUGGESTED: 'pma_userconfig'
+ * @global string $cfg['Servers'][$i]['userconfig']
+$cfg['Servers'][$i]['userconfig'] = '';
+ * @global integer $cfg['Servers'][$i]['userconfig'] = '';
+ * whether to allow login of any user without a password
+ * by default most user will be fine with SHOW DATABASES,
+ * #user# will be replaced by current user
+ * "SHOW DATABASES LIKE '#user#\_%'"
+ * show a 'Drop database' link to normal users
+ * allow login to any user entered server in cookie based authentication
+ * Defines whether a user should be displayed a "show all (records)"
+ * (recommended for multiuser setups)
+ * 'server_privileges.php' = user management
+ *   searchable - "Searchable, with user comments"
+ * Default language to use, if not browser-defined or user-defined
+    'x-user-defined',
+ * For possible setting names look in libraries/config/user_preferences.forms.php
+ * Use %u for username inclusion.
+ * Use %u for username inclusion.
+ * If you have a custom username, specify it here (defaults to anonymous)
+ * @global string $cfg['SQLValidator']['username']
+$cfg['SQLValidator']['username'] = '';
+ * Password for username
+ * The 'cookie' auth_type uses blowfish algorithm to encrypt the password. If
+ * pass phrase that will be used by blowfish. The maximum length seems to be 46
+ * @global string $cfg['Servers'][$i]['controlpass']
+$cfg['Servers'][$i]['controlpass'] = '';
+ * MySQL password (only needed with 'config' auth_type)
+ * @global string $cfg['Servers'][$i]['password']
+$cfg['Servers'][$i]['password'] = '';
+ * Whether to try to connect without password
+ * @global boolean $cfg['Servers'][$i]['nopassword']
+$cfg['Servers'][$i]['nopassword'] = false;
+ * whether to allow login of any user without a password
+ * show change password link
+ * @global string $cfg['SQLValidator']['password']
+$cfg['SQLValidator']['password'] = '';
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/vendor_config.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/config/config_functions.lib.php ...
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/config.values.php ...
+ * used by setup script and user preferences to generate forms.
+    'main.php',                // the welcome page (recommended for multiuser setups)
+    'server_privileges.php',   // user management
+ * Additional validators used for user preferences
+$cfg_db['_userValidators'] = array(
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/auth/config.auth.lib.php ...
+ * Set the user and password after last checkings if required
+function PMA_auth_set_user()
+} // end of the 'PMA_auth_set_user()' function
+        // Check whether user has configured something
+        // if we display the "Server not responding" error, do not confuse users
+            trigger_error(__('phpMyAdmin tried to connect to the MySQL server, and the server rejected the connection. You should check the host, username and password in your configuration and make sure that they correspond to the information given by the administrator of the MySQL server.'), E_USER_WARNING);
+ * Set the user and password after last checkings if required
+            trigger_error(__('phpMyAdmin tried to connect to the MySQL server, and the server rejected the connection. You should check the host, username and password in your configuration and make sure that they correspond to the information given by the administrator of the MySQL server.'), E_USER_WARNING);
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/libraries/tcpdf/config/tcpdf_config.php ...
+	 * ratio used to adjust the conversion of pixels to user units
+	 * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/config.sample.inc.php ...
+// $cfg['Servers'][$i]['controluser'] = 'pma';
+// $cfg['Servers'][$i]['userconfig'] = 'pma_userconfig';
+ * Defines whether a user should be displayed a "show all (records)"
+ * Default language to use, if not browser-defined or user-defined
+ * This is needed for cookie based authentication to encrypt password in
+// $cfg['Servers'][$i]['controlpass'] = 'pmapass';
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/config.inc.php ...
+$cfg['Servers'][$i]['user'] = 'root';
+$cfg['Servers'][$i]['controluser'] = 'pma';
+$cfg['Servers'][$i]['userconfig'] = 'pma_userconfig';
+ * This is needed for cookie based authentication to encrypt password in
+$cfg['Servers'][$i]['password'] = '';
+$cfg['Servers'][$i]['controlpass'] = '';
+------------------------------------------
+# Finding passwords in /opt/lampp/phpmyadmin/show_config_errors.php ...
