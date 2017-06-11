@@ -14,11 +14,10 @@
 //	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 //}
 //
-//	define('DOC_ROOT', $docRoot);
+	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+	define('DOC_ROOT', $docRoot."/dev/huerin");
 
 	session_save_path("/tmp");
-        
-        print_r($_SERVER);
 
         echo DOC_ROOT; exit(0);
 	include_once(DOC_ROOT.'/init_cron.php');
