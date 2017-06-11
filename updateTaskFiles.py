@@ -10,7 +10,7 @@ files = ""
 filesSplit = ""
 daFile = ""
 
-files = os.popen("find ../sistema/ -ctime -5").read()
+files = os.popen("find /var/www/sistema/ -ctime -5").read()
 
 filesSplit = [s.strip() for s in files.splitlines()]
 
