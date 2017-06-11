@@ -137,7 +137,7 @@ class Archivos extends Servicio {
             $query = "SELECT instanciaServicioId, instanciaServicio.servicioId, date, servicio.tipoServicioId, tipoServicio.nombreServicio FROM instanciaServicio
                         LEFT JOIN servicio ON(servicio.servicioId = instanciaServicio.servicioId)
                         LEFT JOIN tipoServicio ON(tipoServicio.tipoServicioId = servicio.tipoServicioId)
-			WHERE date > '2017-12-31' AND carpeta = 0 AND instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
+			WHERE date > '2016-12-31' AND carpeta = 0 AND instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
 			ORDER BY date DESC";
 
             $this->Util()->DB()->setQuery($query);
