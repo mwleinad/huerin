@@ -16,5 +16,5 @@ filesSplit = [s.strip() for s in files.splitlines()]
 
 for xx in filesSplit:
     if(os.path.isfile(xx)):
-        resultado = os.popen("/usr/bin/php /var/www/html/cron/updateTaskFile.php "+"'"+xx+"'").read()
+        resultado = os.popen("/usr/bin/php /var/www/html/dev/huerin/cron/updateTaskFile.php "+"'"+xx+"'").read()
         print resultado
