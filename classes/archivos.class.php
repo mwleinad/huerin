@@ -6,10 +6,6 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
 
-        //$query = 'SELECT * FROM `contract` WHERE activo = 1 AND rfc LIKE "MEAF870926%"';
-        //$this->Util()->DB()->setQuery($query);
-        //$result = $this->Util()->DB()->GetResult();
-
         $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
@@ -56,6 +52,10 @@ class Archivos extends Servicio {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
                         }
                     }
+                }
+                if($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])){
+                    $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
+                    $this->Util()->DB()->setQuery($query);
                 }
             }
         }
@@ -137,7 +137,7 @@ class Archivos extends Servicio {
             $query = "SELECT instanciaServicioId, instanciaServicio.servicioId, date, servicio.tipoServicioId, tipoServicio.nombreServicio FROM instanciaServicio
                         LEFT JOIN servicio ON(servicio.servicioId = instanciaServicio.servicioId)
                         LEFT JOIN tipoServicio ON(tipoServicio.tipoServicioId = servicio.tipoServicioId)
-			WHERE instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
+			WHERE date > '2017-12-31' AND carpeta = 0 AND instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
 			ORDER BY date DESC";
 
             $this->Util()->DB()->setQuery($query);
