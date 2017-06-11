@@ -1,20 +1,20 @@
 <?php
 //exit;
-if(!$_SERVER["DOCUMENT_ROOT"])
-{
-    $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
-}
-
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
-{
-	$docRoot = $_SERVER['DOCUMENT_ROOT'];
-}
-else
-{
-	$docRoot = $_SERVER['DOCUMENT_ROOT'];
-}
-
-	define('DOC_ROOT', $docRoot);
+//if(!$_SERVER["DOCUMENT_ROOT"])
+//{
+//    $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
+//}
+//
+//if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
+//{
+//	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+//}
+//else
+//{
+//	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+//}
+//
+//	define('DOC_ROOT', $docRoot);
 
 	session_save_path("/tmp");
 
