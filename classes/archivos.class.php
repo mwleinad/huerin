@@ -6,6 +6,8 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
         
+        235159
+        exit(0);
         $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
@@ -54,8 +56,9 @@ class Archivos extends Servicio {
                     }
                 }
                 if($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])){
-                    echo $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
+                    $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);
+                    $this->Util()->DB()->GetResult();
                 }
             }
         }
