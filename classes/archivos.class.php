@@ -6,7 +6,6 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
         
-        echo "AHORA SI LA WA CREAR"; exit(0);
         $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
