@@ -17,7 +17,8 @@
 //	define('DOC_ROOT', $docRoot);
 
 	session_save_path("/tmp");
-
+        
+        echo DOC_ROOT; exit(0);
 	include_once(DOC_ROOT.'/init_cron.php');
 	include_once(DOC_ROOT.'/config.php');
 	include_once(DOC_ROOT.'/libraries.php');
