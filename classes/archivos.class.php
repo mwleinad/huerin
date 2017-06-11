@@ -10,7 +10,7 @@ class Archivos extends Servicio {
         //$this->Util()->DB()->setQuery($query);
         //$result = $this->Util()->DB()->GetResult();
 
-        $result = $this->GetActiveMio(1274);
+        $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
             if (!$this->createDir($this->FILES_ROOT . $contract['rfc'])) {
