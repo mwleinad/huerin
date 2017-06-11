@@ -5,7 +5,8 @@ class Archivos extends Servicio {
     private $FILES_ROOT = '/var/www/sistema/';
 
     function creaEstructura() {
-
+        
+        echo "AHORA SI LA WA CREAR"; exit(0);
         $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
