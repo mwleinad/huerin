@@ -541,7 +541,7 @@ class Workflow extends Servicio
 					servicioId = ".$_POST["servicioId"]." AND
 					stepId = '".$_POST["stepId"]."' AND
 					taskId = '".$_POST["taskId"]."' AND
-					control = '".$_POST["control"]."'");
+					control = '1'");
 			$version = $this->Util()->DB()->GetSingle()+ 1;
 			
 
