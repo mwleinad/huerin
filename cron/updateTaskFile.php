@@ -82,7 +82,7 @@ echo $query = "INSERT INTO `taskFile`
         '" . $instanciaServicioId . "', 
         '" . $stepId . "', 
         '" . $taskId . "', 
-        '" . $_POST["control"] . "', 
+        '1', 
         '" . $version . "', 
         '" . $ext . "', 
         '" . date("Y-m-d") . "', 
