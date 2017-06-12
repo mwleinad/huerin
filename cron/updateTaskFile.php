@@ -56,7 +56,7 @@ $stepId = $splitVar[0];
 $splitVar = split("_", $file[$count-4]);
 $instanciaServicioId = $splitVar[0];
 
-echo $query = "SELECT MAX(version) FROM taskFile WHERE 
+$query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = ".$instanciaServicioId." AND
                         stepId = '".$stepId."' AND
                         taskId = '".$taskId."' AND
@@ -66,7 +66,7 @@ $db->setQuery($query);
 
 $version = $db->GetSingle()+ 1;
 
-$query = "INSERT INTO `taskFile` 
+echo $query = "INSERT INTO `taskFile` 
         (
         `servicioId`, 
         `stepId`, 
