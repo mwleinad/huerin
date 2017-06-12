@@ -62,7 +62,7 @@ echo $query = "SELECT MAX(version) FROM taskFile WHERE
 
 $db->setQuery($query);
 
-$version = $util()->DB()->GetSingle()+ 1;
+$version = $db->GetSingle()+ 1;
 
 echo $query = "INSERT INTO `taskFile` 
         (
