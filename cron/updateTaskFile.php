@@ -60,9 +60,9 @@ echo $query = "SELECT MAX(version) FROM taskFile WHERE
                         taskId = '".$taskId."' AND
                         control = '1'";
 
-$Util()->DB()->setQuery($query);
+$util()->DB()->setQuery($query);
 
-$version = $Util()->DB()->GetSingle()+ 1;
+$version = $util()->DB()->GetSingle()+ 1;
 
 echo $query = "INSERT INTO `taskFile` 
         (
@@ -88,7 +88,7 @@ echo $query = "INSERT INTO `taskFile`
         );";
 
 exit(0);
-$Util()->DB()->setQuery();
+$util()->DB()->setQuery();
 $Util()->DB()->InsertData();
 
 $result = $this->StatusById($this->instanciaServicioId);
