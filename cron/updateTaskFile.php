@@ -24,6 +24,8 @@ $filename = $argv[1];
 
 $file_open = date("Y/m/d H:i:s.", filemtime($filename));
 
+$ext = pathinfo($filename, PATHINFO_EXTENSION );
+
 $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
 $mimeType = finfo_file($finfo, $filename);
 
@@ -64,7 +66,7 @@ $db->setQuery($query);
 
 $version = $db->GetSingle()+ 1;
 
-echo $query = "INSERT INTO `taskFile` 
+$query = "INSERT INTO `taskFile` 
         (
         `servicioId`, 
         `stepId`, 
