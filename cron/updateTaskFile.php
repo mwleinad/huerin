@@ -87,7 +87,7 @@ if($version == 0){
             '" . $mimeType . "',
             '".$fileUpdated."'
             );";
-    $db->setQuery();
+    $db->setQuery($query);
     $db->InsertData();
 }
 
