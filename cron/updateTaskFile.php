@@ -21,14 +21,10 @@ $docs = "/var/www/";
 $argv = $_SERVER['argv'];
 
 $filename = $argv[1];
-
-$file_open = date("Y/m/d H:i:s.", filemtime($filename));
-
+$fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
 $ext = pathinfo($filename, PATHINFO_EXTENSION );
-
 $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
 $mimeType = finfo_file($finfo, $filename);
-
 $file = split("/", $filename);
 
 //(
@@ -60,42 +56,44 @@ $query = "SELECT MAX(version) FROM taskFile WHERE
                         servicioId = ".$instanciaServicioId." AND
                         stepId = '".$stepId."' AND
                         taskId = '".$taskId."' AND
-                        control = '1'";
-
+                        control = '1' AND
+                        uploaded = '".$fileUpdated."'";
 $db->setQuery($query);
+$version = $db->GetSingle();
 
-$version = $db->GetSingle()+ 1;
+if($version == 0){
 
-echo $query = "INSERT INTO `taskFile` 
-        (
-        `servicioId`, 
-        `stepId`, 
-        `taskId`, 
-        `control`, 
-        `version`, 
-        `ext`, 
-        `date`,
-        `mime`
-        ) 
-        VALUES 
-        (
-        '" . $instanciaServicioId . "', 
-        '" . $stepId . "', 
-        '" . $taskId . "', 
-        '1', 
-        '" . $version . "', 
-        '" . $ext . "', 
-        '" . date("Y-m-d") . "', 
-        '" . $mimeType . "'
-        );";
-
-exit(0);
-$util()->DB()->setQuery();
-$Util()->DB()->InsertData();
+    $query = "INSERT INTO `taskFile` 
+            (
+            `servicioId`, 
+            `stepId`, 
+            `taskId`, 
+            `control`, 
+            `version`, 
+            `ext`, 
+            `date`,
+            `mime`,
+            `uploaded`
+            ) 
+            VALUES 
+            (
+            '" . $instanciaServicioId . "', 
+            '" . $stepId . "', 
+            '" . $taskId . "', 
+            '1', 
+            '" . $version . "', 
+            '" . $ext . "', 
+            '" . date("Y-m-d") . "', 
+            '" . $mimeType . "',
+            '".$fileUpdated."'
+            );";
+    $db->setQuery();
+    $db->InsertData();
+}
 
 $result = $this->StatusById($this->instanciaServicioId);
-$Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
-$Util()->DB()->UpdateData();
+$db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
+$db->UpdateData();
 
 ////enviar al jefe inmediato
 //if ($version > 1) {
