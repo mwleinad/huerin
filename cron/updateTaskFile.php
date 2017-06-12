@@ -10,7 +10,7 @@ if ($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 
 define('DOC_ROOT', $docRoot);
 
-session_save_path("/tmp");
+session_save_path("/tmp"); 
 
 include_once(DOC_ROOT . '/init.php');
 include_once(DOC_ROOT . '/config.php');
