@@ -54,6 +54,14 @@ $stepId = $splitVar[0];
 $splitVar = split("_", $count-4);
 $instanciaServicioId = $splitVar[0];
 
+$Util()->DB()->setQuery("SELECT MAX(version) FROM taskFile WHERE 
+                        servicioId = ".$_POST["servicioId"]." AND
+                        stepId = '".$_POST["stepId"]."' AND
+                        taskId = '".$_POST["taskId"]."' AND
+                        control = '".$_POST["control"]."'");
+
+$version = $Util()->DB()->GetSingle()+ 1;
+
 echo $query = "INSERT INTO `taskFile` 
         (
         `servicioId`, 
@@ -74,16 +82,16 @@ echo $query = "INSERT INTO `taskFile`
         '" . $version . "', 
         '" . $ext . "', 
         '" . date("Y-m-d") . "', 
-        '" . $_FILES["file"]["type"] . "'
+        '" . $mimeType . "'
         );";
 
 exit(0);
-$this->Util()->DB()->setQuery();
-$this->Util()->DB()->InsertData();
+$Util()->DB()->setQuery();
+$Util()->DB()->InsertData();
 
 $result = $this->StatusById($this->instanciaServicioId);
-$this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
-$this->Util()->DB()->UpdateData();
+$Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
+$Util()->DB()->UpdateData();
 
 ////enviar al jefe inmediato
 //if ($version > 1) {
