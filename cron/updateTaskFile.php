@@ -22,45 +22,69 @@ $argv = $_SERVER['argv'];
 
 $filename = $argv[1];
 
-echo $filename;
-
 $file_open = date("Y/m/d H:i:s.", filemtime($filename));
+
+$finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
+$mimeType = finfo_file($finfo, $filename);
 
 $file = split("/", $filename);
 
-print_r($file);
+//(
+//    [0] =>
+//    [1] => var
+//    [2] => www
+//    [3] => sistema
+//    [4] => AAA070222AN6
+//    [5] => 2017
+//    [6] => 6
+//    [7] => 325342_CERO        ***** INSTANCIA SERVICIO *****
+//    [8] => 104_CONTABILIDAD   ***** STEP *****
+//    [9] => 149_ACUSE          ***** TASK *****
+//    [10] => .testfile.txt
+//)
 
+$count = count($file);
 
-//$this->Util()->DB()->setQuery("
-//                                INSERT INTO `taskFile` 
-//                                (
-//                                `servicioId`, 
-//                                `stepId`, 
-//                                `taskId`, 
-//                                `control`, 
-//                                `version`, 
-//                                `ext`, 
-//                                `date`,
-//                                `mime`
-//                                ) 
-//                                VALUES 
-//                                (
-//                                '" . $_POST["servicioId"] . "', 
-//                                '" . $_POST["stepId"] . "', 
-//                                '" . $_POST["taskId"] . "', 
-//                                '" . $_POST["control"] . "', 
-//                                '" . $version . "', 
-//                                '" . $ext . "', 
-//                                '" . date("Y-m-d") . "', 
-//                                '" . $_FILES["file"]["type"] . "'
-//                                );"
-//                            );
-//$this->Util()->DB()->InsertData();
-//
-//$result = $this->StatusById($this->instanciaServicioId);
-//$this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
-//$this->Util()->DB()->UpdateData();
-//
+$splitVar = split("_", $count-2);
+$taskId = $splitVar[0];
+
+$splitVar = split("_", $count-3);
+$stepId = $splitVar[0];
+
+$splitVar = split("_", $count-4);
+$instanciaServicioId = $splitVar[0];
+
+echo $query = "INSERT INTO `taskFile` 
+        (
+        `servicioId`, 
+        `stepId`, 
+        `taskId`, 
+        `control`, 
+        `version`, 
+        `ext`, 
+        `date`,
+        `mime`
+        ) 
+        VALUES 
+        (
+        '" . $instanciaServicioId . "', 
+        '" . $stepId . "', 
+        '" . $taskId . "', 
+        '" . $_POST["control"] . "', 
+        '" . $version . "', 
+        '" . $ext . "', 
+        '" . date("Y-m-d") . "', 
+        '" . $_FILES["file"]["type"] . "'
+        );";
+
+exit(0);
+$this->Util()->DB()->setQuery();
+$this->Util()->DB()->InsertData();
+
+$result = $this->StatusById($this->instanciaServicioId);
+$this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
+$this->Util()->DB()->UpdateData();
+
 ////enviar al jefe inmediato
 //if ($version > 1) {
 //    $user = new User;
