@@ -45,13 +45,13 @@ $file = split("/", $filename);
 
 $count = count($file);
 
-$splitVar = split("_", $count-2);
+$splitVar = split("_", $filename[$count-2]);
 $taskId = $splitVar[0];
 
-$splitVar = split("_", $count-3);
+$splitVar = split("_", $filename[$count-3]);
 $stepId = $splitVar[0];
 
-$splitVar = split("_", $count-4);
+$splitVar = split("_", $filename[$count-4]);
 $instanciaServicioId = $splitVar[0];
 
 echo $query = "SELECT MAX(version) FROM taskFile WHERE 
