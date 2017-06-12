@@ -55,9 +55,9 @@ $splitVar = split("_", $count-4);
 $instanciaServicioId = $splitVar[0];
 
 $Util()->DB()->setQuery("SELECT MAX(version) FROM taskFile WHERE 
-                        servicioId = ".$_POST["servicioId"]." AND
-                        stepId = '".$_POST["stepId"]."' AND
-                        taskId = '".$_POST["taskId"]."' AND
+                        servicioId = ".$instanciaServicioId." AND
+                        stepId = '".$stepId."' AND
+                        taskId = '".$taskId."' AND
                         control = '".$_POST["control"]."'");
 
 $version = $Util()->DB()->GetSingle()+ 1;
