@@ -60,7 +60,7 @@ echo $query = "SELECT MAX(version) FROM taskFile WHERE
                         taskId = '".$taskId."' AND
                         control = '1'";
 
-$util()->DB()->setQuery($query);
+$db()->setQuery($query);
 
 $version = $util()->DB()->GetSingle()+ 1;
 
