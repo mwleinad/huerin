@@ -58,7 +58,7 @@ $Util()->DB()->setQuery("SELECT MAX(version) FROM taskFile WHERE
                         servicioId = ".$instanciaServicioId." AND
                         stepId = '".$stepId."' AND
                         taskId = '".$taskId."' AND
-                        control = '".$_POST["control"]."'");
+                        control = '1'");
 
 $version = $Util()->DB()->GetSingle()+ 1;
 
