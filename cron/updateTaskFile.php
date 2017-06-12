@@ -91,7 +91,7 @@ if($version == 0){
     $db->InsertData();
 }
 
-$result = $this->StatusById($this->instanciaServicioId);
+$result = StatusById($this->instanciaServicioId);
 $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
 $db->UpdateData();
 
