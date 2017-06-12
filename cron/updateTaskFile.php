@@ -54,11 +54,13 @@ $stepId = $splitVar[0];
 $splitVar = split("_", $count-4);
 $instanciaServicioId = $splitVar[0];
 
-$Util()->DB()->setQuery("SELECT MAX(version) FROM taskFile WHERE 
+echo $query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = ".$instanciaServicioId." AND
                         stepId = '".$stepId."' AND
                         taskId = '".$taskId."' AND
-                        control = '1'");
+                        control = '1'";
+
+$Util()->DB()->setQuery($query);
 
 $version = $Util()->DB()->GetSingle()+ 1;
 
