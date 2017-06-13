@@ -62,7 +62,15 @@ $db->setQuery($query);
 $version = $db->GetSingle();
 
 if($version == 0){
-    $version += 1;
+    
+    $query = "SELECT MAX(version) FROM taskFile WHERE 
+                        servicioId = ".$instanciaServicioId." AND
+                        stepId = '".$stepId."' AND
+                        taskId = '".$taskId."' AND
+                        control = '1'";
+    $db->setQuery($query);
+    
+    $version = $db->GetSingle()+1;
     
     $query = "INSERT INTO `taskFile` 
             (

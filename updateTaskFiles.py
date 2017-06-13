@@ -13,7 +13,7 @@ def executeSomething():
     filesSplit = ""
     daFile = ""
 
-    files = os.popen("find /var/www/sistema/MEAF870926001/ -cmin -20").read()
+    files = os.popen("find /var/www/sistema/ -cmin -20").read()
 
     filesSplit = [s.strip() for s in files.splitlines()]
 
