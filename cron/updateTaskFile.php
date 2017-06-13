@@ -91,8 +91,8 @@ if($version == 0){
     $db->InsertData();
 }
 
-$result = $workflow->StatusById($this->instanciaServicioId);
-$db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'");
+$result = $workflow->StatusById($instanciaServicioId);
+$db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
 $db->UpdateData();
 
 ////enviar al jefe inmediato
