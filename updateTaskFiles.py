@@ -19,8 +19,8 @@ def executeSomething():
 
     for xx in filesSplit:
         if(os.path.isfile(xx)):
-                os.popen("/usr/bin/php /var/www/html/dev/huerin/cron/updateTaskFile.php "+"'"+xx+"'").read()
-        time.sleep(36000)
+            os.popen("/usr/bin/php /var/www/html/dev/huerin/cron/updateTaskFile.php "+"'"+xx+"'").read()
+    time.sleep(36000)
 
 while True:
     executeSomething()
