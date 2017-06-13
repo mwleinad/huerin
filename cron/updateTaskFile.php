@@ -62,7 +62,7 @@ $db->setQuery($query);
 $version = $db->GetSingle();
 
 if($version == 0){
-
+    $version += 1;
     $query = "INSERT INTO `taskFile` 
             (
             `servicioId`, 
