@@ -20,8 +20,6 @@ $docs = "/var/www/";
 
 $argv = $_SERVER['argv'];
 
-print_r($argv);
-
 $filename = $argv[1];
 
 if (is_file($filename)) {
