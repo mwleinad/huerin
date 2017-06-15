@@ -20,7 +20,9 @@ $docs = "/var/www/";
 
 $argv = $_SERVER['argv'];
 
-echo $filename = $argv[1];
+print_r($argv);
+
+$filename = $argv[2];
 
 if (is_file($filename)) {
     $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
