@@ -18,3 +18,5 @@ then
         # update the OLD_STAT_FILE
         echo $NEW_STAT > $OLD_STAT_FILE
 fi
+
+asdkfmasf
