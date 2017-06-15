@@ -22,7 +22,7 @@ $argv = $_SERVER['argv'];
 
 print_r($argv);
 
-$filename = $argv[2];
+$filename = $argv[1];
 
 if (is_file($filename)) {
     $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
