@@ -6,7 +6,7 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
         
-        $result = $this->GetActiveMio(1274);
+        $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
             if (!$this->createDir($this->FILES_ROOT . $contract['rfc'])) {
