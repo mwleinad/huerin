@@ -2,7 +2,7 @@
 
 class Archivos extends Servicio {
 
-    private $FILES_ROOT = '/var/www/sistema/';
+    private $FILES_ROOT = '/var/dev/archivos/';
 
     function creaEstructura() {
         
