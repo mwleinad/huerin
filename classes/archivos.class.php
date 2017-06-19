@@ -5,7 +5,7 @@ class Archivos extends Servicio {
     private $FILES_ROOT = '/var/dev/archivos/';
 
     function creaEstructura() {
-        
+
         $result = $this->GetActiveMio();
 
         foreach ($result as $contract) {
@@ -14,52 +14,54 @@ class Archivos extends Servicio {
             }
 
             foreach ($contract['instancias'] as $instancia) {
-                
-                $instancia['dateExploded'][1] = $instancia['dateExploded'][1]+0;
-                
+
+                $instancia['dateExploded'][1] = $instancia['dateExploded'][1] + 0;
+
                 if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
                     echo "Error al crear directorio año o directorio ya existente<br>";
                 }
-                
-                if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] )) {
+
+                if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
                     if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
-                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."<br>";
+                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 } else {
                     if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
                         echo "Error al crear directorio del mes " . $instancia['dateExploded'][1] . " o directorio ya existente<br>";
                     }
                     if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
-                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."<br>";
+                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 }
-                
-                $query = "SELECT * FROM step WHERE servicioId = ".$instancia['tipoServicioId'];
+
+                $query = "SELECT * FROM step WHERE servicioId = " . $instancia['tipoServicioId'];
                 $this->Util()->DB()->setQuery($query);
                 $pasos = $this->Util()->DB()->GetResult();
-                
-                foreach($pasos as $paso){
-                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."/".$paso['stepId']."_".$paso['nombreStep'])) {
+
+                foreach ($pasos as $paso) {
+                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'])) {
                         echo "Error al crear la carpeta del paso<br>";
                     }
-                    
+
                     $query = "SELECT * FROM task WHERE stepId = " . $paso['stepId'];
                     $this->Util()->DB()->setQuery($query);
                     $tasks = $this->Util()->DB()->GetResult();
 
                     foreach ($tasks as $task) {
-                        if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."/".$paso['stepId']."_".$paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
+                        if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
+                        }
+                        if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
+                            $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'] . "_" . $paso['stepId'] . "_" . $task['taskId'];
+                            echo $comando = "ln -s '" . $this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'] . "' /var/www/scriptTasks/monitores/dev/" . $file;
+                            exec($comando);
                         }
                     }
                 }
-                if($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])){
+                if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                     $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);
                     $this->Util()->DB()->GetResult();
-                    $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'];
-                    echo $comando = "ln -s '".$this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."' /var/www/scriptTasks/monitores/dev/".$file;
-                    exec($comando);
                 }
             }
         }
