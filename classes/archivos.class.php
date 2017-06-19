@@ -57,6 +57,8 @@ class Archivos extends Servicio {
                     $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);
                     $this->Util()->DB()->GetResult();
+                    $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'];
+                    exec("ln '".$this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."' /var/www/scriptTasks/monitores/".$file);
                 }
             }
         }
