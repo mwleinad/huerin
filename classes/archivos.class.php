@@ -141,7 +141,7 @@ class Archivos extends Servicio {
                                     LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
                                     WHERE servicio.status = 'activo' AND customer.active = '1'
                                     " . $sqlCustomer . $sqlContract . $addNomina . "					
-                                    ORDER BY curomerId, clienteName, razonSocialName, nombreServicio ASC");
+                                    ORDER BY customerId, clienteName, razonSocialName, nombreServicio ASC");
 
         $result = $this->Util()->DB()->GetResult();
         foreach ($result as $key => $value) {
