@@ -6,10 +6,19 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
 
-        $result = $this->GetActiveMio();
+        $result = $this->GetActiveMio(1274);
+        
+        $clientsArray = array();
 
         foreach ($result as $contract) {
-            if (!$this->createDir($this->FILES_ROOT . $contract['rfc'])) {
+            
+            if (!$this->createDir($this->FILES_ROOT . $contract['customerId'])) {
+                echo "Error al crear directorio " . $contract['costumerId'] . " o directorio ya existente.<br>";
+            }
+            
+            $clientsArray[$contract['customerId']] = 1;
+            
+            if (!$this->createDir($this->FILES_ROOT . "/" . $contract['customerId'] . "/" . $contract['rfc'])) {
                 echo "Error al crear directorio " . $contract['rfc'] . " o directorio ya existente.<br>";
             }
 
@@ -109,15 +118,31 @@ class Archivos extends Servicio {
         }
 
 
-        $this->Util()->DB()->setQuery("SELECT rfc, servicioId,  customer.nameContact AS clienteName, contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad, servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName, customer.customerId, customer.nameContact FROM servicio 
-			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			LEFT JOIN contract ON contract.contractId = servicio.contractId
-			LEFT JOIN customer ON customer.customerId = contract.customerId
-			LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-			WHERE servicio.status = 'activo' AND customer.active = '1'
-			" . $sqlCustomer . $sqlContract . $addNomina . "					
-			ORDER BY clienteName, razonSocialName, nombreServicio ASC");
-        //$this->Util()->DB()->query;
+        $this->Util()->DB()->setQuery("SELECT rfc, 
+                                        servicioId, 
+                                        customer.nameContact AS clienteName,
+                                        customer.customerId, 
+                                        contract.name AS razonSocialName, 
+                                        nombreServicio, 
+                                        servicio.costo, 
+                                        inicioOperaciones, 
+                                        periodicidad, 
+                                        servicio.contractId, 
+                                        contract.encargadoCuenta, 
+                                        contract.responsableCuenta, 
+                                        responsableCuenta.email AS responsableCuentaEmail, 
+                                        responsableCuenta.name AS responsableCuentaName, 
+                                        customer.customerId, 
+                                        customer.nameContact 
+                                    FROM servicio 
+                                    LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                                    LEFT JOIN contract ON contract.contractId = servicio.contractId
+                                    LEFT JOIN customer ON customer.customerId = contract.customerId
+                                    LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
+                                    WHERE servicio.status = 'activo' AND customer.active = '1'
+                                    " . $sqlCustomer . $sqlContract . $addNomina . "					
+                                    ORDER BY curomerId, clienteName, razonSocialName, nombreServicio ASC");
+
         $result = $this->Util()->DB()->GetResult();
         foreach ($result as $key => $value) {
             $user = new User;
