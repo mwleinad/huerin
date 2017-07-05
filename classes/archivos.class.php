@@ -5,6 +5,15 @@ class Archivos extends Servicio {
     private $FILES_ROOT = '/var/dev/archivos/';
 
     function creaEstructura() {
+        
+        $clientsArray = array();
+        $result = $this->GetActiveGroupByClient(1274);
+        
+        foreach ($result as $client) {
+            $clientsArray[$client['customerId']] = $client['clienteName'];
+        }
+        
+        $this->changeNameDir($clientsArray);
 
         $result = $this->GetActiveMio(1274);
         
@@ -16,15 +25,17 @@ class Archivos extends Servicio {
                 echo "Error al crear directorio " . $contract['costumerId'] . " o directorio ya existente.<br>";
             }
             
-            $clientsArray[$contract['customerId']] = 1;
+            $clientsArray[$contract['customerId']] = $contract['clienteName'];
             
-            if (!$this->createDir($this->FILES_ROOT . "/" . $contract['customerId'] . "/" . $contract['rfc'])) {
+            if (!$this->createDir($this->FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'])) {
                 echo "Error al crear directorio " . $contract['rfc'] . " o directorio ya existente.<br>";
             }
 
             foreach ($contract['instancias'] as $instancia) {
 
                 $instancia['dateExploded'][1] = $instancia['dateExploded'][1] + 0;
+                
+                $instancia['nombreServicio'] = trim($instancia['nombreServicio'], ".");
 
                 if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
                     echo "Error al crear directorio año o directorio ya existente<br>";
@@ -48,6 +59,9 @@ class Archivos extends Servicio {
                 $pasos = $this->Util()->DB()->GetResult();
 
                 foreach ($pasos as $paso) {
+                    
+                    $paso['nombreStep'] = trim($paso['nombreStep'], ".");
+                    
                     if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'])) {
                         echo "Error al crear la carpeta del paso<br>";
                     }
@@ -57,13 +71,14 @@ class Archivos extends Servicio {
                     $tasks = $this->Util()->DB()->GetResult();
 
                     foreach ($tasks as $task) {
+                        
+                        $task['nombreTask'] = trim($task['nombreTask'],".");
+                        
                         if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
                         }
                         if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'] . "_" . $paso['stepId'] . "_" . $task['taskId'];
-                            echo $comando = "ln -s '" . $this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'] . "' /var/www/scriptTasks/monitores/dev/" . $file;
-                            exec($comando);
                         }
                     }
                 }
@@ -74,8 +89,30 @@ class Archivos extends Servicio {
                 }
             }
         }
+        
+        $this->changeNameDir($clientsArray,1);
 
         return $result;
+    }
+    
+    public function changeNameDir($clients, $refactorOder = 0){
+        if($refactorOder){
+            foreach($clients as $kk => $client){
+
+                $nombreCliente = str_replace(" ", "_", $client);
+
+                $command = "mv ".$this->FILES_ROOT.$kk." ".$kk."_".$nombreCliente;
+                exec($command);
+            }
+        }else{
+            foreach($clients as $kk => $client){
+
+                $nombreCliente = str_replace(" ", "_", $client);
+
+                $command = "mv ".$this->FILES_ROOT.$kk."_".$nombreCliente." ".$kk;
+                exec($command);
+            }
+        }
     }
 
     public function createDir($value) {
@@ -96,6 +133,40 @@ class Archivos extends Servicio {
         }
 
         return false;
+    }
+    
+    public function GetActiveGroupByClient($customer = 0, $contract = 0, $rfc = ""){
+        global $months, $User;
+
+        if ($customer != 0) {
+            $sqlCustomer = " AND customer.customerId = '" . $customer . "'";
+        }
+
+        if ($contract != 0) {
+            $sqlContract = " AND contract.contractId = '" . $contract . "'";
+        }
+
+        if (strlen($rfc) > 3 && $customer == 0 && $contract == 0) {
+            $sqlContract = " AND (customer.nameContact LIKE '%" . $rfc . "%' OR contract.name LIKE '%" . $rfc . "%')";
+        }
+
+        if ($User["subRoleId"] == "Nomina") {
+            $addNomina = " AND servicio.tipoServicioId IN (" . SERVICIOS_NOMINA . ")";
+        }
+
+
+        $this->Util()->DB()->setQuery("SELECT customer.nameContact AS clienteName,
+                                        customer.customerId
+                                    FROM servicio 
+                                    LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                                    LEFT JOIN contract ON contract.contractId = servicio.contractId
+                                    LEFT JOIN customer ON customer.customerId = contract.customerId
+                                    LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
+                                    WHERE servicio.status = 'activo' AND customer.active = '1'
+                                    " . $sqlCustomer . $sqlContract . $addNomina . "					
+                                    GROUP BY customerId");
+
+        $result = $this->Util()->DB()->GetResult();
     }
 
     public function GetActiveMio($customer = 0, $contract = 0, $rfc = "") {
