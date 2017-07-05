@@ -7,7 +7,7 @@ class Archivos extends Servicio {
     function creaEstructura() {
         
         $clientsArray = array();
-        $result = $this->GetActiveGroupByClient(1274);
+        $result = $this->GetActiveGroupByClient();
         
         foreach ($result as $client) {
             $clientsArray[$client['customerId']] = $client['clienteName'];
@@ -15,7 +15,7 @@ class Archivos extends Servicio {
         
         $this->changeNameDir($clientsArray);
 
-        $result = $this->GetActiveMio(1274);
+        $result = $this->GetActiveMio();
         
         $clientsArray = array();
 
