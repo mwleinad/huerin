@@ -109,7 +109,7 @@ class Archivos extends Servicio {
 
                 $nombreCliente = str_replace(" ", "_", $client);
 
-                $command = "mv ".$this->FILES_ROOT.$kk."_".$nombreCliente." ".$kk;
+                $command = "mv ".$this->FILES_ROOT.$nombreCliente."_".$kk." ".$kk;
                 exec($command);
             }
         }
