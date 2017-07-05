@@ -167,6 +167,8 @@ class Archivos extends Servicio {
                                     GROUP BY customerId");
 
         $result = $this->Util()->DB()->GetResult();
+        
+        return $result;
     }
 
     public function GetActiveMio($customer = 0, $contract = 0, $rfc = "") {
