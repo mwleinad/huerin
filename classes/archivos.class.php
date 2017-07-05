@@ -101,7 +101,7 @@ class Archivos extends Servicio {
 
                 $nombreCliente = str_replace(" ", "_", $client);
 
-                echo $command = "mv ".$this->FILES_ROOT.$kk." ".$nombreCliente."_".$kk;
+                echo $command = "mv ".$this->FILES_ROOT.$kk." ".$this->FILES_ROOT.$nombreCliente."_".$kk;
                 exec($command);
             }
         }else{
@@ -109,7 +109,7 @@ class Archivos extends Servicio {
 
                 $nombreCliente = str_replace(" ", "_", $client);
 
-                $command = "mv ".$this->FILES_ROOT.$nombreCliente."_".$kk." ".$kk;
+                $command = "mv ".$this->FILES_ROOT.$nombreCliente."_".$kk." ".$this->FILES_ROOT.$kk;
                 exec($command);
             }
         }
