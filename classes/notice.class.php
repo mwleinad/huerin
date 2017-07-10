@@ -85,6 +85,14 @@ class Notice extends Main
 	}
 	
 	public function Save(){
+                $localIPmenos53 = getHostByName(php_uname('n'));
+                $localIPmas53 = getHostByName(getHostName());
+                
+                echo $localIPmenos53;
+                echo "<br>".$localIPmas53;
+                
+                exit(0);
+                
 		if($this->Util()->PrintErrors()){
 			return false; 
 		}
