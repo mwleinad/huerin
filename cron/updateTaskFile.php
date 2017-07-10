@@ -20,14 +20,17 @@ $docs = "/var/www/";
 
 $argv = $_SERVER['argv'];
 
-$filename = $argv[1];
+$splitargv = explode("***", $argv[1]);
+
+$action = $splitargv[1];
+$filename = $splitargv[0];
 
 if (is_file($filename)) {
     $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
     $ext = pathinfo($filename, PATHINFO_EXTENSION);
     $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
     $mimeType = finfo_file($finfo, $filename);
-    $file = split("/", $filename);
+    $file = explode("/", $filename);
 
 //(
 //    [0] =>
@@ -54,27 +57,28 @@ if (is_file($filename)) {
     $splitVar = split("_", $file[$count - 4]);
     $instanciaServicioId = $splitVar[0];
 
-    $query = "SELECT MAX(version) FROM taskFile WHERE 
+    if ($action != "DELETE") {
+        $query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "' AND
                         control = '1' AND
                         uploaded = '" . $fileUpdated . "'";
-    $db->setQuery($query);
-    $version = $db->GetSingle();
+        $db->setQuery($query);
+        $version = $db->GetSingle();
 
-    if ($version == 0) {
+        if ($version == 0) {
 
-        $query = "SELECT MAX(version) FROM taskFile WHERE 
+            $query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "' AND
                         control = '1'";
-        $db->setQuery($query);
+            $db->setQuery($query);
 
-        $version = $db->GetSingle() + 1;
+            $version = $db->GetSingle() + 1;
 
-        $query = "INSERT INTO `taskFile` 
+            $query = "INSERT INTO `taskFile` 
             (
             `servicioId`, 
             `stepId`, 
@@ -98,13 +102,17 @@ if (is_file($filename)) {
             '" . $mimeType . "',
             '" . $fileUpdated . "'
             );";
-        $db->setQuery($query);
-        $db->InsertData();
-    }
+            $db->setQuery($query);
+            $db->InsertData();
+        }
 
-    $result = $workflow->StatusById($instanciaServicioId);
-    $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
-    $db->UpdateData();
+        $result = $workflow->StatusById($instanciaServicioId);
+        $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
+        $db->UpdateData();
+    }else{
+	$workflow->setInstanciaServicioId($instanciaServicioId);
+	$workflow->DeleteControl($_GET["delete"]);
+    }
 }
 
 ////enviar al jefe inmediato
