@@ -91,7 +91,7 @@ class Notice extends Main
                 echo $localIPmenos53;
                 echo "<br>".$localIPmas53;
                 
-                exit(0);
+                exit(0); 
                 
 		if($this->Util()->PrintErrors()){
 			return false; 
