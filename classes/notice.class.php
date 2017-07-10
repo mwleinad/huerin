@@ -91,7 +91,7 @@ class Notice extends Main
                         foreach (explode(',', $_SERVER[$key]) as $ip){
                             $ip = trim($ip); // just to be safe
 
-                            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) !== false){
+                            if (filter_var($ip, FILTER_VALIDATE_IP) !== false){
                                 echo $ip;
                             }
                         }
