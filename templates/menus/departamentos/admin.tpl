@@ -1,6 +1,6 @@
 <div id="menu">
 	<ul class="group" id="menu_group_main">    
-
+                {if $infoUser.personalId == 13}
 				<li class="item first" id="one">        	
         	<a href="{$WEB_ROOT}/personal" class="main{if $mainMnu == "catalogos"} current{/if}">
             	<span class="outer">
@@ -8,6 +8,7 @@
                  </span>
             </a>
         </li>
+        {/if}
 		<li class="item middle" id="two"> 
         <li class="item middle" id="two">
         	<a href="{$WEB_ROOT}/customer" class="main{if $mainMnu == "contratos"} current{/if}">

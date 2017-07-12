@@ -13,7 +13,7 @@
         </li>
        
        {else}
-			{if $infoUser.personalId == 13}
+			{if $infoUser.tipoPersonal != "Recepcion" &&  $infoUser.tipoPersonal != "Nomina"}
 				<li class="item first" id="one">        	
         	<a href="{$WEB_ROOT}/personal" class="main{if $mainMnu == "catalogos"} current{/if}">
             	<span class="outer">
