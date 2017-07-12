@@ -27,15 +27,8 @@ include_once(DOC_ROOT.'/libraries.php');
 	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 
 	$_SESSION['empresaId'] = 15;
-        
-        print_r($User);
-        
-        $huerinPages = array();
-        if($User['personalId'] == 13){
-            $huerinPages = array('personal','regimen','sociedad','tipoServicio','tipoDocumento','tipoRequerimiento','tipoArchivo','impuesto','obligacion','departamentos','mantenimiento');
-        }
 
-	$pages2 = array(
+	$pages = array(
 		'login',
 		'logout',
 		'homepage',
@@ -52,7 +45,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'contract-docs',
 		'state',
 		'city',
-		
+		'personal',
 		'report-obligaciones',
 		'report-basica',
 			'report-cliente',
@@ -79,6 +72,13 @@ include_once(DOC_ROOT.'/libraries.php');
 		'walmart',
 		'view-services',
 
+		'regimen',
+		'sociedad',
+		'tipoServicio',
+		'tipoDocumento',
+		'tipoRequerimiento',
+		'tipoArchivo',
+
 		'services',
 		'add-documento',
 		'add-requerimiento',
@@ -92,7 +92,9 @@ include_once(DOC_ROOT.'/libraries.php');
 		'workflow',
 			'workflow-cliente',
 
-		
+		'impuesto',
+		'obligacion',
+		'departamentos',
 
 		'cxc',
 		'add-payment',
@@ -105,14 +107,13 @@ include_once(DOC_ROOT.'/libraries.php');
 
 		'print',
 		'report-ingresos',
+		'mantenimiento',
 		'archivos',
 		'cfdi',
 		'cfdiPagos',
 		'customer-only'
 
 	);
-        
-        $pages = array_merge($pages2, $huerinPages);
 
 	$page = $_GET['page'];
 
