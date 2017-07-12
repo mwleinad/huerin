@@ -28,8 +28,10 @@ include_once(DOC_ROOT.'/libraries.php');
 
 	$_SESSION['empresaId'] = 15;
         
+        print_r($User);
+        
         $huerinPages = array();
-        if($infoUser['personalId'] == 13){
+        if($User['personalId'] == 13){
             $huerinPages = array('personal','regimen','sociedad','tipoServicio','tipoDocumento','tipoRequerimiento','tipoArchivo','impuesto','obligacion','departamentos','mantenimiento');
         }
 
