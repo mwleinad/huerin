@@ -83,26 +83,29 @@ class Notice extends Main
 				
 		return $row;
 	}
-	
-	public function Save(){
-            
-                foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
-                    if (array_key_exists($key, $_SERVER) === true){
-                        foreach (explode(',', $_SERVER[$key]) as $ip){
-                            $ip = trim($ip); // just to be safe
+        
+        public function GetIp(){
+            foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+                if (array_key_exists($key, $_SERVER) === true){
+                    foreach (explode(',', $_SERVER[$key]) as $ip){
+                        $ip = trim($ip); // just to be safe
 
-                            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) !== false){
-                                echo $ip;
-                            }
+                        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) !== false){
+                            return $ip;
                         }
                     }
                 }
-                
-                exit(0); 
+            }
+            return 0;
+        }
+	
+	public function Save(){
                  
 		if($this->Util()->PrintErrors()){
 			return false; 
 		}
+                
+                $ip = $this->GetIp();
 		
 		$sqlQuery = "INSERT INTO 
 					notice 
@@ -110,14 +113,16 @@ class Notice extends Main
 						usuario,										
 						fecha,
 						description,
-						priority											
+						priority,
+                                                ip
 					)
 				 VALUES 
 					(			
 						'".$this->usuario."',			
 						'".$this->fecha."',
 						'".$this->description."',
-						'".$this->prioridad."'
+						'".$this->prioridad."',
+                                                '".$ip."'
 					)";
 								
 		$this->Util()->DB()->setQuery($sqlQuery);
