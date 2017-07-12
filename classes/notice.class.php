@@ -105,7 +105,7 @@ class Notice extends Main
 			return false; 
 		}
                 
-                $ip = $this->GetIp();
+                $ip = $this->GetIp(); 
 		
 		$sqlQuery = "INSERT INTO 
 					notice 
