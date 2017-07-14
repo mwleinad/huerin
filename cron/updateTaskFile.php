@@ -18,7 +18,7 @@ include_once(DOC_ROOT . '/libraries.php');
 
 $docs = "/var/www/";
 
-$argv = $_SERVER['argv'];
+echo $argv = $_SERVER['argv'];
 
 $splitargv = explode("***", $argv[1]);
 
