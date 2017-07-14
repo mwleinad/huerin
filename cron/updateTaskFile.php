@@ -22,7 +22,7 @@ $argv = $_SERVER['argv'];
 
 $splitargv = explode("***", $argv[1]);
 
-print_r($argv);
+print_r($splitargv);
 
 $action = $splitargv[1];
 $filename = $splitargv[0];
