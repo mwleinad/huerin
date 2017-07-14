@@ -54,7 +54,7 @@ if ($action == "DELETE") {
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
         $mimeType = finfo_file($finfo, $filename);
-        $file = explode("/", $filename);
+        $file = split("/", $filename);
 
 //(
 //    [0] =>
