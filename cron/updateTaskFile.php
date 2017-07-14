@@ -110,8 +110,16 @@ if (is_file($filename)) {
         $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
         $db->UpdateData();
     }else{
-	//$workflow->setInstanciaServicioId($instanciaServicioId);
-	//$workflow->DeleteControl($_GET["delete"]);
+        $query = "SELECT * FROM taskFile WHERE 
+                        servicioId = " . $instanciaServicioId . " AND
+                        stepId = '" . $stepId . "' AND
+                        taskId = '" . $taskId . "'";
+        $db->setQuery($query);
+        $result = $db->GetResult();
+        foreach($result as $taskFile){
+            $workflow->setInstanciaServicioId($instanciaServicioId);
+            $workflow->DeleteControl($taskFile['taskFileId']);
+        }
     }
 }
 
