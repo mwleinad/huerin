@@ -21,8 +21,8 @@ $docs = "/var/www/";
 $argv = $_SERVER['argv'];
 
 $splitargv = explode("***", $argv[1]);
-
-$action = $splitargv[1];
+print_r($splitargv);
+echo $action = $splitargv[1];
 $filename = $splitargv[0];
 
 if ($action == "DELETE") {
@@ -37,7 +37,7 @@ if ($action == "DELETE") {
     $splitVar = split("_", $file[$count - 4]);
     $instanciaServicioId = $splitVar[0];
 
-    $query = "SELECT * FROM taskFile WHERE 
+    echo $query = "SELECT * FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "'";
