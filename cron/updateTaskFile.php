@@ -22,10 +22,21 @@ $argv = $_SERVER['argv'];
 
 $splitargv = explode("***", $argv[1]);
 
-print_r($splitargv);
-
 $action = $splitargv[1];
 $filename = $splitargv[0];
+
+if ($action == "DELETE") {
+    $query = "SELECT * FROM taskFile WHERE 
+                        servicioId = " . $instanciaServicioId . " AND
+                        stepId = '" . $stepId . "' AND
+                        taskId = '" . $taskId . "'";
+    $db->setQuery($query);
+    $result = $db->GetResult();
+    foreach ($result as $taskFile) {
+        $workflow->setInstanciaServicioId($instanciaServicioId);
+        $workflow->DeleteControl($taskFile['taskFileId']);
+    }
+}
 
 if (is_file($filename)) {
     $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
@@ -58,8 +69,6 @@ if (is_file($filename)) {
 
     $splitVar = split("_", $file[$count - 4]);
     $instanciaServicioId = $splitVar[0];
-    
-    echo $action;
 
     if ($action != "DELETE") {
         $query = "SELECT MAX(version) FROM taskFile WHERE 
@@ -113,17 +122,6 @@ if (is_file($filename)) {
         $result = $workflow->StatusById($instanciaServicioId);
         $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
         $db->UpdateData();
-    }else{
-        echo $query = "SELECT * FROM taskFile WHERE 
-                        servicioId = " . $instanciaServicioId . " AND
-                        stepId = '" . $stepId . "' AND
-                        taskId = '" . $taskId . "'";
-        $db->setQuery($query);
-        $result = $db->GetResult();
-        foreach($result as $taskFile){
-            $workflow->setInstanciaServicioId($instanciaServicioId);
-            $workflow->DeleteControl($taskFile['taskFileId']);
-        }
     }
 }
 
