@@ -110,7 +110,7 @@ if (is_file($filename)) {
         $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
         $db->UpdateData();
     }else{
-        $query = "SELECT * FROM taskFile WHERE 
+        echo $query = "SELECT * FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "'";
