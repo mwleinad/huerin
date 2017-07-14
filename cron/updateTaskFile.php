@@ -48,94 +48,94 @@ if ($action == "DELETE") {
         $workflow->setInstanciaServicioId($instanciaServicioId);
         $workflow->DeleteControl($taskFile['taskFileId']);
     }
-} else {
-    if (is_file($filename)) {
-        $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
-        $mimeType = finfo_file($finfo, $filename);
-        $file = split("/", $filename);
-
-//(
-//    [0] =>
-//    [1] => var
-//    [2] => www
-//    [3] => sistema
-//    [4] => AAA070222AN6
-//    [5] => 2017
-//    [6] => 6
-//    [7] => 325342_CERO        ***** INSTANCIA SERVICIO *****
-//    [8] => 104_CONTABILIDAD   ***** STEP *****
-//    [9] => 149_ACUSE          ***** TASK *****
-//    [10] => .testfile.txt
-//)
-
-        $count = count($file);
-
-        $splitVar = split("_", $file[$count - 2]);
-        $taskId = $splitVar[0];
-
-        $splitVar = split("_", $file[$count - 3]);
-        $stepId = $splitVar[0];
-
-        $splitVar = split("_", $file[$count - 4]);
-        $instanciaServicioId = $splitVar[0];
-
-        if ($action != "DELETE") {
-            $query = "SELECT MAX(version) FROM taskFile WHERE 
-                        servicioId = " . $instanciaServicioId . " AND
-                        stepId = '" . $stepId . "' AND
-                        taskId = '" . $taskId . "' AND
-                        control = '1' AND
-                        uploaded = '" . $fileUpdated . "'";
-            $db->setQuery($query);
-            $version = $db->GetSingle();
-
-            if ($version == 0) {
-
-                $query = "SELECT MAX(version) FROM taskFile WHERE 
-                        servicioId = " . $instanciaServicioId . " AND
-                        stepId = '" . $stepId . "' AND
-                        taskId = '" . $taskId . "' AND
-                        control = '1'";
-                $db->setQuery($query);
-
-                $version = $db->GetSingle() + 1;
-
-                $query = "INSERT INTO `taskFile` 
-            (
-            `servicioId`, 
-            `stepId`, 
-            `taskId`, 
-            `control`, 
-            `version`, 
-            `ext`, 
-            `date`,
-            `mime`,
-            `uploaded`
-            ) 
-            VALUES 
-            (
-            '" . $instanciaServicioId . "', 
-            '" . $stepId . "', 
-            '" . $taskId . "', 
-            '1', 
-            '" . $version . "', 
-            '" . $ext . "', 
-            '" . date("Y-m-d") . "', 
-            '" . $mimeType . "',
-            '" . $fileUpdated . "'
-            );";
-                $db->setQuery($query);
-                $db->InsertData();
-            }
-
-            $result = $workflow->StatusById($instanciaServicioId);
-            $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
-            $db->UpdateData();
-        }
-    }
-}
+}// else {
+//    if (is_file($filename)) {
+//        $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
+//        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+//        $finfo = finfo_open(FILEINFO_MIME_TYPE); // devuelve el tipo mime de su extensión
+//        $mimeType = finfo_file($finfo, $filename);
+//        $file = split("/", $filename);
+//
+////(
+////    [0] =>
+////    [1] => var
+////    [2] => www
+////    [3] => sistema
+////    [4] => AAA070222AN6
+////    [5] => 2017
+////    [6] => 6
+////    [7] => 325342_CERO        ***** INSTANCIA SERVICIO *****
+////    [8] => 104_CONTABILIDAD   ***** STEP *****
+////    [9] => 149_ACUSE          ***** TASK *****
+////    [10] => .testfile.txt
+////)
+//
+//        $count = count($file);
+//
+//        $splitVar = split("_", $file[$count - 2]);
+//        $taskId = $splitVar[0];
+//
+//        $splitVar = split("_", $file[$count - 3]);
+//        $stepId = $splitVar[0];
+//
+//        $splitVar = split("_", $file[$count - 4]);
+//        $instanciaServicioId = $splitVar[0];
+//
+//        if ($action != "DELETE") {
+//            $query = "SELECT MAX(version) FROM taskFile WHERE 
+//                        servicioId = " . $instanciaServicioId . " AND
+//                        stepId = '" . $stepId . "' AND
+//                        taskId = '" . $taskId . "' AND
+//                        control = '1' AND
+//                        uploaded = '" . $fileUpdated . "'";
+//            $db->setQuery($query);
+//            $version = $db->GetSingle();
+//
+//            if ($version == 0) {
+//
+//                $query = "SELECT MAX(version) FROM taskFile WHERE 
+//                        servicioId = " . $instanciaServicioId . " AND
+//                        stepId = '" . $stepId . "' AND
+//                        taskId = '" . $taskId . "' AND
+//                        control = '1'";
+//                $db->setQuery($query);
+//
+//                $version = $db->GetSingle() + 1;
+//
+//                $query = "INSERT INTO `taskFile` 
+//            (
+//            `servicioId`, 
+//            `stepId`, 
+//            `taskId`, 
+//            `control`, 
+//            `version`, 
+//            `ext`, 
+//            `date`,
+//            `mime`,
+//            `uploaded`
+//            ) 
+//            VALUES 
+//            (
+//            '" . $instanciaServicioId . "', 
+//            '" . $stepId . "', 
+//            '" . $taskId . "', 
+//            '1', 
+//            '" . $version . "', 
+//            '" . $ext . "', 
+//            '" . date("Y-m-d") . "', 
+//            '" . $mimeType . "',
+//            '" . $fileUpdated . "'
+//            );";
+//                $db->setQuery($query);
+//                $db->InsertData();
+//            }
+//
+//            $result = $workflow->StatusById($instanciaServicioId);
+//            $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
+//            $db->UpdateData();
+//        }
+//    }
+//}
 
 ////enviar al jefe inmediato
 //if ($version > 1) {
