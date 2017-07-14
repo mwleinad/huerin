@@ -18,11 +18,13 @@ include_once(DOC_ROOT . '/libraries.php');
 
 $docs = "/var/www/";
 
-echo $argv = $_SERVER['argv'];
+$argv = $_SERVER['argv'];
 
 $splitargv = explode("***", $argv[1]);
 
-echo $action = $splitargv[1];
+print_r($splitargv);
+
+$action = $splitargv[1];
 $filename = $splitargv[0];
 
 if (is_file($filename)) {
