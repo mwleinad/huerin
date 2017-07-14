@@ -58,6 +58,8 @@ if (is_file($filename)) {
 
     $splitVar = split("_", $file[$count - 4]);
     $instanciaServicioId = $splitVar[0];
+    
+    echo $action;
 
     if ($action != "DELETE") {
         $query = "SELECT MAX(version) FROM taskFile WHERE 
