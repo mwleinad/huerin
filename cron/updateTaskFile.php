@@ -26,10 +26,10 @@ echo $action = $splitargv[1];
 $filename = $splitargv[0];
 
 if ($action == "DELETE") {
-    $file = explode("/", $filename);
+    $file = split("/", $filename);
 
     //$splitVar = split("_", $file[$count - 2]);
-    $splitVar = explode("/", $file[$count - 2]);
+    $splitVar = split("/", $file[$count - 2]);
     $taskId = $splitVar[0];
 
     $splitVar = split("_", $file[$count - 3]);
