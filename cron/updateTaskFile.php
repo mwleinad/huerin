@@ -26,6 +26,17 @@ $action = $splitargv[1];
 $filename = $splitargv[0];
 
 if ($action == "DELETE") {
+    $file = explode("/", $filename);
+    
+    $splitVar = split("_", $file[$count - 2]);
+    $taskId = $splitVar[0];
+
+    $splitVar = split("_", $file[$count - 3]);
+    $stepId = $splitVar[0];
+
+    $splitVar = split("_", $file[$count - 4]);
+    $instanciaServicioId = $splitVar[0];
+
     $query = "SELECT * FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
