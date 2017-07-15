@@ -41,7 +41,7 @@ else
 	$servicio->CreateServiceInstances();
 	//exit;
         
-        //$archivos->creaEstructura();
+        $archivos->creaEstructura();
 
 	$time = date("d-m-Y").' a las '.date('H:i:s');
 	$entry = "Cron ejecutado desde ".$timeStart." el $time Hrs.";

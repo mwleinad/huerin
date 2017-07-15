@@ -8,12 +8,22 @@ $ext = @strtolower(end(explode('.', $_GET["file"])));
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$db->setQuery("SELECT taskFile.*, tipoServicio.nombreServicio, task.nombreTask, contract.name, instanciaServicio.date FROM taskFile
+$db->setQuery("SELECT taskFile.*, 
+    tipoServicio.nombreServicio, 
+    task.nombreTask, 
+    contract.name, 
+    instanciaServicio.date, 
+    contract.customerId, 
+    customer.nameContact as clientName,
+    contract.rfc, 
+    tipoServicio.nombreServicio
+    FROM taskFile
     LEFT JOIN task ON task.taskId = taskFile.taskId
     LEFT JOIN instanciaServicio ON instanciaServicio.instanciaServicioId = taskFile.servicioId
     LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
     LEFT JOIN contract ON contract.contractId = servicio.contractId
     LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+    LEFT JOIN customer ON customer.customerId = contract.customerId
      WHERE taskFile.servicioId = ".$_GET["id"]);
 $files = $db->GetResult();
 
