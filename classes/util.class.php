@@ -1178,8 +1178,10 @@ class Util extends Error {
                 $file["nombreTask"] = str_replace(" ", "_", $file["nombreTask"]);
                 $file["date"] = str_replace("-", "_", $file["date"]);
                 $attachment = DOC_ROOT . "/tasks/" . $file["servicioId"] . "_" . $file["stepId"] . "_" . $file["taskId"] . "_" . $file["control"] . "_" . $file["version"] . "." . $file["ext"];
-                $name = $file["nombreTask"] . "_" . $file["date"] . "_" . $file["servicioId"] . "_" . $file["stepId"] . "_" . $file["taskId"] . "_" . $file["control"] . "_" . $file["version"] . "." . $file["ext"];
-                $zip->addFile($attachment, $name);
+                if(is_file($attachment)){
+                    $name = $file["nombreTask"] . "_" . $file["date"] . "_" . $file["servicioId"] . "_" . $file["stepId"] . "_" . $file["taskId"] . "_" . $file["control"] . "_" . $file["version"] . "." . $file["ext"];
+                    $zip->addFile($attachment, $name);
+                }
             }
 
             if (!is_dir($dirName)) {
