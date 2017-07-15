@@ -1168,7 +1168,7 @@ class Util extends Error {
         $this->changeNameDir($clientsArray);
         
         $dateExploded = explode("-", $files[0]['date']);
-        
+        $dateExploded[1] += 0;
         $dirName = FILES_ROOT . $files[0]['clientName'] . "_" . $files[0]['customerId'] . "/" . $files[0]['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $files[0]['servicioId'] . "_" . $files[0]['nombreServicio'];
 
         $zip = new ZipArchive();
