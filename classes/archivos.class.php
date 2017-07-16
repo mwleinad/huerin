@@ -76,11 +76,9 @@ class Archivos extends Servicio {
                         if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
                         }
-                        if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
-                            $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'] . "_" . $paso['stepId'] . "_" . $task['taskId'];
-                        }
                     }
                 }
+                
                 if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                     $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);

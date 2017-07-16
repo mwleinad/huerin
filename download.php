@@ -15,7 +15,7 @@ $ext = @strtolower(end(explode('.', $_GET["file"])));
  */
 $file = DOC_ROOT . "/" . $_GET["file"];
 
-if (is_file($file)){
+if (is_file($file)) {
     $mime = $mime_types[$ext];
     $file = explode("/", $_GET["file"]);
     header('Content-Disposition: attachment; filename=' . @end($file));
@@ -23,12 +23,12 @@ if (is_file($file)){
     //readfile(urldecode($_GET["file"]));
     $_GET["file"] = str_replace(WEB_ROOT, "", $_GET["file"]);
     $file = DOC_ROOT . "/" . $_GET["file"];
-}else{
+} else {
 
     $explodedRoute = explode("/", $_GET['file']);
     $fileNoExt = rtrim($explodedRoute[1], ".zip");
     $explodedFileName = explode("_", $explodedRoute[1]);
-    
+
     $query = "SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
     contract.name, 
@@ -50,9 +50,9 @@ if (is_file($file)){
     WHERE taskFile.stepId = " . $explodedFileName[1] . " AND taskFile.taskId = " . $explodedFileName[2] . " AND taskFile.servicioId = " . $explodedFileName[0];
 
     $db->setQuery($query);
-    
+
     $result = $db->getRow();
-    
+
     $fecha = $result['date'];
     $nombreCliente = str_replace(" ", "_", $result['clientName']);
     $nombreServicio = $result['nombreServicio'];
@@ -60,10 +60,10 @@ if (is_file($file)){
     $nombreTask = $result['nombreTask'];
     $dateExploded = explode("-", $result['date']);
     $dateExploded[1] += 0;
-    
-    $dirName = FILES_ROOT . $nombreCliente."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
-    
-    $zipPath = DOC_ROOT."/archivos/".$fecha."_".$nombreCliente."_".$nombreServicio."_".$nombreStep."_".$nombreTask.".zip";
+
+    $dirName = FILES_ROOT . $nombreCliente . "_" . $result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
+
+    $zipPath = DOC_ROOT . "/archivos/" . $fecha . "_" . $nombreCliente . "_" . $nombreServicio . "_" . $nombreStep . "_" . $nombreTask . ".zip";
     @unlink($zip);
 
     $zip = new ZipArchive();
@@ -71,7 +71,8 @@ if (is_file($file)){
     if ($res === TRUE) {
 
         if (!is_dir($dirName)) {
-            throw new Exception('Directory ' . $dirName . ' does not exist');
+            //throw new Exception('Directory ' . $dirName . ' does not exist');
+            return false;
         }
 
         $dirName = realpath($dirName);
@@ -112,10 +113,10 @@ if (is_file($file)){
     }
     $mime = $mime_types["zip"];
     $file = explode("/", $zip);
-    header('Content-Disposition: attachment; filename='.@end($file));
-    header('Content-type:'.$mime);
+    header('Content-Disposition: attachment; filename=' . @end($file));
+    header('Content-type:' . $mime);
     //readfile(urldecode($_GET["file"]));
-    $_GET["file"] = str_replace(WEB_ROOT,"", $_GET["file"]);
+    $_GET["file"] = str_replace(WEB_ROOT, "", $_GET["file"]);
 
     $file = $zip;
 }
