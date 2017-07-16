@@ -4,8 +4,8 @@ class Archivos extends Servicio {
 
     function creaEstructura() {
         
-        $clientsArray = array();
-        $result = $this->GetActiveGroupByClient();
+        //$clientsArray = array();
+        //$result = $this->GetActiveGroupByClient();
         
 //        foreach ($result as $client) {
 //            $clientsArray[$client['customerId']] = $client['clienteName'];
@@ -84,7 +84,7 @@ class Archivos extends Servicio {
                 if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                     $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);
-                    $this->Util()->DB()->GetResult();
+                    $this->Util()->DB()->UpdateData();
                 }
             }
         }
