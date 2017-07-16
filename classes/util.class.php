@@ -1164,12 +1164,13 @@ class Util extends Error {
     }
 
     function ZipTasks($zipPath, $files) {
-        $clientsArray = array($files[0]['customerId'] => $files[0]['clientName']);
-        $this->changeNameDir($clientsArray);
+//        $clientsArray = array($files[0]['customerId'] => $files[0]['clientName']);
+//        $this->changeNameDir($clientsArray);
+        $clientName = str_replace(" ", "_", $files[0]['clientName']);
         
         $dateExploded = explode("-", $files[0]['date']);
         $dateExploded[1] += 0;
-        $dirName = FILES_ROOT . $files[0]['customerId'] . "/" . $files[0]['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $files[0]['servicioId'] . "_" . $files[0]['nombreServicio'];
+        $dirName = FILES_ROOT . $clientName . "_" . $files[0]['customerId'] . "/" . $files[0]['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $files[0]['servicioId'] . "_" . $files[0]['nombreServicio'];
 
         $zip = new ZipArchive();
         $res = $zip->open($zipPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
@@ -1185,7 +1186,8 @@ class Util extends Error {
             }
 
             if (!is_dir($dirName)) {
-                throw new Exception('Directory ' . $dirName . ' does not exist');
+                //throw new Exception('Directory ' . $dirName . ' does not exist');
+                return false;
             }
 
             $dirName = realpath($dirName);
@@ -1225,7 +1227,7 @@ class Util extends Error {
             $zip->close();
         }
 
-        $this->changeNameDir($clientsArray, 1);
+        //$this->changeNameDir($clientsArray, 1);
 
         return file_exists($zipPath);
     }

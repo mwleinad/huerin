@@ -7,11 +7,11 @@ class Archivos extends Servicio {
         $clientsArray = array();
         $result = $this->GetActiveGroupByClient();
         
-        foreach ($result as $client) {
-            $clientsArray[$client['customerId']] = $client['clienteName'];
-        }
+//        foreach ($result as $client) {
+//            $clientsArray[$client['customerId']] = $client['clienteName'];
+//        }
         
-        $this->Util()->changeNameDir($clientsArray);
+        //$this->Util()->changeNameDir($clientsArray);
 
         $result = $this->GetActiveMio(); 
         
@@ -19,13 +19,13 @@ class Archivos extends Servicio {
 
         foreach ($result as $contract) {
             
-            if (!$this->createDir(FILES_ROOT . $contract['customerId'])) {
+            if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'])) {
                 echo "Error al crear directorio " . $contract['costumerId'] . " o directorio ya existente.<br>";
             }
             
-            $clientsArray[$contract['customerId']] = $contract['clienteName'];
+            //$clientsArray[$contract['customerId']] = $contract['clienteName'];
             
-            if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'])) {
+            if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'])) {
                 echo "Error al crear directorio " . $contract['rfc'] . " o directorio ya existente.<br>";
             }
 
@@ -34,20 +34,22 @@ class Archivos extends Servicio {
                 $instancia['dateExploded'][1] = $instancia['dateExploded'][1] + 0;
                 
                 $instancia['nombreServicio'] = trim($instancia['nombreServicio'], ".");
+                
+                $clientName = str_replace(" ", "_", $contract['clienteName']);
 
-                if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
+                if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
                     echo "Error al crear directorio año o directorio ya existente<br>";
                 }
 
-                if ($this->checkDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
-                    if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                         echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 } else {
-                    if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
                         echo "Error al crear directorio del mes " . $instancia['dateExploded'][1] . " o directorio ya existente<br>";
                     }
-                    if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                         echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 }
@@ -60,7 +62,7 @@ class Archivos extends Servicio {
                     
                     $paso['nombreStep'] = trim($paso['nombreStep'], ".");
                     
-                    if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'])) {
                         echo "Error al crear la carpeta del paso<br>";
                     }
 
@@ -72,15 +74,15 @@ class Archivos extends Servicio {
                         
                         $task['nombreTask'] = trim($task['nombreTask'],".");
                         
-                        if (!$this->createDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
+                        if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
                         }
-                        if ($this->checkDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
+                        if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             $file = $contract['rfc'] . "_" . $instancia['dateExploded'][0] . "_" . $instancia['dateExploded'][1] . "_" . $instancia['instanciaServicioId'] . "_" . $paso['stepId'] . "_" . $task['taskId'];
                         }
                     }
                 }
-                if ($this->checkDir(FILES_ROOT . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
                     $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
                     $this->Util()->DB()->setQuery($query);
                     $this->Util()->DB()->GetResult();
@@ -88,7 +90,7 @@ class Archivos extends Servicio {
             }
         }
         
-        $this->Util()->changeNameDir($clientsArray,1);
+        //$this->Util()->changeNameDir($clientsArray,1);
 
         return $result;
     }

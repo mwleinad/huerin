@@ -50,12 +50,6 @@ if ($action == "DELETE") {
         $workflow->DeleteControl($taskFile['taskFileId']);
     }
 } else {
-    $aux = explode("/", $filename);
-    $query = "SELECT customerId FROM customer WHERE customerId = '".$aux[3]."'";
-    $db->setQuery($query);
-    $result = $db->getResult();
-    
-    echo count($result);
     
     if (is_file($filename)) {
         $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
