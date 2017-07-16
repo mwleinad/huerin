@@ -26,6 +26,7 @@ if (is_file($file)){
 }else{
 
     $explodedRoute = explode("/", $_GET['file']);
+    $fileNoExt = rtrim($explodedRoute[1], ".zip");
     $explodedFileName = explode("_", $explodedRoute[1]);
     
     print_r($explodedRoute);
