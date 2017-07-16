@@ -27,7 +27,7 @@ if (is_file($file)){
     $explodedRoute = explode("/", $file);
     $explodedFileName = explode("_", $explodedRoute[1]);
     
-    print_r($explodedFileName);
+    print_r($explodedRoute);
 
     $db->setQuery("SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
