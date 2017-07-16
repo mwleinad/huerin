@@ -81,7 +81,7 @@ if ($action == "DELETE") {
         $splitVar = explode("_", $file[$count - 4]);
         $instanciaServicioId = $splitVar[0];
 
-        $query = "SELECT MAX(version) FROM taskFile WHERE 
+        echo $query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "' AND
