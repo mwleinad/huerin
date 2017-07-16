@@ -25,7 +25,7 @@ if (is_file($file)){
     $file = DOC_ROOT . "/" . $_GET["file"];
 }else{
 
-    $explodedRoute = explode("/", $file);
+    $explodedRoute = explode("/", $_GET['file']);
     $explodedFileName = explode("_", $explodedRoute[1]);
     
     print_r($explodedRoute);
