@@ -41,7 +41,7 @@ if (is_file($file)){
     contract.rfc, 
     tipoServicio.nombreServicio, 
     task.nombreTask, 
-    step.nombreStep,
+    step.nombreStep
     FROM taskFile
     LEFT JOIN task ON task.taskId = taskFile.taskId
     LEFT JOIN step ON step.stepId = taskFile.taskId
