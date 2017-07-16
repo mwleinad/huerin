@@ -30,8 +30,8 @@ if (is_file($file)){
     $explodedFileName = explode("_", $explodedRoute[1]);
     
     print_r($explodedRoute);
-
-    $db->setQuery("SELECT taskFile.*, 
+    
+    $query = "SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
     task.nombreTask, 
     contract.name, 
@@ -50,7 +50,9 @@ if (is_file($file)){
     LEFT JOIN contract ON contract.contractId = servicio.contractId
     LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
     LEFT JOIN customer ON customer.customerId = contract.customerId
-    WHERE taskFile.stepId = " . $explodedFileName[1] . " AND taskFile.taskId = " . $explodedFileName[2] . " AND taskFile.servicioId = " . $explodedFileName[0]);
+    WHERE taskFile.stepId = " . $explodedFileName[1] . " AND taskFile.taskId = " . $explodedFileName[2] . " AND taskFile.servicioId = " . $explodedFileName[0];
+
+    $db->setQuery($query);
     
     $result = $db->getRow();
     
