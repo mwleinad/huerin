@@ -43,7 +43,7 @@ if (is_file($file)){
     step.nombreStep
     FROM taskFile
     LEFT JOIN task ON task.taskId = taskFile.taskId
-    LEFT JOIN step ON step.stepId = taskFile.taskId
+    LEFT JOIN step ON step.stepId = taskFile.stepId
     LEFT JOIN instanciaServicio ON instanciaServicio.instanciaServicioId = taskFile.servicioId
     LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
     LEFT JOIN contract ON contract.contractId = servicio.contractId
