@@ -59,7 +59,11 @@
                   <img src="{$WEB_ROOT}/images/icons/activate.png" />
                   <span style="color:#093"><br />
                   {foreach from=$task.controlFileInfo item=file}
-                  Version: {$file.version} Fecha: {$file.date}<a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">Ver Archivo</a><br />
+                      {if($file.uploaded === null}
+                        Version: {$file.version} Fecha: {$file.date}<a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.zip" target="_blank">Ver Archivo</a><br />
+                      {else}
+                        Version: {$file.version} Fecha: {$file.date}<a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">Ver Archivo</a><br />
+                      {/if}
                   {/foreach}	</span>
                 {/if}
 							{else}
