@@ -29,9 +29,7 @@ if (is_file($file)){
     $fileNoExt = rtrim($explodedRoute[1], ".zip");
     $explodedFileName = explode("_", $explodedRoute[1]);
     
-    print_r($explodedRoute);
-    
-    echo $query = "SELECT taskFile.*, 
+    $query = "SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
     contract.name, 
     instanciaServicio.date, 
