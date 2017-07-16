@@ -51,7 +51,7 @@ if ($action == "DELETE") {
     }
 } else {
     $aux = explode("/", $filename);
-    $query = "SELECT customerId FROM customer WHERE customerId = ".$aux[count($aux)-1];
+    $query = "SELECT customerId FROM customer WHERE customerId = ".$aux[3];
     $db->setQuery($query);
     $result = $db->getResult();
     
