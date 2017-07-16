@@ -61,7 +61,7 @@
                   <span style="color:#093"><br />
                   {foreach from=$task.controlFileInfo item=file}
                   Version: {$file.version} Fecha: {$file.date}
-                  {if $file.version === null}
+                  {if $file.version === NULL}
                       <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
                   {else}
                       <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.zip" target="_blank">&raquo; Ver Archivo</a>
