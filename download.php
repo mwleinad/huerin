@@ -41,7 +41,7 @@ if (is_file($file)){
     contract.rfc, 
     tipoServicio.nombreServicio, 
     task.nombreTask, 
-    step.nombreStep 
+    step.nombreStep,
     FROM taskFile
     LEFT JOIN task ON task.taskId = taskFile.taskId
     LEFT JOIN step ON step.stepId = taskFile.taskId
@@ -59,8 +59,9 @@ if (is_file($file)){
     $nombreServicio = $result['nombreServicio'];
     $nombreStep = $result['nombreStep'];
     $nombreTask = $result['nombreTask'];
+    $dateExploded = explode("-", $result['date']);
     
-    $dirName = FILES_ROOT . $result['clientName']."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['instanciaServicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
+    $dirName = FILES_ROOT . $result['clientName']."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
     
     $zipPath = DOC_ROOT."/archivos/".$fecha."_".$nombreCliente."_".$nombreServicio."_".$nombreStep."_".$nombreTask.".zip";
     @unlink($zip);
