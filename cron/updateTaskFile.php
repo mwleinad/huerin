@@ -26,6 +26,7 @@ $action = $splitargv[1];
 $filename = $splitargv[0];
 
 if ($action == "DELETE") {
+    echo "DELETE";
     $file = explode("/", $filename);
     $count = count($file);
 
@@ -49,6 +50,7 @@ if ($action == "DELETE") {
         $workflow->DeleteControl($taskFile['taskFileId']);
     }
 } else {
+    echo "OTRO UNO";
     if (is_file($filename)) {
         $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
