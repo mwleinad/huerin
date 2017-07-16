@@ -62,7 +62,7 @@ if (is_file($file)) {
     $dateExploded[1] += 0;
 
     echo $dirName = FILES_ROOT . $nombreCliente . "_" . $result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
-
+exit(0);
     $zipPath = DOC_ROOT . "/archivos/" . $fecha . "_" . $nombreCliente . "_" . $nombreServicio . "_" . $nombreStep . "_" . $nombreTask . ".zip";
     @unlink($zip);
 
