@@ -61,10 +61,9 @@ if (is_file($file)) {
     $dateExploded = explode("-", $result['date']);
     $dateExploded[1] += 0;
 
-    echo $dirName = FILES_ROOT . $nombreCliente . "_" . $result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
-exit(0);
+    $dirName = FILES_ROOT . $nombreCliente . "_" . $result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
     $zipPath = DOC_ROOT . "/archivos/" . $fecha . "_" . $nombreCliente . "_" . $nombreServicio . "_" . $nombreStep . "_" . $nombreTask . ".zip";
-    @unlink($zip);
+    @unlink($zipPath);
 
     $zip = new ZipArchive();
     $res = $zip->open($zipPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
@@ -112,13 +111,13 @@ exit(0);
         $zip->close();
     }
     $mime = $mime_types["zip"];
-    $file = explode("/", $zip);
+    $file = explode("/", $zipPath);
     header('Content-Disposition: attachment; filename=' . @end($file));
     header('Content-type:' . $mime);
     //readfile(urldecode($_GET["file"]));
     $_GET["file"] = str_replace(WEB_ROOT, "", $_GET["file"]);
 
-    $file = $zip;
+    $file = $zipPath;
 }
 
 readfile($file);
