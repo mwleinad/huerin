@@ -33,7 +33,6 @@ if (is_file($file)){
     
     echo $query = "SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
-    task.nombreTask, 
     contract.name, 
     instanciaServicio.date, 
     contract.customerId, 
