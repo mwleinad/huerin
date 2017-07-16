@@ -23,7 +23,6 @@ $argv = $_SERVER['argv'];
 $splitargv = explode("***", $argv[1]);
 
 $action = $splitargv[1];
-echo "****".$filename = $splitargv[0];echo "***";
 
 if ($action == "DELETE") {
     echo "DELETE";
@@ -50,7 +49,13 @@ if ($action == "DELETE") {
         $workflow->DeleteControl($taskFile['taskFileId']);
     }
 } else {
-    echo "OTRO UNO";
+    $aux = explode("/", $filename);
+    $query = "SELECT customerId FROM customer WHERE customerId = ".$aux[count($aux)-1];
+    $db->setQuery($query);
+    $result = $db->getResult();
+    
+    echo count($result);
+    
     if (is_file($filename)) {
         $fileUpdated = date("Y/m/d H:i:s.", filemtime($filename));
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
