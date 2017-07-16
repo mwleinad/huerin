@@ -31,7 +31,7 @@ if (is_file($file)){
     
     print_r($explodedRoute);
     
-    $query = "SELECT taskFile.*, 
+    echo $query = "SELECT taskFile.*, 
     tipoServicio.nombreServicio, 
     task.nombreTask, 
     contract.name, 
