@@ -18,9 +18,10 @@ class Archivos extends Servicio {
         $clientsArray = array();
 
         foreach ($result as $contract) {
+            $clientName = str_replace(" ", "_", $contract['clienteName']);
             
             if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'])) {
-                echo "Error al crear directorio " . $contract['costumerId'] . " o directorio ya existente.<br>";
+                echo "Error al crear directorio " . $contract['customerId'] . " o directorio ya existente.<br>";
             }
             
             //$clientsArray[$contract['customerId']] = $contract['clienteName'];
@@ -34,8 +35,6 @@ class Archivos extends Servicio {
                 $instancia['dateExploded'][1] = $instancia['dateExploded'][1] + 0;
                 
                 $instancia['nombreServicio'] = trim($instancia['nombreServicio'], ".");
-                
-                $clientName = str_replace(" ", "_", $contract['clienteName']);
 
                 if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
                     echo "Error al crear directorio año o directorio ya existente<br>";
@@ -184,9 +183,7 @@ class Archivos extends Servicio {
                                         contract.encargadoCuenta, 
                                         contract.responsableCuenta, 
                                         responsableCuenta.email AS responsableCuentaEmail, 
-                                        responsableCuenta.name AS responsableCuentaName, 
-                                        customer.customerId, 
-                                        customer.nameContact 
+                                        responsableCuenta.name AS responsableCuentaName 
                                     FROM servicio 
                                     LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
                                     LEFT JOIN contract ON contract.contractId = servicio.contractId
