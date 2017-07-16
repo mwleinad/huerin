@@ -61,7 +61,7 @@ if (is_file($file)){
     $dateExploded = explode("-", $result['date']);
     $dateExploded[1] += 0;
     
-    $dirName = FILES_ROOT . $result['clientName']."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
+    $dirName = FILES_ROOT . $nombreCliente."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
     
     $zipPath = DOC_ROOT."/archivos/".$fecha."_".$nombreCliente."_".$nombreServicio."_".$nombreStep."_".$nombreTask.".zip";
     @unlink($zip);
