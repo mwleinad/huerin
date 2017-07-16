@@ -54,7 +54,7 @@ if (is_file($file)){
     $result = $db->getRow();
     
     $fecha = $result['date'];
-    $nombreCliente = $result['clientName'];
+    $nombreCliente = str_replace(" ", "_", $result['clientName']);
     $nombreServicio = $result['nombreServicio'];
     $nombreStep = $result['nombreStep'];
     $nombreTask = $result['nombreTask'];
