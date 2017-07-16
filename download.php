@@ -60,6 +60,7 @@ if (is_file($file)){
     $nombreStep = $result['nombreStep'];
     $nombreTask = $result['nombreTask'];
     $dateExploded = explode("-", $result['date']);
+    $dateExploded[1] += 0;
     
     $dirName = FILES_ROOT . $result['clientName']."_".$result['customerId'] . "/" . $result['rfc'] . "/" . $dateExploded[0] . "/" . $dateExploded[1] . "/" . $result['servicioId'] . "_" . $result['nombreServicio'] . "/" . $result['stepId'] . "_" . $result['nombreStep'] . "/" . $result['taskId'] . "_" . $result['nombreTask'];
     
