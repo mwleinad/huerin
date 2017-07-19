@@ -96,7 +96,7 @@ class Archivos extends Servicio {
         $validate = false;
 
         if (!file_exists($value)) {
-            mkdir($value);
+            mkdir($value,0777);
             $validate = true;
         }
 
