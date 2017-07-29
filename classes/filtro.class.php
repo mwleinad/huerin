@@ -60,23 +60,25 @@ class Filtro extends Util
 	
   public function UsuariosConPermiso($permisos, $extraId)
   {
-    $permisos = explode("-", $permisos);
+		$permisos = explode("-", $permisos);
 
-    foreach ($permisos as $permiso) 
-		{
-      list($depa, $resp) = explode(",", $permiso);
-      if ($resp) 
-			{
-        $misPermisos[$depa] = $resp;
-      }
-    }
+		foreach ($permisos as $permiso) {
+			list($depa, $resp) = explode(",", $permiso);
 
-    if (count($misPermisos) == 0) 
-		{
-      $misPermisos[1] = $extraId;
-    }
+			if($depa == 25) {
+				continue;
+			}
 
-    return $misPermisos;
+			if ($resp) {
+				$misPermisos[$depa] = $resp;
+			}
+		}
+
+		if (count($misPermisos) == 0) {
+		  $misPermisos[1] = $extraId;
+		}
+
+		return $misPermisos;
 
   }
 		

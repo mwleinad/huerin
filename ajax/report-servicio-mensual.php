@@ -28,7 +28,10 @@ switch($_POST["type"])
 			if(!$_POST["responsableCuenta"]){
 				$page = "report-servicio";
 			}
-			
+
+	echo "<pre>";print_r($_POST);exit;
+
+
 			$deep = ($_POST['deep']) ? "subordinado" : "propio";
 					
 			if($infoUser['departamentoId'] == "1"){

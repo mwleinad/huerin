@@ -1465,17 +1465,6 @@ class Contract extends Main
 			$respCuenta = $formValues['respCuenta'];
 		}
 
-/*		$sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
-				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
-				personal.jefeGerente, personal.jefeContador, customer.nameContact
-				FROM contract
-				LEFT JOIN customer ON customer.customerId = contract.customerId
-				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
-				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
-				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
-				WHERE 1 ".$sqlFilter."
-				ORDER BY contract.name ASC";
-*/
 		 $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 				personal.jefeGerente, personal.jefeContador, customer.nameContact
@@ -1539,7 +1528,9 @@ class Contract extends Main
 		$subordinados = $personal->Subordinados();
 
 		//Array ( [0] => Array ( [personalId] => 168 ) [1] => Array ( [personalId] => 141 ) [2] => Array ( [personalId] => 153 ) [3] => Array ( [personalId] => 159 ) [4] => Array ( [personalId] => 163 ) [5] => Array ( [personalId] => 167 ) [6] => Array ( [personalId] => 170 ) [7] => Array ( [personalId] => 183 ) )
-		//print_r($subordinados);
+/*		echo "<pre>";
+        print_r($subordinados);
+        exit;*/
 		//$subordinados = array(0 => array("personalId" => 153));
 //		$contratos = array();
 
@@ -2834,19 +2825,27 @@ class Contract extends Main
   */
   public function UsuariosConPermiso($permisos, $extraId)
   {
-    $permisos = explode("-", $permisos);
+        $permisos = explode("-", $permisos);
 
-    foreach ($permisos as $permiso) {
-      list($depa, $resp) = explode(",", $permiso);
-      if ($resp) {
-        $misPermisos[$depa] = $resp;
-      }
-    }
+        foreach ($permisos as $permiso) {
+            list($depa, $resp) = explode(",", $permiso);
 
-    if (count($misPermisos) == 0) {
-      $misPermisos[1] = $extraId;
-    }
-    return $misPermisos;
+            if($depa == 25) {
+                continue;
+            }
+
+            if ($resp) {
+                $misPermisos[$depa] = $resp;
+            }
+            if ($resp) {
+                $misPermisos[$depa] = $resp;
+            }
+        }
+
+        if (count($misPermisos) == 0) {
+          $misPermisos[1] = $extraId;
+        }
+        return $misPermisos;
 
   }
 

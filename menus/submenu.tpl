@@ -32,7 +32,7 @@
 				
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
                 <span>Deptos</span></a></li>
-                
+
 
             
             {/if}

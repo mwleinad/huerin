@@ -32,6 +32,7 @@ switch($_POST["type"])
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
+	//echo "<pre>";print_r($_POST);exit;
 
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 
@@ -40,8 +41,7 @@ switch($_POST["type"])
 			$db->setQuery($sql);
 			$db->UpdateData();
 
-			$contracts = array();
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Gerente'){
+			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
 
 				//Si seleccionaron TODOS
 				if($formValues['respCuenta'] == 0){

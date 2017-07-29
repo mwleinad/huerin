@@ -34,7 +34,7 @@
 		foreach($contracts as $keyContract => $myContract)
 		{
 			$usuario = array();
-			$conPermiso = $contract->UsuariosConPermiso($myContract['permisos'], $myContract["responsableCuenta"]);
+			$conPermiso = $filtro->UsuariosConPermiso($myContract['permisos'], $myContract["responsableCuenta"]);
 			foreach($conPermiso as $key => $value)
 			{
 				$util->DB()->setQuery("SELECT name FROM personal
@@ -56,6 +56,10 @@ Subordinados de <?php echo $miUsuario?> (Personas que deben poder ver la razon s
 <tr>
 	<td>Id  </td>
 	<td>Nombre  </td>
+	<td>Reporta a</td>
+	<td>Reporta a  </td>
+	<td>Reporta a  </td>
+	<td>Reporta a  </td>
 </tr>
 <?php
 foreach($losSubordinados as $key => $subordinado)
@@ -63,7 +67,21 @@ foreach($losSubordinados as $key => $subordinado)
 ?>
 	<tr>
   	<td>    <?php echo $subordinado["id"] ?>     </td>
-  	<td>    <?php echo $subordinado["usuario"] ?>     </td>
+		<?php
+		$jefes  = $personal->jefes($subordinado['id']);
+		foreach($jefes as $jefe) {
+			?>
+		<td>
+			<?php
+			$sql = "SELECT * FROM personal
+						WHERE personalId = '".$jefe."'";
+			$db->setQuery($sql);
+			$res = $db->GetRow();
+
+			echo $res["name"] ?>     </td>
+
+		<?php }
+		?>
   </tr>
 <?php		
 }
