@@ -83,25 +83,16 @@ if ($action == "DELETE") {
         $splitVar = explode("_", $file[$count - 4]);
         $instanciaServicioId = $splitVar[0];
 
-        echo $query = "SELECT MAX(version) FROM taskFile WHERE 
+        $query = "SELECT MAX(version) FROM taskFile WHERE 
                         servicioId = " . $instanciaServicioId . " AND
                         stepId = '" . $stepId . "' AND
                         taskId = '" . $taskId . "' AND
                         control = '1' AND
-                        uploaded = '" . $fileUpdated . "'";
+                        uploaded IS NOT NULL";
         $db->setQuery($query);
         $version = $db->GetSingle();
 
         if ($version == 0) {
-
-            $query = "SELECT MAX(version) FROM taskFile WHERE 
-                        servicioId = " . $instanciaServicioId . " AND
-                        stepId = '" . $stepId . "' AND
-                        taskId = '" . $taskId . "' AND
-                        control = '1'";
-            $db->setQuery($query);
-
-            $version = $db->GetSingle() + 1;
 
             $query = "INSERT INTO `taskFile` 
             (
@@ -129,11 +120,11 @@ if ($action == "DELETE") {
             );";
             $db->setQuery($query);
             $db->InsertData();
+            
+            $result = $workflow->StatusById($instanciaServicioId);
+            $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
+            $db->UpdateData();
         }
-
-        $result = $workflow->StatusById($instanciaServicioId);
-        $db->setQuery("UPDATE instanciaServicio SET class = '" . $result["class"] . "' WHERE instanciaServicioId = '" . $instanciaServicioId . "'");
-        $db->UpdateData();
     }
 }
 
