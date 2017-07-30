@@ -93,6 +93,8 @@ if ($action == "DELETE") {
         $version = $db->GetSingle();
 
         if ($version == 0) {
+            
+            $version += 1;
 
             $query = "INSERT INTO `taskFile` 
             (
