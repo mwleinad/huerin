@@ -1428,6 +1428,24 @@ class Contract extends Main
 
   }//BuscarContractOld
 
+    private function contratWithPermission($contrato, $respCuenta, $skip){
+        $split = split('-',$contrato['permisos']);
+
+        foreach($split as $sp){
+            $split2 = split(',',$sp);
+
+            //Se agrego dep 25 que ya no existe
+            if($split2[0] == 25) {
+                continue;
+            }
+
+            if($split2[1] == $respCuenta || $skip){
+                return true;
+            }
+        }
+        return false;
+    }
+
 	public function BuscarContract($formValues, $activos = false){
 
 		global $personal;
@@ -1482,22 +1500,11 @@ class Contract extends Main
 
 		foreach($resContratos as $res){
 
-			$split = split('-',$res['permisos']);
+            $encontrado = $this->contratWithPermission($res, $respCuenta, $skip);
 
-			$encontrado = false;
-			foreach($split as $sp){
-
-				$split2 = split(',',$sp);
-
-				if($split2[1] == $respCuenta || $skip){
-					$encontrado = true;
-					break;
-				}
-
-			}
-
-			if($encontrado == false)
-				continue;
+			if($encontrado == false) {
+                continue;
+            }
 
 			//Checamos Servicios
 
@@ -1527,13 +1534,6 @@ class Contract extends Main
 		$personal->setPersonalId($respCuenta);
 		$subordinados = $personal->Subordinados();
 
-		//Array ( [0] => Array ( [personalId] => 168 ) [1] => Array ( [personalId] => 141 ) [2] => Array ( [personalId] => 153 ) [3] => Array ( [personalId] => 159 ) [4] => Array ( [personalId] => 163 ) [5] => Array ( [personalId] => 167 ) [6] => Array ( [personalId] => 170 ) [7] => Array ( [personalId] => 183 ) )
-/*		echo "<pre>";
-        print_r($subordinados);
-        exit;*/
-		//$subordinados = array(0 => array("personalId" => 153));
-//		$contratos = array();
-
 			$sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 					contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 					personal.jefeGerente, personal.jefeContador, customer.nameContact
@@ -1550,27 +1550,15 @@ class Contract extends Main
 		foreach($subordinados as $sub){
 			$personalId = $sub['personalId'];
 
-
 			foreach($resContratos as $res){
 
-				$split = split('-',$res['permisos']);
+                $encontrado = $this->contratWithPermission($res, $personalId, $skip);
 
-				$encontrado = false;
-				foreach($split as $sp){
+                if($encontrado == false) {
+                    continue;
+                }
 
-					$split2 = split(',',$sp);
-
-					if($split2[1] == $personalId){
-						$encontrado = true;
-						break;
-					}
-
-				}
-
-				if($encontrado == false)
-					continue;
 				//Checamos Servicios
-
 				$sql = "SELECT * FROM servicio
 						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 						WHERE contractId = '".$res["contractId"]."'

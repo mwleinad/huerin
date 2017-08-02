@@ -68,8 +68,7 @@ switch($_POST["type"])
 			}else{
 				$contracts = $contract->BuscarContract($formValues, true);
 			}//else
-			//echo count($contracts);
-			//print_r($contracts);
+
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
@@ -109,8 +108,7 @@ switch($_POST["type"])
 				
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
-					//echo "jere2";
-										
+
 					//Checamos Permisos
 					$resPermisos = explode('-',$con['permisos']);
 					foreach($resPermisos as $res){
@@ -118,7 +116,7 @@ switch($_POST["type"])
 						
 						$idPersonal = $value[1];
 						$idDepto = $value[0];
-						
+
 						$personal->setPersonalId($idPersonal);
 						$nomPers = $personal->GetDataReport();
 						
