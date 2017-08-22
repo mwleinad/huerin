@@ -61,9 +61,15 @@
                   <span style="color:#093"><br />
                   {foreach from=$task.controlFileInfo item=file}
                   Version: {$file.version} Fecha: {$file.date}
-                  <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                  {if $file.uploaded === null}
+                      <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                  {else}
+                      <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.zip" target="_blank">&raquo; Ver Archivo</a>
+                  {/if}
                   {if $tipoPersonal == "Asistente" || $tipoPersonal == "Socio" || $tipoPersonal == "Gerente"}
-									<span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
+                      {if $file.uploaded === null}
+		      <span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
+                      {/if}
                   {/if}
                   <br />
                   {/foreach}	</span>

@@ -264,7 +264,7 @@ class Servicio extends Contract
 		  $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 		
 		//$debug = "servicioId = 3594 AND ";
-		$sql = "SELECT servicioId,  customer.nameContact AS clienteName, 
+		$sql = "SELECT servicioId,  customer.nameContact AS clienteName, contract.rfc,
 				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, 
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
@@ -277,7 +277,7 @@ class Servicio extends Contract
 				LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
 				WHERE ".$debug." servicio.status = 'activo' AND customer.active = '1'
 				".$sqlCustomer.$sqlContract.$addNomina.$depto.$sqlRespCta." 					
-				ORDER BY clienteName, razonSocialName, nombreServicio ASC";						
+				ORDER BY clienteName, razonSocialName, nombreServicio ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
 

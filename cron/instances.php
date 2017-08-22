@@ -40,6 +40,8 @@ else
 	array_map('unlink', glob($mask));
 	$servicio->CreateServiceInstances();
 	//exit;
+        
+        $archivos->creaEstructura();
 
 	$time = date("d-m-Y").' a las '.date('H:i:s');
 	$entry = "Cron ejecutado desde ".$timeStart." el $time Hrs.";

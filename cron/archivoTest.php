@@ -1,5 +1,5 @@
 <?php
-//exit;
+
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
@@ -14,7 +14,8 @@ else
 	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
 
-	define('DOC_ROOT', $docRoot);
+	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+	define('DOC_ROOT', $docRoot."/dev/huerin");
 
 	session_save_path("/tmp");
 

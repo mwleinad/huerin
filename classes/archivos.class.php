@@ -2,63 +2,92 @@
 
 class Archivos extends Servicio {
 
-    private $FILES_ROOT = '/var/www/sistema/';
-
     function creaEstructura() {
+        
+        //$clientsArray = array();
+        //$result = $this->GetActiveGroupByClient();
+        
+//        foreach ($result as $client) {
+//            $clientsArray[$client['customerId']] = $client['clienteName'];
+//        }
+        
+        //$this->Util()->changeNameDir($clientsArray);
 
-        //$query = 'SELECT * FROM `contract` WHERE activo = 1 AND rfc LIKE "MEAF870926%"';
-        //$this->Util()->DB()->setQuery($query);
-        //$result = $this->Util()->DB()->GetResult();
-
-        $result = $this->GetActiveMio(1274);
+        $result = $this->GetActiveMio(); 
+        
+        $clientsArray = array();
 
         foreach ($result as $contract) {
-            if (!$this->createDir($this->FILES_ROOT . $contract['rfc'])) {
+            $clientName = str_replace(" ", "_", $contract['clienteName']);
+            
+            if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'])) {
+                echo "Error al crear directorio " . $contract['customerId'] . " o directorio ya existente.<br>";
+            }
+            
+            //$clientsArray[$contract['customerId']] = $contract['clienteName'];
+            
+            if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'])) {
                 echo "Error al crear directorio " . $contract['rfc'] . " o directorio ya existente.<br>";
             }
 
             foreach ($contract['instancias'] as $instancia) {
+
+                $instancia['dateExploded'][1] = $instancia['dateExploded'][1] + 0;
                 
-                $instancia['dateExploded'][1] = $instancia['dateExploded'][1]+0;
-                
-                if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
+                $instancia['nombreServicio'] = trim($instancia['nombreServicio'], ".");
+
+                if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0])) {
                     echo "Error al crear directorio año o directorio ya existente<br>";
                 }
-                
-                if ($this->checkDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] )) {
-                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
-                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."<br>";
+
+                if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 } else {
-                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1])) {
                         echo "Error al crear directorio del mes " . $instancia['dateExploded'][1] . " o directorio ya existente<br>";
                     }
-                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
-                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."<br>";
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                        echo "Error al crear la carpeta del servicio " . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "<br>";
                     }
                 }
-                
-                $query = "SELECT * FROM step WHERE servicioId = ".$instancia['tipoServicioId'];
+
+                $query = "SELECT * FROM step WHERE servicioId = " . $instancia['tipoServicioId'];
                 $this->Util()->DB()->setQuery($query);
                 $pasos = $this->Util()->DB()->GetResult();
-                
-                foreach($pasos as $paso){
-                    if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."/".$paso['stepId']."_".$paso['nombreStep'])) {
+
+                foreach ($pasos as $paso) {
+                    
+                    $paso['nombreStep'] = trim($paso['nombreStep'], ".");
+                    
+                    if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'])) {
                         echo "Error al crear la carpeta del paso<br>";
                     }
-                    
+
                     $query = "SELECT * FROM task WHERE stepId = " . $paso['stepId'];
                     $this->Util()->DB()->setQuery($query);
                     $tasks = $this->Util()->DB()->GetResult();
 
                     foreach ($tasks as $task) {
-                        if (!$this->createDir($this->FILES_ROOT . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio']."/".$paso['stepId']."_".$paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
+                        
+                        $task['nombreTask'] = trim($task['nombreTask'],".");
+                        
+                        if (!$this->createDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'] . "/" . $paso['stepId'] . "_" . $paso['nombreStep'] . "/" . $task['taskId'] . "_" . $task['nombreTask'])) {
                             echo "Error al crear directorio de la tarea o directorio ya creado<br>";
                         }
                     }
                 }
+                
+                if ($this->checkDir(FILES_ROOT . $clientName . "_" . $contract['customerId'] . "/" . $contract['rfc'] . "/" . $instancia['dateExploded'][0] . "/" . $instancia['dateExploded'][1] . "/" . $instancia['instanciaServicioId'] . "_" . $instancia['nombreServicio'])) {
+                    $query = "UPDATE instanciaServicio SET carpeta = 1 WHERE instanciaServicioId = " . $instancia['instanciaServicioId'];
+                    $this->Util()->DB()->setQuery($query);
+                    $this->Util()->DB()->UpdateData();
+                }
             }
         }
+        
+        //$this->Util()->changeNameDir($clientsArray,1);
 
         return $result;
     }
@@ -67,7 +96,7 @@ class Archivos extends Servicio {
         $validate = false;
 
         if (!file_exists($value)) {
-            mkdir($value);
+            mkdir($value,0777);
             $validate = true;
         }
 
@@ -81,6 +110,42 @@ class Archivos extends Servicio {
         }
 
         return false;
+    }
+    
+    public function GetActiveGroupByClient($customer = 0, $contract = 0, $rfc = ""){
+        global $months, $User;
+
+        if ($customer != 0) {
+            $sqlCustomer = " AND customer.customerId = '" . $customer . "'";
+        }
+
+        if ($contract != 0) {
+            $sqlContract = " AND contract.contractId = '" . $contract . "'";
+        }
+
+        if (strlen($rfc) > 3 && $customer == 0 && $contract == 0) {
+            $sqlContract = " AND (customer.nameContact LIKE '%" . $rfc . "%' OR contract.name LIKE '%" . $rfc . "%')";
+        }
+
+        if ($User["subRoleId"] == "Nomina") {
+            $addNomina = " AND servicio.tipoServicioId IN (" . SERVICIOS_NOMINA . ")";
+        }
+
+
+        $this->Util()->DB()->setQuery("SELECT customer.nameContact AS clienteName,
+                                        customer.customerId
+                                    FROM servicio 
+                                    LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                                    LEFT JOIN contract ON contract.contractId = servicio.contractId
+                                    LEFT JOIN customer ON customer.customerId = contract.customerId
+                                    LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
+                                    WHERE servicio.status = 'activo' AND customer.active = '1'
+                                    " . $sqlCustomer . $sqlContract . $addNomina . "					
+                                    GROUP BY customerId");
+
+        $result = $this->Util()->DB()->GetResult();
+        
+        return $result;
     }
 
     public function GetActiveMio($customer = 0, $contract = 0, $rfc = "") {
@@ -103,15 +168,29 @@ class Archivos extends Servicio {
         }
 
 
-        $this->Util()->DB()->setQuery("SELECT rfc, servicioId,  customer.nameContact AS clienteName, contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad, servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName, customer.customerId, customer.nameContact FROM servicio 
-			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			LEFT JOIN contract ON contract.contractId = servicio.contractId
-			LEFT JOIN customer ON customer.customerId = contract.customerId
-			LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-			WHERE servicio.status = 'activo' AND customer.active = '1'
-			" . $sqlCustomer . $sqlContract . $addNomina . "					
-			ORDER BY clienteName, razonSocialName, nombreServicio ASC");
-        //$this->Util()->DB()->query;
+        $this->Util()->DB()->setQuery("SELECT rfc, 
+                                        servicioId, 
+                                        customer.nameContact AS clienteName,
+                                        customer.customerId, 
+                                        contract.name AS razonSocialName, 
+                                        nombreServicio, 
+                                        servicio.costo, 
+                                        inicioOperaciones, 
+                                        periodicidad, 
+                                        servicio.contractId, 
+                                        contract.encargadoCuenta, 
+                                        contract.responsableCuenta, 
+                                        responsableCuenta.email AS responsableCuentaEmail, 
+                                        responsableCuenta.name AS responsableCuentaName 
+                                    FROM servicio 
+                                    LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                                    LEFT JOIN contract ON contract.contractId = servicio.contractId
+                                    LEFT JOIN customer ON customer.customerId = contract.customerId
+                                    LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
+                                    WHERE servicio.status = 'activo' AND customer.active = '1'
+                                    " . $sqlCustomer . $sqlContract . $addNomina . "					
+                                    ORDER BY customerId, clienteName, razonSocialName, nombreServicio ASC");
+
         $result = $this->Util()->DB()->GetResult();
         foreach ($result as $key => $value) {
             $user = new User;
@@ -137,7 +216,7 @@ class Archivos extends Servicio {
             $query = "SELECT instanciaServicioId, instanciaServicio.servicioId, date, servicio.tipoServicioId, tipoServicio.nombreServicio FROM instanciaServicio
                         LEFT JOIN servicio ON(servicio.servicioId = instanciaServicio.servicioId)
                         LEFT JOIN tipoServicio ON(tipoServicio.tipoServicioId = servicio.tipoServicioId)
-			WHERE instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
+			WHERE date > '2016-12-31' AND carpeta = 0 AND instanciaServicio.servicioId = '" . $value["servicioId"] . "'	
 			ORDER BY date DESC";
 
             $this->Util()->DB()->setQuery($query);
