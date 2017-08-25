@@ -21,7 +21,20 @@ switch($_POST["type"])
 			echo "ok";
 		
 		break;
-		
+	case "searchNivelUno":
+        $year = $_POST['year'];
+        $formValues['subordinados'] = $_POST['deep'];
+        $formValues['respCuenta'] = $_POST['responsableCuenta'];
+        $formValues['departamentoId'] = $_POST["departamentoId"];
+        $formValues['cliente'] = $_POST["rfc"];
+        $formValues['atrasados'] = $_POST["atrasados"];
+
+        $sortedArray = $contract->BuscarGroupCliente($formValues,true);
+        $smarty->assign("cleanedArray", $sortedArray);
+        $smarty->assign("DOC_ROOT", DOC_ROOT);
+        $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-level-one.tpl');
+
+        break;
 	case "search":
 	case "sendEmail":
 	case "graph":
