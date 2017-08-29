@@ -211,8 +211,6 @@ switch($_POST["type"])
                 }
             }
         }*/
-		$idCustomers = array();
-		$customerRazones = array();
 		$newArray = array();
 
 		foreach ($resClientes as $key => $cliente)
@@ -221,6 +219,7 @@ switch($_POST["type"])
 		    //$customerRazones[$customerId]["razones"] = array();
 
             //$cliente["razones"] = array();
+			$detailRazon =array();
             $cad =  array();
             $cntXrzn=  array();
 			foreach($cliente["contracts"] as $keyContract => $contract){
@@ -230,28 +229,77 @@ switch($_POST["type"])
 				   $cntXrzn[$razon][] =  $contract;
 				}else{
 				   $cad[]= $razon;
+				   $cr['nombreRazon'] = $contract['name'];
+				   $cr['rfc'] = $contract['rfc'];
+				   $detailRazon [] = $cr;
 				   $cntXrzn[$razon][] = $contract;
 				}
 			}
 		  $newR =  array();
-		  foreach($cad as $rn){
-			 $newR[$rn] = $cntXrzn[$rn];
+		  foreach($detailRazon as $rn){
+		  	 $cad2["nombreRazon"]=$rn['nombreRazon'];
+		  	 $cad2["rfc"]=$rn['rfc'];
+		  	 $cad2["totalContract"] = count($cntXrzn[$rn['nombreRazon']]);
+		  	 $cad2["contractXrazon"] = $cntXrzn[$rn['nombreRazon']];
+			 $newR[]= $cad2;
 		  }
 		  $cliente["razones"] = $newR;
 		  unset($cliente["contracts"]);
 		  $newArray[] = $cliente;
 		}
+//		echo "<pre>";
+//		print_r($newArray);
+//		exit;
 
-		/*foreach($newArray as $key => $cliente)
+		$groupService = array();
+		$newCustomer = array();
+
+		foreach($newArray as $key => $cliente)
 		{
-			foreach($cliente["razones"] as $ky =>$razon)
+			$serviciosPorRazon =  array();
+			foreach($cliente["razones"] as $ky => $razon)
 			{
-               foreach($razon["instanciasServicio"])
+				$servXrzn = array();
+				$insXserv =  array();
+				$arrayServicios = array();
+				$detailServices = array();
+				foreach($razon["contractXrazon"] as $ky2 => $val2)
+                {
+                  foreach($val2['instanciasServicio'] as $ky3 => $val3)
+				  {
+				  	$tipoId =  $val3["tipoServicioId"];
+				  	if(in_array($tipoId,$arrayServicios))
+					{
+                        $insXserv[$tipoId][]= $val3;
+					}
+					else{
+                        $arrayServicios [] =  $tipoId;
+                        $cd["nombreServicio"] = $val3["nombreServicio"];
+                        $cd["tipoServicioId"] = $tipoId;
+                        $cd["servicioId"] = $val3["servicioId"];
+
+                        $detailServices[] = $cd;
+                        $insXserv[$tipoId] = $val3['instancias'];
+
+					}
+				  }
+
+				  foreach($detailServices as $ky4 => $val4){
+                    $val4["instanciasXservicio"] = $insXserv[$val4['tipoServicioId']];
+                    $servXrzn[] = $val4;
+				  }
+
+			    }
+			    unset($razon['contractXrazon']);
+			    $razon["servicios"] = $servXrzn;
+                $cliente["razones"][$ky] = $razon;
 			}
+
+         $newCustomer[] = $cliente;
 		}
-        echo "<pre>";
-		print_r($newArray);
-		exit;*/
+//        echo "<pre>";
+//		print_r($newCustomer);
+//		exit;
 
        /* $personalOrdenado = $personal->ArrayOrdenadoPersonal();
 
@@ -270,7 +318,7 @@ switch($_POST["type"])
 
         $clientesMeses = array();
         $smarty->assign("cleanedArray", $sortedArray);
-        $smarty->assign("clientes", $newArray);
+        $smarty->assign("clientes", $newCustomer);
         $smarty->assign("clientesMeses", $clientesMeses);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
         $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-level-one.tpl');
