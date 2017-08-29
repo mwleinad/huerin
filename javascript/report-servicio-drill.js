@@ -308,3 +308,6 @@ function SaveEditComentario(id)
 				onFailure: function(){ alert('Something went wrong...') }
 			});
 }
+function showLevel(id){
+	$(id).toggle();
+}
