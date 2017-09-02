@@ -104,8 +104,7 @@ switch($_POST["type"])
 			
 			$resClientes = array();
 			foreach($clientes as $clte){
-				//echo "jere";
-				
+
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
 
@@ -189,7 +188,7 @@ switch($_POST["type"])
 				$resClientes[] = $clte;
 				
 			}//foreach
-			
+
 			$cleanedArray = array();
 			
 			//$cleanedArray = $resClientes;
@@ -227,7 +226,7 @@ switch($_POST["type"])
 					}
 				}
 			}
-			
+
 			$clientesMeses = array();
 			$smarty->assign("cleanedArray", $sortedArray);
 			$smarty->assign("clientes", $resClientes);
