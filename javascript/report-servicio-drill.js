@@ -136,13 +136,14 @@ function doSearch(){
 		onLoading: function(){
 			$("loading").style.display = "block";
 			$('contenido').innerHTML = "";
+            $('contenido2').innerHTML = "";
 		},
 		onSuccess: function(transport){					
 			var response = transport.responseText || "Ocurrio un error durante la conexion al servidor. Por Favor Trate de Nuevo";
 			var splitResponse = response.split("[#]");
 			
 			$("loading").style.display = "none";
-			
+            $("msg-advertencia").style.display = "none";
 			$('contenido').innerHTML = response;
 		},
 		onFailure: function(){ alert('Something went wrong...') }
@@ -310,4 +311,43 @@ function SaveEditComentario(id)
 }
 function showLevel(id){
 	$(id).toggle();
+}
+function ToggleTask(id)
+{
+    $$('.tasks').each(
+        function (e) {
+            e.setStyle({display:'none'});
+        }
+    );
+    $('step-'+id).show();
+}
+
+function ShowSixLevel(id){
+
+    if($('responsableCuenta'))
+    {
+        var responsableCuenta = $('responsableCuenta').value;
+    }
+    else
+    {
+        var responsableCuenta = 0;
+    }
+    new Ajax.Request(WEB_ROOT+'/ajax/report-obligaciones.php',
+        {
+            method:'post',
+            parameters: {type: "showSixLevel", id:id,rfc:$('rfc').value, responsableCuenta: responsableCuenta, year: $('year').value, from: "report-servicios"},
+            onLoading: function(){
+                $("contenido2").innerHTML = "";
+            },
+			onSuccess: function(transport){
+                var response = transport.responseText || "no response text";
+                var splitResponse = response.split("[#]");
+                console.log(splitResponse[1]);
+                $('ul-six-level-'+id).innerHTML = splitResponse[1];
+
+               $('contenido2').innerHTML = splitResponse[2];
+            },
+            onFailure: function(){ alert('Something went wrong...') }
+        });
+    $('ul-six-level-'+id).toggle();
 }

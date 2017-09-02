@@ -14,7 +14,9 @@
                                            {if $it ne ""}
                                             <li><a  href="javascript:;" onclick="showLevel('level5-{$it.instanciaServicioId}')">[+]</a>{$meses[$keyInstancia]}
                                                 <ul style="display:none" id="level5-{$it.instanciaServicioId}">
-                                                    <li class="{if $it.status neq 'inactiva'}
+                                                    <li style="max-width: 50%" >
+                                                        <a  href="javascript:;" onclick="ShowSixLevel({$it.instanciaServicioId})">[+]</a>
+                                                        <span class="{if $it.status neq 'inactiva'}
                                                                 {if $it.class eq 'CompletoTardio'}
                                                                   st{'Completo'} txtSt{'Completo'}
                                                                 {else}
@@ -24,8 +26,11 @@
                                                                     st{$it.class} txtSt{$it.class}
                                                                   {/if}
                                                                 {/if}
-                                                              {/if}">
-                                                        {$servicio.nombreServicio}-{$it.instanciaServicioId}</li>
+                                                              {/if}">{$servicio.nombreServicio}-{$it.instanciaServicioId}</span>
+                                                        <ul id="ul-six-level-{$it.instanciaServicioId}" style="display: none;">
+                                                            
+                                                        </ul>
+                                                    </li>
                                                 </ul>
 
                                             </li>

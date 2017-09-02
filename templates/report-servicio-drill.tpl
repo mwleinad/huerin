@@ -31,10 +31,16 @@
             <br />&nbsp;
        </div>
      
-      <div class="portlet-content nopadding borderGray" id="contenido">
-      		<div style="text-align:center"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
-          {include file="lists/report-servicio-level-one.tpl"}
+      <div class="portlet-content nopadding borderGray">
+         <div style="text-align:center" id="msg-advertencia"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
+         <div id="contenido" style="width:30%; float:left">
+             {include file="lists/report-servicio-level-one.tpl"}
+         </div>
+          <div id="contenido2" style="width:70%; float: right; border-left: 1px; display: block ">
+
+          </div>
       </div>
+
       
       <div style="clear:both"></div>
         <br />

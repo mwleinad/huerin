@@ -8,6 +8,53 @@ session_start();
 
 switch($_POST["type"])
 {
+    case 'showSixLevel':
+        $_SESSION["search"]["rfc"] = $_POST["rfc"];
+        $_SESSION["search"]["responsableCuenta"] = $_POST["responsableCuenta"];
+        $_SESSION["search"]["status"] = $_POST["status"];
+        $_SESSION["search"]["month"] = $_POST["month"];
+        $_SESSION["search"]["year"] = $_POST["year"];
+        $_SESSION["search"]["from"] = $_POST["from"];
+
+        $workflow->setTipoOperacion('workflow');
+
+        $workflow->setInstanciaServicioId($_POST["id"]);
+        $myWorkflow = $workflow->Info();
+
+        $result = $workflow->StatusById($_POST["id"]);
+
+        $db->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
+        		   WHERE instanciaServicioId = '".$_POST["id"]."'");
+        $db->UpdateData();
+
+        $smarty->assign("dia", date("d"));
+
+        $smarty->assign("myWorkflow", $myWorkflow);
+        $smarty->assign('mainMnu','servicios');
+
+        $from = $_SESSION["search"]["from"];
+
+        if(!$from){
+            $from = "servicios";
+        }
+
+        $user->setUserId($User['userId']);
+        $infU = $user->Info();
+        $tipoPersonal = $infU['tipoPersonal'];
+
+        $smarty->assign("from", $from);
+        $smarty->assign("uplToken", $uplToken);
+        $smarty->assign("tipoPersonal", $tipoPersonal);
+        $smarty->assign("stepId", $_POST["stepId"]);
+        $smarty->assign("workFlowId", $_POST["id"]);
+
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/lists/list-six-level.tpl');
+        echo "[#]";
+        $smarty->display(DOC_ROOT.'/templates/lists/detail-six-level.tpl');
+
+
+    break;
 	case "goToWorkflow":
 		
 		$_SESSION["search"]["rfc"] = $_POST["rfc"];
