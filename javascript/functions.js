@@ -368,3 +368,8 @@ function ToggleSpecifiedDiv(id)
 		}
 	});
 }
+
+function ToggleDiv(id)
+{
+	$(id).toggle();
+}

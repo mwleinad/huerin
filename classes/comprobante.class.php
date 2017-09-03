@@ -118,14 +118,6 @@ class Comprobante extends Producto
 		$empresa["empresaId"] = $comprobanteEmpresaId;
 		$userId = 1;
 		include_once(DOC_ROOT.'/classes/generate_xml_default.class.php');//break;
-/*		switch($_SESSION["version"])
-		{
-			case "auto":
-			case "v3":
-			case "construc":
-			case "2":
-				//include_once(DOC_ROOT.'/classes/generate_xml_v2.class.php');break;
-		}*/
 		$xmlGen = new XmlGen;
 		$xml = $xmlGen->GenerateXML($data, $serie, $totales, $nodoEmisor, $nodoReceptor, $_SESSION["conceptos"],$empresa);
 
@@ -134,15 +126,11 @@ class Comprobante extends Producto
 		$rfcActivo = $this->getRfcActive();
 		$root = DOC_ROOT."/empresas/".$data["nodoReceptor"]["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
 
-			$nufa_dos = "SIGN_".$data["nodoReceptor"]["empresaId"]."_".$serie["serie"]."_".$data["folio"];
-			$xmlFile = $root.$nufa.".xml";
-			$zipFile = $root.$nufa.".zip";
-			@unlink($zipFile);
-			$signedFile = $root.$nufa."_signed.zip";
-			$timbreFile = $root.$nufa."_timbre.zip";
-//			$timbradoFile = $root."timbreCFDi.xml";
-//			$timbradoFile = $root."/timbres/".$nufa.".xml";
-			$timbradoFile = $root.$nufa_dos.".xml";
+		$nufa_dos = "SIGN_".$data["nodoReceptor"]["empresaId"]."_".$serie["serie"]."_".$data["folio"];
+		$zipFile = $root.$nufa.".zip";
+		@unlink($zipFile);
+		$signedFile = $root.$nufa."_signed.zip";
+		$timbradoFile = $root.$nufa_dos.".xml";
 
 		$this->Util()->Zip($root, $nufa);
 
@@ -154,13 +142,7 @@ class Comprobante extends Producto
 //		print_r($response);
 		if($response["fault"])
 		{
-/*			echo "<b><br><br>Has encontrado un error al Sellar tu Comprobante. Favor de reportarnos este error con todos los detalles posibles. Gracias!!</b>";
-			echo " ";
-			echo $data["nodoReceptor"]["nombre"];
-			echo " ";
-			echo $data["nodoReceptor"]["rfc"];
-			echo "<br>";
-*/			return false;
+			return false;
 		}
 
 
@@ -182,7 +164,6 @@ class Comprobante extends Producto
 			case "USD": $data["tiposDeMoneda"] = "dolar"; break;
 			case "EUR": $data["tiposDeMoneda"] = "euro"; break;
 		}
-
 
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 			INSERT INTO `comprobante` (
@@ -565,21 +546,15 @@ class Comprobante extends Producto
 			$nufa = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 			$rfcActivo = $this->getRfcActive();
 			$root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
-			$root_dos = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/timbres/";
-			//	echo $root.$nufa;
 			$nufa_dos = "SIGN_".$empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
-			$xmlFile = $root.$nufa.".xml";
 			$zipFile = $root.$nufa.".zip";
 			@unlink($zipFile);
 			$signedFile = $root.$nufa."_signed.zip";
 			@unlink($signedFile);
 			$timbreFile = $root.$nufa."_timbre.zip";
 			@unlink($timbreFile);
-//			$timbradoFile = $root."timbreCFDi.xml";
-//			$timbradoFile = $root."/timbres/".$nufa.".xml";
 			$timbradoFile = $root.$nufa_dos.".xml";
 			@unlink($timbradoFile);
-
 
 			$this->Util()->Zip($root, $nufa);
 

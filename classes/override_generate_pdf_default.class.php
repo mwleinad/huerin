@@ -378,9 +378,7 @@ class Override extends Comprobante
 		{
 			$totales["total"] = floor($totales["total"]);
 		}
-		//echo $centavosLetra;
 		$cantidadLetra = $this->Util()->num2letras($totales["total"], false);
-		//tipo de cambio
 		switch($data["tiposDeMoneda"])
 		{
 			case "peso": $tiposDeCambio = "Pesos"; $tiposDeCambioSufix = "M.N";break;
@@ -417,7 +415,6 @@ class Override extends Comprobante
 		$y = $pdf->GetY()+3;
 		$pdf->SetY($y);
 		$pdf->SetX($xstart);
-//echo $data["formaDePago"];
 		$pdf->SetTextColor(255, 255, 255);
 		$pdf->MultiCell(25,3,"Tipo De Pago",0);
 		$pdf->SetY($y);
@@ -617,8 +614,6 @@ class Override extends Comprobante
 			$pdf->Cell(180,8,"C A N C E L A D O",0,0,"C");
 					
 		}//if
-		echo "pdf";
-		echo $root.$nufa.".pdf";
 		if(!is_dir($rootFacturas))
 		{
 			mkdir($rootFacturas, 0777);

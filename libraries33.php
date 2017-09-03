@@ -4,17 +4,17 @@
 if(!isset($_SESSION['lang']))
 {
 //	include_once(DOC_ROOT.'/properties/language.es.php');
-	include_once(DOC_ROOT.'/properties/errors.es.php');
+    include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 elseif($_SESSION['lang'] == 'es')
 {
 //	include_once(DOC_ROOT.'/properties/language.es.php');
-	include_once(DOC_ROOT.'/properties/errors.es.php');
+    include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 else
 {
 //	include_once(DOC_ROOT.'/properties/language.en.php');
-	include_once(DOC_ROOT.'/properties/errors.es.php');
+    include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 
 
@@ -99,7 +99,6 @@ include_once(DOC_ROOT.'/classes/pendiente.class.php');
 
 include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
-include_once(DOC_ROOT."/classes/cfdi.class.php");
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
 
@@ -171,17 +170,18 @@ $cxc = new CxC;
 $balance = new Balance;
 
 $xmlTransform = new XmlTransform;
-$cfdi = new Cfdi;
 
 $archivos = new Archivos();
 
 //echo $page;exit;
+include_once(DOC_ROOT."/services/Cfdi.php");
 include_once(DOC_ROOT."/services/Catalogo.php");
 include_once(DOC_ROOT."/services/Sello.php");
 include_once(DOC_ROOT."/services/Totales.php");
 include_once(DOC_ROOT."/services/ComprobantePago.php");
 include_once(DOC_ROOT."/services/CfdiUtil.php");
 
+$cfdi = new Cfdi;
 $catalogo = new Catalogo;
 $sello = new Sello;
 $totales = new Totales;
@@ -201,36 +201,36 @@ $User = $_SESSION['User'];
 $infoUser = $user->Info();
 $smarty->assign('infoUser', $infoUser);
 
-	switch($infoUser["tipoPersonal"])
-	{
-		case "Socio": $User['roleId'] = 1; break;
-		case "Gerente": $User['roleId'] = 2; break;
-		case "Supervisor": $User['roleId'] = 3; break;
-		case "Contador": $User['roleId'] = 3; break;
-		case "Auxiliar": $User['roleId'] = 3; break;
-		case "Asistente": $User['roleId'] = 1; break;
-		case "Recepcion": $User['roleId'] = 1; break;
-		case "Cliente": $User['roleId'] = 4; break;
-		case "Nomina":
-			$User['roleId'] = 1;
-			$User['subRoleId'] = "Nomina";
-		break;
-	}
+switch($infoUser["tipoPersonal"])
+{
+    case "Socio": $User['roleId'] = 1; break;
+    case "Gerente": $User['roleId'] = 2; break;
+    case "Supervisor": $User['roleId'] = 3; break;
+    case "Contador": $User['roleId'] = 3; break;
+    case "Auxiliar": $User['roleId'] = 3; break;
+    case "Asistente": $User['roleId'] = 1; break;
+    case "Recepcion": $User['roleId'] = 1; break;
+    case "Cliente": $User['roleId'] = 4; break;
+    case "Nomina":
+        $User['roleId'] = 1;
+        $User['subRoleId'] = "Nomina";
+        break;
+}
 
-	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
+$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 
 if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $User["tipoPersonal"] == "Gerente")
 {
-	$smarty->assign('canEdit', true);
+    $smarty->assign('canEdit', true);
 }
 
 $smarty->assign('User',$User);
 
 function dd($data)
 {
-	echo "<pre>";
-	print_r($data);
-	echo "</pre>";
+    echo "<pre>";
+    print_r($data);
+    echo "</pre>";
 }
 
 ?>
