@@ -95,6 +95,25 @@ class Producto extends Sucursal
 		return $this->excentoIva;
 	}
 
+	private $claveProdServ;
+	public function setClaveProdServ($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "Clave Prod Serv");
+		$this->claveProdServ = $value;
+	}
+	private $claveUnidad;
+	public function setClaveUnidad($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "Clave Unidad");
+		$this->claveUnidad = $value;
+	}
+	private $iepsTasaOCuota;
+	public function setIepsTasaOCuota($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "IEPS Tasa o Cuota");
+		$this->iepsTasaOCuota = $value;
+	}
+
 	public function setUnidad($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 1, "Unidad");
@@ -220,6 +239,9 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["excentoIva"] = $this->excentoIva;
 		$_SESSION["conceptos"][$conceptos]["descripcion"] = urldecode($this->descripcion);
 		$_SESSION["conceptos"][$conceptos]["categoriaConcepto"] = urldecode($this->categoriaConcepto);
+		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
+		$_SESSION["conceptos"][$conceptos]["claveUnidad"] = $this->claveUnidad;
+
 		// print_r($_SESSION);
 		return true;
 	}
@@ -393,6 +415,12 @@ echo "<pre>";
 			$data["ivaThis"] = $this->Util()->RoundNumber($afterDescuento * ($_SESSION["conceptos"][$key]["tasaIva"] / 100));
 			$data["iva"] += $data["ivaThis"];
 
+			$_SESSION["conceptos"][$key]["descuento"] = $data["descuentoThis"];
+			$_SESSION["conceptos"][$key]["importeTotal"] = $concepto["importe"] - $data["descuentoThis"];
+			$_SESSION["conceptos"][$key]["totalIva"] = $_SESSION["conceptos"][$key]["importeTotal"] * (round($_SESSION["conceptos"][$key]["tasaIva"] / 100, 6));
+			//$_SESSION["conceptos"][$key]["totalIeps"] = $_SESSION["conceptos"][$key]["importeTotal"] * (round($_SESSION["conceptos"][$key]["porcentajeIeps"] / 100, 6));
+			$_SESSION["conceptos"][$key]["totalRetencionIva"] = $_SESSION["conceptos"][$key]["importeTotal"] * (round($data["porcentajeRetIva"] / 100, 6));
+			$_SESSION["conceptos"][$key]["totalRetencionIsr"] = $_SESSION["conceptos"][$key]["importeTotal"] * (round($data["porcentajeRetIsr"] / 100, 6));
 		}
 		$data["impuestos"] = $_SESSION["impuestos"];
 		$afterDescuento = $data["subtotal"] - $data["descuento"];

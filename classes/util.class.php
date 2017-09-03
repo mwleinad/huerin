@@ -730,6 +730,31 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		echo "</pre>";
 	}
 
+	function CadenaOriginalFormat($cadena, $decimals = 2, $addPipe = true)
+	{
+		//change tabs, returns and newlines into spaces
+		$cadena = utf8_encode(urldecode($cadena));
+		$cadena = str_replace("|","/",$cadena);
+		$remove = array("\t", "\n", "\r\n", "\r");
+		$cadena = str_replace($remove, ' ', $cadena);
+		$cadena = str_replace("+","MAS",$cadena);
+		$cadena = str_replace("&amp;","&",$cadena);
+		$pat[0] = "/^\s+/";
+		$pat[1] = "/\s{2,}/";
+		$pat[2] = "/\s+\$/";
+		$rep[0] = "";
+		$rep[1] = "";
+		$rep[2] = "";
+		$cadena = preg_replace($pat,$rep,$cadena);
+		$cadena = @number_format($cadena, $decimals, ".", "");
+		if(strlen($cadena) > 0 && $addPipe)
+		{
+			$cadena .= "|";
+		}
+		$cadena = urldecode(utf8_decode($cadena));
+		return $cadena = trim($cadena);
+	}
+
 	function CadenaOriginalVariableFormat($cadena, $formatNumber = false, $addPipe = true, $dec = 2)
 	{
 		//change tabs, returns and newlines into spaces
