@@ -7,12 +7,21 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/reset.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/text.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/blue.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
 
-	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css" />
-	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
+{if $page == 'report-servicio-drill'}
+<!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"  rel="stylesheet">-->
 
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/tree/style.min.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/components-rounded.min.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
+
+{/if}
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
+
 {if $page == "login"}
 <link href="{$WEB_ROOT}/css/login.css" rel="stylesheet" type="text/css" media="all" />  
 {/if}

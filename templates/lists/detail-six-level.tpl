@@ -40,6 +40,7 @@
                                             <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
                                             <input type="hidden" id="control" name="control" value="1" />
                                             <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                                            <input type="hidden" id="instanciaId" name="instanciaId" value="{$workFlowId}" />
                                             <input type="file" id="file" name="file" />
                                             <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
                                         </form>
@@ -53,6 +54,7 @@
                                             <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
                                             <input type="hidden" id="control" name="control" value="1" />
                                             <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                                            <input type="hidden" id="instanciaId" name="instanciaId" value="{$workFlowId}" />
                                             <input type="file" id="file" name="file" />
                                             <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
                                         </form>

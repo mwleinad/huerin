@@ -43,7 +43,7 @@ switch($_POST["type"])
         $tipoPersonal = $infU['tipoPersonal'];
 
         $smarty->assign("from", $from);
-        $smarty->assign("uplToken", $uplToken);
+        $smarty->assign("uplToken", $_SESSION['uplToken']);
         $smarty->assign("tipoPersonal", $tipoPersonal);
         $smarty->assign("stepId", $_POST["stepId"]);
         $smarty->assign("workFlowId", $_POST["id"]);

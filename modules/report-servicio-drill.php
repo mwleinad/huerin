@@ -1,9 +1,14 @@
 <?php
-	
 	/* Start Session Control - Don't Remove This */
 	$user->allowAccess();	
 	/* End Session Control */
-	
+    if($_POST && $_FILES)
+    {
+        if($_SESSION['uplToken'] == $_POST['uplToken']){
+            $workflow->setInstanciaServicioId($_POST["servicioId"]);
+            $workflow->UploadControl();
+        }
+    }
 	$departamentos = $departamentos->Enumerate();
 	$smarty->assign("departamentos", $departamentos);
 	
@@ -32,14 +37,17 @@
 	{
 		$year = date("Y");
 	}
-	
+    $uplToken = rand();
+    $_SESSION['uplToken'] = $uplToken;
+
+    $smarty->assign("uplToken", $uplToken);
 	$smarty->assign("month", $month);
 	$smarty->assign("year", $year);
 	
 	$personals = $personal->Enumerate();
 	$smarty->assign("personals", $personals);
 	
-	if($_SESSION["search"])
+	/*if($_SESSION["search"])
 	{
 		$_POST["responsableCuenta"] = $_SESSION["search"]["responsableCuenta"];
 		
@@ -59,6 +67,6 @@
 		$clientes = $workflow->EnumerateWorkflows($clientes, $month, $year);
 		//print_r($clientes);
 		$smarty->assign("clientes", $clientes);
-	}
+	}*/
 	unset($_SESSION["search"]);
 ?>

@@ -309,8 +309,16 @@ function SaveEditComentario(id)
 				onFailure: function(){ alert('Something went wrong...') }
 			});
 }
-function showLevel(id){
-	$(id).toggle();
+function showLevel(lev,id){
+   if($('before-'+lev+'-'+id).hasClassName('jstree-closed'))
+   {
+       $('before-'+lev+'-'+id).removeClassName('jstree-closed');
+       $('before-'+lev+'-'+id).addClassName('jstree-open');
+   }else
+   {
+       $('before-'+lev+'-'+id).removeClassName('jstree-open');
+       $('before-'+lev+'-'+id).addClassName('jstree-closed');
+   }
 }
 function ToggleTask(id)
 {
@@ -344,10 +352,17 @@ function ShowSixLevel(id){
                 var splitResponse = response.split("[#]");
                 console.log(splitResponse[1]);
                 $('ul-six-level-'+id).innerHTML = splitResponse[1];
-
                $('contenido2').innerHTML = splitResponse[2];
             },
             onFailure: function(){ alert('Something went wrong...') }
         });
-    $('ul-six-level-'+id).toggle();
+	showLevel('level6',id);
+}
+function HideButtons(){
+
+    var buttons = document.getElementsByClassName("btnEnviar");
+    for(i=0; i<buttons.length; i++){
+        buttons[i].style.display = "none";
+    }
+
 }
