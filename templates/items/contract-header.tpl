@@ -1,5 +1,6 @@
 <thead>
 	<tr>
+		<th width="">Id</th>
 		<th width="">Nombre de la Razon Social</th>
 		<th width="60">Tipo</th>
     	<th width="60">RFC</th>       
