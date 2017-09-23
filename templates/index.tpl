@@ -11,6 +11,7 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
 
 {if $page == 'report-servicio-drill'}
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
 <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"  rel="stylesheet">-->
 
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
@@ -83,6 +84,7 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 <script src="{$WEB_ROOT}/javascript/datetimepicker.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
 
 
 </head>

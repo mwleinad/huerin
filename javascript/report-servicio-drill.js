@@ -358,6 +358,10 @@ function ShowSixLevel(id){
         });
 	showLevel('level6',id);
 }
+function uploadFile(id){
+	
+
+}
 function HideButtons(){
 
     var buttons = document.getElementsByClassName("btnEnviar");

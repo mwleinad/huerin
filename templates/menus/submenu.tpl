@@ -62,6 +62,8 @@
                 <span>Rep. de Servicio Mensual</span></a></li>
 								<li><a href="{$WEB_ROOT}/report-servicio-auditoria" {if $page == "report-servicio-auditoria"}class="current"{/if}>
                 <span>Rep. de Auditoria</span></a></li>
+                <li><a href="{$WEB_ROOT}/report-servicio-drill" {if $page == "report-servicio-drill"}class="current"{/if}>
+                        <span>Administrador de archivos</span></a></li>
             {/if}
             {/if}
             {if $mainMnu == "contratos"}

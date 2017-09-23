@@ -45,7 +45,6 @@
                                                                 {/if}
                                                               {/if}">{$servicio.nombreServicio}-{$it.instanciaServicioId}</span>
                                                         </a>
-
                                                         <ul id="ul-six-level-{$it.instanciaServicioId}"  class="jstree-children" role="group">
                                                             
                                                         </ul>
