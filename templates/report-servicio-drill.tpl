@@ -29,7 +29,7 @@
             Cargando...
             <br />&nbsp;
        </div>
-     
+      <!--<form class="dropzone" id="frmFileSp"><input type="submit" value="btn"></form>-->
       <div class="portlet-content nopadding borderGray">
          <div style="text-align:center" id="msg-advertencia"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
          <div id="contenido" style="width:50%; float:left" class="tree-demo jstree jstree-1 jstree-default">

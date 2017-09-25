@@ -387,7 +387,7 @@ class Workflow extends Servicio
 		//Get Steps
 		$row["steps"] = $this->Util()->DB()->GetResult();
 
-		
+
 		//Get Tasks
 		
 		$ii = 1;
@@ -624,15 +624,15 @@ class Workflow extends Servicio
 					
 					$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName, $attachment2, $fileName2, "admin@avantikdads.com", "Administrador del Sistema") ;
 				}
-
+                return true;
 			}
 		else
 		{
 			echo "No se pudo subir el archivo";
+			return false;
 		}
 		
 	}
-
 	function DeleteControl($id)
 	{	
 		$this->Util()->DB()->setQuery("SELECT * FROM `taskFile` WHERE taskFileId = '".$id."'");

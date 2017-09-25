@@ -187,6 +187,17 @@ switch($_POST["type"])
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-email-popup.tpl');
 			
 		break;
+    case 'uploadFile':
+
+            $workflow->setInstanciaServicioId($_POST["servicioId"]);
+            if($workflow->UploadControl())
+            {
+                echo 'ok[#]';
+            }else{
+                echo 'fail[#]';
+            }
+
+    break;
 				
 }
 

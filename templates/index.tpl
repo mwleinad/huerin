@@ -71,11 +71,15 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
+{if $page eq 'report-servicio-drill'}
+	<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
+	<script>var jQ = jQuery.noConflict()</script>
+{/if}
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
-
 {/if}
+
 {if $section == 'consultar-facturas'}
 
 <script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>

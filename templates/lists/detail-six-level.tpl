@@ -38,6 +38,24 @@
                                     </span>
                                     {if $myWorkflow.status neq "inactiva"}
                                         <form method="post" enctype="multipart/form-data" onsubmit="return false;" id="frmFile{$step.stepId}{$task.taskId}{$workFlowId}">
+                                            <input type="hidden" name="type" value="uploadFile" />
+                                            <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
+                                            <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
+                                            <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
+                                            <input type="hidden" id="control" name="control" value="1" />
+                                            <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                                            <input type="hidden" id="instanciaId" name="instanciaId" value="{$workFlowId}" />
+                                            <input type="file" id="file" name="file"/>
+                                            <input type="submit" value="Enviar" class="btnEnviar" onclick="UploadFile('{$step.stepId}{$task.taskId}{$workFlowId}')" />
+                                            <div style="display:none" id="porcentaje_{$step.stepId}{$task.taskId}{$workFlowId}" >0%</div>
+                                            <progress style="display:none"  id="progress_{$step.stepId}{$task.taskId}{$workFlowId}" value="0" min="0" max="100"></progress>
+                                        </form>
+                                    {/if}
+                                {else}
+                                    <img src="{$WEB_ROOT}/images/icons/cancel.png" />
+                                    {if $myWorkflow.status neq "inactiva"}
+                                        <form method="post" enctype="multipart/form-data" onsubmit="return false;" id="frmFile{$step.stepId}{$task.taskId}{$workFlowId}">
+                                            <input type="hidden" name="type" value="uploadFile" />
                                             <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
                                             <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
                                             <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
@@ -46,20 +64,8 @@
                                             <input type="hidden" id="instanciaId" name="instanciaId" value="{$workFlowId}" />
                                             <input type="file" id="file" name="file" />
                                             <input type="submit" value="Enviar" class="btnEnviar" onclick="UploadFile('{$step.stepId}{$task.taskId}{$workFlowId}')" />
-                                        </form>
-                                    {/if}
-                                {else}
-                                    <img src="{$WEB_ROOT}/images/icons/cancel.png" />
-                                    {if $myWorkflow.status neq "inactiva"}
-                                        <form method="post" enctype="multipart/form-data">
-                                            <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
-                                            <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
-                                            <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
-                                            <input type="hidden" id="control" name="control" value="1" />
-                                            <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
-                                            <input type="hidden" id="instanciaId" name="instanciaId" value="{$workFlowId}" />
-                                            <input type="file" id="file" name="file" />
-                                            <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
+                                            <div style="display:none" id="porcentaje_{$step.stepId}{$task.taskId}{$workFlowId}" >0%</div>
+                                            <progress style="display:none"  id="progress_{$step.stepId}{$task.taskId}{$workFlowId}" value="0" min="0" max="100"></progress>
                                         </form>
                                     {/if}
                                 {/if}

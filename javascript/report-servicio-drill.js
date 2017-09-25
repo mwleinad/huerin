@@ -1,4 +1,9 @@
-Event.observe(window, 'load', function() 
+document.observe('dom:loaded', function(){
+    console.log("el dom listo ");
+
+});
+
+Event.observe(window, 'load', function()
 {
 	if($('rfc'))
 	{
@@ -28,9 +33,46 @@ Event.observe(window, 'load', function()
 	{
 		$('divForm').observe("click", AddSuggestListener);
 	}
-		
 });
 
+function addDropzone(){
+    Dropzone.options.frmFileStep = true;
+    Dropzone.options.frmFileStep = {
+        url:WEB_ROOT+'/report-obligaciones',
+        autoProcessQueue: false,
+        uploadMultiple: true,
+        parallelUploads: 100,
+        maxFiles: 100,
+        acceptedFiles:'image/*',
+        init: function() {
+            var myDropzone = this;
+
+            // First change the button to actually tell Dropzone to process the queue.
+            this.element.querySelector("input[type=submit]").addEventListener("click", function(e) {
+                // Make sure that the form isn't actually being sent.
+                e.preventDefault();
+                e.stopPropagation();
+                myDropzone.processQueue();
+            });
+
+            // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
+            // of the sending event because uploadMultiple is set to true.
+            this.on("sendingmultiple", function() {
+                // Gets triggered when the form is actually being sent.
+                // Hide the success button or the complete form.
+            });
+            this.on("successmultiple", function(files, response) {
+                // Gets triggered when the files have successfully been sent.
+                // Redirect user or notify of success.
+            });
+            this.on("errormultiple", function(files, response) {
+                // Gets triggered when there was an error sending the files.
+                // Maybe show form again, and notify user of error
+            });
+        }
+    }
+
+}
 function GoToWorkflow(path, id)
 {
 	if($('responsableCuenta'))
@@ -351,15 +393,44 @@ function ShowSixLevel(id){
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("[#]");
                 console.log(splitResponse[1]);
-                $('ul-six-level-'+id).innerHTML = splitResponse[1];
+               $('ul-six-level-'+id).innerHTML = splitResponse[1];
                $('contenido2').innerHTML = splitResponse[2];
             },
             onFailure: function(){ alert('Something went wrong...') }
         });
 	showLevel('level6',id);
 }
-function uploadFile(id){
-	
+function UploadFile(id){
+    var fd =  new FormData(document.getElementById('frmFile'+id));
+    jQ.ajax({
+            url: WEB_ROOT+"/ajax/report-obligaciones.php",
+            data: fd,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+			xhr: function(){
+				var XHR = jQ.ajaxSettings.xhr();
+				XHR.upload.addEventListener('progress',function(e){
+					console.log(e)
+					var Progress = ((e.loaded / e.total)*100);
+					Progress = (Progress);
+					console.log(Progress)
+                    jQ('#progress_'+id).show();
+                    jQ('#porcentaje_'+id).show();
+					jQ('#progress_'+id).val(Math.round(Progress));
+					jQ('#porcentaje_'+id).html(Math.round(Progress)+'%');
+				},false);
+				return XHR;
+			},
+			beforeSend: function(){
+
+			},
+            success: function(response){
+
+            },
+        }
+
+	)
 
 }
 function HideButtons(){

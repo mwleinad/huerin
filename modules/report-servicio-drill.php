@@ -2,14 +2,7 @@
 	/* Start Session Control - Don't Remove This */
 	$user->allowAccess();	
 	/* End Session Control */
-    if($_POST && $_FILES)
-    {
-        if($_SESSION['uplToken'] == $_POST['uplToken']){
-            $workflow->setInstanciaServicioId($_POST["servicioId"]);
-            $workflow->UploadControl();
-        }
-    }
-	$departamentos = $departamentos->Enumerate();
+    $departamentos = $departamentos->Enumerate();
 	$smarty->assign("departamentos", $departamentos);
 	
 	//$clientes = $customer->Enumerate();
