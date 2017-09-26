@@ -1,8 +1,3 @@
-document.observe('dom:loaded', function(){
-    console.log("el dom listo ");
-
-});
-
 Event.observe(window, 'load', function()
 {
 	if($('rfc'))
@@ -34,45 +29,6 @@ Event.observe(window, 'load', function()
 		$('divForm').observe("click", AddSuggestListener);
 	}
 });
-
-function addDropzone(){
-    Dropzone.options.frmFileStep = true;
-    Dropzone.options.frmFileStep = {
-        url:WEB_ROOT+'/report-obligaciones',
-        autoProcessQueue: false,
-        uploadMultiple: true,
-        parallelUploads: 100,
-        maxFiles: 100,
-        acceptedFiles:'image/*',
-        init: function() {
-            var myDropzone = this;
-
-            // First change the button to actually tell Dropzone to process the queue.
-            this.element.querySelector("input[type=submit]").addEventListener("click", function(e) {
-                // Make sure that the form isn't actually being sent.
-                e.preventDefault();
-                e.stopPropagation();
-                myDropzone.processQueue();
-            });
-
-            // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
-            // of the sending event because uploadMultiple is set to true.
-            this.on("sendingmultiple", function() {
-                // Gets triggered when the form is actually being sent.
-                // Hide the success button or the complete form.
-            });
-            this.on("successmultiple", function(files, response) {
-                // Gets triggered when the files have successfully been sent.
-                // Redirect user or notify of success.
-            });
-            this.on("errormultiple", function(files, response) {
-                // Gets triggered when there was an error sending the files.
-                // Maybe show form again, and notify user of error
-            });
-        }
-    }
-
-}
 function GoToWorkflow(path, id)
 {
 	if($('responsableCuenta'))
@@ -400,6 +356,21 @@ function ShowSixLevel(id){
         });
 	showLevel('level6',id);
 }
+function ShowTasks(stepId,instanciaServicioId,step){
+    jQ.ajax({
+            url: WEB_ROOT+"/ajax/report-obligaciones.php",
+            data: "type=showTask&stepId="+stepId+"&instanciaServicioId="+instanciaServicioId+"&numStep="+step,
+            type: 'POST',
+            beforeSend: function(){
+                jQ('#contenido2').html('');
+            },
+            success: function(response){
+              jQ('#contenido2').html(response);
+            },
+        }
+
+    )
+}
 function UploadFile(id){
     var fd =  new FormData(document.getElementById('frmFile'+id));
     jQ.ajax({
@@ -411,10 +382,8 @@ function UploadFile(id){
 			xhr: function(){
 				var XHR = jQ.ajaxSettings.xhr();
 				XHR.upload.addEventListener('progress',function(e){
-					console.log(e)
 					var Progress = ((e.loaded / e.total)*100);
 					Progress = (Progress);
-					console.log(Progress)
                     jQ('#progress_'+id).show();
                     jQ('#porcentaje_'+id).show();
 					jQ('#progress_'+id).val(Math.round(Progress));
@@ -423,9 +392,28 @@ function UploadFile(id){
 				return XHR;
 			},
 			beforeSend: function(){
-
+                jQ('#load'+id).show();
+                jQ('#file'+id).hide();
+                jQ('#msgRes').html('');
 			},
             success: function(response){
+                var splitResp = response.split("[#]");
+                console.log(response);
+                if(splitResp[0]=='ok')
+				{
+                    jQ('#load'+id).hide();
+                    jQ('#file'+id).show();
+                    jQ('#contenido2').html(splitResp[1]);
+
+				}else if(splitResp[0]=='fail')
+				{
+                    jQ('#load'+id).hide();
+                    jQ('#file'+id).show();
+                    jQ('#msgRes').addClass('alert-danger');
+                    jQ('#msgRes').show();
+                    jQ('#msgRes').html(splitResp[2]);
+                    jQ('.btnEnviar').show();
+				}
 
             },
         }

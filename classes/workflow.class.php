@@ -351,7 +351,52 @@ class Workflow extends Servicio
 		
 		return $clientes;
 	}
-	
+	public function getTasks(){
+
+        $data =  array();
+        $this->Util()->DB()->setQuery("SELECT *, customer.nameContact AS customerName, contract.name AS contractName,
+		instanciaServicio.status AS status  FROM instanciaServicio 
+		LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+		LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+		LEFT JOIN contract ON contract.contractid = servicio.contractId
+		LEFT JOIN customer ON customer.customerId = contract.customerId
+		WHERE instanciaServicioId = '".$this->instanciaServicioId."' ");
+        $row = $this->Util()->DB()->GetRow();
+
+        $data['info'] =  $row;
+        $this->Util()->DB()->setQuery("SELECT * FROM step WHERE stepId ='".$_POST['stepId']."' AND servicioId = '".$row["tipoServicioId"]."' ");
+        $step = $this->Util()->DB()->GetRow();
+        $step["step"] =  $_POST['numStep'];
+
+        $data["step"] =  $step;
+
+        $this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$_POST['stepId']."' ");
+        $tasks = $this->Util()->DB()->GetResult();
+        foreach($tasks as $keyTask => $valueTask){
+            $tasks[$keyTask]["controlFile"] = 0;
+            if($valueTask["control"]) {
+                $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM taskFile 
+					WHERE servicioId = '".$this->instanciaServicioId."' AND stepId = '".$_POST["stepId"]."' AND taskId = '".$valueTask["taskId"]."' AND control = 1");
+                $find = $this->Util()->DB()->GetSingle();
+
+                if($find > 0){
+                    $tasks[$keyTask]["controlFile"] = 1;
+                }
+                $this->Util()->DB()->setQuery("SELECT * FROM taskFile 
+					WHERE servicioId = '".$this->instanciaServicioId."' AND stepId = '".$_POST["stepId"]."' AND taskId = '".$valueTask["taskId"]."' AND control = 1 ORDER BY version DESC");
+                $tasks[$keyTask]["controlFileInfo"] = $this->Util()->DB()->GetResult();
+            }else{
+                $tasks[$keyTask]["controlFile"] = 1;
+            }
+
+        }
+        $data["tasks"] =  $tasks;
+
+        /*echo "<pre>";
+        print_r($data);
+        exit;*/
+      return $data;
+    }
 	public function Info()
 	{
     	if($this->tipoOperacion == "reporteMensual")

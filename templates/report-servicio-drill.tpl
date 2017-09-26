@@ -1,5 +1,4 @@
 <div class="grid_16" id="content">
-    
   <div class="grid_9">
     <h1 class="reportes">Administrador de archivos</h1>
   </div>

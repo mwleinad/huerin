@@ -3,6 +3,7 @@
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Plataforma Operativa Huerin Braun, S.C.</title>
+
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/960.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/reset.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/text.css" />
@@ -11,14 +12,14 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
 
 {if $page == 'report-servicio-drill'}
-	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
 <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"  rel="stylesheet">-->
-
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap-theme.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/tree/style.min.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/components-rounded.min.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
-
 {/if}
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
@@ -35,8 +36,6 @@
 <script type="text/javascript" src="{$WEB_ROOT}/GreyBox/greybox/AJS_fx.js"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/GreyBox/greybox/gb_scripts.js"></script>
 <link href="{$WEB_ROOT}/GreyBox/greybox/gb_styles.css" rel="stylesheet" type="text/css" />
-
-
 
 {if $page == "contract-new" || $page == "contract-edit" || $page == "report-obligaciones" || $page == "report-basica"}
 <link type="text/css" rel="stylesheet" href="{$WEB_ROOT}/calendar/css/jscal2.css" />

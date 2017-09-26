@@ -8,6 +8,19 @@ session_start();
 
 switch($_POST["type"])
 {
+    case 'showTask':
+        $user->setUserId($User['userId']);
+        $infU = $user->Info();
+        $tipoPersonal = $infU['tipoPersonal'];
+
+        $workflow->setInstanciaServicioId($_POST["instanciaServicioId"]);
+        $data =  $workflow->getTasks();
+        $smarty->assign("tipoPersonal", $tipoPersonal);
+        $smarty->assign("stepId", $_POST['stepId']);
+        $smarty->assign("data", $data);
+        $smarty->assign("workFlowId", $_POST["instanciaServicioId"]);
+        $smarty->display(DOC_ROOT.'/templates/lists/list-tasks.tpl');
+    break;
     case 'showSixLevel':
         $_SESSION["search"]["rfc"] = $_POST["rfc"];
         $_SESSION["search"]["responsableCuenta"] = $_POST["responsableCuenta"];
@@ -188,13 +201,27 @@ switch($_POST["type"])
 			
 		break;
     case 'uploadFile':
-
             $workflow->setInstanciaServicioId($_POST["servicioId"]);
             if($workflow->UploadControl())
             {
                 echo 'ok[#]';
+                $user->setUserId($User['userId']);
+                $infU = $user->Info();
+                $tipoPersonal = $infU['tipoPersonal'];
+
+                $workflow->setInstanciaServicioId($_POST["instanciaId"]);
+                $data =  $workflow->getTasks();
+                $smarty->assign("tipoPersonal", $tipoPersonal);
+                $smarty->assign("msgRes", "Archivo guardado correctamente");
+                $smarty->assign("stepId", $_POST['stepId']);
+                $smarty->assign("data", $data);
+                $smarty->assign("workFlowId", $_POST["instanciaId"]);
+                $smarty->display(DOC_ROOT.'/templates/lists/list-tasks.tpl');
+
             }else{
                 echo 'fail[#]';
+                echo "[#]";
+                echo "Hubo un error al guardar archivo intente de nuevo";
             }
 
     break;
