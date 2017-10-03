@@ -4,7 +4,7 @@
         <a href="javascript:;"  onclick="ShowTasks({$step.stepId},{$workFlowId},{$step.step})">
             <i class="jstree-icon fa fa-file {if $step.stepCompleted} icon-state-success {else}icon-state-default{/if}   jstree-themeicon-custom" role="presentation"></i>
            <!-- <span style=" cursor:pointer;{if $step.stepCompleted}background-color:#006633; color:#FFFFFF{else}background-color:#C00; color:#FFFFFF{/if}">-->Paso No. {$step.step} &nbsp;
-            <b>{$step.nombreStep}(<small>{if $step.stepCompleted}Completado{/if}</small>)</b>
+            <b>{$step.nombreStep}<small>{if $step.stepCompleted}(Completado){else}(Pendiente){/if}</small></b>
                <!-- </span> -->
         </a>
     </li>
