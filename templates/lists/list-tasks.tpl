@@ -68,7 +68,7 @@
                                 <form method="post" enctype="multipart/form-data" onsubmit="return false;" id="frmFile{$stepId}{$task.taskId}{$workFlowId}">
                                     <input type="hidden" name="type" value="uploadFile" />
                                     <input type="hidden" id="stepId" name="stepId" value="{$stepId}" />
-                                    <input type="hidden" id="taskId" name="taskId" value="{$taskId}" />
+                                    <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
                                     <input type="hidden" id="servicioId" name="servicioId" value="{$data.info.instanciaServicioId}" />
                                     <input type="hidden" id="control" name="control" value="1" />
                                     <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
