@@ -30,7 +30,6 @@ class Pac extends Util
 			print_r($response);
 			return "fault";
 		}
-	//	print_r($response);
 		return $response;
 	}
 
@@ -75,14 +74,9 @@ class Pac extends Util
 			$data = base64_decode($response["getCfdiReturn"]);
 		}
 		
-		//errors
-//		print_r($response);
-		//save new zip
-//		echo $newFile;
 		$fh = fopen($newFile, 'w') or die("can't open file");
 		$fh = fwrite($fh, $data);
-//		fclose($fh);
-		
+
 		$this->Unzip($path, $newFile);
 		
 		return $response;
@@ -91,7 +85,6 @@ class Pac extends Util
 	function GetTimbreCfdi($user, $pw, $zipFile, $path, $newFile, $empresa)
 	{
 		//open zip and encode it
-		echo $zipFile;
 		$fh = fopen($zipFile, 'r');
 		$theData = fread($fh, filesize($zipFile));
 		$zipFileEncoded = base64_encode($theData);
@@ -130,9 +123,6 @@ class Pac extends Util
 	{
 		$fh = fopen($file, 'r');
 		$theData = fread($fh, filesize($file));
-		//$theData = str_replace("<", "#", $theData);
-		//$theData = str_replace(">", "#", $theData);
-//		echo $theData;
 		$pos = strrpos($theData, "<tfd:TimbreFiscalDigital");
 		$theData = substr($theData, $pos);
 

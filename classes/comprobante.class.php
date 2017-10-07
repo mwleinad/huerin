@@ -1269,6 +1269,8 @@ class Comprobante extends Producto
 			$card['status'] = $val['status'];
 			$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
 			$card['instanciaServicioId'] = $val['instanciaServicioId'];
+			$card['version'] = $val['version'];
+			$card['xml'] = $val['xml'];
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
@@ -1512,18 +1514,23 @@ class Comprobante extends Producto
 		$serie = $compInfo['serie'];
 		$folio = $compInfo['folio'];
 
-		$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+		if($compInfo['version'] == '3.3') {
+			include_once(DOC_ROOT."/services/PdfService.php");
+			include_once(DOC_ROOT."/services/QrService.php");
+			include_once(DOC_ROOT."/services/XmlReaderService.php");
 
-		$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			$pdfService = new PdfService();
+			$fileName = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio;
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$pdf = $pdfService->generate($id_empresa, $fileName, 'email');
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			file_put_contents($enlace, $pdf);
+		} else {
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+		}
 
-		if($_SESSION["version"] == "v3" || $_SESSION["version"] == "construc")
-		{
-			$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
-		else
-		{
-			$archivo_xml = $id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
+		$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
 
 		$enlace_xml = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo_xml;
 
@@ -1549,7 +1556,6 @@ class Comprobante extends Producto
 
 		foreach($emails as $email)
 		{
-        	echo $email = trim($email);
         	$mail->AddAddress($email, 'Estimado Cliente');
 		}
 
@@ -1659,19 +1665,23 @@ class Comprobante extends Producto
 		$serie = $compInfo['serie'];
 		$folio = $compInfo['folio'];
 
-		$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+		if($compInfo['version'] == '3.3') {
+			include_once(DOC_ROOT."/services/PdfService.php");
+			include_once(DOC_ROOT."/services/QrService.php");
+			include_once(DOC_ROOT."/services/XmlReaderService.php");
 
-		$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
-
-		if($_SESSION["version"] == "v3" || $_SESSION["version"] == "construc")
-		{
-			$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
+			$pdfService = new PdfService();
+			$fileName = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio;
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$pdf = $pdfService->generate($id_empresa, $fileName, 'email');
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			file_put_contents($enlace, $pdf);
+		} else {
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
 		}
-		else
-		{
-			$archivo_xml = $id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
 
+		$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
 		$enlace_xml = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo_xml;
 
 		/*** End Archivo PDF ***/

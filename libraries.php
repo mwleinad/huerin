@@ -175,6 +175,18 @@ $cfdi = new Cfdi;
 
 $archivos = new Archivos();
 
+//echo $page;exit;
+include_once(DOC_ROOT."/services/Catalogo.php");
+include_once(DOC_ROOT."/services/Sello.php");
+include_once(DOC_ROOT."/services/Totales.php");
+include_once(DOC_ROOT."/services/ComprobantePago.php");
+include_once(DOC_ROOT."/services/CfdiUtil.php");
+
+$catalogo = new Catalogo;
+$sello = new Sello;
+$totales = new Totales;
+$comprobantePago = new ComprobantePago;
+$cfdiUtil = new CfdiUtil;
 
 $smarty = new Smarty;
 $smarty->assign('DOC_ROOT',DOC_ROOT);
@@ -220,5 +232,7 @@ function dd($data)
 	print_r($data);
 	echo "</pre>";
 }
+
+require 'vendor/autoload.php';
 
 ?>

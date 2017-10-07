@@ -199,30 +199,6 @@
 	
 	}//switch
 	
-/*	$empresa->Util()->DB()->setQuery("SELECT * FROM empresa WHERE empresaId = ".$_SESSION["empresaId"]." LIMIT 1");			
-	$vencimiento = $empresa->Util()->DB()->GetRow();
-	$vencimiento_move = $vencimiento;
-	$smarty->assign("vencimiento", $vencimiento);
-	
-	$vencimiento = strtotime($vencimiento["vencimiento"]) - (3600 * 24 * 30);
-	$oneMonth = time();
-	
-	if($vencimiento < $oneMonth)
-	{
-		$empresa->Util()->setError(20022, "complete");
-		$empresa->Util()->PrintErrors();
-		
-		$smarty->assign("renew", 1);
-	}	
-	
-	$vencimiento = strtotime($vencimiento_move["vencimiento"]);
-	$now = time() - (3600 * 24 * 7);
-	
-	if($vencimiento < $now)
-	{
-		header("Location:".WEB_ROOT."/activar");
-	}
-*/	
 	$id_rfc = $rfc->getRfcActive();
 	$rfc->setRfcId($id_rfc);
 	$certNuevo = $rfc->GetCertificadoByRfc();

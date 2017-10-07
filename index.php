@@ -112,7 +112,11 @@ include_once(DOC_ROOT.'/libraries.php');
 		'archivos',
 		'cfdi',
 		'cfdiPagos',
-		'customer-only'
+		'customer-only',
+
+		//cfdi 3.3
+		'cfdi33-generate',
+		'cfdi33-generate-pdf',
 
 	);
 
