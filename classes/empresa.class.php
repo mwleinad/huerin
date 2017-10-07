@@ -711,7 +711,7 @@ class Empresa extends Main
 			LEFT JOIN empresa ON usuario.empresaId = empresa.empresaId WHERE email = '".$_SESSION["loginKey"]."'");
 		}
 		$user = $generalDb->GetRow();*/
-		$user["empresaId"] = 15;
+		$user["empresaId"] = $_SESSION['empresaId'];
 		$user["version"] = "v3";
 
 		if(!$user)

@@ -95,6 +95,13 @@ class Producto extends Sucursal
 		return $this->excentoIva;
 	}
 
+	private $cuentaPredial;
+	public function setCuentaPredial($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "Cuenta Predial");
+		$this->cuentaPredial = $value;
+	}
+
 	private $claveProdServ;
 	public function setClaveProdServ($value)
 	{
@@ -165,6 +172,34 @@ class Producto extends Sucursal
 		$value = $this->valorUnitario * $this->cantidad;
 		$this->Util()->ValidateFloat($value, 6);
 		$this->importe = $value;
+	}
+
+	public function setExcentoIsh($value)
+	{
+		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Excento Ish");
+		$this->excentoIsh = $value;
+	}
+
+	public function setPorcentajeIsh($value)
+	{
+		$this->Util()->ValidateFloat($value, 6, 100, 0);
+		$this->porcentajeIsh = $value;
+	}
+
+	public function getPorcentajeIsh()
+	{
+		return $this->porcentajeIsh;
+	}
+
+	public function setPorcentajeIeps($value)
+	{
+		$this->Util()->ValidateFloat($value, 6, 100, 0);
+		$this->porcentajeIeps = $value;
+	}
+
+	public function getPorcentajeIeps()
+	{
+		return $this->porcentajeIeps;
 	}
 	
 	public function getImporte()

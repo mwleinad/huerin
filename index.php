@@ -116,6 +116,7 @@ include_once(DOC_ROOT.'/libraries.php');
 
 		//cfdi 3.3
 		'cfdi33-generate',
+		'cfdi33-generate-pdf',
 
 	);
 
