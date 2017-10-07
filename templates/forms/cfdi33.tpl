@@ -1,3 +1,6 @@
+{if $info.version == "auto"}
+	No puedes facturar debido a que tu esquema de CBB expir&oacute; el 1ro de Abril. Por favor contactenos a nuestros telefonos o correos de asistencia para un cambio de esquema a CFDi.
+{else}
 <div id="divForm">
 	<form id="nuevaFactura" name="nuevaFactura" method="post">
         <input type="hidden" id="calle" name="calle" value="" />
@@ -64,9 +67,9 @@
           </div>
 
           <div style="width:90px;float:left">N&uacute;mero de Cuenta:</div>
-          <div style="width:150px;float:left"><input style="width: 50px" name="NumCtaPago" id="NumCtaPago" type="text" value=""  size="4" maxlength="4" class="largeInput"/></div>
+          <div style="width:100px;float:left"><input name="NumCtaPago" id="NumCtaPago" type="text" value=""  size="4" maxlength="4" class="largeInput"/></div>
 
-          <div style="width:250px;float:left; cursor:pointer" onclick="ToggleDiv('facturaOpciones')"><b>&nbsp;&nbsp;&nbsp;[+] M&aacute;s Opciones</b></div>
+          <div style="width:250px;float:left; cursor:pointer" onclick="ToggleDiv('facturaOpciones')"><b>[+] M&aacute;s Opciones</b></div>
 
       		<div style="clear:both"></div>
         </div>
@@ -92,7 +95,7 @@
             <div style="width:90px;float:left">Tipo de Cambio:</div>
             <div style="width:165px;float:left"><input name="tipoDeCambio" id="tipoDeCambio" type="text" value="{$post.tipoDeCambio}" maxlength="7"  class="largeInput" style="width:140px"/></div>
 
-            <div style="width:85px;float:left; padding-left: 15px">% de Descuento:</div>
+            <div style="width:85px;float:left">% de Descuento:</div>
             <div style="width:135px;float:left"><input name="porcentajeDescuento" id="porcentajeDescuento" type="text" value="{$post.porcentajeDescuento}" maxlength="5"  class="largeInput"  style="width:140px"/></div>
 
             <div style="clear:both"></div>
@@ -135,7 +138,7 @@
             <div style="width:62px;float:left">% IEPS:</div>
             <div style="width:126px;float:left"><input name="porcentajeIEPS" id="porcentajeIEPS" type="text" value="{$post.porcentajeIEPS}" size="12"  class="largeInput"  onblur="UpdateIepsConcepto()"/></div>
 
-            <div style="width:90px;float:left; padding-left: 15px">Sucursal:</div>
+            <div style="width:90px;float:left">Sucursal:</div>
             <div style="width:155px;float:left">
             <select name="sucursalId" id="sucursalId"  class="largeInput" style="width:185px">
             {foreach from=$sucursales item=sucursal}
@@ -153,12 +156,27 @@
           <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
          	{foreach from=$comprobantes item=comprobante}
           <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
-              {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
+          {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
               {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
               {else}BRAUN HUERIN SC{/if}
               {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
           {/foreach}
           </select></div>
+
+{*
+        <div style="width:190px;float:left">Generar cuenta por cobrar?<br>
+        <span style="color: #f00;">Por default la factura se considerara pagada</span></div>
+        <div style="width:40px;float:left">
+        	<input name="cuentaPorPagar" id="cuentaPorPagar" type="checkbox" value="yes" class="largeInput"/>
+		</div>
+*}
+        <div style="width:90px;float:left"><label for="cuentaPorPagar">Si</label></div>
+				{if $SITENAME == "FACTURASE" && ($info.empresaId == 249 || $info.empresaId == 307 || $info.empresaId == 308 || $info.empresaId == 483 || $info.empresaId == 535)}
+        <div style="width:50px;float:left">Formato normal?:</div>
+        <div style="width:40px;float:left">
+        	<input name="formatoNormal" id="formatoNormal" type="checkbox" value="1" class="largeInput"/>
+			</div>
+    		{/if}
 
       		<div style="clear:both"></div>
         </div>
@@ -178,13 +196,13 @@
       <div class="formLine">
           <div style="width:140px;float:left">CFDi relacionado Serie:</div>
           <div style="width:100px;float:left">
-          <input name="cfdiRelacionadoSerie" id="cfdiRelacionadoSerie" type="text" value="" placeholder="Ej: A" class="largeInput" size="6"/></div>
+          <input name="cfdiRelacionadoSerie" id="cfdiRelacionadoSerie" type="text" value="" placeholder="A" class="largeInput" size="6"/></div>
 
-          <div style="width:60px;float:left; padding-left: 15px">Folio:</div>
+          <div style="width:60px;float:left">Folio:</div>
           <div style="width:100px;float:left">
-          <input name="cfdiRelacionadoFolio" id="cfdiRelacionadoFolio" type="text" value="" placeholder="Ej: 125" class="largeInput"  size="6"/></div>
+          <input name="cfdiRelacionadoFolio" id="cfdiRelacionadoFolio" type="text" value="" placeholder="125" class="largeInput"  size="6"/></div>
 
-          <div style="width:100px;float:left; padding-left: 15px">Tipo relacion:</div>
+          <div style="width:100px;float:left">Tipo relacion:</div>
           <div style="width:150px;float:left">
           <select name="tipoRelacion" id="tipoRelacion"  class="largeInput" style="width:315px">
             <option value="04" selected>No tiene CFDi relacionado</option>
@@ -196,6 +214,22 @@
        		<div style="clear:both"></div>
         </div>
 
+        {if $info.empresaId == 113}
+        <div class="formLine">
+        	<div style="width:90px;float:left">Tiempo Limite:</div>
+          	<div style="width:135px;float:left">
+            <input name="tiempoLimite" id="tiempoLimite" type="text" value="" size="18"  class="largeInput"/>
+            </div>
+        </div>
+        {/if}
+
+{if $version == "auto" && ($info.empresaId == 39 || $info.empresaId == 180)}
+      <div class="formLine">
+          <div style="width:90px;float:left">% ISH:</div>
+          <div style="width:126px;float:left"><input name="porcentajeISH" id="porcentajeISH" type="text" value="2"  size="12"  class="largeInput"/></div>
+      		<div style="clear:both"></div>
+        </div>
+{/if}
      <div class="formLine">
  					<hr />
         </div>
@@ -245,6 +279,11 @@
       <div class="formLine">
           <div style="width:100px;float:left">Clv Prod o Serv</div>
           <div style="width:100px;float:left">Clave Unidad</div>
+          <div style="width:100px;float:left">C. Predial</div>
+          <div style="width:120px;float:left">IEPS Tasa o Cuota</div>
+          <div style="width:100px;float:left">IEPS</div>
+          <div style="width:100px;float:left">ISH</div>
+
       		<div style="clear:both"></div>
         </div>
 
@@ -255,31 +294,71 @@
               <input name="c_ClaveUnidad" id="c_ClaveUnidad" type="text" value="EA"  size="8"  class="largeInput" placeholder=""/>
           </div>
 
-          <input name="cuentaPredial" id="cuentaPredial" type="hidden" value="{$post.cuentaPredial}"  size="8" class="largeInput"  placeholder="Opcional"/>
-          <input name="iepsTasaOCouta" id="iepsTasaOCouta" type="hidden" value="Tasa"  size="8" class="largeInput"  placeholder="IEPS"/>
-          <input name="iepsConcepto" id="iepsConcepto" type="hidden" value="{$post.ieps}"  size="8" class="largeInput"  placeholder="IEPS"/>
-          <input name="ishConcepto" id="ishConcepto" type="hidden" value="0"  size="8" class="largeInput"  placeholder="% ISH"/>
+          <div style="width:100px;float:left">
+            <input name="cuentaPredial" id="cuentaPredial" type="text" value="{$post.cuentaPredial}"  size="8" class="largeInput"  placeholder="Opcional"/>
+          </div>
+          <div style="width:100px;float:left">
+            <select style="width: 100px" name="iepsTasaOCouta" id="iepsTasaOCouta" class="largeInput">
+                <option value="Tasa">Tasa</option>
+                <option value="Cuota">Cuota</option>
+            </select>
+          </div>
+          <div style="width:100px;float:left">
+            <input name="iepsConcepto" id="iepsConcepto" type="text" value="{$post.ieps}"  size="8" class="largeInput"  placeholder="IEPS"/>
+          </div>
+          <div style="width:100px;float:left">
+            <input name="ishConcepto" id="ishConcepto" type="text" value="{$post.ish}"  size="8" class="largeInput"  placeholder="% ISH"/>
+          </div>
+
 
       		<div style="clear:both"></div>
         </div>
 
+        {if $info.moduloImpuestos == "Si"}
+        {if $expiredImpuestos}
+      	    Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
+        {else}
+                <div class="formLine">
+                    <div style="width:500px;float:left"><b>Extras para impuestos (Si es 0, no se mostrara)</b></div>
+                    <div style="width:100px;float:left">Subtotal</div>
+                    <div style="width:100px;float:left">IVA</div>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="formLine">
+                    <div style="width:500px;float:left">
+                      <input name="amortizacionFiniquito" id="amortizacionFiniquito" type="text" size="48" class="largeInput" placeholder="" value="IMPORTE DE LA ESTIMACION No 01 (UNO) Y FINIQUITO"/></div>
+                    <div style="width:100px;float:left">
+                      <input name="amortizacionFiniquitoSubtotal" id="amortizacionFiniquitoSubtotal" type="text" value="0.00"  size="8"  class="largeInput" placeholder=""/>
+                    </div>
+                    <div style="width:100px;float:left">
+                      <input name="amortizacionFiniquitoIva" id="amortizacionFiniquitoIva" type="text" value="0.00"  size="8"  class="largeInput" placeholder=""/>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+<div class="formLine">
+                    <div style="width:300px;float:left">Amortizacion del anticipo</div>
+                    <div style="width:200px;float:left">IVA Amortizacion</div>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="formLine">
+                    <div style="width:300px;float:left">
+                      <input name="amortizacion" id="amortizacion" type="text" size="28" class="largeInput" placeholder="" value="0.00"/></div>
+                    <div style="width:200px;float:left">
+                      <input name="amortizacionIva" id="amortizacionIva" type="text" value="0.00"  size="8"  class="largeInput" placeholder=""/>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+            {/if}
+            {/if}
 
       <div class="formLine">
           <div style="width:30%;float:left">
-          <textarea placeholder="Escribe tu concepto aqui" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide">{$post.descripcion}</textarea>
+          <textarea placeholder="Escribe tu concepto aqui" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide" style="font-family: Courier New, Courier, monospace !important">{$post.descripcion}</textarea>
 </div>
       		<div style="clear:both"></div>
+      		<span style="color: #f00; font-weight: bold">La descripcion solo puede tener un maximo de 1000 caracteres. Nueva regla del SAT! </span>
  					<hr />
         </div>
-      {if $info.empresaId == 86}
-      <div class="formLine">
-          <div style="width:30%;float:left">
-          Categoria: <input name="categoriaConcepto" id="categoriaConcepto" type="text" value="{$post.categoriaConcepto}"  size="100" class="largeInput"  placeholder="Categoria: Cambiar Si desea Crear una nueva categoria de Concepto."/>
-</div>
-      		<div style="clear:both"></div>
- 					<hr />
-        </div>
-      {/if}
 			</form>
       <b>Conceptos Cargados:</b>
 			<div id="conceptos">
@@ -293,99 +372,92 @@
       <br /><br />
 
 
+
+
      <div class="formLine">
           <div>Observaciones</div>
           <div><textarea placeholder="Observaciones" name="observaciones" cols="33" rows="5" id="observaciones" class="largeInput wide"></textarea></div>
  					<hr />
   		</div>
 
-{if $info.moduloImpuestos == "Si"}
-
-      {if $expiredImpuestos}
-      	Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
-      {else}
-      <div class="formLine">
-				<div style="width:300px;float:left; cursor:pointer" onclick="ToggleDiv('impuestosOpciones')">[+] Mostrar Formulario de Impuestos<br /><br /></div>
-			</div>
-			<span id="loadingDivImpuesto"></span>
-
-      <div id="impuestosOpciones" style="display:none">
+    {if $info.moduloImpuestos == "Si"}
+        {if $expiredImpuestos}
+      	    Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
+        {else}
         <div class="formLine">
-            <div style="width:80px;float:left">Tasa %:</div>
-            <div style="width:350px;float:left">Impuesto</div>
-            <div style="width:80px;float:left">IVA%</div>
-            <div style="width:80px;float:left">Importe</div>
-            <div style="clear:both"></div>
-          </div>
+		    <div style="width:300px;float:left; cursor:pointer" onclick="ToggleDiv('impuestosOpciones')">[+] Mostrar Formulario de Impuestos<br /><br /></div>
+		</div>
+		<span id="loadingDivImpuesto"></span>
+		<br>
 
-        <form id="impuestoForm" name="impuestoForm">
-        <div class="formLine">
-            <div style="width:80px;float:left">
-            <input name="tasa" id="tasa" type="text" value="{$post.tasa}"  size="5" class="largeInput"/></div>
-            <div style="width:350px;float:left">
-            <input name="impuestoId" id="impuestoId" type="text" value="{$post.impuestoId}"  size="44" class="largeInput"/>
-            <div style="position:relative">
-              <div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionImpuestoDiv">
-              </div>
-           </div>
+        <div style="clear:both"></div>
+        <div id="impuestosOpciones" style="display:none">
+            <div class="formLine">
+                <div style="width:80px;float:left">Tasa %:</div>
+                <div style="width:350px;float:left">Impuesto</div>
+                <div style="width:80px;float:left">IVA%</div>
+                <div style="width:80px;float:left">Importe</div>
             </div>
-            <div style="width:80px;float:left">
-            <input name="iva" id="iva" type="text" value="0"  size="5" class="largeInput"/></div>
-            <div style="width:80px;float:left">
-            <input name="importe" id="importe" type="text" value="0"  size="5" class="largeInput"/></div>
-            <div style="width:146px;float:left">
-            <select name="tipo" id="tipo" class="largeInput">
-          <option value="retencion">Retenci&oacute;n</option>
-          <option value="deduccion">Deducci&oacute;n</option>
-          <option value="impuesto">Impuesto</option>
-          <option value="amortizacion">Amortizaci&oacute;n</option>
-          </select>
-          </div>
-            <div style="width:145px;float:left; cursor:pointer" id="agregarImpuestoDiv" class="button"><span>Agregar Impuesto</span></div>
             <div style="clear:both"></div>
-            <hr />
-          </div>
-        </form>
+
+            <form id="impuestoForm" name="impuestoForm">
+            <div class="formLine">
+                <div style="width:80px;float:left">
+                    <input name="tasa" id="tasa" type="text" value="{$post.tasa}"  size="5" class="largeInput"/>
+                </div>
+                <div style="width:350px;float:left">
+                    <input name="impuestoId" id="impuestoId" type="text" value="{$post.impuestoId}"  size="39" class="largeInput"/>
+                    <div style="position:relative">
+                        <div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionImpuestoDiv"></div>
+                    </div>
+                </div>
+                <div style="width:80px;float:left">
+                    <input name="iva" id="iva" type="text" value="0"  size="5" class="largeInput"/></div>
+                <div style="width:80px;float:left">
+                    <input name="importe" id="importe" type="text" value="0"  size="5" class="largeInput"/></div>
+                <div style="width:146px;float:left">
+                    <select name="tipo" id="tipo" class="largeInput">
+                        <option value="retencion">Retenci&oacute;n</option>
+                        <option value="deduccion">Deducci&oacute;n</option>
+                        <option value="impuesto">Impuesto</option>
+                        <option value="amortizacion">Amortizaci&oacute;n</option>
+                    </select>
+                </div>
+                <div style="width:145px;float:left; cursor:pointer" id="agregarImpuestoDiv" class="button">
+                    <span>Agregar Impuesto</span>
+                    </div>
+                <div style="clear:both"></div>
+                <hr />
+              </div>
+            </form>
         Impuestos Cargados:
         <div id="impuestos">
-        Ninguno (Has click en Agregar Impuesto o Retenci&oacute;n para agregar)
+            Ninguno (Has click en Agregar Impuesto o Retenci&oacute;n para agregar)
         </div>
         <br /><br />
-
-  {if $info.empresaId == 86}
-       <div class="formLine">
-            <div>menos-2% I.S.N:</div>
-            <div><input name="isn" id="isn" /></div>
-        </div>
-       <div class="formLine">
-            <div>menos-5% al millar S.F.P</div>
-            <div><input name="spf" id="spf" /></div>
-        </div>
-  {/if}
-
-       <div class="formLine" style="float:left; width:180px">
+        <div class="formLine" style="float:left; width:180px">
             <div>Autorizo:</div>
             <div><textarea name="autorizo" id="autorizo" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-       <div class="formLine"  style="float:left; width:180px">
+        <div class="formLine"  style="float:left; width:180px">
             <div>Recibi&oacute;:</div>
             <div><textarea name="recibio" id="recibio" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-       <div class="formLine"  style="float:left; width:180px">
+        <div class="formLine"  style="float:left; width:180px">
             <div>VoBo:</div>
             <div><textarea name="vobo" id="vobo" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-       <div class="formLine"  style="float:left; width:180px">
+        <div class="formLine"  style="float:left; width:180px">
             <div>Reviso:</div>
             <div><textarea name="reviso" id="reviso" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-       <div class="formLine"  style="float:left; width:180px">
+        <div class="formLine"  style="float:left; width:180px">
             <div>Pago:</div>
             <div><textarea name="pago" id="pago" class="largeInput" style="text-align:center"></textarea></div>
             <hr />
         </div>
         <div style="clear:both"></div>
-			</div>
+            </div>
       {/if}
 {/if}
             <div style="clear:both"></div>
@@ -422,3 +494,4 @@
 
 
 </div>
+{/if}

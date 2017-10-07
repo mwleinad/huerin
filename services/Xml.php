@@ -1,7 +1,7 @@
 <?php
 class Xml extends Producto{
 
-    private $data;
+    public $data;
     private $totales;
     private $tipoDeCambio;
 
@@ -30,6 +30,8 @@ class Xml extends Producto{
     private $complementos;
     private $impuestosLocales;
     private $impuestoLocal;
+    private $myComplementoNomina;
+    private $complementoDonataria;
 
     private $pagos;
 
@@ -37,10 +39,14 @@ class Xml extends Producto{
     private $comprobantePago;
     private $uuidRelacionado;
 
-    public function __construct()
+    public function __construct($data)
     {
         $this->cfdiUtil = new CfdiUtil();
         $this->comprobantePago = new ComprobantePago();
+
+        $this->data = $data;
+
+        $this->setTipoComprobante();
     }
 
     public function CadenaOriginal($xmlFile) {
@@ -52,7 +58,6 @@ class Xml extends Producto{
         $proc->importStyleSheet($xsl);
 
         $xml = new DOMDocument("1.0","UTF-8");
-
         $xml->load($xmlFile);
         $cadenaOriginal = $proc->transformToXML($xml);
 
@@ -62,15 +67,11 @@ class Xml extends Producto{
         return $cadenaOriginal;
     }
 
-    function Generate($data, $totales, $nodosConceptos,$empresa)
+    function Generate($totales, $nodosConceptos, $empresa)
     {
-        $this->data = $data;
         $this->totales = $totales;
 
-        $this->miEmpresa = [
-            "empresaId" => $this->data["serie"]["empresaId"],
-            "version" => "v3",
-        ];
+        $this->miEmpresa = $this->Info();
 
         $this->nodosConceptos = $nodosConceptos;
 
@@ -79,8 +80,6 @@ class Xml extends Producto{
         $this->formatDate();
 
         $this->getUUIDRelacionado();
-
-        $this->getTipoComprobante();
 
         $this->buildNodoRoot();
 
@@ -103,15 +102,41 @@ class Xml extends Producto{
         $this->buildNodoPagos();
 
         $this->CargaAtt($this->root, $this->buildRootData());
-        //$this->CargaAtt($this->root, $this->buildRootData());
 
         if($this->isPago()) {
-            $xsdPagos = 'http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd';
+            $xsd = 'http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd';
         }
 
-        $this->root->setAttribute("xsi:schemaLocation", "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd ".$this->xsdNomina." ".$this->xsdDonataria." ".$this->xsdImplocal." ".$xsdPagos);
+        if($this->isNomina()){
+            $xsd = "http://www.sat.gob.mx/nomina http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd";
+
+            $this->root->setAttribute('xmlns:nomina12', "http://www.sat.gob.mx/nomina12");
+            $this->root->setAttribute('xmlns:catNomina', "http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Nomina");
+            $this->root->setAttribute('xmlns:tdCFDI', "http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI");
+            $this->root->setAttribute('xmlns:catCFDI', "http://www.sat.gob.mx/sitio_internet/cfd/catalogos");
+        }
+
+        if($this->isDonataria()){
+            $xsd = "http://www.sat.gob.mx/donat http://www.sat.gob.mx/sitio_internet/cfd/donat/donat11.xsd";
+        }
+
+        if($this->totales['porcentajeISH'] > 0){
+            $xsd = "http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd";
+            $this->root->setAttribute('xmlns:implocal', "http://www.sat.gob.mx/implocal");
+        }
+
+        if(count($_SESSION["impuestos"]) > 0) {
+            $xsd = "http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd";
+            $this->root->setAttribute('xmlns:implocal', "http://www.sat.gob.mx/implocal");
+        }
+
+        $this->buildXsd($xsd);
 
         return $this->save();
+    }
+
+    private function buildXsd($xsd = null){
+        $this->root->setAttribute("xsi:schemaLocation", "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd ".$xsd);
     }
 
     private function getUUIDRelacionado(){
@@ -208,7 +233,8 @@ class Xml extends Producto{
             $this->root->setAttribute("xmlns:implocal", "http://www.sat.gob.mx/implocal");
         }
 
-        if($this->miEmpresa['donatarias'] == "Si"){
+        //recibo de donataria
+        if($this->isDonataria()) {
             $this->root->setAttribute("xmlns:implocal", "http://www.sat.gob.mx/donat");
         }
 
@@ -217,15 +243,14 @@ class Xml extends Producto{
         }
 
         $this->tipoDeCambio = $this->Util()->CadenaOriginalVariableFormat($this->data["tipoDeCambio"], true,false, true);
-        if($this->data["fromNomina"])
-        {
+        if($this->isNomina()) {
             $this->fromNominaChanges();
         }
 
 
     }
 
-    private function getTipoComprobante() {
+    public function setTipoComprobante() {
         $this->tipoComprobante = strtoupper(substr($this->data["tipoDeComprobante"],0,1));
     }
 
@@ -233,7 +258,7 @@ class Xml extends Producto{
         return $this->tipoComprobante == 'T';
     }
 
-    private function isPago() {
+    public function isPago() {
         return $this->tipoComprobante == 'P';
     }
 
@@ -245,8 +270,12 @@ class Xml extends Producto{
         return $this->tipoComprobante == 'E';
     }
 
-    private function isNomina() {
+    public function isNomina() {
         return $this->tipoComprobante == 'N';
+    }
+
+    public function isDonataria() {
+        return $this->data['comprobante']["tiposComprobanteId"] == 9;
     }
 
     private function buildRootData() {
@@ -270,6 +299,22 @@ class Xml extends Producto{
             $rootData["CondicionesDePago"] = $this->Util()->CadenaOriginalVariableFormat($this->data["condicionesDePago"],false,false);
         }
 
+        $totalRetenciones = 0;
+        if(count($_SESSION["impuestos"]) > 0) {
+            foreach($_SESSION["impuestos"] as $key => $impuesto) {
+
+                if(!isset($impuesto["parent"])) {
+                    continue;
+                }
+                if($impuesto["tasaIva"] > 0){
+                    $tasa = $impuesto["tasaIva"] / 100;
+                    $impuesto['importe'] = $impuesto['importe'] * (1 + $tasa);
+                }
+                $totalRetenciones += $impuesto['importe'];
+            }
+            $this->totales["subtotal"] = $this->totales["subtotal"] + $totalRetenciones;
+        }
+
         $rootData["SubTotal"] = $this->Util()->CadenaOriginalVariableFormat($this->totales["subtotal"],true,false);
         if($this->isTraspaso() || $this->isPago()){
             $rootData["SubTotal"] = 0;
@@ -291,7 +336,7 @@ class Xml extends Producto{
 
         //TODO algo raro con el % de asignacion, no me preocupare de ello por ahora, checar si
         //puede aplicar cuando sea MXN
-        if(!$this->isPago()){
+        if(!$this->isPago() && !$this->isNomina()){
             $rootData["TipoCambio"] =  $this->Util()->CadenaOriginalFormat($this->tipoDeCambio, $decimals,false);;
         }
 
@@ -322,6 +367,10 @@ class Xml extends Producto{
     }
 
     private function calcularDescuentos() {
+        if($this->isNomina()){
+            return $this->totalDeducciones;
+        }
+
         if($this->isTraspaso() || $this->isPago() || $this->data["porcentajeDescuento"] <= 0){
             return 0;
         }
@@ -362,8 +411,6 @@ class Xml extends Producto{
     }
 
     private function buildNodoEmisor() {
-
-        $this->data["nodoEmisor"]["rfc"]["regimenFiscal"] = 601;
         $this->emisor = $this->xml->createElement("cfdi:Emisor");
         $this->emisor = $this->root->appendChild($this->emisor);
 
@@ -403,20 +450,21 @@ class Xml extends Producto{
         $conceptos = $this->xml->createElement("cfdi:Conceptos");
         $conceptos = $this->root->appendChild($conceptos);
 
+
         foreach($this->nodosConceptos as $concepto)
         {
             $myConcepto = $this->xml->createElement("cfdi:Concepto");
 
-            if($this->data["fromNomina"])
-            {
+            if($this->isNomina()) {
                 $cantidad = $this->Util()->CadenaOriginalVariableFormat($concepto["cantidad"],false,false,false,false,true);
-                $concepto["unidad"] = "ACT";
+                $concepto["unidad"] = "";
                 $concepto["descripcion"] = "Pago de nómina";
                 $concepto["valorUnitario"] = $this->totales["subtotal"];
                 $concepto["importe"] = $this->totales["subtotal"];
-            }
-            else
-            {
+                $concepto["claveProdServ"] = '84111505';
+                $concepto["claveUnidad"] = 'ACT';
+                $concepto["descuento"] = $this->totalDeducciones;
+            } else {
                 $cantidad = $this->Util()->CadenaOriginalVariableFormat($concepto["cantidad"],true,false);
             }
 
@@ -439,7 +487,7 @@ class Xml extends Producto{
                 $conceptoData["Unidad"] = $this->Util()->CadenaOriginalVariableFormat($concepto["unidad"],false,false);
             }
 
-            $conceptoData["Descripcion"] = $this->Util()->CadenaOriginalVariableFormat($concepto["descripcion"],false,false);
+            $conceptoData["Descripcion"] = $concepto["descripcion"];
 
             if($this->isPago()) {
                 $conceptoData["ValorUnitario"] = $this->Util()->CadenaOriginalFormat($concepto["valorUnitario"], 0, false);
@@ -453,7 +501,6 @@ class Xml extends Producto{
                 $conceptoData["Importe"] = $this->Util()->CadenaOriginalVariableFormat($concepto["importe"],true,false);
             }
 
-
             if($concepto["descuento"] > 0) {
                 $conceptoData["Descuento"] = $this->Util()->CadenaOriginalVariableFormat($concepto["descuento"],true,false);
             }
@@ -461,8 +508,7 @@ class Xml extends Producto{
             $myConcepto = $conceptos->appendChild($myConcepto);
             $this->CargaAtt($myConcepto, $conceptoData);
 
-            if(!$this->isPago()) {
-
+            if(!$this->isPago() && !$this->isNomina()) {
                 //Si alguno de los impuestos o retenciones existe, este nodo debe existir sino no
                 if($concepto["totalIva"] + $concepto["totalIeps"] > 0 || ($this->totales["retIva"] + $this->totales["retIsr"] > 0)) {
                     $impuestosConcepto = $this->xml->createElement("cfdi:Impuestos");
@@ -480,6 +526,12 @@ class Xml extends Producto{
                         $trasladoConcepto = $trasladosConcepto->appendChild($trasladoConcepto);
 
                         $tasa = $concepto["tasaIva"] / 100;
+
+                        //Recalculamos importe e iva si tenemos impuesots, estoy es un workaround para no cambiar el desglose
+                        if($_SESSION['impuestos']){
+                            $concepto["importeTotal"] = $concepto['importe'] - $concepto['descuento'];
+                            $concepto["totalIva"] = $concepto["importeTotal"] * $tasa;
+                        }
 
                         $this->CargaAtt($trasladoConcepto, array(
                                 "Base" => $this->Util()->CadenaOriginalVariableFormat($concepto["importeTotal"],true,false),
@@ -514,8 +566,6 @@ class Xml extends Producto{
                         $this->trasladosGlobales['003'][(string)$tasaIeps]["importe"] += $this->Util()->CadenaOriginalVariableFormat($concepto["totalIeps"],true,false);
                         $this->trasladosGlobales['003'][(string)$tasaIeps]["tasaOCuota"] = $concepto["iepsTasaOCuota"];
                     }
-
-                    //TODO ish (aunque creo que ese es impuesto local y va en el complemento
                 }
 
                 if($this->totales["retIva"] + $this->totales["retIsr"] > 0) {
@@ -561,10 +611,7 @@ class Xml extends Producto{
                     }
                 }
             }
-            //TODO hacer pruebas con conceptos exentos
-            //TODO ahora cada concepto lleva Nodo Impuestos, Retenciones y Traslados
 
-            //TODO informacion aduanera
             if(strlen($concepto["cuentaPredial"]) > 0)
             {
                 $cuentaPredial = $this->xml->createElement("cfdi:CuentaPredial");
@@ -574,25 +621,19 @@ class Xml extends Producto{
                     )
                 );
             }
-
-            //TODO complemento concepto  (probablemente nunca se haga)
-            //TODO parte (probablemente nunca se haga)
         }
     }
 
     private function buildNodoImpuestos() {
-       /* if($this->totales["retIva"] + $this->totales["retIsr"] <= 0 || count($this->trasladosGlobales) <= 0){
-            return;
-        }*/
         //TODO return si no hay impuestos
-        if($this->isPago()) {
+        if($this->isPago() || $this->isNomina()) {
             return;
         }
 
         $impuestos = $this->xml->createElement("cfdi:Impuestos");
         $impuestos = $this->root->appendChild($impuestos);
 
-        if(!$this->data["fromNomina"])
+        if(!$this->isNomina())
         {
             $this->CargaAtt($impuestos, array(
                 "TotalImpuestosRetenidos" => $this->Util()->CadenaOriginalVariableFormat($this->totalImpuestosRetenidos,true,false),
@@ -679,8 +720,8 @@ class Xml extends Producto{
             "FormaDePagoP" => $metodoPago,
             "MonedaP" => $tipoDeMoneda,
             "Monto" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false),
-            //"NumOperacion" => uniqid(),
-            "NumOperacion" => 1,
+            "NumOperacion" => uniqid(),
+            //"NumOperacion" => 1,
         ];
 
         if($this->data['tiposDeMonedaPago'] != 'peso'){
@@ -715,42 +756,35 @@ class Xml extends Producto{
     }
 
     private function buildNodoComplementos() {
-        //TODO Para tipo N, P, o T no debe existir
-        if(!$this->isIngreso()) {
+        if(!$this->isIngreso() && !$this->isNomina()) {
             return;
         }
 
         $this->complementos = $this->xml->createElement("cfdi:Complemento");
         $this->complementos = $this->root->appendChild($this->complementos);
 
-        //TODO from nomina
-        if($this->data["fromNomina"])
-        {
-            include_once(DOC_ROOT."/classes/complemento_nomina_12_xml.php");
-            //TODO todo esto debe de ir en el root xml al inicio, no olvidar las lineas comentadas
-            $this->xsdNomina = "http://www.sat.gob.mx/nomina http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd";
-
-/*            $root->setAttribute('xmlns:nomina12', "http://www.sat.gob.mx/nomina12");
-            $root->setAttribute('xmlns:catNomina', "http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Nomina");
-            $root->setAttribute('xmlns:tdCFDI', "http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI");
-            $root->setAttribute('xmlns:catCFDI', "http://www.sat.gob.mx/sitio_internet/cfd/catalogos");*/
+        if($this->isNomina()) {
+            include(DOC_ROOT."/services/complementos/Nomina.php");
         }
 
-        //TODO donatarias
-        if($this->miEmpresa["donatarias"] == "Si")
+        if($this->isDonataria())
         {
-            include_once(DOC_ROOT."/addComplementos/complemento_donataria_xml.php");
-            $this->xsdDonataria = "http://www.sat.gob.mx/donat http://www.sat.gob.mx/sitio_internet/cfd/donat/donat11.xsd";
+            include(DOC_ROOT."/services/complementos/Donatarias.php");
         }
 
         if($this->totales['porcentajeISH'] > 0){
             include(DOC_ROOT."/services/complementos/Ish.php");
             $this->xsdImplocal = "http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd";
         }
+
+        if(count($_SESSION["impuestos"]) > 0) {
+            include(DOC_ROOT."/services/complementos/Impuestos.php");
+            $this->xsdImplocal = "http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd";
+        }
     }
 
     private function save() {
-        $nufa = $_SESSION["empresaId"]."_".$this->data["serie"]["serie"]."_".$this->data["folio"];
+        $nufa = $this->miEmpresa["empresaId"]."_".$this->data["serie"]["serie"]."_".$this->data["folio"];
 
         $rfcActivo = $this->getRfcActive();
         $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
@@ -765,8 +799,6 @@ class Xml extends Producto{
         {
             mkdir($root, 0777);
         }
-
-        @unlink($root.$nufa.".xml");
 
         return $this->xml->save($root.$nufa.".xml");
     }

@@ -61,7 +61,8 @@ class Sello extends Comprobante
         //verify
         exec("openssl dgst -sha256 -verify ".$root."/publickey.txt -out ".$root."/verified.txt -signature ".$root."/md5sha1.txt ".$root."/md5.txt");
 
-        $cadenaOriginalDecoded = utf8_decode($cadenaOriginal);
+        //TODO recordar este que se le quito el utf8
+        $cadenaOriginalDecoded = $cadenaOriginal;
 
         $file = $root.$cert;      // Ruta al archivo
         $datos = file($file);

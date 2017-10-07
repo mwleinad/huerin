@@ -180,6 +180,10 @@ include_once(DOC_ROOT."/services/Sello.php");
 include_once(DOC_ROOT."/services/Totales.php");
 include_once(DOC_ROOT."/services/ComprobantePago.php");
 include_once(DOC_ROOT."/services/CfdiUtil.php");
+include_once(DOC_ROOT."/services/PdfService.php");
+include_once(DOC_ROOT."/services/XmlReaderService.php");
+include_once(DOC_ROOT."/services/QrService.php");
+
 
 $cfdi = new Cfdi;
 $catalogo = new Catalogo;
@@ -187,6 +191,10 @@ $sello = new Sello;
 $totales = new Totales;
 $comprobantePago = new ComprobantePago;
 $cfdiUtil = new CfdiUtil;
+$pdfService = new PdfService;
+$xmlReaderService = new XmlReaderService;
+$qrService = new QrService;
+
 
 $smarty = new Smarty;
 $smarty->assign('DOC_ROOT',DOC_ROOT);
@@ -232,5 +240,8 @@ function dd($data)
     print_r($data);
     echo "</pre>";
 }
+
+require 'vendor/autoload.php';
+
 
 ?>

@@ -1273,6 +1273,8 @@ class Comprobante extends Producto
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
+			$card['version'] = $val['version'];
+			$card['xml'] = $val['xml'];
 
 			$info[$key] = $card;
 			

@@ -2,90 +2,6 @@ var DOC_ROOT = "../";
 var DOC_ROOT_TRUE = "../";
 var DOC_ROOT_SECTION = "../../";
 
-function VistaPreviaComprobante()
-{
-    var message = "Esto solo generara una vista previa, para generar un comprobante da click en Generar Comprobante.";
-    if(!confirm(message))
-    {
-        return;
-    }
-
-    $('showFactura').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /><br>Generando Vista Previa, este proceso puede tardar unos segundos</div>';
-
-    $('nuevaFactura').enable();
-    var nuevaFactura = $('nuevaFactura').serialize();
-    $('nuevaFactura').disable();
-    $('rfc').enable();
-    $('userId').enable();
-    $('formaDePago').enable();
-    $('condicionesDePago').enable();
-    $('metodoDePago').enable();
-    $('tasaIva').enable();
-    $('tiposDeMoneda').enable();
-    $('porcentajeRetIva').enable();
-    $('porcentajeDescuento').enable();
-    $('tipoDeCambio').enable();
-    $('porcentajeRetIsr').enable();
-    $('tiposComprobanteId').enable();
-    $('sucursalId').enable();
-    $('porcentajeIEPS').enable();
-    $('nuevaFactura').enable();
-
-    if($('reviso')) var reviso = $('reviso').value;
-    else var reviso = "";
-
-    if($('autorizo')) var autorizo = $('autorizo').value;
-    else var autorizo = "";
-
-    if($('recibio')) var recibio = $('recibio').value;
-    else var recibio = "";
-
-    if($('vobo')) var vobo = $('vobo').value;
-    else var vobo = "";
-
-    if($('pago')) var pago = $('pago').value;
-    else var pago = "";
-
-    if($('tiempoLimite')) var tiempoLimite = $('tiempoLimite').value;
-    else var tiempoLimite = "";
-
-    if($('porcentajeISH')) var porcentajeISH = $('porcentajeISH').value;
-    else var porcentajeISH = 0;
-
-    if($('formatoNormal'))
-    {
-        if($('formatoNormal').checked)
-            var formatoNormal = $('formatoNormal').value;
-        else
-            var formatoNormal = 0;
-    }
-    else
-    {
-        var formatoNormal = 0;
-    }
-
-    new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
-        {
-            parameters: {nuevaFactura: nuevaFactura, observaciones: $('observaciones').value, type: "vistaPreviaComprobante", reviso: reviso, autorizo: autorizo, recibio: recibio, vobo: vobo, pago: pago, porcentajeISH: porcentajeISH, tiempoLimite:tiempoLimite, formatoNormal:formatoNormal},
-            method:'post',
-            onSuccess: function(transport){
-                var response = transport.responseText || "no response text";
-
-                var splitResponse = response.split("|");
-
-                if(splitResponse[0] == "ok"){
-                    $('showFactura').innerHTML = splitResponse[1];
-                }else{
-                    $('divStatus').innerHTML = splitResponse[1];
-                    $('centeredDiv').show();
-                    grayOut(true);
-                }
-            },
-            onFailure: function(){ alert('Something went wrong...') }
-        });
-}
-
-
 function SuggestUser()
 {
     new Ajax.Request(WEB_ROOT+'/ajax/suggest.php',
@@ -244,21 +160,16 @@ function FillDatosFacturacion(id)
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
+                //splitResponse[3] = splitResponse[3].replace(/\r?\n/g, '<br />');
+                //alert(decodeURIComponent(splitResponse[3]));
                 console.log(splitResponse);
-                $('razonSocial').value = splitResponse[3] +
-                    "\n" + splitResponse[4] +
-                    " " + splitResponse[5] +
-                    " " + splitResponse[6] +
-                    " " + splitResponse[7] +
-                    " " + splitResponse[8] +
-                    " " + splitResponse[9] +
-                    "\n" + splitResponse[10] +
-                    " " + splitResponse[11] +
-                    " " + splitResponse[12] +
-                    " " + splitResponse[13] +
-                    "\n" + splitResponse[14];
-                $('rfc').value = splitResponse[15];
+
+
+                $('razonSocial').value = splitResponse[3];
+                $('rfc').value = splitResponse[4];
                 $('userId').value = splitResponse[16];
+                $('calle').value = splitResponse[6];
+                $('pais').value = splitResponse[7];
                 $('loadingDivDatosFactura').innerHTML = '';
 
             },
@@ -322,7 +233,7 @@ function AgregarImpuesto()
                 }
                 $('impuestos').innerHTML = splitResponse[2];
                 var elements = $$('span.linkBorrarImpuesto');
-                //AddBorrarImpuestosListeners(elements);
+                AddBorrarImpuestosListeners(elements);
 
                 UpdateTotalesDesglosados();
             },
@@ -407,7 +318,7 @@ function UpdateTotalesDesglosados()
         });
 }
 
-function GenerarComprobante()
+function GenerarComprobante(format)
 {
     var message = "Realmente deseas generar un comprobante. Asegurate de que lo estes generando para tu RFC Correcto.";
     if(!confirm(message))
@@ -467,10 +378,9 @@ function GenerarComprobante()
     if($('folioSobre')) var folioSobre = $('folioSobre').value;
     else var folioSobre = "";
 
-/*
-    if($('cuentaPorPagar').checked) var cuentaPorPagar = $('cuentaPorPagar').value;
-    else var cuentaPorPagar = "";
-*/
+    //if($('cuentaPorPagar').checked) var cuentaPorPagar = $('cuentaPorPagar').value;
+    //else var cuentaPorPagar = "";
+    var cuentaPorPagar = "";
 
     if($('formatoNormal')){
         if($('formatoNormal').checked)
@@ -481,9 +391,38 @@ function GenerarComprobante()
         var formatoNormal = 0;
     }
 
+    if($('banco')) var banco = $('banco').value;
+    else var banco = 0;
+
+    if($('fechaDeposito')) var fechaDeposito = $('fechaDeposito').value;
+    else var fechaDeposito = 0;
+
+    if($('referencia')) var referencia = $('referencia').value;
+    else var referencia = 0;
+
     new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php',
         {
-            parameters: {nuevaFactura: nuevaFactura, observaciones: $('observaciones').value, type: "generarComprobante", reviso: reviso, autorizo: autorizo, recibio: recibio, vobo: vobo, pago: pago, fechaSobreDia: fechaSobreDia, fechaSobreMes: fechaSobreMes, fechaSobreAnio: fechaSobreAnio, folioSobre: folioSobre, tiempoLimite:tiempoLimite, formatoNormal:formatoNormal},
+            parameters: {
+                nuevaFactura: nuevaFactura,
+                observaciones: $('observaciones').value,
+                type: 'generarComprobante',
+                reviso: reviso,
+                autorizo: autorizo,
+                recibio: recibio,
+                vobo: vobo,
+                pago: pago,
+                fechaSobreDia: fechaSobreDia,
+                fechaSobreMes: fechaSobreMes,
+                fechaSobreAnio: fechaSobreAnio,
+                folioSobre: folioSobre,
+                tiempoLimite:tiempoLimite,
+                cuentaPorPagar:cuentaPorPagar,
+                formatoNormal:formatoNormal,
+                format:format,
+                banco:banco,
+                fechaDeposito:fechaDeposito,
+                referencia:referencia,
+            },
             method:'post',
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
@@ -504,7 +443,6 @@ function GenerarComprobante()
             onFailure: function(){ alert('Something went wrong...') }
         });
 }
-
 
 function ShowPopUpDiv(id)
 {
@@ -534,7 +472,6 @@ function ShowPopUpDiv(id)
 Event.observe(window, 'load', function() {
     if($('rfc'))
     {
-//		Event.observe($('rfc'), "keyup", function(){ SuggestUser(); FillDatosFacturacion();});
         Event.observe($('rfc'), "keyup", function(){ SuggestUser(); });
     }
     if($('rfc'))
@@ -547,7 +484,9 @@ Event.observe(window, 'load', function() {
     }
     if($('rfc'))
     {
-        Event.observe($('generarFactura'), "click", GenerarComprobante);
+        Event.observe($('generarFactura'), "click", function() {
+            GenerarComprobante('generar');
+        });
     }
     if($('rfc'))
     {
@@ -555,7 +494,9 @@ Event.observe(window, 'load', function() {
         {
             Event.observe($('agregarImpuestoDiv'), "click", AgregarImpuesto);
         }
-        Event.observe($('vistaPrevia'), "click", VistaPreviaComprobante);
+        Event.observe($('vistaPrevia'), "click", function() {
+            GenerarComprobante('vistaPrevia');
+        });
 
     }
 
@@ -567,7 +508,6 @@ Event.observe(window, 'load', function() {
     if($$('span.linkBorrar'))
     {
         var elements = $$('span.linkBorrar');
-        //AddBorrarConceptoListeners(elements);
     }
 
     AddSuggestListener = function(e) {
@@ -638,6 +578,8 @@ function EnviarEmail(id){
             parameters: {type: 'enviar_email', id_comprobante: id},
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
+                console.log(response);
+                //	alert(response);
                 var splitResponse = response.split("[#]");
                 if(splitResponse[0] == "ok"){
                     ShowStatusPopUp(splitResponse[1])

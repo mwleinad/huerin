@@ -233,4 +233,6 @@ function dd($data)
 	echo "</pre>";
 }
 
+require 'vendor/autoload.php';
+
 ?>
