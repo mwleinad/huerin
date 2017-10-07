@@ -51,11 +51,9 @@ function ToggleTask(id)
         onFailure: function(){ alert('Something went wrong...') }
       });
   }
-  
   function HideButtons(){
-	
+
 	var buttons = document.getElementsByClassName("btnEnviar");
-	
 	for(i=0; i<buttons.length; i++){
 		buttons[i].style.display = "none";
 	}

@@ -50,6 +50,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-basica',
 			'report-cliente',
 			'report-servicio',
+        	'report-servicio-drill',
 			'report-cobranza-new',
 			'report-servicio-mensual',
 			'report-servicio-auditoria',

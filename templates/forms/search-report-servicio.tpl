@@ -2,6 +2,7 @@
  
 <form name="frmSearch" id="frmSearch" action="" method="post">
 <input type="hidden" name="type" id="type" value="search" />
+<input type="hidden" name="uplToken" id="uplToken" value="search" />
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />

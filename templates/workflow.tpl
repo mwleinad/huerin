@@ -19,8 +19,8 @@
      	{foreach from=$myWorkflow.steps item=step}
       	
       	<div style=" cursor:pointer; width:150px; float:left; height:100px; min-height:100px; border:solid; border-width:1px; margin:5px; padding:5px; text-align:center; {if $step.stepCompleted}background-color:#006633; color:#FFFFFF{else}background-color:#C00; color:#FFFFFF{/if}" onclick="ToggleTask({$step.stepId})">
-        	Paso No. {$step.step}<br />
-        	<b>{$step.nombreStep}</b><br />
+        	Paso No. {$step.step}<br /><b>{$step.nombreStep}</b><br />
+
           &raquo; Click para Ver Tareas &laquo;
           {if $step.stepCompleted}Completado{/if}
         </div>
@@ -31,8 +31,8 @@
         {/if}
       {/foreach}
       <div style="clear:both"></div>
-      
-     	{foreach from=$myWorkflow.steps item=step key=key}
+
+      {foreach from=$myWorkflow.steps item=step key=key}
       <div style="border:solid; border-width:1px; margin:10px; padding:10px; {if $stepId == $step.stepId}display:block{/if}display:none" id="step-{$step.stepId}" class="tasks">
      	{*if $key == 0 || $step.prevStep.completed == 1*}
      	{if $key == 0 || 1 == 1}

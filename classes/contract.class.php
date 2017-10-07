@@ -1445,7 +1445,25 @@ class Contract extends Main
         }
         return false;
     }
+    public function BuscarGroupCliente($formValues,$activos=false){
+       global $personal;
+       global $user;
 
+       if($formValues['cliente'])
+		  $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
+
+        if($activos)
+            $sqlFilter .= " AND customer.active = '1'";
+
+       $sql = "SELECT contract.*, contract.name AS name,customer.nameContact,customer.customerId
+				FROM contract
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				WHERE 1 ".$sqlFilter." GROUP BY contract.name ORDER BY customer.nameContact ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $resContratos = $this->Util()->DB()->GetResult();
+
+        return $resContratos;
+    }
 	public function BuscarContract($formValues, $activos = false){
 
 		global $personal;
