@@ -8,6 +8,16 @@
                    {if $fact.ext != ''}
                    <a title="Ver Comprobante de Pago" href="{$WEB_ROOT}/download.php?file=payments/{$fact.paymentId}.{$fact.ext}"><img src="{$WEB_ROOT}/images/icons/ver_factura.png" id="{$fact.comprobanteId}" border="0" alt="Ver Factura" width="16" /></a>
                    {/if}
+                    {if $fact.comprobantePagoId}
+                        {*descargar xml*}
+                        <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobantePagoId}&type=download">
+                            <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
+                        </a>
+                        {*descargar xml*}
+                        <a href="{$WEB_ROOT}/sistema/descargar-xml/item/{$fact.comprobantePagoId}">
+                            <img src="{$WEB_ROOT}/images/icons/descargar.png" border="0" width="16" />
+                        </a>
+                    {/if}
                 </td>
               </tr>
              

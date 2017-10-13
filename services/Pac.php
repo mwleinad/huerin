@@ -64,8 +64,9 @@ class Pac33 extends Util
             $response = $client->call('getCfdiTest', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             if($response["faultcode"])
             {
-                print_r($response);
-                return "fault";
+                $data['worked'] = false;
+                $data['response'] = $response;
+                return $data;
             }
             $data = base64_decode($response["getCfdiTestReturn"]);
         }
@@ -74,8 +75,9 @@ class Pac33 extends Util
             $response = $client->call('getCfdi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             if($response["faultcode"])
             {
-                print_r($response);
-                return "fault";
+                $data['worked'] = false;
+                $data['response'] = $response;
+                return $data;
             }
             $data = base64_decode($response["getCfdiReturn"]);
         }
@@ -85,7 +87,9 @@ class Pac33 extends Util
 
         $this->Unzip($xmlConSello['root'], $xmlConSello['zipSignedFile']);
 
-        return $response;
+        $return['worked'] = true;
+        $return['response'] = $response;
+        return $return;
     }
 
     function GetTimbreCfdi($user, $pw, $zipFile, $path, $newFile, $empresa)

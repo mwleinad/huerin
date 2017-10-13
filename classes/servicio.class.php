@@ -72,7 +72,6 @@ class Servicio extends Contract
 	{
 		$init = microtime();
 		$result = $this->EnumerateActive();
-		
 		foreach($result as $key => $value)
 		{	
 			echo 'servicioId = '.$value['servicioId'];
@@ -97,7 +96,7 @@ class Servicio extends Contract
 				//Checar ultima fecha de instancia
 				$this->Util()->DB()->setQuery("
 					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' ORDER BY date DESC LIMIT 1"); 
-				echo $ultimoServicio = $this->Util()->DB()->GetSingle();
+				$ultimoServicio = $this->Util()->DB()->GetSingle();
 
 				switch($value["periodicidad"])
 				{
@@ -108,6 +107,7 @@ class Servicio extends Contract
 					case "Anual": $substract = "-12 month"; break;
 					case "Eventual": continue 2; break;
 				}
+
 				$currentDate = date("Y-m-d");
 				$newdate = strtotime ( $substract , strtotime ( $currentDate ) ) ;
 				$newdate = date ( 'Y-m-d' , $newdate );
@@ -118,12 +118,13 @@ class Servicio extends Contract
 				$startdate=$dateExploded[0]."-".$dateExploded[1]."-01";
 				
 				echo 'primerServicio = '.$primerServicio;
+				echo '<br>periodicidad = '.$value["periodicidad"];
 				echo '<br>ultimoServicio = '.$ultimoServicio;
 				echo '<br>currentDate = '.$currentDate;
 				echo '<br>newdate = '.$newdate;
 				echo '<br>startdate = '.$startdate;
 				if($primerServicio > $startdate)
-				{	
+				{
 					switch($value["periodicidad"])
 					{
 						case "Mensual": $add = "+1 month"; break;
@@ -144,18 +145,27 @@ class Servicio extends Contract
 							}
 						}
 
-						$this->Util()->DB()->setQuery("
-						REPLACE INTO  `instanciaServicio` (
-							`servicioId` ,
-							`date` ,
-							`status`
-						) VALUES (
-							'".$value["servicioId"]."',  
-							'".$dateExploded[0]."-".$dateExploded[1]."-01',  
-							'activa');"
-						);
-						//echo $this->Util()->DB()->query;
-						$this->Util()->DB()->InsertData();
+						$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
+							servicioId = ".$value["servicioId"]."
+						 	AND date = '".$dateExploded[0]."-".$dateExploded[1]."-01'";
+
+						$this->Util()->DB()->setQuery($sql);
+						$count = $this->Util()->DB()->GetSingle();
+
+						if($count == 0) {
+							$sql = "
+								INSERT INTO  `instanciaServicio` (
+									`servicioId` ,
+									`date` ,
+									`status`
+								) VALUES (
+									'".$value["servicioId"]."',
+									'".$dateExploded[0]."-".$dateExploded[1]."-01',
+								'activa')";
+							$this->Util()->DB()->setQuery($sql);
+							$this->Util()->DB()->InsertData();
+						}
+
 						echo '<br>';
 						
 						$startdate = strtotime ( $add , strtotime ( $startdate ) ) ;
@@ -178,22 +188,27 @@ class Servicio extends Contract
 					$addedDate = strtotime ( $add , strtotime ( $ultimoServicio ) ) ;
 					$addedDate = date ( 'Y-m-d' , $addedDate );
 					$explodedAddedDate = explode("-", $addedDate);
-					
-					$this->Util()->DB()->setQuery("
-						REPLACE INTO  `instanciaServicio` (
-							`servicioId`,
-							`date`,
-							`status`
-							)
-							VALUES (
-								'".$value["servicioId"]."',  
-								'".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1',  
-								'activa');"
-							);
-					//		echo $this->Util()->DB()->query;
-					$this->Util()->DB()->InsertData();
-					
-					echo $this->Util()->DB()->getQuery();
+
+					$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
+							servicioId = ".$value["servicioId"]."
+						 	AND date = '".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1'";
+
+					$this->Util()->DB()->setQuery($sql);
+					$count = $this->Util()->DB()->GetSingle();
+
+					if($count == 0) {
+						$sql = "
+								INSERT INTO  `instanciaServicio` (
+									`servicioId` ,
+									`date` ,
+									`status`
+								) VALUES (
+									'".$value["servicioId"]."',
+									'".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1',
+								'activa')";
+						$this->Util()->DB()->setQuery($sql);
+						$this->Util()->DB()->InsertData();
+					}
 					echo '<br>';
 				}
 
@@ -263,7 +278,8 @@ class Servicio extends Contract
 		if($departamentoId!="")
 		  $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 		
-		//$debug = "servicioId = 3594 AND ";
+		$debug = "servicioId = 5307 AND ";
+		//$debug = '';
 		$sql = "SELECT servicioId,  customer.nameContact AS clienteName, 
 				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, 
