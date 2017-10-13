@@ -574,6 +574,26 @@ class CxC extends Producto
 
 	public function DeletePayment($id)
 	{
+		$payment = $this->PaymentInfo($id);
+
+		$eliminarPago = true;
+		if($payment["comprobantePagoId"]) {
+
+			$empresa = new Empresa();
+			$empresa->setComprobanteId($payment["comprobantePagoId"]);
+			$empresa->setMotivoCancelacion("Pago eliminado");
+
+			if(!$empresa->CancelarComprobante()){
+				$eliminarPago = false;
+			}
+		}
+
+		if($eliminarPago === false){
+			$this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
+			$this->Util()->PrintErrors();
+			return false;
+		}
+
 		$this->Util()->DB()->setQuery("
 			DELETE FROM payment WHERE paymentId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
