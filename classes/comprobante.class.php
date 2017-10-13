@@ -766,7 +766,7 @@ class Comprobante extends Producto
 
 	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $recipient)
 	{
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId FROM comprobante
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId, version FROM comprobante
 			LEFT JOIN cliente ON cliente.userId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
 	//	echo $this->Util()->DB()->query;
@@ -811,6 +811,7 @@ class Comprobante extends Producto
 			$uuid = str_replace("\"", "", $theData);
 			$uuid = str_replace("=", "", $uuid);
 			$uuid = str_replace(" ", "", $uuid);
+			$uuid = substr($uuid, 0, 36);
 
 			$path = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/".$row["noCertificado"].".cer.pfx";
 
@@ -834,7 +835,6 @@ class Comprobante extends Producto
 			$this->setRfcId($rfcActivo);
 			$nodoEmisorRfc = $this->InfoRfc();
 			$response = $pac->CancelaCfdi($user, $pw, $nodoEmisorRfc["rfc"], $uuid, $path, $password);
-
 		}
 
 		if(!$response["cancelaCFDiReturn"]["text"])
@@ -843,7 +843,13 @@ class Comprobante extends Producto
 			$this->Util()->PrintErrors();
 			return false;
 		}
-		//echo "here";
+
+		if($row['version'] == '3.3') {
+			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
+			$this->Util()->PrintErrors();
+			return true;
+		}
+
 
 			//$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE comprobante SET status = '0' WHERE comprobanteId = ".$id_comprobante);
 			//$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
