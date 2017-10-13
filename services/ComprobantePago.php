@@ -1,9 +1,8 @@
 <?php
-
 class ComprobantePago extends Comprobante {
 
     private function generateSerieIfNotExists() {
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie");
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE empresaId = '".$_SESSION["empresaId"]."'");
         $serieExistente = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         //Create series if it doesn't exists TODO do not let this serie to be deleted or modified, also hide it from other places
@@ -25,22 +24,21 @@ class ComprobantePago extends Comprobante {
 				`lugarDeExpedicion`,
 				`noCertificado`,
 				`consecutivo`,
-				`rfcId`,
-				`sucursalAsignada`
+				`rfcId`
 			) VALUES
 			(
 				'".$_SESSION["empresaId"]."',
-				'0',
+				'1',
 				'COMPAGO',
 				'1',
 				'999999999',
 				'10',
-				'0',
+				'1',
 				'".$serieExistente['noCertificado']."',
 				'1',
-				'".$activeRfc."',
-				'0'
+				'".$activeRfc."'
 			)");
+            echo $this->Util()->DBSelect($_SESSION["empresaId"])->query;
             return $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
         }
 
@@ -70,6 +68,8 @@ class ComprobantePago extends Comprobante {
 
     public function generar($infoComprobante, $infoPago){
         $cfdi = new Cfdi();
+
+        $_SESSION["empresaId"] = $infoComprobante['empresaId'];
 
         $serieId = $this->generateSerieIfNotExists();
 
@@ -107,8 +107,8 @@ class ComprobantePago extends Comprobante {
 
     public function getPagos($comprobante, $impPagado) {
         $sql =  "SELECT COUNT(*) as pagos, SUM(payment.amount) as totalPagado FROM  payment
-        LEFT JOIN notaVenta ON payment.notaVentaId = notaVenta.notaVentaId
-        WHERE notaVenta.comprobanteId = '".$comprobante["comprobanteId"]."'";
+        LEFT JOIN comprobante ON payment.comprobanteId = comprobante.comprobanteId
+        WHERE comprobante.comprobanteId = '".$comprobante["comprobanteId"]."'";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
@@ -119,6 +119,10 @@ class ComprobantePago extends Comprobante {
         $data["impSaldoAnt"] = $impSaldoAnt;
         $data["impPagado"] = $impPagado;
         $data["impSaldoInsoluto"] = $impSaldoInsoluto;
+
+        if($data["impSaldoInsoluto"] < 0){
+            $data["impSaldoInsoluto"] = 0;
+        }
 
         return $data;
     }

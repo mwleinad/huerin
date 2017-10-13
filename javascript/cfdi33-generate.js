@@ -205,7 +205,7 @@ function AgregarConcepto()
                 }
                 $('conceptos').innerHTML = splitResponse[2];
                 var elements = $$('span.linkBorrar');
-                //AddBorrarConceptoListeners(elements);
+                AddBorrarConceptoListeners(elements);
 
                 UpdateTotalesDesglosados();
             },
@@ -242,7 +242,7 @@ function AgregarImpuesto()
 }
 
 
-function BorrarConcepto(id)
+function BorrarConcepto(e, id)
 {
     new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
         {
@@ -252,7 +252,7 @@ function BorrarConcepto(id)
                 var response = transport.responseText || "no response text";
                 $('conceptos').innerHTML = response;
                 var elements = $$('span.linkBorrar');
-                //AddBorrarConceptoListeners(elements)
+                AddBorrarConceptoListeners(elements)
                 UpdateTotalesDesglosados();
 
             },
@@ -283,7 +283,8 @@ function AddBorrarConceptoListeners(elements)
 {
     elements.each(
         function(e) {
-            var id = $(e).up(0).previous(10).innerHTML;
+            var id = $(e).up(0).previous(8).innerHTML;
+            console.log(id);
             Event.observe(e, "click", function (e) {
                 BorrarConcepto(e, id);
             });

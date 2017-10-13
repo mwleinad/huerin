@@ -20,9 +20,10 @@ session_save_path("/tmp");
 
 include_once(DOC_ROOT.'/init_cron.php');
 include_once(DOC_ROOT.'/config.php');
-include_once(DOC_ROOT.'/libraries.php');
-//echo date("Y-m-d H:i:s");
-//exit;
+include_once(DOC_ROOT.'/libraries33.php');
+
+include_once(DOC_ROOT.'/services/AutomaticCfdi.php');
+$automaticCfdi = new AutomaticCfdi();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s');
 
 if (!isset($_SESSION))
@@ -30,7 +31,6 @@ if (!isset($_SESSION))
     session_start();
 }
 $_SESSION['empresaId'] = 15;
-
 
 $mask = DOC_ROOT.'/temp/15_A_*.*';
 $array = glob($mask);
@@ -40,8 +40,7 @@ $array = glob($mask);
 array_map('unlink', glob($mask));
 if(date("d") < 25)
 {
-    exit;
-    $automaticInvoice->CreateServiceInvoices();
+    $automaticCfdi->CreateServiceInvoices();
 }
 
 $time = date("d-m-Y").' a las '.date('H:i:s');

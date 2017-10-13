@@ -703,10 +703,10 @@ class Xml extends Producto{
 
         switch($this->data['infoPago']->metodoPago) {
             case "Efectivo": $metodoPago = "01";break;
-            case "Tarjeta Credito o Debito": $metodoPago = "04";break;
+            case "Deposito": $metodoPago = "04";break;
             case "Transferencia": $metodoPago = "03";break;
             case "Cheque": $metodoPago = "02";break;
-            case "Otro": $metodoPago = "01";break;
+            default: $metodoPago = "99";break;
         }
 
         switch($this->data['tiposDeMonedaPago']) {
@@ -720,8 +720,8 @@ class Xml extends Producto{
             "FormaDePagoP" => $metodoPago,
             "MonedaP" => $tipoDeMoneda,
             "Monto" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false),
-            "NumOperacion" => uniqid(),
-            //"NumOperacion" => 1,
+            "NumOperacion" => $this->data['infoPago']->operacion,
+            "NumOperacion" => 1,
         ];
 
         if($this->data['tiposDeMonedaPago'] != 'peso'){
