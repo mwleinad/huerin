@@ -721,7 +721,6 @@ class Xml extends Producto{
             "MonedaP" => $tipoDeMoneda,
             "Monto" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false),
             "NumOperacion" => $this->data['infoPago']->operacion,
-            "NumOperacion" => 1,
         ];
 
         if($this->data['tiposDeMonedaPago'] != 'peso'){
