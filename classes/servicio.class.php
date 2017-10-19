@@ -63,6 +63,13 @@ class Servicio extends Contract
 	public function setStatus($value) {
 		$this->status = $value; 
 	}
+    private $_fechaDoc;
+    public function setFechaDoc($value) {
+        if ($value > date('Y-m-d')) {
+            $this->Util()->setError(10054, "error");
+        }
+        $this->fechaDoc = $value;
+    }
 	
 	public function setContratosActivos($value){
 		$this->contratosActivos = $value;
@@ -505,6 +512,25 @@ class Servicio extends Contract
       instanciaServicioId = '".$this->instanciaServicioId."'");
 		$this->Util()->DB()->UpdateData();
 	}
+    public function ChangeDateWorkFlow()
+    {
+        if($this->Util()->PrintErrors()){
+         return false;
+        }
+       $sql = "
+			UPDATE
+				instanciaServicio
+			SET
+				`date` = '".$this->fechaDoc."'
+			WHERE 
+      instanciaServicioId = '".$this->instanciaServicioId."'";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(1, "complete");
+        $this->Util()->PrintErrors();
+        return true;
+    }
   
 	public function Info()
 	{

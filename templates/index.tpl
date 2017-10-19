@@ -13,7 +13,6 @@
 
 {if $page == 'report-servicio-drill'}
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
-<!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"  rel="stylesheet">-->
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap-theme.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
@@ -21,6 +20,8 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/components-rounded.min.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
 {/if}
+<link href="{$WEB_ROOT}/libs/bootstrap-select/css/bootstrap-select.min.css"  />
+<link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
 
@@ -47,7 +48,6 @@
 <script src="{$WEB_ROOT}/javascript/clearbox.js"></script>
 {/if}
 
-
 <style type="text/css">
 {if $page == "docs-files" || $page == "sellado-files" || $page == "services" || $page == "add-documento" || $page == "add-requerimiento" || $page == "add-archivo" || $page == "add-impuesto" || $page == "add-obligacion" || $page == "service-steps"}
 body { background:; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
@@ -66,30 +66,31 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
     DD_belatedPNG.fix('#menu ul li a span span');
 </script>        
 <![endif]-->
-
 {if $page != 'costeo-add' && $page != 'invoice-new'}
-
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
 {if $page eq 'report-servicio-drill'}
-	<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
-	<script>var jQ = jQuery.noConflict()</script>
+
 {/if}
+<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
+<script>var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 
 {if $section == 'consultar-facturas'}
-
 <script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
-
 {/if}
 <script src="{$WEB_ROOT}/javascript/datetimepicker.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
-
-
+<script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
+<script>
+   /* var datepicker = jQ.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
+    jQ.fn.bootstrapDP = datepicker;*/
+</script>
 </head>
 
 <body>
