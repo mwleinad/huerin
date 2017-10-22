@@ -40,6 +40,7 @@ $array = glob($mask);
 array_map('unlink', glob($mask));
 if(date("d") < 25)
 {
+    exit;
     $automaticInvoice->CreateServiceInvoices();
 }
 

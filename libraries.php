@@ -18,6 +18,8 @@ else
 }
 
 
+require 'vendor/autoload.php';
+
 //include_once(DOC_ROOT.'/properties/config.php');
 require(DOC_ROOT.'/libs/Smarty.class.php');
 require(DOC_ROOT.'/libs/nusoap.php');
@@ -99,7 +101,13 @@ include_once(DOC_ROOT.'/classes/pendiente.class.php');
 
 include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
-include_once(DOC_ROOT."/classes/cfdi.class.php");
+
+if($_GET['page'] == 'add-payment') {
+	include_once(DOC_ROOT."/services/Cfdi.php");
+} else{
+	include_once(DOC_ROOT."/classes/cfdi.class.php");
+
+}
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
 
@@ -233,6 +241,5 @@ function dd($data)
 	echo "</pre>";
 }
 
-require 'vendor/autoload.php';
 
 ?>

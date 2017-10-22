@@ -136,6 +136,7 @@
         </tbody>
     </table>
 
+    {*{$xmlData.db.observaciones|urldecode|replace:"[%]MAS[%]":"+"}*}
     <p class="bold no-margin">Conceptos</p>
     {foreach from=$xmlData.conceptos item=concepto}
     <table width="100%" class="outline-table">
@@ -273,7 +274,9 @@
     </table>
     <p class="small-height">&nbsp;</p>
     {/foreach}
-
+    {if $xmlData.db.status == 0}
+        <span style="font-size: 96px; color: #f00; text-align: center">CANCELADO</span>
+    {/if}
     {*Complemento de impuestos*}
     {include file="{$DOC_ROOT}/templates/pdf/complementoImpuestos.tpl"}
 
