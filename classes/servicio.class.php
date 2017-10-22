@@ -278,7 +278,7 @@ class Servicio extends Contract
 		if($departamentoId!="")
 		  $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 		
-		$debug = "servicioId = 5307 AND ";
+		//$debug = "servicioId = 5307 AND ";
 		//$debug = '';
 		$sql = "SELECT servicioId,  customer.nameContact AS clienteName, 
 				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
