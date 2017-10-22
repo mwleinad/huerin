@@ -6,7 +6,7 @@
 
 	if($_POST)
 	{
-		$cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"], $_POST["paymentDate"],$_POST['efectivo']);
+		$cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"], $_POST["paymentDate"],$_POST['efectivo'],$_POST['generarComprobantePago']);
 	}
 	$smarty->assign('mainMnu','cxc');
 
@@ -20,8 +20,7 @@
 			$id_comprobante = $_GET['isid'];
 			$compInfo = $comprobante->GetInfoComprobante($id_comprobante,true);
 		}
-		
-			
+
 			$_SESSION['fromPayments']=true;
 
 						

@@ -18,21 +18,21 @@ class Cfdi extends Comprobante
         $data["tiposComprobanteId"] = $tipoSerie[0];
         $data["tiposSerieId"] = $tipoSerie[1];
 
-        if($data["tiposSerieId"] == "5")
+        if($data["tiposSerieId"] == "5" || $data["tiposSerieId"] == "55")
         {
             $empresaIdFacturador = 15;
             $_SESSION['empresaId'] = 15;
             $empresa['empresaId'] = 15;
             $emisor = $emisorHuerin;
         }
-        elseif($data["tiposSerieId"] == "51")
+        elseif($data["tiposSerieId"] == "51"|| $data["tiposSerieId"] == "54")
         {
             $empresaIdFacturador = 20;
             $_SESSION['empresaId'] = 20;
             $empresa['empresaId'] = 20;
             $emisor = $emisorBraun;
         }
-        elseif($data["tiposSerieId"] == "52")
+        elseif($data["tiposSerieId"] == "52"|| $data["tiposSerieId"] == "53")
         {
             $empresaIdFacturador = 21;
             $_SESSION['empresaId'] = 21;
@@ -132,7 +132,6 @@ class Cfdi extends Comprobante
         {
             $vs->Util()->setError(10047, "error");
         }
-
         if($vs->Util()->PrintErrors()){ return false; }
 
         if($notaCredito)
@@ -147,6 +146,7 @@ class Cfdi extends Comprobante
         }
 
         $serie = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
         if(!$serie)
         {
             $vs->Util()->setError(10047, "error");
@@ -165,20 +165,13 @@ class Cfdi extends Comprobante
         $fecha = $this->Util()->FormatDateAndTime(time() - 600);
         $fechaPago = $this->Util()->FormatDate(time());
 
-        if($_SESSION["empresaId"] == 292)
-        {
-            //$fecha = "2016-06-30 21:49:52";
-        }
-        //$fecha = "2017-09-23 10:49:52";
-
         $data["fechaPago"] = $fechaPago;
-
 
         //el tipo de comprobante lo determina tiposComprobanteId
          $tipoDeComprobante = $this->GetTipoComprobante($data["tiposComprobanteId"]);
         $data["comprobante"] = $this->InfoComprobante($data["tiposComprobanteId"]);
 
-
+        $fecha = "2017-10-12 19:57:09";
         $data["serie"] = $serie;
         $data["folio"] = $folio;
         $data["fecha"] = $fecha;
@@ -223,8 +216,6 @@ class Cfdi extends Comprobante
 
         include_once(DOC_ROOT.'/services/Xml.php');
         $xml = new Xml($data);
-
-
 
         //TODO might move to constructor
         if(!$xml->isNomina()){
@@ -315,13 +306,12 @@ class Cfdi extends Comprobante
 
         $response = $pac->GetCfdi($xmlConSello);
 
-        if(is_array($response))
+        $_SESSION['errorPac'] = '';
+        if($response['worked'] == false)
         {
-            if($response["tipo"] == "error")
-            {
-                $vs->Util()->setError(10047, "error", utf8_encode($response["msg"]));
-                if($vs->Util()->PrintErrors()){ return false; }
-            }
+            $_SESSION['errorPac'] = utf8_encode($response["response"]['faultstring']);
+            $vs->Util()->setError(10047, "error", utf8_encode($response["response"]['faultstring']));
+            if($vs->Util()->PrintErrors()){ return false; }
         }
 
         $timbreXml = $pac->ParseTimbre($xmlConSello['xmlSignedFile'], $data["sello"]);
@@ -336,20 +326,6 @@ class Cfdi extends Comprobante
             $impuestos->generar($xmlConSello, $_SESSION["impuestos"], $_SESSION['firmas'], $_SESSION['amortizacion']);
         }
 
-        //TODO addenda continental
-        /*include_once(DOC_ROOT."/addendas/addenda_xml.php");*/
-        if($empresa["empresaId"] == 15){
-
-            if($data['nodoReceptor']['noControl'] ||
-                $data['nodoReceptor']['carrera'] ||
-                $data['banco'] ||
-                $data['fechaDeposito'] ||
-                $data['referencia']) {
-                include_once(DOC_ROOT."/services/Addendas/Escuela.php");
-                $escuela = new Escuela();
-                $escuela->generar($xmlConSello, $data);
-            }
-        }
         $data["timbreFiscal"] = $cadenaOriginalTimbre;
 
         //cambios 29 junio 2011

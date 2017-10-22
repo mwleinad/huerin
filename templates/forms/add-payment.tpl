@@ -26,7 +26,15 @@
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Importe:</div>
                 <input class="largeInput medium" name="amount" id="amount" type="text" value="" size="50" maxlength="15"/>
-        </div>		
+        </div>
+
+			{if $post.version == '3.3'}
+				<div class="formLine" style="width:100%; text-align:left">
+					<div style="width:25%;float:left; color:#f00">Generar comprobante con complemento de pago por este importe?</div>
+					<!-- CAMPO generarComprobantePago   -->
+					<input type="checkbox" name="generarComprobantePago" checked id="generarComprobantePago">
+				</div>
+			{/if}
 
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">  Comprobante de pago:</div>
