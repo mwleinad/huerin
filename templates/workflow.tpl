@@ -3,16 +3,17 @@
   <div class="grid_9">
   <h1 class="catalogos">Workflow  </h1>
   </div>
-  
-  
   <div class="clear">
   </div>
-  
   <div id="portlets">
+      <form method="post" name="frmWorkFlow" id="frmWorkFlow" onsubmit="return false">
+          <input type="hidden" id="idWorkFlow" name="idWorkFlow" value="{$workFlowId}">
+          <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
+
 	Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
-  {$myWorkflow.date} | <a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a> | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br />
+   <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  onclick="Calendario(this)" value="{$myWorkflow.date}" />
+  </span> | <a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a> | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br /></form>
   <div class="clear"></div>
-  
   <div class="portlet">
       <div class="portlet-content nopadding borderGray" id="contenido" style="padding:15px">
           
