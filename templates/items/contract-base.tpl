@@ -1,6 +1,7 @@
 {foreach from=$contracts item=item key=key}
     {if $User.roleId < 4}
 	<tr id="1">
+        <td align="center" class="id">{$item.contractId}</td>
 		<td align="center" class="id">{$item.name}</td>
 		<td align="center" class="id">{$item.type}</td>
     <td align="center">{$item.rfc}</td>

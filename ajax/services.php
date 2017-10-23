@@ -233,6 +233,23 @@ switch($_POST["type"])
         echo "ok[#]";
         $_SESSION['msgOk'] = 2;
     break;
+    case 'changeDateWorkFlow':
+        $workflowId =  $_POST['id'];
+        $servicio->setInstanciaServicioId($_POST['idWorkFlow']);
+        $servicio->setFechaDoc($_POST['dateNew']);
+        if($servicio->ChangeDateWorkFlow())
+        {
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+        }else{
+           echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+
+
+
+    break;
 		
 }
 ?>

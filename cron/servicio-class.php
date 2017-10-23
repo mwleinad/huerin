@@ -187,7 +187,7 @@ class Servicio extends Contract
 			LEFT JOIN contract ON contract.contractId = servicio.contractId
 			LEFT JOIN customer ON customer.customerId = contract.customerId
 			LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-			WHERE servicio.status = 'activo' AND customer.active = '1'
+			WHERE contractId = 1700 AND servicio.status = 'activo' AND customer.active = '1'
 			".$sqlCustomer.$sqlContract.$addNomina."					
 			ORDER BY clienteName, razonSocialName, nombreServicio ASC");
 		//$this->Util()->DB()->query;

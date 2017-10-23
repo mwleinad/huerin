@@ -672,15 +672,18 @@ class Empresa extends Main
 		$_SESSION["conceptos"] = array();
 		$_SESSION["conceptos"] = $conceptos;
 		
-		if($comprobante->CancelarComprobante($data, $id_comprobante, false, $row["userId"]))
+		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $row["userId"]))
 		{
-			$sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.$date.'" WHERE comprobanteId = '.$id_comprobante;
-			$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);		
-			$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-			
-			$this->Util()->setError(20027, "complete");
-			$this->Util()->PrintErrors();
+			return false;
 		}
+
+		$sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.$date.'" WHERE comprobanteId = '.$id_comprobante;
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+
+		$this->Util()->setError(20027, "complete");
+		$this->Util()->PrintErrors();
+
 		return true;
 	}
 
@@ -711,7 +714,7 @@ class Empresa extends Main
 			LEFT JOIN empresa ON usuario.empresaId = empresa.empresaId WHERE email = '".$_SESSION["loginKey"]."'");
 		}
 		$user = $generalDb->GetRow();*/
-		$user["empresaId"] = 15;
+		$user["empresaId"] = $_SESSION['empresaId'];
 		$user["version"] = "v3";
 
 		if(!$user)

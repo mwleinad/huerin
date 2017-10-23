@@ -766,7 +766,7 @@ class Comprobante extends Producto
 
 	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $recipient)
 	{
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId FROM comprobante
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId, version FROM comprobante
 			LEFT JOIN cliente ON cliente.userId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
 	//	echo $this->Util()->DB()->query;
@@ -811,6 +811,7 @@ class Comprobante extends Producto
 			$uuid = str_replace("\"", "", $theData);
 			$uuid = str_replace("=", "", $uuid);
 			$uuid = str_replace(" ", "", $uuid);
+			$uuid = substr($uuid, 0, 36);
 
 			$path = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/".$row["noCertificado"].".cer.pfx";
 
@@ -834,7 +835,6 @@ class Comprobante extends Producto
 			$this->setRfcId($rfcActivo);
 			$nodoEmisorRfc = $this->InfoRfc();
 			$response = $pac->CancelaCfdi($user, $pw, $nodoEmisorRfc["rfc"], $uuid, $path, $password);
-
 		}
 
 		if(!$response["cancelaCFDiReturn"]["text"])
@@ -843,7 +843,13 @@ class Comprobante extends Producto
 			$this->Util()->PrintErrors();
 			return false;
 		}
-		//echo "here";
+
+		if($row['version'] == '3.3') {
+			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
+			$this->Util()->PrintErrors();
+			return true;
+		}
+
 
 			//$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE comprobante SET status = '0' WHERE comprobanteId = ".$id_comprobante);
 			//$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
@@ -1269,6 +1275,8 @@ class Comprobante extends Producto
 			$card['status'] = $val['status'];
 			$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
 			$card['instanciaServicioId'] = $val['instanciaServicioId'];
+			$card['version'] = $val['version'];
+			$card['xml'] = $val['xml'];
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
@@ -1512,18 +1520,23 @@ class Comprobante extends Producto
 		$serie = $compInfo['serie'];
 		$folio = $compInfo['folio'];
 
-		$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+		if($compInfo['version'] == '3.3') {
+			include_once(DOC_ROOT."/services/PdfService.php");
+			include_once(DOC_ROOT."/services/QrService.php");
+			include_once(DOC_ROOT."/services/XmlReaderService.php");
 
-		$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			$pdfService = new PdfService();
+			$fileName = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio;
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$pdf = $pdfService->generate($id_empresa, $fileName, 'email');
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			file_put_contents($enlace, $pdf);
+		} else {
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+		}
 
-		if($_SESSION["version"] == "v3" || $_SESSION["version"] == "construc")
-		{
-			$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
-		else
-		{
-			$archivo_xml = $id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
+		$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
 
 		$enlace_xml = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo_xml;
 
@@ -1549,7 +1562,6 @@ class Comprobante extends Producto
 
 		foreach($emails as $email)
 		{
-        	echo $email = trim($email);
         	$mail->AddAddress($email, 'Estimado Cliente');
 		}
 
@@ -1659,19 +1671,23 @@ class Comprobante extends Producto
 		$serie = $compInfo['serie'];
 		$folio = $compInfo['folio'];
 
-		$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+		if($compInfo['version'] == '3.3') {
+			include_once(DOC_ROOT."/services/PdfService.php");
+			include_once(DOC_ROOT."/services/QrService.php");
+			include_once(DOC_ROOT."/services/XmlReaderService.php");
 
-		$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
-
-		if($_SESSION["version"] == "v3" || $_SESSION["version"] == "construc")
-		{
-			$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
+			$pdfService = new PdfService();
+			$fileName = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio;
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$pdf = $pdfService->generate($id_empresa, $fileName, 'email');
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
+			file_put_contents($enlace, $pdf);
+		} else {
+			$archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
+			$enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
 		}
-		else
-		{
-			$archivo_xml = $id_empresa.'_'.$serie.'_'.$folio.'.xml';
-		}
 
+		$archivo_xml = "SIGN_".$id_empresa.'_'.$serie.'_'.$folio.'.xml';
 		$enlace_xml = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo_xml;
 
 		/*** End Archivo PDF ***/

@@ -21,7 +21,309 @@ switch($_POST["type"])
 			echo "ok";
 		
 		break;
+	case "searchNivelUno":
+        $year = $_POST['year'];
+
+        $formValues['subordinados'] = $_POST['deep'];
+        $formValues['respCuenta'] = $_POST['responsableCuenta'];
+        $formValues['departamentoId'] = $_POST["departamentoId"];
+        $formValues['cliente'] = $_POST["rfc"];
+        $formValues['atrasados'] = $_POST["atrasados"];
+
+        //Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
+
+        $sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
+					WHERE class = ''";
+        $db->setQuery($sql);
+        $db->UpdateData();
+
+        $contracts = array();
+        if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
+
+            //Si seleccionaron TODOS
+            if($formValues['respCuenta'] == 0){
+
+                $personal->setActive(1);
+                $socios = $personal->ListSocios();
+
+                foreach($socios as $res){
+
+                    $formValues['respCuenta'] = $res['personalId'];
+                    $formValues['subordinados'] = 1;
+
+                    $resContracts = $contract->BuscarContract($formValues, true);
+
+                    $contracts = @array_merge($contracts, $resContracts);
+
+
+                }//foreach
+
+            }else{
+                $contracts = $contract->BuscarContract($formValues, true);
+            }
+
+        }else{
+            $contracts = $contract->BuscarContract($formValues, true);
+        }//else
+
+        $idClientes = array();
+        $idContracts = array();
+        $contratosClte = array();
+		$nameRazones = array();
+        foreach($contracts as $res){
+            $contractId = $res['contractId'];
+            $customerId = $res['customerId'];
+            $nameRazon = $res['name'];
+
+            if(!in_array($customerId,$idClientes))
+                $idClientes[] = $customerId;
+
+            if(!in_array($contractId,$idContracts)){
+                $idContracts[] = $contractId;
+                $contratosClte[$customerId][] = $res;
+            }
+
+
+        }//foreach
 		
+        $clientes = array();
+        //	print_r($idClientes);
+        //	print_r($idContracts);
+        //	print_r($contratosClte);
+        foreach($idClientes as $customerId){
+
+            $customer->setCustomerId($customerId);
+            $infC = $customer->Info();
+
+            $infC['contracts'] = $contratosClte[$customerId];
+
+            $clientes[] = $infC;
+
+        }//foreach
+
+        $resClientes = array();
+        foreach($clientes as $clte){
+            //echo "jere";
+
+            $contratos = array();
+            foreach($clte['contracts'] as $con){
+
+                //Checamos Permisos
+                $resPermisos = explode('-',$con['permisos']);
+                foreach($resPermisos as $res){
+                    $value = explode(',',$res);
+
+                    $idPersonal = $value[1];
+                    $idDepto = $value[0];
+
+                    $personal->setPersonalId($idPersonal);
+                    $nomPers = $personal->GetDataReport();
+
+                    $permisos[$idDepto] = $nomPers;
+                    $permisos2[$idDepto] = $idPersonal;
+                }
+
+                //$personal->setPersonalId($con['responsableCuenta']);
+                //$con['responsable'] = $personal->Info();
+
+                $servicios = array();
+                foreach($con['servicios'] as $serv){
+
+                    $servicio->setServicioId($serv['servicioId']);
+                    $infServ = $servicio->Info();
+
+                    $noCompletados = 0;
+                    for($ii = 1; $ii <= 12; $ii++){
+                        $statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
+
+                        $month = date("m");
+                        if($ii < $month){
+                            if($statusColor["class"] == "PorIniciar" || $statusColor["class"] == "Iniciado")
+                            {
+                                $noCompletados++;
+                            }
+                        }
+
+                        //Si es Servicio de Domicilio Fiscal, que no lleve colores
+                        if($statusColor['tipoServicioId'] == 16)
+                            $statusColor['class'] = '';
+
+                        if($statusColor['tipoServicioId'] == 34)
+                            $statusColor['class'] = '';
+
+                        if($statusColor['tipoServicioId'] == 24)
+                            $statusColor['class'] = '';
+
+                        if($statusColor['tipoServicioId'] == 37)
+                            $statusColor['class'] = '';
+
+                        $serv['instancias'][$ii] = $statusColor;
+                    }
+
+                    $tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
+                    $deptoId = $tipoServicio->GetField('departamentoId');
+
+                    $serv['responsable'] = $permisos[$deptoId];
+
+                    if($formValues['atrasados'])
+                    {
+                        if($noCompletados > 0)
+                        {
+                            $servicios[] = $serv;
+                        }
+                    }
+                    else
+                    {
+                        $servicios[] = $serv;
+                    }
+
+                }//foreach
+                $con['instanciasServicio'] = $servicios;
+
+                $contratos[] = $con;
+
+            }//foreach
+            $clte['contracts'] = $contratos;
+
+            $resClientes[] = $clte;
+
+        }//foreach
+
+        $cleanedArray = array();
+
+        //$cleanedArray = $resClientes;
+
+        /*foreach($resClientes as $key => $cliente)
+        {
+            foreach($cliente["contracts"] as $keyContract => $contract)
+            {
+                foreach($contract["instanciasServicio"] as $keyServicio => $servicio)
+                {
+                    $card["comentario"] = $servicio["comentario"];
+                    $card["servicioId"] = $servicio["servicioId"];
+                    $card["nameContact"] = $cliente["nameContact"];
+                    $card["tipoPersonal"] = $servicio["responsable"]["tipoPersonal"];
+                    $card["responsable"] = $servicio["responsable"]["name"];
+                    $card["name"] = $contract["name"];
+                    $card["instanciasServicio"] = $servicio["instancias"];;
+                    $card["nombreServicio"] = $servicio["nombreServicio"];;
+                    $cleanedArray[] = $card;
+                }
+            }
+        }*/
+		$newArray = array();
+
+		foreach ($resClientes as $key => $cliente)
+		{
+			$customerId = $cliente["customerId"];
+		    //$customerRazones[$customerId]["razones"] = array();
+
+            //$cliente["razones"] = array();
+			$detailRazon =array();
+            $cad =  array();
+            $cntXrzn=  array();
+			foreach($cliente["contracts"] as $keyContract => $contract){
+				$razon = $contract["name"];
+				if(in_array($razon, $cad))
+				{
+				   $cntXrzn[$razon][] =  $contract;
+				}else{
+				   $cad[]= $razon;
+				   $cr['nombreRazon'] = $contract['name'];
+				   $cr['rfc'] = $contract['rfc'];
+				   $detailRazon [] = $cr;
+				   $cntXrzn[$razon][] = $contract;
+				}
+			}
+		  $newR =  array();
+		  foreach($detailRazon as $rn){
+		  	 $cad2["nombreRazon"]=$rn['nombreRazon'];
+		  	 $cad2["rfc"]=$rn['rfc'];
+		  	 $cad2["totalContract"] = count($cntXrzn[$rn['nombreRazon']]);
+		  	 $cad2["contractXrazon"] = $cntXrzn[$rn['nombreRazon']];
+			 $newR[]= $cad2;
+		  }
+		  $cliente["razones"] = $newR;
+		  unset($cliente["contracts"]);
+		  $newArray[] = $cliente;
+		}
+//		echo "<pre>";
+//		print_r($newArray);
+//		exit;
+
+		$groupService = array();
+		$newCustomer = array();
+
+		foreach($newArray as $key => $cliente)
+		{
+			$serviciosPorRazon =  array();
+			foreach($cliente["razones"] as $ky => $razon)
+			{
+				$servXrzn = array();
+				$insXserv =  array();
+				$arrayServicios = array();
+				$detailServices = array();
+				foreach($razon["contractXrazon"] as $ky2 => $val2)
+                {
+                  foreach($val2['instanciasServicio'] as $ky3 => $val3)
+				  {
+				  	$tipoId =  $val3["tipoServicioId"];
+				  	if(in_array($tipoId,$arrayServicios))
+					{
+                        $insXserv[$tipoId][]= $val3;
+					}
+					else{
+                        $arrayServicios [] =  $tipoId;
+                        $cd["nombreServicio"] = $val3["nombreServicio"];
+                        $cd["tipoServicioId"] = $tipoId;
+                        $cd["servicioId"] = $val3["servicioId"];
+
+                        $detailServices[] = $cd;
+                        $insXserv[$tipoId] = $val3['instancias'];
+
+					}
+				  }
+
+				  foreach($detailServices as $ky4 => $val4){
+                    $val4["instanciasXservicio"] = $insXserv[$val4['tipoServicioId']];
+                    $servXrzn[] = $val4;
+				  }
+
+			    }
+			    unset($razon['contractXrazon']);
+			    $razon["servicios"] = $servXrzn;
+                $cliente["razones"][$ky] = $razon;
+			}
+
+         $newCustomer[] = $cliente;
+		}
+//        echo "<pre>";
+//		print_r($newCustomer);
+//		exit;
+
+       /* $personalOrdenado = $personal->ArrayOrdenadoPersonal();
+
+        $sortedArray = array();
+        foreach($personalOrdenado as $personalKey => $personalValue)
+        {
+            foreach($cleanedArray as $keyCleaned => $cleanedArrayValue)
+            {
+                if($personalValue["name"] == $cleanedArrayValue["responsable"])
+                {
+                    $sortedArray[] = $cleanedArrayValue;
+                    unset($cleanedArrayValue[$keyCleaned]);
+                }
+            }
+        }*/
+
+        $clientesMeses = array();
+        $smarty->assign("cleanedArray", $sortedArray);
+        $smarty->assign("clientes", $newCustomer);
+        $smarty->assign("clientesMeses", $clientesMeses);
+        $smarty->assign("DOC_ROOT", DOC_ROOT);
+        $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-level-one.tpl');
+
+        break;
 	case "search":
 	case "sendEmail":
 	case "graph":
@@ -68,7 +370,6 @@ switch($_POST["type"])
 			}else{
 				$contracts = $contract->BuscarContract($formValues, true);
 			}//else
-
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
@@ -104,8 +405,7 @@ switch($_POST["type"])
 			
 			$resClientes = array();
 			foreach($clientes as $clte){
-				//echo "jere";
-				
+
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
 
@@ -189,7 +489,7 @@ switch($_POST["type"])
 				$resClientes[] = $clte;
 				
 			}//foreach
-			
+
 			$cleanedArray = array();
 			
 			//$cleanedArray = $resClientes;
@@ -227,7 +527,7 @@ switch($_POST["type"])
 					}
 				}
 			}
-			
+
 			$clientesMeses = array();
 			$smarty->assign("cleanedArray", $sortedArray);
 			$smarty->assign("clientes", $resClientes);

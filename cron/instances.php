@@ -38,6 +38,7 @@ else
 	$mask = DOC_ROOT.'/temp/20_B_*.*';
 	$array = glob($mask);
 	array_map('unlink', glob($mask));
+	//la clase es servicio.class.php
 	$servicio->CreateServiceInstances();
 	//exit;
 

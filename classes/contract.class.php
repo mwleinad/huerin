@@ -1445,7 +1445,25 @@ class Contract extends Main
         }
         return false;
     }
+    public function BuscarGroupCliente($formValues,$activos=false){
+       global $personal;
+       global $user;
 
+       if($formValues['cliente'])
+		  $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
+
+        if($activos)
+            $sqlFilter .= " AND customer.active = '1'";
+
+       $sql = "SELECT contract.*, contract.name AS name,customer.nameContact,customer.customerId
+				FROM contract
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				WHERE 1 ".$sqlFilter." GROUP BY contract.name ORDER BY customer.nameContact ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $resContratos = $this->Util()->DB()->GetResult();
+
+        return $resContratos;
+    }
 	public function BuscarContract($formValues, $activos = false){
 
 		global $personal;
@@ -1667,8 +1685,6 @@ class Contract extends Main
 								$subordinadosPermiso = array(
 									$User["userId"]);
 							} else {
-							 // echo $User["userId"];
-								//print_r($subordinados);
 								$subordinadosPermiso = array();
 								foreach ($subordinados as $sub) {
 									array_push($subordinadosPermiso, $sub["personalId"]);
@@ -1679,10 +1695,6 @@ class Contract extends Main
 							if ($User["roleId"] == 1 || $User["roleId"] == 4) {
 								$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 							} else {
-								//echo "test";
-								//print_r($subordinadosPermiso);
-								//print_r($conPermiso);
-								//print_r($value);
 								foreach ($subordinadosPermiso as $usuarioPermiso) {
 									if (in_array($usuarioPermiso, $conPermiso)) {
 										$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
@@ -1932,7 +1944,6 @@ class Contract extends Main
           '".$this->claveIsn."')"
     );
 
-    /** echo $this->Util()->DB()->query; */
     $contractId = $this->Util()->DB()->InsertData();
 
       $sql = "SELECT * FROM contract WHERE contractId = '".$contractId."'";
@@ -2122,7 +2133,6 @@ class Contract extends Main
       $sendmail = new SendMail();
 
       $personal = new Personal();
-      //echo $this->responsableCuenta;
       $personal->setPersonalId($this->responsableCuenta);
       $responsables = $personal->jefes($this->responsableCuenta, $idList=array());
 
@@ -2510,8 +2520,7 @@ class Contract extends Main
             {
                 $personal->setPersonalId($value);
                 $userInfo = $personal->Info();
-                echo $to = $userInfo["email"];
-                echo " ";
+                $to = $userInfo["email"];
                 //$to = "comprobantefiscal@braunhuerin.com.mx";
                 $toName = $userInfo["name"];
                 $body = $complete.".Razon social: ".$info["name"]." fue hecha por ".$_SESSION["User"]["username"];
