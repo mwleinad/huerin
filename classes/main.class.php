@@ -85,6 +85,38 @@ class Main
 		return $result;
 	}
 
+	function ListTipoDeMoneda33()
+	{
+		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("comprobante", "tipoDeMoneda");
+
+		$monedas = array();
+		foreach($result as $key => $moneda)
+		{
+			switch($moneda)
+			{
+				case "peso":
+					$monedas[$key]["tipo"] = "MXN";
+					$monedas[$key]["moneda"] = "Peso";
+					break;
+				case "dolar":
+					$monedas[$key]["tipo"] = "USD";
+					$monedas[$key]["moneda"] = "Dolar";
+					break;
+				case "euro":
+					$monedas[$key]["tipo"] = "EUR";
+					$monedas[$key]["moneda"] = "Euro";
+					break;
+				case "quetzal":
+					$monedas[$key]["tipo"] = "GTQ";
+					$monedas[$key]["moneda"] = "quetzal";
+					break;
+
+			}
+		}
+//		print_r($monedas);
+		return $monedas;
+	}
+
 	function ListExcentoIva()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("concepto", "excentoIva");

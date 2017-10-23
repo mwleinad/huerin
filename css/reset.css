@@ -41,3 +41,31 @@ del{
 table{
 /*	border-collapse:collapse;border-spacing:0
 */}
+button, html input[type=button] {
+	-webkit-appearance: button; /* cursor: pointer; */
+}
+.btn{
+	margin-bottom: 5px!important;
+	display: inline-block;
+	margin-bottom: 0;
+	font-weight: 400;
+	text-align: center;
+	vertical-align: middle;
+	touch-action: manipulation;
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+.btn-xs {
+	padding: 1px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 3px;
+}
+.btn.green {
+	color: #FFF;
+	background-color: #32c5d2;
+	border-color: #32c5d2;
+}
+.btn:not(.btn-sm):not(.btn-lg) {
+	line-height: 1.44;
+}

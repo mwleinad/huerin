@@ -185,12 +185,11 @@ class Override extends Comprobante
 //$pdf->MultiCell(80,4,$infoReceptor,0);
 				
 		//block sucursal
-		echo "aaaaa";
-		
+
 			$infoSucursal = urldecode($data["nodoEmisor"]["sucursal"]["identificador"]);
 			$infoSucursal .= "\n".urldecode("Direccion: ".$data["nodoEmisor"]["sucursal"]["calle"]." ".$data["nodoEmisor"]["sucursal"]["noExt"]." ".$data["nodoEmisor"]["sucursal"]["noInt"]);
 			$infoSucursal .= "\n".urldecode($data["nodoEmisor"]["sucursal"]["colonia"]);
-			echo $infoSucursal .= "\n".urldecode($data["nodoEmisor"]["sucursal"]["municipio"]." ".$data["nodoEmisor"]["sucursal"]["estado"]." ".$data["nodoEmisor"]["sucursal"]["pais"]." \nCP: ".$data["nodoEmisor"]["sucursal"]["cp"]);
+			$infoSucursal .= "\n".urldecode($data["nodoEmisor"]["sucursal"]["municipio"]." ".$data["nodoEmisor"]["sucursal"]["estado"]." ".$data["nodoEmisor"]["sucursal"]["pais"]." \nCP: ".$data["nodoEmisor"]["sucursal"]["cp"]);
 			//$infoSucursal .= "\n".urldecode("RFC: ".$data["nodoEmisor"]["sucursal"]["rfc"]);
 			
 			$pdf->SetFillColor(30,30,30);
@@ -367,7 +366,6 @@ class Override extends Comprobante
 		{
 			$totales["total"] = floor($totales["total"]);
 		}
-		//echo $centavosLetra;
 		$cantidadLetra = $this->Util()->num2letras($totales["total"], false);
 		//tipo de cambio
 		switch($data["tiposDeMoneda"])
@@ -405,7 +403,6 @@ class Override extends Comprobante
 		$y = $pdf->GetY()+3;
 		$pdf->SetY($y);
 		$pdf->SetX($xstart);
-//echo $data["formaDePago"];
 		$pdf->SetTextColor(255, 255, 255);
 		$pdf->MultiCell(25,3,"Tipo De Pago",0);
 		$pdf->SetY($y);
@@ -451,7 +448,6 @@ class Override extends Comprobante
 		$pdf->SetX($xstart+20);
 		$pdf->SetTextColor(0,0,0);
 		$pdf->MultiCell(31,3,"$".$this->Util()->CadenaOriginalPDFFormat($totales["iva"], true,false),0,"R",0);
-//print_r($totales);
 		if($totales["retIva"] != 0)
 		{
 			$pdf->SetY($pdf->GetY());

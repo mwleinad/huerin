@@ -10,5 +10,5 @@
 	}
 	$workflow->setInstanciaServicioId($_GET["id"]);
 	$workflow->DeleteControl($_GET["delete"]);
-	header("Location:".WEB_ROOT."/workflow/id/".$_GET["id"]);
+	header("Location:".WEB_ROOT."/report-servicio-drill");
 ?>

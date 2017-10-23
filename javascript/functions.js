@@ -45,6 +45,7 @@ function ToogleStatusDiv()
 function ToogleStatusDivOnPopup()
 {
 	$('centeredDivOnPopup').toggle();
+    grayOut(false);
 }
 
 function AddNoticePopup(id)
@@ -366,4 +367,9 @@ function ToggleSpecifiedDiv(id)
 			});
 		}
 	});
+}
+
+function ToggleDiv(id)
+{
+	$(id).toggle();
 }

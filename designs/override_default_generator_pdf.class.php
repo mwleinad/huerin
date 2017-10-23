@@ -7,19 +7,6 @@ class OverrideGenerator extends Main
 		global $rfc;
 		global $comprobante;
 
-		//echo $data["nodoEmisor"]["rfc"]["rfc"];
-/*		if($data["nodoEmisor"]["rfc"]["rfc"] == "BABJ701019LD7")
-		{
-			$_SESSION["empresaId"] = 20;
-		}
-		if($data["nodoEmisor"]["rfc"]["rfc"] == "BCO160224ECA")
-		{
-			$_SESSION["empresaId"] = 21;
-		}
-		else
-		{
-			$_SESSION["empresaId"] = 15;
-		}				*/
  		$_SESSION["empresaId"] = $empresa["empresaId"];
 
 		//Instanciation of inherited class
@@ -41,13 +28,9 @@ class OverrideGenerator extends Main
 		$qrRfc = strtoupper($data["nodoEmisor"]["rfc"]["rfc"]);
 		$nufa = $serie["serieId"].".jpg";
 		
-		//print_r($serie);
-		//echo $rootQr.$nufa;
-		//exit;
 		if(file_exists($rootQr.$nufa))
 		{
-			//$pdf->Image($rootQr.$nufa,$xstart+160,$setY+15, 27.5, 27.5,'PNG'); 		
-			$pdf->Image($rootQr.$nufa,2,10, 25,25); 		
+			$pdf->Image($rootQr.$nufa,2,10, 25,25);
 		}
 
 		$nufa = $_SESSION["empresaId"]."_".$serie["serie"]."_".$data["folio"];

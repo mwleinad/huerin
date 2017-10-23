@@ -38,7 +38,7 @@ class CxC extends Producto
 						LEFT JOIN contract ON contract.contractId = c.userId
 						LEFT JOIN customer ON customer.customerId = contract.customerId
 						LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
-						WHERE c.status='1' AND customer.active = '1'
+						WHERE c.status='1' AND c.tiposComprobanteId != 10 AND customer.active = '1'
 						".$sqlSearch."
 						ORDER BY fecha DESC ".$sqlAdd;
 						
@@ -444,7 +444,7 @@ class CxC extends Producto
 		return true;
 	}
 
-	public function AddPayment($id, $metodoDePago, $amount, $fecha,$efectivo=false)
+	public function AddPayment($id, $metodoDePago, $amount, $fecha,$efectivo=false, $comprobantePago)
 	{
 		$amount = $this->Util()->limpiaNumero($amount);
 		$fecha = $this->Util()->FormatDateMySql($fecha);
@@ -470,9 +470,9 @@ class CxC extends Producto
 		$comprobante = new Comprobante;
 
 		if($efectivo)
-		$compInfo = $comprobante->GetInfoComprobante($id,true);
+			$compInfo = $comprobante->GetInfoComprobante($id,true);
 		else
-		$compInfo = $comprobante->GetInfoComprobante($id);
+			$compInfo = $comprobante->GetInfoComprobante($id);
 
 		$user = new User;
 		if($efectivo)
@@ -480,6 +480,26 @@ class CxC extends Producto
 		else
 		$user->setUserId($compInfo['userId'],1);
 		$usr = $user->GetUserInfo();
+
+		$comprobanteId = null;
+		if($comprobantePago){
+			$comprobantePago = new ComprobantePago();
+
+
+			$infoPago = new stdClass();
+
+			$infoPago->fecha = $fecha;
+			$infoPago->amount = $amount;
+			$infoPago->metodoPago = $metodoDePago;
+			$infoPago->operacion = uniqid();
+			$comprobanteId = $comprobantePago->generar($compInfo, $infoPago);
+
+			if($_SESSION['errorPac']) {
+				$this->Util()->setError(10046, "error", $_SESSION['errorPac']);
+				$this->Util()->PrintErrors();
+				return false;
+			}
+		}
 
 		if($metodoDePago == "Saldo a Favor")
 		{
@@ -529,6 +549,7 @@ class CxC extends Producto
 				`metodoDePago` ,
 				`amount` ,
 				`ext` ,
+				`comprobantePagoId`,
 				`paymentDate`
 				)
 				VALUES (
@@ -536,6 +557,7 @@ class CxC extends Producto
 				'".$metodoDePago."',
 				'".$amount."',
 				'".$ext."',
+				'".$comprobanteId."',
 				'".$fecha."'
 			)");
 		$paymentId = $this->Util()->DB()->InsertData();
@@ -552,6 +574,26 @@ class CxC extends Producto
 
 	public function DeletePayment($id)
 	{
+		$payment = $this->PaymentInfo($id);
+
+		$eliminarPago = true;
+		if($payment["comprobantePagoId"]) {
+
+			$empresa = new Empresa();
+			$empresa->setComprobanteId($payment["comprobantePagoId"]);
+			$empresa->setMotivoCancelacion("Pago eliminado");
+
+			if(!$empresa->CancelarComprobante()){
+				$eliminarPago = false;
+			}
+		}
+
+		if($eliminarPago === false){
+			$this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
+			$this->Util()->PrintErrors();
+			return false;
+		}
+
 		$this->Util()->DB()->setQuery("
 			DELETE FROM payment WHERE paymentId = '".$id."'");
 		$this->Util()->DB()->DeleteData();

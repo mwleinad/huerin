@@ -32,7 +32,6 @@ switch($_POST["type"])
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
-	//echo "<pre>";print_r($_POST);exit;
 
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 
@@ -68,8 +67,6 @@ switch($_POST["type"])
 			}else{
 				$contracts = $contract->BuscarContract($formValues, true);
 			}//else
-			//echo count($contracts);
-			//print_r($contracts);
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
@@ -105,11 +102,9 @@ switch($_POST["type"])
 
 			$resClientes = array();
 			foreach($clientes as $clte){
-				//echo "jere";
 
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
-					//echo "jere2";
 
 					//Checamos Permisos
 					$resPermisos = explode('-',$con['permisos']);
@@ -274,7 +269,6 @@ switch($_POST["type"])
 				$clte['contracts'] = $contratos;
 
 				$resClientes[] = $clte;
-			//echo serialize($resClientes)." {} ";
 			}//foreach
 			//die();
 			$alfabeto = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,Ñ,O,P,Q,R,S,T,U,V,W,X,Y,Z";
@@ -303,10 +297,6 @@ switch($_POST["type"])
 					}
 				}
 			}
-			// echo "<pre>";
-			// print_r($resClientes);
-			// echo "</pre>";
-			// exit;
 
 			if($period == "efm"){
 				$monthNames = array("Ene", "Feb", "Mar");

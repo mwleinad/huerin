@@ -3,24 +3,25 @@
   <div class="grid_9">
   <h1 class="catalogos">Workflow  </h1>
   </div>
-  
-  
   <div class="clear">
   </div>
-  
   <div id="portlets">
+      <form method="post" name="frmWorkFlow" id="frmWorkFlow" onsubmit="return false">
+          <input type="hidden" id="idWorkFlow" name="idWorkFlow" value="{$workFlowId}">
+          <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
+
 	Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
-  {$myWorkflow.date} | <a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a> | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br />
+   <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  onclick="Calendario(this)" value="{$myWorkflow.date}" />
+  </span> | <a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a> | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br /></form>
   <div class="clear"></div>
-  
   <div class="portlet">
       <div class="portlet-content nopadding borderGray" id="contenido" style="padding:15px">
           
      	{foreach from=$myWorkflow.steps item=step}
       	
       	<div style=" cursor:pointer; width:150px; float:left; height:100px; min-height:100px; border:solid; border-width:1px; margin:5px; padding:5px; text-align:center; {if $step.stepCompleted}background-color:#006633; color:#FFFFFF{else}background-color:#C00; color:#FFFFFF{/if}" onclick="ToggleTask({$step.stepId})">
-        	Paso No. {$step.step}<br />
-        	<b>{$step.nombreStep}</b><br />
+        	Paso No. {$step.step}<br /><b>{$step.nombreStep}</b><br />
+
           &raquo; Click para Ver Tareas &laquo;
           {if $step.stepCompleted}Completado{/if}
         </div>
@@ -31,8 +32,8 @@
         {/if}
       {/foreach}
       <div style="clear:both"></div>
-      
-     	{foreach from=$myWorkflow.steps item=step key=key}
+
+      {foreach from=$myWorkflow.steps item=step key=key}
       <div style="border:solid; border-width:1px; margin:10px; padding:10px; {if $stepId == $step.stepId}display:block{/if}display:none" id="step-{$step.stepId}" class="tasks">
      	{*if $key == 0 || $step.prevStep.completed == 1*}
      	{if $key == 0 || 1 == 1}

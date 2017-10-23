@@ -50,6 +50,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-basica',
 			'report-cliente',
 			'report-servicio',
+        	'report-servicio-drill',
 			'report-cobranza-new',
 			'report-servicio-mensual',
 			'report-servicio-auditoria',
@@ -111,7 +112,11 @@ include_once(DOC_ROOT.'/libraries.php');
 		'archivos',
 		'cfdi',
 		'cfdiPagos',
-		'customer-only'
+		'customer-only',
+
+		//cfdi 3.3
+		'cfdi33-generate',
+		'cfdi33-generate-pdf',
 
 	);
 
