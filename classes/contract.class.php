@@ -1430,7 +1430,6 @@ class Contract extends Main
 
     private function contratWithPermission($contrato, $respCuenta, $skip){
         $split = split('-',$contrato['permisos']);
-
         foreach($split as $sp){
             $split2 = split(',',$sp);
 
@@ -1468,8 +1467,7 @@ class Contract extends Main
 
 		global $personal;
 		global $User;
-
-		if($formValues['cliente'])
+        if($formValues['cliente'])
 		  $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
 
 		if($formValues['razonSocial'])
@@ -1515,7 +1513,6 @@ class Contract extends Main
 		$this->Util()->DB()->setQuery($sql);
 		$resContratos = $this->Util()->DB()->GetResult();
 		$contratos = array();
-
 		foreach($resContratos as $res){
 
             $encontrado = $this->contratWithPermission($res, $respCuenta, $skip);
@@ -1544,7 +1541,6 @@ class Contract extends Main
 
 		}//foreach
 		//INCLUIR SUBORDINADOS
-
 		if(!$formValues['subordinados'])
 			return $contratos;
 
