@@ -65,9 +65,6 @@ class Servicio extends Contract
 	}
     private $_fechaDoc;
     public function setFechaDoc($value) {
-        if ($value > date('Y-m-d')) {
-            $this->Util()->setError(10054, "error");
-        }
         $this->fechaDoc = $value;
     }
 	
