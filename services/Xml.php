@@ -132,6 +132,8 @@ class Xml extends Producto{
 
         $this->buildXsd($xsd);
 
+//        print_r($this->save());
+
         return $this->save();
     }
 
@@ -798,6 +800,7 @@ class Xml extends Producto{
         {
             mkdir($root, 0777);
         }
+        //print_r($this->xml);exit;
 
         return $this->xml->save($root.$nufa.".xml");
     }
