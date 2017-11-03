@@ -18,7 +18,7 @@ class AutomaticCfdi extends Comprobante
 			WHERE empresaId = '20' ORDER BY rfcId ASC LIMIT 1");
         $emisorBraun = $this->Util()->DB()->GetRow();
 
-        $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE customerId = 1320");
+        $this->Util()->DB()->setQuery("SELECT * FROM customer");
         $clientes = $this->Util()->DB()->GetResult();
         $data = array();
         foreach($clientes as $key => $cliente)
@@ -556,6 +556,7 @@ class AutomaticCfdi extends Comprobante
         //exit;
         //Contratos
         unset($data);
+        unset($_SESSION["conceptos"]);
         foreach($contratos as $contractId => $servicios){
             //	echo "jere";
             $this->Util()->DB()->setQuery("SELECT facturador FROM contract WHERE contractId = '".$contractId."'");
@@ -588,16 +589,15 @@ class AutomaticCfdi extends Comprobante
             echo $contractId.' :: '.$value["facturador"];
             echo "<br>";
 
-            $subtotal = $res["costoServicio"];
+            $subtotal = 0;
             $idInstServ = array();
             $_SESSION["conceptos"] = array();
             $tasaIva = $emisor["iva"];
-
-            $iva = $subtotal * ($emisor["iva"] / 100);
-            $total = $subtotal + $iva;
             foreach($servicios as $res){
 
+                $iva = $res["costoServicio"] * ($emisor["iva"] / 100);
                 $subtotal += $res["costoServicio"];
+                $total = $subtotal + $iva;
 
                 $fecha = explode("-", $res["date"]);
                 $fechaText = $months[$fecha[1]]." del ".$fecha["0"];

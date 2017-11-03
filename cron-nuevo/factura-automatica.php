@@ -1,5 +1,5 @@
 <?php
-//exit;
+
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
