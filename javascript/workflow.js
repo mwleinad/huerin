@@ -24,7 +24,7 @@ function Calendario(input){
 }
 function ToggleTask(id)
 {
-	$('.tasks').each(
+	$$('.tasks').each(
 		 function (e) {
 				e.setStyle({display:'none'}); 
 		 } 

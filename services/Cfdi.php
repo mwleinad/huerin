@@ -171,7 +171,7 @@ class Cfdi extends Comprobante
          $tipoDeComprobante = $this->GetTipoComprobante($data["tiposComprobanteId"]);
         $data["comprobante"] = $this->InfoComprobante($data["tiposComprobanteId"]);
 
-        $fecha = "2017-10-12 19:57:09";
+        //$fecha = "2017-10-12 19:57:09";
         $data["serie"] = $serie;
         $data["folio"] = $folio;
         $data["fecha"] = $fecha;
