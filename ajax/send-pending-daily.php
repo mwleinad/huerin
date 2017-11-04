@@ -200,10 +200,10 @@ foreach($employees as $key=>$itemEmploye){
         $toName = $itemEmploye["name"];
         $attachment = DOC_ROOT."/sendFiles/".$fileName.".xlsx";
 
-        $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName, $attachment2, $fileName2,'' , "ENVIOS AUTOMATICOS") ;
-        $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-        $db->setQuery($up);
-        $db->UpdateData();
+        //$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName, $attachment2, $fileName2,'' , "ENVIOS AUTOMATICOS") ;
+       // $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+       // $db->setQuery($up);
+       // $db->UpdateData();
         exit;
     }
 

@@ -1345,7 +1345,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 			return $fechaMes;
 		}
 	}
-function GetMesGuion($fecha)
+    function GetMesGuion($fecha)
 	{
 		if(!empty($fecha)) //	2013/12/31----->31/Dic/2013
 		{
@@ -1360,6 +1360,13 @@ function GetMesGuion($fecha)
 		$mesArray = array("00","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic");
 		return $mesArray[($numMes*1)];
 	}
+	function ConvertToLineal($array=array(),$field){
+	    $newArray = array();
+	    foreach($array as $k=>$val)
+	        $newArray[] =  $val[$field];
+
+	    return $newArray;
+    }
 
 
 
