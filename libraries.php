@@ -203,7 +203,6 @@ $smarty->assign('WEB_ROOT',WEB_ROOT);
 $smarty->assign('property', $property);
 
 $lang = $util->ReturnLang();
-
 $User = $_SESSION['User'];
 
 $infoUser = $user->Info();

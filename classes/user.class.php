@@ -26,9 +26,9 @@ class User extends Sucursal
 	//private functions
 	function Info()
 	{
+
 		if(!$this->userId)
 			$this->userId = $_SESSION["User"]["userId"];
-
 		if($_SESSION["User"]["roleId"] == 4){
 			$sql = "SELECT * FROM customer WHERE customerId = '".$this->userId."'";
 			$this->Util()->DB()->setQuery($sql);

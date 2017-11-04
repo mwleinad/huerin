@@ -32,7 +32,7 @@ if(isset($_GET['page'])&&$_GET['page'] == 'cfdi33-generate-pdf') {
   mb_language('uni');
   mb_regex_encoding('UTF-8');
   ob_start('mb_output_handler');
-};
+}
 
 
 
