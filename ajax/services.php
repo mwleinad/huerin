@@ -221,7 +221,7 @@ switch($_POST["type"])
     
     case "cancelWorkFlow":
       $servicio->setInstanciaServicioId($_POST['instanciaServicioId']);	
-      	$servicio->setStatus("inactiva");	
+      	$servicio->setStatus("baja");
         $servicio->CancelWorkFlow();
         echo "ok[#]";
         $_SESSION['msgOk'] = 1;

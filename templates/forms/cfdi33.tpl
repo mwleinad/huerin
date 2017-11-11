@@ -289,7 +289,7 @@
 
       <div class="formLine">
           <div style="width:100px;float:left">
-              <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="01010101"  size="8" class="largeInput" placeholder=""/></div>
+              <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="84111500"  size="8" class="largeInput" placeholder=""/></div>
           <div style="width:100px;float:left">
               <input name="c_ClaveUnidad" id="c_ClaveUnidad" type="text" value="EA"  size="8"  class="largeInput" placeholder=""/>
           </div>
