@@ -628,7 +628,6 @@ class AutomaticCfdi extends Comprobante
             $data["idFactura"] = $res["instanciaServicioId"]; //Duda
 
 
-            $data["formaDePago"] = "99";
             $data["condicionesDePago"] = "";
             $data["tasaIva"] = $tasaIva;
             $data["tiposDeMoneda"] = "MXN";
@@ -782,8 +781,13 @@ class AutomaticCfdi extends Comprobante
                 "password" => ""
             );
 
-            $metodoDePago = $res["metodoDePago"];
-            $data["metodoDePago"] = $metodoDePago;
+            $formaDePago = $res["metodoDePago"];
+
+            if($formaDePago == 'NA'){
+                $formaDePago = 99;
+            }
+
+            $data["formaDePago"] = $formaDePago;
             $data["NumCtaPago"] = $res["noCuenta"];
 
             if(strlen($data["NumCtaPago"]) != 4){
