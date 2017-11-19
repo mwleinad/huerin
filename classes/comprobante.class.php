@@ -1446,6 +1446,8 @@ class Comprobante extends Producto
 			$card['comprobanteId'] = $val['comprobanteId'];
 			$card['status'] = $val['status'];
 			$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
+            $card['version'] = $val['version'];
+            $card['xml'] = $val['xml'];
 
 			$card['instanciaServicioId'] = $val['instanciaServicioId'];
 
