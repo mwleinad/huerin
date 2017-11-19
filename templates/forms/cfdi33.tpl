@@ -155,12 +155,14 @@
           <div style="width:340px;float:left">
           <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
          	{foreach from=$comprobantes item=comprobante}
-          <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
-          {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
-              {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
-              {else}BRAUN HUERIN SC{/if}
-              {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
-          {/foreach}
+                {if $comprobante.serie != 'COMPAGO'}
+                  <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
+                  {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
+                      {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
+                      {else}BRAUN HUERIN SC{/if}
+                      {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
+                {/if}
+            {/foreach}
           </select></div>
 
 {*
