@@ -613,7 +613,7 @@ class AutomaticCfdi extends Comprobante
                     "descripcion" => $concepto,
                     "tasaIva" => $tasaIva,
                     "claveProdServ" => '84111500',
-                    "claveUnidad" => 'EA',
+                    "claveUnidad" => 'E48',
                     'importeTotal' => $res["costoServicio"],
                     'totalIva' => $iva,
                 );
