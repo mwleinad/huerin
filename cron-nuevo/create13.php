@@ -18,9 +18,13 @@ else
 
 	session_save_path("/tmp");
 
-	include_once(DOC_ROOT.'/init.php');
-	include_once(DOC_ROOT.'/config.php');
-	include_once(DOC_ROOT.'/libraries.php');
+include_once(DOC_ROOT.'/init_cron.php');
+include_once(DOC_ROOT.'/config.php');
+include_once(DOC_ROOT.'/libraries33.php');
+
+include_once(DOC_ROOT.'/services/month13.class.php');
+$month13 = new Month13;
+
 	
 	if (!isset($_SESSION)) 
 	{

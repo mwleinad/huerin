@@ -48,7 +48,7 @@ include_once(DOC_ROOT."/classes/CNumeroaLetra.class.php");
 include_once(DOC_ROOT."/classes/pac.class.php");
 include_once(DOC_ROOT.'/classes/automatic-invoice.class.php');
 include_once(DOC_ROOT.'/classes/automatic-invoice-rif.class.php');
-include_once(DOC_ROOT.'/classes/month13.class.php');
+//include_once(DOC_ROOT.'/classes/month13.class.php');
 include_once(DOC_ROOT.'/classes/automatic-invoice-braun.class.php');
 
 include_once(DOC_ROOT.'/classes/excel.class.php');
@@ -161,7 +161,7 @@ $xmlGen = new XmlGen;
 $pac = new Pac;
 $automaticInvoice = new AutomaticInvoice;
 $automaticInvoiceRif = new AutomaticInvoiceRif;
-$month13 = new Month13;
+
 $automaticInvoiceBraun = new AutomaticInvoiceBraun;
 $sendmail = new SendMail;
 $excel = new Excel;

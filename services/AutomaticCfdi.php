@@ -18,7 +18,7 @@ class AutomaticCfdi extends Comprobante
 			WHERE empresaId = '20' ORDER BY rfcId ASC LIMIT 1");
         $emisorBraun = $this->Util()->DB()->GetRow();
 
-        $this->Util()->DB()->setQuery("SELECT * FROM customer");
+        $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE customerId = 31");
         $clientes = $this->Util()->DB()->GetResult();
         $data = array();
         foreach($clientes as $key => $cliente)
@@ -781,11 +781,12 @@ class AutomaticCfdi extends Comprobante
                 "password" => ""
             );
 
-            $formaDePago = $res["metodoDePago"];
+/*            $formaDePago = $res["metodoDePago"];
 
             if($formaDePago == 'NA'){
                 $formaDePago = 99;
-            }
+            }*/
+            $formaDePago = 99;
 
             $data["formaDePago"] = $formaDePago;
             $data["NumCtaPago"] = $res["noCuenta"];
@@ -798,7 +799,7 @@ class AutomaticCfdi extends Comprobante
 
             $data['userId'] = $res["contractId"];
             $data['format'] = 'generar';
-            $data['metodoDePago'] = 'PUE';
+            $data['metodoDePago'] = 'PPD';
             $data['cfdiRelacionadoSerie'] = null;
             $data['cfdiRelacionadoFolio'] = null;
             $data['tipoRelacion'] = '04';

@@ -142,7 +142,8 @@
     <table width="100%" class="outline-table">
         <tbody>
         <tr class="border-bottom border-right center font-smallest">
-            <td class="border-top" width="10%"><strong>Cve del producto/servicio</strong></td>
+            <td class="border-top" width="5%"><strong>Cve prod/serv</strong></td>
+            <td class="border-top" width="5%"><strong>Cve unidad</strong></td>
             <td class="border-top" width="10%"><strong>No. identification</strong></td>
             <td class="border-top" width="10%"><strong>Cantidad</strong></td>
             <td class="border-top" width="10%"><strong>Unidad</strong></td>
@@ -152,6 +153,7 @@
         </tr>
         <tr class="border-right border-bottom">
             <td class="left">{$concepto.concepto.ClaveProdServ}</td>
+            <td class="left">{$concepto.concepto.ClaveUnidad}</td>
             <td class="left">{$concepto.NoIdentificacion}</td>
             <td class="left">{$concepto.concepto.Cantidad}</td>
             <td class="left">{$concepto.concepto.Unidad}</td>
@@ -160,7 +162,7 @@
             <td class="right">{$concepto.concepto.Descuento|number}</td>
         </tr>
         <tr class="border-right border-bottom">
-            <td colspan="7" class="pad-left pre" style="font-family: monospace">
+            <td colspan="8" class="pad-left pre" style="font-family: monospace">
                 {$concepto.concepto.Descripcion|nl2br|replace:" ":"&nbsp;"|replace:"[%]MAS[%]":"+"}
 
                 {if $xmlData.amortizacionData.amortizacionFiniquitoSubtotal > 0 || $xmlData.amortizacionData.amortizacion > 0}
@@ -193,11 +195,7 @@
                                 <td class="no-border right"><u>{$xmlData.amortizacionData.amortizacionIva+$xmlData.amortizacionData.amortizacion|number}</u></td>
                             </tr>
                         {/if}
-                        <tr>
-                            <td colspan="4">
-                                &nbsp;
-                            </td>
-                        </tr>
+
                         <tr class="no-border">
                             <td class="no-border left"></td>
                             <td class="no-border right"></td>
@@ -212,7 +210,7 @@
             <td colspan="3" width="100%" class="pad-left no-border-right">
                 &nbsp;
             </td>
-            <td colspan="4" width="100%" class="pad-left no-border-left padding-vertical">
+            <td colspan="5" width="100%" class="pad-left no-border-left padding-vertical">
                 {if count($concepto.traslados) > 0}
                 <table width="100%" class="outline-table no-border">
                     <tbody>
@@ -272,7 +270,9 @@
         </tr>
         </tbody>
     </table>
+{*
     <p class="small-height">&nbsp;</p>
+*}
     {/foreach}
     {if $xmlData.db.status == 0}
         <span style="font-size: 96px; color: #f00; text-align: center">CANCELADO</span>

@@ -34,7 +34,7 @@
             </a>
         </li>
         <li class="item middle" id="four">
-        	<a href="{$WEB_ROOT}/sistema/nueva-factura" class="main {if $mainMnu == "admin-folios"} current{/if}">
+        	<a href="{$WEB_ROOT}/cfdi33-generate" class="main {if $mainMnu == "admin-folios"} current{/if}">
             	<span class="outer">
                 	<span class="inner invoice">Facturacion</span>
                 </span>
@@ -48,16 +48,6 @@
                 </span>
             </a>
         </li>        
-
-{*
-        <li class="item middle" id="three">
-        	<a href="{$WEB_ROOT}/cfdi" class="main{if $mainMnu == "cfdi"} current{/if}">
-            	<span class="outer">
-                	<span class="inner event_manager png">Comprobante<br /> Digital</span>
-                </span>
-            </a>
-        </li>        
-*}
 
         <li class="item last" id="three">
         	<a href="{$WEB_ROOT}/report-documentacion-permanente" class="main{if $mainMnu == "reportes"} current{/if}">
