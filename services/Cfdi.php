@@ -199,7 +199,7 @@ class Cfdi extends Comprobante
         if($data['nodoEmisor']['rfc']['regimenFiscal'] == 'REGIMEN%20GENERAL%20DE%20LEY%20PERSONAS%20MORALES') {
             $data['nodoEmisor']['rfc']['regimenFiscal'] = '601';
         } else {
-            $data['nodoEmisor']['rfc']['regimenFiscal'] = '605';
+            $data['nodoEmisor']['rfc']['regimenFiscal'] = '612';
         }
 
         $userId = $data["userId"];

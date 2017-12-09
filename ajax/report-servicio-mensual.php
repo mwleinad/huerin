@@ -29,8 +29,6 @@ switch($_POST["type"])
 				$page = "report-servicio";
 			}
 
-	echo "<pre>";print_r($_POST);exit;
-
 
 			$deep = ($_POST['deep']) ? "subordinado" : "propio";
 					

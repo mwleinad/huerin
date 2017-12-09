@@ -667,7 +667,7 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 			{
 				$empresaIdFacturador = 21;
 				$_SESSION['empresaId'] = 21;
-				$emisor = $emisorBHSC;
+                $emisor = $emisorHuerin;
 				$nombreFactura = "Factura";
 			}
 			if($value["facturador"] == "Huerin")
@@ -693,24 +693,32 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 			$subtotal = 0;
 			$idInstServ = array();
 			$_SESSION["conceptos"] = array();
+            $tasaIva = $emisor["iva"];
 			foreach($servicios as $res){
 
-				$subtotal += $res["costoServicio"];
+                $iva = $res["costoServicio"] * ($emisor["iva"] / 100);
+                $subtotal += $res["costoServicio"];
+                $total = $subtotal + $iva;
 
-				$fecha = explode("-", $res["date"]);
-				$fechaText = $months[$fecha[1]]." del ".$fecha["0"];
-				$concepto = $res["nombreServicio"]." MES 13";
+                $fecha = explode("-", $res["date"]);
+                $fechaText = $months[$fecha[1]]." del ".$fecha["0"];
+                $concepto = $res["nombreServicio"]." CORRESPONDIENTE AL MES 13";
+                //$concepto = "SERVICIOS CONTABLES MES 13";
 
-				$_SESSION["conceptos"][] = array(
-						"noIdentificacion" => "",
-						"cantidad" => 1,
-						"unidad" => "No Aplica",
-						"valorUnitario" => $res["costoServicio"],
-						"importe" => $res["costoServicio"],
-						"excentoIva" => "no",
-						"descripcion" => $concepto,
-						"tasaIva" => $tasaIva
-				);
+                $_SESSION["conceptos"][] = array(
+                    "noIdentificacion" => "",
+                    "cantidad" => 1,
+                    "unidad" => "No Aplica",
+                    "valorUnitario" => $res["costoServicio"],
+                    "importe" => $res["costoServicio"],
+                    "excentoIva" => "no",
+                    "descripcion" => $concepto,
+                    "tasaIva" => $tasaIva,
+                    "claveProdServ" => '84111500',
+                    "claveUnidad" => 'E48',
+                    'importeTotal' => $res["costoServicio"],
+                    'totalIva' => $iva,
+                );
 
 				echo  $res["nombreServicio"]." ".$res["instanciaServicioId"]." ".$res["name"]." ".$res["rfc"]." ".$res["costoServicio"];
 				echo "<br>";
@@ -720,42 +728,35 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 			}//foreach
 
 
-
-			$iva = $subtotal * ($emisor["iva"] / 100);
-			$total = $subtotal + $iva;
-			$tasaIva = $emisor["iva"];
-
 			$data["idFactura"] = $res["instanciaServicioId"]; //Duda
 
 
-			$data["formaDePago"] = "PAGO EN UNA SOLA EXHIBICION";
-			$data["condicionesDePago"] = "";
-			$data["tasaIva"] = $tasaIva;
-			$data["tiposDeMoneda"] = "MXN";
-			$data["porcentajeRetIva"] = 0;
-			$data["porcentajeDescuento"] = 0;
-			$data["tipoDeCambio"] = 0;
-			$data["porcentajeRetIsr"] = 0;
-			$data["tiposComprobanteId"] = 1;
-			$data["porcentajeIEPS"] = 0 ;
+            $data["condicionesDePago"] = "";
+            $data["tasaIva"] = $tasaIva;
+            $data["tiposDeMoneda"] = "MXN";
+            $data["porcentajeRetIva"] = 0;
+            $data["porcentajeDescuento"] = 0;
+            $data["tipoDeCambio"] = 1.00;
+            $data["porcentajeRetIsr"] = 0;
+            $data["porcentajeIEPS"] = 0 ;
 
-			//get serie
-			$this->Util()->DB()->setQuery("SELECT * FROM serie WHERE empresaId = '".$empresaIdFacturador."'
+            //get serie
+            $this->Util()->DB()->setQuery("SELECT * FROM serie WHERE empresaId = '".$empresaIdFacturador."'
 				ORDER BY serieId ASC LIMIT 1");
-			$serie = $this->Util()->DB()->GetRow();
-			//agregar serie
-			$data["serie"] = array
-			(
-					"serieId" => $serie["serieId"],
-					"serie" => $serie["serie"],
-					"empresaId" => $serie["empresaId"],
-					"tiposComprobanteId" => $serie["tiposComprobanteId"],
-					"lugarDeExpedicion" => $serie["lugarDeExpedicion"],
-					"noCertificado" => $serie["noCertificado"],
-					"email" => $serie["email"],
-					"consecutivo" => $serie["consecutivo"],
-					"rfcId" => $serie["rfcId"]
-			);
+            $serie = $this->Util()->DB()->GetRow();
+            //agregar serie
+            $data["serie"] = array
+            (
+                "serieId" => $serie["serieId"],
+                "serie" => $serie["serie"],
+                "empresaId" => $serie["empresaId"],
+                "tiposComprobanteId" => $serie["tiposComprobanteId"],
+                "lugarDeExpedicion" => $serie["lugarDeExpedicion"],
+                "noCertificado" => $serie["noCertificado"],
+                "email" => $serie["email"],
+                "consecutivo" => $serie["consecutivo"],
+                "rfcId" => $serie["rfcId"]
+            );
 
 			$data["comprobante"] = array
 			(
@@ -768,77 +769,78 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 			$emisor["rfc"] = trim(str_replace("-", "", $emisor["rfc"]));
 			$emisor["rfc"] = str_replace(" ", "", $emisor["rfc"]);
 
-			$data["nodoEmisor"]["rfc"] = array
-			(
-					"rfcId" => $emisor["rfcId"],
-					"empresaId" => $empresaIdFacturador,
-					"regimenFiscal" => $emisor["regimenFiscal"],
-					"rfc" => $emisor["rfc"],
-					"razonSocial" => $emisor["razonSocial"],
-					"pais" => $emisor["pais"],
-					"calle" => $emisor["calle"],
-					"noExt" => $emisor["noExt"],
-					"noInt" => $emisor["noInt"],
-					"colonia" => $emisor["colonia"],
-					"localidad" => $emisor["localidad"],
-					"municipio" => $emisor["municipio"],
-					"ciudad" => $emisor["ciudad"],
-					"referencia" => $emisor["referencia"],
-					"estado" => $emisor["estado"],
-					"cp" => $emisor["cp"],
-					"activo" => $emisor["activo"],
-					"main" => $emisor["main"]
-			);
+            $data["nodoEmisor"]["rfc"] = array
+            (
 
-			if($value["facturador"] == "BHSC")
-			{
-				$data["nodoEmisor"]["sucursal"] = array
-				(
-						"identificador" => "Matriz",
-						"rfcId" => $emisor["rfcId"],
-						"empresaId" => $empresaIdFacturador,
-						"regimenFiscal" => $emisor["regimenFiscal"],
-						"rfc" => $emisor["rfc"],
-						"razonSocial" => $emisor["razonSocial"],
-						"pais" => $emisor["pais"],
-						"calle" => "NAVARRA",
-						"noExt" => "210",
-						"noInt" => "PB",
-						"colonia" => "Alamos",
-						"localidad" => "BENITO JUAREZ",
-						"municipio" => "BENITO JUAREZ",
-						"ciudad" => "BENITO JUAREZ",
-						"referencia" => "",
-						"estado" => "DF",
-						"cp" => "03400",
-						"activo" => $emisor["activo"],
-						"main" => $emisor["main"]
-				);
-			}
-			else
-			{
-				$data["nodoEmisor"]["sucursal"] = array(
-						"identificador" => "Matriz",
-						"rfcId" => $emisor["rfcId"],
-						"empresaId" => $empresaIdFacturador,
-						"regimenFiscal" => $emisor["regimenFiscal"],
-						"rfc" => $emisor["rfc"],
-						"razonSocial" => $emisor["razonSocial"],
-						"pais" => $emisor["pais"],
-						"calle" => $emisor["calle"],
-						"noExt" => $emisor["noExt"],
-						"noInt" => $emisor["noInt"],
-						"colonia" => $emisor["colonia"],
-						"localidad" => $emisor["localidad"],
-						"municipio" => $emisor["municipio"],
-						"ciudad" => $emisor["ciudad"],
-						"referencia" => $emisor["referencia"],
-						"estado" => $emisor["estado"],
-						"cp" => $emisor["cp"],
-						"activo" => $emisor["activo"],
-						"main" => $emisor["main"]
-				);
-			}
+                "rfcId" => $emisor["rfcId"],
+                "empresaId" => $empresaIdFacturador,
+                "regimenFiscal" => $emisor["regimenFiscal"],
+                "rfc" => $emisor["rfc"],
+                "razonSocial" => $emisor["razonSocial"],
+                "pais" => $emisor["pais"],
+                "calle" => $emisor["calle"],
+                "noExt" => $emisor["noExt"],
+                "noInt" => $emisor["noInt"],
+                "colonia" => $emisor["colonia"],
+                "localidad" => $emisor["localidad"],
+                "municipio" => $emisor["municipio"],
+                "ciudad" => $emisor["ciudad"],
+                "referencia" => $emisor["referencia"],
+                "estado" => $emisor["estado"],
+                "cp" => $emisor["cp"],
+                "activo" => $emisor["activo"],
+                "main" => $emisor["main"]
+            );
+
+            if($value["facturador"] == "BHSC")
+            {
+                $data["nodoEmisor"]["sucursal"] = array
+                (
+                    "identificador" => "Matriz",
+                    "rfcId" => $emisor["rfcId"],
+                    "empresaId" => $empresaIdFacturador,
+                    "regimenFiscal" => $emisor["regimenFiscal"],
+                    "rfc" => $emisor["rfc"],
+                    "razonSocial" => $emisor["razonSocial"],
+                    "pais" => $emisor["pais"],
+                    "calle" => "NAVARRA",
+                    "noExt" => "210",
+                    "noInt" => "PB",
+                    "colonia" => "Alamos",
+                    "localidad" => "BENITO JUAREZ",
+                    "municipio" => "BENITO JUAREZ",
+                    "ciudad" => "BENITO JUAREZ",
+                    "referencia" => "",
+                    "estado" => "DF",
+                    "cp" => "03400",
+                    "activo" => $emisor["activo"],
+                    "main" => $emisor["main"]
+                );
+            }
+            else
+            {
+                $data["nodoEmisor"]["sucursal"] = array(
+                    "identificador" => "Matriz",
+                    "rfcId" => $emisor["rfcId"],
+                    "empresaId" => $empresaIdFacturador,
+                    "regimenFiscal" => $emisor["regimenFiscal"],
+                    "rfc" => $emisor["rfc"],
+                    "razonSocial" => $emisor["razonSocial"],
+                    "pais" => $emisor["pais"],
+                    "calle" => $emisor["calle"],
+                    "noExt" => $emisor["noExt"],
+                    "noInt" => $emisor["noInt"],
+                    "colonia" => $emisor["colonia"],
+                    "localidad" => $emisor["localidad"],
+                    "municipio" => $emisor["municipio"],
+                    "ciudad" => $emisor["ciudad"],
+                    "referencia" => $emisor["referencia"],
+                    "estado" => $emisor["estado"],
+                    "cp" => $emisor["cp"],
+                    "activo" => $emisor["activo"],
+                    "main" => $emisor["main"]
+                );
+            }
 
 			//$data["nodoEmisor"]["sucursal"]["identificador"] = "Matriz";
 			$res["rfc"] = trim(str_replace("-", "", $res["rfc"]));
@@ -860,45 +862,61 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 				$res["rfc"] = "XAXX010101000";
 			}
 
-			$data["nodoReceptor"] = array
-			(
-					"userId" => $res["contractId"],
-					"empresaId" => $empresaIdFacturador,
-					"rfcId" => $emisor["rfcId"],
-					"rfc" => $res["rfc"],
-					"nombre" => $res["name"],
-					"calle" => $res["address"],
-					"noExt" => $res["noExtAddress"],
-					"noInt" => $res["noIntAddress"],
-					"colonia" => $res["coloniaAddress"],
-					"municipio" => $res["municipioAddress"],
-					"cp" => $res["cpAddress"],
-					"estado" => $res["estadoAddress"],
-					"localidad" => $res["municipioAddress"],
-					"referencia" => "",
-					"pais" => $res["paisAddress"],
-					"email" => $res["emailContactoAdministrativo"],
-					"telefono" => $res["telefonoContactoAdministrativo"],
-					"password" => ""
-			);
+            $data["nodoReceptor"] = array
+            (
+                "userId" => $res["contractId"],
+                "empresaId" => $empresaIdFacturador,
+                "rfcId" => $emisor["rfcId"],
+                "rfc" => $res["rfc"],
+                "nombre" => $res["name"],
+                "calle" => $res["address"],
+                "noExt" => $res["noExtAddress"],
+                "noInt" => $res["noIntAddress"],
+                "colonia" => $res["coloniaAddress"],
+                "municipio" => $res["municipioAddress"],
+                "cp" => $res["cpAddress"],
+                "estado" => $res["estadoAddress"],
+                "localidad" => $res["municipioAddress"],
+                "referencia" => "",
+                "pais" => $res["paisAddress"],
+                "email" => $res["emailContactoAdministrativo"],
+                "telefono" => $res["telefonoContactoAdministrativo"],
+                "password" => ""
+            );
 
-			$metodoDePago = $res["metodoDePago"];
-			$data["metodoDePago"] = $metodoDePago;
-			$data["NumCtaPago"] = $res["noCuenta"];
+            /*            $formaDePago = $res["metodoDePago"];
 
-			//print_r($_SESSION["conceptos"]);
+            if($formaDePago == 'NA'){
+                $formaDePago = 99;
+            }*/
+            $formaDePago = 99;
 
-			echo "\n\nFactura para ".$res["rfc"]." Lista\n";
+            $data["formaDePago"] = $formaDePago;
+            $data["NumCtaPago"] = $res["noCuenta"];
 
-			if(!$result = $this->GenerarComprobanteAutomatico($data, false, false, $empresaIdFacturador))
-			{
-				echo "\nError al generar la factura para ".$res["rfc"]."\n\n";
-			}
-			else
-			{
-				$last = $this->GetLastComprobante();
-				//$comprobante = $result;
-				$this->Util()->DB()->setQuery("
+            if(strlen($data["NumCtaPago"]) != 4){
+                $data["NumCtaPago"] = '';
+            }
+
+            $data['userId'] = $res["contractId"];
+            $data['format'] = 'generar';
+            $data['metodoDePago'] = 'PPD';
+            $data['cfdiRelacionadoSerie'] = null;
+            $data['cfdiRelacionadoFolio'] = null;
+            $data['tipoRelacion'] = '04';
+            $data['usoCfdi'] = 'G03';
+            $data["tiposComprobanteId"] = $serie["tiposComprobanteId"]."-".$serie['serieId'];
+
+            $cfdi = new Cfdi();
+
+            $result = $cfdi->Generar($data);
+
+            if(!$result){
+                echo "\nError al generar la factura para ".$res["rfc"]."\n\n";
+                print_r($_SESSION['errorPac']);
+            } else {
+                $last = $this->GetLastComprobante();
+                $this->Util()->DB()->setQuery("
 				INSERT INTO  `facturaEspecial` (
 					`contractId` ,
 					`year`
@@ -906,11 +924,11 @@ foreach($data["serviciosBhsc"] as $key => $servicio)
 					VALUES (
 					'".$res["contractId"]."',  '".$year."'
 					)");
-				$this->Util()->DB()->InsertData();
-				echo "\n\nFactura para ".$value["rfc"]." Lista\n";
-			}
-			//break;
-			//exit;
+                $this->Util()->DB()->InsertData();
+                echo "\n\nFactura para ".$value["rfc"]." Lista\n";
+
+            }
+            break;
 		}//foreach
 
 		//FIN AGRUPADO POR CONTRATOS
