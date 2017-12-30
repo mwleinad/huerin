@@ -1699,7 +1699,7 @@ class Comprobante extends Producto
 
 		$mail = new PHPMailer();
 		$mail->Subject = 'Envio de Factura con Folio No. '.$folio;
-		$fromName = "Janette Miranda";
+		$fromName = "Araceli Sanchez";
 		$mail->AddReplyTo(FROM_MAIL, $fromName);
 		$mail->SetFrom(FROM_MAIL, $fromName);
 
