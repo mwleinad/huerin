@@ -1500,13 +1500,10 @@ class Contract extends Main
         $resContratos = $this->Util()->DB()->GetResult();
         $contratos = array();
         foreach($resContratos as $res){
-
             $encontrado = $this->findPermission($res, $formValues['persons']);
-
             if($encontrado == false) {
                 continue;
             }
-
             //Checamos Servicios
             $sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
