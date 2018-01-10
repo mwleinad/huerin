@@ -1367,6 +1367,9 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 	    return $newArray;
     }
+    function getLastDayMonth($anio,$mes){
+        return date("d",(mktime(0,0,0,$mes+1,1,$anio)-1));
+    }
 
 
 
