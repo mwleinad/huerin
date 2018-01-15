@@ -29,17 +29,21 @@ $db->UpdateData();
 
 $year = '2017';
 $persons = array();
+$arrayBase =  array();
+
+for ($ii = 1; $ii <= 12; $ii++) {
+   $arrayBase[$ii]=array();
+}
 foreach($employees as $key=>$itemEmploye) {
-    if($itemEmploye['lastSendEmail']<date('Y-m-d')){
+    if($itemEmploye['personalId']==53){
     $personal->setPersonalId($itemEmploye['personalId']);
     $subordinados = $personal->Subordinados();
 
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
     array_push($persons, $itemEmploye['personalId']);
     $formValues['persons'] = $persons;
-    $formValues['atrasados'] = 1;
+    $formValues['atrasados'] =  1;
     $contracts = $contract->BuscarContractV2($formValues, true);
-
     if (empty($contracts))
     {
         $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
@@ -64,9 +68,6 @@ foreach($employees as $key=>$itemEmploye) {
 
     }//foreach
     $clientes = array();
-    //	print_r($idClientes);
-    //	print_r($idContracts);
-    //	print_r($contratosClte);
     foreach ($idClientes as $customerId) {
         $customer->setCustomerId($customerId);
         $infC = $customer->Info();
@@ -83,7 +84,6 @@ foreach($employees as $key=>$itemEmploye) {
         $contratosAtrasados = array();
         $keyContractAtrasados = 0;
         foreach ($clte['contracts'] as $con) {
-
             //Checamos Permisos
             $resPermisos = explode('-', $con['permisos']);
             foreach ($resPermisos as $res) {
@@ -105,75 +105,31 @@ foreach($employees as $key=>$itemEmploye) {
             $serviciosAtrasados = array();
             $keyServAtrasado = 0;
             foreach ($con['servicios'] as $serv) {
-
                 $servicio->setServicioId($serv['servicioId']);
                 $infServ = $servicio->Info();
 
-                $noCompletados = 0;
-
-                for ($ii = 1; $ii <= 12; $ii++) {
-                    $statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii, $year);
-
-                    $month = date("m");
-                    if ($ii < $month) {
-                        if ($statusColor["class"] == "PorIniciar" || $statusColor["class"] == "Iniciado" || $statusColor["class"] == "PorCompletar") {
-                            $noCompletados++;
-                        }
-                    }
-
-                    //Si es Servicio de Domicilio Fiscal, que no lleve colores
-                    if ($statusColor['tipoServicioId'] == 16)
-                        $statusColor['class'] = '';
-
-                    if ($statusColor['tipoServicioId'] == 34)
-                        $statusColor['class'] = '';
-
-                    if ($statusColor['tipoServicioId'] == 24)
-                        $statusColor['class'] = '';
-
-                    if ($statusColor['tipoServicioId'] == 37)
-                        $statusColor['class'] = '';
-
-                    $serv['instancias'][$ii] = $statusColor;
-                }
+                $noCompletados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
+                $temp = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year);
+                $serv['instancias'] = array_replace_recursive($arrayBase,$temp);
 
                 $tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
                 $deptoId = $tipoServicio->GetField('departamentoId');
-
                 $serv['responsable'] = $permisos[$deptoId];
+                $servicios[] = $serv;
 
-                if ($formValues['atrasados']) {
-                    $serviciosAtrasados[$keyServAtrasado] = $serv;
-                    $keyServAtrasado++;
-                    if ($noCompletados > 0) {
-                        $servicios[] = $serv;
-                    }
-                } else {
+                /*if(!empty($noCompletados))
                     $servicios[] = $serv;
-                }
-                
+                else
+                    continue ;*/
             }//foreach
 
             $con['instanciasServicio'] = $servicios;
-            $con['instanciasServicioAtrasados'] = $serviciosAtrasados;
             $contratos[] = $con;
-            if (!empty($serviciosAtrasados)) {
-                $contratosAtrasados[$keyContractAtrasados] = $con;
-                $keyContractAtrasados++;
-            }
 
         }//foreach}
         $clte['contracts'] = $contratos;
         $resClientes[] = $clte;
-        if (!empty($contratosAtrasados)) {
-            $cltA['contracts'] = $contratosAtrasados;
-            $clteAtrasados[$keyClteAtrasados] = $cltA;
-            $keyClteAtrasados++;
-        }
-
     }//foreach
-        dd($resClientes);
-    exit;
     $cleanedArray = array();
     foreach ($resClientes as $key => $cliente) {
         foreach ($cliente["contracts"] as $keyContract => $contract) {
@@ -187,22 +143,6 @@ foreach($employees as $key=>$itemEmploye) {
                 $card["instanciasServicio"] = $servicio["instancias"];;
                 $card["nombreServicio"] = $servicio["nombreServicio"];;
                 $cleanedArray[] = $card;
-            }
-        }
-    }
-    $cleanedArrayAtrasados = array();
-    foreach ($clteAtrasados as $key => $clientea) {
-        foreach ($clientea["contracts"] as $keyContracta => $contracta) {
-            foreach ($contracta["instanciasServicioAtrasados"] as $keyServicioa => $servicioa) {
-                $card2["comentario"] = $servicioa["comentario"];
-                $card2["servicioId"] = $servicioa["servicioId"];
-                $card2["nameContact"] = $clientea["nameContact"];
-                $card2["tipoPersonal"] = $servicioa["responsable"]["tipoPersonal"];
-                $card2["responsable"] = $servicioa["responsable"]["name"];
-                $card2["name"] = $contracta["name"];
-                $card2["instanciasServicio"] = $servicioa["instancias"];;
-                $card2["nombreServicio"] = $servicioa["nombreServicio"];;
-                $cleanedArrayAtrasados[] = $card2;
             }
         }
     }
@@ -220,52 +160,28 @@ foreach($employees as $key=>$itemEmploye) {
         }
     }*/
     $last = $util->getLastDayMonth(date('Y'), date('m'));
-    //if($last==date('d'))
-    if (date('d') == $last) {
-        $smarty->assign("cleanedArray", $cleanedArray);
-        $contents = $smarty->fetch(DOC_ROOT . '/templates/lists/report-servicio.tpl');
-        $html = $contents;
-        $html = str_replace('$', '', $html);
-        $html = str_replace(',', '', $html);
-        $fileNameMonth = $itemEmploye['personalId'] . "REP-MENSUAL" . date('Y-m-d');
-        $excel->ConvertToExcel($html, 'xlsx', false, $fileNameMont);
 
-        $subject = "REPORTE MENSUAL DE CUENTAS";
-        $body = "ESTIMADO USUARIO ESTE ES EL RESUMEN DE LAS CUENTAS QUE TIENE ASIGNADOS Y LA DE SUS SUBORDINADOS..(ES TO ES UN PRUEBA HACER CASO OMISO)";
-        $sendmail = new SendMail;
+    $smarty->assign("cleanedArray", $cleanedArray);
+    $contents2 = $smarty->fetch(DOC_ROOT . '/templates/lists/report-servicio.tpl');
+    $html2 = $contents2;
+    $html2 = str_replace('$', '', $html2);
+    $html2 = str_replace(',', '', $html2);
+    $fileNameDay = $itemEmploye['personalId'] . "REPORTE-ANUAL" . date('Y-m-d');
+    $excel->ConvertToExcel($html2, 'xlsx', false, $fileNameDay);
 
-        $to = $itemEmploye["email"];
-        $toName = $itemEmploye["name"];
-        $attachment = DOC_ROOT . "/sendFiles/" . $fileNameMonth.".xlsx";
+    $subject = "REPORTE ANUAL DE CUENTAS";
+    $body = "ESTIMADO USUARIO ESTE ES EL RESUMEN DE LAS CUENTAS QUE TIENE ASIGNADOS Y LA DE SUS SUBORDINADOS..(ES TO ES UN PRUEBA HACER CASO OMISO)";
+    $sendmail = new SendMail;
 
-        $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameMonth.".xlsx", $attachment2, $fileName2,'' , "ENVIOS AUTOMATICOS") ;
-        $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-        $db->setQuery($up);
-        $db->UpdateData();
-        unlink($attachment);
-    } else {
-        $smarty->assign("cleanedArray", $cleanedArrayAtrasados);
-        $contents2 = $smarty->fetch(DOC_ROOT . '/templates/lists/report-servicio.tpl');
-        $html2 = $contents2;
-        $html2 = str_replace('$', '', $html2);
-        $html2 = str_replace(',', '', $html2);
-        $fileNameDay = $itemEmploye['personalId'] . "REPORTE-DIARIO" . date('Y-m-d');
-        $excel->ConvertToExcel($html2, 'xlsx', false, $fileNameDay);
+    $to = $itemEmploye["email"];
+    $toName = $itemEmploye["name"];
+    $attachment = DOC_ROOT . "/sendFiles/".$fileNameDay.".xlsx";
 
-        $subject = "REPORTE DIARIO DE CUENTAS";
-        $body = "ESTIMADO USUARIO ESTE ES EL RESUMEN DE LAS CUENTAS QUE TIENE ASIGNADOS Y LA DE SUS SUBORDINADOS..(ES TO ES UN PRUEBA HACER CASO OMISO)";
-        $sendmail = new SendMail;
-
-        $to = $itemEmploye["email"];
-        $toName = $itemEmploye["name"];
-        $attachment = DOC_ROOT . "/sendFiles/".$fileNameDay.".xlsx";
-
-        $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'' , "ENVIOS AUTOMATICOS") ;
-        $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-        $db->setQuery($up);
-        $db->UpdateData();
-        unlink($attachment);
-    }
+    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'' , "ENVIOS AUTOMATICOS") ;
+    $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+    $db->setQuery($up);
+    $db->UpdateData();
+    unlink($attachment);
     exit;
     }
 }

@@ -1476,7 +1476,7 @@ class Contract extends Main
 
         return $resContratos;
     }
-    public function BuscarContractV2($formValues,$activos=false)
+    public function BuscarContractV2($formValues=array(),$activos=false)
     {
         $sqlFilter = "";
         global $personal;
@@ -1498,9 +1498,13 @@ class Contract extends Main
 
         $this->Util()->DB()->setQuery($sql);
         $resContratos = $this->Util()->DB()->GetResult();
+
         $contratos = array();
         foreach($resContratos as $res){
-            $encontrado = $this->findPermission($res, $formValues['persons']);
+            if($res['permisos']=="")
+                continue;
+
+            $encontrado = $this->findPermission($res, $formValues);
             if($encontrado == false) {
                 continue;
             }
