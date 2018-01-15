@@ -101,7 +101,6 @@ include_once(DOC_ROOT.'/classes/pendiente.class.php');
 
 include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
-include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -183,7 +182,6 @@ $xmlTransform = new XmlTransform;
 $cfdi = new Cfdi;
 
 $archivos = new Archivos();
-$instanciaServicio =  new InstanciaServicio();
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");
@@ -205,6 +203,7 @@ $smarty->assign('WEB_ROOT',WEB_ROOT);
 $smarty->assign('property', $property);
 
 $lang = $util->ReturnLang();
+
 $User = $_SESSION['User'];
 
 $infoUser = $user->Info();

@@ -3,6 +3,8 @@ include_once('init.php');
 
 include_once('config.php');
 include_once(DOC_ROOT.'/libraries.php');
+
+
 	if (!isset($_SESSION))
 	{
 	  session_start();
@@ -119,10 +121,13 @@ include_once(DOC_ROOT.'/libraries.php');
 	);
 
 	$page = $_GET['page'];
+
+
 	if(!in_array($page, $pages))
 	{
 		$page = "homepage";
 	}
+
 	include_once(DOC_ROOT.'/modules/user.php');
 	include_once(DOC_ROOT.'/modules/'.$page.'.php');
 
