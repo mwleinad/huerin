@@ -1345,7 +1345,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 			return $fechaMes;
 		}
 	}
-function GetMesGuion($fecha)
+    function GetMesGuion($fecha)
 	{
 		if(!empty($fecha)) //	2013/12/31----->31/Dic/2013
 		{
@@ -1360,6 +1360,34 @@ function GetMesGuion($fecha)
 		$mesArray = array("00","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic");
 		return $mesArray[($numMes*1)];
 	}
+	function ConvertToLineal($array=array(),$field){
+	    $newArray = array();
+	    foreach($array as $k=>$val)
+	        $newArray[] =  $val[$field];
+
+	    return $newArray;
+    }
+    function getLastDayMonth($anio,$mes){
+        return date("d",(mktime(0,0,0,$mes+1,1,$anio)-1));
+    }
+    public function inicio_fin_semana($fecha){
+
+        $diaInicio="Monday";
+        $diaFin="Sunday";
+
+        $strFecha = strtotime($fecha);
+
+        $fechaInicio = date('Y-m-d',strtotime('last '.$diaInicio,$strFecha));
+        $fechaFin = date('Y-m-d',strtotime('next '.$diaFin,$strFecha));
+
+        if(date("l",$strFecha)==$diaInicio){
+            $fechaInicio= date("Y-m-d",$strFecha);
+        }
+        if(date("l",$strFecha)==$diaFin){
+            $fechaFin= date("Y-m-d",$strFecha);
+        }
+        return Array("fechaInicio"=>$fechaInicio,"fechaFin"=>$fechaFin);
+    }
 
 
 
