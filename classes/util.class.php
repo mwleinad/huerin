@@ -1370,6 +1370,24 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
     function getLastDayMonth($anio,$mes){
         return date("d",(mktime(0,0,0,$mes+1,1,$anio)-1));
     }
+    public function inicio_fin_semana($fecha){
+
+        $diaInicio="Monday";
+        $diaFin="Sunday";
+
+        $strFecha = strtotime($fecha);
+
+        $fechaInicio = date('Y-m-d',strtotime('last '.$diaInicio,$strFecha));
+        $fechaFin = date('Y-m-d',strtotime('next '.$diaFin,$strFecha));
+
+        if(date("l",$strFecha)==$diaInicio){
+            $fechaInicio= date("Y-m-d",$strFecha);
+        }
+        if(date("l",$strFecha)==$diaFin){
+            $fechaFin= date("Y-m-d",$strFecha);
+        }
+        return Array("fechaInicio"=>$fechaInicio,"fechaFin"=>$fechaFin);
+    }
 
 
 
