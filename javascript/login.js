@@ -29,7 +29,7 @@ function DoLogin()
 			}
 			else
 			{
-				Redirect('');
+				location.href = WEB_ROOT;
 			}
 
 		},

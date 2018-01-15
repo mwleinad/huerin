@@ -3,7 +3,7 @@
 class Excel
 {
 
-	public function ConvertToExcel($htmltable, $type, $debug = false,$fileName='exportar')
+	public function ConvertToExcel($htmltable, $type, $debug = false)
 	{
 		if($debug === false) {
   		$debug = false;
@@ -424,10 +424,7 @@ if($type == "pdf")
 else
 {
 	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-	if($fileName=='exportar')
-	 $objWriter->save(DOC_ROOT."/exportar.xlsx");
-	else
-     $objWriter->save(DOC_ROOT."/sendFiles/".$fileName.".xlsx");
+	$objWriter->save(DOC_ROOT."/exportar.xlsx");
 
 }
 

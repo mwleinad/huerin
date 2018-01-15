@@ -16,6 +16,7 @@ switch($_POST["type"])
 		$user->setPassword($passwd);
 		
 		//Eliminamos la sesiones activas por otros usuarios
+		
 		$_SESSION['User'] = array();
 		unset($_SESSION['User']);
 		$_SESSION['Usr'] = array();
@@ -23,6 +24,7 @@ switch($_POST["type"])
 		
 		if($user->doLogin()){
 			//echo session_id();
+//			print_r($_SESSION);
 //			exit;
 			echo "ok[#]";
 		}else{
