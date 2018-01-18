@@ -101,6 +101,8 @@ include_once(DOC_ROOT.'/classes/pendiente.class.php');
 
 include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
+include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
+include_once(DOC_ROOT."/classes/contractRep.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -156,6 +158,8 @@ $obligacion = new Obligacion;
 $log = new Log;
 
 $filtro = new Filtro;
+$instanciaServicio = new InstanciaServicio;
+$contractRep = new ContractRep;
 
 $empresa = new Empresa;
 $rfc = new Rfc;

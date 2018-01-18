@@ -17,7 +17,7 @@ class SendMail extends Main
 
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
-
+            $mail->IsSMTP();
 			$mail->SMTPAuth   = true;
 			$mail->Host       = "mail.avantika.com.mx";
 			$mail->Port       = 587;
@@ -51,7 +51,7 @@ class SendMail extends Main
 			}
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
-
+            $mail->IsSMTP();
 			$mail->SMTPAuth   = true;
 			$mail->Host       = "mail.avantika.com.mx";
 			$mail->Port       = 587;
