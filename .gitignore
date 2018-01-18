@@ -23,4 +23,6 @@ cron/create13.txt
 cron/facturas_log.txt
 cron/facturas.txt
 cron/facturasnew.txt
-cron/alerts.txt
+cron-nuevo/repatrasados.txt
+cron-nuevo/templates_c
+exportar.xlsx
