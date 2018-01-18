@@ -16,3 +16,10 @@ javascript/js-config.js
 /.svn
 /dev
 /sendFiles
+/vendor
+cron-nuevo/facturas.txt
+cron/alerts.txt
+cron/create13.txt
+cron/facturas_log.txt
+cron/facturasnew.txt
+cron/alerts.txt
