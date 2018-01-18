@@ -18,7 +18,7 @@ class AutomaticCfdi extends Comprobante
 			WHERE empresaId = '20' ORDER BY rfcId ASC LIMIT 1");
         $emisorBraun = $this->Util()->DB()->GetRow();
 
-        $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE customerId = 31");
+        $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE customerId != 280");
         $clientes = $this->Util()->DB()->GetResult();
         $data = array();
         foreach($clientes as $key => $cliente)

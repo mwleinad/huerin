@@ -1445,11 +1445,11 @@ class Comprobante extends Producto
 			$card['porcentajeIEPS'] = $val['porcentajeIEPS'];
 			$card['comprobanteId'] = $val['comprobanteId'];
 			$card['status'] = $val['status'];
-			$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
-            $card['version'] = $val['version'];
+            $card['tipoDeComprobante'] = $val['tipoDeComprobante'];
+			$card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
 
-			$card['instanciaServicioId'] = $val['instanciaServicioId'];
+            $card['instanciaServicioId'] = $val['instanciaServicioId'];
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
