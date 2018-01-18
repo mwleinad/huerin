@@ -151,16 +151,20 @@
 			</div>
 
       <div class="formLine">
-          <div style="width:90px;float:left">Seleccionar Serie:</div>
+          <div style="width:90px;float:left">Seleccionar Serieaaaaa:</div>
           <div style="width:340px;float:left">
           <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
          	{foreach from=$comprobantes item=comprobante}
-          <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
-          {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
-              {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
-              {else}BRAUN HUERIN SC{/if}
-              {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
-          {/foreach}
+                {if $comprobante.serie != 'COMPAGO'}
+                    {if $comprobante.serieId != 5}
+                  <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
+                  {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
+                      {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
+                      {else}BRAUN HUERIN SC{/if}
+                      {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
+                    {/if}
+                {/if}
+            {/foreach}
           </select></div>
 
 {*
@@ -289,9 +293,9 @@
 
       <div class="formLine">
           <div style="width:100px;float:left">
-              <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="01010101"  size="8" class="largeInput" placeholder=""/></div>
+              <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="84111500"  size="8" class="largeInput" placeholder=""/></div>
           <div style="width:100px;float:left">
-              <input name="c_ClaveUnidad" id="c_ClaveUnidad" type="text" value="EA"  size="8"  class="largeInput" placeholder=""/>
+              <input name="c_ClaveUnidad" id="c_ClaveUnidad" type="text" value="E48"  size="8"  class="largeInput" placeholder=""/>
           </div>
 
           <div style="width:100px;float:left">

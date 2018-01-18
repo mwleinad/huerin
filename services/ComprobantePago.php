@@ -6,7 +6,7 @@ class ComprobantePago extends Comprobante {
         $serieExistente = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         //Create series if it doesn't exists TODO do not let this serie to be deleted or modified, also hide it from other places
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = 10");
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = 10 AND empresaId = '".$_SESSION["empresaId"]."'");
         $serie = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         if(!$serie) {

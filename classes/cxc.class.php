@@ -88,6 +88,8 @@ class CxC extends Producto
 					$card['status'] = $val['status'];
 					$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
 					$card['cxcDiscount'] = $val['cxcDiscount'];
+                    $card['version'] = $val['version'];
+                    $card['xml'] = $val['xml'];
 
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card['nameContact'] = $val["nameContact"];

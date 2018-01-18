@@ -55,7 +55,7 @@
         
 				{if $infoUser.tipoPersonal == "Socio" || $infoUser.tipoPersonal == "Gerente" || $infoUser.tipoPersonal == "Supervisor" || $infoUser.tipoPersonal == "Asistente"}
         <li class="item middle" id="four">
-        	<a href="{$WEB_ROOT}/sistema/nueva-factura" class="main {if $mainMnu == "admin-folios"} current{/if}">
+        	<a href="{$WEB_ROOT}/cfdi33-generate" class="main {if $mainMnu == "admin-folios"} current{/if}">
             	<span class="outer">
                 	<span class="inner invoice">Facturacion</span>
                 </span>

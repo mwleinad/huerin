@@ -1525,7 +1525,6 @@ class Contract extends Main
             }
 
 			//Checamos Servicios
-
 			$sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
@@ -1536,15 +1535,17 @@ class Contract extends Main
 			$res["servicios"] = $this->Util()->DB()->GetResult();
 			$res["noServicios"] = count($res["servicios"]);
 
+
 			//Si no tiene departamento asignado lo borro
 			if ($res["servicios"][0]['departamentoId'] == "")
-				continue;
+            {
+                continue;
+            }
 
 			$contratos[] = $res;
 
 		}//foreach
 		//INCLUIR SUBORDINADOS
-
 		if(!$formValues['subordinados'])
 			return $contratos;
 
@@ -1595,7 +1596,6 @@ class Contract extends Main
 			}//foreach
 
 		}//foreach
-		//print_r($contratos);
 		return $contratos;
 
 	}//BuscarContract

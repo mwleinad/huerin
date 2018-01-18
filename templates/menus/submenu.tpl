@@ -159,7 +159,7 @@
 
             {if $page == "sistema" || $page == "reporte-sat" || $page == "admin-folios" || $page == "cfdi33-generate"}
             <ul>
-              <li><a href="{$WEB_ROOT}/sistema/nueva-factura" {if $includedTpl == "sistema_nueva-factura"} class="current"{/if}><span>Nuevo CFDi</span></a></li>
+              {*<li><a href="{$WEB_ROOT}/sistema/nueva-factura" {if $includedTpl == "sistema_nueva-factura"} class="current"{/if}><span>Nuevo CFDi</span></a></li>*}
                 <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if}><span>Nuevo CFDi 3.3</span></a></li>
               <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if}><span>Consultar Comprobantes</span></a></li>
               <li><a href="{$WEB_ROOT}/admin-folios/nuevos-folios" {if $includedTpl == "admin-folios_nuevos-folios"} class="current"{/if}><span>Lista de Folios</span></a></li>

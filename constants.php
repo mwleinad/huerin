@@ -21,8 +21,8 @@ define("BALANCE_YEAR", "2013");
 
 
 define("SEND_TO", "dlopez@trazzos.com");
-define("SEND_TO2", "S.janette@hotmail.com");
-define("SEND_TO3", "jmponce@braunhuerin.com.mx");
+define("SEND_TO2", "mwleinad@hotmail.com");
+define("SEND_TO3", "asanchez@braunhuerin.com.mx");
 define("FROM_MAIL", "facturacion@braunhuerin.com.mx");
 define("FROM_MAILAlERTA", "noreply@noreply.com");
 
