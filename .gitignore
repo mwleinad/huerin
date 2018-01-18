@@ -21,5 +21,6 @@ cron-nuevo/facturas.txt
 cron/alerts.txt
 cron/create13.txt
 cron/facturas_log.txt
+cron/facturas.txt
 cron/facturasnew.txt
 cron/alerts.txt
