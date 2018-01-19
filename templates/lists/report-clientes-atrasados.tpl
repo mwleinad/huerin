@@ -46,7 +46,7 @@
                     title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
                     <div style="cursor:pointer" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')">
                         {$item.nombreServicio|truncate:5:""}
-                        <br><a style="color:#FFF;font-weight:bold">{($meses[$instanciaServicio.mes]|UPPER)|truncate:3:""}-{$instanciaServicio.anio}</a>
+                        <br><a style="color:#FFF;font-weight:bold">{($meses[$instanciaServicio.mes]|upper)|truncate:3:""}-{$instanciaServicio.anio}</a>
                         <a href="{$WEB_ROOT}/download_tasks.php?id={$instanciaServicio.instanciaServicioId}" style="color:#FFF;font-weight:bold">Archivos</a>
                     </div>
 
