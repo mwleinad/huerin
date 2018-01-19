@@ -166,7 +166,7 @@ foreach($logs as $key=>$value) {
                     }
                 }
                 if(empty($old))
-                    $descripcion = 'EL usuario realizo la edicion del registro sin actualizar o modifcar datos';
+                    $descripcion = 'Edicion de registro sin modificar informacion';
                 $card['oldValue']=$old;
                 $card['newValue']=$new;
             }else{
@@ -197,8 +197,8 @@ $body   = " SE HACE LLEGAR EL REPORTE DE BITACORA CORRESPONDIENTE AL MES DE ".st
           Este correo se genero automaticamente favor de no responder";
 $sendmail = new SendMail;
 
-$to = 'isc061990@gmail.com';
-$toName = 'HECTOR';
+$to = 'jhuerin@braunhuerin.com.mx';
+$toName = 'JACOBO EDUARDO HUERIN ROMANO';
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
 $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "BITACORA") ;
