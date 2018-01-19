@@ -1844,7 +1844,7 @@ class Contract extends Main
   */
   public function Save()
   {
-      global $User;
+      global $User,$log;
     /** if ($this->Util()->PrintErrors()){ return 0; } */
 
     $this->Util()->DB()->setQuery(
@@ -1949,7 +1949,15 @@ class Contract extends Main
       $sql = "SELECT * FROM contract WHERE contractId = '".$contractId."'";
       $this->Util()->DB()->setQuery($sql);
       $newData = $this->Util()->DB()->GetRow();
-
+      //Guardamos el Log
+      $log->setPersonalId($User['userId']);
+      $log->setFecha(date('Y-m-d H:i:s'));
+      $log->setTabla('contract');
+      $log->setTablaId($contractId);
+      $log->setAction('Insert');
+      $log->setOldValue('');
+      $log->setNewValue(serialize($newData));
+      $log->Save();
       //actualizar historial
       $this->Util()->DB()->setQuery("
 			INSERT INTO
@@ -2029,7 +2037,7 @@ class Contract extends Main
   */
   public function UpdateMyContract()
   {
-      global $User;
+      global $User,$log;
     	//if ($this->Util()->PrintErrors()){ return false; }
 
 		//Obtenemos los datos de la BD antes de actualizar para el Log
@@ -2103,7 +2111,15 @@ class Contract extends Main
 		$this->Util()->DB()->setQuery($sql);
     	$newData = $this->Util()->DB()->GetRow();
 
-		//Guardamos el Log
+	  //Guardamos el Log
+      $log->setPersonalId($User['userId']);
+      $log->setFecha(date('Y-m-d H:i:s'));
+      $log->setTabla('contract');
+      $log->setTablaId($this->contractId);
+      $log->setAction('Update');
+      $log->setOldValue(serialize($oldData));
+      $log->setNewValue(serialize($newData));
+      $log->Save();
 
       //actualizar historial
       $this->Util()->DB()->setQuery("
@@ -2151,7 +2167,7 @@ class Contract extends Main
       }
       //exit;
 
-      $fp = fopen(DOC_ROOT.'/contracts.log','a');
+        $fp = fopen(DOC_ROOT.'/contracts.log','a');
 		fwrite($fp,"OLD DATA\n");
 		fwrite($fp,json_encode($oldData));
 		fwrite($fp,"\n\nNEW DATA\n");
@@ -2414,7 +2430,7 @@ class Contract extends Main
   */
   public function Delete()
   {
-      global $User;
+    global $User,$log;
     if ($this->Util()->PrintErrors()) {
       return false;
     }
@@ -2443,6 +2459,19 @@ class Contract extends Main
       $this->Util()->DB()->setQuery($sql);
       $newData = $this->Util()->DB()->GetRow();
 
+      //Guardamos el Log
+      $log->setPersonalId($User['userId']);
+      $log->setFecha(date('Y-m-d H:i:s'));
+      $log->setTabla('contract');
+      $log->setTablaId($this->contractId);
+      if($active=="Si")
+        $log->setAction('Reactivacion');
+      elseif($active=='No')
+        $log->setAction('Baja');
+
+      $log->setOldValue(serialize($info));
+      $log->setNewValue(serialize($newData));
+      $log->Save();
       $this->Util()->DB()->setQuery("
 			INSERT INTO
 				contractChanges
@@ -2464,7 +2493,7 @@ class Contract extends Main
 		);");
       $this->Util()->DB()->InsertData();
 
-        $responsables = $this->getAllResponsables($info);
+      $responsables = $this->getAllResponsables($info);
 
       $personal = new Personal;
       $sendmail = new SendMail();

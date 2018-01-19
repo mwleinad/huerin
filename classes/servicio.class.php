@@ -696,7 +696,7 @@ class Servicio extends Contract
 
 	public function Delete()
 	{
-		global $User;
+		global $User,$log;
 
 		if($this->Util()->PrintErrors()){ return false; }
 		
@@ -729,7 +729,19 @@ class Servicio extends Contract
 				servicioId = '".$this->servicioId."'");
 		$servicio = $this->Util()->DB()->GetRow();
 
+        //Guardamos el Log
+        $log->setPersonalId($User['userId']);
+        $log->setFecha(date('Y-m-d H:i:s'));
+        $log->setTabla('servicio');
+        $log->setTablaId($this->servicioId);
+        if($active=="activo")
+            $log->setAction('Reactivacion');
+        elseif($active=='baja')
+            $log->setAction('Baja');
 
+        $log->setOldValue(serialize($info));
+        $log->setNewValue(serialize($servicio));
+        $log->Save();
 		//actualizar historial
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
