@@ -88,7 +88,7 @@ switch($_POST["type"])
 				$log->setFecha(date('Y-m-d H:i:s'));
 				$log->setTabla('servicio');
 				$log->setTablaId($servicioId);
-				$log->setAction('Update');
+				$log->setAction('Insert');
 				$log->setOldValue('');
 				$log->setNewValue(serialize($newServicio));
 				$log->Save();
@@ -125,14 +125,14 @@ switch($_POST["type"])
 				//Guardamos el Log de Eventos
 				$infoServicio = $servicio->Info();
 				
-				$log->setPersonalId($User['userId']);
+				/*$log->setPersonalId($User['userId']);
 				$log->setFecha(date('Y-m-d H:i:s'));
 				$log->setTabla('servicio');
 				$log->setTablaId($servicioId);
 				$log->setAction('Delete');
 				$log->setOldValue(serialize($infoServicio));
 				$log->setNewValue('');
-				$log->Save();
+				$log->Save();*/
 			
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
