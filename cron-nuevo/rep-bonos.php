@@ -206,7 +206,7 @@ foreach($employees as $key=>$itemEmploye){
     $excel->ConvertToExcel($html, 'xlsx', false, $fileName,true);
 
     $subject='REPORTE BONOS '.$tri;
-    $body = "ESTIMADO USUARIO: A CONTINUACION SE LE HACE LLEGAR EL REPORTE DE BONOS CORRESPONDIENTE AL ".$tri." DEL &Ntilde; ".DATE('Y')."
+    $body = "ESTIMADO USUARIO: A CONTINUACION SE LE HACE LLEGAR EL REPORTE DE BONOS CORRESPONDIENTE AL ".$tri." DEL A&Ntilde;O ".DATE('Y')."
         <br>
         <br>
         <br>
