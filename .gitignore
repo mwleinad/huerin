@@ -26,3 +26,5 @@ cron/facturasnew.txt
 cron-nuevo/repatrasados.txt
 cron-nuevo/templates_c
 exportar.xlsx
+cron-nuevo/repbitacora.txt
+contracts.log

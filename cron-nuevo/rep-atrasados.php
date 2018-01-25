@@ -1,5 +1,5 @@
 <?php
-ini_set('memory_limit','3G');
+ini_set('memory_limit','4G');
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
