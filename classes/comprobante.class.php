@@ -766,7 +766,7 @@ class Comprobante extends Producto
 
 	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $recipient)
 	{
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId, version FROM comprobante
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version FROM comprobante
 			LEFT JOIN cliente ON cliente.userId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
 	//	echo $this->Util()->DB()->query;
@@ -805,7 +805,10 @@ class Comprobante extends Producto
 			fclose($fh);
 
 			$theData = explode("UUID", $theData);
-			$theData = $theData[1];
+            if($row['tiposComprobanteId']==10)
+                $theData = $theData[2];
+            else
+                $theData = $theData[1];
 			$theData = explode("FechaTimbrado", $theData);
 			$theData = $theData[0];
 			$uuid = str_replace("\"", "", $theData);
