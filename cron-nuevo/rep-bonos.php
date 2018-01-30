@@ -23,7 +23,7 @@ $inicioFin = $util->inicio_fin_semana(date('Y-m-d'));
 $filtroOrden="Cliente";
 
 $year=2017;
-$sql = "SELECT * FROM personal WHERE tipoPersonal NOT IN('socio','asistente') 
+$sql = "SELECT * FROM personal WHERE puesto like'%gerente%'
           AND (lastSendBono < DATE(NOW()) OR lastSendBono IS NULL) ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);

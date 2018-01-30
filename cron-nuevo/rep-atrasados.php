@@ -32,15 +32,24 @@ $db->UpdateData();
 
 $arrayBase =  array();
 foreach($employees as $key=>$itemEmploye) {
-    if(trim($itemEmploye['email']=='.'))
+    if(!filter_var($itemEmploye['email'],FILTER_VALIDATE_EMAIL))
+    {
+        echo $itemEmploye['personalId']." correo no valido : ".$itemEmploye['email'];
+        $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+        $db->setQuery($up);
+        $db->UpdateData();
         continue;
-
+    }
+    $deptos= array();
     $persons = array();
     $personal->setPersonalId($itemEmploye['personalId']);
-    $subordinados = $personal->Subordinados();
+    $subordinados = $personal->Subordinados(true);
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
+    $deptos  = $util->ConvertToLineal($subordinados, 'dptoId');
+
     array_unshift($persons, $itemEmploye['personalId']);
-    $contracts = $contractRep->BuscarContractV2($persons,true);
+    array_unshift($deptos, $itemEmploye['departamentoId']);
+    $contracts = $contractRep->BuscarContractV2($persons,true,$deptos);
     if(empty($contracts))
     {
         $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
