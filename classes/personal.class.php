@@ -740,7 +740,7 @@ function SubordinadosDetails()
 
             if(count($value["children"]) > 0)
             {
-                $this->JerarquiaLinealJustId($value["children"]);
+                $this->JerarquiaLinealWhitDpto($value["children"]);
             }
         }
     }
