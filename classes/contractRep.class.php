@@ -22,7 +22,7 @@ class ContractRep extends Main
         }
         return false;
     }
-    public function BuscarContractV2($formValues=array(),$activos=false)
+    public function BuscarContractV2($formValues=array(),$activos=false , $deptos = array())
     {
         $sqlFilter = "";
         global $personal;
@@ -31,6 +31,7 @@ class ContractRep extends Main
             $sqlFilter .= " AND customer.active = '1'";
         //Contratos Activos
         $sqlFilter .= ' AND contract.activo = "Si"';
+
         $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 				personal.jefeGerente, personal.jefeContador, customer.nameContact
@@ -45,6 +46,9 @@ class ContractRep extends Main
         $this->Util()->DB()->setQuery($sql);
         $resContratos = $this->Util()->DB()->GetResult();
 
+        if(count($deptos)>1)
+            $sqlDepto =" AND tipoServicio.departamentoId IN (".implode(',',$deptos).") ";
+
         $contratos = array();
         foreach($resContratos as $res){
             if($res['permisos']=="")
@@ -55,7 +59,7 @@ class ContractRep extends Main
                 continue;
             }
             //Checamos Servicios
-            $sql = "SELECT * FROM servicio
+           $sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
 					AND servicio.status = 'activo'

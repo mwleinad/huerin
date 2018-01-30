@@ -31,7 +31,7 @@
 						{if $Letra == $servicio.LETRA && $keyLetra == $servicio.POCICION}
 						<tr>
 							<td align="left" class="" title="{$contract.responsable.name}">{$cliente.nameContact}</td>
-							<td align="left" class="" title="{$contract.responsable.name}">{$servicio.responsable}</td>
+							<td align="left" class="" title="{$contract.responsable.name}">{$servicio.responsable|upper}</td>
 							<td align="left" class="" title="{$contract.responsable.name}">{$contract.name}</td>
 							<td align="center" class="" title="{$contract.responsable.name}">{$servicio.nombreServicio}</td>
 							{foreach from=$servicio.instancias item=instanciaServicio}
@@ -40,13 +40,13 @@
 								{if $EXEL == "SI"}
 									{if $instanciaServicio.status neq 'inactiva'}
 										{if $instanciaServicio.class eq 'CompletoTardio' || $instanciaServicio.class eq 'Completo'}
-											style="background-color: #009900 !important;color:#FFF"
+											style="background-color:#009900 !important;color:#FFF"
 										{else}
 											{if $instanciaServicio.class eq 'Iniciado' || $instanciaServicio.class eq 'PorCompletar'}
-												style="background-color: #FC0 !important;color:#FFF"
+												style="background-color:#FC0 !important;color:#FFF"
 											{else}
 												{if $instanciaServicio.class == "PorIniciar"}
-													style="background-color: #F00 !important;color:#FFF"
+													style="background-color:#F00 !important;color:#FFF"
 												{/if}
 											{/if}
 										{/if}
@@ -68,19 +68,30 @@
 								{/if}
 
 								title="{$servicio.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
-									<div style="cursor:pointer" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')">
-										{if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
+									{if $NODIV eq 'SI'}
+                                        {if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
 											${$servicio.costo|number_format:2:".":","}
-										{else}
+                                        {else}
 											-
-										{/if}
-										{if $instanciaServicio.status eq 'inactiva'}
+                                        {/if}
+                                        {if $instanciaServicio.status eq 'inactiva'}
 											<span style="color:#DA9696">(Inactivo)</span>
-										{/if}
-									</div>
+                                        {/if}
+									{else}
+										<div style="cursor:pointer" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')">
+                                            {if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
+												${$servicio.costo|number_format:2:".":","}
+                                            {else}
+												-
+                                            {/if}
+                                            {if $instanciaServicio.status eq 'inactiva'}
+												<span style="color:#DA9696">(Inactivo)</span>
+                                            {/if}
+										</div>
+									{/if}
 								</td>
 							{/foreach}
-							<td align="center" mso-number-format>${$servicio.sumatotal|number_format:2}</td>
+							<td align="center">${$servicio.sumatotal|number_format:2}</td>
 						</tr>
 						{/if}
 					{/foreach}

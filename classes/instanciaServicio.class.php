@@ -71,16 +71,79 @@ class InstanciaServicio extends  Servicio
                 YEAR(instanciaServicio.date) as anio,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
-				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (instanciaServicio.date >='2015-01-01' AND instanciaServicio.date<DATE(NOW()))
 				AND instanciaServicio.class IN ('PorIniciar','PorCompletar')
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."' ORDER BY YEAR(instanciaServicio.date) DESC, MONTH(instanciaServicio.date) ASC";
+				AND servicio.servicioId = '".$servicioId."' group by instanciaServicio.date ORDER BY YEAR(instanciaServicio.date) DESC, MONTH(instanciaServicio.date) ASC";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
 
         return $data;
+    }
+    function getSumaBonoTrimestre($servicioId,$year,$meses=array()){
+        $sql = "SELECT 
+                sum(servicio.costo) as costoTotal
+				FROM instanciaServicio 
+				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+				WHERE MONTH(instanciaServicio.date) IN (".implode(',',$meses).") AND YEAR(instanciaServicio.date)='".$year."'
+				AND instanciaServicio.class IN ('CompletoTardio','Completo')
+				AND (servicio.status != 'baja'
+      			OR servicio.status != 'inactiva')
+				AND instanciaServicio.status != 'baja'		
+				AND servicio.servicioId = '".$servicioId."' GROUP BY servicio.servicioId";
+        $this->Util()->DB()->setQuery($sql);
+        $total =  $this->Util()->DB()->GetSingle();
+        return $total;
+    }
+    function getBonoTrimestre($servicioId,$year,$meses=array()){
+         $sql = "SELECT 
+                CASE tipoServicioId 
+                WHEN 16 THEN ''
+                WHEN 34 THEN ''
+                WHEN 24 THEN ''
+                WHEN 27 THEN ''
+                ELSE
+                class
+                END 
+                AS class,
+                servicio.costo,
+                YEAR(instanciaServicio.date) as anio,
+                MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
+				FROM instanciaServicio 
+				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+				WHERE MONTH(instanciaServicio.date) IN (".implode(',',$meses).") AND YEAR(instanciaServicio.date)='".$year."'
+				AND (servicio.status != 'baja'
+      			OR servicio.status != 'inactiva')
+				AND instanciaServicio.status != 'baja'		
+				AND servicio.servicioId = '".$servicioId."' ORDER BY  MONTH(instanciaServicio.date) ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $data = $this->Util()->DB()->GetResult();
+
+        $new = array();
+        foreach($data as $key => $value)
+        {
+            switch($value['mes']){
+                case 1:
+                case 4:
+                case 7:
+                case 10:
+                    $llave = 0; break;
+                case 2:
+                case 5:
+                case 8:
+                case 11:
+                    $llave = 1; break;
+                case 3:
+                case 6:
+                case 9:
+                case 12:
+                $llave = 2; break;
+            }
+            $new[$llave] =  $value;
+        }
+        return $new;
     }
 }

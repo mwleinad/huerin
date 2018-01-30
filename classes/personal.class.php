@@ -615,7 +615,7 @@ class Personal extends Main
 		return $subordinados;
 	}
 	
-function Subordinados()
+function Subordinados($whitDpto=false)
 {   
 	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
 		LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
@@ -625,7 +625,10 @@ function Subordinados()
 	$jerarquia = $this->Jerarquia($result, $this->personalId);
 	
 	$_SESSION["lineal"] = array();
-	$this->JerarquiaLinealJustId($jerarquia);
+	if($whitDpto)
+        $this->JerarquiaLinealWhitDpto($jerarquia);
+	else
+	    $this->JerarquiaLinealJustId($jerarquia);
 	
 	return $_SESSION["lineal"];
 }
@@ -727,6 +730,20 @@ function SubordinadosDetails()
 			}
 		}
 	}
+    function JerarquiaLinealWhitDpto($tree)
+    {
+        foreach($tree as $key => $value)
+        {
+            $card["personalId"] = $value["personalId"];
+            $card["dptoId"] = $value["departamentoId"];
+            $_SESSION["lineal"][] = $card;
+
+            if(count($value["children"]) > 0)
+            {
+                $this->JerarquiaLinealWhitDpto($value["children"]);
+            }
+        }
+    }
 	
 	
 	function ArrayOrdenadoPersonal()
