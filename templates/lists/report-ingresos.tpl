@@ -1,4 +1,4 @@
-<table width="1200" cellpadding="0" cellspacing="0" id="box-table-b">
+<table width="100%" cellpadding="0" cellspacing="0" id="box-table-b">
 <thead>
 	<tr>
 		<th align="center" width="60">Cliente</th>
@@ -26,10 +26,10 @@
             <td align="center">${$servicio.costo|number_format:2}</td>
             <td align="center">${$servicio.costoMens}</td>
             <td align="center">${$servicio.costoVisual}</td>
-            <td align="center">{$servicio.auxiliar}</td>
-            <td align="center">{$servicio.contador}</td>
-            <td align="center">{$servicio.supervisor}</td>
-            <td align="center">{$servicio.gerente}</td>
+            <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
+            <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
+            <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
+            <td align="center">{if $servicio.gerente eq ''}--{else}{$servicio.gerente}{/if}</td>
         </tr> 
         {/foreach}
     {/foreach}

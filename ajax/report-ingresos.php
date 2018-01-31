@@ -133,38 +133,67 @@ switch($_POST["type"])
 						$personal->setPersonalId($personalId);		
 						$infP = $personal->Info();
 						
-						if($infP['tipoPersonal'] == 'Gerente'){
+						if($infP['tipoPersonal'] == 'Gerente' || $infP['tipoPersonal'] == 'Socio'){
 							$serv['gerente'] = $infP['name'];
 						}elseif($infP['tipoPersonal'] == 'Supervisor'){
 						
 							$serv['supervisor'] = $infP['name'];
 							
-							$personal->setPersonalId($infP['jefeGerente']);
+							$personal->setPersonalId($infP['jefeInmediato']);
 							$serv['gerente'] = $personal->GetNameById();
 							
-						}elseif($infP['tipoPersonal'] == 'Contador'){
+						}
+                        elseif($infP['tipoPersonal'] == 'Asistente'){
+                            $serv['auxiliar'] = $infP['name'];
+
+                            $personal->setPersonalId($infP['jefeInmediato']);
+                            $jGer = $personal->Info();
+                            $personal->setPersonalId($jGer['personalId']);
+                            $serv['gerente'] = $personal->GetNameById();
+
+                        }elseif($infP['tipoPersonal'] == 'Contador'){
 						
 							$serv['contador'] = $infP['name'];
-							
-							$personal->setPersonalId($infP['jefeSupervisor']);
+
+							$personal->setPersonalId($infP['jefeInmediato']);
+                            $jSup = $personal->Info();
+							$personal->setPersonalId($jSup['personalId']);
 							$serv['supervisor'] = $personal->GetNameById();
 							
-							$personal->setPersonalId($infP['jefeGerente']);
+							$personal->setPersonalId($jSup['jefeInmediato']);
 							$serv['gerente'] = $personal->GetNameById();
 							
 						}elseif($infP['tipoPersonal'] == 'Auxiliar'){
 						
 							$serv['auxiliar'] = $infP['name'];
-							
-							$personal->setPersonalId($infP['jefeContador']);
+
+                            $contadorId = $infP['jefeInmediato']==0?$infP['personalId']:$infP['jefeInmediato'];
+                            $personal->setPersonalId($contadorId);
+                            $jCont = $personal->Info();
+
+							$personal->setPersonalId($jCont['personalId']);
 							$serv['contador'] = $personal->GetNameById();
-							
-							$personal->setPersonalId($infP['jefeSupervisor']);
+
+                            $supervisorId = $jCont['jefeInmediato']==0?$jCont['personalId']:$jCont['jefeInmediato'];
+                            $personal->setPersonalId($supervisorId);
+                            $jSup = $personal->Info();
+
+							$personal->setPersonalId($jSup['personalId']);
 							$serv['supervisor'] = $personal->GetNameById();
-							
-							$personal->setPersonalId($infP['jefeGerente']);
+
+                            $gerenteId = $jSup['jefeInmediato']==0?$jSup['personalId']:$jSup['jefeInmediato'];
+                            $personal->setPersonalId($gerenteId);
+                            $jGer = $personal->Info();
+
+							$personal->setPersonalId($jGer['personalId']);
 							$serv['gerente'] = $personal->GetNameById();
-						}
+
+						}elseif(empty($infP)){
+                            $serv['auxiliar'] = 'N/E';
+                            $serv['contador'] = 'N/E';
+                            $serv['supervisor'] = 'N/E';
+                            $serv['gerente'] = 'N/E';
+                        }
 						
 						//END PERSONAL
 						
