@@ -141,8 +141,10 @@ class Excel
 
                                 if(preg_match("/cabeceraTabla/i",$ths->item($x)->getAttribute('class')))
                                 {$headrows[$h]['bgcolor'][] = '6b6b6b';}
+                                elseif(preg_match("/divInside/i",$ths->item($x)->getAttribute('class')))
+                                {$headrows[$h]['bgcolor'][] = '686DAB';}
                                 else
-                                {$headrows[$h]['bgcolor'][] = 'FFFFFF';}
+                                 $headrows[$h]['bgcolor'][] = 'FFFFFF';
 
                             }
                             else
@@ -372,6 +374,13 @@ class Excel
                         else
                             $worksheet->getColumnDimension($xcol)->setWidth(10);
                     }
+                    if($thistext[0]=='$')
+                    {
+                        $thistext= str_replace('$','',$thistext);
+                        $style_overlay['numberformat']['code']=PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE;
+                    }
+
+
                     $worksheet->setCellValue($xcol.$xrow, $thistext);
                     if($debug) {
                         fwrite($handle, "\n".$xcol.":".$xrow." ColSpan:".$thiscolspan." Color:".$thiscolor." Align:".$thisalign." VAlign:".$thisvalign." BGColor:".$thisbg." Bold:".$strbold." cellValue: ".$thistext);

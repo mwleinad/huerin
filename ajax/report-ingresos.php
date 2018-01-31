@@ -170,17 +170,19 @@ switch($_POST["type"])
                             $contadorId = $infP['jefeInmediato']==0?$infP['personalId']:$infP['jefeInmediato'];
                             $personal->setPersonalId($contadorId);
                             $jCont = $personal->Info();
+                            if($jCont['tipoPersonal']=='Contador'){
+                                $personal->setPersonalId($jCont['personalId']);
+                                $serv['contador'] = $personal->GetNameById();
+                            }
 
-							$personal->setPersonalId($jCont['personalId']);
-							$serv['contador'] = $personal->GetNameById();
 
                             $supervisorId = $jCont['jefeInmediato']==0?$jCont['personalId']:$jCont['jefeInmediato'];
                             $personal->setPersonalId($supervisorId);
                             $jSup = $personal->Info();
-
-							$personal->setPersonalId($jSup['personalId']);
-							$serv['supervisor'] = $personal->GetNameById();
-
+                            if($jSup['tipoPersonal']=="Supervisor"){
+                                $personal->setPersonalId($jSup['personalId']);
+                                $serv['supervisor'] = $personal->GetNameById();
+                            }
                             $gerenteId = $jSup['jefeInmediato']==0?$jSup['personalId']:$jSup['jefeInmediato'];
                             $personal->setPersonalId($gerenteId);
                             $jGer = $personal->Info();
