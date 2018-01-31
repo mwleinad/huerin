@@ -15,7 +15,7 @@
   	</div>
 
 	<div class="clear"></div>
-
+    <div id="portlets">
 	<div class="portlet">
  
         {include file="forms/search-report-ingresos.tpl"}   
@@ -27,7 +27,7 @@
             <br />&nbsp;
         </div>
      
-        <div class="portlet-content nopadding borderGray" id="contenido" style="overflow:auto; width:910px; margin-left:10px;">
+        <div class="portlet-content nopadding borderGray" id="contenido" style="overflow:auto; max-height:550px; margin-left:10px;">
           {include file="lists/report-ingresos.tpl"}            
         </div>
       
@@ -35,7 +35,7 @@
         <br />
                      
 	</div>
-
+    </div>
 	<div class="clear"></div>
 
 </div>

@@ -29,12 +29,12 @@ $sql = "UPDATE instanciaServicio SET class = 'PorIniciar'
 					WHERE class = ''";
 $db->setQuery($sql);
 $db->UpdateData();
-
 $arrayBase =  array();
 foreach($employees as $key=>$itemEmploye) {
-    if(!filter_var($itemEmploye['email'],FILTER_VALIDATE_EMAIL))
+    if(!$util->ValidateEmail(trim($itemEmploye['email'])))
     {
         echo $itemEmploye['personalId']." correo no valido : ".$itemEmploye['email'];
+        echo "<br>";
         $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
         $db->setQuery($up);
         $db->UpdateData();
