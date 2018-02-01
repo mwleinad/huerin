@@ -84,3 +84,17 @@ $html = str_replace(',', '', $html);
 
 $file = 'COBRANZA-'.strtoupper($util->GetMonthByKey($mes));
 $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
+
+$subject= $file;
+$body   = " SE HACE LLEGAR EL REPORTE DE COBRANZA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))."
+          <br><br>
+          Este correo se genero automaticamente favor de no responder";
+$sendmail = new SendMail;
+
+$to = 'rzetina@braunhuerin.com.mx';
+$toName = 'JACOBO EDUARDO HUERIN ROMANO';
+$attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
+
+$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
+echo "reporte enviado correctamente";
+unlink($attachment);
