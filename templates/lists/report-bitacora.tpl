@@ -5,7 +5,7 @@
         <th colspan="10"></th>
     </tr>
     <tr>
-        <th colspan="10" style="font-size:16px">BITACORA DE MOVIMIENTOS CORRESPONDIENTE AL MES {$meses[$mes]|UPPER}  </th>
+        <th colspan="10" style="font-size:16px">BITACORA DE MOVIMIENTOS CORRESPONDIENTE AL MES {$meses[$mes]|upper}  </th>
     </tr>
     <tr>
         <th align="center" width="60">FECHA Y HORA</th>
