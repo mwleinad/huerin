@@ -175,7 +175,7 @@ $html = '<html>
 			</head>
 			';
 $smarty->assign("registros", $new);
-$contents = $smarty->fetch(DOC_ROOT . '/templates/lists/tree-subordinate.tpl');
+$contents = $smarty->fetch(DOC_ROOT . '/templates/lists/rep-subordinado.tpl');
 $html .= $contents;
 $file = 'arbol-subordinados';
 $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
