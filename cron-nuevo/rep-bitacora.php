@@ -202,4 +202,5 @@ $toName = 'JACOBO EDUARDO HUERIN ROMANO';
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
 $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "BITACORA") ;
+echo "reporte bitacora enviado";
 unlink($attachment);
