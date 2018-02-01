@@ -6,20 +6,8 @@
 			<th class="cabeceraTabla" align="center" >Razon Social</th>
 			<th class="cabeceraTabla" align="center" >Servicio</th>
 			{foreach from=$nombreMeses item=mes}
-			<th class="cabeceraTabla" align="center" width="50px" >{$mes}</th>
+				<th class="cabeceraTabla" align="center" width="50px" >{$mes}</th>
 			{/foreach}
-			<!-- <th align="center" width="50">Ene</th>
-			<th align="center" width="50">Feb</th>
-			<th align="center" width="50">Mar</th>
-			<th align="center" width="50">Abr</th>
-			<th align="center" width="50">May</th>
-			<th align="center" width="50">Jun</th>
-			<th align="center" width="50">Jul</th>
-			<th align="center" width="50">Ago</th>
-			<th align="center" width="50">Sep</th>
-			<th align="center" width="50">Oct</th>
-			<th align="center" width="50">Nov</th>
-			<th align="center" width="50">Dic</th> -->
 			<th class="cabeceraTabla" align="center" >Total</th>
 		</tr>
 	</thead>
