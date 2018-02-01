@@ -18,13 +18,10 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$inicioFin = $util->inicio_fin_semana(date('Y-m-d'));
-
 $filtroOrden="Cliente";
 
-$year=2017;
-$sql = "SELECT * FROM personal WHERE puesto like'%gerente%'
-          AND (lastSendBono < DATE(NOW()) OR lastSendBono IS NULL) ORDER BY personalId ASC LIMIT 3";
+$sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%')
+          AND (lastSendBono < DATE(NOW()) OR lastSendBono IS NULL) AND active='1' ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);
 
@@ -34,43 +31,54 @@ $db->setQuery($sql);
 $db->UpdateData();
 $mesesBase = array(0=>array(),1=>array(),2=>array());
 $meses = array();
-switch(date('m')){
+$fecha = strtotime('-1 month', strtotime(date('Y-m-d')));
+$before = date('Y-m-d',$fecha);
+$date = explode('-',$before);
+$year = $date[0];
+
+switch($date[1]){
     case 1:
     case 2:
     case 3:
         $meses = array(1,2,3);
         $trimestre = array('Enero','Febrero','Marzo');
-        $tri = "PRIMER TRIMESTRE";
+        $tri = "PRIMER-TRIMESTRE-".$year;
     break;
     case 4:
     case 5:
     case 6:
         $meses = array(4,5,6);
         $trimestre = array('Abril','Mayo','Junio');
-        $tri = "SEGUNDO TRIMESTRE";
+        $tri = "SEGUNDO-TRIMESTRE-".$year;
         break;
     case 7:
     case 8:
     case 9:
         $meses = array(7,8,9);
         $trimestre = array('Julio','Agosto','Septiembre');
-        $tri = "TERCER TRIMESTRE";
+        $tri = "TERCER-TRIMESTRE-".$year;
         break;
     case 10:
     case 11:
     case 12:
         $meses = array(10,11,12);
         $trimestre = array('Octubre','Noviembre','Diciembre');
-        $tri = "CUARTO TRIMESTRE";
+        $tri = "CUARTO-TRIMESTRE-".$year;
         break;
 }
 foreach($employees as $key=>$itemEmploye){
     $persons = array();
+    $deptos =  array();
     $personal->setPersonalId($itemEmploye['personalId']);
-    $subordinados = $personal->Subordinados();
+    $subordinados = $personal->Subordinados(true);
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
+    $deptos  = $util->ConvertToLineal($subordinados, 'dptoId');
+
     array_unshift($persons, $itemEmploye['personalId']);
-    $contracts = $contractRep->BuscarContractV2($persons,true);
+    array_unshift($deptos, $itemEmploye['departamentoId']);
+    $deptos = array_unique($deptos);
+
+    $contracts = $contractRep->BuscarContractV2($persons,true,$deptos);
     if(empty($contracts))
     {
         $up = 'UPDATE personal SET lastSendBono=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
@@ -201,6 +209,7 @@ foreach($employees as $key=>$itemEmploye){
     $smarty->assign("NODIV", 'SI');
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono.tpl');
+    $html = str_replace(',', '', $html);
 
     $fileName = "BONOS-".$tri."-".$itemEmploye['personalId'];
     $excel->ConvertToExcel($html, 'xlsx', false, $fileName,true);
@@ -213,11 +222,11 @@ foreach($employees as $key=>$itemEmploye){
         Este correo se genero automaticamente favor de no responder. ";
     $sendmail = new SendMail;
 
-    $to = $itemEmploye["email"];
+    $to = array($itemEmploye["email"]=>$itemEmploye['name'],'isc061990@gmail.com'=>'Desarrollador');
     $toName = $itemEmploye["name"];
     $attachment = DOC_ROOT . "/sendFiles/".$fileName.".xlsx";
 
-    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
+    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     $up = 'UPDATE personal SET lastSendBono=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
     $db->setQuery($up);
     $db->UpdateData();

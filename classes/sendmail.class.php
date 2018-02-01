@@ -45,9 +45,9 @@ class SendMail extends Main
 			$mail->AddReplyTo($from, $fromName);
 			$mail->SetFrom($from, $fromName);
 			
-			foreach($to as $recipient)
+			foreach($to as $correo => $name)
 			{
-				$mail->AddAddress($recipient, "Estimado Usuario");
+				$mail->AddAddress($correo, $name);
 			}
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
