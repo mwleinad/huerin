@@ -178,7 +178,16 @@ $smarty->assign("registros", $new);
 $contents = $smarty->fetch(DOC_ROOT . '/templates/lists/rep-subordinado.tpl');
 $html .= $contents;
 $file = 'arbol-subordinados';
-$excel->ConvertToExcel($html, 'xlsx', false,$file,true);
+header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
+header("Content-type:   application/x-msexcel; charset=utf-8");
+header("Content-Disposition: attachment; filename=".$file.".xls");
+header("Pragma: no-cache");
+echo "\xEF\xBB\xBF";
+header("Expires: 0");
+
+echo $html;
+exit;
+/*$excel->ConvertToExcel($html, 'xlsx', false,$file,true);
 $path = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
 header('Content-disposition: attachment; filename='.$file.'.xlsx');
@@ -189,7 +198,7 @@ header('Cache-Control: must-revalidate');
 header('Pragma: public');
 ob_clean();
 flush();
-readfile($path);
+readfile($path);*/
 
 
 
