@@ -21,7 +21,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $filtroOrden="Cliente";
 
 $sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%')
-          AND (lastSendBono < DATE(NOW()) OR lastSendBono IS NULL) AND active='1' ORDER BY personalId ASC LIMIT 1";
+          AND (lastSendBono < DATE(NOW()) OR lastSendBono IS NULL) AND active='1' ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);
 
