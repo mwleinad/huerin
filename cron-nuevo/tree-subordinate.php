@@ -21,7 +21,7 @@ else
 }
 define('DOC_ROOT', $docRoot);
 
-include_once(DOC_ROOT.'/initPdf.php');
+include_once(DOC_ROOT.'/initContent.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 if(!isset($_SESSION['User'])){
