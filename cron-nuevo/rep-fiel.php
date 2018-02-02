@@ -106,8 +106,8 @@ foreach($employees as $key=>$itemEmploye){
     $toName = 'ROGELIO ZETINA';
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
-    //$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
+    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
     echo "Reporte de vencimientos de fiel enviados";
     echo "<br>";
-    //unlink($attachment);
+    unlink($attachment);
 }
