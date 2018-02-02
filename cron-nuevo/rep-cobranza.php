@@ -29,14 +29,14 @@ $sql = "SELECT a.paymentDate,concat_ws('',b.serie,b.folio) as factura,a.amount a
         LEFT JOIN contract c ON b.userId=c.contractId 
         LEFT JOIN customer d ON c.customerId=d.customerId
         LEFT JOIN personal e ON c.responsableCuenta=e.personalId
-        WHERE date(a.paymentDate)>=DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY
+        WHERE b.empresaId=21 AND date(a.paymentDate)>=DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY
         AND date(a.paymentDate) <= LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) ORDER BY  a.paymentDate DESC ";
 $db->setQuery($sql);
 $payments = $db->GetResult($sql);
-$db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY from payment limit 1');
+$db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY from payment where 1');
 $initMonth = $db->GetSingle();
-$mes = date('m',$initMonth);
-
+$des = explode('-',$initMonth);
+$mes = $des[1];
 $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -92,7 +92,7 @@ $body   = " SE HACE LLEGAR EL REPORTE DE COBRANZA DEL MES DE ".strtoupper($util-
 $sendmail = new SendMail;
 
 $to = 'rzetina@braunhuerin.com.mx';
-$toName = 'JACOBO EDUARDO HUERIN ROMANO';
+$toName = 'ROGELIO ZETINA';
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
 $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
