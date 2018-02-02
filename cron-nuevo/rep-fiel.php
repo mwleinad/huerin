@@ -92,7 +92,7 @@ foreach($employees as $key=>$itemEmploye){
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/rep-fiel.tpl');
    // $file = "ARCHIVOS-VENCIDOSOPORVENCER-".$itemEmploye['personalId'];
-    $file = "CORREGIR-FECHA-".strtoupper(substr($itemEmploye['name'],0,6));
+    $file = "CORREGIR-FECHA-".strtoupper(substr($itemEmploye['name'],0,6))."(".$itemEmploye['email'].")";
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
