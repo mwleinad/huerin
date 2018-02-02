@@ -9,10 +9,10 @@
 		<th align="center"  class="cabeceraTabla">#</th>
 		<th align="center"  class="cabeceraTabla">NOMBRE EMPLEADO</th>
 		<th align="center" class="cabeceraTabla">PUESTO</th>
-		<th align="center" class="cabeceraTabla">JEFE CONTADOR</th>
-		<th align="center"  class="cabeceraTabla">JEFE SUPERVISOR</th>
+		<th align="center" class="cabeceraTabla">CONTADOR</th>
+		<th align="center"  class="cabeceraTabla">SUPERVISOR</th>
 		<th align="center" class="cabeceraTabla">GERENTE</th>
-		<th align="center"  class="cabeceraTabla">GERENTE GENERAL</th>
+		<th align="center"  class="cabeceraTabla">DIRECTOR</th>
 
 	</tr>
 </thead>

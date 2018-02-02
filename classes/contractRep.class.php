@@ -79,4 +79,81 @@ class ContractRep extends Main
 
         return $contratos;
     }
+    public function FilesWhitoutDate($id){
+
+        $sql = 'SELECT a.date,b.descripcion FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                WHERE a.date="0000-00-00" AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+
+        return $result;
+    }
+    public function CheckExpirationFiel($id){
+        $nowAdd = strtotime('+1 month', strtotime(date('Y-m-d')));
+        $addMonth = date('Y-m-d',$nowAdd);
+        $sql = 'SELECT 
+                CASE 
+                WHEN DATE(NOW())>a.date THEN "Vencido"
+                WHEN DATE(NOW())<=a.date THEN "PorVencer"
+                END
+                AS typeExpirate,
+                a.date,b.descripcion FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                WHERE (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.date!="0000-00-00" AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+
+        return $result;
+    }
+    public function SearchOnlyContract($formValues=array(),$activos=false){
+        $sqlFilter = "";
+        if($activos)
+            $sqlFilter .= " AND customer.active = '1'";
+        //Contratos Activos
+        $sqlFilter .= ' AND contract.activo = "Si"';
+
+        $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
+				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
+				personal.jefeGerente, personal.jefeContador, customer.nameContact
+				FROM contract
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
+				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
+				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
+				WHERE 1 ".$sqlFilter."
+				ORDER BY contract.name ASC";
+
+        $this->Util()->DB()->setQuery($sql);
+        $resContratos = $this->Util()->DB()->GetResult();
+        $contratos = array();
+        foreach($resContratos as $res) {
+            if ($res['permisos'] == "")
+                continue;
+
+            $encontrado = $this->findPermission($res, $formValues);
+            if ($encontrado == false) {
+                continue;
+            }
+            $permisos = explode('-',$res['permisos']);
+            $filesExp = $this->FilesWhitoutDate($res['contractId']);
+
+            if(empty($filesExp))
+                continue;
+            $res['filesExpirate'] = $filesExp;
+            foreach($permisos as $pk=>$vp){
+                $dp = explode(',',$vp);
+                switch($dp[0]){
+                    case 1:$res['respContabilidad'] = $dp[1];break;
+                    case 8:$res['respNominas'] = $dp[1];break;
+                    case 31:$res['respAuditoria'] = $dp[1];break;
+                    case 24:$res['respImss'] = $dp[1];break;
+                    case 22:$res['respJuridico'] = $dp[1];break;
+                    case 21:$res['respAdministracion'] = $dp[1];break;
+                    case 26:$res['respMensajeria'] = $dp[1];break;
+                }
+            }
+
+            $contratos[] =  $res;
+        }
+        return $contratos;
+    }
 }

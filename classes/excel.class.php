@@ -3,7 +3,7 @@
 class Excel
 {
 
-    public function ConvertToExcel($htmltable, $type, $debug = false,$fileName='exportar',$wrap=false)
+    public function ConvertToExcel($htmltable, $type, $debug = false,$fileName='exportar',$wrap=false,$finWrap='D')
     {
         if($debug === false) {
             $debug = false;
@@ -366,7 +366,7 @@ class Excel
                     $style_overlay['fill']['color']['rgb'] = $thisbg;
                     if($thiscolspan == 1) {
                         if($wrap){
-                            if($xcol>'D')
+                            if($xcol>$finWrap)
                                 $worksheet->getColumnDimension($xcol)->setWidth(12);
                             else
                                 $worksheet->getColumnDimension($xcol)->setAutoSize(true);
