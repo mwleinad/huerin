@@ -134,7 +134,7 @@ class ContractRep extends Main
                 continue;
             }
             $permisos = explode('-',$res['permisos']);
-            $filesExp = $this->FilesWhitoutDate($res['contractId']);
+            $filesExp = $this->CheckExpirationFiel($res['contractId']);
 
             if(empty($filesExp))
                 continue;
