@@ -28,9 +28,7 @@ $sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Ge
          ORDER BY personalId ASC";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);
-
 foreach($employees as $key=>$itemEmploye){
-
     $persons = array();
     $personal->setPersonalId($itemEmploye['personalId']);
     $subordinados = $personal->Subordinados(true);
@@ -44,11 +42,20 @@ foreach($employees as $key=>$itemEmploye){
         $personal->setPersonalId($vc['respJuridico']);
         $contracts[$kc]['responsableJuridico'] = $personal->GetNameById();
     }
-
     $sortedArray = $util->orderMultiDimensionalArray($contracts,'nameContact');
     if(count($sortedArray)<=0)
         continue;
 
+    //se comprueba que la ultima notifiacion de vencimiento ya haya pasado una semana
+    if($itemEmploye['lastSendArchivo']!='0000-00-00' && $itemEmploye['lastSendArchivo']!=''){
+        $last = strtotime('+1 week',strtotime($itemEmploye['lastSendArchivo']));
+        $addweek = date('Y-m-d',$last);
+        if(date('Y-m-d')<$addweek)
+        {
+            echo "No se envia correo a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'];echo "<br>";
+            continue;
+        }
+    }
     $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -91,23 +98,25 @@ foreach($employees as $key=>$itemEmploye){
     $smarty->assign("registros", $sortedArray);
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/rep-fiel.tpl');
-   // $file = "ARCHIVOS-VENCIDOSOPORVENCER-".$itemEmploye['personalId'];
-    $file = "CORREGIR-FECHA-".strtoupper(substr($itemEmploye['name'],0,6))."(".$itemEmploye['email'].")";
+    $file = "ARCHIVOS-".strtoupper(substr($itemEmploye['name'],0,6));
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
 
-    $body   = " SE HACE LLEGAR EL REPORTE DE COBRANZA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))."
+    $body   = " SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
           <br><br>
           Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
 
-    $to = 'desarrollo@aristasoluciones.com';
-    $toName = 'ROGELIO ZETINA';
+    $to = $itemEmploye['email'];
+    $toName = $itemEmploye['name'];
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
-    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
-    echo "Reporte de vencimientos de fiel enviados";
+    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ARCHIVOS") ;
+    $up = 'UPDATE personal SET lastSendArchivo=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+    $db->setQuery($up);
+    $db->UpdateData();
+    echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d');echo "<br>";
     echo "<br>";
     unlink($attachment);
 }
