@@ -28,7 +28,7 @@
                 <input class="largeInput medium" name="amount" id="amount" type="text" value="" size="50" maxlength="15"/>
             </div>
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">* Deposito</div>
+				<div style="width:30%;float:left">* Deposito(<small>Dejar vacio con metodo de pago saldo a favor</small>)</div>
 				<input class="largeInput medium" name="deposito" id="deposito" type="text" value="" size="50" maxlength="15"/>
 			</div>
 

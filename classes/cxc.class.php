@@ -446,7 +446,7 @@ class CxC extends Producto
 		return true;
 	}
 
-	public function AddPayment($id, $metodoDePago,$amount,$deposito,$fecha,$efectivo=false, $comprobantePago,$deposito)
+	public function AddPayment($id, $metodoDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago)
 	{
 	    $amount = $this->Util()->limpiaNumero($amount);
         $deposito = $this->Util()->limpiaNumero($deposito);
@@ -463,12 +463,14 @@ class CxC extends Producto
 			$this->Util()->PrintErrors();
 			return false;
 		}
-        if($deposito<$amount)
-        {
-            $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
-            $this->Util()->PrintErrors();
-            return false;
-        }
+
+		if($metodoDePago!="Saldo a Favor")
+            if($deposito<$amount)
+            {
+                $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
+                $this->Util()->PrintErrors();
+                return false;
+            }
 
 		/*
 		if(!$_FILES["comprobante"]["name"])
