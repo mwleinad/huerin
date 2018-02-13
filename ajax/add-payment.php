@@ -13,8 +13,7 @@ session_start();
 switch($_POST["type"])
 {
      case 'saveAddPayment':
-
-         if($cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"], $_POST["paymentDate"],$_POST['efectivo'],$_POST['generarComprobantePago']))
+         if($cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"],$_POST['deposito'],$_POST["paymentDate"],$_POST['efectivo'],$_POST['generarComprobantePago']))
          {
              echo "ok[#]";
              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');

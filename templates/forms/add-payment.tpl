@@ -26,7 +26,11 @@
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Importe:</div>
                 <input class="largeInput medium" name="amount" id="amount" type="text" value="" size="50" maxlength="15"/>
-        </div>
+            </div>
+			<div class="formLine" style="width:100%; text-align:left">
+				<div style="width:30%;float:left">* Deposito</div>
+				<input class="largeInput medium" name="deposito" id="deposito" type="text" value="" size="50" maxlength="15"/>
+			</div>
 
 			{if $post.version == '3.3'}
 				<div class="formLine" style="width:100%; text-align:left">

@@ -446,23 +446,29 @@ class CxC extends Producto
 		return true;
 	}
 
-	public function AddPayment($id, $metodoDePago, $amount, $fecha,$efectivo=false, $comprobantePago)
+	public function AddPayment($id, $metodoDePago,$amount,$deposito,$fecha,$efectivo=false, $comprobantePago,$deposito)
 	{
-
 	    $amount = $this->Util()->limpiaNumero($amount);
-	    if(!$this->Util()->validateDateFormat($fecha,'Fecha'))
+        $deposito = $this->Util()->limpiaNumero($deposito);
+	    if($this->Util()->validateDateFormat($fecha,'Fecha'))
 	        $fecha = $this->Util()->FormatDateMySql($fecha);
 
-		if($this->Util()->PrintErrors()){ return false; }
+        if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->ValidateFloat($amount);
 
-		if($amount < 0.01)
+		if($amount<0.01)
 		{
 			$this->Util()->setError(10046, "error", "La cantidad a pagar debe de ser mayor a 0");
 			$this->Util()->PrintErrors();
 			return false;
 		}
+        if($deposito<$amount)
+        {
+            $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
+            $this->Util()->PrintErrors();
+            return false;
+        }
 
 		/*
 		if(!$_FILES["comprobante"]["name"])
@@ -556,6 +562,7 @@ class CxC extends Producto
 				`".$campo."` ,
 				`metodoDePago` ,
 				`amount` ,
+				`deposito` ,
 				`ext` ,
 				`comprobantePagoId`,
 				`paymentDate`
@@ -564,6 +571,7 @@ class CxC extends Producto
 				'".$id."',
 				'".$metodoDePago."',
 				'".$amount."',
+				'".$deposito."',
 				'".$ext."',
 				'".$comprobanteId."',
 				'".$fecha."'
