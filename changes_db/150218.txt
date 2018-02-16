@@ -2,3 +2,6 @@ ALTER TABLE `tipoDocumento`
 	ADD COLUMN `status` ENUM('1','0') NOT NULL DEFAULT '1' AFTER `nombre`;
 ALTER TABLE `tipoArchivo`
     	ADD COLUMN `status` ENUM('1','0') NULL DEFAULT '1' AFTER `descripcion`;
+
+ALTER TABLE `personal`
+	ADD COLUMN `lastChangePassword` DATE NULL DEFAULT NULL AFTER `lastSendArchivo`;

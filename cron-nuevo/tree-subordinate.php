@@ -28,8 +28,7 @@ if(!isset($_SESSION['User'])){
     echo "no se puede ejecutar, favor de iniciar sesion";
     exit;
 }
-
-$sql = "SELECT * FROM personal WHERE tipoPersonal!='Socio' ORDER BY personalId  ASC";
+$sql = "SELECT * FROM personal WHERE active='1'  ORDER BY personalId  ASC";
 $db->setQuery($sql);
 $results = $db->GetResult();
 $new = array();
