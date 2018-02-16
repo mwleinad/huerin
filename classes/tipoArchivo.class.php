@@ -29,9 +29,8 @@ class TipoArchivo extends Main
 
 	public function Enumerate()
 	{
-		$this->Util()->DB()->setQuery('SELECT * FROM tipoArchivo ORDER BY tipoArchivoId ASC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT * FROM tipoArchivo WHERE status="1" ORDER BY tipoArchivoId ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
-
 		return $result;
 	}
 
@@ -87,8 +86,8 @@ class TipoArchivo extends Main
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
-			DELETE FROM
-				tipoArchivo
+			UPDATE tipoArchivo
+			  SET status='0'
 			WHERE
 				tipoArchivoId = '".$this->tipoArchivoId."'");
 		$this->Util()->DB()->DeleteData();

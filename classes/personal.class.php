@@ -176,25 +176,28 @@ class Personal extends Main
 		global $infoUser;
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
-			$sqlActive = " AND active = '1'";
+			$sqlActive = " AND a.active = '1'";
 
 		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Asistente") {
 			$sql = "SELECT
-						*
+						a.*,
+						b.name as nombreJefe,
+						c.departamento
 					FROM
-						personal WHERE 1
+						personal a 
+						LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
+						LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
 					".$sqlFilter.$sqlActive."
 					ORDER BY
-						name ASC";
+						a.name ASC";
 	
 			$this->Util()->DB()->setQuery($sql);
 			$result = $this->Util()->DB()->GetResult();
-	
 			return $result;
 		}
 		
 		$this->setPersonalId($infoUser['personalId']);
-   	$result = $this->SubordinadosDetails();
+   	    $result = $this->SubordinadosDetails();
 		return $result;
 	}
 	
@@ -641,7 +644,6 @@ function AddMeToArray()
 	$row = $this->Util()->DB()->GetRow($sql);
 
 	array_unshift($_SESSION["lineal"], $row);
-
 }
 
 function SubordinadosDetails()

@@ -10,6 +10,7 @@
 		<th align="center" width="60" class="cabeceraTabla">NOMBRE DEL CLIENTE</th>
 		<th align="center" width="60" class="cabeceraTabla">RAZON SOCIAL</th>
 		<th align="center" width="60" class="cabeceraTabla">NUMERO DE FACTURA</th>
+		<th align="center" width="60" class="cabeceraTabla">IMPORTE</th>
 		<th align="center" width="60" class="cabeceraTabla">DEPOSITO</th>
 
 	</tr>
@@ -22,9 +23,10 @@
 			<td align="center">{$item.nameContact}</td>
 			<td align="center">{$item.name}</td>
 			<td align="center">{$item.factura}</td>
-			<td align="center">${$item.deposito|number_format:2:'.':','}</td>
+			<td align="center">${$item.importe|number_format:2:'.':','}</td>
+			<td align="center">{if $item.deposito<=0}{'N/C'}{else}${$item.deposito|number_format:2:'.':','}{/if}</td>
 	 	</tr>
-    {math equation='x+y' x=$totalDeposito y=$item.deposito assign="totalDeposito"}
+    {math equation='x+y' x=$totalDeposito y=$item.importe assign="totalDeposito"}
 {foreachelse}
 <tr>
 	<td colspan="5" align="center">Ning&uacute;n registro encontrado.</td>
@@ -35,8 +37,5 @@
 	<td align="right"><b>TOTAL</b></td>
 	<td align="center">{$totalDeposito|number_format:2:'.':','}</td>
 </tr>
-
-
-
 </tbody>
 </table>

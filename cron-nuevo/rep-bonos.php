@@ -35,8 +35,8 @@ $fecha = strtotime('-1 month', strtotime(date('Y-m-d')));
 $before = date('Y-m-d',$fecha);
 $date = explode('-',$before);
 $year = $date[0];
-
-switch($date[1]){
+$month = (int)$date[1];
+switch($month){
     case 1:
     case 2:
     case 3:
@@ -211,7 +211,7 @@ foreach($employees as $key=>$itemEmploye){
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono.tpl');
     $html = str_replace(',', '', $html);
 
-    $fileName = "BONOS-".$tri."-".$itemEmploye['personalId'];
+    $fileName = "BONOS-".$tri."-".$itemEmploye['personalId'].trim(strtoupper(substr($itemEmploye['name'],0,6)));
     $excel->ConvertToExcel($html, 'xlsx', false, $fileName,true);
 
     $subject='REPORTE BONOS '.$tri;
@@ -220,15 +220,23 @@ foreach($employees as $key=>$itemEmploye){
         <br>
         <br>
         Este correo se genero automaticamente favor de no responder. ";
-    $sendmail = new SendMail;
 
-    $to = array($itemEmploye["email"]=>$itemEmploye['name'],'isc061990@gmail.com'=>'Desarrollador');
+    $sendmail = new SendMail;
+    if(REP_STATUS=='test')
+        $to = array(EMAIL_DEV=>'Desarrollador');
+    else
+        $to = array($itemEmploye["email"]=>$itemEmploye['name'],EMAIL_DEV=>'Desarrollador');
+
     $toName = $itemEmploye["name"];
     $attachment = DOC_ROOT . "/sendFiles/".$fileName.".xlsx";
 
     $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
-    $up = 'UPDATE personal SET lastSendBono=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-    $db->setQuery($up);
-    $db->UpdateData();
+    if(REP_STATUS!='test') {
+        $up = 'UPDATE personal SET lastSendBono=" ' . date("Y-m-d") . ' " WHERE personalId=' . $itemEmploye["personalId"] . ' ';
+        $db->setQuery($up);
+        $db->UpdateData();
+    }
+    echo "REPORTE DE BONOS ENVIADO A : ".$itemEmploye['email'];
+    echo "<br>";
     unlink($attachment);
 }

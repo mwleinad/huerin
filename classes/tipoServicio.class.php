@@ -119,7 +119,26 @@ class TipoServicio extends Main
 		$data["pages"] = $pages;
 		return $data;
 	}
+    public function EnumerateOnePage(){
+        global $User;
 
+        //filtro departamento
+        if($User['departamentoId']!="1" && $User["roleId"]!=1)
+            $filtroDep="WHERE departamentoId=".$User['departamentoId'];
+
+        $this->Util()->DB()->setQuery('SELECT * FROM tipoServicio '.$filtroDep.' ORDER BY nombreServicio ASC ');
+        $result = $this->Util()->DB()->GetResult();
+
+        foreach($result as $key => $row)
+        {
+            $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM step WHERE servicioId = '".$row["tipoServicioId"]."'");
+            $result[$key]["totalPasos"] = $this->Util()->DB()->GetSingle();
+        }
+
+        $data["items"] = $result;
+
+        return $data;
+    }
 	public function EnumerateAll()
 	{
 		$this->Util()->DB()->setQuery('SELECT * FROM tipoServicio ORDER BY tipoServicioId ASC');

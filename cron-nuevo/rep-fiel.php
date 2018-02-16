@@ -98,25 +98,33 @@ foreach($employees as $key=>$itemEmploye){
     $smarty->assign("registros", $sortedArray);
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/rep-fiel.tpl');
-    $file = "ARCHIVOS-".strtoupper(substr($itemEmploye['name'],0,6));
+    $file = "ARCHIVOS-".trim(strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId']);
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
 
-    $body   = " SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
+    $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
           <br><br>
           Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
 
-    $to = $itemEmploye['email'];
+    if(REP_STATUS=='test')
+        $to = array(EMAIL_DEV=>'Desarrollador');
+    else
+        $to = array($itemEmploye["email"]=>$itemEmploye['name'],EMAIL_DEV=>'Desarrollador');
+
     $toName = $itemEmploye['name'];
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
-    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ARCHIVOS") ;
-    $up = 'UPDATE personal SET lastSendArchivo=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-    $db->setQuery($up);
-    $db->UpdateData();
+    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ARCHIVOS") ;
+    if(REP_STATUS!='test')
+    {
+        $up = 'UPDATE personal SET lastSendArchivo=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+        $db->setQuery($up);
+        $db->UpdateData();
+    }
     echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d');echo "<br>";
     echo "<br>";
     unlink($attachment);
+
 }

@@ -154,6 +154,48 @@ class Documento extends Contract
 		$this->Util()->PrintErrors();
 		return true;
 	}
+	public function GetDocContract(){
+        $result = array();
+        $docs = array();
+        //Obtener los documentos que debe ser obligatorio para cada contrato
+        $this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" order by nombre ASC');
+        $tipos =  $this->Util()->DB()->GetResult();
+
+        $this->Util()->DB()->setQuery('SELECT regimenId FROM contract where contractId='.$this->contractId);
+        $regimenId =  $this->Util()->DB()->GetSingle();
+
+        $idReq =  $this->Util()->ConvertToLineal($tipos,'tipoDocumentoId');
+        $noFile=0;
+        foreach($tipos as $key => $value)
+        {
+            $this->Util()->DB()->setQuery('select * from documento where tipoDocumentoId='.$value['tipoDocumentoId'].' AND contractId='.$this->contractId.' order by documentoId  DESC');
+            $row = $this->Util()->DB()->GetRow();
+            //falta comprobar si el documentoe es obligado para el contract en cuestion en base a su regimenId
+            if(!empty($row)){
+                $cad=$row;
+                $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
+                if(file_exists($file))
+                    $cad['fileExist'] = true;
+                else{
+                    $noFile++;
+                    $cad['fileExist'] = false;
+                }
+                $cad['nombreDoc']=$value['nombre'];
+                $cad['required'] = true;
+            }
+            else
+            {
+                //si no es obligado el documento pues no pasa nada
+               $cad=array();
+               $cad['nombreDoc']=$value['nombre'];
+               $cad['required']=false;
+            }
+            $docs[]=$cad;
+        }
+        $result['docs']= $docs;
+        $result['noFiles'] = $noFile;
+        return $result;
+    }
 
 }
 

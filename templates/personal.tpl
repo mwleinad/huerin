@@ -22,7 +22,7 @@
   
   <div class="portlet">
      
-      <div class="portlet-content nopadding borderGray" id="contenido">
+      <div class="portlet-content nopadding borderGray" id="contenido" style="overflow-x: scroll">
           
           {include file="lists/personal.tpl"}            
         
