@@ -35,11 +35,11 @@
                 <li><a href="{$WEB_ROOT}/tipoArchivo" {if $page == "tipoArchivo"}class="current"{/if}>
                 <span>Tipo de Archivo</span></a></li>
 
-                <li><a href="{$WEB_ROOT}/impuesto" {if $page == "impuesto"}class="current"{/if}>
+               {*<li><a href="{$WEB_ROOT}/impuesto" {if $page == "impuesto"}class="current"{/if}>
                 <span>Impuestos</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/obligacion" {if $page == "obligacion"}class="current"{/if}>
-                <span>Obligaciones</span></a></li>
+                <span>Obligaciones</span></a></li>*}
 
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
                 <span>Deptos</span></a></li>
