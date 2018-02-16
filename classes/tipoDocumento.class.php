@@ -29,9 +29,8 @@ class TipoDocumento extends Main
 
 	public function Enumerate()
 	{
-		$this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento ORDER BY tipoDocumentoId ASC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" ORDER BY tipoDocumentoId ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
-
 		return $result;
 	}
 
@@ -87,8 +86,8 @@ class TipoDocumento extends Main
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
-			DELETE FROM
-				tipoDocumento
+			UPDATE 	tipoDocumento
+			  SET status='0'
 			WHERE
 				tipoDocumentoId = '".$this->tipoDocumentoId."'");
 		$this->Util()->DB()->DeleteData();

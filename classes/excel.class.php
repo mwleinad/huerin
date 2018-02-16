@@ -143,6 +143,10 @@ class Excel
                                 {$headrows[$h]['bgcolor'][] = '6b6b6b';}
                                 elseif(preg_match("/divInside/i",$ths->item($x)->getAttribute('class')))
                                 {$headrows[$h]['bgcolor'][] = '686DAB';}
+                                elseif(preg_match("/greenBox/i",$ths->item($x)->getAttribute('class')))
+                                {$headrows[$h]['bgcolor'][] = '009900';}
+                                elseif(preg_match("/redBox/i",$ths->item($x)->getAttribute('class')))
+                                {$headrows[$h]['bgcolor'][] = 'F00F00';}
                                 else
                                  $headrows[$h]['bgcolor'][] = 'FFFFFF';
 
