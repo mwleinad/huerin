@@ -43,6 +43,7 @@ class Archivo extends Contract
 
 	public function setDate($value)
 	{
+	    $this->Util()->ValidateRequireField($value,"Fecha de vencimiento");
 		$this->datef = $value;
 	}
 	
@@ -141,6 +142,9 @@ class Archivo extends Contract
 
 	public function Save()
 	{
+        if($_FILES['path']['error']==4||$_FILES['path']['name']==''||$_FILES['path']['type']=='')
+            $this->Util()->setError(0,'error','Es necesario adjuntar un archivo o compruebe que el archivo sea valido');
+
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
