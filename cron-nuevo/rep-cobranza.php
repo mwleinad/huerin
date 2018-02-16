@@ -24,7 +24,7 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$sql = "SELECT a.paymentDate,concat_ws('',b.serie,b.folio) as factura,a.amount as deposito,d.nameContact,c.name,e.name as responsable FROM payment a 
+$sql = "SELECT a.paymentDate,concat_ws('',b.serie,b.folio) as factura,a.amount as importe,a.deposito,d.nameContact,c.name,e.name as responsable FROM payment a 
         LEFT JOIN comprobante b ON a.comprobanteId=b.comprobanteId
         LEFT JOIN contract c ON b.userId=c.contractId 
         LEFT JOIN customer d ON c.customerId=d.customerId
@@ -36,7 +36,7 @@ $payments = $db->GetResult($sql);
 $db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY from payment where 1');
 $initMonth = $db->GetSingle();
 $des = explode('-',$initMonth);
-$mes = $des[1];
+$mes = (int)$des[1];
 $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -84,17 +84,18 @@ $html = str_replace(',', '', $html);
 
 $file = 'COBRANZA-'.strtoupper($util->GetMonthByKey($mes));
 $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
-
 $subject= $file;
 $body   = " SE HACE LLEGAR EL REPORTE DE COBRANZA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))."
           <br><br>
           Este correo se genero automaticamente favor de no responder";
 $sendmail = new SendMail;
 
-$to = 'rzetina@braunhuerin.com.mx';
-$toName = 'ROGELIO ZETINA';
-$attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
+if(REP_STATUS=='test')
+    $to = array(EMAIL_DEV=>'Desarrollador');
+else
+    $to = array('rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',EMAIL_DEV=>'Desarrollador');
 
-$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
+$attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
+$sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
 echo "reporte enviado correctamente";
 unlink($attachment);

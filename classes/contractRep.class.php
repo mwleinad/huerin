@@ -98,7 +98,7 @@ class ContractRep extends Main
                 END
                 AS typeExpirate,
                 a.date,b.descripcion FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
-                WHERE (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.date!="0000-00-00" AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
+                WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
 

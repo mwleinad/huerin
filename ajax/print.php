@@ -12,7 +12,7 @@ $html = $_POST["contenido"];
 $html = str_replace('$','', $html);
 $html = str_replace(',','', $html);
 
-$excel->ConvertToExcel($html, $_POST["type"]);
+$excel->ConvertToExcel($html, $_POST["type"],false,'exportar',true,45);
 
 if(!$_POST["type"])
 {
