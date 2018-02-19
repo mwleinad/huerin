@@ -1345,7 +1345,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 			return $fechaMes;
 		}
 	}
-function GetMesGuion($fecha)
+    function GetMesGuion($fecha)
 	{
 		if(!empty($fecha)) //	2013/12/31----->31/Dic/2013
 		{
@@ -1387,6 +1387,12 @@ function GetMesGuion($fecha)
             $fechaFin= date("Y-m-d",$strFecha);
         }
         return Array("fechaInicio"=>$fechaInicio,"fechaFin"=>$fechaFin);
+    }
+    function generateRandomString($length = 10,$upper=false) {
+        if($upper)
+            return substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+        else
+            return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
     }
 
 }
