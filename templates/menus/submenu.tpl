@@ -42,7 +42,7 @@
                 <span>Obligaciones</span></a></li>*}
 
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
-                <span>Deptos</span></a></li>
+                <span>Departamentos</span></a></li>
 
 				<li><a href="{$WEB_ROOT}/mantenimiento" {if $page == "mantenimiento"}class="current"{/if}>
                 <span>Mantenimiento</span></a></li>
@@ -56,12 +56,12 @@
 {*}               <li><a href="{$WEB_ROOT}/servicios" {if $page == "servicios"}class="current"{/if}>
                 <span>Servicios</span></a></li>{*}
                 <li><a href="{$WEB_ROOT}/report-servicio" {if $page == "report-servicio"}class="current"{/if}>
-                <span>Rep. de Servicio Anual</span></a></li>
+                <span>Servicio Anual</span></a></li>
 
 								<li><a href="{$WEB_ROOT}/report-servicio-mensual" {if $page == "report-servicio-mensual"}class="current"{/if}>
-                <span>Rep. de Servicio Mensual</span></a></li>
+                <span>Servicio Mensual</span></a></li>
 								<li><a href="{$WEB_ROOT}/report-servicio-auditoria" {if $page == "report-servicio-auditoria"}class="current"{/if}>
-                <span>Rep. de Auditoria</span></a></li>
+                <span>Servicio Auditoria</span></a></li>
                 <li><a href="{$WEB_ROOT}/report-servicio-drill" {if $page == "report-servicio-drill"}class="current"{/if}>
                         <span>Administrador de archivos</span></a></li>
             {/if}
@@ -90,7 +90,7 @@
 
 				{if $User.roleId == 1}
                 <li><a href="{$WEB_ROOT}/reporte_facturas.php" {if $page == "reporte_facturas"}class="current"{/if}>
-                <span>Rep. de Facturas</span></a></li>
+                <span>Facturas</span></a></li>
 				{/if}
 
 
@@ -99,17 +99,17 @@
                 <span>Reporte CxC</span></a></li>
 				{/if}
 				<li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
-                <span>Rep. de Doc. Perm.</span></a></li>
+                <span>Documentos Permanentes</span></a></li>
 
 				<li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
-                <span>Rep. de Archivos Perm.</span></a></li>
+                <span>Archivos Permanentes</span></a></li>
 
 				{/if}
 
 
                 {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
                 <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
-                <span>Rep. de Ing.</span></a></li>
+                <span>Ingresos</span></a></li>
                 {/if}
                 <!--{if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
                 <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if}>
@@ -127,17 +127,17 @@
                 {/if}
 
                     <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
-                            <span>Reporte R. Social</span></a></li>
+                            <span>Razones Sociales</span></a></li>
 
                 {if $User.roleId < 4}
                 <li><a href="{$WEB_ROOT}/historial" {if $page == "historial"}class="current"{/if}>
-                        <span>Log Servicios</span></a></li>
+                        <span>Bitacora Servicios</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/historialContract" {if $page == "historialContract"}class="current"{/if}>
-                        <span>Log Contratos</span></a></li>
+                        <span>Bitacora Contratos</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/historialCustomer" {if $page == "historialCustomer"}class="current"{/if}>
-                        <span>Log Clientes</span></a></li>
+                        <span>Bitacora Clientes</span></a></li>
             {/if}
 
 
