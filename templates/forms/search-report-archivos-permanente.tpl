@@ -5,7 +5,7 @@
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
-<table width="500" align="center">
+<table width="60%" align="center">
 <tr style="background-color:#CCC">
     <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 </tr>
@@ -20,24 +20,24 @@
     <td align="center">Departamento:</td>
 </tr>
 <tr>	
-    <td align="center">
-    	<input type="text" size="25" name="rfc" id="rfc" class="smallInput" autocomplete="off" value="{$search.rfc}" />
+    <td align="center" style="padding-left: 5px;padding-right: 5px">
+    	<input type="text" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%"  />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
          		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
         	 	</div>
          	</div>
 		</td>
-		    <td align="center">
-    	<input type="text" size="25" name="rfc2" id="rfc2" class="smallInput" autocomplete="off" value="{$search.rfc}" />
+		    <td align="center"style="padding-left: 5px;padding-right: 5px">
+    	<input type="text" name="rfc2" id="rfc2" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%" />
           <div id="loadingDivDatosFactura2"></div>
 					<div style="position:relative">
          		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv2">
         	 	</div>
          	</div>
 		</td>
-        <td align="center">
-            <select name="responsableCuenta" id="responsableCuenta"  class="smallInput">
+        <td align="center" style="padding-left: 5px;padding-right: 5px">
+            <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
             {* if $User.roleId=="1" *}
             <option value="0" selected="selected">Todos...</option>
             {* /if *}
@@ -46,8 +46,8 @@
             {/foreach}
             </select>
 		</td>    
-		<td align="center">
-			<input name="subordinados" id="subordinados" type="checkbox" value="1"/>
+		<td align="center" style="padding-left: 5px;padding-right: 5px">
+			<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: auto"/>
 		</td>
         {*}
     	<td align="center">
@@ -59,8 +59,8 @@
 			</select>
 		</td>
         {*}
-		<td align="center">
-    	<select name="departamentoId" id="departamentoId"  class="smallInput">
+		<td align="center" style="padding-left: 5px;padding-right: 5px">
+    	<select name="departamentoId" id="departamentoId"  class="largeInput" >
       	<option value="" selected="selected">Todos...</option>
         {foreach from=$departamentos item=depto}
       	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>

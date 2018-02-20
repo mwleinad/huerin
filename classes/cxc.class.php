@@ -446,20 +446,31 @@ class CxC extends Producto
 		return true;
 	}
 
-	public function AddPayment($id, $metodoDePago, $amount, $fecha,$efectivo=false, $comprobantePago)
+	public function AddPayment($id, $metodoDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago)
 	{
-		$amount = $this->Util()->limpiaNumero($amount);
-		$fecha = $this->Util()->FormatDateMySql($fecha);
-		if($this->Util()->PrintErrors()){ return false; }
+	    $amount = $this->Util()->limpiaNumero($amount);
+        $deposito = $this->Util()->limpiaNumero($deposito);
+	    if($this->Util()->validateDateFormat($fecha,'Fecha'))
+	        $fecha = $this->Util()->FormatDateMySql($fecha);
+
+        if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->ValidateFloat($amount);
 
-		if($amount < 0.01)
+		if($amount<0.01)
 		{
 			$this->Util()->setError(10046, "error", "La cantidad a pagar debe de ser mayor a 0");
 			$this->Util()->PrintErrors();
 			return false;
 		}
+
+		if($metodoDePago!="Saldo a Favor")
+            if($deposito<$amount)
+            {
+                $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
+                $this->Util()->PrintErrors();
+                return false;
+            }
 
 		/*
 		if(!$_FILES["comprobante"]["name"])
@@ -469,6 +480,7 @@ class CxC extends Producto
 			return false;
 		}
 		*/
+
 		$comprobante = new Comprobante;
 
 		if($efectivo)
@@ -477,13 +489,35 @@ class CxC extends Producto
 			$compInfo = $comprobante->GetInfoComprobante($id);
 
 		$user = new User;
+
 		if($efectivo)
 		$user->setUserId($compInfo['contractId'],1);
 		else
 		$user->setUserId($compInfo['userId'],1);
 		$usr = $user->GetUserInfo();
 
-		$comprobanteId = null;
+        if($metodoDePago == "Saldo a Favor")
+        {
+            if($usr["cxcSaldoFavor"] < $amount)
+            {
+                $this->Util()->setError(10046, "error", "El Saldo a Favor del cliente no es suficiente para cubrir el importe del pago.");
+                $this->Util()->PrintErrors();
+                return false;
+            }
+            else
+            {
+                $this->Util()->DB()->setQuery("
+					UPDATE
+						customer
+					SET
+						`cxcSaldoFavor` = cxcSaldoFavor - '".$amount."'
+					WHERE customerId = '".$usr["customerId"]."'");
+                $this->Util()->DB()->UpdateData();
+
+            }
+        }
+
+        $comprobanteId = null;
 		if($comprobantePago){
 			$comprobantePago = new ComprobantePago();
 
@@ -503,26 +537,6 @@ class CxC extends Producto
 			}
 		}
 
-		if($metodoDePago == "Saldo a Favor")
-		{
-			if($usr["cxcSaldoFavor"] < $amount)
-			{
-				$this->Util()->setError(10046, "error", "El Saldo a Favor del cliente no es suficiente para cubrir el importe del pago.");
-				$this->Util()->PrintErrors();
-				return false;
-			}
-			else
-			{
-				$this->Util()->DB()->setQuery("
-					UPDATE
-						customer
-					SET
-						`cxcSaldoFavor` = cxcSaldoFavor - '".$amount."'
-					WHERE customerId = '".$usr["customerId"]."'");
-				$this->Util()->DB()->UpdateData();
-
-			}
-		}
 
 		if($metodoDePago != "Saldo a Favor")
 		{
@@ -550,6 +564,7 @@ class CxC extends Producto
 				`".$campo."` ,
 				`metodoDePago` ,
 				`amount` ,
+				`deposito` ,
 				`ext` ,
 				`comprobantePagoId`,
 				`paymentDate`
@@ -558,6 +573,7 @@ class CxC extends Producto
 				'".$id."',
 				'".$metodoDePago."',
 				'".$amount."',
+				'".$deposito."',
 				'".$ext."',
 				'".$comprobanteId."',
 				'".$fecha."'
@@ -570,7 +586,7 @@ class CxC extends Producto
 		@move_uploaded_file($_FILES["comprobante"]['tmp_name'], $target_path);
 
 		$this->Util()->setError(10046, "complete", "Has Agregado un Pago correctamente");
-		$this->Util()->PrintErrors();
+        $this->Util()->PrintErrors();
 		return true;
 	}
 

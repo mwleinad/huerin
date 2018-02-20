@@ -68,7 +68,6 @@ class Error
 		
 		$errors["total"] = count($errors["value"]);
 		$errors["complete"] = $this->complete;
-		
 		return $errors;
 	}
 

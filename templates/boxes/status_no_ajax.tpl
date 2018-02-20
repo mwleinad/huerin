@@ -19,4 +19,4 @@
 
         </div>
       {/if}  
-			{*include file="{$DOC_ROOT}/templates/boxes/status_close.tpl"*} 
+			{*include file="{$DOC_ROOT}/templates/boxes/status_close.tpl"*}
