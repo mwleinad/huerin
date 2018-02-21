@@ -695,7 +695,41 @@ class Workflow extends Servicio
 		
 		@unlink(DOC_ROOT.'/tasks/'.$nomFile);
 	}
+    function GetStatusByComprobante($contratoId,$year){
+	    $monthBase = array(1=>array('class'=>'#000000'),2=>array('class'=>'#000000'),3=>array('class'=>'#000000'),4=>array('class'=>'#000000'),
+            5=>array('class'=>'#000000'),6=>array('class'=>'#000000'),7=>array('class'=>'#000000'),8=>array('class'=>'#000000'),
+            9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
+	    $months = array();
+	    $new =array();
+        $sql = "SELECT a.comprobanteId, a.userId, a.total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes FROM comprobante a 
+                LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
+				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1'
+				GROUP BY a.comprobanteId,MONTH(a.fecha) ORDER BY a.fecha ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $noComplete=0;
+        foreach($result as $key=>$value){
+            if(!in_array($value['mes'],$months))
+            {
+                array_push($months,$value['mes']);
+                $value['saldo'] =  $value['total']-$value['payment'];
+                if($value["saldo"] > 1)
+                {
+                    $value["class"] = "#ff0000";
+                    $noComplete++;
+                }
+                else{
+                    $value["class"] = "#00ff00";
+                }
 
+                $new[$value['mes']] =  $value;
+            }
+        }
+        $new = array_replace_recursive($monthBase,$new);
+        $data['serv'] = $new;
+        $data['noComplete']=$noComplete;
+        return $data;
+    }
 	function StatusByComprobante($contratoId, $month , $year)
 	{
 		$sql = "SELECT comprobanteId, userId, total, fecha, `status` FROM comprobante WHERE
