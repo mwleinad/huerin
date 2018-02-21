@@ -22,6 +22,72 @@ class ContractRep extends Main
         }
         return false;
     }
+    public function BuscarContract($formValues=array(),$activos=false , $deptos = array())
+    {
+        $sqlFilter = "";
+
+        if($formValues['cliente'])
+            $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
+
+        if($formValues['razonSocial'])
+            $sqlFilter = " AND contract.nombreComercial LIKE '%".$formValues['razonSocial']."%'";
+
+        if($formValues['departamentoId'])
+            $sqlDepto = " AND tipoServicio.departamentoId='".$formValues['departamentoId']."'";
+
+        if($activos)
+            $sqlFilter .= " AND customer.active = '1'";
+
+        if($formValues['facturador'])
+            $sqlFilter .= ' AND contract.facturador = "'.$formValues['facturador'].'"';
+
+        //Contratos Activos
+        $sqlFilter .= ' AND contract.activo = "Si"';
+
+        $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
+				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
+				personal.jefeGerente, personal.jefeContador, customer.nameContact
+				FROM contract
+				LEFT JOIN customer ON customer.customerId = contract.customerId
+				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
+				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
+				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
+				WHERE 1 ".$sqlFilter."
+				ORDER BY contract.name ASC";
+
+        $this->Util()->DB()->setQuery($sql);
+        $resContratos = $this->Util()->DB()->GetResult();
+
+        $contratos = array();
+        foreach($resContratos as $res){
+            if($res['permisos']=="")
+                continue;
+
+            $encontrado = $this->findPermission($res, $formValues['respCuenta']);
+            if($encontrado == false) {
+                continue;
+            }
+            //Checamos Servicios
+            $sql = "SELECT * FROM servicio
+					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+					WHERE contractId = '".$res["contractId"]."'
+					AND servicio.status = 'activo'
+					".$sqlDepto."
+					ORDER BY tipoServicio.nombreServicio ASC";
+            $this->Util()->DB()->setQuery($sql);
+            $res["servicios"] = $this->Util()->DB()->GetResult();
+            $res["noServicios"] = count($res["servicios"]);
+
+            //Si no tiene departamento asignado lo borro
+            if ($res["servicios"][0]['departamentoId'] == "")
+                continue;
+
+            $contratos[] = $res;
+
+        }
+
+        return $contratos;
+    }
     public function BuscarContractV2($formValues=array(),$activos=false , $deptos = array())
     {
         $sqlFilter = "";
