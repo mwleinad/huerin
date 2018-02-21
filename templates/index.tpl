@@ -25,6 +25,7 @@
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
 
+
 {if $page == "login"}
 <link href="{$WEB_ROOT}/css/login.css" rel="stylesheet" type="text/css" media="all" />  
 {/if}
@@ -68,9 +69,6 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 <![endif]-->
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
-{if $page eq 'report-servicio-drill'}
-
-{/if}
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
 <script>var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
@@ -87,6 +85,7 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
+
 <script>
    /* var datepicker = jQ.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
     jQ.fn.bootstrapDP = datepicker;*/

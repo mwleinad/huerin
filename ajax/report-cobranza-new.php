@@ -25,7 +25,7 @@ switch($_POST["type"])
 	case "search":
 	case "sendEmail":
 	case "graph":
-				
+	        $months = array();
 			$year = $_POST['year'];
 			
 			$formValues['subordinados'] = $_POST['deep'];			
@@ -49,27 +49,62 @@ switch($_POST["type"])
 				
 					$personal->setActive(1);
 					$socios = $personal->ListSocios();
-					
+					$idPersons= array();
 					foreach($socios as $res){
-						
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-						
-						$resContracts = $contract->BuscarContract($formValues, true);
-						
-						$contracts = @array_merge($contracts, $resContracts);
-						
-						
-					}//foreach
-				
+                        array_push($idPersons,$res['personalId']);
+                        $personal->setPersonalId($res['personalId']);
+                        $subordinados = $personal->Subordinados();
+                        if(empty($subordinados))
+                        	continue;
+
+                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
+                        $idPersons=array_merge($idPersons,$subsLine);
+                        unset($subsLine);
+                        unset($subordinados);
+					}//foreac
+					$idPersons = array_unique($idPersons);
+					$formValues['respCuenta'] =  $idPersons;
+                    $contracts = $contractRep->BuscarContract($formValues, true);
 				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
+                    $idPersons = array();
+                    $respCuenta = $formValues['respCuenta'];
+                    array_push($idPersons,$respCuenta);
+                    if($formValues['subordinados']){
+                        $personal->setPersonalId($respCuenta);
+                        $subordinados = $personal->Subordinados();
+                        if(!empty($subordinados)){
+                            $subsLine = $util->ConvertToLineal($subordinados,'personalId');
+                            $idPersons=array_merge($idPersons,$subsLine);
+                            unset($subsLine);
+                            unset($subordinados);
+                        }
+					}
+
+                    $formValues['respCuenta'] = $idPersons;
+					$contracts = $contractRep->BuscarContract($formValues, true);
 				}
 			
 			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
+				$idPersons = array();
+                if($formValues['respCuenta']==0)
+                	$respCuenta = $User['userId'];
+				else
+					$respCuenta = $formValues['respCuenta'];
+				array_push($idPersons,$respCuenta);
+                if($formValues['subordinados']){
+					$personal->setPersonalId($respCuenta);
+					$subordinados = $personal->Subordinados();
+					if(!empty($subordinados)){
+						$subsLine = $util->ConvertToLineal($subordinados,'personalId');
+						$idPersons=array_merge($idPersons,$subsLine);
+						unset($subsLine);
+						unset($subordinados);
+					}
+                }
+				$formValues['respCuenta'] = $idPersons;
+				$contracts = $contractRep->BuscarContract($formValues, true);
 			}//else
-			//echo count($contracts);
+			//echo count($contracts);exit;
 			//print_r($contracts);
 			$idClientes = array();
 			$idContracts = array();
@@ -106,49 +141,16 @@ switch($_POST["type"])
 			
 			$resClientes = array();
 			foreach($clientes as $clte){
-				//echo "jere";
-
 				$contratos = array();
-				//echo "<pre>";
-				//print_r($clte['contracts']);
 				foreach($clte['contracts'] as $con){
-					//echo "jere2";
-										
-					//Checamos Permisos
-					$resPermisos = explode('-',$con['permisos']);
-					foreach($resPermisos as $res){
-						$value = explode(',',$res);
-						
-						$idPersonal = $value[1];
-						$idDepto = $value[0];
-						
-						$personal->setPersonalId($idPersonal);
-						$nomPers = $personal->GetDataReport();
-						
-						$permisos[$idDepto] = $nomPers;
-						$permisos2[$idDepto] = $idPersonal;
-					}	
-					
 					$personal->setPersonalId($con['responsableCuenta']);
 					$con['responsable'] = $personal->Info();
 
 					$serv = array();
+                    $statusColor =  $workflow->GetStatusByComprobante($con['contractId'], $year);
+					$con['instanciasServicio'] =$statusColor['serv'];
 
-					$noCompletados = 0;
-					for($ii = 1; $ii <= 12; $ii++){
-						$statusColor = $workflow->StatusByComprobante($con['contractId'], $ii , $year);
-
-						if($statusColor["class"] == "#ff0000" )
-						{
-							$noCompletados++;
-						}
-
-						$serv[$ii] = $statusColor;
-					}
-
-					$con['instanciasServicio'] = $serv;
-
-					if($formValues['atrasados'] && $noCompletados > 0)
+					if($formValues['atrasados'] && $statusColor['noComplete'] > 0)
 					{
 						$contratos[] = $con;
 					}
@@ -164,14 +166,7 @@ switch($_POST["type"])
 				
 			}//foreach
 
-/*			echo "<pre>";
-			print_r($resClientes);
-			exit;*/
-			
 			$cleanedArray = array();
-			
-			//$cleanedArray = $resClientes;
-
 			foreach($resClientes as $key => $cliente)
 			{
 				foreach($cliente["contracts"] as $keyContract => $contract)
@@ -191,12 +186,7 @@ switch($_POST["type"])
 						}*/
 				}
 			}
-/*				echo "<pre>";
-                print_r($cleanedArray);
-                exit;*/
-
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
-			
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
 			{
@@ -209,10 +199,6 @@ switch($_POST["type"])
 					}
 				}
 			}
-
-			//$sortedArray = $cleanedArray;
-			//print_r($sortedArray);
-			
 			$clientesMeses = array();
 			$smarty->assign("cleanedArray", $sortedArray);
 			$smarty->assign("clientes", $resClientes);

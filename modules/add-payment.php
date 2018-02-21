@@ -7,6 +7,7 @@
 	if($_POST)
 	{
 		$cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"], $_POST["paymentDate"],$_POST['efectivo'],$_POST['generarComprobantePago']);
+
 	}
 	$smarty->assign('mainMnu','cxc');
 

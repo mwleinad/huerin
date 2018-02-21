@@ -7,7 +7,7 @@
 	       		<img src="{$WEB_ROOT}/images/error.gif" />
     			{/if}  
        	</h3>
-        <div style="position:relative;top:-40px;left:50px; font-size:16px;">
+        <div style="position:relative;top:-40px;left:50px; font-size:16px; max-width:416px; text-align: justify">
         {foreach from=$errors.value item="error" key="key"}
     			{$error}
     			{if $errors.field.$key}: {$errors.field.$key}
@@ -17,4 +17,4 @@
 
         </div>
       {/if}  
-			{include file="{$DOC_ROOT}/templates/boxes/status_close.tpl"} 
+	  {include file="{$DOC_ROOT}/templates/boxes/status_close.tpl"}
