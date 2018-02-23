@@ -27,8 +27,8 @@ cron/nstances_log.txt
 cron/send-comprobantes.txt
 cron-nuevo/repatrasados.txt
 cron-nuevo/repatrasados.txtt
-cron-nuevo/repfiel.txtt
-cron-nuevo/repdocper.txtt
+cron-nuevo/repfiel.txt
+cron-nuevo/repdocper.txt
 cron-nuevo/templates_c
 exportar.xlsx
 cron-nuevo/repbitacora.txt

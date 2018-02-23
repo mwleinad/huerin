@@ -17,7 +17,7 @@
 		<th class="redBox" colspan="{($totalColspan+4)/5}" align="center">
 			Celda roja indica que el documento es obligatorio para el area de {$depto|ucfirst} y ademas falta por subir a la plataforma.
 		</th>
-		<th class="grayBox" colspan="{($totalColspan+4)/5 +($totalColspan+3)%5}" align="center">
+		<th class="grayBox" colspan="{($totalColspan+4)/5 +($totalColspan+4)%5}" align="center">
 			Celdas sin color indican que el documento no pertenece a su area, es opcional o bien no aplica para el tipo de persona al cual pertenece
 			la razon social(cliente).
 		</th>
