@@ -1,0 +1,82 @@
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=1;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=3;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=4;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=5;
+	update tipoDocumento SET dptosId='22' WHERE tipoDocumentoId=6;
+	update tipoDocumento SET dptosId='22' WHERE tipoDocumentoId=7;
+	update tipoDocumento SET dptosId='24' WHERE tipoDocumentoId=8;
+	update tipoDocumento SET dptosId='24' WHERE tipoDocumentoId=9;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=10;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=11;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=12;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=13;
+	update tipoDocumento SET dptosId='1' WHERE tipoDocumentoId=16;
+	update tipoDocumento SET dptosId='1,22' WHERE tipoDocumentoId=17;
+	update tipoDocumento SET dptosId='22' WHERE tipoDocumentoId=19;
+	update tipoDocumento SET dptosId='1,22' WHERE tipoDocumentoId=20;
+	update tipoDocumento SET dptosId='24' WHERE tipoDocumentoId=22;
+	update tipoDocumento SET dptosId='24' WHERE tipoDocumentoId=23;
+
+/*tabla tipo archivo*/
+	update tipoArchivo SET dptosId='1' WHERE tipoArchivoId=8;
+    	update tipoArchivo SET dptosId='22' WHERE tipoArchivoId=2;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=7;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=5;
+    	update tipoArchivo SET dptosId='24' WHERE tipoArchivoId=9;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=11;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=12;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=13;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=14;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=15;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=16;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=17;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=18;
+    	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=19;
+
+
+
+-- Volcando estructura para tabla huerin.requerimentspersons
+CREATE TABLE IF NOT EXISTS `requerimentsPersons` (
+  `requerimentId` int(11) NOT NULL AUTO_INCREMENT,
+  `relacionId` int(11) NOT NULL,
+  `type` enum('Persona Moral','Persona Fisica','Ambos') DEFAULT NULL,
+  `resource` enum('Archivo','Documento') DEFAULT NULL,
+  `required` enum('Obligatorio','Opcional','Condicional') DEFAULT NULL,
+  `status` enum('Activo','Baja') DEFAULT NULL,
+  PRIMARY KEY (`requerimentId`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+
+-- Volcando datos para la tabla huerin.requerimentspersons: ~29 rows (aproximadamente)
+DELETE FROM `requerimentsPersons`;
+/*!40000 ALTER TABLE `requerimentsPersons` DISABLE KEYS */;
+INSERT INTO `requerimentsPersons` (`requerimentId`, `relacionId`, `type`, `resource`, `required`, `status`) VALUES
+	(1, 2, 'Ambos', 'Archivo', 'Obligatorio', 'Activo'),
+	(2, 7, 'Ambos', 'Archivo', 'Obligatorio', 'Activo'),
+	(3, 11, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(4, 17, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(5, 12, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(6, 13, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(7, 14, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(8, 15, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(9, 16, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(10, 18, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(11, 19, 'Ambos', 'Archivo', 'Opcional', 'Activo'),
+	(12, 9, 'Ambos', 'Archivo', 'Condicional', 'Activo'),
+	(13, 3, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(14, 5, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(15, 6, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(16, 7, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(17, 10, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(18, 20, 'Ambos', 'Documento', 'Obligatorio', 'Activo'),
+	(19, 16, 'Ambos', 'Documento', 'Opcional', 'Activo'),
+	(20, 19, 'Ambos', 'Documento', 'Opcional', 'Activo'),
+	(21, 8, 'Ambos', 'Documento', 'Condicional', 'Activo'),
+	(22, 9, 'Ambos', 'Documento', 'Condicional', 'Activo'),
+	(23, 22, 'Ambos', 'Documento', 'Condicional', 'Activo'),
+	(24, 23, 'Ambos', 'Documento', 'Condicional', 'Activo'),
+	(25, 11, 'Persona Moral', 'Documento', 'Obligatorio', 'Activo'),
+	(26, 13, 'Persona Moral', 'Documento', 'Obligatorio', 'Activo'),
+	(27, 4, 'Persona Moral', 'Documento', 'Opcional', 'Activo'),
+	(28, 12, 'Persona Moral', 'Documento', 'Opcional', 'Activo'),
+	(29, 17, 'Persona Moral', 'Documento', 'Opcional', 'Activo'),
+	(30, 1, 'Persona Moral', 'Documento', 'Obligatorio', 'Activo');

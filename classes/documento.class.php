@@ -154,46 +154,91 @@ class Documento extends Contract
 		$this->Util()->PrintErrors();
 		return true;
 	}
-	public function GetDocContract(){
+	public function GetDocContract($item,$dep){
         $result = array();
         $docs = array();
         //Obtener los documentos que debe ser obligatorio para cada contrato
         $this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" order by nombre ASC');
         $tipos =  $this->Util()->DB()->GetResult();
-
-        $this->Util()->DB()->setQuery('SELECT regimenId FROM contract where contractId='.$this->contractId);
-        $regimenId =  $this->Util()->DB()->GetSingle();
-
-        $idReq =  $this->Util()->ConvertToLineal($tipos,'tipoDocumentoId');
+        $totalTipos = count($tipos);
         $noFile=0;
         foreach($tipos as $key => $value)
         {
+            $dptos =  explode(",",$value['dptosId']);
+            if(!in_array($dep,$dptos))
+            {
+                $cad['nombreDoc']=$value['nombre'];
+                $cad['fileExist'] = false;
+                $cad['required'] = false;
+                $cad['typeRequired'] = 'No Aplica';
+                $docs[]=$cad;
+                $totalTipos--;
+                continue;
+            }
+            $this->Util()->DB()->setQuery('SELECT required  FROM requerimentsPersons WHERE resource="Documento" AND (type="Ambos" OR type="'.$item['type'].'") AND relacionId='.$value['tipoDocumentoId'].'');
+            $isRequired = $this->Util()->DB()->GetSingle();
+            if($isRequired=="")
+                $isRequired='none';
+
             $this->Util()->DB()->setQuery('select * from documento where tipoDocumentoId='.$value['tipoDocumentoId'].' AND contractId='.$this->contractId.' order by documentoId  DESC');
             $row = $this->Util()->DB()->GetRow();
-            //falta comprobar si el documentoe es obligado para el contract en cuestion en base a su regimenId
-            if(!empty($row)){
-                $cad=$row;
-                $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
-                if(file_exists($file))
-                    $cad['fileExist'] = true;
-                else{
-                    $noFile++;
+            $cad=$row;
+            switch($isRequired){
+                case 'Obligatorio':
+                    $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
+                    if(file_exists($file))
+                        $cad['fileExist'] = true;
+                    else{
+                        $noFile++;
+                        $cad['fileExist'] = false;
+                    }
+                    $cad['nombreDoc']=$value['nombre'];
+                    $cad['required'] = true;
+                    $cad['typeRequired'] = $isRequired;
+                break;
+                case 'Opcional':
+                    $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
+                    if(file_exists($file))
+                        $cad['fileExist'] = true;
+                    else
+                        $cad['fileExist'] = false;
+
+                    $cad['nombreDoc']=$value['nombre'];
+                    $cad['required'] = false;
+                    $cad['typeRequired'] = $isRequired;
+                break;
+                case 'Condicional':
+                    $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
+                    $cad['nombreDoc']=$value['nombre'];
+                    if($item['respImss']){
+                        if(file_exists($file))
+                            $cad['fileExist'] = true;
+                        else{
+                            $noFile++;
+                            $cad['fileExist'] = false;
+                        }
+                        $cad['required'] = true;
+                        $cad['typeRequired'] = 'Obligatorio';
+
+                    }
+                    else{
+                        $cad['fileExist'] = false;
+                        $cad['required'] = false;
+                        $cad['typeRequired'] = $isRequired;
+                    }
+                break;
+               default:
+                    $cad['nombreDoc']=$value['nombre'];
                     $cad['fileExist'] = false;
-                }
-                $cad['nombreDoc']=$value['nombre'];
-                $cad['required'] = true;
-            }
-            else
-            {
-                //si no es obligado el documento pues no pasa nada
-               $cad=array();
-               $cad['nombreDoc']=$value['nombre'];
-               $cad['required']=false;
+                    $cad['required'] = false;
+                    $cad['typeRequired'] = 'No Aplica';
+                break;
             }
             $docs[]=$cad;
         }
         $result['docs']= $docs;
         $result['noFiles'] = $noFile;
+        $result['totalTipos'] = $totalTipos;
         return $result;
     }
 
