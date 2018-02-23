@@ -43,11 +43,11 @@ foreach($employees as $key=>$itemEmploye) {
     $subordinados = $personal->Subordinados();
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
     array_unshift($persons, $itemEmploye['personalId']);
-    $contracts = $contractRep->BuscarContractV2($persons,true);
+    $contracts = $contractRep->SearchOnlyContract($persons,true);
     foreach($contracts as $kc=>$itemContract){
        $documento->setContractId($itemContract['contractId']);
-       $documentos = $documento->GetDocContract();
-       if($documentos['noFiles']<=0)
+       $documentos = $documento->GetDocContract($itemContract,$itemEmploye['departamentoId']);
+       if($documentos['noFiles']<=0 || $documentos['totalTipos']<=0)
        {
            unset($contracts[$kc]);
            continue;
@@ -69,6 +69,9 @@ foreach($employees as $key=>$itemEmploye) {
     if(count($contracts)<=0)
         continue;
 
+    $departamentos->setDepartamentoId($itemEmploye['departamentoId']);
+    $depto  =  $departamentos->GetNameById();
+    $smarty->assign('depto',$depto);
     $smarty->assign('tiposDocumentos',$tiposDocumentos);
     $smarty->assign('contracts',$contracts);
     $smarty->assign('personal',strtoupper($itemEmploye['name']));
@@ -146,7 +149,7 @@ foreach($employees as $key=>$itemEmploye) {
 			</head>
 			';
     $html .=$contents;
-    $file = 'DOCSPENDIENTES-'.strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId'];
+    $file = strtoupper(substr($depto,0,2)).'-DOCSPENDIENTES-'.strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId'];
     $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
 
     $subject= $file;
@@ -161,9 +164,9 @@ foreach($employees as $key=>$itemEmploye) {
 
     $toName = $itemEmploye["name"];
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
-
     $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     unlink($attachment);
     echo "REPORTE DE DOCUMENTOS PENDIENTES POR SUBIR ENVIADO A : ".$itemEmploye['email'];
     echo "<br>";
+
 }

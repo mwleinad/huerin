@@ -154,20 +154,27 @@ class ContractRep extends Main
 
         return $result;
     }
-    public function CheckExpirationFiel($id){
+
+    public function CheckExpirationFiel($item,$dep){
         $nowAdd = strtotime('+1 month', strtotime(date('Y-m-d')));
         $addMonth = date('Y-m-d',$nowAdd);
-        $sql = 'SELECT 
+        $sql = 'SELECT
                 CASE 
                 WHEN DATE(NOW())>a.date THEN "Vencido"
                 WHEN DATE(NOW())<=a.date THEN "PorVencer"
                 END
                 AS typeExpirate,
-                a.date,b.descripcion FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
-                WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
+                a.date,b.descripcion,b.dptosId FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.contractId='.$item['contractId'].' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
+
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
 
+        foreach($result as $key=>$value){
+           $dptos =  explode(',',$value['dptosId']);
+           if(!in_array($dep,$dptos))
+               unset($result[$key]);
+        }
         return $result;
     }
     public function SearchOnlyContract($formValues=array(),$activos=false){
@@ -200,11 +207,11 @@ class ContractRep extends Main
                 continue;
             }
             $permisos = explode('-',$res['permisos']);
-            $filesExp = $this->CheckExpirationFiel($res['contractId']);
+           /* $filesExp = $this->CheckExpirationFiel($res['contractId']);
 
             if(empty($filesExp))
                 continue;
-            $res['filesExpirate'] = $filesExp;
+            $res['filesExpirate'] = $filesExp;*/
             foreach($permisos as $pk=>$vp){
                 $dp = explode(',',$vp);
                 switch($dp[0]){

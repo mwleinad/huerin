@@ -2,7 +2,7 @@
 <thead>
 <tr rowspan="10">
     <th colspan="3" class="divInside" align="center">
-        ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES A CUENTA DE {$namePersonal|upper} Y SUBORDINADOS
+        ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES A CUENTA DE {$namePersonal|upper} Y SUBORDINADOS DEL AREA DE {$depto|upper}
     </th>
 </tr>
 <tr>
