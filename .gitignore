@@ -26,10 +26,16 @@ cron/facturasnew.txt
 cron/nstances_log.txt
 cron/send-comprobantes.txt
 cron-nuevo/repatrasados.txt
+cron-nuevo/repatrasados.txtt
+cron-nuevo/repfiel.txtt
+cron-nuevo/repdocper.txtt
 cron-nuevo/templates_c
 exportar.xlsx
 cron-nuevo/repbitacora.txt
 cron-nuevo/repcobranza.txt
 cron-nuevo/repbonos.txt
 cron-nuevo/changepassword.txt
+cron-nuevo/contractslog.txt
+cron/.facturas_log.txt.swp
+export/templates_c
 contracts.log
