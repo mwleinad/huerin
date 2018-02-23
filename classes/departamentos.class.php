@@ -46,6 +46,11 @@ class Departamentos extends Main
 		$row = $this->Util()->DB()->GetRow();
 		return $row;
 	}
+	public function GetNameById(){
+        $this->Util()->DB()->setQuery("SELECT departamento FROM departamentos WHERE departamentoId = '".$this->departamentoId."'");
+        $single= $this->Util()->DB()->GetSingle();
+        return $single;
+    }
 
 	public function Archivos()
 	{

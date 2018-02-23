@@ -32,11 +32,20 @@ foreach($employees as $key=>$itemEmploye){
     $persons = array();
     $personal->setPersonalId($itemEmploye['personalId']);
     $subordinados = $personal->Subordinados(true);
-    $persons = $util->ConvertToLineal($subordinados, 'personalId');;
+    $persons = $util->ConvertToLineal($subordinados, 'personalId');
 
     array_unshift($persons, $itemEmploye['personalId']);
     $contracts = $contractRep->SearchOnlyContract($persons, true);
     foreach ($contracts as $kc=>$vc){
+        $filesExp = $contractRep->CheckExpirationFiel($vc,$itemEmploye['departamentoId']);
+        if(empty($filesExp))
+        {
+            unset($contracts[$kc]);
+            continue;
+        }
+
+        $contracts[$kc]['filesExpirate'] = $filesExp;
+
         $personal->setPersonalId($vc['respContabilidad']);
         $contracts[$kc]['responsableContabilidad'] = $personal->GetNameById();
         $personal->setPersonalId($vc['respJuridico']);
@@ -94,15 +103,17 @@ foreach($employees as $key=>$itemEmploye){
 				</style>
 			</head>
 			';
+    $departamentos->setDepartamentoId($itemEmploye['departamentoId']);
+    $depto =  $departamentos->GetNameById();
+    $smarty->assign("depto", $depto);
     $smarty->assign("namePersonal", $itemEmploye['name']);
     $smarty->assign("registros", $sortedArray);
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/rep-fiel.tpl');
-    $file = "ARCHIVOS-".trim(strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId']);
+    $file = strtoupper(substr($depto,0,2))."-ARCHIVOS-".trim(strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId']);
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
-
     $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
           <br><br>
           Este correo se genero automaticamente favor de no responder";
@@ -123,8 +134,7 @@ foreach($employees as $key=>$itemEmploye){
         $db->setQuery($up);
         $db->UpdateData();
     }
+    unlink($attachment);
     echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d');echo "<br>";
     echo "<br>";
-    unlink($attachment);
-
 }
