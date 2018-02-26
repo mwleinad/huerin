@@ -24,7 +24,7 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%' OR puesto like'%supervisor%' OR  puesto like'%Supervisor%')  AND active='1 
+$sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%' OR puesto like'%supervisor%' OR  puesto like'%Supervisor%')  AND active='1' 
          ORDER BY personalId ASC";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);
@@ -114,7 +114,7 @@ foreach($employees as $key=>$itemEmploye){
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
-    $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
+    $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMOS A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
           <br><br>
           Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
@@ -136,5 +136,5 @@ foreach($employees as $key=>$itemEmploye){
     }
     unlink($attachment);
     echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d');echo "<br>";
-    echo "<br>";
+    echo "\n";
 }
