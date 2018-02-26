@@ -24,6 +24,7 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
+echo 'Inicio ejecucion : '.date('Y-m-d H:i:s',time())." \n";
 $sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%' OR puesto like'%supervisor%' OR  puesto like'%Supervisor%')  AND active='1' 
          ORDER BY personalId ASC";
 $db->setQuery($sql);
@@ -138,3 +139,4 @@ foreach($employees as $key=>$itemEmploye){
     echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d');echo "<br>";
     echo "\n";
 }
+echo 'Final ejecucion : '.date('Y-m-d H:i:s',time());
