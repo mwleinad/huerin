@@ -112,7 +112,7 @@ class ContractRep extends Main
         $this->Util()->DB()->setQuery($sql);
         $resContratos = $this->Util()->DB()->GetResult();
 
-        if(count($deptos)>1)
+        if(count($deptos)>0)
             $sqlDepto =" AND tipoServicio.departamentoId IN (".implode(',',$deptos).") ";
 
         $contratos = array();
