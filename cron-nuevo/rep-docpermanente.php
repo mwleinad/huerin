@@ -33,9 +33,7 @@ $employees = $db->GetResult($sql);
 
 $util->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" ORDER BY nombre ASC ');
 $tiposDocumentos = $util->DB()->GetResult();
-
-
-
+echo 'Inicio ejecucion : '.date('Y-m-d H:i:s',time())." \n";
 foreach($employees as $key=>$itemEmploye) {
     $persons = array();
     $contracts =  array();
@@ -166,7 +164,7 @@ foreach($employees as $key=>$itemEmploye) {
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
     $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     unlink($attachment);
-    echo "REPORTE DE DOCUMENTOS PENDIENTES POR SUBIR ENVIADO A : ".$itemEmploye['email'];
-    echo "\n";
+    echo "REPORTE DE DOCUMENTOS PENDIENTES POR SUBIR ENVIADO A : ".$itemEmploye['email']." \n";
 
 }
+echo 'Final ejecucion : '.date('Y-m-d H:i:s',time());

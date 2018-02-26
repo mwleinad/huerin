@@ -77,7 +77,6 @@ foreach($employees as $key=>$itemEmploye){
     array_unshift($persons, $itemEmploye['personalId']);
     array_unshift($deptos, $itemEmploye['departamentoId']);
     $deptos = array_unique($deptos);
-
     $contracts = $contractRep->BuscarContractV2($persons,true,$deptos);
     if(empty($contracts))
     {
