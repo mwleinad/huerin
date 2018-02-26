@@ -167,6 +167,6 @@ foreach($employees as $key=>$itemEmploye) {
     $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     unlink($attachment);
     echo "REPORTE DE DOCUMENTOS PENDIENTES POR SUBIR ENVIADO A : ".$itemEmploye['email'];
-    echo "<br>";
+    echo "\n";
 
 }

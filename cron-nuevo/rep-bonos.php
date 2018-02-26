@@ -237,6 +237,6 @@ foreach($employees as $key=>$itemEmploye){
         $db->UpdateData();
     }
     echo "REPORTE DE BONOS ENVIADO A : ".$itemEmploye['email'];
-    echo "<br>";
+    echo "\n";
     unlink($attachment);
 }
