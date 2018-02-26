@@ -124,9 +124,9 @@ class TipoServicio extends Main
 
         //filtro departamento
         if($User['departamentoId']!="1" && $User["roleId"]!=1)
-            $filtroDep="WHERE departamentoId=".$User['departamentoId'];
+            $filtroDep=" AND departamentoId=".$User['departamentoId'];
 
-        $this->Util()->DB()->setQuery('SELECT * FROM tipoServicio '.$filtroDep.' ORDER BY nombreServicio ASC ');
+        $this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" '.$filtroDep.' ORDER BY nombreServicio ASC ');
         $result = $this->Util()->DB()->GetResult();
 
         foreach($result as $key => $row)
@@ -229,11 +229,11 @@ class TipoServicio extends Main
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
-			DELETE FROM
-				tipoServicio
+			UPDATE tipoServicio SET
+				status='0'
 			WHERE
 				tipoServicioId = '".$this->tipoServicioId."'");
-		$this->Util()->DB()->DeleteData();
+		$this->Util()->DB()->UpdateData();
 		$this->Util()->setError(3, "complete");
 		$this->Util()->PrintErrors();
 		return true;
