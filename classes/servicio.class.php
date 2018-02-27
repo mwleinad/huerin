@@ -243,7 +243,7 @@ class Servicio extends Contract
 				FROM servicio 
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
-				WHERE servicio.contractId = '".$this->getContractId()."'					
+				WHERE servicio.contractId = '".$this->getContractId()."' AND servicio.status='activo'					
 				ORDER BY tipoServicio.nombreServicio ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();

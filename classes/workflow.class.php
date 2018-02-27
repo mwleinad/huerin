@@ -656,7 +656,6 @@ class Workflow extends Servicio
 					$sendmail = new SendMail;
 	
 					$to = $userInfo["email"];
-					$to = "diego@avantika.com.mx";
 					$toName = $userInfo["name"];
 					
 					$versionAnt = $version - 1;
