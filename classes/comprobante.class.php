@@ -1590,9 +1590,9 @@ class Comprobante extends Producto
 			$body .= "R.F.C: BABJ701019LD7<br>";
 			$body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
 			$body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-			$body .= "Banco     Banamex<br>";
-			$body .= "Cuenta    6115476 Suc 378<br>";
-			$body .= "Clabe      002180037861154769<br><br>";
+			$body .= "Banco     Scotiabank<br>";
+			$body .= "Cuenta    00105313691<br>";
+			$body .= "Clabe      044180-001053-136916<br><br>";
 		}
 		elseif($compInfo["empresaId"] == 21)
 		{
@@ -1758,9 +1758,9 @@ class Comprobante extends Producto
 			// $body .= "R.F.C: BABJ701019LD7<br>";
 			// $body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
 			$body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-			$body .= "Banco     Banamex<br>";
-			$body .= "Cuenta    6115476 Suc 378<br>";
-			$body .= "Clabe      002180037861154769<br><br>";
+            $body .= "Banco     Scotiabank<br>";
+            $body .= "Cuenta    00105313691<br>";
+            $body .= "Clabe      044180-001053-136916<br><br>";
 			$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
 		}
 		elseif($compInfo["empresaId"] == 21)
