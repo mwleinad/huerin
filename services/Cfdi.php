@@ -65,7 +65,7 @@ class Cfdi extends Comprobante
 
         if(count($_SESSION["conceptos"]) < 1)
         {
-            $vs->Util()->setError(10040, "error", "");
+            $vs->Util()->setError(10040, "error", "Debe agregar por lo menos un concepto");
         }
 
         if($data["fechaSobre"] != "")

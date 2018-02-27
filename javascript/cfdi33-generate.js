@@ -166,7 +166,7 @@ function FillDatosFacturacion(id)
 
 
                 $('razonSocial').value = splitResponse[3];
-                $('rfc').value = splitResponse[4];
+                $('rfc').value = splitResponse[15];
                 $('userId').value = splitResponse[16];
                 $('calle').value = splitResponse[6];
                 $('pais').value = splitResponse[7];

@@ -151,7 +151,7 @@
 			</div>
 
       <div class="formLine">
-          <div style="width:90px;float:left">Seleccionar Serieaaaaa:</div>
+          <div style="width:90px;float:left">Seleccionar Serie:</div>
           <div style="width:340px;float:left">
           <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
          	{foreach from=$comprobantes item=comprobante}
