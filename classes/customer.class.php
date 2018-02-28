@@ -1350,7 +1350,7 @@ class Customer extends Main
 			
 			$result[$key]["contracts"] = $this->GetRazonesSociales($val["customerId"]);
 
-          $result[$key]["servicios"] = count($result[$key]["contracts"]);
+            $result[$key]["servicios"] = count($result[$key]["contracts"]);
 						
 			$countContracts = count($result[$key]["contracts"]);
 			
@@ -1379,14 +1379,29 @@ class Customer extends Main
 					}
 
 					$cUser = new User;
+					$oPer =  new Personal;
 					//Agregar o no agregar servicio a arreglo de contratos?
 					foreach ($serviciosContrato as $servicio) {
 
 						//$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
 						$cUser->setUserId($value["responsableCuenta"]);
 						$userInfo = $cUser->Info();
-						
+
 						$result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
+
+						$treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
+						switch($treeSub['tipoPersonal']){
+                            case 'Supervisor':
+                            case 'Asistente':
+                            case 'Gerente':
+                            case 'socio':
+                                $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['name'];
+                            break;
+                            case 'Contador':
+                            case 'Auxiliar':
+                                $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
+                                break;
+                        }
 
 						$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
 												

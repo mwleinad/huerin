@@ -239,11 +239,11 @@ class Servicio extends Contract
 	{
 		global $months;
 		
-		$sql = "SELECT *, servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual 
+		$sql = "SELECT *,servicio.status,servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual 
 				FROM servicio 
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
-				WHERE servicio.contractId = '".$this->getContractId()."' AND servicio.status='activo'					
+				WHERE servicio.contractId = '".$this->getContractId()."'					
 				ORDER BY tipoServicio.nombreServicio ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
@@ -547,7 +547,7 @@ class Servicio extends Contract
   
 	public function Info()
 	{
-		$this->Util()->DB()->setQuery("SELECT *, servicio.costo AS costo FROM servicio 
+		$this->Util()->DB()->setQuery("SELECT *,servicio.status, servicio.costo AS costo FROM servicio 
 		LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 		LEFT JOIN contract ON contract.contractId = servicio.contractId
 		WHERE servicioId = '".$this->servicioId."'");
@@ -701,6 +701,7 @@ class Servicio extends Contract
 		if($this->Util()->PrintErrors()){ return false; }
 		
 		$info = $this->Info();
+		dd($info);
 		
 		if($info["status"] == 'activo')
 		{
