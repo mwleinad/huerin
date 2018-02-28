@@ -156,26 +156,34 @@ class ContractRep extends Main
     }
 
     public function CheckExpirationFiel($item,$dep){
+        $result2 = array();
         $nowAdd = strtotime('+1 month', strtotime(date('Y-m-d')));
         $addMonth = date('Y-m-d',$nowAdd);
-        $sql = 'SELECT
-                CASE 
-                WHEN DATE(NOW())>a.date THEN "Vencido"
-                WHEN DATE(NOW())<=a.date THEN "PorVencer"
-                END
-                AS typeExpirate,
-                a.date,b.descripcion,b.dptosId FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
-                WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.contractId='.$item['contractId'].' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
-
+        $sql ="SELECT MAX(archivoId) as archivoId,contractId,tipoArchivoId,MAX(date) as date from archivo where contractId=".$item['contractId']."  group by tipoArchivoId ORDER BY date DESC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
+        $idArchivos = $this->Util()->ConvertToLineal($result,'archivoId');
+        if(count($idArchivos)<=0)
+            return $result2;
 
-        foreach($result as $key=>$value){
+        $sqlf = 'SELECT
+                    CASE 
+                    WHEN DATE(NOW())>a.date THEN "Vencido"
+                    WHEN DATE(NOW())<=a.date THEN "PorVencer"
+                    END
+                    AS typeExpirate,
+                    a.date,b.descripcion,b.dptosId FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                    WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.archivoId IN('.implode(",",$idArchivos).')';
+        $this->Util()->DB()->setQuery($sqlf);
+        $result2 = $this->Util()->DB()->GetResult();
+
+        foreach($result2 as $key=>$value){
            $dptos =  explode(',',$value['dptosId']);
            if(!in_array($dep,$dptos))
-               unset($result[$key]);
+               unset($result2[$key]);
         }
-        return $result;
+
+        return $result2;
     }
     public function SearchOnlyContract($formValues=array(),$activos=false){
         $sqlFilter = "";
