@@ -18,7 +18,7 @@
     {if $User.roleId < 3}
 		<td align="center">        	
 			{if $item.status == 'activo'}
-      	<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.servicioId}" title="Desactivar"/> 
+      	<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.servicioId}" title="Desactivar"/>
       {else}
       	<img src="{$WEB_ROOT}/images/icons/activate.png" class="spanDelete" id="{$item.servicioId}" title="Activar"/> 
       {/if}  
