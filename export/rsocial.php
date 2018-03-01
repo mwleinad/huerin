@@ -31,6 +31,7 @@ $x .=
 	<thead>
         <tr>
             <th style=\"background:#E0E5E7;text-align:center\"><b>NO. CLIENTE</b></th>
+             <th style=\"background:#E0E5E7;text-align:center\"><b>NO. CONTRATO</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>CLIENTE</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>TEL. CONTACTO</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>EMAIL CONTACTO</b></th>
@@ -38,12 +39,12 @@ $x .=
             <th style=\"background:#E0E5E7;text-align:center\"><b>RAZONES SOCIALES</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>FECHA ALTA</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>OBSERVACIONES</b></th>
-            <th style=\"background:#E0E5E7;text-align:center\"><b>ACTIVO</b></th>
+            <th style=\"background:#E0E5E7;text-align:center\"><b>CLIENTE ACTIVO</b></th>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>NOMBRE RAZON SOCIAL</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>TIPO</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RFC</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>REGIMEN FISCAL</b></td>
-            <td style=\"background:#D7EBFF;text-align:center;\"><b>ACTIVO</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RAZON ACTIVA</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>NOMBRE COMERCIAL</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>DIRECCION COMERCIAL</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>DIRECCION FISCAL</b></td>
@@ -65,6 +66,15 @@ $x .=
             <td style=\"background:#D7EBFF;text-align:center;\"><b>METODO DE PAGO</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>NUMERO DE CUENTA</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RESPONSABLE</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>SUPERVISOR</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. CONTABILIDAD</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. NOMINA</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. ADMIN</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. JURIDICO</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. IMSS</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. MENSAJERIA</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. AUDITORIA</b></td>
+            
         </tr>
 	</thead>
 	<tbody>";
@@ -83,6 +93,7 @@ foreach($clientes as $res){
             $x .= "
 				<tr>
     				<td style=\"text-align:center;\">".$res['customerId']."</td>
+    				<td style=\"text-align:center;\">".$con['contractId']."</td>
         			<td style=\"text-align:left;\">".utf8_decode($res['nameContact'])."</td>
 	        		<td style=\"text-align:center;\">".$res['phone']."</td>
 		        	<td style=\"text-align:left;\">".$res['email']."</td>
@@ -118,6 +129,14 @@ foreach($clientes as $res){
 					<td style=\"text-align:center;\">".$con['metodoDePago']."</td>
 					<td style=\"text-align:center;\">".$con['noCuenta']."</td>
 					<td style=\"text-align:center;\">".$con['responsable']["name"]."</td>
+					<td style=\"text-align:center;\">".$con['supervisadoBy']."</td>
+					<td style=\"text-align:center;\">".$con['respContabilidad']."</td>
+					<td style=\"text-align:center;\">".$con['respNominas']."</td>
+					<td style=\"text-align:center;\">".$con['respAdministracion']."</td>
+					<td style=\"text-align:center;\">".$con['respJuridico']."</td>
+					<td style=\"text-align:center;\">".$con['respImss']."</td>
+					<td style=\"text-align:center;\">".$con['respMensajeria']."</td>
+					<td style=\"text-align:center;\">".$con['respAuditoria']."</td>
 				</tr>";
 
         }//foreach
