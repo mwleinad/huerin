@@ -1361,7 +1361,60 @@ class Customer extends Main
 				
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
                   //echo "<pre style='text-align: left'>";
+                    $oPer =  new Personal;
+                    $permisosArray = explode('-',$value['permisos']);
+                    foreach($permisosArray as $pk=>$vp){
+                        $dp = explode(',',$vp);
+                        switch($dp[0]){
+                            case 1:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respContabilidad"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 8:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respNominas"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 31:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respAuditoria"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 24:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respImss"] =strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 22:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respJuridico"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 21:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respAdministracion"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                            case 26:
+                                $oPer->setPersonalId($dp[1]);
+                                $result[$key]["contracts"][$keyContract]["respMensajeria"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
+                            break;
+                        }
+                    }
+                    $cUser = new User;
+                    $cUser->setUserId($value["responsableCuenta"]);
+                    $userInfo = $cUser->Info();
 
+                    $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
+
+                    $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
+                    switch($treeSub['tipoPersonal']){
+                        case 'Supervisor':
+                        case 'Asistente':
+                        case 'Gerente':
+                        case 'socio':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['name'];
+                            break;
+                        case 'Contador':
+                        case 'Auxiliar':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
+                            break;
+                    }
 
                   //$contract = new Contract;
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
@@ -1374,43 +1427,17 @@ class Customer extends Main
 						$result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
 						if($result[$key]["showCliente"] > 0)
 						{
-							break;
+							continue;
 						}
 					}
-
-					$cUser = new User;
-					$oPer =  new Personal;
 					//Agregar o no agregar servicio a arreglo de contratos?
 					foreach ($serviciosContrato as $servicio) {
-
 						//$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
-						$cUser->setUserId($value["responsableCuenta"]);
-						$userInfo = $cUser->Info();
-
-						$result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
-
-						$treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
-						switch($treeSub['tipoPersonal']){
-                            case 'Supervisor':
-                            case 'Asistente':
-                            case 'Gerente':
-                            case 'socio':
-                                $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['name'];
-                            break;
-                            case 'Contador':
-                            case 'Auxiliar':
-                                $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
-                                break;
-                        }
-
 						$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
-												
 						//Si es usuario de contabilidad
 						$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
 
 					}//foreach
-
-
 					//si hay instancias de servcicio se muestra el cliente si no no
 					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
 			
@@ -1422,11 +1449,8 @@ class Customer extends Main
 				$result[$key]["contracts"][0]["fake"] = 1;
 			}
 			$filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
-			
    	}//foreach
-		
-		//dd($result);
-   	return $result;
+        return $result;
 		
 	}//SuggestCustomerCatalog
 	

@@ -114,17 +114,17 @@ class Filtro extends Util
 	{
 		if($type == "propio")
 		{			
-      $subordinadosPermiso = array($userId);
-    }
+            $subordinadosPermiso = array($userId);
+        }
 		else
 		{
 			$subordinadosPermiso = array();
-      foreach ($subordinados as $sub) 
+            foreach ($subordinados as $sub)
 			{
-       	array_push($subordinadosPermiso, $sub["personalId"]);
-     	}
-		  array_push($subordinadosPermiso, $userId);
-    }//else
+       	       array_push($subordinadosPermiso, $sub["personalId"]);
+            }
+		     array_push($subordinadosPermiso, $userId);
+         }//else
 		
 		return $subordinadosPermiso;
 	}
