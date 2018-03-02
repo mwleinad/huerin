@@ -19,12 +19,26 @@ define("SERVICIOS_NOMINA", "5, 6, 7, 13, 14, 15");
 define("BALANCE_MONTH", "7");
 define("BALANCE_YEAR", "2013");
 
+switch($_SERVER['HTTP_HOST'])
+{
+    case 'localhost':
+        define("SEND_TO", "administracion@emfrich.com.mx");
+        define("SEND_TO2", "isc061990@gmail.com");
+        define("SEND_TO3", "leasib_666@hotmail.com");
+        define("FROM_MAIL", "facturacion@braunhuerin.com.mx");
+        define("FROM_MAILAlERTA", "noreply@noreply.com");
+    break;
+    default:
+        define("SEND_TO", "asanchez@braunhuerin.com.mx");
+        define("SEND_TO2", "cobranza2@braunhuerin.com.mx ");
+        define("SEND_TO3", "cobranza3@braunhuerin.com.mx");
+        define("FROM_MAIL", "facturacion@braunhuerin.com.mx");
+        define("FROM_MAILAlERTA", "noreply@noreply.com");
+    break;
+}
 
-define("SEND_TO", "dlopez@trazzos.com");
-define("SEND_TO2", "mwleinad@hotmail.com");
-define("SEND_TO3", "asanchez@braunhuerin.com.mx");
-define("FROM_MAIL", "facturacion@braunhuerin.com.mx");
-define("FROM_MAILAlERTA", "noreply@noreply.com");
+$CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN',SEND_TO2=>'COBRANZA1',SEND_TO3=>'COBRANZA2');
+define("CC_EMAILS", serialize($CC_EMAILS));
 
 define("SERVICIO_CONTABILIDAD", $servicioContabilidad);
 define("RIF", 8);

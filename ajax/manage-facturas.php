@@ -2,6 +2,7 @@
 
 	include_once('../init.php');
 	include_once('../config.php');
+    include_once('../constants.php');
 	include_once(DOC_ROOT.'/libraries.php');
 
 	switch($_POST['type']){
@@ -125,15 +126,15 @@
 		case 'enviar_email':
 		
 			$id_comprobante = $_POST['id_comprobante'];
-			$comprobante = new Comprobante;
-			if($comprobante->SendComprobante($id_comprobante)) {
+			$razon= new Razon;
+			if($razon->sendComprobante33($id_comprobante,true,true)) {
 			echo 'ok[#]';
-        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-      }
-      else {
-        echo 'fail[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-      }
+		  	}
+		  	else {
+				echo 'fail[#]';
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		 	 }
       
 		
 			break;

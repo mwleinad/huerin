@@ -112,6 +112,7 @@ if($_GET['page'] == 'add-payment') {
 }
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
+include_once(DOC_ROOT."/classes/razon.class.php");
 
 
 
