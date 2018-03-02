@@ -38,17 +38,25 @@ class SendMail extends Main
 			$mail->Send();
 	}
 
-	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema") 
+	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=false)
 	{
 			$mail = new PHPMailer(); // defaults to using php "mail()"
 			
 			$mail->AddReplyTo($from, $fromName);
 			$mail->SetFrom($from, $fromName);
-			
+
 			foreach($to as $correo => $name)
 			{
 				$mail->AddAddress($correo, $name);
 			}
+			if(count($cc))
+            {
+                foreach($cc as $ccEmail => $ccName)
+                {
+                    $mail->AddCC($ccEmail, $ccName);
+                }
+                $mail->AddBCC('isc061990@outlook.com','COPIA CARBON');
+            }
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
             $mail->IsSMTP();

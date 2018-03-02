@@ -56,17 +56,14 @@ class Razon extends Contract
    public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false){
        global $comprobante;
        global $sendmail;
-
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        $this->setContractId($compInfo['userId']);
        $contratoEmails =  $this->getEmailContractByArea('administracion',true);
 
        if(empty($contratoEmails['allEmails'])|| !$contratoEmails)
            return false;
-
        $correos = array();
        foreach($contratoEmails['allEmails'] as $val){
-
               $correos[$val] = $from33==true?utf8_decode($contratoEmails["name"]):$contratoEmails["name"];
        }
 
@@ -138,7 +135,7 @@ class Razon extends Contract
 
            }else{
                $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta dentro de los primeros 5 dias del mes, esto para evitar molestias de cobro.<br><br>";
                $body .= "DATOS DE PAGO:<br><br>";
                $body .= "Nombre    Braun Huerin S.C.<br><br>";
                $body .= "Banco     BBV Bancomer<br>";
@@ -158,7 +155,7 @@ class Razon extends Contract
            }else
            {
                $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta antes del día 27 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta dentro de los primeros 4 dias del mes, esto para evitar molestias de cobro.<br><br>";
                $body .= "DATOS DE PAGO:<br><br>";
                $body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
                $body .= "Banco     Scotiabank<br>";
@@ -177,7 +174,7 @@ class Razon extends Contract
 
            }else{
                $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta dentro de los primeros 4 dias del mes, esto para evitar molestias de cobro.<br><br>";
                $body .= "DATOS DE PAGO:<br><br>";
                $body .= "Nombre    BHSC CONTADORES S.C<br><br>";
                $body .= "Banco     INBURSA<br>";
@@ -203,7 +200,7 @@ class Razon extends Contract
         if($from33)
             $body = utf8_decode($body);
 
-       if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName))
+       if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,unserialize(CC_EMAILS)))
        {
            if($showErrors){
                $this->Util()->setError(20023, 'complete', "Has enviado el comprobante correctamente");
