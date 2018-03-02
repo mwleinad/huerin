@@ -36,7 +36,7 @@ switch($_POST["type"])
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo "[#]";
-				$resTipoServicio = $tipoServicio->Enumerate();
+				$resTipoServicio = $tipoServicio->EnumerateOnePage();
 				$smarty->assign("resTipoServicio", $resTipoServicio);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/tipoServicio.tpl');
@@ -89,7 +89,7 @@ switch($_POST["type"])
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo "[#]";
-				$resTipoServicio = $tipoServicio->Enumerate();
+				$resTipoServicio = $tipoServicio->EnumerateOnePage();
 				$smarty->assign("resTipoServicio", $resTipoServicio);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/tipoServicio.tpl');
