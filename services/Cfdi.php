@@ -168,7 +168,7 @@ class Cfdi extends Comprobante
         $data["fechaPago"] = $fechaPago;
 
         //el tipo de comprobante lo determina tiposComprobanteId
-         $tipoDeComprobante = $this->GetTipoComprobante($data["tiposComprobanteId"]);
+        $tipoDeComprobante = $this->GetTipoComprobante($data["tiposComprobanteId"]);
         $data["comprobante"] = $this->InfoComprobante($data["tiposComprobanteId"]);
 
         //$fecha = "2017-10-12 19:57:09";
@@ -456,7 +456,9 @@ class Cfdi extends Comprobante
 
         }
         //End notaVenta
-
+        //Enviar por correo despues de crear factura.
+        $razon =  new Razon;
+        $razon->sendComprobante33($comprobanteId,false,true);
         //finally we update the 'consecutivo
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE serie SET consecutivo = consecutivo + 1 WHERE serieId = ".$serie["serieId"]);
         $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
