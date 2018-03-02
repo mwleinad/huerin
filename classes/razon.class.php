@@ -155,7 +155,7 @@ class Razon extends Contract
            }else
            {
                $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta dentro de los primeros 4 dias del mes, esto para evitar molestias de cobro.<br><br>";
+               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta dentro de los primeros 5 dias del mes, esto para evitar molestias de cobro.<br><br>";
                $body .= "DATOS DE PAGO:<br><br>";
                $body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
                $body .= "Banco     Scotiabank<br>";
@@ -174,7 +174,7 @@ class Razon extends Contract
 
            }else{
                $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta dentro de los primeros 4 dias del mes, esto para evitar molestias de cobro.<br><br>";
+               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta dentro de los primeros 5 dias del mes, esto para evitar molestias de cobro.<br><br>";
                $body .= "DATOS DE PAGO:<br><br>";
                $body .= "Nombre    BHSC CONTADORES S.C<br><br>";
                $body .= "Banco     INBURSA<br>";
