@@ -56,6 +56,7 @@ class Razon extends Contract
    public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false){
        global $comprobante;
        global $sendmail;
+
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        $this->setContractId($compInfo['userId']);
        $contratoEmails =  $this->getEmailContractByArea('administracion',true);
@@ -68,6 +69,7 @@ class Razon extends Contract
 
               $correos[$val] = $from33==true?utf8_decode($contratoEmails["name"]):$contratoEmails["name"];
        }
+
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
@@ -93,8 +95,18 @@ class Razon extends Contract
        $enlace_xml  = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo_xml;
 
        /*** End Archivo PDF ***/
-       $fromName = "FACTURACION B&H";
-       $subject  = 'Envio de Factura con Folio No. '.$serie.$folio;
+
+       if($compInfo['tiposComprobanteId']==10)
+       {
+           $fromName = "COBRANZA B&H";
+           $subject  =  $from33?utf8_decode($contratoEmails['name']):$contratoEmails['name'];
+
+       }
+       else{
+           $fromName = "FACTURACION B&H";
+           $subject  = 'Envio de Factura con Folio No. '.$serie.$folio;
+       }
+
 
        if (file_exists($enlace)) {
            $attachment1 = $enlace;
@@ -119,48 +131,75 @@ class Razon extends Contract
        $body = " <pre>";
        if($compInfo["empresaId"] == 15)
        {
-           $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+           if($compInfo['tiposComprobanteId']==10)
+           {
+               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura complemento emitida por BRAUN HUERIN SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
 
-           $body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+           }else{
+               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "DATOS DE PAGO:<br><br>";
+               $body .= "Nombre    Braun Huerin S.C.<br><br>";
+               $body .= "Banco     BBV Bancomer<br>";
+               $body .= "Cuenta    0189768785<br>";
+               $body .= "Clabe     012180-001897-687857<br><br>";
+               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
 
-           $body .= "DATOS DE PAGO:<br><br>";
-           $body .= "Nombre    Braun Huerin S.C.<br><br>";
-           $body .= "Banco     BBV Bancomer<br>";
-           $body .= "Cuenta    0189768785<br>";
-           $body .= "Clabe     012180-001897-687857<br><br>";
-           $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
+            }
        }
        elseif($compInfo["empresaId"] == 20)
        {
-           $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+           if($compInfo['tiposComprobanteId']==10)
+           {
+               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura complemento emitida por JACOBO BRAUN BRUCKMAN , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
 
-           $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta antes del día 27 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+           }else
+           {
+               $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta antes del día 27 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "DATOS DE PAGO:<br><br>";
+               $body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
+               $body .= "Banco     Scotiabank<br>";
+               $body .= "Cuenta    00105313691<br>";
+               $body .= "Clabe      044180-001053-136916<br><br>";
+               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
 
-           $body .= "DATOS DE PAGO:<br><br>";
-           $body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-           $body .= "Banco     Scotiabank<br>";
-           $body .= "Cuenta    00105313691<br>";
-           $body .= "Clabe      044180-001053-136916<br><br>";
-           $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
+           }
        }
        elseif($compInfo["empresaId"] == 21)
        {
-           $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+           if($compInfo['tiposComprobanteId']==10)
+           {
+               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura complemento emitida por BHSC CONTADORES SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
 
-           $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+           }else{
+               $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+               $body .= "DATOS DE PAGO:<br><br>";
+               $body .= "Nombre    BHSC CONTADORES S.C<br><br>";
+               $body .= "Banco     INBURSA<br>";
+               $body .= "Cuenta    5003-6325-646<br>";
+               $body .= "Clabe     036-1805-0036-3256-464<br><br>";
+               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
 
-           $body .= "DATOS DE PAGO:<br><br>";
-
-           $body .= "Nombre    BHSC CONTADORES S.C<br><br>";
-           $body .= "Banco     INBURSA<br>";
-           $body .= "Cuenta    5003-6325-646<br>";
-           $body .= "Clabe     036-1805-0036-3256-464<br><br>";
-           $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
+           }
        }
-       $body .= "Gracias.<br>";
-       $body .= "Favor de revisar el archivo adjunto para ver factura.\r\n";
-       $body .= "<br><br>";
-       $body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
+
+       if($compInfo['tiposComprobanteId']==10){
+           $body .= "Quedo de usted. Saludos cordiales! Gracias.<br><br><br>";
+           $body .= "Favor de revisar el archivo adjunto para ver comprobante.\r\n";
+           $body .= "<br><br>";
+           //$body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
+       }else{
+           $body .= "Gracias.<br>";
+           $body .= "Favor de revisar el archivo adjunto para ver factura.\r\n";
+           $body .= "<br><br>";
+          // $body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
+       }
+
         if($from33)
             $body = utf8_decode($body);
 
