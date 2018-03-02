@@ -69,7 +69,11 @@ class SendMail extends Main
 			{
 				$mail->AddAttachment($attachment2, $fileName2);
 			}
-			$mail->Send();
+			if($mail->Send())
+			    return true;
+			else
+			    return false;
+
 	}
 
 }
