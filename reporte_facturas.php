@@ -7,7 +7,7 @@
 			$comprobantes = array();
 			$values['status_activo'] = 1;
 				
-			$comprobantes = $comprobante->SearchComprobantesByRfc($values);		
+			$comprobantes = $comprobante->SearchCompro bantesByRfc($values);
 
 				$data .= "Serie,Folio,Concepto,Razon Social,Fecha,Monto sin IVA,Iva,Total\n";
 				foreach($comprobantes["items"] as $comprobante)
