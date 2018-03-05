@@ -79,6 +79,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'tipoDocumento',
 		'tipoRequerimiento',
 		'tipoArchivo',
+		'exp-imp-data',
 
 		'services',
 		'add-documento',
