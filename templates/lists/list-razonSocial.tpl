@@ -54,17 +54,17 @@
         <td style="text-align:center;">{$item['customerId']}</td>
         <td style="text-align:center;">{$item['contractId']}</td>
         <td style="text-align:left;">{($item['nameContact'])}</td>
-        <td style="text-align:center;">{$item['phone']}</td>
-        <td style="text-align:left;">{$item['email']}</td>
+        <td style="text-align:center;">{$item['customerPhone']}</td>
+        <td style="text-align:left;">{$item['customerEmail']}</td>
         <td style="text-align:center;">{$item['password']}</td>
-        <td style="text-align:center;">{count($item['contracts'])}</td>
+        <td style="text-align:center;">{$item['totalContracts']}</td>
         <td style="text-align:center;">{date('d-m-Y',strtotime($item['fechaAlta']))}</td>
         <td style="text-align:center;">{($item['observaciones'])}</td>
-        <td style="text-align:center;">{$activo}</td>
+        <td style="text-align:center;">{if $item['customerActive'] eq 1}Si{else}No{/if}</td>
         <td style="text-align:center;">{($item['name'])}</td>
         <td style="text-align:center;">{($item['type'])}</td>
         <td style="text-align:center;">{$item['rfc']}</td>
-        <td style="text-align:center;">{($nomRegimen)}</td>
+        <td style="text-align:center;">{$item['nomRegimen']}</td>
         <td style="text-align:center;">{$item['activo']}</td>
         <td style="text-align:center;">{$item['nombreComercial']}</td>
         <td style="text-align:center;">{$item['direccionComercial']}</td>
@@ -87,15 +87,15 @@
         <td style="text-align:center;">{$item['facturador']}</td>
         <td style="text-align:center;">{$item['metodoDePago']}</td>
         <td style="text-align:center;">{$item['noCuenta']}</td>
-        <td style="text-align:center;">{$item['responsable']["name"]}</td>
+        <td style="text-align:center;">{$item['nameResponsableCuenta']}</td>
         <td style="text-align:center;">{$item['supervisadoBy']}</td>
-        <td style="text-align:center;">{$item['respContabilidad']}</td>
-        <td style="text-align:center;">{$item['respNominas']}</td>
-        <td style="text-align:center;">{$item['respAdministracion']}</td>
-        <td style="text-align:center;">{$item['respJuridico']}</td>
-        <td style="text-align:center;">{$item['respImss']}</td>
-        <td style="text-align:center;">{$item['respMensajeria']}</td>
-        <td style="text-align:center;">{$item['respAuditoria']}</td>
+        <td style="text-align:center;">{$item['nameContabilidad']}</td>
+        <td style="text-align:center;">{$item['nameNominas']}</td>
+        <td style="text-align:center;">{$item['nameAdministracion']}</td>
+        <td style="text-align:center;">{$item['nameJuridico']}</td>
+        <td style="text-align:center;">{$item['nameImss']}</td>
+        <td style="text-align:center;">{$item['nameMensajeria']}</td>
+        <td style="text-align:center;">{$item['nameAuditoria']}</td>
     </tr>
     {foreachelse}
       <tr>
