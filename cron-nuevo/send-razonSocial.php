@@ -40,25 +40,10 @@ foreach($employees as $key=>$itemEmploye){
     array_unshift($deptos, $itemEmploye['departamentoId']);
     $deptos = array_unique($deptos);
 
-    $contracts = $contractRep->SearchOnlyContract($persons, true);
+    $contracts = $contractRep->SearchOnlyContract($persons, true,true,$itemEmploye['personalId']);
     if(empty($contracts))
         continue;
-    foreach($contracts as $ky=>$val){
-        $personal->setPersonalId($val['respContabilidad']);
-        $contracts[$ky]['respContabilidad']= $personal->GetNameById();
-        $personal->setPersonalId($val['respNominas']);
-        $contracts[$ky]['respNominas']= $personal->GetNameById();
-        $personal->setPersonalId($val['respAdministracion']);
-        $contracts[$ky]['respAdministracion']= $personal->GetNameById();
-        $personal->setPersonalId($val['respJuridico']);
-        $contracts[$ky]['respJuridico']= $personal->GetNameById();
-        $personal->setPersonalId($val['respImss']);
-        $contracts[$ky]['respImss']= $personal->GetNameById();
-        $personal->setPersonalId($val['respMensajeria']);
-        $contracts[$ky]['respMensajeria']= $personal->GetNameById();
-        $personal->setPersonalId($val['respAuditoria']);
-        $contracts[$ky]['respAuditoria']= $personal->GetNameById();
-    }
+
     $departamentos->setDepartamentoId($itemEmploye['departamentoId']);
     $depto =  $departamentos->GetNameById();
 

@@ -38,7 +38,7 @@ class SendMail extends Main
 			$mail->Send();
 	}
 
-	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=false)
+	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array())
 	{
 			$mail = new PHPMailer(); // defaults to using php "mail()"
 			
@@ -49,7 +49,7 @@ class SendMail extends Main
 			{
 				$mail->AddAddress($correo, $name);
 			}
-			if(count($cc))
+			if(count($cc)>0)
             {
                 foreach($cc as $ccEmail => $ccName)
                 {
