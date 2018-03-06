@@ -274,7 +274,7 @@ class ContractRep extends Main
             {
                 $personal->setPersonalId($res['responsableCuenta']);
                 $res['nameResponsableCuenta'] = $personal->GetNameById();
-                $this->Util()->DB()->setQuery('select count(*) FROM contract WHERE customerId="'.$res['customerId'].'" ');
+                $this->Util()->DB()->setQuery('select count(*) FROM contract WHERE customerId="'.$res['customerId'].'" AND activo="Si" ');
                 $res['totalContracts'] = $this->Util()->DB()->GetSingle();
                 if($personalId!=65&&$personalId!=$res['respAdministracion'])
                     continue;
