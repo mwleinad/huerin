@@ -185,7 +185,8 @@ class ContractRep extends Main
 
         return $result2;
     }
-    public function SearchOnlyContract($formValues=array(),$activos=false){
+    public function SearchOnlyContract($formValues=array(),$activos=false,$isRepRazon=false,$personalId=0){
+        global $personal;
         $sqlFilter = "";
         if($activos)
             $sqlFilter .= " AND customer.active = '1'";
@@ -194,14 +195,15 @@ class ContractRep extends Main
 
         $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
-				personal.jefeGerente, personal.jefeContador, customer.nameContact
+				personal.jefeGerente, personal.jefeContador, customer.nameContact,customer.phone as customerPhone,
+				customer.email as customerEmail,customer.fechaAlta,customer.active as customerActive,regimen.nombreRegimen as nomRegimen
 				FROM contract
 				LEFT JOIN customer ON customer.customerId = contract.customerId
 				LEFT JOIN regimen ON regimen.regimenId = contract.regimenId
 				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
 				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
 				WHERE 1 ".$sqlFilter."
-				ORDER BY customer.name ASC";
+				ORDER BY customer.nameContact ASC";
 
         $this->Util()->DB()->setQuery($sql);
         $resContratos = $this->Util()->DB()->GetResult();
@@ -223,16 +225,60 @@ class ContractRep extends Main
             foreach($permisos as $pk=>$vp){
                 $dp = explode(',',$vp);
                 switch($dp[0]){
-                    case 1:$res['respContabilidad'] = $dp[1];break;
-                    case 8:$res['respNominas'] = $dp[1];break;
-                    case 31:$res['respAuditoria'] = $dp[1];break;
-                    case 24:$res['respImss'] = $dp[1];break;
-                    case 22:$res['respJuridico'] = $dp[1];break;
-                    case 21:$res['respAdministracion'] = $dp[1];break;
-                    case 26:$res['respMensajeria'] = $dp[1];break;
+                    case 1:$res['respContabilidad'] = $dp[1];
+                         if($isRepRazon)
+                         {
+                             $personal->setPersonalId($dp[1]);
+                             $res['nameContabilidad']= $personal->GetNameById();
+                         }
+                    break;
+                    case 8:$res['respNominas'] = $dp[1];
+                          if($isRepRazon){
+                              $personal->setPersonalId($dp[1]);
+                              $res['nameNominas']= $personal->GetNameById();
+                          }
+                    break;
+                    case 31:$res['respAuditoria'] = $dp[1];
+                        if($isRepRazon){
+                            $personal->setPersonalId($dp[1]);
+                            $res['nameAuditoria']= $personal->GetNameById();
+                        }
+                    break;
+                    case 24:$res['respImss'] = $dp[1];
+                        if($isRepRazon){
+                            $personal->setPersonalId($dp[1]);
+                            $res['nameImss']= $personal->GetNameById();
+                        }
+                    break;
+                    case 22:$res['respJuridico'] = $dp[1];
+                        if($isRepRazon){
+                            $personal->setPersonalId($dp[1]);
+                            $res['nameJuridico']= $personal->GetNameById();
+                        }
+                    break;
+                    case 21:$res['respAdministracion'] = $dp[1];
+                        if($isRepRazon){
+                            $personal->setPersonalId($dp[1]);
+                            $res['nameAdministracion']= $personal->GetNameById();
+                        }
+                    break;
+                    case 26:$res['respMensajeria'] = $dp[1];
+                        if($isRepRazon){
+                            $personal->setPersonalId($dp[1]);
+                            $res['nameMensajeria']= $personal->GetNameById();
+                        }
+                    break;
                 }
             }
-
+            if($isRepRazon)
+            {
+                $personal->setPersonalId($res['responsableCuenta']);
+                $res['nameResponsableCuenta'] = $personal->GetNameById();
+                $this->Util()->DB()->setQuery('select count(*) FROM contract WHERE customerId="'.$res['customerId'].'" ');
+                $res['totalContracts'] = $this->Util()->DB()->GetSingle();
+                if($personalId!=65&&$personalId!=$res['respAdministracion'])
+                    continue;
+            }
             $contratos[] =  $res;
         }
         return $contratos;
