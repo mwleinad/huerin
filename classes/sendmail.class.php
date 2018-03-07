@@ -47,7 +47,17 @@ class SendMail extends Main
 
 			foreach($to as $correo => $name)
 			{
-				$mail->AddAddress($correo, $name);
+			    switch($name){
+                    case 'Desarrollador':
+                        if(count($to)>1)
+                            $mail->AddBCC($correo, $name);
+                        else
+                            $mail->AddAddress($correo, $name);
+                    break;
+                    default:
+                        $mail->AddAddress($correo, $name);
+                    break;
+                }
 			}
 			if(count($cc)>0)
             {
