@@ -78,6 +78,19 @@ foreach($employees as $key => $itemEmploye){
     foreach($clientes as $clte){
         $contratos = array();
         foreach($clte['contracts'] as $con){
+            $respAdmin=0;
+            $permisos = explode('-',$con['permisos']);
+             foreach($permisos as $kp=>$vp){
+                 $dp = explode(',',$vp);
+                 if($dp[0]==21){
+                     $respAdmin = $dp[1];
+                     break;
+                 }
+             }
+             //si no tiene responsable de admin o el personal en la iteracion no es el resp de admin se omite.
+             if(($respAdmin==0||$respAdmin!=$itemEmploye['personalId'])&&$itemEmploye['personalId']!=65)
+                 continue;
+
             $personal->setPersonalId($con['responsableCuenta']);
             $con['responsable'] = $personal->Info();
 
@@ -94,11 +107,17 @@ foreach($employees as $key => $itemEmploye){
                 $contratos[] = $con;
             }
         }//foreach
+        //si no tiene ningun contrato se omite cliente.
         $clte['contracts'] = $contratos;
+        if(empty($contratos))
+            continue;
 
         $resClientes[] = $clte;
 
     }//foreach
+    //si no tiene ningun cliente se omite el envio del reporte al personal
+    if(empty($resClientes))
+        continue;
 
     $cleanedArray = array();
     foreach($resClientes as $key => $cliente)
@@ -134,7 +153,6 @@ foreach($employees as $key => $itemEmploye){
     $file = strtoupper(substr($depto,0,2))."-REP-COBRANZA-".trim(strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId']);
     $smarty->assign("cleanedArray", $sortedArray);
     $smarty->assign("DOC_ROOT", DOC_ROOT);
-
     $html = $smarty->fetch(DOC_ROOT.'/templates/lists/report-cobranza-new.tpl');
     $excel->ConvertToExcel($html,'xlsx',false,$file,true,500);
 
