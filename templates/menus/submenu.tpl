@@ -126,8 +126,8 @@
                 <span>Reporte Cobranza</span></a></li>
                 {/if}
 
-                    <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
-                            <span>Razones Sociales</span></a></li>
+                <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
+                <span>Razones Sociales</span></a></li>
 
                 {if $User.roleId < 4}
                 <li><a href="{$WEB_ROOT}/historial" {if $page == "historial"}class="current"{/if}>
@@ -138,6 +138,9 @@
 
                 <li><a href="{$WEB_ROOT}/historialCustomer" {if $page == "historialCustomer"}class="current"{/if}>
                         <span>Bitacora Clientes</span></a></li>
+                <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
+                            <span>Bitacoras</span></a></li>
+
             {/if}
 
 

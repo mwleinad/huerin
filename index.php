@@ -63,6 +63,7 @@ include_once(DOC_ROOT.'/libraries.php');
 			'report-invoice',
 			'log',
 			'report-servicio-bono',
+			'bitacora',
 			'historial',
 			'historialContract',
 			'historialCustomer',
