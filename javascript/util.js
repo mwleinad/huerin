@@ -79,6 +79,7 @@ function FViewOffSet(response)
 	$('fview').style.position = "absolute";
 	$('fview').style.top = top+"px";
 	$('fview').innerHTML = response;
+	jQ('#fview').draggable();
 //	new Draggable('fview',{scroll:window,handle:'draganddrop'});
 }
 
