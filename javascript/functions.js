@@ -373,3 +373,14 @@ function ToggleDiv(id)
 {
 	$(id).toggle();
 }
+function SetDateCalendar(input){
+    var dateNow = jQ("#"+input.id).val();
+    var flag = true;
+    jQ("#"+input.id).datepicker({
+        format:'yyyy-mm-dd',
+        language:'es',
+        autoclose:true,
+        todayBtn: true,
+        todayBtn: "linked"
+    }).focus();
+}

@@ -70,5 +70,21 @@ class Log extends Util
 		
     	return $idsUsers;
   	}
+  	function SearchLog($values){
+  	    $filter ="";
+  	    if($values['modulo']!="")
+  	        $filter .=" AND log.tabla='".$values['modulo']."' ";
+        if($values['finicial']!="")
+            $filter .=" AND log.fecha>='".$values['finicial']." 00:00:00' ";
+        if($values['ffinal']!="")
+            $filter .=" AND log.fecha<='".$values['ffinal']." 00:00:00' ";
+
+         $sql = "SELECT date(log.fecha) as fecham,log.*,personal.name as usuario FROM log LEFT JOIN personal ON log.personalId=personal.personalId where 1 ".$filter."   ORDER BY log.fecha ASC";
+         $this->Util()->DB()->setQuery($sql);
+         $result = $this->Util()->DB()->GetResult();
+
+         return $result;
+    }
+
   		
 }//Log

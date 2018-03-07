@@ -697,7 +697,7 @@ class Customer extends Main
 
   public function Edit()
   {
-    global $User;
+    global $User,$log;
     if($this->Util()->PrintErrors()){ return false; }
 
     $oldData = $this->Info();
@@ -724,7 +724,17 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
 
-    //actualizar historial
+    //Guardamos el Log
+    $log->setPersonalId($User['userId']);
+    $log->setFecha(date('Y-m-d H:i:s'));
+    $log->setTabla('customer');
+    $log->setTablaId($this->customerId);
+    $log->setAction('Update');
+    $log->setOldValue(serialize($oldData));
+    $log->setNewValue(serialize($newData));
+    $log->Save();
+
+    //actualizar historial de customer de forma independiente(analizar si es conveniente dejarlo)
     $this->Util()->DB()->setQuery("
 			INSERT INTO
 				customerChanges
