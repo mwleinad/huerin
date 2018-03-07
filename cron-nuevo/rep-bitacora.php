@@ -33,7 +33,7 @@ foreach($logs as $key=>$value) {
     $tipo = "";
     switch ($value['action']) {
         case 'Insert':
-            $tipo = 'Alta de registro';
+            $tipo = 'Alta';
             if($value['tabla']=='contract')
                 $descripcion = 'Alta de una razon social o contrato';
             elseif($value['tabla']=='servicio')
@@ -42,7 +42,7 @@ foreach($logs as $key=>$value) {
             $showChnages= false;
             break;
         case 'Update':
-            $tipo = 'Modificacion de registro';
+            $tipo = 'Modificacion';
             if($value['tabla']=='contract')
                 $descripcion = 'Actualizacion de informacion del cliente';
             elseif($value['tabla']=='servicio')
@@ -50,7 +50,7 @@ foreach($logs as $key=>$value) {
             $showChnages = true;
             break;
         case 'Delete':
-            $tipo = 'Eliminacion de registro';
+            $tipo = 'Eliminacion';
             if($value['tabla']=='contract')
                 $descripcion = 'Eliminacion de una razon social';
             elseif($value['tabla']=='servicio')
@@ -58,7 +58,7 @@ foreach($logs as $key=>$value) {
             $showChnages  = false;
             break;
         case 'Reactivacion':
-            $tipo ='Reactivacion de registro';
+            $tipo ='Reactivacion';
             if($value['tabla']=='contract')
                 $descripcion = 'Reactivacion de una razon social del cliente';
             elseif($value['tabla']=='servicio')
@@ -66,7 +66,7 @@ foreach($logs as $key=>$value) {
             $showChnages=false;
             break;
         case 'Baja':
-            $tipo ='Baja de registro';
+            $tipo ='Baja';
             if($value['tabla']=='contract')
                 $descripcion = 'Baja de una razon social del cliente';
             elseif($value['tabla']=='servicio')
