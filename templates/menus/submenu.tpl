@@ -89,7 +89,7 @@
 
 
 				{if $User.roleId == 1}
-                <li><a href="{$WEB_ROOT}/reporte_facturas.php" {if $page == "reporte_facturas"}class="current"{/if}>
+                <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
                 <span>Facturas</span></a></li>
 				{/if}
 
