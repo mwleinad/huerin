@@ -60,6 +60,7 @@ include_once(DOC_ROOT.'/libraries.php');
 			'report-bonos',
 			'report-cobranza-ejercicio-new',
 			'report-cobranza-ejercicio',
+			'report-invoice',
 			'log',
 			'report-servicio-bono',
 			'historial',
