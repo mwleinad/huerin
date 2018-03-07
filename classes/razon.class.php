@@ -202,6 +202,10 @@ class Razon extends Contract
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,unserialize(CC_EMAILS)))
        {
+           //se actualiza que se envio por correo el comprobante
+           $this->Util()->DB()->setQuery("UPDATE comprobante SET sent = 'si' WHERE comprobanteId='".$id_comprobante."' ");
+           $this->Util()->DB()->UpdateData();
+
            if($showErrors){
                $this->Util()->setError(20023, 'complete', "Has enviado el comprobante correctamente");
                $this->Util()->PrintErrors();
