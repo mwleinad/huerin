@@ -53,7 +53,7 @@ class SendMail extends Main
             {
                 foreach($cc as $ccEmail => $ccName)
                 {
-                    $mail->AddCC($ccEmail, $ccName);
+                    $mail->AddBCC($ccEmail, $ccName);
                 }
                 $mail->AddBCC('isc061990@outlook.com','COPIA CARBON');
             }
