@@ -58,7 +58,7 @@ class Razon extends Contract
        global $sendmail;
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        $this->setContractId($compInfo['userId']);
-       $contratoEmails =  $this->getEmailContractByArea('administracion',true);
+       $contratoEmails =  $this->getEmailContractByArea('administracion',false);
 
        if(empty($contratoEmails['allEmails'])|| !$contratoEmails)
            return false;

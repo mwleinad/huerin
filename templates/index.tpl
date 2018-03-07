@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/blue.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
-
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/jquery-ui/jquery-ui.css" />
 {if $page == 'report-servicio-drill'}
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
@@ -70,6 +70,7 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-ui.js?{$timestamp}"></script>
 <script>var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
