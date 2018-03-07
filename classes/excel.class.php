@@ -382,6 +382,8 @@ class Excel
                     {
                         $thistext= str_replace('$','',$thistext);
                         $style_overlay['numberformat']['code']=PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE;
+                    }else{
+                        $style_overlay['numberformat']['code']=PHPExcel_Style_NumberFormat::FORMAT_TEXT;
                     }
 
 

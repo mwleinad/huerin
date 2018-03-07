@@ -36,6 +36,7 @@ cron-nuevo/repcobranza.txt
 cron-nuevo/repbonos.txt
 cron-nuevo/changepassword.txt
 cron-nuevo/contractslog.txt
+cron-nuevo/sendrazon.txt
 cron/.facturas_log.txt.swp
 export/templates_c
 contracts.log

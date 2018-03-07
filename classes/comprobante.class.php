@@ -1297,7 +1297,6 @@ class Comprobante extends Producto
 	}//GetComprobantesByRfc
 
 	function SearchComprobantesByRfc($values){
-
 		global $user;
 
 		$sqlSearch = '';
@@ -1306,6 +1305,9 @@ class Comprobante extends Producto
 			$sqlSearch .= ' AND c.folio = "'.$values['folio'].'"';
 		}//if
 
+        if($values['serie']){
+            $sqlSearch .= ' AND c.serie = "'.$values['serie'].'"';
+        }
 		if($values['folio'] && $values["folioA"]){
 			$sqlSearch .= ' AND c.folio >= "'.$values['folio'].'" AND c.folio <="'.$values["folioA"].'"';
 		}//if
@@ -1341,7 +1343,7 @@ class Comprobante extends Producto
 
 		//$sqlQuery = 'SELECT * FROM comprobante ORDER BY serie ASC, fecha DESC, comprobanteId DESC';
 		//echo "jere";
-		$sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
+		 $sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
 			FROM comprobante as c
 			LEFT JOIN contract ON contract.contractId = c.userId
 			LEFT JOIN customer ON customer.customerId = contract.customerId
@@ -1349,7 +1351,7 @@ class Comprobante extends Producto
 			LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 			WHERE 1 '.$sqlSearch.' ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
-	//	exit;
+
 		$id_empresa = $_SESSION['empresaId'];
 
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
@@ -1363,7 +1365,6 @@ class Comprobante extends Producto
 		$info = array();
 		//echo count($comprobantes);
 		foreach($comprobantes as $key => $val){
-			//print_r($val);
 			$user->setUserId($val['userId'],1);
 			$usr = $user->GetUserInfo();
 			$card['serie'] = $val['serie'];
@@ -1380,33 +1381,27 @@ class Comprobante extends Producto
 					$card['concepto'] = $aux[1];
 					$auxC = false;
 					continue;
-				}
-			}
-			if ($auxC){
-				foreach ($servicios as $serv) {
-					$servicioAux = "|".strtolower($serv['nombreServicio'])." ";
-					$index = strpos($cadenaOAux,$servicioAux);
-					if($index){
-						$inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
-						$aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-						$card['concepto']  = $aux[1];
-						$auxC = false;
-						continue;
-					}
-				}
-			}
-			if ($auxC){
-				foreach ($servicios as $serv) {
-					$servicioAux = "|".strtolower($serv['nombreServicio'])."|";
-					$index = strpos($cadenaOAux,$servicioAux);
-					if($index){
-						$inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
-						$aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-						$card['concepto']  = $aux[1];
-						$auxC = false;
-						continue;
-					}
-				}
+				}else{
+                    $servicioAux = "|".strtolower($serv['nombreServicio'])." ";
+                    $index = strpos($cadenaOAux,$servicioAux);
+                    if($index){
+                        $inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
+                        $aux=explode("|",substr($val["cadenaOriginal"], $inicio));
+                        $card['concepto']  = $aux[1];
+                        $auxC = false;
+                        continue;
+                    }else{
+                        $servicioAux = "|".strtolower($serv['nombreServicio'])."|";
+                        $index = strpos($cadenaOAux,$servicioAux);
+                        if($index){
+                            $inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
+                            $aux=explode("|",substr($val["cadenaOriginal"], $inicio));
+                            $card['concepto']  = $aux[1];
+                            $auxC = false;
+                            continue;
+                        }
+                    }
+                }
 			}
 			if($auxC){
 				$servicioAux = " correspondiente";
@@ -1458,7 +1453,6 @@ class Comprobante extends Producto
 			$card["uuid"] = $timbreFiscal["UUID"];
 
 			$info[$key] = $card;
-
 		}//foreach
 
 		$data["items"] = $info;
