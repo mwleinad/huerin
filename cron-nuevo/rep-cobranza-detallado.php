@@ -143,7 +143,7 @@ foreach($employees as $key => $itemEmploye){
                 <br><br>Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
     if(REP_STATUS=='test')
-        $to = array(EMAIL_DEV=>'Desarrollador','isc061990@outlook.com'=>'otro correo');
+        $to = array(EMAIL_DEV=>'Desarrollador');
     else
         $to = array($itemEmploye["email"]=>$itemEmploye['name'],EMAIL_DEV=>'Desarrollador');
 
