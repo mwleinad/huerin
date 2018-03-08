@@ -49,6 +49,8 @@
     <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
+    <td align="center"></td>
+    <td align="center"></td>
     <td align="center">${$totalPeriodo|number_format:2}</td>
     <td align="center">${$totalMens|number_format:2}</td>
     <td align="center"></td>
