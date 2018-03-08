@@ -1528,7 +1528,7 @@ class Contract extends Main
 			$sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='0'
+					AND servicio.status = 'activo' AND tipoServicio.status='1'
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
 			$this->Util()->DB()->setQuery($sql);
