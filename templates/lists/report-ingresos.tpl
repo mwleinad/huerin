@@ -5,6 +5,8 @@
 		<th align="center" width="60">Raz&oacute;n Social</th>
 		<th align="center" width="60">Servicio</th>
 		<th align="center" width="60">Periodo</th>
+        <th align="center" width="60">Fecha inicio facturacion</th>
+        <th align="center" width="60">Fecha Inicio Operacion</th>
 		<th align="center" width="60">Costo por Periodo</th>
         <th align="center" width="60">Costo Mensual</th>
         <th align="center" width="60">Costo Informativo</th>
@@ -23,6 +25,8 @@
             <td align="center">{$contract.name}</td>
             <td align="center">{$servicio.nombreServicio}</td>
             <td align="center">{$servicio.periodicidad}</td>
+            <td align="center">{$servicio.inicioFactura}</td>
+            <td align="center">{$servicio.inicioOperaciones}</td>
             <td align="center">${$servicio.costo|number_format:2}</td>
             <td align="center">${$servicio.costoMens}</td>
             <td align="center">${$servicio.costoVisual}</td>
