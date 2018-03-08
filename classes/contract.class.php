@@ -1384,7 +1384,7 @@ class Contract extends Main
      	$sql = "SELECT * FROM servicio
               	LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
               	WHERE contractId = '".$value["contractId"]."'
-              	AND servicio.status = 'activo'
+              	AND servicio.status = 'activo' AND tipoServicio.status='1'
               	".$depto."
               	ORDER BY
                 tipoServicio.nombreServicio ASC";
@@ -1581,7 +1581,7 @@ class Contract extends Main
 				$sql = "SELECT * FROM servicio
 						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 						WHERE contractId = '".$res["contractId"]."'
-						AND servicio.status = 'activo'
+						AND servicio.status = 'activo' AND tipoServicio.status='1'
 						".$sqlDepto."
 						ORDER BY tipoServicio.nombreServicio ASC";
 				$this->Util()->DB()->setQuery($sql);
@@ -1659,7 +1659,7 @@ class Contract extends Main
 					LEFT JOIN
 						tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE
-						contractId = '".$value["contractId"]."' AND servicio.status = 'activo'
+						contractId = '".$value["contractId"]."' AND servicio.status = 'activo' AND tipoServicio.status='1'
 					ORDER BY
 						nombreServicio ASC"
 			);
