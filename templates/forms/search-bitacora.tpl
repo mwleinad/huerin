@@ -15,7 +15,7 @@
                     <select name="modulo" id="modulo" class="largeInput medium2">
                         <option value="">Seleccionar </option>
                         <option value="servicio">Servicios</option>
-                        <option value="contract">Contratos</option>
+                        <option value="contract">Razones sociales</option>
                         <option value="customer">Clientes</option>
                     </select>
                 </td>
