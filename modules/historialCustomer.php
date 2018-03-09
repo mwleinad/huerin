@@ -14,7 +14,7 @@
 /* Start Session Control - Don't Remove This */
 $user->allowAccess("report-ingresos");
 /* End Session Control */
-
+header('Location: '.WEB_ROOT);
 $historial = $customer->HistorialAll();
 
 $smarty->assign("historial", $historial);

@@ -130,18 +130,9 @@
                 <span>Razones Sociales</span></a></li>
 
                 {if $User.roleId < 4}
-                <li><a href="{$WEB_ROOT}/historial" {if $page == "historial"}class="current"{/if}>
-                        <span>Bitacora Servicios</span></a></li>
-
-                <li><a href="{$WEB_ROOT}/historialContract" {if $page == "historialContract"}class="current"{/if}>
-                        <span>Bitacora Contratos</span></a></li>
-
-                <li><a href="{$WEB_ROOT}/historialCustomer" {if $page == "historialCustomer"}class="current"{/if}>
-                        <span>Bitacora Clientes</span></a></li>
                 <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
                             <span>Bitacoras</span></a></li>
-
-            {/if}
+                {/if}
 
 
             {/if}
