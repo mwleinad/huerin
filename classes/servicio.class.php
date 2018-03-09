@@ -82,11 +82,30 @@ class Servicio extends Contract
 			echo '<br>';
 			
 			$dateExploded = explode("-", $value["inicioOperaciones"]);
-						
+
+
 			//Check if first instance
 			if(!count($value["instancias"]))
 			{	
-				$sql = "INSERT INTO  `instanciaServicio` (`servicioId`,`date`,`status`)
+				//si es precierre  debe abrir solo en los meses 7 9 11
+			    if($value["tipoServicioId"]==PRECIERRE){
+			        $mesPre = (int)$dateExploded[1];
+			        switch($mesPre){
+                        case 1:case 2:case 3:case 4:case 5:
+                        case 6:case 7:case 12:
+                            $dateExploded[1]=7;
+                        break;
+                        case 8:
+                        case 9:
+                            $dateExploded[1]=9;
+                        break;
+                        case 10:
+                        case 11:
+                            $dateExploded[1]=11;
+                            break;
+                    }
+                }
+			    $sql = "INSERT INTO  `instanciaServicio` (`servicioId`,`date`,`status`)
 				VALUES ('".$value["servicioId"]."','".$dateExploded[0]."-".$dateExploded[1]."-1','activa');";
 				$this->Util()->DB()->setQuery($sql);
 				$this->Util()->DB()->InsertData();
@@ -137,8 +156,11 @@ class Servicio extends Contract
 						case "Semestral": $add = "+6 month"; break;
 						case "Anual": $add = "+12 month"; break;
 					}
+					$cont=1;
+					//crea los workflows atrasados sucede si se cambia la fecha de inicio de operaciones.
 					while($primerServicio > $startdate)
-					{
+					{ echo "<br>vuelta".$cont."-".$startdate."<br>";
+
 						$dateExploded = explode("-",$startdate);
 
 						if($value["tipoServicioId"] == RIF )
@@ -148,6 +170,61 @@ class Servicio extends Contract
 								$dateExploded[1] = $dateExploded[1] + 1;
 							}
 						}
+                        $addTemp =  $add;
+                        if($value["tipoServicioId"]==PRECIERRE){
+                            $mesPre = (int)$dateExploded[1];
+                            switch($mesPre){
+                                case 1:
+                                    $add = "+6 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 2:
+                                    $add = "+5 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 3:
+                                    $add = "+4 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 4:
+                                    $add = "+3 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 5:
+                                    $add = "+2 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 6:
+                                    $add = "+1 month";
+                                    $dateExploded[1]=7;
+                                break;
+                                case 7:
+                                    $dateExploded[1]=7;
+                                break;
+                                case 12://si ponen esta fecha de operacion ya no deberia crear nada
+                                    $add = "+7 month";
+                                    $dateExploded[1]=7;
+                                    $startdate = strtotime ( $add , strtotime ( $startdate ) ) ;
+                                    $startdate = date ( 'Y-m-d' , $startdate );
+                                    continue;
+                                break;
+                                case 8:
+                                    $add = "+1 month";
+                                    $dateExploded[1]=9;
+                                break;
+                                case 9:
+                                    $dateExploded[1]=9;
+                                break;
+                                case 10:
+                                    $add = "+1 month";
+                                    $dateExploded[1]=11;
+                                break;
+                                case 11:
+                                    $dateExploded[1]=11;
+                                break;
+                            }
+                        }
+
 
 						$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
 							servicioId = ".$value["servicioId"]."
@@ -174,6 +251,8 @@ class Servicio extends Contract
 						
 						$startdate = strtotime ( $add , strtotime ( $startdate ) ) ;
 						$startdate = date ( 'Y-m-d' , $startdate );
+						$add=$addTemp;
+						$cont++;
 					}
 				}
 				
@@ -193,6 +272,23 @@ class Servicio extends Contract
 					$addedDate = date ( 'Y-m-d' , $addedDate );
 					$explodedAddedDate = explode("-", $addedDate);
 
+                    if($value["tipoServicioId"]==PRECIERRE){
+                        $mesPreAdd = (int)$explodedAddedDate[1];
+                        switch($mesPreAdd){
+                            case 1:case 2:case 3:case 4:case 5:
+                            case 6:case 7:case 12:
+                                $explodedAddedDate[1]=7;
+                            break;
+                            case 8:
+                            case 9:
+                                $explodedAddedDate[1]=9;
+                                break;
+                            case 10:
+                            case 11:
+                                $explodedAddedDate[1]=11;
+                            break;
+                        }
+                    }
 					$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
 							servicioId = ".$value["servicioId"]."
 						 	AND date = '".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1'";
@@ -295,7 +391,7 @@ class Servicio extends Contract
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
 				LEFT JOIN customer ON customer.customerId = contract.customerId
 				LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-				WHERE ".$debug." servicio.status = 'activo' AND customer.active = '1'
+				WHERE ".$debug." servicio.status = 'activo' AND tipoServicio.status='1' AND customer.active = '1'
 				".$sqlCustomer.$sqlContract.$addNomina.$depto.$sqlRespCta." 					
 				ORDER BY clienteName, razonSocialName, nombreServicio ASC";						
 		$this->Util()->DB()->setQuery($sql);
