@@ -1326,7 +1326,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 		foreach($email as $key => $value)
 		{
-			if(!$value)
+			if(!$value||!$this->ValidateEmail($value)||stripos($value,'braunhuerin.com.mx'))
 			{
 				unset($email[$key]);
 			}
