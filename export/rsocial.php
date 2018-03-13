@@ -41,6 +41,7 @@ $x .=
             <th style=\"background:#E0E5E7;text-align:center\"><b>OBSERVACIONES</b></th>
             <th style=\"background:#E0E5E7;text-align:center\"><b>CLIENTE ACTIVO</b></th>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>NOMBRE RAZON SOCIAL</b></td>
+            <td style=\"background:#D7EBFF;text-align:center;\"><b>TOTAL DE IGUALA</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>TIPO</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RFC</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>REGIMEN FISCAL</b></td>
@@ -103,6 +104,7 @@ foreach($clientes as $res){
 			        <td style=\"text-align:center;\">".utf8_decode($res['observaciones'])."</td>
 			        <td style=\"text-align:center;\">".$activo."</td>
 					<td style=\"text-align:center;\">".utf8_decode($con['name'])."</td>
+					<td style=\"text-align:left;\">$ ".$con['totalMensual']."</td>
 					<td style=\"text-align:center;\">".utf8_decode($con['type'])."</td>
 					<td style=\"text-align:center;\">".$con['rfc']."</td>
 					<td style=\"text-align:center;\">".utf8_decode($nomRegimen)."</td>

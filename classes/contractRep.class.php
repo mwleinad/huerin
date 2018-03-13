@@ -186,7 +186,7 @@ class ContractRep extends Main
         return $result2;
     }
     public function SearchOnlyContract($formValues=array(),$activos=false,$isRepRazon=false,$personalId=0){
-        global $personal;
+        global $personal,$contract;
         $sqlFilter = "";
         if($activos)
             $sqlFilter .= " AND customer.active = '1'";
@@ -272,6 +272,9 @@ class ContractRep extends Main
             }
             if($isRepRazon)
             {
+                //encontrar total de iguala por cada contrato.
+                $contract->setContractId($res['contractId']);
+                $res['totalMensual'] =number_format($contract->getTotalIguala(),2,'.',',');
                 $personal->setPersonalId($res['responsableCuenta']);
                 $res['nameResponsableCuenta'] = $personal->GetNameById();
                 $this->Util()->DB()->setQuery('select count(*) FROM contract WHERE customerId="'.$res['customerId'].'" AND activo="Si" ');

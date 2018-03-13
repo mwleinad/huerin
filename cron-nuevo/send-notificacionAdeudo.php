@@ -84,4 +84,4 @@ foreach($results as $key=>$value) {
     echo 'Correo enviado.'.$value['contractId'].'\n';
     $total++;
 }
-echo "Total de clientes con adeudo = ".$total;
+echo "Total de clientes con adeudo = ".$total.'\n';

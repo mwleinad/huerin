@@ -12,6 +12,7 @@
         <th style="background:#E0E5E7;text-align:center"><b>OBSERVACIONES</b></th>
         <th style="background:#E0E5E7;text-align:center"><b>CLIENTE ACTIVO</b></th>
         <th style="background:#D7EBFF;text-align:center;"><b>NOMBRE RAZON SOCIAL</b></th>
+        <th style="background:#D7EBFF;text-align:center;"><b>TOTAL DE IGUALA</b></th>
         <th style="background:#D7EBFF;text-align:center;"><b>TIPO</b></th>
         <th style="background:#D7EBFF;text-align:center;"><b>RFC</b></th>
         <th style="background:#D7EBFF;text-align:center;"><b>REGIMEN FISCAL</b></th>
@@ -62,6 +63,7 @@
         <td style="text-align:center;">{($item['observaciones'])}</td>
         <td style="text-align:center;">{if $item['customerActive'] eq 1}Si{else}No{/if}</td>
         <td style="text-align:center;">{($item['name'])}</td>
+        <td style="text-align:center;">${$item['totalMensual']}</td>
         <td style="text-align:center;">{($item['type'])}</td>
         <td style="text-align:center;">{$item['rfc']}</td>
         <td style="text-align:center;">{$item['nomRegimen']}</td>
