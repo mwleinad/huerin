@@ -2907,6 +2907,11 @@ class Contract extends Main
 
         return $data;
     }
+    public function getTotalIguala(){
+      $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT SUM(costo) FROM servicio WHERE contractId="'.$this->contractId.'" AND status="activo" ');
+      $single =  $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
+      return $single;
+    }
 }
 
 ?>

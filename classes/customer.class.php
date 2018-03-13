@@ -1406,10 +1406,12 @@ class Customer extends Main
                             break;
                         }
                     }
+                    $contract = new Contract;
                     $cUser = new User;
                     $cUser->setUserId($value["responsableCuenta"]);
                     $userInfo = $cUser->Info();
-
+                    $contract->setContractId($value['contractId']);
+                    $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
                     $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
 
                     $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
@@ -1426,7 +1428,7 @@ class Customer extends Main
                             break;
                     }
 
-                  //$contract = new Contract;
+
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
