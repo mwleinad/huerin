@@ -86,6 +86,7 @@ foreach($employees as $key=>$itemEmploye){
     $smarty->assign("contracts", $razonesAdeudo);
     $smarty->assign("DOC_ROOT", DOC_ROOT);
     $html = $smarty->fetch(DOC_ROOT.'/templates/lists/list-razonWhitAdeudo.tpl');
+    $html = str_replace(',', '', $html);
     $file = strtoupper(substr($depto,0,2))."-RAZONESCONADEUDO-".trim(strtoupper(substr($itemEmploye['name'],0,6)).$itemEmploye['personalId']);
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,500);
     $subject= $file;
