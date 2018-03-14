@@ -24,7 +24,8 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$sql = "SELECT a.paymentDate,concat_ws('',b.serie,b.folio) as factura,a.amount as importe,a.deposito,d.nameContact,c.name,e.name as responsable FROM payment a 
+$sql = "SELECT a.paymentDate,concat_ws('',b.serie,b.folio) as factura,a.amount as importe,a.deposito,d.nameContact,c.name,e.name as responsable,
+        b.xml,b.empresaId ,b.serie as serief,b.folio as foliof,b.rfcId,a.comprobantePagoId FROM payment a 
         LEFT JOIN comprobante b ON a.comprobanteId=b.comprobanteId
         LEFT JOIN contract c ON b.userId=c.contractId 
         LEFT JOIN customer d ON c.customerId=d.customerId
@@ -37,6 +38,37 @@ $db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONT
 $initMonth = $db->GetSingle();
 $des = explode('-',$initMonth);
 $mes = (int)$des[1];
+
+//crear el zip que enviara todos los xmls
+$zip =  new ZipArchive();
+$file_name = 'XMLS-'.strtoupper($util->GetMonthByKey($mes)).'.ZIP';
+$file_zip =DOC_ROOT.'/sendFiles/'.$file_name;
+if($zip->open($file_zip,ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)===true) {
+    echo 'Creado en' . $file_zip . '\n';
+    foreach ($payments as $kp => $vp) {
+        $archivo_xml = "SIGN_" . $vp['empresaId'] . '_' . $vp['serief'] . '_' . $vp['foliof'] . '.xml';
+        $enlace_xml = DOC_ROOT . '/empresas/' . $vp['empresaId'] . '/certificados/' . $vp['rfcId'] . '/facturas/xml/' . $archivo_xml;
+        if (file_exists($enlace_xml)) {
+            $zip->addFile($enlace_xml, 'XML-CFDI/'.$archivo_xml);
+        }
+        //comprobar si hay complementos, tambien se adjunta en el zip
+        if($vp['comprobantePagoId']>0){
+            $db->setQuery("SELECT folio,serie,empresaId,rfcId FROM comprobante WHERE comprobanteId='".$vp['comprobantePagoId']."'");
+            $complemento = $db->GetRow();
+            if(!empty($complemento)){
+                $archivo_xml_comp = "SIGN_" . $complemento['empresaId'] . '_' . $complemento['serie'] . '_' . $complemento['folio'] . '.xml';
+                $enlace_xml_comp = DOC_ROOT . '/empresas/' . $complemento['empresaId'] . '/certificados/' . $complemento['rfcId'] . '/facturas/xml/' . $archivo_xml_comp;
+                if (file_exists($enlace_xml_comp))
+                    $zip->addFile($enlace_xml_comp, 'XML-COMP/'.$archivo_xml_comp);
+            }
+
+        }
+    }
+    $zip->close();
+}
+else {
+    echo 'Error creando en'.$file_zip.'\n';
+}
 $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -96,6 +128,7 @@ else
     $to = array('rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',EMAIL_DEV=>'Desarrollador');
 
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
-$sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
+$sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "REP-COBRANZA") ;
 echo "reporte enviado correctamente";
 unlink($attachment);
+unlink($file_zip);
