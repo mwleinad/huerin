@@ -22,14 +22,13 @@
         <td style="text-align:center;">{$item.numeroFactura}</td>
         <td style="text-align:left; ">
             {foreach from=$item.factPendientes key=kfact item=fact}
-                <b>FOLIO:</b> {$fact.folioSerie}    <b>MONTO:</b> $ {$fact.pendiente|number_format:2:'.':','}  <b>FECHA-EMISION:</b>{$fact.fecha|date_format:'%Y-%m-%d'}<hr/>
-            {/foreach}
+                <p><b>FOLIO-FACTURA:</b> {$fact.folioSerie}    <b>MONTO-PENDIENTE:</b> $ {$fact.pendiente|number_format:2:'.':','}  <b>FECHA-EMISION:</b>{$fact.fecha|date_format:'%Y-%m-%d'}</p><hr/>          {/foreach}
         </td>
         <td style="text-align:left;">{$item.montoTotal}</td>
     </tr>
     {foreachelse}
       <tr>
-          <td colspan="5">No se encontraron resultados</td>
+          <td colspan="8">No se encontraron resultados</td>
       </tr>
     {/foreach}
     </tbody>
