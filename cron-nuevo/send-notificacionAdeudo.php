@@ -17,7 +17,8 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+echo "fuera";
+exit;
 $db->setQuery("SELECT * FROM contract WHERE activo='si' ORDER BY name ASC ");
 $results = $db->GetResult();
 
@@ -66,6 +67,7 @@ foreach($results as $key=>$value) {
     $body .="<br><br>Agradecemos nos proporcione su comprobante de pago lo antes posible, para conciliar.";
     $body .="<br><br>Gracias.";
     $emails = array();
+
     if(REP_STATUS=='test'){
         $emails=array(EMAIL_DEV=>'Desarrollador');
         $todoMail ="";
@@ -81,7 +83,9 @@ foreach($results as $key=>$value) {
     }
 
     $sendmail->PrepareMultiple('FACTURAS PENDIENTES',$body,$emails,'','','','','',FROM_MAIL,'COBRANZA B&H');
-    echo 'Correo enviado.'.$value['contractId'].'\n';
+    echo "Correo enviado.".$value['contractId'];
+    echo '\n';
     $total++;
 }
-echo "Total de clientes con adeudo = ".$total.'\n';
+echo "Total de clientes con adeudo=".$total;
+echo '\n';
