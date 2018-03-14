@@ -61,7 +61,7 @@ foreach($employees as $key=>$itemEmploye){
         $totalAdeudo = 0;
         foreach($comprobantes as $kcom=>$compro){
             $resta = $compro['total']-$compro['totalPagos'];
-            if($resta>0.01){
+            if($resta>0.1){
                 $compro['pendiente'] = $resta;
                 $totalAdeudo = $totalAdeudo+$compro['pendiente'];
                 $pendientes[]=$compro;
