@@ -24,7 +24,7 @@
             {foreach from=$item.factPendientes key=kfact item=fact}
                 <p><b>FOLIO-FACTURA:</b> {$fact.folioSerie}    <b>MONTO-PENDIENTE:</b> $ {$fact.pendiente|number_format:2:'.':','}  <b>FECHA-EMISION:</b>{$fact.fecha|date_format:'%Y-%m-%d'}</p><hr/>          {/foreach}
         </td>
-        <td style="text-align:left;">{$item.montoTotal}</td>
+        <td style="text-align:left;">${$item.montoTotal}</td>
     </tr>
     {foreachelse}
       <tr>
