@@ -420,12 +420,6 @@ class Personal extends Main
 			$this->jefeSupervisor = 0;
 			$this->jefeContador = 0;
 		}
-
-/*				jefeContador = '".$this->jefeContador."',
-				jefeSupervisor = '".$this->jefeSupervisor."',
-				jefeGerente = '".$this->jefeGerente."',
-				jefeSocio = '".$this->jefeSocio."',
-*/
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				personal
@@ -451,7 +445,30 @@ class Personal extends Main
 				active = '".$this->active."'
 			WHERE personalId = '".$this->personalId."'");
 		$this->Util()->DB()->UpdateData();
+        //actualizar los expedientes.
+        if(!empty($_POST['expe'])){
+            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT expedienteId from personalExpedientes WHERE personalId="'.$this->personalId.'" ');
+            $arrayExp = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+            $expActual = $this->Util()->ConvertToLineal($arrayExp,'expedienteId');
+            $sql2 = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
+            foreach($_POST['expe'] as $exp){
+                if($exp===end($_POST['expe']))
+                    $sql2 .="(".$this->personalId.",".$exp.");";
+                else
+                    $sql2 .="(".$this->personalId.",".$exp."),";
+                //encontrar la posicion de $exp en expActual
+                $key = array_search($exp,$expActual);
+                unset($expActual[$key]);
+            }
 
+            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql2);
+            $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+            if(!empty($expActual)){
+                $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId IN(".implode(",",$expActual).") AND personalId='".$this->personalId."'";
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
+                $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+            }
+        }
 		$this->Util()->setError(10049, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -460,17 +477,6 @@ class Personal extends Main
 	public function Save()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-
-/*				jefeContador,
-				jefeSupervisor,
-				jefeGerente,
-				jefeSocio,
-								'".$this->jefeContador."',
-				'".$this->jefeSupervisor."',
-				'".$this->jefeGerente."',
-				'".$this->jefeSocio."',
-
-*/
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
 				personal
@@ -517,7 +523,18 @@ class Personal extends Main
 				'".$this->fechaIngreso."',
 				'".$this->active."'
 		);");
-		$this->Util()->DB()->InsertData();
+		$id = $this->Util()->DB()->InsertData();
+        if(!empty($_POST['expe'])){
+            $sql = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
+            foreach($_POST['expe'] as $exp){
+                if($exp===end($_POST['expe']))
+                    $sql .="(".$id.",".$exp.");";
+                else
+                    $sql .="(".$id.",".$exp."),";
+            }
+            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+            $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+        }
 		$this->Util()->setError(10048, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -927,6 +944,23 @@ function SubordinadosDetails()
                 break;
         }
         return $cad;
+    }
+    public function GetExpedientes(){
+	    $sql ="SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='".$this->personalId."' and b.status='activo' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+        foreach($result as $key=>$value){
+            $file = DOC_ROOT."/expedientes/".$this->personalId."/".$value['path'];
+            if(file_exists($file)&&is_file($file))
+            {
+                $ext =end(explode('.',$value['path']));
+                $result[$key]['findFile'] = true;
+                $result[$key]['ext'] = $ext;
+            }
+            else
+                $result[$key]['findFile'] = false;
+        }
+        return $result;
     }
 
 }

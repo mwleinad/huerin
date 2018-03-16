@@ -104,6 +104,7 @@ include_once(DOC_ROOT."/classes/filtro.class.php");
 include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
 include_once(DOC_ROOT."/classes/contractRep.class.php");
 include_once(DOC_ROOT."/classes/serie.class.php");
+include_once(DOC_ROOT."/classes/expediente.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -189,6 +190,7 @@ $cfdi = new Cfdi;
 
 $archivos = new Archivos();
 $objectSerie=  new Serie;
+$expediente=  new Expediente;
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");

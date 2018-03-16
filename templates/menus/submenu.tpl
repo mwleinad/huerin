@@ -15,7 +15,7 @@
         	{if $mainMnu == "catalogos"}
 
                 <li><a href="{$WEB_ROOT}/personal" {if $page == "personal"}class="current"{/if}>
-                <span>Contadores</span></a></li>
+                <span>Empleados</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/regimen" {if $page == "regimen" || $page == "contract-subcategory"}class="current"{/if}>
                 <span>Regimenes</span></a></li>

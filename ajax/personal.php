@@ -22,6 +22,9 @@ switch($_POST["type"])
 
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
+
+       		$expedientes = $expediente->Enumerate();
+            $smarty->assign("expedientes", $expedientes);
 			
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-personal-popup.tpl');
@@ -49,12 +52,6 @@ switch($_POST["type"])
 
 			$personal->setTipoPersonal($_POST['tipoPersonal']);
 			$personal->setDepartamentoId($_POST['departamentoId']);
-			$personal->setJefeInmediato($_POST['jefeInmediato']);
-/*			$personal->setJefeContador($_POST['jefeContador']);
-			$personal->setJefeSupervisor($_POST['jefeSupervisor']);
-			$personal->setJefeGerente($_POST['jefeGerente']);
-			$personal->setJefeSocio($_POST['jefeSocio']);
-*/			
 			$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));			
 			$personal->setFechaIngreso($fechaIngreso);
 						
@@ -131,13 +128,25 @@ switch($_POST["type"])
 
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
+
+			$expedientes = $expediente->Enumerate();
+			foreach($expedientes as $key => $value){
+				$db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" AND expedienteId="'.$value['expedienteId'].'"');
+				$find = $db->GetRow();
+				if(!empty($find))
+			    	$expedientes[$key]['find']=true;
+				else
+                    $expedientes[$key]['find']=false;
+
+			}
+			$smarty->assign("expedientes", $expedientes);
 			
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-personal-popup.tpl');
 		
 		break;
 		
 	case "saveEditPersonal":
-			
+
 			$personal->setPersonalId($_POST['personalId']);
 			$personal->setName($_POST['name']);			
 			$personal->setPhone($_POST['phone']);
@@ -158,11 +167,6 @@ switch($_POST["type"])
 			$personal->setTipoPersonal($_POST['tipoPersonal']);
 			$personal->setDepartamentoId($_POST['departamentoId']);
 			$personal->setJefeInmediato($_POST['jefeInmediato']);
-/*			$personal->setJefeContador($_POST['jefeContador']);
-			$personal->setJefeSupervisor($_POST['jefeSupervisor']);
-			$personal->setJefeGerente($_POST['jefeGerente']);
-			$personal->setJefeSocio($_POST['jefeSocio']);
-*/			
 			$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));			
 			$personal->setFechaIngreso($fechaIngreso);
 			
@@ -190,6 +194,18 @@ switch($_POST["type"])
 			}
 			
 		break;
+    case "showFile":
+
+        $personal->setPersonalId($_POST['personalId']);
+        $myPersonal = $personal->Info();
+		$expedientes = $personal->GetExpedientes();
+
+        $smarty->assign("DOC_ROOT", DOC_ROOT);
+        $smarty->assign("info", $myPersonal);
+        $smarty->assign("expedientes", $expedientes);
+        $smarty->display(DOC_ROOT.'/templates/boxes/show-file-personal-popup.tpl');
+
+        break;
 		
 }
 ?>
