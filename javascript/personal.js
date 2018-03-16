@@ -243,6 +243,8 @@ function LoadBoxDropzone(){
             var defaultMessage = 'Arraste o click en esta zona para subir archivo';
         jQ(this).dropzone({
             dictDefaultMessage:defaultMessage,
+            dictCancelUpload:'Cancelar',
+            dictCancelUploadConfirmation:'¿ Esta seguro de cancelar la carga ?',
             url: WEB_ROOT + '/ajax/expediente.php',
             paramName:'file_'+sp[1]+sp[2],
             addRemoveLinks: true,
