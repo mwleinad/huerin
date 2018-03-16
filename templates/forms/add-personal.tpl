@@ -114,55 +114,34 @@
              </select>
              <hr />       
           </div>
-      
-{*}          <div class="formLine" style="width:100%; text-align:left" id="jefeContadorDiv">
-             <div style="width:30%;float:left">Reporta a Contador:</div>
-             <select name="jefeContador" id="jefeContador" class="smallInput medium">
-              	<option value="0">Seleccione...</option>
-             	{foreach from=$contadores item=contador}
-              	<option value="{$contador.personalId}">{$contador.name}</option>
-              {/foreach}
-             </select>
-             <hr />       
+          <div class="formLine" style="width:100%; text-align:left">
+            <div style="width:30%;float:left">Activo:</div><input name="active" id="active" type="checkbox" value="1" checked="checked"/>
+            <hr />
           </div>
+          <div class="formLine" style="width:100%; text-align:left;" >
+                <div style="display: inline-block">Expedientes a subir</div>
+                <br/> <br/>
+                <div style="display: inline-block;">
+                    <table>
+                        {assign var='ncol' value=3}
+                        {foreach from=$expedientes key=kexp item=exp}
+                            {if $ncol eq 3}
+                                <tr><td><input type="checkbox" name="expe[]" id="" value="{$exp.expedienteId}" {if $exp.find}checked{/if}></td><td>{$exp.name}</td>
+                                {assign var='ncol' value=$ncol-1}
+                            {else}
+                                <td> <input type="checkbox" name="expe[]" id="{$exp.expedienteId}" value="{$exp.expedienteId}" {if $exp.find}checked{/if}></td> <td>{$exp.name}</td>
+                                {assign var='ncol' value=$ncol-1}
+                                {if $ncol eq 0}
+                                    {assign var='ncol' value=3}
+                                    </tr>
+                                {/if}
+                            {/if}
+                        {/foreach}
+                    </table>
+                </div>
 
-          <div class="formLine" style="width:100%; text-align:left" id="jefeSupervisorDiv">
-             <div style="width:30%;float:left">Reporta a Supervisor:</div>
-             <select name="jefeSupervisor" id="jefeSupervisor" class="smallInput medium">
-              	<option value="0">Seleccione...</option>
-             	{foreach from=$supervisores item=supervisor}
-              	<option value="{$supervisor.personalId}">{$supervisor.name}</option>
-              {/foreach}
-             </select>
-             <hr />       
-          </div>
-
-          <div class="formLine" style="width:100%; text-align:left" id="jefeGerenteDiv">
-             <div style="width:30%;float:left">Reporta a Gerente:</div>
-             <select name="jefeGerente" id="jefeGerente" class="smallInput medium">
-              	<option value="0">Seleccione...</option>
-             	{foreach from=$gerentes item=gerente}
-              	<option value="{$gerente.personalId}">{$gerente.name}</option>
-              {/foreach}
-             </select>
-             <hr />       
-          </div>
-
-          <div class="formLine" style="width:100%; text-align:left" id="jefeSocioDiv">
-             <div style="width:30%;float:left">Reporta a Socio:</div>
-             <select name="jefeSocio" id="jefeSocio" class="smallInput medium">
-              	<option value="0">Seleccione...</option>
-             	{foreach from=$socios item=socio}
-              	<option value="{$socio.personalId}">{$socio.name}</option>
-              {/foreach}
-             </select>
-             <hr />       
-          </div>{*}
-
-            <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">Activo:</div><input name="active" id="active" type="checkbox" value="1" checked="checked"/>
-                <hr />       
-              </div>
+                <hr />
+            </div>
 			<div style="clear:both"></div>
 			* Campos requeridos
             <div class="formLine" style="text-align:center; margin-left:300px">            
