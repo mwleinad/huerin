@@ -11,8 +11,8 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/jquery-ui/jquery-ui.css" />
-{if $page == 'report-servicio-drill'}
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
+{if $page == 'report-servicio-drill'}
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap-theme.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
