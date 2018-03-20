@@ -1,0 +1,38 @@
+-- Volcando estructura para tabla huerin.expedientes
+CREATE TABLE IF NOT EXISTS `expedientes` (
+  `expedienteId` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) DEFAULT NULL,
+  `status` enum('activo','baja') NOT NULL DEFAULT 'activo',
+  `extension` enum('pdf','zip','jpg') DEFAULT NULL,
+  PRIMARY KEY (`expedienteId`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+
+-- Volcando datos para la tabla huerin.expedientes: ~17 rows (aproximadamente)
+DELETE FROM `expedientes`;
+INSERT INTO `expedientes` (`expedienteId`, `name`, `status`, `extension`) VALUES
+	(1, 'ACTA DE NACIMIENTO', 'activo', 'pdf'),
+	(2, 'COMPROBANTE DE DOMICLIO', 'activo', 'pdf'),
+	(3, 'COMPROBANTE DE ESTUDIO', 'activo', 'pdf'),
+	(4, 'CEDULA PROFESIONAL', 'activo', 'pdf'),
+	(5, 'CARTAS DE RECOMEDACION', 'activo', 'pdf'),
+	(6, 'IDENTIFICACION OFICIAL', 'activo', 'pdf'),
+	(7, 'CURP', 'activo', 'pdf'),
+	(8, 'NUMERO DE SEGURO SOCIAL', 'activo', 'pdf'),
+	(9, 'ACUSE RFC', 'activo', 'pdf'),
+	(10, 'ANTECEDENTES NO PENALES', 'activo', 'pdf'),
+	(11, 'FOTOGRAFIAS', 'activo', 'zip'),
+	(12, 'CURRICULUM VITAE', 'activo', 'pdf'),
+	(13, 'INFONAVIT O FONACOT', 'activo', 'pdf'),
+	(14, 'DATOS DE BENEFICIARIOS', 'activo', 'pdf'),
+	(15, 'CONTRATO', 'activo', 'pdf'),
+	(16, 'AVISO DE PRIVACIDAD', 'activo', 'pdf'),
+	(17, 'REGLAMENTO INTERNO', 'activo', 'pdf');
+
+-- Volcando estructura para tabla huerin.personalexpedientes
+CREATE TABLE IF NOT EXISTS `personalExpedientes` (
+  `personalId` int(11) NOT NULL,
+  `expedienteId` int(11) NOT NULL,
+  `path` varchar(200) DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  PRIMARY KEY (`personalId`,`expedienteId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
