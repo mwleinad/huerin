@@ -1,6 +1,5 @@
 <?php
 include_once('init.php');
-
 include_once('config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
@@ -25,14 +24,13 @@ include_once(DOC_ROOT.'/libraries.php');
 		break;
 	}
 	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
-
 	$_SESSION['empresaId'] = 15;
-
 	$pages = array(
 		'login',
 		'logout',
 		'homepage',
 		'customer',
+		'rol',
 		'contract-category',
 		'contract-subcategory',
 		'document-basic',
@@ -124,8 +122,6 @@ include_once(DOC_ROOT.'/libraries.php');
 	);
 
 	$page = $_GET['page'];
-
-
 	if(!in_array($page, $pages))
 	{
 		$page = "homepage";
@@ -146,7 +142,6 @@ include_once(DOC_ROOT.'/libraries.php');
 	$smarty->assign('includedTpl', $includedTpl);
 	$smarty->assign('lang', $lang);
 	$smarty->assign('timestamp', time());
-
 	$smarty->display(DOC_ROOT.'/templates/index.tpl');
 
 ?>

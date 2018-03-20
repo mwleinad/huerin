@@ -13,81 +13,85 @@
      	</ul>     
         <ul>
         	{if $mainMnu == "catalogos"}
-
+                {if in_array(8,$permissions)}
                 <li><a href="{$WEB_ROOT}/personal" {if $page == "personal"}class="current"{/if}>
                 <span>Empleados</span></a></li>
-
+                {/if}
+                {if in_array(14,$permissions)}
                 <li><a href="{$WEB_ROOT}/regimen" {if $page == "regimen" || $page == "contract-subcategory"}class="current"{/if}>
                 <span>Regimenes</span></a></li>
-
+                {/if}
+                {if in_array(19,$permissions)}
                 <li><a href="{$WEB_ROOT}/sociedad" {if $page == "sociedad"}class="current"{/if}>
                 <span>Tipos de Sociedad</span></a></li>
-
+                {/if}
+                {if in_array(24,$permissions)}
                 <li><a href="{$WEB_ROOT}/tipoServicio" {if $page == "tipoServicio"}class="current"{/if}>
                 <span>Tipo de Servicio</span></a></li>
-
+                {/if}
+                {if in_array(37,$permissions)}
                 <li><a href="{$WEB_ROOT}/tipoDocumento" {if $page == "tipoDocumento"}class="current"{/if}>
                 <span>Tipo de Documento</span></a></li>
-
+                {/if}
+                {if in_array(42,$permissions)}
                 <li><a href="{$WEB_ROOT}/tipoRequerimiento" {if $page == "tipoRequerimiento"}class="current"{/if}>
                 <span>Tipo de Requerimiento</span></a></li>
-
+                {/if}
+                {if in_array(47,$permissions)}
                 <li><a href="{$WEB_ROOT}/tipoArchivo" {if $page == "tipoArchivo"}class="current"{/if}>
                 <span>Tipo de Archivo</span></a></li>
-
+                {/if}
                {*<li><a href="{$WEB_ROOT}/impuesto" {if $page == "impuesto"}class="current"{/if}>
                 <span>Impuestos</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/obligacion" {if $page == "obligacion"}class="current"{/if}>
                 <span>Obligaciones</span></a></li>*}
-
+                {if in_array(52,$permissions)}
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
                 <span>Departamentos</span></a></li>
-
+                {/if}
+                {if in_array(56,$permissions)}
 				<li><a href="{$WEB_ROOT}/mantenimiento" {if $page == "mantenimiento"}class="current"{/if}>
                 <span>Mantenimiento</span></a></li>
+                {/if}
 
 
             {/if}
 
             {if $mainMnu == "servicios"}
             {if $User.roleId < 4}
-
-{*}               <li><a href="{$WEB_ROOT}/servicios" {if $page == "servicios"}class="current"{/if}>
-                <span>Servicios</span></a></li>{*}
-                <li><a href="{$WEB_ROOT}/report-servicio" {if $page == "report-servicio"}class="current"{/if}>
-                <span>Servicio Anual</span></a></li>
-
-								<li><a href="{$WEB_ROOT}/report-servicio-mensual" {if $page == "report-servicio-mensual"}class="current"{/if}>
-                <span>Servicio Mensual</span></a></li>
-								<li><a href="{$WEB_ROOT}/report-servicio-auditoria" {if $page == "report-servicio-auditoria"}class="current"{/if}>
-                <span>Servicio Auditoria</span></a></li>
-                <li><a href="{$WEB_ROOT}/report-servicio-drill" {if $page == "report-servicio-drill"}class="current"{/if}>
-                        <span>Administrador de archivos</span></a></li>
+                {if in_array(94,$permissions)}
+                    <li><a href="{$WEB_ROOT}/report-servicio" {if $page == "report-servicio"}class="current"{/if}>
+                    <span>Servicio Anual</span></a></li>
+                {/if}
+                {if in_array(95,$permissions)}
+                    <li><a href="{$WEB_ROOT}/report-servicio-mensual" {if $page == "report-servicio-mensual"}class="current"{/if}>
+                    <span>Servicio Mensual</span></a></li>
+                {/if}
+                {if in_array(96,$permissions)}
+                    <li><a href="{$WEB_ROOT}/report-servicio-auditoria" {if $page == "report-servicio-auditoria"}class="current"{/if}>
+                    <span>Servicio Auditoria</span></a></li>
+                {/if}
+                {if in_array(97,$permissions)}
+                    <li><a href="{$WEB_ROOT}/report-servicio-drill" {if $page == "report-servicio-drill"}class="current"{/if}>
+                    <span>Administrador de archivos</span></a></li>
+                {/if}
             {/if}
             {/if}
             {if $mainMnu == "contratos"}
-
-            {if $User.roleId < 4}
+                {if in_array(91,$permissions)}
                 <li><a href="{$WEB_ROOT}/customer/tipo/Activos" {if $page == "customer" && $tipo == "Activos"}class="current"{/if}>
                 <span>Listado Activos</span></a></li>
-                {if $User.roleId == 1 || $infoUser.tipoPersonal == "Gerente" || $User.userId == "149"  || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)}
+                {/if}
+                {if in_array(92,$permissions)}
+                {*if $User.roleId == 1 || $infoUser.tipoPersonal == "Gerente" || $User.userId == "149"  || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)*}
 				<li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if $page == "customer" && $tipo == "Inactivos"}class="current"{/if}>
                 <span>Listado Inactivos</span></a></li>
 				{/if}
             {/if}
-            {/if}
 
             {if $mainMnu == "reportes"}
-
                 {if $User.roleId < 4}
-{*}             <li><a href="{$WEB_ROOT}/report-obligaciones" {if $page == "report-obligaciones"}class="current"{/if}>
-                <span>Reporte de Subordinados</span></a></li>
-
-                 <li><a href="{$WEB_ROOT}/report-basica" {if $page == "report-basica"}class="current"{/if}>
-                <span>Rep. Propio.</span></a></li>{*}
-
-
 				{if $User.roleId == 1}
                 <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
                 <span>Facturas</span></a></li>
@@ -103,10 +107,7 @@
 
 				<li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
                 <span>Archivos Permanentes</span></a></li>
-
 				{/if}
-
-
                 {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
                 <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
                 <span>Ingresos</span></a></li>
@@ -176,7 +177,6 @@
                 <span>Pagos y Activaciones</span></a></li>
 
                 {/if}
-
             {/if}
             
 

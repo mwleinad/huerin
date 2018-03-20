@@ -105,6 +105,7 @@ include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
 include_once(DOC_ROOT."/classes/contractRep.class.php");
 include_once(DOC_ROOT."/classes/serie.class.php");
 include_once(DOC_ROOT."/classes/expediente.class.php");
+include_once(DOC_ROOT."/classes/rol.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -191,6 +192,7 @@ $cfdi = new Cfdi;
 $archivos = new Archivos();
 $objectSerie=  new Serie;
 $expediente=  new Expediente;
+$rol=  new Rol;
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");
@@ -233,8 +235,10 @@ $smarty->assign('infoUser', $infoUser);
 			$User['subRoleId'] = "Nomina";
 		break;
 	}
-
-	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
+$rol->setRolId($User['roleId']);
+$permissions = $rol->GetPermisosByRol();
+$smarty->assign('permissions', $permissions);
+$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 
 if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $User["tipoPersonal"] == "Gerente")
 {
