@@ -3,9 +3,11 @@
 		<td align="center" class="id">{$item.stateId}</td>
 		<td align="center">{$item.name}</td>  
         <td align="center">
+        {if in_array(30,$permissions)}
          <a href="{$WEB_ROOT}/city/stateId/{$item.stateId}">
         	<img src="{$WEB_ROOT}/images/icons/add.png" border="0" width="16" height="16" title="Agregar Municipios" />
-        </a>
+		 </a>
+		{/if}
         </td>
 		<td align="center">        	
 			<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.stateId}" title="Eliminar"/>   

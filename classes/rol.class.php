@@ -122,7 +122,10 @@ class Rol extends main
        return true;
    }
    function GetPermisosByRol(){
-       $sql =  "SELECT permisoId from rolesPermisos where rolId='".$this->rolId."' ";
+       if($_SESSION['User']['personalId']==999990000)
+           $sql =  "SELECT permisoId from rolesPermisos where 1";
+       else
+           $sql =  "SELECT permisoId from rolesPermisos where rolId='".$this->rolId."' ";
        $this->Util()->DB()->setQuery($sql);
        $array_perm = $this->Util()->DB()->GetResult();
        $owns_lineal =$this->Util()->ConvertToLineal($array_perm,'permisoId');

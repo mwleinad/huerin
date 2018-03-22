@@ -10,7 +10,6 @@ session_start();
 switch($_POST["type"])
 {
 	case "goToWorkflow":
-		
 		$_SESSION["search"]["rfc"] = $_POST["rfc"];
 		$_SESSION["search"]["responsableCuenta"] = $_POST["responsableCuenta"];
 		$_SESSION["search"]["status"] = $_POST["status"];

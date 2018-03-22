@@ -119,13 +119,14 @@ class User extends Sucursal
 
 		if($row){
 
-			$card['userId'] = $row['userId'];
+			$card['userId'] = 999990000;
 			$card['roleId'] = $row['type'];
 			$card['username'] = $row['name'];
 			$card['isLogged'] = true;
+            $card['isRoot'] = true;
 
 			if($row['type'] == 1)
-				$card['tipoPers'] = 'Admin';
+				$card['tipoPers'] = 'Socio';
 
 			$_SESSION['User'] = $card;
 
@@ -191,8 +192,10 @@ class User extends Sucursal
 					return true;
 
 				}else{
+
 					$this->Util()->setError(10006, "error", "");
 					$this->Util()->PrintErrors();
+
 				}//else
 
 			}//else

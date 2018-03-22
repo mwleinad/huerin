@@ -3,14 +3,20 @@
 		<td align="center" class="id">{$item.nombreStep}</td>
 		<td align="center">{$item.descripcion}</td>  
 		<td align="center">{$item.countTasks}
-    {if $item.countTasks > 0}
-	    <span style="cursor:pointer" onclick="ToogleTasks({$item.stepId})" id="spanStepId-{$item.stepId}">[+]</span>
-    {/if}
+   		 {if $item.countTasks > 0 AND  in_array(34,$permissions)}
+	    	<span style="cursor:pointer" onclick="ToogleTasks({$item.stepId})" id="spanStepId-{$item.stepId}">[+]</span>
+    	{/if}
     </td>  
-		<td align="center">        	
-      	<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.stepId}" title="Desactivar"/> 
-        <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.stepId}" title="Editar"/>
-        <img src="{$WEB_ROOT}/images/icons/task.png" class="spanAddTask" id="{$item.stepId}" title="Agregar Tarea"/>
+		<td align="center">
+        {if in_array(32,$permissions)}
+      		<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.stepId}" title="Desactivar"/>
+		{/if}
+        {if in_array(31,$permissions)}
+        	<img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.stepId}" title="Editar"/>
+		{/if}
+        {if in_array(33,$permissions)}
+        	<img src="{$WEB_ROOT}/images/icons/task.png" class="spanAddTask" id="{$item.stepId}" title="Agregar Tarea"/>
+		{/if}
 		</td>
 	</tr>
     {if $item.countTasks > 0}

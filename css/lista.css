@@ -11,3 +11,13 @@
 #lista-main ul {
     margin: 0 0 0 2em;
 }
+#lista-main ul li {
+    list-style: none;
+    margin: 0 0 0 2em;
+}
+.noShow{
+    display: none;
+}
+.siShow{
+    display: block;
+}

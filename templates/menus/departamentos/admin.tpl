@@ -1,6 +1,6 @@
 <div id="menu">
 	<ul class="group" id="menu_group_main">
-        {if in_array(1,$permissions)}
+        {if in_array(1,$permissions) || $User.isRoot}
 			<li class="item first" id="one">
                 <a href="{$WEB_ROOT}/personal" class="main{if $mainMnu == "catalogos"} current{/if}">
                     <span class="outer">
@@ -9,7 +9,7 @@
                 </a>
             </li>
         {/if}
-        {if in_array(2,$permissions)}
+        {if in_array(2,$permissions)|| $User.isRoot}
         <li class="item middle" id="two">
         	<a href="{$WEB_ROOT}/customer" class="main{if $mainMnu == "contratos"} current{/if}">
             	<span class="outer">
@@ -18,7 +18,7 @@
             </a>
         </li>
         {/if}
-        {if in_array(3,$permissions)}
+        {if in_array(3,$permissions)|| $User.isRoot}
         <li class="item middle" id="four">
         	<a href="{$WEB_ROOT}/report-servicio" class="main{if $mainMnu == "servicios"} current{/if}">
             	<span class="outer">
@@ -27,7 +27,7 @@
             </a>
         </li>
         {/if}
-        {if in_array(4,$permissions)}
+        {if in_array(4,$permissions)|| $User.isRoot}
         <li class="item middle" id="four">
         	<a href="{$WEB_ROOT}/cxc" class="main{if $mainMnu == "cxc"} current{/if}">
             	<span class="outer">
@@ -36,7 +36,7 @@
             </a>
         </li>
         {/if}
-        {if in_array(5,$permissions)}
+        {if in_array(5,$permissions)|| $User.isRoot}
         <li class="item middle" id="four">
         	<a href="{$WEB_ROOT}/cfdi33-generate" class="main {if $mainMnu == "admin-folios"} current{/if}">
             	<span class="outer">
@@ -45,7 +45,7 @@
             </a>
         </li>
         {/if}
-        {if in_array(6,$permissions)}
+        {if in_array(6,$permissions)|| $User.isRoot}
         <li class="item middle" id="three">
         	<a href="{$WEB_ROOT}/archivos/id/1" class="main{if $mainMnu == "archivos"} current{/if}">
             	<span class="outer">
@@ -54,7 +54,7 @@
             </a>
         </li>        
         {/if}
-        {if in_array(7,$permissions)}
+        {if in_array(7,$permissions)|| $User.isRoot}
         <li class="item last" id="three">
         	<a href="{$WEB_ROOT}/report-documentacion-permanente" class="main{if $mainMnu == "reportes"} current{/if}">
             	<span class="outer">

@@ -11,15 +11,14 @@ jQ(document).ready(function(){
                 FViewOffSet(response);
                 jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
                 jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
+                TogglePermisos();
             }
 
         });
     });
 
 });
-jQ('#saveConfigRol').on('click',function(){
 
-});
 function close_popup(){
     $('fview').hide();
     grayOut(false);
@@ -52,5 +51,19 @@ function SaveConfig(self){
                 ShowStatusPopUp(splitResp[1]);
             }
         }
+    });
+}
+function TogglePermisos(){
+    jQ('.deepList').on('click',function(){
+        if(jQ("ul#"+this.id).is(':visible')){
+            jQ("#"+this.id).html('[+]-');
+            jQ("ul#"+this.id).removeClass('siShow');
+        }
+        else
+        {
+            jQ('#'+this.id).html('[-]-');
+            jQ("ul#"+this.id).addClass('siShow');
+        }
+
     });
 }

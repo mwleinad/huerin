@@ -5,22 +5,24 @@
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
                 {function name=draw_permiso level=0}
-					<ul class="level{$level}">
+					<ul class="noShow level{$level}" id="level{$level}">
                         {foreach from=$data item=item key=key}
                             {if $item.children|@count > 0}
-								<li><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
-                                {draw_permiso data=$item.children level=$level+1}
+								<li><a href="javascript:void(0);" class="deepList" id="level{$key}{$item.permisoId}">[+]-</a><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
+                                {draw_permiso data=$item.children level="{$key}{$item.permisoId}"}
                             {else}
-								<li><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
+								<li><a href="javascript:void(0);">[<small>{'x'|lower}</small>]-</a><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
                             {/if}
                         {/foreach}
 					</ul>
                 {/function}
 				<ul id="lista-main">
                     {foreach from=$modulos item=item key=key}
-						<li><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
-                        {if $item.children|@count > 0}
-                            {draw_permiso data=$item.children level=1}
+						{if $item.children|@count > 0}
+							<li><a href="javascript:void(0);" class="deepList " id="level{$key}{$item.permisoId}">[+]-</a><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
+                            {draw_permiso data=$item.children level="{$key}{$item.permisoId}"}
+						{else}
+							<li><a href="javascript:void(0);">[<small>{'x'|lower}</small>]-</a><input type="checkbox" name="permisos[]" value="{$item.permisoId}" {if $item.letMe}checked{/if}/>{$item.titulo}</li>
                         {/if}
                     {/foreach}
 				</ul>
