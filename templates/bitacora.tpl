@@ -11,9 +11,11 @@
         <div class="clear"></div>
         {include file="forms/search-bitacora.tpl"}
         <div class="portlet">
+            {if in_array(169,$permissions)}
             <div class="portlet-title">
 
             </div>
+            {/if}
             <div class="portlet-content nopadding borderGray" id="contenido">
             </div>
         </div>

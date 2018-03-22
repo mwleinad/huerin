@@ -19,7 +19,11 @@ class Rol extends main
         return $info;
     }
     public function Enumerate(){
-       $sql ="SELECT * FROM roles WHERE status='activo' ORDER BY name ASC";
+        $where ="";
+        if($_SESSION['User']['tipoPers']=='Socio')
+            $where =  " AND rolId!=1 ";
+
+       $sql ="SELECT * FROM roles WHERE status='activo' ".$where." ORDER BY name ASC";
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;

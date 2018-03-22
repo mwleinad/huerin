@@ -126,7 +126,7 @@ class User extends Sucursal
             $card['isRoot'] = true;
 
 			if($row['type'] == 1)
-				$card['tipoPers'] = 'Socio';
+				$card['tipoPers'] = 'Admin';
 
 			$_SESSION['User'] = $card;
 

@@ -1,5 +1,5 @@
 <div id="menu">
-  {if $User.tipoPers == "Asistente" || $User.tipoPers == "Socio"}
+  {if $User.tipoPers == "Asistente" || $User.tipoPers == "Socio"|| $User.tipoPers == "Admin"}
   	{include file="templates/menus/departamentos/admin.tpl"}
   {elseif $User.roleId == 4}
 	<ul class="group" id="menu_group_main">

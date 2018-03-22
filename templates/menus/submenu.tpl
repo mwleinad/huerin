@@ -105,45 +105,50 @@
 
             {if $mainMnu == "reportes"}
                 {if $User.roleId < 4}
-                {if in_array(92,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
-                    <span>Facturas</span></a></li>
-				{/if}
-				{if $User.roleId == 1}
-                    <li><a href="{$WEB_ROOT}/report-cxc" {if $page == "report-cxc"}class="current"{/if}>
-                    <span>Reporte CxC</span></a></li>
-				{/if}
-				<li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
-                    <span>Documentos Permanentes</span></a></li>
-
-				<li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
-                <span>Archivos Permanentes</span></a></li>
+                    {if in_array(153,$permissions)|| $User.isRoot}
+                        <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
+                        <span>Facturas</span></a></li>
+                    {/if}
+                    {if in_array(155,$permissions)|| $User.isRoot}
+                        <li><a href="{$WEB_ROOT}/report-cxc" {if $page == "report-cxc"}class="current"{/if}>
+                        <span>Reporte CxC</span></a></li>
+                    {/if}
+                    {if in_array(157,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
+                        <span>Documentos Permanentes</span></a></li>
+                    {/if}
+                    {if in_array(153,$permissions)|| $User.isRoot}
+                        <li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
+                        <span>Archivos Permanentes</span></a></li>
+                    {/if}
 				{/if}
                 {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
-                <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
-                <span>Ingresos</span></a></li>
-                {/if}
-                <!--{if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
-                <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if}>
-                <span>Rep. Bonos</span></a></li>
-                {/if}-->
-				{if $User.tipoPers == "Socio" || $User.tipoPers == "Admin" || $User.tipoPers == "Gerente" || $User.userId == 71 || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)}
-                <li><a href="{$WEB_ROOT}/report-servicio-bono" {if $page == "report-servicio-bono"}class="current"{/if}>
-                <span>Reporte de Bonos</span></a></li>
-                {/if}
 
+                    <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
+                    <span>Ingresos</span></a></li>
+
+                {/if}
+				{if $User.tipoPers == "Socio" || $User.tipoPers == "Admin" || $User.tipoPers == "Gerente" || $User.userId == 71 || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)}
+
+                     <li><a href="{$WEB_ROOT}/report-servicio-bono" {if $page == "report-servicio-bono"}class="current"{/if}>
+                     <span>Reporte de Bonos</span></a></li>
+
+                {/if}
 
                 {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin" || $User.tipoPers == "Asistente"}
-                <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
-                <span>Reporte Cobranza</span></a></li>
-                {/if}
 
+                    <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
+                    <span>Reporte Cobranza</span></a></li>
+                {/if}
+                {if in_array(167,$permissions)}
                 <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
                 <span>Razones Sociales</span></a></li>
-
+                {/if}
                 {if $User.roleId < 4}
-                <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
-                            <span>Bitacoras</span></a></li>
+                    {if in_array(168,$permissions)}
+                    <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
+                                <span>Bitacoras</span></a></li>
+                    {/if}
                 {/if}
 
 
