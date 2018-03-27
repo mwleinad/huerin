@@ -18,6 +18,21 @@ jQ(document).ready(function(){
     });
 
 });
+jQ(document).on('click','#copyPermiso',function(){
+    var rolId = jQ('#id').val();
+    var baseId = jQ('#rolBaseId').val();
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:{id:rolId,baseId:baseId,type:'copyPermiso'},
+        success:function (response) {
+            jQ('#det-config').html(response);
+            jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
+            TogglePermisos();
+        }
+
+    });
+});
 
 function close_popup(){
     $('fview').hide();

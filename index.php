@@ -6,7 +6,7 @@ include_once(DOC_ROOT.'/libraries.php');
 	{
 	  session_start();
 	}
-	switch($infoUser["tipoPersonal"])
+	/*switch($infoUser["tipoPersonal"])
 	{
 		case "Socio": $User['roleId'] = 1; break;
 		case "Gerente": $User['roleId'] = 2; break;
@@ -20,7 +20,7 @@ include_once(DOC_ROOT.'/libraries.php');
 			$User['roleId'] = 1;
 			$User['subRoleId'] = "Nomina";
 		break;
-	}
+	}*/
 	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 	$_SESSION['empresaId'] = 15;
 	$pages = array(
@@ -63,6 +63,7 @@ include_once(DOC_ROOT.'/libraries.php');
 			'historial',
 			'historialContract',
 			'historialCustomer',
+            'tree-subordinate',
 
 		'report-walmart',
 		'report-cobranza',

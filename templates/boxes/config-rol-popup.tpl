@@ -11,6 +11,6 @@
 		<img src="{$WEB_ROOT}/images/draganddrop.png" border="0" alt="mueve" />
 	</div>
 </div>
-<div class="wrapper">
+<div class="wrapper" id="det-config">
 	{include file="{$DOC_ROOT}/templates/forms/config-rol.tpl"}
 </div>

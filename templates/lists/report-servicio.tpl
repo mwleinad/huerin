@@ -26,14 +26,12 @@
 		<tr>
 			<td align="center" class="" title="{$item.nameContact}">
 				<span id="comentario-{$item.servicioId}">{$item.comentario}</span>
-				{if $User.roleId < 4}
                     {if in_array(117,$permissions)||$User.isRoot}
 						<img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.servicioId}" onclick="ModifyComment({$item.servicioId})"  title="Editar"/>
 					{/if}
 					{if in_array(99,$permissions)||$User.isRoot}
 						<a href="{$WEB_ROOT}/download_all_tasks.php?id={$item.servicioId}" style="color:#FFF;font-weight:bold"><img src="{$WEB_ROOT}/images/b_disc.png" class="spanEdit" id="{$item.servicioId}" title="Descargar todos los archivos"/></a>
 					{/if}
-				{/if}
 			</td>
     		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     		<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>

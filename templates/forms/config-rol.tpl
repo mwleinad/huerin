@@ -1,4 +1,15 @@
 <div id="divForm">
+	<div class="formLine" style="width:100%; text-align:left">
+		<div style="width:30%;float:left">Copiar permisos del rol :</div>
+		<select name="rolBaseId" id="rolBaseId" class="smallInput medium" ">
+		<option value="">Seleccionar permisos</option>
+        {foreach from=$roles item=item key=key}
+			<option value="{$item.rolId}">{$item.name}</option>
+        {/foreach}
+		</select>
+		<input type="button" id="copyPermiso" value="Copiar" />
+		<hr />
+	</div>
 	<form id="frmPermisos" name="frmPermisos" method="post">
 			<input type="hidden" id="type" name="type" value="save_config"/>
 			<input type="hidden" id="id" name="id" value="{$info.rolId}"/>

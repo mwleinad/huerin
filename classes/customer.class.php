@@ -398,7 +398,7 @@ class Customer extends Main
 
         	}
 
-        	if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
+        	if (($showCliente === false && in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         	}
 			
@@ -609,7 +609,7 @@ class Customer extends Main
               || $userInfo["jefeSupervisor"] == $User["userId"] 
               || $userInfo["jefeGerente"] == $User["userId"] 
               || $userInfo["jefeSocio"] == $User["userId"]) 
-              || ($User["roleId"] > 20 && $User["roleId"] < 40)
+              || in_array($User['roleId'],explode(',',ROLES_LIMITADOS))
             ) {
               $showCliente = true;
               $result[$key]["servicios"]++;
@@ -617,7 +617,7 @@ class Customer extends Main
           }
         }
 
-      if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
+      if (($showCliente === false && in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
       }
         
@@ -1153,7 +1153,7 @@ class Customer extends Main
 
         }
 
-        if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
+        if (($showCliente === false && in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
 
@@ -1293,7 +1293,7 @@ class Customer extends Main
 
         }
 
-        if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
+        if (($showCliente === false &&in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
 

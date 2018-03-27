@@ -14,7 +14,7 @@
   {if $infoCustomer}
   <div class="grid_9" id="eventbox">
       {*if $infoUser.tipoPersonal != "Gerente" || $infoUser.tipoPersonal != "Supervisor"*}
-      {if in_array(63,$permissions)}
+      {if in_array(63,$permissions)||$User.isRoot}
         <a href="{$WEB_ROOT}/contract-new/id/{$infoCustomer.customerId}" class="inline_add">Agregar Nueva Razon Social</a> |
       {/if}
       <a href="{$WEB_ROOT}/customer" class="backbutton">Regresar</a>
@@ -82,9 +82,8 @@
   &nbsp;
   </div>
   <div class="grid_7 backbutton" id="eventbox">
-      {if $User.roleId < 4}
-
-      <a href="{$WEB_ROOT}/customer" >Regresar</a>
+      {if $User.roleId !=6}
+        <a href="{$WEB_ROOT}/customer" >Regresar</a>
       {/if}
   </div>
 </div>

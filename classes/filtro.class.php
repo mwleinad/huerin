@@ -38,7 +38,7 @@ class Filtro extends Util
 		$withPermission = false;
 
 		//if admin or asistente
-		if($roleId == 1 || $roleId == 4){
+		if($roleId == 1 || $roleId == 5){
 			$withPermission = true;
 			$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 		}
@@ -131,7 +131,7 @@ class Filtro extends Util
 	
 	function ShowByDefault($servicios, $roleId)
 	{
-		if(count($servicios) == 0 && ($roleId == 1 || $roleId == 4) ){
+		if(count($servicios) == 0 && ($roleId == 1 || $roleId == 5) ){
 			return 1;
 		}
 		return 0;
@@ -153,7 +153,7 @@ class Filtro extends Util
 	{
 		if (
 			($showCliente === 0 && 
-				($roleId > 1 && $roleId < 4)
+				(in_array($roleId,explode(',',ROLES_LIMITED)))
 			) || 
 			($showCliente === 0 && 
 				$type == "propio"

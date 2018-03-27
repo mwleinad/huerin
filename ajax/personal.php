@@ -23,6 +23,9 @@ switch($_POST["type"])
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
 
+            $roles = $rol->GetListRoles();
+        	$smarty->assign("roles", $roles);
+
        		$expedientes = $expediente->Enumerate();
             $smarty->assign("expedientes", $expedientes);
 			
@@ -128,6 +131,9 @@ switch($_POST["type"])
 
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
+
+			$roles = $rol->GetListRoles();
+			$smarty->assign("roles", $roles);
 
 			$expedientes = $expediente->Enumerate();
 			foreach($expedientes as $key => $value){

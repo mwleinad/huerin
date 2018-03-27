@@ -72,7 +72,6 @@
             {/if}
 
             {if $mainMnu == "servicios"}
-            {if $User.roleId < 4}
                 {if in_array(94,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-servicio" {if $page == "report-servicio"}class="current"{/if}>
                     <span>Servicio Anual</span></a></li>
@@ -90,68 +89,59 @@
                     <span>Administrador de archivos</span></a></li>
                 {/if}
             {/if}
-            {/if}
             {if $mainMnu == "contratos"}
                 {if in_array(91,$permissions)|| $User.isRoot}
-                <li><a href="{$WEB_ROOT}/customer/tipo/Activos" {if $page == "customer" && $tipo == "Activos"}class="current"{/if}>
+                <li><a href="{$WEB_ROOT}/customer/tipo/Activos" {if ($page == "customer" && $tipo == "Activos")}class="current"{/if}>
                 <span>Listado Activos</span></a></li>
                 {/if}
                 {if in_array(92,$permissions)|| $User.isRoot}
                 {*if $User.roleId == 1 || $infoUser.tipoPersonal == "Gerente" || $User.userId == "149"  || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)*}
-				<li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if $page == "customer" && $tipo == "Inactivos"}class="current"{/if}>
+				<li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if ($page == "customer" && $tipo == "Inactivos")}class="current"{/if}>
                 <span>Listado Inactivos</span></a></li>
 				{/if}
             {/if}
 
             {if $mainMnu == "reportes"}
-                {if $User.roleId < 4}
-                    {if in_array(153,$permissions)|| $User.isRoot}
-                        <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
-                        <span>Facturas</span></a></li>
-                    {/if}
-                    {if in_array(155,$permissions)|| $User.isRoot}
-                        <li><a href="{$WEB_ROOT}/report-cxc" {if $page == "report-cxc"}class="current"{/if}>
-                        <span>Reporte CxC</span></a></li>
-                    {/if}
-                    {if in_array(157,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
-                        <span>Documentos Permanentes</span></a></li>
-                    {/if}
-                    {if in_array(153,$permissions)|| $User.isRoot}
-                        <li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
-                        <span>Archivos Permanentes</span></a></li>
-                    {/if}
-				{/if}
-                {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin"}
-
+                {if in_array(153,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if}>
+                    <span>Facturas</span></a></li>
+                {/if}
+                {if in_array(155,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-cxc" {if $page == "report-cxc"}class="current"{/if}>
+                    <span>Reporte CxC</span></a></li>
+                {/if}
+                {if in_array(157,$permissions)|| $User.isRoot}
+                <li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
+                    <span>Documentos Permanentes</span></a></li>
+                {/if}
+                {if in_array(153,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
+                    <span>Archivos Permanentes</span></a></li>
+                {/if}
+                {if in_array(161,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
                     <span>Ingresos</span></a></li>
-
                 {/if}
-				{if $User.tipoPers == "Socio" || $User.tipoPers == "Admin" || $User.tipoPers == "Gerente" || $User.userId == 71 || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)}
-
+				{if in_array(163,$permissions)|| $User.isRoot}
                      <li><a href="{$WEB_ROOT}/report-servicio-bono" {if $page == "report-servicio-bono"}class="current"{/if}>
                      <span>Reporte de Bonos</span></a></li>
-
                 {/if}
-
-                {if $User.tipoPers == "Socio" || $User.tipoPers == "Admin" || $User.tipoPers == "Asistente"}
-
+                {if in_array(165,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
                     <span>Reporte Cobranza</span></a></li>
                 {/if}
-                {if in_array(167,$permissions)}
-                <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
-                <span>Razones Sociales</span></a></li>
+                {if in_array(167,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
+                    <span>Razones Sociales</span></a></li>
                 {/if}
-                {if $User.roleId < 4}
-                    {if in_array(168,$permissions)}
+                 {if in_array(168,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
-                                <span>Bitacoras</span></a></li>
-                    {/if}
+                    <span>Bitacoras</span></a></li>
                 {/if}
-
-
+                {if in_array(178,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if}>
+                    <span>Arbol de subordinados</span></a></li>
+                {/if}
             {/if}
 
             {if $mainMnu == "cxc"}
@@ -160,8 +150,8 @@
                     <span>Cuentas por Cobrar</span></a></li>
                 {/if}
                 {if in_array(121,$permissions) || $User.isRoot}
-                <li><a href="{$WEB_ROOT}/balance" {if $page == "balance"}class="current"{/if}>
-                <span>Estado de cuenta saldos pendientes</span></a></li>
+                    <li><a href="{$WEB_ROOT}/balance" {if $page == "balance"}class="current"{/if}>
+                    <span>Estado de cuenta saldos pendientes</span></a></li>
                 {/if}
             {/if}
             {if $page == "sistema" || $page == "reporte-sat" || $page == "admin-folios" || $page == "cfdi33-generate"}
@@ -183,17 +173,15 @@
             </ul>
             {/if}
             {if $mainMnu == "cfdi"}
-                {if $User.roleId < 4}
-
+                {if in_array(8888,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/cfdi" {if $page == "cfdi"}class="current"{/if}>
                 <span>Cuentas del Sistema</span></a></li>
 
                 <li><a href="{$WEB_ROOT}/cfdiPagos" {if $page == "cfdiPagos"}class="current"{/if}>
                 <span>Pagos y Activaciones</span></a></li>
-
                 {/if}
             {/if}
-            
+
 
        </ul>
     </div>

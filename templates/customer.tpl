@@ -4,7 +4,7 @@
   <h1 class="clientes">Clientes {$tipo}</h1>
   </div>
   <div class="grid_6" id="eventbox" >
-    {if in_array(60,$permissions)}
+    {if in_array(60,$permissions)|| $User.isRoot}
         <a href="javascript:;" title="Exportar a Excel" onclick="ExportExcel()">
             <img src="{$WEB_ROOT}/images/excel.PNG" width="16" border="0" />
         </a>
@@ -13,7 +13,7 @@
   {if $User.roleId < 2 && $tipo == "Inactivos"}
       <!--<a href="javascript:void(0)" onclick="EliminarInactivos()" style="color:#FF0033">&raquo;Eliminar Inactivos&laquo;</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
   {/if}
-  {if in_array(57,$permissions)}
+  {if in_array(57,$permissions)|| $User.isRoot}
       <a href="javascript:void(0)" class="inline_add" id="addCustomer">Agregar Cliente</a>
       <input type="hidden" id="tipoModulo" name="tipoModulo" value="{$tipo}"/>
   {/if}  

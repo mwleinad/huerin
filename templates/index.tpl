@@ -95,16 +95,6 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 </head>
 
 <body>
-{*}<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v2.4&appId=181783391885099";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script> {*}
-
-
 {if $page == "login"}
 <div style="background-color:#009900; color:#FFFFFF" align="center">
 Sistema ejecutandose desde nuevo servidor

@@ -15,21 +15,21 @@
 	<td align="center">{$item.formattedInicioOperaciones}</td>
     <td align="center">{$item.formattedInicioFactura}</td>
 	<td align="center">{$item.status}</td>
-    {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions)}
+    {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions) || $User.isRoot}
 		<td align="center">
 		{if $item.status == 'activo'}
-			{if in_array(88,$permissions)}
+			{if in_array(88,$permissions) || $User.isRoot}
 				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.servicioId}" title="Desactivar"/>
 			{/if}
 		{else}
-			{if in_array(90,$permissions)}
+			{if in_array(90,$permissions) || $User.isRoot}
 				<img src="{$WEB_ROOT}/images/icons/activate.png" class="spanDelete" id="{$item.servicioId}" title="Activar"/>
 			{/if}
 		{/if}
-		{if in_array(87,$permissions) &&$item.status == 'activo'}
+		{if (in_array(87,$permissions)|| $User.isRoot) &&$item.status == 'activo'}
 		<img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.servicioId}" title="Editar"/>
 		{/if}
-		{if in_array(89,$permissions)}
+		{if in_array(89,$permissions) || $User.isRoot}
 		<img src="{$WEB_ROOT}/images/icons/calendar.png" class="" id="{$item.servicioId}" title="Historial de Cambios" onclick="Historial({$item.servicioId})"/>
 		{/if}
 		</td>

@@ -35,7 +35,7 @@
       							{/if}
       						{/if}"
 					 title="{$servicio.nombreServicio}{if $instanciaServicio.steps.$foo.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.steps.$foo.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.steps.$foo.class}{/if}{/if}">	
-		<div style="cursor:pointer" {if in_array(108,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>Paso {$foo+1} <br> {$instanciaServicio.steps.$foo.nombreStep}</div>
+		<div style="cursor:pointer" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>Paso {$foo+1} <br> {$instanciaServicio.steps.$foo.nombreStep}</div>
 				</td>
 				{else}
 				<td  colspan="3"></td>

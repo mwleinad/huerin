@@ -1,7 +1,9 @@
 <?php
 	
 	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('contract-new');	
+    $user->allowAccess(2);
+    $user->allowAccess(62);
+    $user->allowAccess(63);
 	/* End Session Control */
 	
 	if($_POST)

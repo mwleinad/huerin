@@ -64,7 +64,7 @@ class Rol extends main
    }
    function GetConfigRol(){
        //find permisos by rol
-       $sql =  "SELECT permisoId from rolesPermisos where rolId=".$this->rolId;
+       $sql =  "SELECT permisoId from rolesPermisos where rolId='".$this->rolId."'";
        $this->Util()->DB()->setQuery($sql);
        $array_perm = $this->Util()->DB()->GetResult();
        $owns_lineal =$this->Util()->ConvertToLineal($array_perm,'permisoId');
@@ -135,4 +135,33 @@ class Rol extends main
        $owns_lineal =$this->Util()->ConvertToLineal($array_perm,'permisoId');
        return $owns_lineal;
    }
+   function GetPermisoByTitulo($titulo){
+       $sql =  "SELECT permisoId from permisos where titulo='".$titulo."' ";
+       $this->Util()->DB()->setQuery($sql);
+       $single = $this->Util()->DB()->GetSingle();
+       return $single;
+   }
+   function FindFirstPage(){
+       global $User;
+       $roleId =$User['roleId'];
+       $sql =  "SELECT a.permisoId from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where a.rolId='".$this->rolId."' AND 
+                b.parentId is null";
+       $this->Util()->DB()->setQuery($sql);
+       $result = $this->Util()->DB()->GetResult();
+       $firstPages = array();
+       foreach($result  as $key=>$value){
+           $sql =  "SELECT namePage from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where a.rolId='".$this->rolId."' AND 
+                b.parentId='".$value['permisoId']."' ORDER BY b.permisoId ASC limit 1";
+           $this->Util()->DB()->setQuery($sql);
+           $single = $this->Util()->DB()->GetSingle();
+           $firstPages[$value['permisoId']]=$single;
+       }
+       return $firstPages;
+   }
+    public function GetListRoles(){
+        $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ORDER BY name ASC";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+        return $result;
+    }
 }

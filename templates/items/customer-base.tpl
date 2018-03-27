@@ -13,17 +13,17 @@
            	{else}
             	{$item.contracts|count}                
           	{/if}	
-       		{if $item.contracts|count > 0 && in_array(62,$permissions)}
+       		{if $item.contracts|count > 0 && (in_array(62,$permissions)|| $User.isRoot)}
         		<a href="{$WEB_ROOT}/contract/id/{$item.customerId}">
             	<img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Razones Sociales"/> 
             	</a>                
           	{/if}
-          	{if in_array(61,$permissions)}
+          	{if in_array(61,$permissions) || $User.isRoot}
         		<a href="{$WEB_ROOT}/contract-new/id/{$item.customerId}">
                 <img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Razon Social"/>
                 </a>
           	{/if}
-            {if $item.contracts|count > 0 && in_array(62,$permissions)}
+            {if $item.contracts|count > 0 && (in_array(62,$permissions)|| $User.isRoot)}
             <br />     		
                 <a href="{$WEB_ROOT}/contract/id/{$item.customerId}-activos">{$item.contractsActivos} Act.</a>
                 <br />
@@ -37,17 +37,18 @@
         <td align="center">{$item.fechaAlta|date_format:"d-m-Y"}</td>
 		<td align="center">
         {if $item.active == 1}
-          {if in_array(59,$permissions)}
+          {if in_array(59,$permissions)|| $User.isRoot}
             <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.customerId}" title="Desactivar"/>
           {/if}
+          {if (in_array(58,$permissions)|| $User.isRoot) && $item.active == 1}
+                <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.customerId}" title="Editar"/>
+          {/if}
         {else}
-            {if in_array(93,$permissions)&& in_array(91,$permissions)}
+            {if (in_array(93,$permissions)&& in_array(91,$permissions))|| $User.isRoot}
                 <img src="{$WEB_ROOT}/images/icons/activate.png" class="spanDelete" id="{$item.customerId}" title="Activar"/>
             {/if}
          {/if}
-         {if in_array(58,$permissions) && $item.active == 1}
-            <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.customerId}" title="Editar"/>
-         {/if}
+
 		</td>
 	</tr>
 {foreachelse}

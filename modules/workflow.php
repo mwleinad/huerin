@@ -1,10 +1,10 @@
 <?php
 
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('customer');
-	/* End Session Control */
-
-	if($_POST && $_FILES)
+    /* Star Session Control Modules*/
+    $user->allowAccess(3);//level 1
+    $user->allowAccess(100);//level 2s
+    /* End Session Control */
+    if($_POST && $_FILES)
 	{
 		if($_SESSION['uplToken'] == $_POST['uplToken']){
     		$workflow->setInstanciaServicioId($_GET["id"]);

@@ -1,8 +1,9 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('customer');	
-	/* End Session Control */
+    /* Star Session Control Modules*/
+    $user->allowAccess(2);//level 1
+    $user->allowAccess(62);//level 2
+    $user->allowAccess(86);//level 3
+    /* End Session Control */
 	
 	$servicio->setContractId($_GET["id"]);
 	$servicios = $servicio->Enumerate();
