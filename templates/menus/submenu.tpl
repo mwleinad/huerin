@@ -114,7 +114,7 @@
                 <li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if}>
                     <span>Documentos Permanentes</span></a></li>
                 {/if}
-                {if in_array(153,$permissions)|| $User.isRoot}
+                {if in_array(159,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-archivos-permanente" {if $page == "report-archivos-permanente"}class="current"{/if}>
                     <span>Archivos Permanentes</span></a></li>
                 {/if}
