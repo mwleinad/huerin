@@ -140,7 +140,7 @@
                 {/if}
                 {if in_array(178,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if}>
-                    <span>Arbol de subordinados</span></a></li>
+                    <span>Reporte Organigrama</span></a></li>
                 {/if}
             {/if}
 

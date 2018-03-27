@@ -1,7 +1,7 @@
 <div class="grid_16" id="content">
 
     <div class="grid_9">
-        <h1 class="catalogos">Arbol de desglose de subordinados.</h1>
+        <h1 class="catalogos">Reporte Organigrama</h1>
     </div>
     <div class="grid_6" id="eventbox">
     </div>

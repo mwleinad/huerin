@@ -28,13 +28,4 @@
 	{include file="{$DOC_ROOT}/templates/forms/archivos.tpl"}
 </div>
 {/if}
-<!--
-<div id="infoImpuestos" style="display:block">
-	{include file="{$DOC_ROOT}/templates/forms/impuestos.tpl"}
-</div>
-
-<div id="infoObligaciones" style="display:block">
-	{include file="{$DOC_ROOT}/templates/forms/obligaciones.tpl"}
-</div>
--->
 </form>

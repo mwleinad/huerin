@@ -1,5 +1,6 @@
 <?php
-//$empresa->AuthUser();
+$user->allowAccess(5);//level1
+$user->allowAccess(131);//level2
 
 $info = $empresa->Info();
 $smarty->assign("info", $info);

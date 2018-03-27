@@ -225,11 +225,11 @@ $smarty->assign('infoUser', $infoUser);
 		case "Socio": $User['roleId'] = 1; break;
 		case "Gerente": $User['roleId'] = 2; break;
 		case "Supervisor": $User['roleId'] = 3; break;
-		case "Contador": $User['roleId'] = 4; break;
+		case "Contador": $User['roleId'] = 6; break;
 		case "Auxiliar": $User['roleId'] = 7; break;
 		case "Asistente": $User['roleId'] = 5; break;
 		case "Recepcion": $User['roleId'] = 9; break;
-		case "Cliente": $User['roleId'] = 6; break;
+		case "Cliente": $User['roleId'] = 4; break;
 		case "Nomina":
 			$User['roleId'] = 8;
 			$User['subRoleId'] = "Nomina";
