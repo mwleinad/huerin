@@ -28,7 +28,7 @@
 
 
 {if $page == "login"}
-<link href="{$WEB_ROOT}/css/login.css" rel="stylesheet" type="text/css" media="all" />  
+<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
 {/if}
 <script src="{$WEB_ROOT}/javascript/js-config.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript">
