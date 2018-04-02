@@ -4,6 +4,7 @@
         <h1 class="catalogos">Roles</h1>
     </div>
     <div class="grid_6" id="eventbox">
+        <a href="javascript:void(0)" class="inline_add" id="addRol">Agregar Rol</a>
     </div>
     <div class="clear">
     </div>

@@ -12,6 +12,11 @@ class Rol extends main
     function setRolId($value){
         $this->rolId=$value;
     }
+    private $name;
+    function setName($value){
+        $this->Util()->ValidateRequireField($value,'Nombre de rol');
+        $this->name=$value;
+    }
     public function Info(){
         $sql = "SELECT * FROM roles WHERE status='activo' AND rolId='".$this->rolId."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
@@ -27,6 +32,55 @@ class Rol extends main
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
+    }
+    function Save(){
+        $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        if(!empty($res))
+            $this->Util()->setError(0,'error',"Ya existe un registro con el nombre proporcionado");
+
+
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "INSERT INTO roles(name,status) VALUES('".$this->name."','ativo') ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->InsertData();
+
+        $this->Util()->setError(0,"complete",'Se ha creado el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function Update(){
+        $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' AND rolId!='".$this->rolId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        if(!empty($res))
+            $this->Util()->setError(0,'error',"Ya existe un registro con el nombre proporcionado");
+
+
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "UPDATE roles SET name='".$this->name."' WHERE rolId='".$this->rolId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(0,"complete",'Se ha actualizado el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function Delete(){
+
+        $sql = "UPDATE roles SET status='baja' WHERE rolId='".$this->rolId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        
+        $this->Util()->DB()->setQuery($sql);
+
+        $this->Util()->setError(0,"complete",'Se ha dado de baja el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
     }
     function FindDeep(array $elements,$parentId=0){
        $branch=array();
