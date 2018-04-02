@@ -1692,7 +1692,7 @@ class Contract extends Main
 								array_push($subordinadosPermiso, $User["userId"]);
 							}
 							//si es usuario de contabilidad
-							if ($User["roleId"] == 1 || $User["roleId"] == 4) {
+							if ($User["roleId"] <= 4) {
 								$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 							} else {
 								foreach ($subordinadosPermiso as $usuarioPermiso) {

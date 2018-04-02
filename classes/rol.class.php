@@ -75,7 +75,7 @@ class Rol extends main
 
         $sql = "UPDATE roles SET status='baja' WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
-        
+
         $this->Util()->DB()->setQuery($sql);
 
         $this->Util()->setError(0,"complete",'Se ha dado de baja el registro correctamente');
