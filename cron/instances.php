@@ -16,7 +16,7 @@ else
 
 	define('DOC_ROOT', $docRoot);
 
-	session_save_path("C:/xampp/tmp2");
+	session_save_path("/tmp");
 
 	include_once(DOC_ROOT.'/init_cron.php');
 	include_once(DOC_ROOT.'/config.php');
