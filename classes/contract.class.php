@@ -1703,7 +1703,7 @@ class Contract extends Main
 								}//foreach
 							}//if
 						}//foreach
-                
+
 						if (count($result[$key]['instanciasServicio']) > 0) {
 							$showCliente = true;
 							$result[$key]["servicios"]++;
