@@ -30,6 +30,7 @@ switch($_SERVER['HTTP_HOST'])
     break;
     default:
         define("SEND_TO", "asanchez@braunhuerin.com.mx");
+        define("SEND_TO1", "cobranza1@braunhuerin.com.mx ");
         define("SEND_TO2", "cobranza2@braunhuerin.com.mx ");
         define("SEND_TO3", "cobranza3@braunhuerin.com.mx");
         define("FROM_MAIL", "facturacion@braunhuerin.com.mx");
@@ -37,7 +38,7 @@ switch($_SERVER['HTTP_HOST'])
     break;
 }
 
-$CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN',SEND_TO2=>'COBRANZA1',SEND_TO3=>'COBRANZA2');
+$CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN',SEND_TO1=>'COBRANZA1',SEND_TO2=>'COBRANZA2',SEND_TO3=>'COBRANZA3');
 define("CC_EMAILS", serialize($CC_EMAILS));
 
 define("SERVICIO_CONTABILIDAD", $servicioContabilidad);
