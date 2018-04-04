@@ -117,7 +117,7 @@
           <div class="formLine" style="width:100%; text-align:left;" >
                 <div style="display: inline-block">Expedientes a subir</div>
                 <br/> <br/>
-                <div style="display: inline-block;">
+                <div style="display: inline-block; ">
                     <table>
                         {assign var='ncol' value=3}
                         {foreach from=$expedientes key=kexp item=exp}
@@ -134,8 +134,8 @@
                             {/if}
                         {/foreach}
                     </table>
-                </div>
-
+                </div><br>
+                 <span style="color: #990000;">{$msgExp}</span>
                 <hr />
           </div>
 

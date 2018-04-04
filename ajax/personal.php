@@ -24,6 +24,13 @@ switch($_POST["type"])
 			$smarty->assign("socios", $socios);
 
        		$expedientes = $expediente->Enumerate();
+        	foreach($expedientes as $key => $value){
+        		if(!strpos(strtolower($value['name']),'fonacot'))
+                    $expedientes[$key]['find']=true;
+			}
+
+
+
             $smarty->assign("expedientes", $expedientes);
 			
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
@@ -128,17 +135,30 @@ switch($_POST["type"])
 
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
+            //comprobar si se encuentra configurado el empleado con sus expedientes
+        	$db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" ');
+       		$resExp = $db->GetResult();
 
 			$expedientes = $expediente->Enumerate();
-			foreach($expedientes as $key => $value){
-				$db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" AND expedienteId="'.$value['expedienteId'].'"');
-				$find = $db->GetRow();
-				if(!empty($find))
-			    	$expedientes[$key]['find']=true;
-				else
-                    $expedientes[$key]['find']=false;
-
+			if(empty($resExp)){
+				//si no se encuentra configurado se muestran chekeados todos.
+                foreach($expedientes as $key => $value){
+                    if(!strpos(strtolower($value['name']),'fonacot'))
+                        $expedientes[$key]['find']=true;
+                }
+                $smarty->assign("msgExp", 'Es necesario guardar cambios, para que los expedientes queden registrados.');
+			}else{
+                foreach($expedientes as $key => $value){
+                    $db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" AND expedienteId="'.$value['expedienteId'].'"');
+                    $find = $db->GetRow();
+                    if(!empty($find)){
+                        $expedientes[$key]['find']=true;
+                    }
+                    else
+                        $expedientes[$key]['find']=false;
+                }
 			}
+
 			$smarty->assign("expedientes", $expedientes);
 			
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-personal-popup.tpl');
