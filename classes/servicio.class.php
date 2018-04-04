@@ -110,8 +110,8 @@ class Servicio extends Contract
 				$this->Util()->DB()->setQuery($sql);
 				$this->Util()->DB()->InsertData();
 				
-				echo $sql.'\n'."<br>";
-				
+				echo $sql.' \n'." <br>";
+
 			}else{
 				
 				//Checamos si ya es tiempo de crear otra instancia
@@ -140,12 +140,12 @@ class Servicio extends Contract
 				$primerServicio = $this->Util()->DB()->GetSingle();
 				$startdate=$dateExploded[0]."-".$dateExploded[1]."-01";
 				
-				echo 'primerServicio = '.$primerServicio.'\n';
-				echo '<br>periodicidad = '.$value["periodicidad"].'\n';
-				echo '<br>ultimoServicio = '.$ultimoServicio.'\n';
-				echo '<br>currentDate = '.$currentDate.'\n';
-				echo '<br>newdate = '.$newdate.'\n';
-				echo '<br>startdate = '.$startdate.'\n';
+				echo 'primerServicio = '.$primerServicio.' \n';
+				echo '<br>periodicidad = '.$value["periodicidad"].' \n';
+				echo '<br>ultimoServicio = '.$ultimoServicio.' \n';
+				echo '<br>currentDate = '.$currentDate.' \n';
+				echo '<br>newdate = '.$newdate.' \n';
+				echo '<br>startdate = '.$startdate.' \n';
 				if($primerServicio > $startdate)
 				{
 					switch($value["periodicidad"])
@@ -159,7 +159,7 @@ class Servicio extends Contract
 					$cont=1;
 					//crea los workflows atrasados sucede si se cambia la fecha de inicio de operaciones.
 					while($primerServicio > $startdate)
-					{ echo "<br>vuelta".$cont."-".$startdate.'\n';
+					{ echo "<br>vuelta".$cont."-".$startdate.' \n';
 
 						$dateExploded = explode("-",$startdate);
 
@@ -307,25 +307,25 @@ class Servicio extends Contract
 						$this->Util()->DB()->setQuery($sql);
 						$this->Util()->DB()->InsertData();
 					}
-					echo '<br>'.'\n';
+					echo '<br>'.' \n';
 				}
 
 			}
 			
-			echo '<br>'.'\n';
+			echo '<br>'.' \n';
 			echo '*****************';
-			echo '<br>'.'\n';
+			echo '<br>'.' \n';
 			
 		}//foreach
 		
 		$end = microtime();
 		
-		echo 'Init = '.$init.'\n';
+		echo 'Init = '.$init.' \n';
 		echo '<br>';
-		echo 'End = '.$end;
+		echo 'End = '.$end.' \n';
 				
 		$tiempo = $end-$init;
-		echo "Script ejecutado en ".$tiempo." Milisegundos\n";
+		echo "Script ejecutado en ".$tiempo." Milisegundos \n";
 		
 	}//CreateServiceInstances
 
