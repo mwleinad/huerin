@@ -38,7 +38,8 @@ class Filtro extends Util
 		$withPermission = false;
 
 		//if admin or asistente
-		if($roleId == 1 || $roleId == 4){
+
+		if(in_array($roleId,explode(',',ROLES_UNLIMITED))){
 			$withPermission = true;
 			$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 		}
