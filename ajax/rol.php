@@ -47,10 +47,13 @@ switch($_POST['type']){
         $smarty->display(DOC_ROOT.'/templates/forms/config-rol.tpl');
         break;
     case 'addRol':
+        $deps =  $departamentos->GetListDepartamentos();
+        $smarty->assign('deps',$deps);
         $smarty->assign('title','Agregar Rol');
         $smarty->display(DOC_ROOT.'/templates/boxes/add-rol-popup.tpl');
     break;
     case 'saveRol':
+         $rol->setDepartamentoId($_POST['depId']);
          $rol->setName($_POST['name']);
          if($rol->Save())
          {
@@ -69,14 +72,17 @@ switch($_POST['type']){
          }
     break;
     case 'editRol':
+        $deps =  $departamentos->GetListDepartamentos();
         $rol->setRolId($_POST['id']);
         $post = $rol->Info();
+        $smarty->assign('deps',$deps);
         $smarty->assign('post',$post);
         $smarty->assign('title','Editar Rol');
         $smarty->display(DOC_ROOT.'/templates/boxes/add-rol-popup.tpl');
     break;
     case 'updateRol':
         $rol->setRolId($_POST['rolId']);
+        $rol->setDepartamentoId($_POST['depId']);
         $rol->setName($_POST['name']);
         if($rol->Update())
         {

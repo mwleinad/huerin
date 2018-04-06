@@ -24,6 +24,11 @@ class Rol extends main
         $this->Util()->ValidateRequireField($value,'Nombre de rol');
         $this->name=$value;
     }
+    private $depId;
+    public function setDepartamentoId($value){
+        $this->Util()->ValidateRequireField($value,'Departamento');
+        $this->depId=$value;
+    }
     private $titulo;
     public function setTitulo($value){
         $this->titulo=$value;
@@ -43,9 +48,15 @@ class Rol extends main
     public function Enumerate(){
         $where ="";
         if($_SESSION['User']['tipoPers']=='Socio')
-            $where =  " AND rolId!=1 ";
+            $where =  " AND a.rolId!=1 ";
+        elseif($_SESSION['User']['tipoPers']=='Coordinador'){
+            $where =  " AND a.rolId!=1 AND a.rolId!=5";
+        }
 
-       $sql ="SELECT * FROM roles WHERE status='activo' ".$where." ORDER BY name ASC";
+       $sql ="SELECT a.*,
+              CASE WHEN a.departamentoId is null THEN 'SIN DEPARTAMENTO'
+              ELSE b.departamento END AS departamento
+              FROM roles a LEFT JOIN departamentos b ON a.departamentoId=b.departamentoId WHERE a.status='activo' ".$where." ORDER BY b.departamento ASC,a.name ASC";
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
@@ -61,7 +72,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO roles(name,status) VALUES('".$this->name."','activo') ";
+        $sql = "INSERT INTO roles(name,status,departamentoId) VALUES('".$this->name."','activo','".$this->depIds."') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -80,7 +91,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "UPDATE roles SET name='".$this->name."' WHERE rolId='".$this->rolId."' ";
+        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."' WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 
@@ -92,8 +103,11 @@ class Rol extends main
 
         $sql = "UPDATE roles SET status='baja' WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
-
-        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+        //eliminar permisos
+        $sqlDel = "DELETE FROM rolesPermisos WHERE rolId='".$this->rolId."' ";
+        $this->Util()->DB()->setQuery($sqlDel);
+        $this->Util()->DB()->DeleteData();
 
         $this->Util()->setError(0,"complete",'Se ha dado de baja el registro correctamente');
         $this->Util()->PrintErrors();
@@ -231,7 +245,11 @@ class Rol extends main
        return $firstPages;
    }
     public function GetListRoles(){
-        $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ORDER BY name ASC";
+        global $User;
+        if($User['tipoPers']!='Admin'&&$User['tipoPers']!='Socio'&&$User['tipoPers']!='Coordinador')
+            $filtro = " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
+
+        $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ".$filtro." ORDER BY name ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         return $result;

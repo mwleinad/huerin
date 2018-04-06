@@ -24,7 +24,12 @@ class Personal extends Main
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Celular");
 		$this->celphone = $value;
 	}
-
+    private $roleId;
+    public function setRole($value)
+    {
+        if($this->Util()->ValidateRequireField($value, "Rol Id"))
+        $this->roleId = $value;
+    }
 	private $skype;
 	public function setSkype($value)
 	{
@@ -440,6 +445,7 @@ class Personal extends Main
 				jefeInmediato = '".$this->jefeInmediato."',
 				computadora = '".$this->computadora."',
 				tipoPersonal = '".trim($this->tipoPersonal)."',
+				roleId = '".trim($this->roleId)."',
 				departamentoId = '".$this->departamentoId."',
 				fechaIngreso = '".$this->fechaIngreso."',
 				active = '".$this->active."'
@@ -497,6 +503,7 @@ class Personal extends Main
 				jefeInmediato,
 				computadora,
 				tipoPersonal,
+				roleId,
 				departamentoId,
 				fechaIngreso,
 				active
@@ -519,6 +526,7 @@ class Personal extends Main
 				'".$this->jefeInmediato."',
 				'".$this->computadora."',
 				'".trim($this->tipoPersonal)."',
+				'".trim($this->roleId)."',
 				'".$this->departamentoId."',
 				'".$this->fechaIngreso."',
 				'".$this->active."'

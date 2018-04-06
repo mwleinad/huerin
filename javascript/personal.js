@@ -1,6 +1,7 @@
 Event.observe(window, 'load', function() {
 	Dropzone.autoDiscover=false;
-	Event.observe($('addPersonal'), "click", AddPersonalDiv);
+	if(document.getElementById("addPersonal"))
+			Event.observe($('addPersonal'), "click", AddPersonalDiv);
 
 	AddEditPersonalListeners = function(e) {
 		var el = e.element();

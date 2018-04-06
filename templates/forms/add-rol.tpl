@@ -12,6 +12,18 @@
 				<div style="width:70%;float: left;">
 					<input type="text" name="name" id="name" value="{$post.name}" class="largeInput "/>
 				</div>
+				<hr>
+			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left">Departamento</div>
+				<div style="width:70%;float: left;">
+					<select name="depId" id="depId" class="largeInput">
+						<option value="">Seleccionar..</option>
+						{foreach from=$deps item=item key=key}
+							<option value="{$item.departamentoId}" {if $item.departamentoId eq $post.departamentoId}selected{/if}>{$item.departamento}</option>
+						{/foreach}
+					</select>
+				</div>
 
 			</div>
 			<div style="clear:both"></div>

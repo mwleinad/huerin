@@ -27,7 +27,12 @@ class Departamentos extends Main
 		return $this->departamento;
 	}
 
-
+    public function GetListDepartamentos()
+    {
+        $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY departamento ASC ');
+        $result = $this->Util()->DB()->GetResult();
+        return $result;
+    }
 	public function Enumerate($all=false)
 	{
 		global $infoUser;
