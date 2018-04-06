@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="frmRol" name="frmRol" method="post" onsubmit="return false;"  enctype="multipart/form-data">
+	<form id="frmRol" name="frmRol" method="post" onsubmit="return false;" action="#" >
 		{if $post}
 			<input name="rolId" id="rolId" type="hidden" value="{$post.rolId}" size="50"/>
 			<input type="hidden" id="type" name="type" value="updateRol"/>

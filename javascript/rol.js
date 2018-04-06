@@ -2,17 +2,20 @@ var AJAX_PATH = WEB_ROOT+"/ajax/rol.php";
 jQ(document).ready(function(){
 
     jQ('#addRol').on('click',function(){
-        grayOut(true);
         jQ('#fview').show();
         jQ.ajax({
             url:AJAX_PATH,
             method:'post',
             data:{id:this.id,type:'addRol'},
             success:function (response) {
+                FViewOffSet('');
                 FViewOffSet(response);
-                jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-                jQ('div#fview').on('click','#btnRol',function(){
-                    ExecuteFunRol(this)});
+                jQ('#closePopUpDiv').on('click',function(){
+                    close_popup();
+                });
+                jQ('#btnRol').on('click',function(){
+                    ExecuteFunRol(this);
+                });
             }
 
         });
@@ -30,7 +33,9 @@ jQ(document).on('click','#copyPermiso',function(){
         data:{id:rolId,baseId:baseId,type:'copyPermiso'},
         success:function (response) {
             jQ('#det-config').html(response);
-            jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
+            jQ('#saveConfig').on('click',function(){
+                SaveConfig(this);
+            });
             TogglePermisos();
         }
 
@@ -45,8 +50,10 @@ jQ(document).on('click',".spanConfig",function(){
         data:{id:this.id,type:'open_config'},
         success:function (response) {
             FViewOffSet(response);
-            jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-            jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
+            jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup();});
+            jQ('#saveConfig').on('click',function(){
+                SaveConfig(this);
+            });
             TogglePermisos();
         }
 
@@ -61,8 +68,12 @@ jQ(document).on('click',".spanEdit",function(){
         data:{id:this.id,type:'editRol'},
         success:function (response) {
             FViewOffSet(response);
-            jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-            jQ('div#fview').on('click','#btnEdit',function(){ExecuteFunRol(this)});
+            jQ('#closePopUpDiv').on('click',function(){
+                close_popup();
+            });
+            jQ('#btnEdit').on('click',function(){
+                ExecuteFunRol(this);
+            });
         }
 
     });
@@ -90,6 +101,7 @@ jQ(document).on('click',".spanDelete",function(){
 });
 
 function close_popup(){
+    $('fview').innerHTML='';
     $('fview').hide();
     grayOut(false);
     return;
