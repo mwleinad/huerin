@@ -183,7 +183,7 @@ class Personal extends Main
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
 
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Asistente") {
+		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')===true ) {
 			$sql = "SELECT
 						a.*,
 						b.name as nombreJefe,
