@@ -18,7 +18,7 @@
 			<hr />
 			<div class="formLine" style="text-align:center">
 				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-imgs"/>
-				<input type="submit" id="btnRol" name="btnRol" class="buttonForm" value="{if $post}Actualizar{else}Guardar{/if}" />
+				<input type="submit" {if !$post}id="btnRol" name="btnRol"{else}id="btnEdit" name="btnEdit"{/if} class="buttonForm" value="{if $post}Actualizar{else}Guardar{/if}" />
 			</div>
 		</fieldset>
 	</form>

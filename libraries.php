@@ -220,7 +220,7 @@ $User = $_SESSION['User'];
 $infoUser = $user->Info();
 $smarty->assign('infoUser', $infoUser);
 
-	switch($infoUser["tipoPersonal"])
+	/*switch($infoUser["tipoPersonal"])
 	{
 		case "Socio": $User['roleId'] = 1; break;
 		case "Gerente": $User['roleId'] = 2; break;
@@ -234,16 +234,24 @@ $smarty->assign('infoUser', $infoUser);
 			$User['roleId'] = 8;
 			$User['subRoleId'] = "Nomina";
 		break;
-	}
+	}*/
+if($_SESSION['User']['tipoPers']=='Admin')	{
+    $rol->setAdmin(1);
+    $User['roleId'] = 1;
+}else{
+    $rol->setTitulo($infoUser['tipoPersonal']);
+    $User['roleId'] = $rol->GetIdByName();
+}
 $rol->setRolId($User['roleId']);
 $permissions = $rol->GetPermisosByRol();
 $smarty->assign('permissions', $permissions);
+
+
 $rol->setRolId($User['roleId']);
 $firstPages = $rol->FindFirstPage();
 $smarty->assign('firstPages', $firstPages);
 
 $User['tipoPersonal'] = $infoUser['tipoPersonal'];
-
 if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $User["tipoPersonal"] == "Gerente")
 {
 	$smarty->assign('canEdit', true);

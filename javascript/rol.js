@@ -1,21 +1,6 @@
 var AJAX_PATH = WEB_ROOT+"/ajax/rol.php";
 jQ(document).ready(function(){
-    jQ('.spanConfig').on('click',function(){
-        grayOut(true);
-        jQ('#fview').show();
-        jQ.ajax({
-            url:AJAX_PATH,
-            method:'post',
-            data:{id:this.id,type:'open_config'},
-            success:function (response) {
-                FViewOffSet(response);
-                jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-                jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
-                TogglePermisos();
-            }
 
-        });
-    });
     jQ('#addRol').on('click',function(){
         grayOut(true);
         jQ('#fview').show();
@@ -26,7 +11,8 @@ jQ(document).ready(function(){
             success:function (response) {
                 FViewOffSet(response);
                 jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-                jQ('div#fview').on('click','#btnRol',function(){ExecuteFunRol(this)});
+                jQ('div#fview').on('click','#btnRol',function(){
+                    ExecuteFunRol(this)});
             }
 
         });
@@ -50,6 +36,22 @@ jQ(document).on('click','#copyPermiso',function(){
 
     });
 });
+jQ(document).on('click',".spanConfig",function(){
+    grayOut(true);
+    jQ('#fview').show();
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:{id:this.id,type:'open_config'},
+        success:function (response) {
+            FViewOffSet(response);
+            jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
+            jQ('div#fview').on('click','#saveConfig',function(){SaveConfig(this)});
+            TogglePermisos();
+        }
+
+    });
+});
 jQ(document).on('click',".spanEdit",function(){
     grayOut(true);
     jQ('#fview').show();
@@ -60,7 +62,7 @@ jQ(document).on('click',".spanEdit",function(){
         success:function (response) {
             FViewOffSet(response);
             jQ('div#fview').on('click','#closePopUpDiv',function(){close_popup()});
-            jQ('div#fview').on('click','#btnRol',function(){ExecuteFunRol(this)});
+            jQ('div#fview').on('click','#btnEdit',function(){ExecuteFunRol(this)});
         }
 
     });
@@ -134,7 +136,6 @@ function TogglePermisos(){
     });
 }
 function ExecuteFunRol(self){
-    var id =  self.id;
     var form = jQ(self).parents('form:first');
     var fd =  new FormData(form[0]);
     jQ.ajax({

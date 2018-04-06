@@ -1,10 +1,12 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess();	
-	/* End Session Control */
-	
-	$departamentos = $departamentos->Enumerate();
+
+    /* Star Session Control Modules*/
+    $user->allowAccess(3);  //level 1
+    $user->allowAccess(94);//level 2
+    /* end Session Control Modules*/
+
+
+    $departamentos = $departamentos->Enumerate();
 	$smarty->assign("departamentos", $departamentos);
 	
 	//$clientes = $customer->Enumerate();

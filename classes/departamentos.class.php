@@ -37,6 +37,12 @@ class Departamentos extends Main
 				
 		$this->Util()->DB()->setQuery('SELECT * FROM departamentos '.$filtroDepto.' ORDER BY departamento ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
+		//encontrar el permisoId de cada departamento
+        foreach($result as $key=> $dep){
+            $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos  WHERE titulo="'.$dep['departamento'].'" ');
+            $perId = $this->Util()->DB()->GetSingle();
+            $result[$key]['permId']=$perId;
+        }
 		return $result;
 	}
     public function GetFirstDep()
@@ -51,7 +57,7 @@ class Departamentos extends Main
         if($User['tipoPers']!="Admin")
            $filtro .=' AND a.rolId="'.$User['roleId'].'" ';
 
-        $this->Util()->DB()->setQuery('SELECT b.titulo,b.permisoId FROM rolesPermisos a INNER JOIN permisos b ON 
+        $this->Util()->DB()->setQuery('SELECT b.titulo FROM rolesPermisos a INNER JOIN permisos b ON 
                                        a.permisoId=b.permisoId '.$filtro.' ORDER BY b.titulo ASC '.$sql_add);
         //$this->Util()->DB()->GetQuery();
         $single = $this->Util()->DB()->GetSingle();

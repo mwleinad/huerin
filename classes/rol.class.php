@@ -8,20 +8,37 @@
 
 class Rol extends main
 {
+    private $admin;
+    function setAdmin($value){
+        $this->admin=$value;
+    }
+    public function isAdmin(){
+        return $this->admin;
+    }
     private $rolId;
     function setRolId($value){
         $this->rolId=$value;
     }
     private $name;
-    function setName($value){
+    public function setName($value){
         $this->Util()->ValidateRequireField($value,'Nombre de rol');
         $this->name=$value;
+    }
+    private $titulo;
+    public function setTitulo($value){
+        $this->titulo=$value;
     }
     public function Info(){
         $sql = "SELECT * FROM roles WHERE status='activo' AND rolId='".$this->rolId."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $info = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         return $info;
+    }
+    public function GetIdByName(){
+        $sql = "SELECT rolId FROM roles WHERE status='activo' AND name='".$this->titulo."' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $single = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
+        return $single;
     }
     public function Enumerate(){
         $where ="";
@@ -33,7 +50,7 @@ class Rol extends main
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
     }
-    function Save(){
+    public function Save(){
         $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
@@ -44,7 +61,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO roles(name,status) VALUES('".$this->name."','ativo') ";
+        $sql = "INSERT INTO roles(name,status) VALUES('".$this->name."','activo') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -180,7 +197,7 @@ class Rol extends main
        return true;
    }
    function GetPermisosByRol(){
-       if($_SESSION['User']['personalId']==999990000)
+       if($this->isAdmin())
            $sql =  "SELECT permisoId from rolesPermisos where 1";
        else
            $sql =  "SELECT permisoId from rolesPermisos where rolId='".$this->rolId."' ";
@@ -197,15 +214,16 @@ class Rol extends main
    }
    function FindFirstPage(){
        global $User;
+       if(!$this->isAdmin())
+           $filtro = " AND a.rolId='".$this->rolId."' ";
+
        $roleId =$User['roleId'];
-       $sql =  "SELECT a.permisoId from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where a.rolId='".$this->rolId."' AND 
-                b.parentId is null";
+       $sql =  "SELECT a.permisoId from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where b.parentId is null ".$filtro." ";
        $this->Util()->DB()->setQuery($sql);
        $result = $this->Util()->DB()->GetResult();
        $firstPages = array();
        foreach($result  as $key=>$value){
-           $sql =  "SELECT namePage from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where a.rolId='".$this->rolId."' AND 
-                b.parentId='".$value['permisoId']."' ORDER BY b.permisoId ASC limit 1";
+           $sql =  "SELECT namePage from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where b.parentId='".$value['permisoId']."' ".$filtro." ORDER BY b.permisoId ASC limit 1";
            $this->Util()->DB()->setQuery($sql);
            $single = $this->Util()->DB()->GetSingle();
            $firstPages[$value['permisoId']]=$single;
@@ -217,5 +235,24 @@ class Rol extends main
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         return $result;
+    }
+    public function ValidatePrivilegiosRol(array $incluye){
+        $sql = "SELECT * FROM roles WHERE rolId='".$this->rolId."' AND status='activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        //si no se encuentra rol se convierte en limitado retorna false
+        if(empty($row))
+            return false;
+
+        //comprobar nombre de rol por trozos de nombre
+        $lim=0;
+        foreach($incluye as $inc){
+            if(stripos($row['name'],$inc)!==false)
+              $lim++;
+        }
+        if($lim>0)
+            return false;
+        else
+            return true;
     }
 }

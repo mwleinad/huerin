@@ -2,17 +2,11 @@
      <div class="container">
        <ul>
         	{if $mainMnu == "archivos"}
-          	{foreach from=$resDepartamentos item=item}
-                {if (in_array(141,$permissions)&&$item.departamento eq 'Contabilidad')
-                ||(in_array(142,$permissions)&&$item.departamento eq 'Nominas')
-                ||(in_array(143,$permissions)&&$item.departamento eq 'Administracion')
-                ||(in_array(144,$permissions)&&$item.departamento eq 'Juridico')
-                ||(in_array(145,$permissions)&&$item.departamento eq 'IMSS')
-                ||(in_array(146,$permissions)&&$item.departamento eq 'Mensajeria')
-                ||(in_array(147,$permissions)&&$item.departamento eq 'Auditoria') || $User.isRoot}
-                <li><a href="{$WEB_ROOT}/archivos/id/{$item.departamentoId}" {if $page == "archivos" && $item.departamentoId == $id}class="current"{/if}>
-                <span>{$item.departamento}</span></a></li>
-                {/if}
+          	    {foreach from=$resDepartamentos item=item}
+                    {if (in_array($item.permId,$permissions))|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/archivos/id/{$item.departamentoId}" {if $page == "archivos" && $item.departamentoId == $id}class="current"{/if}>
+                    <span>{$item.departamento}</span></a></li>
+                    {/if}
                {/foreach}
                {if in_array(148,$permissions) || $User.isRoot}
                 <li><a href="#" onclick="NuevoArchivo({$id})">

@@ -5,7 +5,7 @@
 	</div>
 	<div id="ftitl">
 		<div class="flabel">Configurar rol</div>
-		<div id="vtitl"><span title="Titulo">Configuracion de rol</span></div>
+		<div id="vtitl"><span title="Titulo">Configuracion de rol {$info.name}</span></div>
 	</div>
 	<div id="draganddrop" style="position:absolute;top:45px;left:640px">
 		<img src="{$WEB_ROOT}/images/draganddrop.png" border="0" alt="mueve" />

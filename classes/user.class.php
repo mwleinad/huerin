@@ -37,12 +37,18 @@ class User extends Sucursal
 			$row["tipoPersonal"] = "Cliente";
 			$row["name"] = $row["nameContact"];
 		}
-		else
+		elseif($_SESSION["User"]["tipoPers"] == 'Admin')
 		{
-		    $sql = "SELECT * FROM personal WHERE personalId = '".$this->userId."'";
+		    $sql = "SELECT * FROM user WHERE userId = '1'";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
+
+		}else{
+            $sql = "SELECT * FROM personal WHERE personalId = '".$this->userId."'";
+            $this->Util()->DB()->setQuery($sql);
+            $row = $this->Util()->DB()->GetRow();
 		}
+
 
 		$row["version"] = "v3";
 

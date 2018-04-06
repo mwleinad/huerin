@@ -35,10 +35,14 @@ class Filtro extends Util
 	
 	public function WithPermission($roleId, $conPermiso, $subordinadosPermiso, &$result = false, $servicio = false, $key = 0, $keyContract = 0)
 	{
-		$withPermission = false;
+		global $rol;
+	    $withPermission = false;
+        //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
+        $rol->setRolId($roleId);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
 
-		//if admin or asistente
-		if($roleId == 1 || $roleId == 5){
+		//if el rol del usuario tiene privilegio de ver todos los contrartos
+		if($unlimited){
 			$withPermission = true;
 			$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 		}
@@ -131,7 +135,11 @@ class Filtro extends Util
 	
 	function ShowByDefault($servicios, $roleId)
 	{
-		if(count($servicios) == 0 && ($roleId == 1 || $roleId == 5) ){
+	    global $rol;
+        //comprobar el rol si es de tipo ilimitado pasando nombre de roles que queremos limitar
+        $rol->setRolId($roleId);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+		if(count($servicios) == 0 && $unlimited ){
 			return 1;
 		}
 		return 0;
@@ -151,9 +159,13 @@ class Filtro extends Util
 	
 	function RemoveClientFromView($showCliente, $roleId, $type, &$result, $key = 0)
 	{
+	    global $rol;
+	    //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
+        $rol->setRolId($roleId);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
 		if (
 			($showCliente === 0 && 
-				(in_array($roleId,explode(',',ROLES_LIMITED)))
+				(!$unlimited)//($roleId > 1 && $roleId < 4)
 			) || 
 			($showCliente === 0 && 
 				$type == "propio"

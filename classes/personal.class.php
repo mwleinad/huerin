@@ -439,7 +439,7 @@ class Personal extends Main
 				grupo = '".$this->grupo."',
 				jefeInmediato = '".$this->jefeInmediato."',
 				computadora = '".$this->computadora."',
-				tipoPersonal = '".$this->tipoPersonal."',
+				tipoPersonal = '".trim($this->tipoPersonal)."',
 				departamentoId = '".$this->departamentoId."',
 				fechaIngreso = '".$this->fechaIngreso."',
 				active = '".$this->active."'
@@ -518,7 +518,7 @@ class Personal extends Main
 				'".$this->grupo."',
 				'".$this->jefeInmediato."',
 				'".$this->computadora."',
-				'".$this->tipoPersonal."',
+				'".trim($this->tipoPersonal)."',
 				'".$this->departamentoId."',
 				'".$this->fechaIngreso."',
 				'".$this->active."'

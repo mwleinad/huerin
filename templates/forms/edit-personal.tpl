@@ -78,6 +78,7 @@
           <div class="formLine" style="width:100%; text-align:left">
              <div style="width:30%;float:left">Tipo de Usuario:</div>
               <select name="tipoPersonal" id="tipoPersonal" class="smallInput medium" onchange="ToggleReporta()">
+                  <option value="" >Seleccionar...</option>
                   {foreach from=$roles item=item key=key}
                       <option value="{$item.name}" {if $post.tipoPersonal eq $item.name} selected="selected" {/if}>{$item.name}</option>
                   {/foreach}
