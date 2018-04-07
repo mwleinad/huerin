@@ -246,8 +246,16 @@ class Rol extends main
    }
     public function GetListRoles(){
         global $User;
-        if($User['tipoPers']!='Admin'&&$User['tipoPers']!='Socio'&&$User['tipoPers']!='Coordinador')
+        if($User['tipoPers']!='Admin'&&$User['tipoPers']!='Socio'&&$User['tipoPers']!='Coordinador'){
             $filtro = " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
+        }else{
+            if($User['tipoPers']=='Socio')
+                $filtro = " AND lower(name)!='socio'  ";
+            elseif($User['tipoPers']=='Coordinador'){
+                $filtro = " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
+            }
+        }
+
 
         $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ".$filtro." ORDER BY name ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
