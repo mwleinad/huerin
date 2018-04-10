@@ -38,7 +38,7 @@ switch($_POST["type"])
         $db->UpdateData();
 
         $contracts = array();
-        if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
+        if($User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
 
             //Si seleccionaron TODOS
             if($formValues['respCuenta'] == 0){
