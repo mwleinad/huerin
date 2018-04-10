@@ -262,7 +262,7 @@ class Rol extends main
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         return $result;
     }
-    public function ValidatePrivilegiosRol(array $incluye){
+    public function ValidatePrivilegiosRol(array $incluye,$except=array()){
         $sql = "SELECT * FROM roles WHERE rolId='".$this->rolId."' AND status='activo' ";
         $this->Util()->DB()->setQuery($sql);
         $row = $this->Util()->DB()->GetRow();
@@ -275,6 +275,10 @@ class Rol extends main
         foreach($incluye as $inc){
             if(stripos($row['name'],$inc)!==false)
               $lim++;
+        }
+        foreach($except as $excep){
+            if(stripos($row['name'],$excep)!==false)
+                $lim--;
         }
         if($lim>0)
             return false;
