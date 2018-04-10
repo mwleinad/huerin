@@ -137,7 +137,7 @@ class Filtro extends Util
 	    global $rol;
         //comprobar el rol si es de tipo ilimitado pasando nombre de roles que queremos limitar
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
 		if(count($servicios) == 0 && $unlimited ){
 			return 1;
 		}
