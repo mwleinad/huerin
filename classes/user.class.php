@@ -35,6 +35,7 @@ class User extends Sucursal
 			$row = $this->Util()->DB()->GetRow();
 
 			$row["tipoPersonal"] = "Cliente";
+            $row["roleId"] =4;
 			$row["name"] = $row["nameContact"];
 		}
 		elseif($_SESSION["User"]["tipoPers"] == 'Admin')
@@ -42,6 +43,7 @@ class User extends Sucursal
 		    $sql = "SELECT * FROM user WHERE userId = '1'";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
+            $row["tipoPersonal"] = "Admin";
 
 		}else{
             $sql = "SELECT * FROM personal WHERE personalId = '".$this->userId."'";

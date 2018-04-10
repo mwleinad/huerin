@@ -239,8 +239,19 @@ if($_SESSION['User']['tipoPers']=='Admin')	{
     $rol->setAdmin(1);
     $User['roleId'] = 1;
 }else{
+    //primero buscar por nombre el rol
     $rol->setTitulo($infoUser['tipoPersonal']);
-    $User['roleId'] = $rol->GetIdByName();
+    $roleId = $rol->GetIdByName();
+     if($roleId<=0){
+         //si por nombre de rol no se encuentra entonces usar el rolId que tiene en la tabla personal
+         //ese nunca debe fallar aun que se cambie de nombre de nombre de el rol. cuando se haya asignado los roles a todos
+         // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
+         $rol->setRolId($infoUser['roleId']);
+         $row = $rol->Info();
+         $roleId=$row['rolId'];
+         $User['tipoPers'] = $row['name'];
+     }
+    $User['roleId'] = $roleId;
 }
 $rol->setRolId($User['roleId']);
 $permissions = $rol->GetPermisosByRol();
