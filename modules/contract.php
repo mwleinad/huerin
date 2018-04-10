@@ -1,8 +1,9 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	//$user->allowAccess('contract');
-	/* End Session Control */
+
+    /* Star Session Control Modules*/
+    $user->allowAccess(2);  //level 1
+    $user->allowAccess(62);//level 2
+    /* end Session Control Modules*/
 	
 	$okMsg = $_SESSION['msgOk'];
 	$_SESSION['msgOk'] = 0;

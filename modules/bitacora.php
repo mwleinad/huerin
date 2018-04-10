@@ -1,6 +1,4 @@
 <?php
-$user->allowAccess('bitacora');
-if($User['roleId']!=1)
-    header('Location: '.WEB_ROOT);
-
+$user->allowAccess(7);
+$user->allowAccess(168);
 $smarty->assign('mainMnu','reportes');

@@ -35,14 +35,22 @@ class User extends Sucursal
 			$row = $this->Util()->DB()->GetRow();
 
 			$row["tipoPersonal"] = "Cliente";
+            $row["roleId"] =4;
 			$row["name"] = $row["nameContact"];
 		}
-		else
+		elseif($_SESSION["User"]["tipoPers"] == 'Admin')
 		{
-			$sql = "SELECT * FROM personal WHERE personalId = '".$this->userId."'";
+		    $sql = "SELECT * FROM user WHERE userId = '1'";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
+            $row["tipoPersonal"] = "Admin";
+
+		}else{
+            $sql = "SELECT * FROM personal WHERE personalId = '".$this->userId."'";
+            $this->Util()->DB()->setQuery($sql);
+            $row = $this->Util()->DB()->GetRow();
 		}
+
 
 		$row["version"] = "v3";
 
@@ -56,22 +64,12 @@ class User extends Sucursal
 		//$infoUser = $this->Info();
 		//print_r($infoUser);
 		//exit;
-		switch($infoUser["tipoPersonal"])
-		{
-			case "Socio": $User['roleId'] = 1; break;
-			case "Asistente": $User['roleId'] = 1; break;
-			case "Gerente": $User['roleId'] = 2; break;
-			case "Supervisor": $User['roleId'] = 3; break;
-			case "Contador": $User['roleId'] = 3; break;
-			case "Auxiliar": $User['roleId'] = 3; break;
-		}
-
 		if(!$User['isLogged']){
 			header('Location: '.WEB_ROOT.'/login');
 			exit;
 		}
 
-		if($User['roleId'] != 1 && $page != ''){
+		if($page != ''&&!$User['isRoot']){
 			if(!$this->allow_access_module($page)){
 				header('Location: '.WEB_ROOT);
 				exit;
@@ -80,17 +78,11 @@ class User extends Sucursal
 	}
 
 	public function allow_access_module($page){
+		global $rol;
 		$User = $_SESSION['User'];
 
-		$allowPages = array('');
-		if($User['roleId'] == 3)
-			$allowPages = array('customer','contract','servicios', 'contract-view');
-
-		if($User['roleId'] == 1)
-			$allowPages = array('report-cxc');
-
-
-		if(in_array($page,$allowPages) || $User['roleId'] == 2)
+        $allowPages = $rol->GetPermisosByRol();
+		if(in_array($page,$allowPages))
 			return true;
 		else
 			return false;
@@ -119,10 +111,11 @@ class User extends Sucursal
 
 		if($row){
 
-			$card['userId'] = $row['userId'];
+			$card['userId'] = 999990000;
 			$card['roleId'] = $row['type'];
 			$card['username'] = $row['name'];
 			$card['isLogged'] = true;
+            $card['isRoot'] = true;
 
 			if($row['type'] == 1)
 				$card['tipoPers'] = 'Admin';
@@ -191,8 +184,10 @@ class User extends Sucursal
 					return true;
 
 				}else{
+
 					$this->Util()->setError(10006, "error", "");
 					$this->Util()->PrintErrors();
+
 				}//else
 
 			}//else

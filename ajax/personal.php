@@ -23,6 +23,9 @@ switch($_POST["type"])
 			$socios = $personal->ListSocios();			
 			$smarty->assign("socios", $socios);
 
+            $roles = $rol->GetListRoles();
+        	$smarty->assign("roles", $roles);
+
        		$expedientes = $expediente->Enumerate();
         	foreach($expedientes as $key => $value){
         		if(!strpos(strtolower($value['name']),'fonacot'))
@@ -58,6 +61,10 @@ switch($_POST["type"])
 			$personal->setComputadora($_POST['computadora']);
 
 			$personal->setTipoPersonal($_POST['tipoPersonal']);
+			$rol->setTitulo($_POST['tipoPersonal']);
+			$roleId=$rol->GetIdByName();
+			$personal->setRole($roleId);
+
 			$personal->setDepartamentoId($_POST['departamentoId']);
 			$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));			
 			$personal->setFechaIngreso($fechaIngreso);
@@ -139,6 +146,9 @@ switch($_POST["type"])
         	$db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" ');
        		$resExp = $db->GetResult();
 
+			$roles = $rol->GetListRoles();
+			$smarty->assign("roles", $roles);
+
 			$expedientes = $expediente->Enumerate();
 			if(empty($resExp)){
 				//si no se encuentra configurado se muestran chekeados todos.
@@ -185,6 +195,10 @@ switch($_POST["type"])
 			$personal->setComputadora($_POST['computadora']);
 
 			$personal->setTipoPersonal($_POST['tipoPersonal']);
+			$rol->setTitulo($_POST['tipoPersonal']);
+        	$roleId=$rol->GetIdByName();
+        	$personal->setRole($roleId);
+
 			$personal->setDepartamentoId($_POST['departamentoId']);
 			$personal->setJefeInmediato($_POST['jefeInmediato']);
 			$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));			

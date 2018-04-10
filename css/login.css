@@ -12,8 +12,11 @@ h1 {
 	text-align: center;
 }
 #login {
+	display: flex;
+	flex-direction: column;
 	margin:10px 0px 0px 0px;
 	border:1px solid #666;
+	border-radius: 4px;
 /*	background:url(../images/bg_login.gif) repeat-x left top #f6f5f5;
 */	background:url(../images/bg_login.gif) repeat-x left top #f6f5f5;
 	padding:20px;
@@ -113,4 +116,34 @@ p.error {
 	border:1px solid #666;
 	background:#CCC;
 	display:none;
+}
+.container_12, .container_16 {
+	margin-left: auto !important;
+	margin-right: auto !important;
+	width: 960px !important;
+}
+.grid_6{
+	display: inline !important;
+	float: left !important;
+	margin-left: 10px !important;
+	margin-right: 10px !important;
+}
+.container_16 .suffix_5
+{
+	padding-right: 300px;
+}
+.container_16 .prefix_5
+{
+	padding-left: 300px;
+}
+.container_16 .grid6{
+	width: 340px !important;
+}
+.logo{
+	padding-bottom:10px;
+	height:70px;
+	text-align: center;
+}
+.logo .img{
+	max-height:100%;
 }

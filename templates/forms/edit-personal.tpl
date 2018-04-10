@@ -77,15 +77,12 @@
 
           <div class="formLine" style="width:100%; text-align:left">
              <div style="width:30%;float:left">Tipo de Usuario:</div>
-             <select name="tipoPersonal" id="tipoPersonal" class="smallInput medium" onchange="ToggleReporta()">
-              	<option value="Auxiliar" {if $post.tipoPersonal == "Auxiliar"} selected="selected" {/if}>Auxiliar</option>
-              	<option value="Contador" {if $post.tipoPersonal == "Contador"} selected="selected" {/if}>Contador</option>
-              	<option value="Supervisor" {if $post.tipoPersonal == "Supervisor"} selected="selected" {/if}>Supervisor</option>
-              	<option value="Gerente" {if $post.tipoPersonal == "Gerente"} selected="selected" {/if}>Gerente</option>
-              	<option value="Socio" {if $post.tipoPersonal == "Socio"} selected="selected" {/if}>Socio</option>
-              	<option value="Asistente" {if $post.tipoPersonal == "Asistente"} selected="selected" {/if}>Asistente</option>
-                
-             </select>
+              <select name="tipoPersonal" id="tipoPersonal" class="smallInput medium" onchange="ToggleReporta()">
+                  <option value="" >Seleccionar...</option>
+                  {foreach from=$roles item=item key=key}
+                      <option value="{$item.name}" {if $post.tipoPersonal eq $item.name} selected="selected" {/if}>{$item.name}</option>
+                  {/foreach}
+              </select>
              <hr />       
           </div>
       

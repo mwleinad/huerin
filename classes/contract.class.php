@@ -1422,7 +1422,7 @@ class Contract extends Main
 
 		$contratos[$key] = $result[$key];
 
-    }//foreach
+    }//foreach contractOld
 
     return $contratos;
 
@@ -1492,7 +1492,7 @@ class Contract extends Main
 		if($formValues['respCuenta'] == 0){
 			$respCuenta = $User['userId'];
 			$formValues['subordinados'] = 1;
-
+            //el roleId 4 es de cliente solo deberia poder ver la sus contratos, en otros apartados el roleId 4 es usado como admin(verificarlo)
             if($_SESSION['User']["roleId"] == 4)
             {
                 $skip = true;
@@ -1610,7 +1610,7 @@ class Contract extends Main
   */
 	public function Enumerate($id = 0, $status = '')
   	{
-		global $User;
+		global $User,$rol;
     	if($id){
       		$add = "WHERE contract.customerId = '".$id."'";
     	}
@@ -1624,7 +1624,7 @@ class Contract extends Main
     	$personal->setPersonalId($User["userId"]);
     	$subordinados = $personal->Subordinados();
 
-    $sql = "SELECT
+        $sql = "SELECT
             *,
             contract.name AS name,
             contract.encargadoCuenta AS encargadoCuenta,
@@ -1691,8 +1691,11 @@ class Contract extends Main
 								}
 								array_push($subordinadosPermiso, $User["userId"]);
 							}
-							//si es usuario de contabilidad
-							if ($User["roleId"] == 1 || $User["roleId"] == 4) {
+							//comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
+                            // el usuario esta dentro de los permisos del contrato
+                            $rol->setRolId($User['roleId']);
+                            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+							if ($unlimited) {
 								$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
 							} else {
 								foreach ($subordinadosPermiso as $usuarioPermiso) {
@@ -1713,8 +1716,9 @@ class Contract extends Main
 
 					}
 				}
-
-        if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
+        $rol->setRolId($User['roleId']);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+        if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
 

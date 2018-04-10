@@ -6,7 +6,9 @@
   </div>
 
   <div class="grid_6" id="eventbox">
+      {if in_array(30,$permissions)}
       <a href="javascript:void(0)" class="inline_add" id="addSteps">Agregar Paso</a>
+      {/if}
   </div>
   
   <div class="clear"></div>

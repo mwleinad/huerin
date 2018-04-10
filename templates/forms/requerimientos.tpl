@@ -12,7 +12,7 @@
 
   <tr>
 		<td align="left" width="40%" class="tdPad">
-    {if $canEdit}
+        {if in_array(81,$permissions)||$User.isRoot}
     	<a href="{$WEB_ROOT}/add-requerimiento/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Requerimiento', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Requerimiento"/> Agregar Requerimiento</a>
 		{/if}
 			<div id="contentRequerimientos">

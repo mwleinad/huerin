@@ -1,5 +1,6 @@
 Event.observe(window, 'load', function() {
-	Event.observe($('addSteps'), "click", AddStepsDiv);
+    if(document.getElementById("addSteps"))
+		Event.observe($('addSteps'), "click", AddStepsDiv);
 
 	AddEditCustomerListeners = function(e) {
 		var el = e.element();

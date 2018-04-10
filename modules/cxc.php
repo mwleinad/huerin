@@ -1,6 +1,9 @@
 <?php
 
-//	$empresa->AuthUser();
+    /* Star Session Control Modules*/
+    $user->allowAccess(4);  //level 1
+    $user->allowAccess(120);//level 2
+    /* end Session Control Modules*/
 
 	$info = $empresa->Info();
 	$smarty->assign("info", $info);

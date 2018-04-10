@@ -1,9 +1,8 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('customer');	
-	/* End Session Control */
-	
+
+    /* Star Session Control Modules*/
+    $user->allowAccess(6);  //level 1
+    /* end Session Control Modules*/
 	if($_POST && $_FILES && !$_POST["editArchivo"])
 	{
 		$departamentos->SubirArchivo();			
@@ -14,14 +13,23 @@
 		$departamentos->ActualizarArchivo();			
 	}
 
-	
+
 	$resDepartamentos = $departamentos->Enumerate();
+
 	$smarty->assign("resDepartamentos", $resDepartamentos);
 	$smarty->assign("id", $_GET["id"]);
 
 	$departamentos->setDepartamentoId($_GET["id"]);
 	$departamento = $departamentos->Info();
-	$smarty->assign("departamento", $departamento);
+
+    //comprobar si el departamento pasado tiene permiso el rol
+    $permisoId = $rol->GetPermisoByTitulo($departamento['departamento']);
+    if($permisoId<=0)
+        $permisoId=-1;
+
+    $user->allowAccess($permisoId);
+
+    $smarty->assign("departamento", $departamento);
 
 	$archivos = $departamentos->Archivos();
 	$smarty->assign("archivos", $archivos);

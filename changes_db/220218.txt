@@ -18,6 +18,7 @@
 	update tipoDocumento SET dptosId='24' WHERE tipoDocumentoId=23;
 
 /*tabla tipo archivo*/
+   ALTER TABLE  `tipoArchivo` ADD  `dptosId` VARCHAR( 50 ) NULL DEFAULT NULL AFTER  `status` ;
 	update tipoArchivo SET dptosId='1' WHERE tipoArchivoId=8;
     	update tipoArchivo SET dptosId='22' WHERE tipoArchivoId=2;
     	update tipoArchivo SET dptosId='1,22' WHERE tipoArchivoId=7;
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `requerimentsPersons` (
   `required` enum('Obligatorio','Opcional','Condicional') DEFAULT NULL,
   `status` enum('Activo','Baja') DEFAULT NULL,
   PRIMARY KEY (`requerimentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla huerin.requerimentspersons: ~29 rows (aproximadamente)
 DELETE FROM `requerimentsPersons`;

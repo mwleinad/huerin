@@ -10,18 +10,18 @@
           <input type="hidden" id="idWorkFlow" name="idWorkFlow" value="{$workFlowId}">
           <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
 	Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
-   <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  {if $User.tipoPersonal eq 'Socio' OR $User.tipoPersonal eq 'Asistente'}onclick="Calendario(this)"{/if} value="{$myWorkflow.date}" />
-  </span> | <a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a> | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br /></form>
+   <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  {if in_array(116,$permissions)||$User.isRoot}onclick="Calendario(this)"{/if} value="{$myWorkflow.date}" />
+  </span> |{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br /></form>
   <div class="clear"></div>
   <div class="portlet">
       <div class="portlet-content nopadding borderGray" id="contenido" style="padding:15px">
           
      	{foreach from=$myWorkflow.steps item=step}
-      	
-      	<div style=" cursor:pointer; width:150px; float:left; height:100px; min-height:100px; border:solid; border-width:1px; margin:5px; padding:5px; text-align:center; {if $step.stepCompleted}background-color:#006633; color:#FFFFFF{else}background-color:#C00; color:#FFFFFF{/if}" onclick="ToggleTask({$step.stepId})">
+      	<div style=" cursor:pointer; width:150px; float:left; height:100px; min-height:100px; border:solid; border-width:1px; margin:5px; padding:5px; text-align:center; {if $step.stepCompleted}background-color:#006633; color:#FFFFFF{else}background-color:#C00; color:#FFFFFF{/if}" {if in_array(102,$permissions)||$User.isRoot}onclick="ToggleTask({$step.stepId})"{/if}>
         	Paso No. {$step.step}<br /><b>{$step.nombreStep}</b><br />
-
-          &raquo; Click para Ver Tareas &laquo;
+            {if in_array(102,$permissions)||$User.isRoot}
+             &raquo; Click para Ver Tareas &laquo;
+            {/if}
           {if $step.stepCompleted}Completado{/if}
         </div>
         {if $step.step < $myWorkflow.totalSteps}
@@ -61,13 +61,17 @@
                   <span style="color:#093"><br />
                   {foreach from=$task.controlFileInfo item=file}
                   Version: {$file.version} Fecha: {$file.date}
-                  <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
-                  {if $tipoPersonal == "Asistente" || $tipoPersonal == "Socio" || $tipoPersonal == "Gerente"}
-									<span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
+                  {if in_array(104,$permissions)||$User.isRoot}
+                    <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                  {/if}
+                  {*if $tipoPersonal == "Asistente" || $tipoPersonal == "Socio" || $tipoPersonal == "Gerente" *}
+                  {if in_array(105,$permissions)||$User.isRoot}
+					    <span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
                   {/if}
                   <br />
                   {/foreach}	</span>
-                    {if $myWorkflow.status neq "inactiva"}
+                  {if $myWorkflow.status neq "inactiva"}
+                    {if in_array(103,$permissions)||$User.isRoot}
                     <form method="post" enctype="multipart/form-data">
                       <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
                       <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
@@ -78,21 +82,24 @@
                       <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
                     </form>
                     {/if}
+                   {/if}
                 {else}
                   <img src="{$WEB_ROOT}/images/icons/cancel.png" />
                   {if $myWorkflow.status neq "inactiva"}
-                  <form method="post" enctype="multipart/form-data">
-                     <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
-                      <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
-                      <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
-                      <input type="hidden" id="control" name="control" value="1" />
-                      <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
-                      <input type="file" id="file" name="file" />
-                      <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
-                    </form>
+                      {if in_array(103,$permissions)||$User.isRoot}
+                          <form method="post" enctype="multipart/form-data">
+                          <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
+                          <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
+                          <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
+                          <input type="hidden" id="control" name="control" value="1" />
+                          <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                          <input type="file" id="file" name="file" />
+                          <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
+                          </form>
+                      {/if}
                     {/if}
                 {/if}
-							{else}
+			  {else}
               	N/A
               {/if}            
  
@@ -117,9 +124,13 @@
       <div style="clear:both"> </div>           
       <div class="formLine" style="text-align:center; margin-left:420px">            
       {if $myWorkflow.status neq "inactiva"}
-          <a class="button_notok" id="btnAddCancelWorkFlow" onclick="CancelarWorkFlow({$workFlowId})"><span>Desactivar</span></a>           
-       {else} 
-          <a class="button_ok" id="btnAddCancelWorkFlow" onclick="ReactivarWorkFlow({$workFlowId})"><span>Activar</span></a>           
+          {if in_array(106,$permissions)||$User.isRoot}
+            <a class="button_notok" id="btnAddCancelWorkFlow" onclick="CancelarWorkFlow({$workFlowId})"><span>Desactivar</span></a>
+          {/if}
+       {else}
+          {if in_array(106,$permissions)||$User.isRoot}
+            <a class="button_ok" id="btnAddCancelWorkFlow" onclick="ReactivarWorkFlow({$workFlowId})"><span>Activar</span></a>
+          {/if}
        {/if}
   <div class="clear"> </div>
 

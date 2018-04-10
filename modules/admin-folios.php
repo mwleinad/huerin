@@ -121,12 +121,19 @@
 
 	switch($_GET['section']){
 		case 'nuevos-folios':
-		
+		      $user->allowAccess(5);
+		      $user->allowAccess(139);
+
 			  $folios->setIdRfc($id_rfc);
 			  $listFolios = $folios->GetFoliosByRfc();
 			  $smarty->assign('folios', $listFolios);				
 			  
-			  break;	
+			  break;
+        case 'actualizar-certificado':
+            $user->allowAccess(5);
+            $user->allowAccess(140);
+        break;
+
 	}//switch
 	
 //	$DOC_ROOT = $_SERVER['DOCUMENT_ROOT'];

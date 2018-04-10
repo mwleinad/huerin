@@ -9,8 +9,7 @@
 		<th width="50">Razones Sociales</th>
     <th width="30">Activo</th>
     <th width="100">Fecha Alta</th>
-			{if $User.roleId < 3}
-		<th>Acciones</th>
-    {/if}
+	<th>Acciones</th>
+
 	</tr>
 </thead>

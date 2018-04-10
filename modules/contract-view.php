@@ -1,7 +1,10 @@
 <?php
 	
 	/* Start Session Control - Don't Remove This */
-	$user->allowAccess();	
+    $user->allowAccess(2);
+    $user->allowAccess(62);
+    $user->allowAccess(66);
+
 	/* End Session Control */
 	
 	$contractId = intval($_GET['contId']);

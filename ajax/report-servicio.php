@@ -297,25 +297,6 @@ switch($_POST["type"])
 
          $newCustomer[] = $cliente;
 		}
-//        echo "<pre>";
-//		print_r($newCustomer);
-//		exit;
-
-       /* $personalOrdenado = $personal->ArrayOrdenadoPersonal();
-
-        $sortedArray = array();
-        foreach($personalOrdenado as $personalKey => $personalValue)
-        {
-            foreach($cleanedArray as $keyCleaned => $cleanedArrayValue)
-            {
-                if($personalValue["name"] == $cleanedArrayValue["responsable"])
-                {
-                    $sortedArray[] = $cleanedArrayValue;
-                    unset($cleanedArrayValue[$keyCleaned]);
-                }
-            }
-        }*/
-
         $clientesMeses = array();
         $smarty->assign("cleanedArray", $sortedArray);
         $smarty->assign("clientes", $newCustomer);
