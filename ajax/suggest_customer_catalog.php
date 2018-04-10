@@ -22,8 +22,13 @@ if($User['tipoPersonal'] == 'Supervisor' && $_POST["responsableCuenta"] == 0){
 					
 		$personal->setPersonalId($_POST["responsableCuenta"]);
 		$myUser = $personal->Info();
-		$roleId = $personal->GetRoleId($myUser["tipoPersonal"]);
-		
+        $rol->setTitulo($myUser['tipoPersonal']);
+        $roleId = $rol->GetIdByName();
+        if($roleId<=0){
+            $rol->setRolId($myUser['roleId']);
+            $row = $rol->Info();
+            $roleId=$row['rolId'];
+        }
 		if($_POST["responsableCuenta"]){
 			$User["roleId"] = $roleId;
 			$User["departamentoId"] = $myUser["departamentoId"];
@@ -51,7 +56,13 @@ if($User['tipoPersonal'] == 'Supervisor' && $_POST["responsableCuenta"] == 0){
 	}
 	
 	$myUser = $personal->Info();
-	$roleId = $personal->GetRoleId($myUser["tipoPersonal"]);
+    $rol->setTitulo($myUser['tipoPersonal']);
+    $roleId = $rol->GetIdByName();
+    if($roleId<=0){
+        $rol->setRolId($myUser['roleId']);
+        $row = $rol->Info();
+        $roleId=$row['rolId'];
+    }
 	
 	if($_POST["responsableCuenta"])
 	{

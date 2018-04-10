@@ -37,9 +37,9 @@ class Filtro extends Util
 	{
 		global $rol;
 	    $withPermission = false;
-        //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
+        //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar(el gerente igual debe ser limitado)
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
 		//if el rol del usuario tiene privilegio de ver todos los contrartos
 		if($unlimited){
 			$withPermission = true;
