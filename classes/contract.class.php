@@ -1694,10 +1694,10 @@ class Contract extends Main
 							//comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
                             // el usuario esta dentro de los permisos del contrato
                             $rol->setRolId($User['roleId']);
-                            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+                            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('juridico'));
 							if ($unlimited) {
 								$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-							} else {
+                            } else {
 								foreach ($subordinadosPermiso as $usuarioPermiso) {
 									if (in_array($usuarioPermiso, $conPermiso)) {
 										$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
@@ -1717,7 +1717,7 @@ class Contract extends Main
 					}
 				}
         $rol->setRolId($User['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'),array('juridico'));
         if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }

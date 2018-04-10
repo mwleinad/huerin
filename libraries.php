@@ -248,6 +248,7 @@ if($_SESSION['User']['tipoPers']=='Admin')	{
          // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
          $rol->setRolId($infoUser['roleId']);
          $row = $rol->Info();
+         $infoUser['tipoPersonal'] = $row['name'];
          $roleId=$row['rolId'];
          $User['tipoPers'] = $row['name'];
      }
