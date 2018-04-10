@@ -27,7 +27,13 @@ switch($_POST["type"])
 								
 					$personal->setPersonalId($_POST["responsableCuenta"]);
 					$myUser = $personal->Info();
-					$roleId = $personal->GetRoleId($myUser["tipoPersonal"]);
+                    $rol->setTitulo($myUser['tipoPersonal']);
+                    $roleId = $rol->GetIdByName();
+                    if($roleId<=0){
+                        $rol->setRolId($myUser['roleId']);
+                        $row = $rol->Info();
+                        $roleId=$row['rolId'];
+                    }
 					
 					if($_POST["responsableCuenta"]){
 						$User["roleId"] = $roleId;
@@ -56,7 +62,13 @@ switch($_POST["type"])
 							
 				$personal->setPersonalId($_POST["responsableCuenta"]);
 				$myUser = $personal->Info();
-				$roleId = $personal->GetRoleId($myUser["tipoPersonal"]);
+                $rol->setTitulo($myUser['tipoPersonal']);
+                $roleId = $rol->GetIdByName();
+                if($roleId<=0){
+                    $rol->setRolId($myUser['roleId']);
+                    $row = $rol->Info();
+                    $roleId=$row['rolId'];
+                }
 				
 				if($_POST["responsableCuenta"]){
 					$User["roleId"] = $roleId;
