@@ -78,7 +78,7 @@ class Servicio extends Contract
 		$result = $this->EnumerateActive();
 		foreach($result as $key => $value)
 		{	
-			echo 'servicioId = '.$value['servicioId'];
+			echo 'servicioId = '.$value['servicioId'].'\n';
 			echo '<br>';
 			
 			$dateExploded = explode("-", $value["inicioOperaciones"]);
@@ -110,15 +110,15 @@ class Servicio extends Contract
 				$this->Util()->DB()->setQuery($sql);
 				$this->Util()->DB()->InsertData();
 				
-				echo $sql.'<br>';
-				
+				echo $sql.' \n'." <br>";
+
 			}else{
 				
 				//Checamos si ya es tiempo de crear otra instancia
 			
 				//Checar ultima fecha de instancia
 				$this->Util()->DB()->setQuery("
-					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' ORDER BY date DESC LIMIT 1"); 
+					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status='activa' ORDER BY date DESC LIMIT 1");
 				$ultimoServicio = $this->Util()->DB()->GetSingle();
 
 				switch($value["periodicidad"])
@@ -136,16 +136,16 @@ class Servicio extends Contract
 				$newdate = date ( 'Y-m-d' , $newdate );
 				//--------------------------------------------------------------------------
 				$this->Util()->DB()->setQuery("
-				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' ORDER BY date ASC LIMIT 1"); 
+				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status='activa' ORDER BY date ASC LIMIT 1");
 				$primerServicio = $this->Util()->DB()->GetSingle();
 				$startdate=$dateExploded[0]."-".$dateExploded[1]."-01";
 				
-				echo 'primerServicio = '.$primerServicio;
-				echo '<br>periodicidad = '.$value["periodicidad"];
-				echo '<br>ultimoServicio = '.$ultimoServicio;
-				echo '<br>currentDate = '.$currentDate;
-				echo '<br>newdate = '.$newdate;
-				echo '<br>startdate = '.$startdate;
+				echo 'primerServicio = '.$primerServicio.' \n';
+				echo '<br>periodicidad = '.$value["periodicidad"].' \n';
+				echo '<br>ultimoServicio = '.$ultimoServicio.' \n';
+				echo '<br>currentDate = '.$currentDate.' \n';
+				echo '<br>newdate = '.$newdate.' \n';
+				echo '<br>startdate = '.$startdate.' \n';
 				if($primerServicio > $startdate)
 				{
 					switch($value["periodicidad"])
@@ -159,7 +159,7 @@ class Servicio extends Contract
 					$cont=1;
 					//crea los workflows atrasados sucede si se cambia la fecha de inicio de operaciones.
 					while($primerServicio > $startdate)
-					{ echo "<br>vuelta".$cont."-".$startdate."<br>";
+					{ echo "<br>vuelta".$cont."-".$startdate.' \n';
 
 						$dateExploded = explode("-",$startdate);
 
@@ -224,10 +224,8 @@ class Servicio extends Contract
                                 break;
                             }
                         }
-
-
 						$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
-							servicioId = ".$value["servicioId"]."
+							servicioId = ".$value["servicioId"]." AND status='activa'
 						 	AND date = '".$dateExploded[0]."-".$dateExploded[1]."-01'";
 
 						$this->Util()->DB()->setQuery($sql);
@@ -290,7 +288,7 @@ class Servicio extends Contract
                         }
                     }
 					$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
-							servicioId = ".$value["servicioId"]."
+							servicioId = ".$value["servicioId"]." AND status='activa'
 						 	AND date = '".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1'";
 
 					$this->Util()->DB()->setQuery($sql);
@@ -309,25 +307,25 @@ class Servicio extends Contract
 						$this->Util()->DB()->setQuery($sql);
 						$this->Util()->DB()->InsertData();
 					}
-					echo '<br>';
+					echo '<br>'.' \n';
 				}
 
 			}
 			
-			echo '<br>';
+			echo '<br>'.' \n';
 			echo '*****************';
-			echo '<br>';
+			echo '<br>'.' \n';
 			
 		}//foreach
 		
 		$end = microtime();
 		
-		echo 'Init = '.$init;
+		echo 'Init = '.$init.' \n';
 		echo '<br>';
-		echo 'End = '.$end;
+		echo 'End = '.$end.' \n';
 				
 		$tiempo = $end-$init;
-		echo "Script ejecutado en ".$tiempo." Milisegundos";
+		echo "Script ejecutado en ".$tiempo." Milisegundos \n";
 		
 	}//CreateServiceInstances
 
@@ -408,11 +406,10 @@ class Servicio extends Contract
 			$contract = new Contract;
 			$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 			$data["subordinados"] = $filtro->Subordinados($User["userId"]);
-			
+
 			$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
 			
 			$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["subordinadosPermiso"], $data["conPermiso"]);
-			
 			if($data["withPermission"] === false){
 				unset($result[$key]);
 				continue;
@@ -423,7 +420,7 @@ class Servicio extends Contract
 			$result[$key]["formattedInicioOperaciones"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
 
 			$this->Util()->DB()->setQuery("SELECT * FROM instanciaServicio
-			WHERE servicioId = '".$value["servicioId"]."'	
+			WHERE servicioId = '".$value["servicioId"]."' AND status='activa' 	
 			ORDER BY date DESC");
 			$result[$key]["instancias"] = $this->Util()->DB()->GetResult();
 						
