@@ -17,7 +17,7 @@
 	$status = $val[1];
 		
 	$resContracts = $contract->Enumerate($id, $status);
-	
+
 	//print_r($resContracts);
 	$customer->setCustomerId($_GET["id"]);
 	$infoCustomer = $customer->Info();

@@ -117,9 +117,6 @@ class Personal extends Main
 	{
 		$this->active = $value;
 	}
-
-
-
 	var $tipoPersonal;
 	public function setTipoPersonal($value)
 	{
@@ -182,8 +179,7 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
-
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')===true ) {
+		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false ) {
 			$sql = "SELECT
 						a.*,
 						b.name as nombreJefe,
