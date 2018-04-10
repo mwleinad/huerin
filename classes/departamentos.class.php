@@ -27,7 +27,12 @@ class Departamentos extends Main
 		return $this->departamento;
 	}
 
-
+    public function GetListDepartamentos()
+    {
+        $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY departamento ASC ');
+        $result = $this->Util()->DB()->GetResult();
+        return $result;
+    }
 	public function Enumerate($all=false)
 	{
 		global $infoUser;
@@ -35,10 +40,37 @@ class Departamentos extends Main
 		//if($infoUser["tipoPersonal"]!="Socio" && !$all)
 		//$filtroDepto=' WHERE departamentoId="'.$infoUser['departamentoId'].'" ';
 				
-		$this->Util()->DB()->setQuery('SELECT * FROM departamentos '.$filtroDepto.' ORDER BY departamentoId ASC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT * FROM departamentos '.$filtroDepto.' ORDER BY departamento ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
+		//encontrar el permisoId de cada departamento
+        foreach($result as $key=> $dep){
+            $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos  WHERE titulo="'.$dep['departamento'].'" ');
+            $perId = $this->Util()->DB()->GetSingle();
+            $result[$key]['permId']=$perId;
+        }
 		return $result;
 	}
+    public function GetFirstDep()
+    {
+        global $User;
+        $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos  WHERE parentId=6 and permisoId!=149 AND permisoId!=148 ORDER BY titulo ASC '.$sql_add);
+        $perms = $this->Util()->DB()->GetResult();
+        $perm = $this->Util()->ConvertToLineal($perms,'permisoId');
+
+        $filtro=' WHERE  a.permisoId IN ('.implode(',',$perm).') ';
+
+        if($User['tipoPers']!="Admin")
+           $filtro .=' AND a.rolId="'.$User['roleId'].'" ';
+
+        $this->Util()->DB()->setQuery('SELECT b.titulo FROM rolesPermisos a INNER JOIN permisos b ON 
+                                       a.permisoId=b.permisoId '.$filtro.' ORDER BY b.titulo ASC '.$sql_add);
+        //$this->Util()->DB()->GetQuery();
+        $single = $this->Util()->DB()->GetSingle();
+
+        $this->Util()->DB()->setQuery('SELECT departamentoId FROM departamentos  WHERE departamento="'.$single.'"');
+        $depId = $this->Util()->DB()->GetSingle();
+        return $depId;
+    }
 
 	public function Info()
 	{

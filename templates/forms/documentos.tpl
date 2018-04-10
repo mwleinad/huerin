@@ -9,10 +9,9 @@
 	</tr>
 </thead>
 <tbody id="tbInfSub">
-
   <tr>
 		<td align="left" width="40%" class="tdPad">
-    {if $canEdit || $User["userId"] == 149}
+        {if (in_array(72,$permissions)&&in_array(73,$permissions))||$User.isRoot}
     	<a href="{$WEB_ROOT}/add-documento/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Documento', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Documento"/> Agregar Documento</a>
 		{/if}
 			<div id="contentDocumentos">
@@ -20,8 +19,5 @@
       </div>
       </td>
 	</tr>
-
-  
-
 </tbody>
 </table>

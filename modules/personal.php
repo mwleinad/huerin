@@ -1,9 +1,9 @@
 <?php
 
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('personal');	
+	/* Star Session Control Modules*/
+    $user->allowAccess(1);
+	$user->allowAccess(8);
 	/* End Session Control */
-	
 	$personals = $personal->Enumerate();
 		
 	$smarty->assign("personals", $personals);

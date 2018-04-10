@@ -105,6 +105,7 @@ include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
 include_once(DOC_ROOT."/classes/contractRep.class.php");
 include_once(DOC_ROOT."/classes/serie.class.php");
 include_once(DOC_ROOT."/classes/expediente.class.php");
+include_once(DOC_ROOT."/classes/rol.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -191,6 +192,7 @@ $cfdi = new Cfdi;
 $archivos = new Archivos();
 $objectSerie=  new Serie;
 $expediente=  new Expediente;
+$rol=  new Rol;
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");
@@ -218,30 +220,57 @@ $User = $_SESSION['User'];
 $infoUser = $user->Info();
 $smarty->assign('infoUser', $infoUser);
 
-	switch($infoUser["tipoPersonal"])
+	/*switch($infoUser["tipoPersonal"])
 	{
 		case "Socio": $User['roleId'] = 1; break;
 		case "Gerente": $User['roleId'] = 2; break;
 		case "Supervisor": $User['roleId'] = 3; break;
-		case "Contador": $User['roleId'] = 3; break;
-		case "Auxiliar": $User['roleId'] = 3; break;
-		case "Asistente": $User['roleId'] = 1; break;
-		case "Recepcion": $User['roleId'] = 1; break;
+		case "Contador": $User['roleId'] = 6; break;
+		case "Auxiliar": $User['roleId'] = 7; break;
+		case "Asistente": $User['roleId'] = 5; break;
+		case "Recepcion": $User['roleId'] = 9; break;
 		case "Cliente": $User['roleId'] = 4; break;
 		case "Nomina":
-			$User['roleId'] = 1;
+			$User['roleId'] = 8;
 			$User['subRoleId'] = "Nomina";
 		break;
-	}
+	}*/
+if($_SESSION['User']['tipoPers']=='Admin')	{
+    $rol->setAdmin(1);
+    $User['roleId'] = 1;
+}else{
+    //primero buscar por nombre el rol
+    $rol->setTitulo($infoUser['tipoPersonal']);
+    $roleId = $rol->GetIdByName();
+     if($roleId<=0){
+         //si por nombre de rol no se encuentra entonces usar el rolId que tiene en la tabla personal
+         //ese nunca debe fallar aun que se cambie de nombre de nombre de el rol. cuando se haya asignado los roles a todos
+         // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
+         $rol->setRolId($infoUser['roleId']);
+         $row = $rol->Info();
+         $roleId=$row['rolId'];
+         $User['tipoPers'] = $row['name'];
+     }
+    $User['roleId'] = $roleId;
+}
+$rol->setRolId($User['roleId']);
+$permissions = $rol->GetPermisosByRol();
+$smarty->assign('permissions', $permissions);
 
-	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 
+$rol->setRolId($User['roleId']);
+$firstPages = $rol->FindFirstPage();
+$smarty->assign('firstPages', $firstPages);
+
+$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $User["tipoPersonal"] == "Gerente")
 {
 	$smarty->assign('canEdit', true);
 }
 
 $smarty->assign('User',$User);
+$firstDep = $departamentos->GetFirstDep();
+$smarty->assign("firstDep", $firstDep);
 
 function dd($data)
 {

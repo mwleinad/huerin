@@ -24,10 +24,11 @@
 <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/lista.css" />
 
 
 {if $page == "login"}
-<link href="{$WEB_ROOT}/css/login.css" rel="stylesheet" type="text/css" media="all" />  
+<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
 {/if}
 <script src="{$WEB_ROOT}/javascript/js-config.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript">
@@ -94,16 +95,6 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 </head>
 
 <body>
-{*}<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v2.4&appId=181783391885099";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script> {*}
-
-
 {if $page == "login"}
 <div style="background-color:#009900; color:#FFFFFF" align="center">
 Sistema ejecutandose desde nuevo servidor

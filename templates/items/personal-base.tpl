@@ -14,10 +14,16 @@
 		<td align="center">{$item.departamento}</td>
 		<td align="center">{$item.puesto}</td>
 		<td align="center">{$item.nombreJefe}</td>
-		<td align="center">        	
-			<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.personalId}" title="Eliminar"/>   
+		<td align="center">
+            {if in_array(9,$permissions)|| $User.isRoot}
+			<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.personalId}" title="Eliminar"/>
+			{/if}
+            {if in_array(10,$permissions)|| $User.isRoot}
             <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.personalId}" title="Editar"/>
-			<img src="{$WEB_ROOT}/images/icons/file.png" class="spanShowFile" id="{$item.personalId}" title="Ver archivos"/>
+			{/if}
+            {if in_array(11,$permissions)|| $User.isRoot}
+			<img src="{$WEB_ROOT}/images/icons/file.png" class="spanShowFile" id="{$item.personalId}" title="Ver expedientes"/>
+			{/if}
 		</td>
 	</tr>
 {foreachelse}

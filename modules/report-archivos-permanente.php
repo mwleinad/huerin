@@ -11,10 +11,11 @@
 * @link     http://avantika.com.mx
 **/
 
-  /* Start Session Control - Don't Remove This */
-  $user->allowAccess("report-archivos-permanente");
-  /* End Session Control */
-  
+    /* Star Session Control Modules*/
+    $user->allowAccess(7);  //level 1
+    $user->allowAccess(159);//level 2
+    /* end Session Control Modules*/
+
   	$personals = $personal->Enumerate();
 	$departamentos = $departamentos->Enumerate();
 	

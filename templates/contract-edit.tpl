@@ -39,8 +39,10 @@
         	<div id="divLoading">
                 <img src="{$WEB_ROOT}/images/loading.gif" />
                 <br />Guardando...
-            </div>           
+            </div>
+            {if in_array(64,$permissions)||$User.isRoot}
             <div class="btnSave" onclick="VerifyForm()"></div>
+            {/if}
         </div>
       
     </div>

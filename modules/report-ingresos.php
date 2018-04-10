@@ -11,9 +11,10 @@
 * @link     http://avantika.com.mx
 **/
 
-  	/* Start Session Control - Don't Remove This */
-  	$user->allowAccess("report-ingresos");
-  	/* End Session Control */
+    /* Star Session Control Modules*/
+    $user->allowAccess(7);  //level 1
+    $user->allowAccess(161);//level 2
+    /* end Session Control Modules*/
   
   	$personals = $personal->Enumerate();
 	$departamentos = $departamentos->Enumerate();

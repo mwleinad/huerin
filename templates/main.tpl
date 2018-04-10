@@ -1,4 +1,4 @@
-{if $page != "product-add" && $page != "obs-add"}
+{if $page != "product-add" && $page != "obs-add" && $page != "login"}
 <div id="container">
 	{include file="templates/{$includedTpl}.tpl"}	
 </div> 

@@ -1,8 +1,9 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess('customer');	
-	/* End Session Control */
+
+    /* Star Session Control Modules*/
+    $user->allowAccess(4);  //level 1
+    $user->allowAccess(121);//level 2
+    /* end Session Control Modules*/
 	if(!$_GET["tipo"])
 	{
 		$_GET["tipo"] = "Activos";

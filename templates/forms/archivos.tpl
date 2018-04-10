@@ -11,14 +11,14 @@
 <tbody id="tbInfSubArch">
 
   <tr>
-		<td align="left" width="40%" class="tdPad">
-    {if $canEdit || $User["userId"] == 149}
-    	<a href="{$WEB_ROOT}/add-archivo/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Archivo', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Documento"/> Agregar Archivos</a>
-		{/if}
-			<div id="contentArchivos">
-			{include file="{$DOC_ROOT}/templates/lists/archivo.tpl"}    
-      </div>
-      </td>
+    <td align="left" width="40%" class="tdPad">
+    {if in_array(68,$permissions)||$User.isRoot}
+    <a href="{$WEB_ROOT}/add-archivo/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Archivo', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Archivo"/> Agregar Archivos</a>
+    {/if}
+    <div id="contentArchivos">
+        {include file="{$DOC_ROOT}/templates/lists/archivo.tpl"}
+    </div>
+  </td>
 	</tr>
 
   

@@ -1,8 +1,9 @@
 <div class="grid_6 prefix_5 suffix_5">
-    <h1>
-    <img src="http://www.braunhuerin.com.mx/imagenes/logo.png" /></h1>
-      <div id="login">
-          
+    <h1></h1>
+      <div id="login" >
+        <div class="logo">
+          <img src="{$WEB_ROOT}/images/logo.svg"  class="img" />
+        </div>
         <form name="frmLogin" id="frmLogin" method="post">
           <input type="hidden" name="type" value="doLogin" />
           <p>

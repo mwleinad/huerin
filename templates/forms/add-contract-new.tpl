@@ -3,9 +3,6 @@
 
 	{include file="{$DOC_ROOT}/templates/forms/add-contract-basic.tpl"}
 
-	{*include file="{$DOC_ROOT}/templates/forms/accionistas.tpl"*}
-
-
 <div id="infoCompraVenta2" style="display:block">
 	{include file="{$DOC_ROOT}/templates/forms/datos-contacto.tpl"}
 </div>

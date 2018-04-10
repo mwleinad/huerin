@@ -118,7 +118,7 @@ class Archivos extends Servicio {
             $user->setUserId($value["responsableCuenta"]);
             $userInfo = $user->Info();
             if (
-                    ($User["roleId"] > 2 && $User["roleId"] < 4) &&
+                    (in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) &&
                     ($User["userId"] != $value["responsableCuenta"] &&
                     $userInfo["jefeContador"] != $User["userId"] &&
                     $userInfo["jefeSupervisor"] != $User["userId"] &&

@@ -3,12 +3,14 @@
   <div class="grid_9">
   <h1 class="catalogos">Estado de cuenta saldos pendientes</h1>
   </div>
-    <div class="grid_6" id="eventbox">
+  {if in_array(130,$permissions) || $User.isRoot}
+  <div class="grid_6" id="eventbox">
 		  <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
 		  <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
   <div id="loadPrint">
   </div>
   </div>
+  {/if}
   <div class="grid_6" id="eventbox" >
   </div>
 
@@ -58,7 +60,7 @@
                     <option value="2016" {if $year == "2016"} selected="selected" {/if}>2016</option>
                     <option value="2017" {if $year == "2017"} selected="selected" {/if}>2017</option>
                     <option value="2018" {if $year == "2018"} selected="selected" {/if}>2018</option>
-                    <option value="2019" {if $year == "2019"} selected="selected" {/if}>2010</option>
+                    <option value="2019" {if $year == "2019"} selected="selected" {/if}>2019</option>
                     <option value="2020" {if $year == "2020"} selected="selected" {/if}>2020</option>
                 </select>
 

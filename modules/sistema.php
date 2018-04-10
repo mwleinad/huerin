@@ -13,6 +13,10 @@
 	switch($_GET["section"]){
 	
 		case "nueva-factura":
+		    //verificar permisos
+            $user->allowAccess(5);
+		    $user->allowAccess(131);
+
 			$producto->CleanConceptos();
 			$producto->CleanImpuestos();
 			$ivas = $main->ListIvas();
@@ -37,7 +41,10 @@
 			break;
 			
 		case 'consultar-facturas':
-			
+            //verificar permisos
+            $user->allowAccess(5);
+            $user->allowAccess(132);
+
 			$comprobantes = array();
 			$comprobante->SetPage($_GET["p"]);
 			$result = $comprobante->GetComprobantesByRfc();
@@ -106,7 +113,11 @@
 			break;
 		
 		case 'ver-pdf':
-			
+            //verificar permisos
+            $user->allowAccess(5);
+            $user->allowAccess(132);
+            $user->allowAccess(134);
+
 			$id_comprobante = $_GET['item'];
 			$infoComp = $comprobante->GetInfoComprobante($id_comprobante);
 			//crear pdf on the fly			
@@ -118,7 +129,10 @@
 			break;
 		
 		case 'descargar-pdf':
-			
+            //verificar permisos
+            $user->allowAccess(5);
+            $user->allowAccess(132);
+            $user->allowAccess(135);
 			$id_comprobante = $_GET['item'];
 			$infoComp = $comprobante->GetInfoComprobante($id_comprobante);
 			//crear pdf on the fly
@@ -130,7 +144,10 @@
 			break;
 		
 		case 'descargar-xml':
-			
+            //verificar permisos
+            $user->allowAccess(5);
+            $user->allowAccess(132);
+            $user->allowAccess(136);
 			$id_comprobante = $_GET['item'];
 						
 			$infoComp = $comprobante->GetInfoComprobante($id_comprobante);
@@ -150,7 +167,10 @@
 			break;
 		
 		case 'enviar-pdf':
-			
+            //verificar permisos
+            $user->allowAccess(5);
+            $user->allowAccess(132);
+            $user->allowAccess(137);
 			$id_comprobante = $_GET['item'];
 						
 			$infoComp = $comprobante->GetInfoComprobante($id_comprobante);
