@@ -1167,14 +1167,13 @@ class Customer extends Main
           }
 
         }
-        //limitar hasta nivel supervisor
+        //limitar hasta nivel gerente
         $rol->setRolId($User['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
         if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
 
-        
     }
 		$noDuplicados = array();
 		foreach($result as $key => $value)
@@ -1182,7 +1181,6 @@ class Customer extends Main
 			$noDuplicados[$value["customerId"]] = $value;
 		}
 		$result = $noDuplicados;
-
     return $result;
   }	
 	
@@ -1447,8 +1445,6 @@ class Customer extends Main
                             $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
                             break;
                     }
-
-
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
