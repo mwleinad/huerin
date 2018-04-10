@@ -27,7 +27,7 @@ class Personal extends Main
     private $roleId;
     public function setRole($value)
     {
-        if($this->Util()->ValidateRequireField($value, "Rol Id"))
+        if($this->Util()->ValidateRequireField($value, "Tipo de Usuario(rolId)"))
         $this->roleId = $value;
     }
 	private $skype;
