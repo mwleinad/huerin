@@ -1340,6 +1340,17 @@ class Comprobante extends Producto
 			$sqlSearch .= ' AND c.rfcId = '.$values['facturador'];
 
 		$id_rfc = $this->getRfcActive();
+		switch($values['generateby']){
+            case 'automatico':
+                $sqlSearch .= ' AND instanciaServicio.comprobanteId is not null';
+            break;
+            case 'manual':
+                $sqlSearch .= ' AND instanciaServicio.comprobanteId is  null';
+            break;
+
+        }
+        if(!isset($values['addComplemento']))
+            $sqlSearch .= ' AND c.tiposComprobanteId!="10" ';
 
 		//$sqlQuery = 'SELECT * FROM comprobante ORDER BY serie ASC, fecha DESC, comprobanteId DESC';
 		//echo "jere";
