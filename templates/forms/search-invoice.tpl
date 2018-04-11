@@ -3,7 +3,7 @@
         <input type="hidden" name="type" id="type" value="search">
         <table width="900" align="center">
             <tr style="background-color:#CCC">
-                <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
+                <td colspan="7" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
             </tr>
             <tr>
                 <td align="center">A&ntilde;o</td>
@@ -11,6 +11,8 @@
                 <td align="center">Serie</td>
                 <td align="center">Cliente/Razon social</td>
                 <td align="center">Status</td>
+                <td align="center">Generado</td>
+                <td align="center">Incluir complementos</td>
             </tr>
             <tr>
                 <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
@@ -45,7 +47,7 @@
                         {/foreach}
                     </select>
                 </td>
-                <td style="width: 60%; padding:0px 4px 4px 8px;" align="center">
+                <td style="width: 35%; padding:0px 4px 4px 8px;" align="center">
                     <input type="text" name="name" id="name" class="largeInput medium2">
                     <input type="hidden" name="rfc" id="rfc" class="largeInput medium2">
                 </td>
@@ -55,6 +57,17 @@
                         <option value="1">Activos</option>
                         <option value="0">Cancelados</option>
                     </select>
+                </td>
+                <td style="width: 15%; padding:0px 4px 4px 8px;" align="center">
+                    <select name="generateby" id="generateby" class="largeInput medium2">
+                        <option value="">Todos</option>
+                        <option value="automatico">Automatico</option>
+                        <option value="manual">Manuales</option>
+                    </select>
+                </td>
+                <td style="width: 15%; padding:0px 4px 4px 8px;" align="center">
+                    <input type="checkbox" name="addComplemento" id="addComplemento" class="largeInput medium2" />
+
                 </td>
             </tr>
             <tr align="center">

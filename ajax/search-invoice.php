@@ -11,6 +11,8 @@ switch ($_POST['type']){
          $filter['serie'] = $_POST['serie'];
          $filter['rfc'] = $_POST['rfc'];
          $filter['nombre'] = $_POST['name'];
+         $filter['generateby'] = $_POST['generateby'];
+         $filter['addComplemento'] = $_POST['addComplemento'];
          $comprobantes=array();
          $comprobantes = $comprobante->SearchComprobantesByRfc($filter);
          $smarty->assign("comprobantes", $comprobantes);
