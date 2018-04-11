@@ -16,11 +16,7 @@
             </tr>
             <tr>
                 <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
-                    <select name="anio" id="anio" class="largeInput medium2">
-                        <option value="2016">2016</option>
-                        <option value="2017">2017</option>
-                        <option value="2018">2018</option>
-                    </select>
+                    {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
                 </td>
                 <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
                     <select name="mes" id="mes" class="largeInput medium2">
