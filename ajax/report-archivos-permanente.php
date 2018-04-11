@@ -44,33 +44,8 @@
 		  	$archivos = $archivo->EnumerateAll();
 		
 		  	$contracts = array();
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
-				
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-				
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-					
-					foreach($socios as $res){
-						
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-						
-						$resContracts = $contract->BuscarContract($formValues, true);
-						
-						$contracts = @array_merge($contracts, $resContracts);
-						
-						
-					}//foreach
-				
-				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
-				}
-			
-			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
-			}//else
+		  	//filtro
+            include_once(DOC_ROOT.'/ajax/filter.php');
 		 
 		  	foreach ($contracts as $key => $value) {
 				if (preg_match("/TENGO/i", $contracts[$key]['claveFiel'])) {
