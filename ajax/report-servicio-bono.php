@@ -39,34 +39,7 @@ switch($_POST["type"])
 					WHERE class = ''";
 			$db->setQuery($sql);
 			$db->UpdateData();
-
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
-
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-
-					foreach($socios as $res){
-
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-
-						$resContracts = $contract->BuscarContract($formValues, true);
-
-						$contracts = @array_merge($contracts, $resContracts);
-
-
-					}//foreach
-
-				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
-				}
-
-			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
-			}//else
+    		include_once(DOC_ROOT.'/ajax/filter.php');
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();

@@ -181,8 +181,7 @@
 
 		case 'search':
 
-				echo 'ok[#]';
-				
+			echo 'ok[#]';
 			$year = $_POST['year'];
 			
 			$formValues['subordinados'] = $_POST['deep'];			
@@ -198,35 +197,68 @@
 			$db->UpdateData();
 						
 			$contracts = array();
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
-				
+			if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
 				//Si seleccionaron TODOS
 				if($formValues['respCuenta'] == 0){
-				
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-					
-					foreach($socios as $res){
-						
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-						
-						$resContracts = $contract->BuscarContract($formValues, true);
-						
-						$contracts = @array_merge($contracts, $resContracts);
-						
-						
-					}//foreach
+                    $personal->setActive(1);
+                    $socios = $personal->ListSocios();
+                    $idPersons= array();
+                    foreach($socios as $res){
+                        array_push($idPersons,$res['personalId']);
+                        $personal->setPersonalId($res['personalId']);
+                        $subordinados = $personal->Subordinados();
+                        if(empty($subordinados))
+                            continue;
+
+                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
+                        $idPersons=array_merge($idPersons,$subsLine);
+                        unset($subsLine);
+                        unset($subordinados);
+                    }//foreac
+                    $idPersons = array_unique($idPersons);
+                    $formValues['respCuenta'] =  $idPersons;
+                    $contracts = $contractRep->BuscarContract($formValues, true);
 				
 				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
+                    $idPersons = array();
+                    $respCuenta = $formValues['respCuenta'];
+                    array_push($idPersons,$respCuenta);
+                    if($formValues['subordinados']){
+                        $personal->setPersonalId($respCuenta);
+                        $subordinados = $personal->Subordinados();
+                        if(!empty($subordinados)){
+                            $subsLine = $util->ConvertToLineal($subordinados,'personalId');
+                            $idPersons=array_merge($idPersons,$subsLine);
+                            unset($subsLine);
+                            unset($subordinados);
+                        }
+                    }
+
+                    $formValues['respCuenta'] = $idPersons;
+                    $contracts = $contractRep->BuscarContract($formValues, true);
 				}
 			
 			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
+                $idPersons = array();
+                if($formValues['respCuenta']==0)
+                    $respCuenta = $User['userId'];
+                else
+                    $respCuenta = $formValues['respCuenta'];
+                array_push($idPersons,$respCuenta);
+                if($formValues['subordinados']){
+                    $personal->setPersonalId($respCuenta);
+                    $subordinados = $personal->Subordinados();
+                    if(!empty($subordinados)){
+                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
+                        $idPersons=array_merge($idPersons,$subsLine);
+                        unset($subsLine);
+                        unset($subordinados);
+                    }
+                }
+                $formValues['respCuenta'] = $idPersons;
+                $contracts = $contractRep->BuscarContract($formValues, true);
 			}//else
 			//echo count($contracts);
-		
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
@@ -245,9 +277,8 @@
 								
 			}//foreach					
 			
-			$values['departamentoId'] = $_POST["departamentoId"];
-			$values['anio'] = $_POST["year"];
-
+				$values['departamentoId'] = $_POST["departamentoId"];
+				$values['anio'] = $_POST["year"];
 				$values['nombre'] = $_POST['rfc'];
 				$values['facturador'] = $_POST['facturador'];
 				$values['respCuenta'] = $_POST['responsableCuenta'];

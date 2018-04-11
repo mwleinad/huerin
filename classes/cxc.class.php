@@ -3,14 +3,11 @@
 class CxC extends Producto
 {
 	function SearchCuentasPorCobrarNoReporte($contracts, $values){
-
 		//Viene del Buscador o viene del Modulo
 		{
 			global $user;
 
 			$sqlSearch = '';
-		//print_r($contracts);
-		echo count($contracts);
 		$ids = array();
 			$inIds = "0";
 		foreach($contracts as $key => $contract)
