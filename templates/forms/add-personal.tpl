@@ -85,7 +85,7 @@
               <select name="tipoPersonal" id="tipoPersonal" class="smallInput medium" onchange="ToggleReporta()">
                   <option value="">Seleccionar....</option>
               {foreach from=$roles item=item key=key}
-                  <option value="{$item.name}" {if $post.tipoPersonal eq $item.name} selected="selected" {/if}>{$item.name}</option>
+                  <option value="{$item.name}" {if $post.tipoPersonal eq $item.name || $post.roleId eq $item.rolId } selected="selected" {/if}>{$item.name}</option>
               {/foreach}
               </select>
              <hr />       

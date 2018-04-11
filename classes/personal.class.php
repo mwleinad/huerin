@@ -179,7 +179,7 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false ) {
+		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false ) {
 			$sql = "SELECT
 						a.*,
 						b.name as nombreJefe,
@@ -199,7 +199,7 @@ class Personal extends Main
 		
 		$this->setPersonalId($infoUser['personalId']);
    	    $result = $this->SubordinadosDetails();
-		return $result;
+   	    return $result;
 	}
 	
 	function EnumerateById($ids)
@@ -376,7 +376,7 @@ class Personal extends Main
 			$sqlActive = " AND active = '1'";
 
 		$sql = "SELECT * FROM personal
-				WHERE tipoPersonal = 'Socio'
+				WHERE tipoPersonal = 'Socio' OR roleId in(1,5)
 				".$sqlActive."
 				ORDER BY name ASC";
 		$this->Util()->DB()->setQuery($sql);

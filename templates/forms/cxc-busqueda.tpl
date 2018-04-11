@@ -1,6 +1,6 @@
  <div align="center"  id="divForm">
  
-<form name="frmSearch" id="frmSearch" action="" method="post">
+<form name="frmSearch" id="frmSearch" action="" method="post" onsubmit="return false">
 <input type="hidden" name="type" id="type" value="search" />
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
@@ -27,45 +27,38 @@
 		</td>
         <td align="center">
     	<select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
-      	{if $User.roleId=="1"}
-		<option value="0" selected="selected">Todos...</option>
-		{/if}
-        {foreach from=$personals item=personal}
-      	<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
-        {/foreach}
-      </select>  
+			{if $User.tipoPersonal eq 'Socio' ||$User.tipoPersonal eq 'Coordinador'||$User.tipoPersonal eq 'Admin'}
+			 	<option value="0">Todos...</option>
+			{/if}
+			{foreach from=$personals item=personal}
+		 		<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId && $search.responsableCuenta} selected="selected" {/if} >{$personal.name}</option>
+			{/foreach}
+      	</select>
 		</td>    
 		<td align="center">
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
-		   <td align="center">
-    	<select name="departamentoId" id="departamentoId"  class="smallInput">
-      	<option value="" selected="selected">Todos...</option>
-        {foreach from=$departamentos item=depto}
-      	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-        {/foreach}
-      </select>  
-		</td>  
-		
-		<td align="center">    	
-    <select name="year" id="year"  class="smallInput" style="width: 80px; min-width: 80px">
-      	<option value="2012" {if $year == "2012"} selected="selected" {/if}>2012</option>
-      	<option value="2013" {if $year == "2013"} selected="selected" {/if}>2013</option>
-      	<option value="2014" {if $year == "2014"} selected="selected" {/if}>2014</option>
-      	<option value="2015" {if $year == "2015"} selected="selected" {/if}>2015</option>
-      	<option value="2016" {if $year == "2016"} selected="selected" {/if}>2016</option>
-      	<option value="2017" {if $year == "2017"} selected="selected" {/if}>2017</option>
-      	<option value="2018" {if $year == "2018"} selected="selected" {/if}>2018</option>
-      	<option value="2019" {if $year == "2019"} selected="selected" {/if}>2010</option>
-      	<option value="2020" {if $year == "2020"} selected="selected" {/if}>2020</option>
-     </select>
-
-    </td></tr>
+	   <td align="center">
+			<select name="departamentoId" id="departamentoId"  class="smallInput">
+			<option value="" selected="selected">Todos...</option>
+			{foreach from=$departamentos item=depto}
+			<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
+			{/foreach}
+			</select>
+		</td>
+		<td align="center">
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+        </td>
+</tr>
 <tr>
-    <td align="center" colspan="4">
-        <div style="margin-left:400px">
-        <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
-        </div>
+    <td align="center" colspan="5">
+		<div style="text-align: center; width: 100%">
+            {include file="{$DOC_ROOT}/templates/boxes/loaded.tpl"}
+			<div style="display: inline-block">
+				<a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
+			</div>
+		</div>
+
     </td>
 </tr>
 </table>
