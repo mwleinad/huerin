@@ -8,7 +8,7 @@ date_default_timezone_set('America/Mexico_City');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$user->allowAccess('customer');
+$user->allowAccess(167);
 
 extract($_POST);
 
