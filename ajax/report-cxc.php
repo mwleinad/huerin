@@ -31,7 +31,7 @@ switch($_POST["type"])
 			$values['anio'] = $_POST['year'];
 
 			$listCxc = $cxc->SearchCuentasPorCobrar($values);
-			
+			$totales =  array();
 			foreach($listCxc['items'] as $key => $value)
 			{
 				$totales[$value['nombre']]['total']=$totales[$value['nombre']]['total']+$value['total'];
