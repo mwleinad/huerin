@@ -8,45 +8,15 @@ switch($_POST["type"])
 {
 	
 	case 'search':
-					
 			echo 'ok[#]';
-			
 			$formValues['subordinados'] = $_POST['subordinados'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
 			$idContrato = $_POST['contractId'];
-			
 			$contracts = array();
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
-				
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-				
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-					
-					foreach($socios as $res){
-						
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-						
-						$resContracts = $contract->BuscarContract($formValues, true);
-						
-						$contracts = @array_merge($contracts, $resContracts);
-						
-						
-					}//foreach
-				
-				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
-				}
-			
-			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
-			}//else
-			
-						
+			//este archivo contiene los filtros segun sea el rol, se usa en varios apartado cambiarlos por este archivo
+            include_once(DOC_ROOT.'/ajax/filter.php');
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();

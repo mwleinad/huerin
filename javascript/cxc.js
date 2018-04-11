@@ -4,14 +4,13 @@
 		
 		new Ajax.Request(WEB_ROOT+'/ajax/cxc.php',{
 			method:'post',
-			parameters: $('frmBusqueda').serialize(true),
+			parameters: $('frmSearch').serialize(true),
 			onLoading: function(){
 				$('loadBusqueda').show();	
 			},
 			onSuccess: function(transport){								
 				var response = transport.responseText || "no response text";				
 				var splitResponse = response.split("[#]");
-console.log(response);
 				$('loadBusqueda').hide();
 
 				if(splitResponse[0].trim()=="ok"){
@@ -176,7 +175,7 @@ function SuggestUser()
 		}
 		
 	$('facturasListDiv').observe("click", AddEditItemsListeners);
-	$('btnBuscar').observe("click", Buscar);
+	//$('btnBuscar').observe("click", c);
 	
 });
 
@@ -212,20 +211,15 @@ function doSearch(){
 		method:'post',
 		parameters: $('frmSearch').serialize(true),
 		onLoading: function(){
-			$("loading").style.display = "block";
+			$("loading-img").style.display = "block";
 			$('contenido').innerHTML = "";
+			$("btnBuscar").style.display='none';
 		},
-		onSuccess: function(transport){		
-			
-			
+		onSuccess: function(transport){
 				var response = transport.responseText || "no response text";				
 				var splitResponse = response.split("[#]");
-				console.log(splitResponse);
-//console.log(response);
-				console.log(splitResponse[0]);
-
-				//$('loadBusqueda').hide();
-
+                $("btnBuscar").style.display='block';
+			    $("loading-img").style.display = "none";
 				if(splitResponse[0] == "ok"){
 					//$('total').update(splitResponse[1]);
 					$('facturasListDiv').update(splitResponse[2]);
