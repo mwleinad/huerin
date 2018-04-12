@@ -232,16 +232,14 @@ switch($_POST['type']){
                       $html.= "<br>";
                        if($contrato_actual['permisos']!=implode("-",$per)){
                            $logFilGlobal .=$logFil;
-                           $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
-                           $html .="<br><br>";
-                           $upDo++;
-                           //$db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
-                           //$up = $db->UpdateData();
-                          /* if($up>0){
+
+                           $db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
+                           $up = $db->UpdateData();
+                           if($up>0){
                                $upDo++;
                                $html .=$db->getQuery();
                                $html .="<br><br>";
-                           }*/
+                           }
                        }else{
                           $html="";
                           $noUpdate++;
@@ -254,15 +252,15 @@ switch($_POST['type']){
                     }
                     break;
             }
-            $html .=" total actualizados : ".$upDo."<br>";
+            $htmlglob .=" total de contratos actualizados : ".$upDo."<br>";
             fclose($fp);
             echo "ok[#]";
             echo $htmlglob;
             echo  $logFilGlobal;
-            echo "contratos que no tenian responsable en una area<br><br>";
+            echo "<br>contratos que no tenian responsable en una area<br><br>";
             echo $stringNoResp;
-            echo 'Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
-            echo 'Total que no se actualizan por no sufrir cambios '.$noUpdate;
+            echo '<br>Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
+            echo 'Total de contratos que no se actualizaron por tener informacion correcta '.$noUpdate;
         }
     break;
 }
