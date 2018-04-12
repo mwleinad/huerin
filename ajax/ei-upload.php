@@ -37,12 +37,13 @@ switch($_POST['type']){
             $fila=1;
             switch($_POST['tipo-ei']){
                 case 'imp-rsocial':
-                    $fila=1;
+                    $fila=0;
                     $upDo=0;
                     $logFile="";
                     while(($row=fgetcsv($fp,2048,","))==true){
-                        if($fila==1)
+                        if($fila==0)
                         {
+                            dd($row);
                             $fila++;
                             continue;
                         }
