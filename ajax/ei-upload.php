@@ -37,13 +37,12 @@ switch($_POST['type']){
             $fila=1;
             switch($_POST['tipo-ei']){
                 case 'imp-rsocial':
-                    $fila=0;
+                    $fila=1;
                     $upDo=0;
                     $logFile="";
-                    while(($row=fgetcsv($fp,2048,","))==true){
-                        if($fila==0)
+                    while(($row=fgetcsv($fp,4096,","))==true){
+                        if($fila==1)
                         {
-                            dd($row);
                             $fila++;
                             continue;
                         }
@@ -55,7 +54,6 @@ switch($_POST['type']){
                         $permisos_actuales = explode("-",$contrato_actual['permisos']);
                         if(empty($contrato_actual)||$contrato_actual['permisos']==""||((trim($row[40])==""||trim($row[40])=="--")&&(trim($row[41])==""||trim($row[41])=="--")))
                         {
-                            dd($row);
                             $logFil .="este no pasa ".$row[1]."<br>";
                             $fila++;
                             continue;
@@ -139,11 +137,11 @@ switch($_POST['type']){
                         }
                       $html.= $contrato_actual['permisos']."<=>".implode("-",$per);
                       $html.= "<br>";
-                        //$db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
-                        //$up = $db->UpdateData();
+                        $db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
+                        $up = $db->UpdateData();
                         if($up>0){
                             $upDo++;
-                            //$html .=$db->getQuery();
+                            $html .=$db->getQuery();
                             $html .="<br><br>";
                         }
 
@@ -154,7 +152,7 @@ switch($_POST['type']){
                     }
                     break;
             }
-            $html .=" total actualizados : ".$fila."<br>";
+            $html .=" total actualizados : ".$upDo."<br>";
 
             fclose($fp);
             echo "ok[#]";
