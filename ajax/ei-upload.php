@@ -54,6 +54,7 @@ switch($_POST['type']){
                         $permisos_actuales = explode("-",$contrato_actual['permisos']);
                         if(empty($contrato_actual)||$contrato_actual['permisos']==""||((trim($row[40])==""||trim($row[40])=="--")&&(trim($row[41])==""||trim($row[41])=="--")))
                         {
+                            dd($row);
                             $logFil .="este no pasa ".$row[1]."<br>";
                             $fila++;
                             continue;
