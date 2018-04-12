@@ -135,6 +135,7 @@ switch($_POST['type']){
                             $cad= $kp.",".$valp;
                             array_push($per,$cad);
                         }
+                      $logFil .= ' =|'.$row[1].'<br>';
                       $html.= $contrato_actual['permisos']."<=>".implode("-",$per);
                       $html.= "<br>";
                         $db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
