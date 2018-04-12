@@ -6,7 +6,7 @@ include_once(DOC_ROOT.'/libraries.php');
 switch ($_POST['type']){
     case 'search':
          $filter['status_activo'] = $_POST['status'];
-         $filter['anio'] = $_POST['anio'];
+         $filter['anio'] = $_POST['year'];
          $filter['mes'] = $_POST['mes'];
          $filter['serie'] = $_POST['serie'];
          $filter['rfc'] = $_POST['rfc'];

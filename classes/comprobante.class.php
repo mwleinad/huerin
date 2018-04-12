@@ -1361,7 +1361,7 @@ class Comprobante extends Producto
 			LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = c.comprobanteId
 			LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			WHERE 1 '.$sqlSearch.' ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
+			WHERE 1 '.$sqlSearch.'  GROUP BY c.comprobanteId ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
 
 		$id_empresa = $_SESSION['empresaId'];
 
