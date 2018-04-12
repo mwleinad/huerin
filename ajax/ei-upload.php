@@ -85,7 +85,7 @@ switch($_POST['type']){
                         if(array_key_exists(21,$dptos)&&$dptos[21]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[40]) . "' ");
                             $respAdmId = $db->GetSingle();
-                            $logFil .="Admin:".$row[39]."(".$respAdmId.") <-> ";
+                            $logFil .="Admin:".$row[40]."(".$respAdmId.") <-> ";
                             if ($dptos[21] != $respAdmId&&$respAdmId>0)
                                 $deptosNew[21] = $respAdmId;
                             else
@@ -94,7 +94,7 @@ switch($_POST['type']){
                         if(array_key_exists(22,$dptos)&&$dptos[22]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[41]) . "' ");
                             $respJurId = $db->GetSingle();
-                            $logFil .="Jurid:".$row[39]."(".$respJurId.") <-> ";
+                            $logFil .="Jurid:".$row[41]."(".$respJurId.") <-> ";
                             if ($dptos[22] != $respJurId&&$respJurId>0)
                                 $deptosNew[22] = $respJurId;
                             else
@@ -103,7 +103,7 @@ switch($_POST['type']){
                         if(array_key_exists(24,$dptos)&&$dptos[24]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[42]) . "' ");
                             $respImmId = $db->GetSingle();
-                            $logFil .="Imms:".$row[39]."(".$respImmId.") <-> ";
+                            $logFil .="Imms:".$row[42]."(".$respImmId.") <-> ";
                             if ($dptos[24] != $respImmId&&$respImmId>0)
                                 $deptosNew[24] = $respImmId;
                             else
@@ -112,7 +112,7 @@ switch($_POST['type']){
                         if(array_key_exists(26,$dptos)&&$dptos[26]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[43]) . "' ");
                             $respMsjId = $db->GetSingle();
-                            $logFil .="Mensaje :".$row[39]."(".$respMsjId.") <-> ";
+                            $logFil .="Mensaje :".$row[43]."(".$respMsjId.") <-> ";
                             if ($dptos[26] != $respMsjId&&$respMsjId>0)
                                 $deptosNew[26] = $respMsjId;
                             else
@@ -122,7 +122,7 @@ switch($_POST['type']){
 
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[44]) . "' ");
                             $respAudId = $db->GetSingle();
-                            $logFil .="Audit :".$row[39]."(".$respAudId.") <-> ";
+                            $logFil .="Audit :".$row[44]."(".$respAudId.") <-> ";
                             if ($dptos[31] != $respAudId&&$respAudId>0)
                                 $deptosNew[31] = $respAudId;
                             else
