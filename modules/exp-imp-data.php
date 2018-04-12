@@ -6,6 +6,5 @@
  * Time: 07:26 AM
  */
 
-$user->allowAccess('exp-imp-data');
-if($User['roleId']!=1)
-     header('Location: '.WEB_ROOT);
+$user->allowAccess(1);
+
