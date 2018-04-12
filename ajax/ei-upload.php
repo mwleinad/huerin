@@ -52,7 +52,7 @@ switch($_POST['type']){
                         $dptos=array();
                         $deptosNew =  array();
                         $permisos_actuales = explode("-",$contrato_actual['permisos']);
-                        if(empty($contrato_actual)||$contrato_actual['permisos']==""||trim($row[39])==""||trim($row[39])=="--")
+                        if(empty($contrato_actual)||$contrato_actual['permisos']==""||(trim($row[40])==""||trim($row[40])=="--"||trim($row[41])==""||trim($row[41])=="--"))
                         {
                             $fila++;
                             continue;
