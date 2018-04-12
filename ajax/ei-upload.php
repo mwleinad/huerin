@@ -40,9 +40,10 @@ switch($_POST['type']){
                     $fila=1;
                     $upDo=0;
                     $logFile="";
-                    $noResp="";
+                    $stringNoResp="";
                     $addRes=0;
                     while(($row=fgetcsv($fp,4096,","))==true){
+                        $noResp ="";
                         if($fila==1)
                         {
                             $fila++;
@@ -223,6 +224,7 @@ switch($_POST['type']){
                           $addRes++;
                           $noResp .= ' ===> '.$row[1].'<br>';
                       }
+                      $stringNoResp .=$noResp;
                       $logFil .= ' =|'.$row[1].'<br>';
                       $html.= $contrato_actual['permisos']."<=>".implode("-",$per);
                       $html.= "<br>";
@@ -254,7 +256,7 @@ switch($_POST['type']){
             echo $html;
             echo  $logFil;
             echo "contratos que no tenian responsable en una area<br><br>";
-            echo $noResp;
+            echo $stringNoResp;
             echo 'Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes;
         }
     break;
