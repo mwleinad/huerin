@@ -33,16 +33,18 @@ switch($_POST['type']){
         {
             $file_temp = $_FILES['file']['tmp_name'];
             $fp = fopen($file_temp,'r');
-            $html ="";
             $fila=1;
             switch($_POST['tipo-ei']){
                 case 'imp-rsocial':
                     $fila=1;
                     $upDo=0;
-                    $logFile="";
+                    $logFileGlobal="";
+                    $htmlglob ="";
                     $stringNoResp="";
                     $addRes=0;
                     while(($row=fgetcsv($fp,4096,","))==true){
+                        $html="";
+                        $logFil="";
                         $noResp ="";
                         if($fila==1)
                         {
@@ -229,7 +231,8 @@ switch($_POST['type']){
                       $html.= $contrato_actual['permisos']."<=>".implode("-",$per);
                       $html.= "<br>";
                        if($contrato_actual['permisos']!=implode("-",$per)){
-                          $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
+                           $logFilGlobal .=$logFil;
+                           $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
                            $html .="<br><br>";
                            $upDo++;
                            //$db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
@@ -243,6 +246,7 @@ switch($_POST['type']){
                           $html="";
                           $noUpdate++;
                        }
+                       $htmlglob .=$html;
                         unset($per);
                         unset($dptos);
                         unset($deptosNew);
@@ -253,11 +257,12 @@ switch($_POST['type']){
             $html .=" total actualizados : ".$upDo."<br>";
             fclose($fp);
             echo "ok[#]";
-            echo $html;
-            echo  $logFil;
+            echo $htmlglob;
+            echo  $logFilGlobal;
             echo "contratos que no tenian responsable en una area<br><br>";
             echo $stringNoResp;
-            echo 'Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes;
+            echo 'Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
+            echo 'Total que no se actualizan por no sufrir cambios '.$noUpdate;
         }
     break;
 }
