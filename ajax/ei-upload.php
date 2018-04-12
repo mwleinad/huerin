@@ -40,7 +40,7 @@ switch($_POST['type']){
                     $fila=1;
                     $upDo=0;
                     $logFile="";
-                    while(($row=fgetcsv($fp,1024,","))==true){
+                    while(($row=fgetcsv($fp,2048,","))==true){
                         if($fila==1)
                         {
                             $fila++;
