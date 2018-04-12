@@ -1268,10 +1268,6 @@ class Customer extends Main
           $cUser = new User;
           //agregar o no agregar servicio a arreglo de contratos?
           foreach ($serviciosContrato as $servicio) {
-            //$conPermiso = $result[$key]["contracts"][$keyContract]['permisos'];
-            $responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
-
-            //            $cUser->setUserId($responsableId);
             $cUser->setUserId($value["responsableCuenta"]);
             $userInfo = $cUser->Info();
             $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;

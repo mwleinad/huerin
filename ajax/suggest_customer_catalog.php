@@ -48,7 +48,6 @@ if($User['tipoPersonal'] == 'Supervisor' && $_POST["responsableCuenta"] == 0){
 	}
 	else
 	{
-		//cambios 3/13/2016
 		$_POST["responsableCuenta"] = $_SESSION["User"]["userId"];
 		$_POST["subor"] = "subordinado";
 		$User["userId"] = $_POST["responsableCuenta"];
@@ -63,6 +62,8 @@ if($User['tipoPersonal'] == 'Supervisor' && $_POST["responsableCuenta"] == 0){
         $row = $rol->Info();
         $roleId=$row['rolId'];
     }
+    if($User['tipoPersonal']=='Admin')
+        $roleId = 1;
 	
 	if($_POST["responsableCuenta"])
 	{
