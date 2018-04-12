@@ -233,15 +233,15 @@ switch($_POST['type']){
                        if($contrato_actual['permisos']!=implode("-",$per)){
 
                            $logFilGlobal .=$logFil;
-                           $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
-                           $html .="<br><br>";
-                           /*$db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
+                          /* $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
+                           $html .="<br><br>";*/
+                           $db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
                            $up = $db->UpdateData();
                            if($up>0){
                                $upDo++;
                                $html .=$db->getQuery();
                                $html .="<br><br>";
-                           }*/
+                           }
                        }else{
                           $html="";
                           $noUpdate++;
