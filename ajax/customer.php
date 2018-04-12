@@ -57,9 +57,6 @@ switch($_POST["type"])
 				}
 				
 				$User["userId"] = $_POST["responsableCuenta"];
-				
-				
-							
 				$personal->setPersonalId($_POST["responsableCuenta"]);
 				$myUser = $personal->Info();
                 $rol->setTitulo($myUser['tipoPersonal']);
@@ -69,7 +66,9 @@ switch($_POST["type"])
                     $row = $rol->Info();
                     $roleId=$row['rolId'];
                 }
-				
+                if($User['tipoPersonal']=='Admin')
+                    $roleId = 1;
+
 				if($_POST["responsableCuenta"]){
 					$User["roleId"] = $roleId;
 					$User["departamentoId"] = $myUser["departamentoId"];
