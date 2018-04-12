@@ -39,6 +39,7 @@ switch($_POST['type']){
                 case 'imp-rsocial':
                     $fila=1;
                     $upDo=0;
+                    $logFile="";
                     while(($row=fgetcsv($fp,1024,","))==true){
                         if($fila==1)
                         {
@@ -63,8 +64,8 @@ switch($_POST['type']){
                         //encontrar id de responsables.
                         if(array_key_exists(1,$dptos)&&$dptos[1]>0){
                             $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[38])."' ");
-                            echo $db->getQuery()."<br>";
                             $respConId =  $db->GetSingle();
+                            $logFil .="Contabiliad:".$row[38]."(".$respConId.") <-> ";
                             if($dptos[1]!=$respConId&&$respConId>0)
                                 $deptosNew[1] = $respConId;
                             else
@@ -74,8 +75,8 @@ switch($_POST['type']){
 
                         if(array_key_exists(8,$dptos)&&$dptos[8]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[39]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respNomId = $db->GetSingle();
+                            $logFil .="Nomina:".$row[39]."(".$respNomId.") <-> ";
                             if ($dptos[8] != $respNomId&&$respNomId>0)
                                 $deptosNew[8] = $respNomId;
                             else
@@ -83,8 +84,8 @@ switch($_POST['type']){
                         }
                         if(array_key_exists(21,$dptos)&&$dptos[21]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[40]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respAdmId = $db->GetSingle();
+                            $logFil .="Admin:".$row[39]."(".$respAdmId.") <-> ";
                             if ($dptos[21] != $respAdmId&&$respAdmId>0)
                                 $deptosNew[21] = $respAdmId;
                             else
@@ -92,8 +93,8 @@ switch($_POST['type']){
                         }
                         if(array_key_exists(22,$dptos)&&$dptos[22]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[41]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respJurId = $db->GetSingle();
+                            $logFil .="Jurid:".$row[39]."(".$respJurId.") <-> ";
                             if ($dptos[22] != $respJurId&&$respJurId>0)
                                 $deptosNew[22] = $respJurId;
                             else
@@ -101,8 +102,8 @@ switch($_POST['type']){
                         }
                         if(array_key_exists(24,$dptos)&&$dptos[24]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[42]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respImmId = $db->GetSingle();
+                            $logFil .="Imms:".$row[39]."(".$respImmId.") <-> ";
                             if ($dptos[24] != $respImmId&&$respImmId>0)
                                 $deptosNew[24] = $respImmId;
                             else
@@ -110,8 +111,8 @@ switch($_POST['type']){
                         }
                         if(array_key_exists(26,$dptos)&&$dptos[26]>0) {
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[43]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respMsjId = $db->GetSingle();
+                            $logFil .="Mensaje :".$row[39]."(".$respMsjId.") <-> ";
                             if ($dptos[26] != $respMsjId&&$respMsjId>0)
                                 $deptosNew[26] = $respMsjId;
                             else
@@ -120,8 +121,8 @@ switch($_POST['type']){
                         if(array_key_exists(31,$dptos)&&$dptos[31]>0) {
 
                             $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[44]) . "' ");
-                            echo $db->getQuery()."<br>";
                             $respAudId = $db->GetSingle();
+                            $logFil .="Audit :".$row[39]."(".$respAudId.") <-> ";
                             if ($dptos[31] != $respAudId&&$respAudId>0)
                                 $deptosNew[31] = $respAudId;
                             else
@@ -150,10 +151,12 @@ switch($_POST['type']){
                     }
                     break;
             }
-            $html .=" total actualizados : ".$fila;
+            $html .=" total actualizados : ".$fila."<br>";
+
             fclose($fp);
             echo "ok[#]";
             echo $html;
+            echo  $logFil;
         }
     break;
 }
