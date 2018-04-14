@@ -115,5 +115,87 @@ switch($_POST['type']){
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
-        break;
+    break;
+    case 'export':
+        include(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        $styles = array(
+            'styleLetMe' => array(
+                            'fill' => array(
+                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                'color' => array('rgb' => '47f08b')
+                             )
+                          ),
+            'styleBold' => array(
+                            'font' => array('bold'=>true,)
+                        )
+        );
+
+        $roles = $rol->Enumerate();
+        $book =  new PHPExcel();
+        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+        $book->getProperties()->setCreator('B&H');
+
+        foreach($roles as $key=>$value){
+            //crear una pestaña por cada rol
+            $sheet = $book->createSheet($key);
+            $sheet->setCellValue('A1','Permisos del rol '.$value['name']);
+            $sheet->setTitle($value['name']);
+
+            //iterar primer nivel
+            $rol->setRolId($value['rolId']);
+            $yours = $rol->GetConfigRol();
+            $row = 4;
+            foreach($yours as $ky =>$vy){
+                $col = $vy['levelDeep'];
+                $cell = PHPExcel_Cell::stringFromColumnIndex($col);
+                $cell2 = PHPExcel_Cell::stringFromColumnIndex($col+1);
+                if($vy['letMe']){
+                    $sheet->getStyle($cell.$row)->applyFromArray($styles['styleLetMe']);
+                    $sheet->getStyle($cell2.$row)->applyFromArray($styles['styleLetMe']);
+                }
+                $sheet->getStyle($cell.$row)->applyFromArray($styles['styleBold']);
+                if(!empty($vy['children'])){
+                    $sheet->setCellValueByColumnAndRow($col,$row,$vy['titulo']);
+
+                    $back['padre'] = 'no';
+                    $back['init']  = 1;
+                    $row++;
+                    $rol->DrawChildrenExcel($row,$sheet,$vy['children'],$styles);
+                }else{
+                    $sheet->setCellValueByColumnAndRow($col,$row,$vy['titulo']);
+                    $row++;
+                }
+
+
+            }
+            $sheet->calculateColumnWidths();
+
+        }
+        $book->setActiveSheetIndex(0);
+        switch($_POST['tipo']){
+            case 'pdf':
+                $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
+                //$rendererLibrary = 'tcPDF5.9';
+                //$rendererLibrary = 'mPDF';
+                $rendererLibrary = '';
+                $rendererLibraryPath = DOC_ROOT.'/pdf/' . $rendererLibrary;
+                PHPExcel_Settings::setPdfRenderer(
+                    $rendererName,
+                    $rendererLibraryPath);
+
+                $book->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+                $book->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_LEGAL);
+
+                $writer = new PHPExcel_Writer_PDF($book);
+                $writer = PHPExcel_IOFactory::createWriter($book, 'PDF');
+                $writer->save(DOC_ROOT."/sendFiles/roles.pdf");
+            break;
+            default:
+                $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+                $writer->save(DOC_ROOT."/sendFiles/roles.xlsx");
+            break;
+
+        }
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/roles.".$_POST['tipo'];
+    break;
 }
