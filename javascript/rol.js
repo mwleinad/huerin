@@ -177,3 +177,18 @@ function ExecuteFunRol(self){
         }
     });
 }
+function ExportRolesDetail(tipo){
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:{type:'export',tipo:tipo},
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#loadPrint').html('Generando reporte......')
+        },
+        success: function(response){
+            jQ('#loadPrint').html('')
+            window.location = response;
+        }
+    });
+}

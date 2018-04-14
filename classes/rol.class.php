@@ -126,7 +126,7 @@ class Rol extends main
        }
        return $branch;
     }
-   function CountChild(array $temps,&$count,$owns){
+   function CountChild(array $temps,$count,$owns){
        $tree =array();
        $cad=array();
        foreach($temps as $kt=>$temp){
@@ -139,9 +139,10 @@ class Rol extends main
 
            if(!empty($temp['children']))
            {
-               $count++;
+              $count++;
               $deep =  $this->CountChild($temp['children'],$count,$owns);
            }
+
            $cad['children'] =  $deep;
            $tree[]=$cad;
        }
@@ -175,7 +176,6 @@ class Rol extends main
               $deep = $this->CountChild($val['children'],$countLevel,$owns_lineal);
            }
            $card['children']=$deep;
-           $card['levels'] = $countLevel;
            $new[]=$card;
        }
       return $new;
@@ -284,5 +284,28 @@ class Rol extends main
             return false;
         else
             return true;
+    }
+    public function DrawChildrenExcel(&$row,$sheet,$children,$styles){
+        foreach($children as $var){
+            $col=$var['levelDeep'];
+            $cell = PHPExcel_Cell::stringFromColumnIndex($col);
+            $cell2 = PHPExcel_Cell::stringFromColumnIndex($col+1);
+            if($var['letMe']){
+                $sheet->getStyle($cell.$row)->applyFromArray($styles['styleLetMe']);
+                $sheet->getStyle($cell2.$row)->applyFromArray($styles['styleLetMe']);
+            }
+            if(!empty($var['children'])){
+                $sheet->getStyle($cell.$row)->applyFromArray($styles['styleBold']);
+                $sheet->setCellValueByColumnAndRow($col,$row,$var['titulo']);
+                $row++;
+                $this->DrawChildrenExcel($row,$sheet,$var['children'],$styles);
+            }
+            else{
+                 $sheet->setCellValueByColumnAndRow($col,$row,$var['titulo']);
+
+                 $row++;
+            }
+
+        }
     }
 }
