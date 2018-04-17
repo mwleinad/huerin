@@ -1,13 +1,13 @@
 
 ALTER TABLE `permisos`
 	ADD COLUMN `levelDeep` INT(11) NULL DEFAULT NULL AFTER `namePage`;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=1;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=2;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=3;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=4;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=5;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=6;
-UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=7;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=1;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=2;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=3;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=4;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=5;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=6;
+UPDATE `huerin`.`permisos` SET `levelDeep`='0' WHERE  `permisoId`=7;
 UPDATE `huerin`.`permisos` SET `levelDeep`='1' WHERE  `permisoId`=8;
 UPDATE `huerin`.`permisos` SET `levelDeep`='2' WHERE  `permisoId`=9;
 UPDATE `huerin`.`permisos` SET `levelDeep`='2' WHERE  `permisoId`=10;

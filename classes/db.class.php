@@ -204,7 +204,12 @@ class DB
 		$enum_fields = $enum_array[1];
 
 		return( $enum_fields );
-	}	
+	}
+	function RollBackRegister($table,$primaryKey,$id){
+	    $this->query ="DELETE FROM ".$table." WHERE ".$primaryKey." = '".$id."'";
+	    $this->ExecuteQuery();
+	    $this->CleanQuery();
+    }
 }
 
 ?>
