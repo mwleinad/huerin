@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS `noticeOwners`;
+CREATE TABLE IF NOT EXISTS `noticeOwners` (
+  `noticeId` int(11) NOT NULL,
+  `departamentoId` int(11) NOT NULL,
+  `roles` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`noticeId`,`departamentoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

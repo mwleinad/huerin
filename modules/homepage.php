@@ -14,46 +14,7 @@
 		
 	}
 
-	if($_POST["type"]=="saveAddNotice")
-	{
-	   $ruta = DOC_ROOT.'/archivos';
-	   $tamano = $_FILES["path"]['size'];
-	   $tipo = $_FILES["path"]['type'];
-	   $archivo = $_FILES["path"]['name'];
-	   $extension = explode(".",$archivo);
-	  
-	  $notice->setDescription($_POST["descripcion"]);
-	  $notice->setPrioridad($_POST["prioridad"]);
-		$notice->setUsuario($_SESSION["User"]["username"]);
-		$notice->setFecha(date("Y-m-d"));
-
-		if($_FILES["path"]['name'])
-	  {
-	     $prefijo = "notice_".$_POST["usuario"].$id;
-			 $fileName = $prefijo.".".end($extension);
-			 $destino =  $ruta."/".$fileName;
-	  }
-
-	  $notice->setPath($fileName);
-		echo "here";
-	  $id = $notice->Save();
-
-	  $notice->setPath($fileName);
-
-	  $notice->setNoticeId($id);
-
-		if($_FILES["path"]['name'])
-	  {
-	     $prefijo = "notice_".$_POST["usuario"].$id;
-			 $fileName = $prefijo.".".end($extension);
-			 $destino =  $ruta."/".$fileName;
-	  }
-	  $notice->setPath($fileName);
-	  $notice->Update();
-
-	  header('Location: '.WEB_ROOT.'/homepage');
-	}
-	if($_SESSION["avisoadd"])
+	 if($_SESSION["avisoadd"])
 	  {
 		  $msg = "El aviso fue agregado correctamente";
 		  $smarty->assign("msg", $msg);

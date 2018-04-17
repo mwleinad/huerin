@@ -24,22 +24,22 @@
                <p align="center">Bienvenido:{$variable} <br />Selecciona alguna opcion de los menus.</p>
                 <p>&nbsp;</p>
             </div>
-            {if in_array(171,$permissions)}
-            <div style="text-align:center">
-            Pendientes
-            </div>
-            <div class="portlet-content nopadding borderGray" id="contenido">
-              {include file="lists/pendientes.tpl"}
-            </div>
-            {/if}
-            {if in_array(172,$permissions) || $User.isRoot}
-            <div style="text-align:center">
-            Avisos
-            </div>
-            <div class="portlet-content nopadding borderGray" id="contenido">
-                {include file="lists/avisos.tpl"}
-            </div>
-            {/if}
+                {if in_array(171,$permissions)}
+                    <div style="text-align:center">
+                    Pendientes
+                    </div>
+                    <div class="portlet-content nopadding borderGray" id="contenidoPendiente">
+                      {include file="lists/pendientes.tpl"}
+                    </div>
+                {/if}
+                {if in_array(172,$permissions) || $User.isRoot}
+                    <div style="text-align:center">
+                    Avisos
+                    </div>
+                    <div class="portlet-content nopadding borderGray" id="contenidoAviso">
+                        {include file="lists/avisos.tpl"}
+                    </div>
+                {/if}
             {/if}
           <div class="portlet-content nopadding borderGray" style="text-align:center;display: flex;flex-direction: column">
               {if empty($permissions)}

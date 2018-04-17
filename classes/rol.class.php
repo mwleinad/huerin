@@ -61,6 +61,27 @@ class Rol extends main
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
     }
+    public function GetRolesGroupByDep(){
+       $res = $this->Enumerate();
+       $groups = array();
+       $deps = array();
+       foreach($res as $key => $item){
+           if(!$item['departamentoId'])
+               continue;
+
+           $depId = $item['departamentoId'];
+
+           if(in_array($depId,$deps)){
+               $groups[$depId]['roles'][] = $item;
+           }else{
+               array_push($deps,$depId);
+               $groups[$depId]['departamento'] =$item['departamento'];
+               $groups[$depId]['departamentoId'] =$item['departamentoId'];
+               $groups[$depId]['roles'][] =$item;
+           }
+       }
+       return $groups;
+    }
     public function Save(){
         $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' ";
         $this->Util()->DB()->setQuery($sql);
@@ -308,4 +329,5 @@ class Rol extends main
 
         }
     }
+
 }

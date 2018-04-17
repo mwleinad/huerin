@@ -6,9 +6,10 @@ include_once(DOC_ROOT.'/libraries.php');
 
 switch($_POST["type"])
 {
-	case "addNotice": 
-	
+	case "addNotice":
+			$roles = $rol->GetRolesGroupByDep();
 	        $noticeId = $notice->GetLast();
+            $smarty->assign("roles", $roles);
 			$smarty->assign("noticeId", $noticeId+1);
 			$smarty->assign("userId", $_SESSION["User"]["userId"]);
 			$smarty->assign("usuario", $_SESSION["User"]["username"]);
@@ -72,26 +73,46 @@ switch($_POST["type"])
 		break;		
 		
 	case "saveAddNotice":
-	
-	        $fecha  = date("Y-m-d");
-			$notice->setFecha($fecha);
+            $ruta = DOC_ROOT.'/archivos';
+            $notice->setFecha(date("Y-m-d"));
 			$notice->setPrioridad($_POST['prioridad']);
 			$notice->setDescription($_POST['descripcion']);
 			$notice->setUsuario($_POST['usuario']);
-			
-			//$noticeId = $notice->Save();
-			
-			/*if(!$noticeId)
+			if(!$notice->Save())
 			{
 				echo "fail[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 			}
 			else
-			{*/
+			{
 				echo "ok[#]";
-				echo $noticeId;				
-			//}
-			
+                $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+                $notice->SetPage($_GET["p"]);
+                $resArchivo = $notice->Enumerate();
+                foreach($resArchivo["items"] as $key =>$value)
+                {
+                    $card = $value;
+                    $card["fecha"] = $util->ChangeDateFormat($value["fecha"]);
+                    $card["description"] = nl2br($value["description"]);
+                    $resArchivo["items"][$key] = $card;
+                }
+                echo "[#]";
+                $smarty->assign("notices", $resArchivo);
+                $smarty->display(DOC_ROOT.'/templates/lists/avisos.tpl');
+
+                $pendiente->SetPage($_GET["p"]);
+                $resArchivo = $pendiente->Enumerate();
+                foreach($resArchivo["items"] as $key =>$value)
+                {
+                    $card = $value;
+                    $card["fecha"] = $util->ChangeDateFormat($value["fecha"]);
+                    $card["description"] = nl2br($value["description"]);
+                    $resArchivo["items"][$key] = $card;
+                }
+                echo "[#]";
+                $smarty->assign("pendientes", $resArchivo);
+                $smarty->display(DOC_ROOT.'/templates/lists/pendientes.tpl');
+			}
 		break;
 	
 	case "deleteNotice":

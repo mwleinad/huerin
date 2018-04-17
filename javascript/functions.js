@@ -186,34 +186,38 @@ function AddPendiente()
 
 function AddNotice()
 {
-	new Ajax.Request(WEB_ROOT+'/ajax/homepage.php',
-	{
-		method:'post',
-		parameters: $('addNoticeForm').serialize(true),
-		onLoading: function(){
-			$("btnSaveNot").hide();
-			$("load").show();
-		},
-		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";
-			var splitResponse = response.split("[#]");
+	var fd =  new FormData(document.getElementById('addNoticeForm'));
+    jQ.ajax({
+        url: WEB_ROOT+'/ajax/homepage.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#load').show();
+            jQ('#saveNotice').hide();
+        },
+        success: function(response){
+            var splitResp = response.split("[#]");
+            console.log(response);
+            if(splitResp[0]=='ok')
+            {
+                jQ('#load').hide();
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#contenidoAviso').html(splitResp[2]);
+                jQ('#contenidoPendiente').html(splitResp[3]);
+                jQ('#saveNotice').show();
+                AddNoticePopup(0);
 
-			$("load").hide();
+            }else{
+                jQ('#load').hide();
+                jQ('#saveNotice').show();
+                ShowStatusPopUp(splitResp[1]);
+            }
 
-			if(splitResponse[0] == "fail")
-			{
-				$("btnSaveNot").show();
-				ShowStatusPopUp(splitResponse[1])
-			}
-			else
-			{
-				$("noticeId").value = splitResponse[1];
-				$('addNoticeForm').submit();
-			}
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
+        },
 
+    });
 }
 
 function DeleteNotice(id)
