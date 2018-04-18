@@ -254,7 +254,7 @@ class Notice extends Main
                 $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
             }
 
-            //$sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
+            $sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();
