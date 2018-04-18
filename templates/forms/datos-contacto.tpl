@@ -11,52 +11,52 @@
 <tbody id="tbDatosContacto">
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Administrativo (Pagos)</td>
-			<td align="left"><input name="nameContactoAdministrativo" id="nameContactoAdministrativo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="nameContactoAdministrativo" id="nameContactoAdministrativo" type="text" value="{$bse.nameContactoAdministrativo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Email Contacto Administrativo (Pagos)</td>
-			<td align="left"><input name="emailContactoAdministrativo" id="emailContactoAdministrativo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="emailContactoAdministrativo" id="emailContactoAdministrativo" type="text" value="{$bse.emailContactoAdministrativo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Telefono Contacto Administrativo (Pagos)</td>
-			<td align="left"><input name="telefonoContactoAdministrativo" id="telefonoContactoAdministrativo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="telefonoContactoAdministrativo" id="telefonoContactoAdministrativo" type="text" value="{$bse.telefonoContactoAdministrativo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Contabilidad (Documentacion)</td>
-			<td align="left"><input name="nameContactoContabilidad" id="nameContactoContabilidad" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="nameContactoContabilidad" id="nameContactoContabilidad" type="text" value="{$bse.nameContactoContabilidad}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Email Contacto Contabilidad (Documentacion)</td>
-			<td align="left"><input name="emailContactoContabilidad" id="emailContactoContabilidad" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="emailContactoContabilidad" id="emailContactoContabilidad" type="text" value="{$bse.emailContactoContabilidad}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Telefono Contacto Contabilidad (Documentacion)</td>
-			<td align="left"><input name="telefonoContactoContabilidad" id="telefonoContactoContabilidad" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="telefonoContactoContabilidad" id="telefonoContactoContabilidad" type="text" value="{$bse.telefonoContactoContabilidad}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Directivo</td>
-			<td align="left"><input name="nameContactoDirectivo" id="nameContactoDirectivo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="nameContactoDirectivo" id="nameContactoDirectivo" type="text" value="{$bse.nameContactoDirectivo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Email Contacto Directivo</td>
-			<td align="left"><input name="emailContactoDirectivo" id="emailContactoDirectivo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="emailContactoDirectivo" id="emailContactoDirectivo" type="text" value="{$bse.emailContactoDirectivo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Telefono de Oficina Contacto Directivo</td>
-			<td align="left"><input name="telefonoContactoDirectivo" id="telefonoContactoDirectivo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="telefonoContactoDirectivo" id="telefonoContactoDirectivo" type="text" value="{$bse.telefonoContactoDirectivo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
     <tr>
 			<td align="left" width="40%">* Telefono Celular Contacto Directivo</td>
-			<td align="left"><input name="telefonoCelularDirectivo" id="telefonoCelularDirectivo" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left"><input name="telefonoCelularDirectivo" id="telefonoCelularDirectivo" type="text" value="{$bse.telefonoCelularDirectivo}" class="smallInput medium" size="50"/></td>
 		</tr>    
 
 </tbody>

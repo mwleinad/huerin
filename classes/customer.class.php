@@ -350,7 +350,7 @@ class Customer extends Main
 				  LEFT JOIN 
 					tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				  WHERE 
-					contractId = '".$value["contractId"]."' AND servicio.status = 'activo'          
+					contractId = '".$value["contractId"]."' AND servicio.status = 'activo' AND tipoServicio.status='1'         
 				  ORDER BY 
 					nombreServicio ASC"
           		);
