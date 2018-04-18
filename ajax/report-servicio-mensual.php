@@ -21,33 +21,37 @@ switch($_POST["type"])
 	case "search":
 	case "sendEmail":
 	case "graph":
-			
 			global $infoUser;
-						
 			if(!$_POST["responsableCuenta"]){
 				$page = "report-servicio";
 			}
-
-
 			$deep = ($_POST['deep']) ? "subordinado" : "propio";
-					
 			if($infoUser['departamentoId'] == "1"){
 				if($_POST['departamentoId'])
 					$filtroDepto = "tipoServicio.departamentoId='".$_POST['departamentoId']."' AND";
 			}else{
 				$filtroDepto = "tipoServicio.departamentoId='".$infoUser['departamentoId']."' AND";
 			}
-
 			$personal->setPersonalId($_POST["responsableCuenta"]);
 			$myUser = $personal->Info();
-			$roleId = $personal->GetRoleId($myUser["tipoPersonal"]);
-
+			$rol->setTitulo($myUser['tipoPersonal']);
+			$roleId = $rol->GetIdByName();
+			if($roleId<=0){
+				$rol->setRolId($myUser['roleId']);
+				$row = $rol->Info();
+				$roleId=$row['rolId'];
+			}
 			if($_POST["responsableCuenta"]){
 				$User["roleId"] = $roleId;
 				$User["departamentoId"] = $myUser["departamentoId"];
 				$User["userId"] = $_POST["responsableCuenta"];
 			}else{
-				$User['userId'] = $_SESSION['User']['userId'];
+				if($User['tipoPers']=='Admin')
+                    $User['userId'] = 0;
+				else{
+                    $User['userId'] = $_SESSION['User']['userId'];
+				}
+
 			}
 
 			if($_POST["rfc"] == ""){
