@@ -35,6 +35,7 @@
 		$contract->setClaveCiec($_POST['claveCiec']);
 		$contract->setClaveIdse($_POST['claveIdse']);
 		$contract->setClaveIsn($_POST['claveIsn']);
+        $contract->setClaveSip($_POST['claveSip']);
 		$contract->setName($_POST['name']);
 		$contract->setAddress($_POST['address']);
 		$contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);

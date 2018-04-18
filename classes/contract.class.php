@@ -329,6 +329,11 @@ class Contract extends Main
     $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Clave Isn');
     $this->claveIsn = $value;
   }
+  private $claveSip;
+  public function setClaveSip($value)
+  {
+    $this->claveSip = $value;
+  }
 
   private $contractId;
   private $customerId;
@@ -1877,6 +1882,7 @@ class Contract extends Main
           claveCiec,
           claveFiel,
           claveIdse,
+          claveSip,
           rfc,
           noExtComercial,
           noIntComercial,
@@ -1924,6 +1930,7 @@ class Contract extends Main
           '".$this->claveCiec."',
           '".$this->claveFiel."',
           '".$this->claveIdse."',
+          '".$this->claveSip."',
           '".$this->rfc."',
           '".$this->noExtComercial."',
           '".$this->noIntComercial."',
@@ -2027,10 +2034,8 @@ class Contract extends Main
           $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
           //break;
       }
-
     $this->Util()->setError(10029, "complete");
     $this->Util()->PrintErrors();
-
     return $contractId;
   }
 
@@ -2077,6 +2082,7 @@ class Contract extends Main
 			  claveCiec = '".$this->claveCiec."',
 			  claveFiel = '".$this->claveFiel."',
 			  claveIdse = '".$this->claveIdse."',
+			  claveSip = '".$this->claveSip."',
 			  noExtComercial = '".$this->noExtComercial."',
 			  noIntComercial = '".$this->noIntComercial."',
 			  coloniaComercial = '".$this->coloniaComercial."',
@@ -2915,6 +2921,11 @@ class Contract extends Main
       $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT SUM(costo) FROM servicio WHERE contractId="'.$this->contractId.'" AND status="activo" ');
       $single =  $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
       return $single;
+    }
+    public function getInfoFirstContract(){
+       $this->Util()->DB()->setQuery('SELECT * FROM contract WHERE customerId="'.$this->customerId.'"  ORDER BY contractId ASC');
+       $row = $this->Util()->DB()->GetRow();
+       return $row;
     }
 }
 

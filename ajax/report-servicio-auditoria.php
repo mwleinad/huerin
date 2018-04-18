@@ -24,7 +24,6 @@ switch($_POST["type"])
 	case "graph":
 			
 			global $infoUser;
-						
 			if(!$_POST["responsableCuenta"]){
 				$page = "report-servicio";
 			}
@@ -47,7 +46,11 @@ switch($_POST["type"])
 				$User["departamentoId"] = $myUser["departamentoId"];
 				$User["userId"] = $_POST["responsableCuenta"];
 			}else{
-				$User['userId'] = $_SESSION['User']['userId'];
+                if($User['tipoPers']=='Admin')
+                    $User['userId'] = 0;
+                else{
+                    $User['userId'] = $_SESSION['User']['userId'];
+                }
 			}
 
 			if($_POST["rfc"] == ""){

@@ -1,0 +1,2 @@
+ALTER TABLE `contract`
+	ADD COLUMN `claveSip` VARCHAR(255) NOT NULL AFTER `claveIsn`;
