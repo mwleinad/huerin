@@ -45,9 +45,9 @@ class InstanciaServicio extends  Servicio
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE MONTH(instanciaServicio.date) <= 12
+				WHERE MONTH(instanciaServicio.date) < MONTH(NOW())
 				AND YEAR(instanciaServicio.date) = '".$year."'
-				AND instanciaServicio.class IN ('PorIniciar','PorCompletar')
+				AND instanciaServicio.class IN ('PorIniciar','PorCompletar','Iniciado')
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
