@@ -338,7 +338,7 @@ class Customer extends Main
       		foreach ($result[$key]["contracts"] as $keyContract => $value) {
 			
           		$contract = new Contract;
-				
+
           		$conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 
           		//checar servicios del contrato para saber si lo debemos mostrar o no
@@ -360,17 +360,24 @@ class Customer extends Main
           	
 				//agregar o no agregar servicio a arreglo de contratos?
           		foreach ($serviciosContrato as $servicio) {
-					//$conPermiso = $result[$key]["contracts"][$keyContract]['permisos'];
 					$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
-	
-					//$cUser->setUserId($responsableId);
 					$cUser->setUserId($value["responsableCuenta"]);
 					$userInfo = $cUser->Info();
 					$result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
             
 					if ($type == "propio") {
-						$subordinadosPermiso = array( 
-						$User["userId"]);
+					    //si es propio pero es administrador debe ver el de todos
+                        if($User['tipoPers']=='Admin'){
+                            $subordinadosPermiso = array();
+                            foreach ($subordinados as $sub) {
+                                array_push($subordinadosPermiso, $sub["personalId"]);
+                            }
+                            array_push($subordinadosPermiso, $User["userId"]);
+                        }else{
+                            $subordinadosPermiso = array(
+                                $User["userId"]);
+                        }
+
 					} else {
 					  	$subordinadosPermiso = array();
 					  	foreach ($subordinados as $sub) {
@@ -378,7 +385,6 @@ class Customer extends Main
 						}
               			array_push($subordinadosPermiso, $User["userId"]);
             		}
-
 					//si es usuario con privilegio de ver todos los contratos, de lo contrario que verifique permisos
                     $rol->setRolId($User['roleId']);
                     $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
@@ -403,7 +409,7 @@ class Customer extends Main
 
         	}
             $rol->setRolId($User['roleId']);
-            $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'));
+            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
         	if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
                 unset($result[$key]);
         	}
