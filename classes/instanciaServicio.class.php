@@ -10,6 +10,8 @@ class InstanciaServicio extends  Servicio
 {
     function getInstanciaByServicio($servicioId, $year)
     {
+        $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
+            10=>array(),11=>array(),12=>array());
         $sql = "SELECT 
                 CASE tipoServicioId 
                 WHEN 16 THEN ''
@@ -31,13 +33,11 @@ class InstanciaServicio extends  Servicio
 				AND servicio.servicioId = '".$servicioId."'";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
-
-        $new = array();
         foreach($data as $key => $value)
         {
-            $new[$value['mes']] =  $value;
+            $base[$value['mes']] =  $value;
         }
-        return $new;
+        return $base;
     }
     function getInstanciaAtrasado($servicioId,$year){
         $sql = "SELECT 

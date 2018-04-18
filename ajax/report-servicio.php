@@ -38,34 +38,7 @@ switch($_POST["type"])
         $db->UpdateData();
 
         $contracts = array();
-        if($User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
-
-            //Si seleccionaron TODOS
-            if($formValues['respCuenta'] == 0){
-
-                $personal->setActive(1);
-                $socios = $personal->ListSocios();
-
-                foreach($socios as $res){
-
-                    $formValues['respCuenta'] = $res['personalId'];
-                    $formValues['subordinados'] = 1;
-
-                    $resContracts = $contract->BuscarContract($formValues, true);
-
-                    $contracts = @array_merge($contracts, $resContracts);
-
-
-                }//foreach
-
-            }else{
-                $contracts = $contract->BuscarContract($formValues, true);
-            }
-
-        }else{
-            $contracts = $contract->BuscarContract($formValues, true);
-        }//else
-
+        include_once(DOC_ROOT.'/ajax/filter.php');
         $idClientes = array();
         $idContracts = array();
         $contratosClte = array();
@@ -82,29 +55,17 @@ switch($_POST["type"])
                 $idContracts[] = $contractId;
                 $contratosClte[$customerId][] = $res;
             }
-
-
         }//foreach
-		
         $clientes = array();
-        //	print_r($idClientes);
-        //	print_r($idContracts);
-        //	print_r($contratosClte);
         foreach($idClientes as $customerId){
 
             $customer->setCustomerId($customerId);
             $infC = $customer->Info();
-
             $infC['contracts'] = $contratosClte[$customerId];
-
             $clientes[] = $infC;
-
         }//foreach
-
         $resClientes = array();
         foreach($clientes as $clte){
-            //echo "jere";
-
             $contratos = array();
             foreach($clte['contracts'] as $con){
                 $resPermisos = explode('-',$con['permisos']);
@@ -128,33 +89,6 @@ switch($_POST["type"])
                     $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year);
                     $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
                     $noCompletados = count($atrasados);
-                    /*for($ii = 1; $ii <= 12; $ii++){
-                        $statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-                        $month = date("m");
-                        if($ii < $month){
-                            if($statusColor["class"] == "PorIniciar" || $statusColor["class"] == "Iniciado")
-                            {
-                                $noCompletados++;
-                            }
-                        }
-
-                        //Si es Servicio de Domicilio Fiscal, que no lleve colores
-                        if($statusColor['tipoServicioId'] == 16)
-                            $statusColor['class'] = '';
-
-                        if($statusColor['tipoServicioId'] == 34)
-                            $statusColor['class'] = '';
-
-                        if($statusColor['tipoServicioId'] == 24)
-                            $statusColor['class'] = '';
-
-                        if($statusColor['tipoServicioId'] == 37)
-                            $statusColor['class'] = '';
-
-                        $serv['instancias'][$ii] = $statusColor;
-                    }*/
-
                     $tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
                     $deptoId = $tipoServicio->GetField('departamentoId');
 
@@ -242,13 +176,8 @@ switch($_POST["type"])
 		  unset($cliente["contracts"]);
 		  $newArray[] = $cliente;
 		}
-//		echo "<pre>";
-//		print_r($newArray);
-//		exit;
-
 		$groupService = array();
 		$newCustomer = array();
-
 		foreach($newArray as $key => $cliente)
 		{
 			$serviciosPorRazon =  array();
@@ -312,7 +241,6 @@ switch($_POST["type"])
 			$formValues['atrasados'] = $_POST["atrasados"];
 
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
-								
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
 					WHERE class = ''";
 			$db->setQuery($sql);
@@ -339,9 +267,6 @@ switch($_POST["type"])
 			}//foreach
 						
 			$clientes = array();
-		//	print_r($idClientes);
-		//	print_r($idContracts);
-		//	print_r($contratosClte);
 			foreach($idClientes as $customerId){
 				
 				$customer->setCustomerId($customerId);
@@ -372,48 +297,20 @@ switch($_POST["type"])
 						
 						$permisos[$idDepto] = $nomPers;
 						$permisos2[$idDepto] = $idPersonal;
-					}	
-					
-					//$personal->setPersonalId($con['responsableCuenta']);					
-					//$con['responsable'] = $personal->Info();					
-					
+					}
 					$servicios = array();
 					foreach($con['servicios'] as $serv){
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
 						$noCompletados = 0;
-						for($ii = 1; $ii <= 12; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-							
-							$month = date("m");
-							if($ii < $month){
-								if($statusColor["class"] == "PorIniciar" || $statusColor["class"] == "Iniciado")
-								{
-									$noCompletados++;
-								}
-							}
-							
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
+                        $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year);
+                        $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
+                        $noCompletados = count($atrasados);
 
-							if($statusColor['tipoServicioId'] == 34)
-								$statusColor['class'] = '';
-
-							if($statusColor['tipoServicioId'] == 24)
-								$statusColor['class'] = '';
-
-							if($statusColor['tipoServicioId'] == 37)
-								$statusColor['class'] = '';
-
-							$serv['instancias'][$ii] = $statusColor;
-						}
-						
 						$tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
 						$deptoId = $tipoServicio->GetField('departamentoId');
 						
 						$serv['responsable'] = $permisos[$deptoId];
-						
 						if($formValues['atrasados'])
 						{
 							if($noCompletados > 0)
@@ -428,20 +325,13 @@ switch($_POST["type"])
 						
 					}//foreach
 					$con['instanciasServicio'] = $servicios;
-																				
 					$contratos[] = $con;
-					
 				}//foreach
 				$clte['contracts'] = $contratos;
-				
 				$resClientes[] = $clte;
-				
 			}//foreach
 
 			$cleanedArray = array();
-			
-			//$cleanedArray = $resClientes;
-
 			foreach($resClientes as $key => $cliente)
 			{
 				foreach($cliente["contracts"] as $keyContract => $contract)
@@ -462,7 +352,6 @@ switch($_POST["type"])
 			}
 			
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
-			
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
 			{
@@ -475,7 +364,6 @@ switch($_POST["type"])
 					}
 				}
 			}
-
 			$clientesMeses = array();
 			$smarty->assign("cleanedArray", $sortedArray);
 			$smarty->assign("clientes", $resClientes);
