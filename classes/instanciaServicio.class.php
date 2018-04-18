@@ -30,7 +30,7 @@ class InstanciaServicio extends  Servicio
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."'";
+				AND servicio.servicioId = '".$servicioId."' GROUP BY MONTH(instanciaServicio.date) ORDER BY instanciaServicio.date DESC " ;
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
         if(empty($data))
@@ -54,7 +54,7 @@ class InstanciaServicio extends  Servicio
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."'";
+				AND servicio.servicioId = '".$servicioId."' GROUP BY MONTH(instanciaServicio.date) ORDER BY instanciaServicio.date";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
 
