@@ -771,7 +771,7 @@ class Workflow extends Servicio
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."'";
+				AND servicio.servicioId = '".$servicioId."' ORDER BY instanciaServicio.instanciaServicioId ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$data = $this->Util()->DB()->GetRow();
 
