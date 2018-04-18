@@ -54,7 +54,6 @@ switch($_POST["type"])
 					$contratosClte[$customerId][] = $res;
 				}
 			}//foreach
-
 			$clientes = array();
 			foreach($idClientes as $customerId){
 
@@ -85,35 +84,41 @@ switch($_POST["type"])
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
 						$sumaTotal = 0;
-						if($period == "efm"){
-                            $meses = array(1,2,3);
-                            $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
-                            $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                            $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
-						}elseif($period == "amj"){
-							$meses = array(4,5,6);
-                            $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
-                            $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                            $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
-						}elseif($period == "jas"){
-                            $meses = array(7,8,9);
-                            $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
-                            $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                            $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
-						}elseif($period == "ond"){
-                            $meses = array(10,11,12);
-                            $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
-                            $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                            $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
-						}else{
-                            $meses = array(1,2,3,4,5,6,7,8,9,10,11,12);
-                            $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
-                            $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                            $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+						switch($period)
+						{
+							case 'efm':
+                                $meses = array(1,2,3);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+							break;
+							case 'amj':
+                                $meses = array(4,5,6);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+							break;
+							case 'jas':
+                                $meses = array(7,8,9);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+							break;
+							case 'ond':
+                                $meses = array(10,11,12);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+							break;
+							default:
+                                $meses = array(1,2,3,4,5,6,7,8,9,10,11,12);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+							break;
 						}
 						$serv['sumatotal'] = $sumaTotal;
 						$serv['costo'] = $infServ['costo'];
-
 						$tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
 						$deptoId = $tipoServicio->GetField('departamentoId');
 						$serv['responsable'] = $permisos[$deptoId];
@@ -124,12 +129,9 @@ switch($_POST["type"])
 					$contratos[] = $con;
 
 				}//foreach
-
 				$clte['contracts'] = $contratos;
-
 				$resClientes[] = $clte;
 			}//foreach
-			//die();
 			$alfabeto = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,Ñ,O,P,Q,R,S,T,U,V,W,X,Y,Z";
 			$abcdario = explode(",", $alfabeto);
 
@@ -168,8 +170,6 @@ switch($_POST["type"])
 			}else{
 				$monthNames = array("Ene", "Feb", "Mar","Abr", "May", "Jun","Jul", "Ago", "Sep","Oct", "Nov", "Dic");
 			}
-
-
 			$clientesMeses = array();
 			$smarty->assign("abcdario", $abcdario);
 			$smarty->assign("nombreMeses", $monthNames);
