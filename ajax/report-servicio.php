@@ -306,6 +306,8 @@ switch($_POST["type"])
 						$infServ = $servicio->Info();
 						$noCompletados = 0;
                         $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year);
+                        if(!$serv['instancias'])
+                            continue;
                         $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
                         $noCompletados = count($atrasados);
 
