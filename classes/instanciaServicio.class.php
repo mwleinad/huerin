@@ -33,8 +33,6 @@ class InstanciaServicio extends  Servicio
 				AND servicio.servicioId = '".$servicioId."' GROUP BY MONTH(instanciaServicio.date) ORDER BY instanciaServicio.date DESC " ;
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
-        if(empty($data))
-           return false;
 
         foreach($data as $key => $value)
         {
