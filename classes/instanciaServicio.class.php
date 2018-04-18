@@ -33,6 +33,9 @@ class InstanciaServicio extends  Servicio
 				AND servicio.servicioId = '".$servicioId."'";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
+        if(empty($data))
+           return false;
+
         foreach($data as $key => $value)
         {
             $base[$value['mes']] =  $value;
