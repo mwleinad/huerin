@@ -2922,8 +2922,8 @@ class Contract extends Main
       $single =  $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
       return $single;
     }
-    public function getInfoFirstContract(){
-       $this->Util()->DB()->setQuery('SELECT * FROM contract WHERE customerId="'.$this->customerId.'"  ORDER BY contractId ASC');
+    public function getInfoLastContract(){
+       $this->Util()->DB()->setQuery('SELECT * FROM contract WHERE customerId="'.$this->customerId.'"  ORDER BY contractId DESC');
        $row = $this->Util()->DB()->GetRow();
        return $row;
     }
