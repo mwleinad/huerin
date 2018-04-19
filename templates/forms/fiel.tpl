@@ -29,7 +29,7 @@
 		<td align="left"><input name="claveIsn" id="claveIsn" type="text" value="" class="smallInput medium" size="50"/></td>
 	</tr>
 	<tr>
-		<td align="left" width="40%">Clave Sipare</td>
+		<td align="left" width="40%">* Clave Sipare</td>
 		<td align="left"><input name="claveSip" id="claveSip" type="text" value="{$contractInfo.claveSip}" class="smallInput medium" size="50"/></td>
 	</tr>
 </tbody>

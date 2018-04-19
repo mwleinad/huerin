@@ -178,21 +178,7 @@
         <textarea name="direccionComercial" id="direccionComercial" class="smallInput" style="width:350px" rows="5">{$contractInfo.direccionComercial}</textarea>
     </td>
 	</tr>
-{*
-   <tr>
-    <td align="left" width="40%" class="tdPad">* Cobrador:</td>
-    <td align="left" class="tdPad">
-      <select name="cobrador" id="cobrador" class="smallInput medium">
-        <option value=""></option>
-        {foreach from=$empleados item=item}
-        <option value="{$item.personalId}" {if $contractInfo.cobrador == $item.personalId} selected="selected"{/if}>{$item.name}</option>
-        {/foreach}
-      </select>
-    </td>
-  </tr>
-*}
-
-  <tr>
+    <tr>
 		<td align="left" width="40%" class="tdPad">* Responsable contabilidad:</td>
 		<td align="left" class="tdPad">
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
@@ -209,7 +195,7 @@
 		<td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>
 		<td align="left" class="tdPad">
           <select name="permisos[]" id="permisos[]" class="smallInput medium">
-          	<option value=""></option>
+          	<option value="">Seleccionar......</option>
           {foreach from=$empleados item=item}
           	<option value="{$depto.departamentoId},{$item.personalId}" {if $permisos.{$depto.departamentoId} == $item.personalId} selected="selected"{/if}>{$item.name}</option>
           {/foreach}

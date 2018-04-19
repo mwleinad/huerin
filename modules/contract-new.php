@@ -70,8 +70,21 @@
 	}
     //copiar datos basicos de una razon social existente(casi siempre se repite)
     $contract->setCustomerId($_GET['id']);
-	$contractBase = $contract->getInfoFirstContract();
+	$contractBase = $contract->getInfoLastContract();
     $smarty->assign("bse", $contractBase);
+    if(!empty($contractBase))
+    {
+        $arrayPermisos = explode("-",$contractBase['permisos']);
+        $allPerm = array();
+       foreach($arrayPermisos as $vp){
+           list($dep,$per) = explode(',',$vp);
+           //agregar al array solo los departamentos administracion,mensajeria,contabilidad y juridico
+           if($dep==21||$dep==1||$dep==22||$dep==26)
+             $allPerm[$dep] = $per;
+       }
+        $smarty->assign("allPerm", $allPerm);
+    }
+
 
 	$customer->setCustomerId($_GET["id"]);
 	$infoCustomer = $customer->Info();
