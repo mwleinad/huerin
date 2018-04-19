@@ -43,7 +43,6 @@ switch($_POST["type"])
 		break;	
 		
 	case "saveAddPersonal":
-			
 			$personal->setName($_POST['name']);			
 			$personal->setPhone($_POST['phone']);
 			$personal->setEmail($_POST['email']);
