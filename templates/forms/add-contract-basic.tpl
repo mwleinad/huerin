@@ -180,14 +180,13 @@
         <textarea name="direccionComercial" id="direccionComercial" class="smallInput" style="width:350px" rows="5">{$contractInfo.direccionComercial}</textarea>
     </td>
 	</tr>
-
-	  <tr>
+	<tr>
 		<td align="left" width="40%" class="tdPad">* Responsable Contabilidad:</td>
 		<td align="left" class="tdPad">
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
-          	<option value=""></option>
+          	<option value="">Seleccionar.......</option>
           {foreach from=$empleados item=item}
-          	<option value="{$item.personalId}">{$item.name}</option>
+          	<option value="{$item.personalId}" {if $allPerm[1] eq $item.personalId}selected{/if}>{$item.name}</option>
           {/foreach}  
           </select>
     </td>
@@ -199,9 +198,9 @@
 		<td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>
 		<td align="left" class="tdPad">
           <select name="permisos[]" id="permisos[]" class="smallInput medium">
-          	<option value=""></option>
+          	<option value="">Seleccionar..</option>
           {foreach from=$empleados item=item}
-          	<option value="{$depto.departamentoId},{$item.personalId}">{$item.name}</option>
+          	<option value="{$depto.departamentoId},{$item.personalId}" {if $allPerm[$depto.departamentoId] eq $item.personalId}selected{/if}>{$item.name}</option>
           {/foreach}  
           </select>
     </td>
