@@ -13,15 +13,7 @@ class InstanciaServicio extends  Servicio
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
         $sql = "SELECT 
-                CASE tipoServicioId 
-                WHEN 16 THEN ''
-                WHEN 34 THEN ''
-                WHEN 24 THEN ''
-                WHEN 27 THEN ''
-                ELSE
                 class
-                END 
-                AS class
                 ,MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
@@ -60,15 +52,7 @@ class InstanciaServicio extends  Servicio
     }
     function getOnlyAtrasados($servicioId){
         $sql = "SELECT 
-                CASE tipoServicioId 
-                WHEN 16 THEN ''
-                WHEN 34 THEN ''
-                WHEN 24 THEN ''
-                WHEN 27 THEN ''
-                ELSE
-                class
-                END 
-                AS class,
+                class,
                 YEAR(instanciaServicio.date) as anio,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
@@ -101,15 +85,7 @@ class InstanciaServicio extends  Servicio
     }
     function getBonoTrimestre($servicioId,$year,$meses=array()){
          $sql = "SELECT 
-                CASE tipoServicioId 
-                WHEN 16 THEN ''
-                WHEN 34 THEN ''
-                WHEN 24 THEN ''
-                WHEN 27 THEN ''
-                ELSE
-                class
-                END 
-                AS class,
+                class,
                 servicio.costo,
                 YEAR(instanciaServicio.date) as anio,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
