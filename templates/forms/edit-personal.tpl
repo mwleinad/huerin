@@ -119,10 +119,10 @@
                         {assign var='ncol' value=3}
                         {foreach from=$expedientes key=kexp item=exp}
                             {if $ncol eq 3}
-                                <tr><td><input type="checkbox" name="expe[]" id="" value="{$exp.expedienteId}" {if $exp.find}checked{/if}></td><td>{$exp.name}</td>
+                                <tr><td><input type="checkbox" name="expe[]" id="" value="{$exp.expedienteId}" {if $exp.find}checked onclick="return false;"{/if}></td><td>{$exp.name}</td>
                                 {assign var='ncol' value=$ncol-1}
                             {else}
-                                <td> <input type="checkbox" name="expe[]" id="{$exp.expedienteId}" value="{$exp.expedienteId}" {if $exp.find}checked{/if}></td> <td>{$exp.name}</td>
+                                <td> <input type="checkbox" name="expe[]" id="{$exp.expedienteId}" value="{$exp.expedienteId}" {if $exp.find}checked onclick="return false;"{/if}></td> <td>{$exp.name}</td>
                                 {assign var='ncol' value=$ncol-1}
                                 {if $ncol eq 0}
                                     {assign var='ncol' value=3}
