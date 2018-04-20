@@ -70,17 +70,19 @@ class Notice extends Main
                     $infoRol = $rol->Info();
                 }
                 $depId = $infoRol['departamentoId'];
-                // si el rol de usuario esta permitido que lo vea o que sea el coordinador o socio le llegara
+                // si el rol de usuario esta permitido que lo vea lo vera
                 if(empty($owners))
                 {
+                    //si permisos del aviso es vacio, y fecha del aviso es apartir del 17042018 se elimina por que debe tener permiso
+                    if($value['fecha']>='2018-04-17')
+                        unset($result[$key]);
+
                     continue;
                 }
                 if(!array_key_exists($depId,$owners))
                     unset($result[$key]);
                 elseif(!in_array($roleId,$owners[$depId]))
                     unset($result[$key]);
-
-
 
             }
 
@@ -135,7 +137,7 @@ class Notice extends Main
         }
         return 0;
     }
-    function CheckIfSelectedArea(){
+    function CheckIfSelectedArea($required){
         global $rol;
         $res = $rol->GetRolesGroupByDep();
         $owners = array();
@@ -147,6 +149,7 @@ class Notice extends Main
             }
         }
         if(empty($owners)){
+            if(!$required)
             $this->Util()->setError(10001,'error','Es necesario seleccionar por lo menos una area');
             return false;
         }else{
@@ -157,7 +160,7 @@ class Notice extends Main
     public function Save(){
         global $rol,$customer,$User;
         //comprobar que se ha seleccionado  por lo menos una area
-        $owners = $this->CheckIfSelectedArea();
+        $owners = $this->CheckIfSelectedArea($this->sendCustomer);
 		if($this->Util()->PrintErrors()){
 			return false; 
 		}
@@ -221,43 +224,41 @@ class Notice extends Main
            $this->Util()->PrintErrors();
            return false;
         }else{
+            //si el archivo se subio correctamente se procede a guardar los permisos y enviar por correo de lo contrario se realiza un rollbac
+            //siempre y cuando
+            if(!empty($owners)) {
+                $this->Util()->DB()->setQuery($sqlOwn);
+                $this->Util()->DB()->ExecuteQuery();
+                $this->Util()->DB()->CleanQuery();
+                $sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "'";
+                $this->Util()->DB()->setQuery($sqlQuery);
+                $personal = $this->Util()->DB()->GetResult();
+                $subject = "Aviso Nuevo " . $this->usuario;
+                $sendmail = new SendMail();
+                $mails = array();
+                foreach ($personal as $key => $usuario) {
+                    // comprobar a que area pertenece el rol del personal
+                    $rol->setTitulo($usuario['tipoPersonal']);
+                    $rolId = $rol->GetIdByName();
+                    $roleId = $rolId <= 0 ? $usuario['roleId'] : $rolId;
+                    if ($roleId) {
+                        $rol->setRolId($roleId);
+                        $infoRol = $rol->Info();
+                    }
+                    $depId = !$infoRol['departamentoId'] ? $usuario['departamentoId'] : $infoRol['departamentoId'];
+                    // si el rol de usuario esta permitido que lo vea o que sea el coordinador o socio le llegara
+                    if ((array_key_exists($depId, $owners) && in_array($roleId, $owners[$depId])) || ($usuario['tipoPersonal'] == 'Socio' || $usuario['tipoPersonal'] == 'Coordinador'))
+                        $mails[$usuario['email']] = $usuario['name'];
 
-            //si el archivo se subio correctamente se procede a guardar los permisos y enviar por correo de lo contrario se realiza un rollback
-            $this->Util()->DB()->setQuery($sqlOwn);
-            $this->Util()->DB()->ExecuteQuery();
-            $this->Util()->DB()->CleanQuery();
-
-            $sqlQuery = "SELECT * FROM personal WHERE personalId != '".IDBRAUN."'";
-            $this->Util()->DB()->setQuery($sqlQuery);
-            $personal = $this->Util()->DB()->GetResult();
-            $subject = "Aviso Nuevo ".$this->usuario;
-            $sendmail = new SendMail();
-            $mails = array();
-            foreach($personal as $key => $usuario)
-            {
-                // comprobar a que area pertenece el rol del personal
-                $rol->setTitulo($usuario['tipoPersonal']);
-                $rolId=$rol->GetIdByName();
-                $roleId = $rolId<=0?$usuario['roleId']:$rolId;
-                if($roleId)
-                {
-                    $rol->setRolId($roleId);
-                    $infoRol = $rol->Info();
                 }
-                $depId = !$infoRol['departamentoId']?$usuario['departamentoId']:$infoRol['departamentoId'];
-                 // si el rol de usuario esta permitido que lo vea o que sea el coordinador o socio le llegara
-                if((array_key_exists($depId,$owners)&&in_array($roleId,$owners[$depId]))||($usuario['tipoPersonal']=='Socio'||$usuario['tipoPersonal']=='Coordinador'))
-                    $mails[$usuario['email']] = $usuario['name'];
+                $body = "<pre> " . nl2br(utf8_decode($this->description));
+                $body .= "<br><br>El aviso fue creado por " . $this->usuario;
+                if (file_exists($destino)) {
+                    $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
+                }
 
+                $sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
             }
-            $body = "<pre> ".nl2br(utf8_decode($this->description));
-            $body .= "<br><br>El aviso fue creado por ".$this->usuario;
-            if(file_exists($destino))
-            {
-                $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
-            }
-
-            $sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
             //si se selecciona enviar a cliente hacer lo siguiente
             if($this->sendCustomer){
                 //administrador,socio y coordinador pueden seleccionar enviar a cliente
@@ -288,7 +289,8 @@ class Notice extends Main
                 {
                     $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
                 }
-                // $sendmail->PrepareMultiple($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
+                //desactivar asta que confime rogelio
+               // $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
             }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');

@@ -26,10 +26,18 @@
 				<br><br>
 				<div style="display: inline-block;">
 					<table>
+						<tr>
+							<td style="vertical-align: top">
+								<input type="checkbox" id="allSelected" value="" checked>
+							</td>
+							<td style="vertical-align: top">
+								Seleccionar todos
+							</td>
+						</tr>
                         {assign var='ncol' value=3}
                         {foreach from=$roles key=key item=item}
                             {if $ncol eq 3}
-								<tr>
+								<tr class="area">
 								<td style="vertical-align: top">
 									<input type="checkbox" name="dep-{$item.departamentoId}[]" id="father-{$item.departamentoId}"  value="{$item.departamentoId}" checked>
 								</td>
