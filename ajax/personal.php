@@ -65,6 +65,7 @@ switch($_POST["type"])
 			$personal->setRole($roleId);
 
 			$personal->setDepartamentoId($_POST['departamentoId']);
+            $personal->setJefeInmediato($_POST['jefeInmediato']);
 			$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));			
 			$personal->setFechaIngreso($fechaIngreso);
 						
@@ -90,7 +91,6 @@ switch($_POST["type"])
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/personal.tpl');
 			}
-			
 		break;
 		
 	case "deletePersonal":

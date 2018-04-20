@@ -440,3 +440,16 @@ jQ(document).on('change','form#addNoticeForm td>input[type="checkbox"]',function
         });
 	}
 });
+jQ(document).on('change','form#addNoticeForm input[type="checkbox"]#allSelected',function(){
+    if(jQ(this).is(':checked')){
+        jQ('form#addNoticeForm table tr.area input[type="checkbox"]').each(function(e){
+            var self = this;
+            self.checked=true;
+        });
+	}else{
+        jQ('form#addNoticeForm table tr.area input[type="checkbox"]').each(function(e){
+            var self = this;
+            self.checked=false;
+        });
+	}
+});
