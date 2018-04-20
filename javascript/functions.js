@@ -35,7 +35,6 @@ function LoginCheck()
   });
 
 }
-
 function ToogleStatusDiv()
 {
 	$('centeredDiv').toggle();
@@ -219,7 +218,6 @@ function AddNotice()
 
     });
 }
-
 function DeleteNotice(id)
 {
 	var resp = confirm("Esta seguro de eliminar este registro?");
@@ -251,7 +249,6 @@ function DeleteNotice(id)
 	});
 
 }
-
 function ClosePendiente(id)
 {
 	var resp = confirm("Esta seguro de cerrar este pendiente?");
@@ -283,12 +280,10 @@ function ClosePendiente(id)
 	});
 
 }
-
 function Redirect(page)
 {
 	window.location = WEB_ROOT+page;
 }
-
 function Logout() {
 	new Ajax.Request(WEB_ROOT+'/ajax/logout.php',
 	{
@@ -309,12 +304,6 @@ function Logout() {
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
-/*
-Event.observe(window, 'load', function() {
-	Event.observe($('cambiarRfcButton'), "click", CambiarRfcActivo);
-	Event.observe($('logoutDiv'), "click", Logout);
-});
-*/
 function CambiarRfcActivo()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
@@ -329,7 +318,6 @@ function CambiarRfcActivo()
   });
 
 }
-
 function printExcel(id, type)
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/print.php',
@@ -372,7 +360,6 @@ function ToggleSpecifiedDiv(id)
 		}
 	});
 }
-
 function ToggleDiv(id)
 {
 	$(id).toggle();
@@ -388,3 +375,68 @@ function SetDateCalendar(input){
         todayBtn: "linked"
     }).focus();
 }
+jQ(document).on('change','form#addNoticeForm li>input[type="checkbox"]',function(){
+
+	if(jQ(this).is(':checked'))
+	{
+		jQ('form#addNoticeForm input[type="checkbox"]#'+this.id).each(function(e){
+			var self = this;
+			self.checked=true;
+            //comprobar por cada hijo si se tiene que activar el padre
+            var clss = self.getAttribute('class');
+            var actives = 0;
+            jQ('.'+clss).each(function(){
+                var selfChild= this;
+                if(jQ(selfChild).is(':checked'))
+                    actives++;
+            });
+            if(actives<=0)
+            {
+                var idSplit = clss.split('-');
+                jQ('#father-'+idSplit[1]).prop('checked',false);
+            }else{
+                var idSplit = clss.split('-');
+                jQ('#father-'+idSplit[1]).prop('checked',true);
+            }
+		});
+	}
+	else{
+        jQ('form#addNoticeForm input[type="checkbox"]#'+this.id).each(function(){
+        	var self =  this;
+            self.checked=false;
+            //comprobar por cada hijo si se tiene que activar el padre
+            var clss = self.getAttribute('class')
+            var actives = 0;
+            jQ('.'+clss).each(function(){
+            	var selfChild= this;
+                if(jQ(selfChild).is(':checked'))
+                    actives++;
+            });
+            if(actives==0)
+            {
+                var idSplit = clss.split('-');
+                jQ('#father-'+idSplit[1]).prop('checked',false);
+            }else{
+                var idSplit = clss.split('-');
+                jQ('#father-'+idSplit[1]).prop('checked',true);
+            }
+        });
+	}
+
+});
+//si selecciona un padre se selecciona todo los hijos
+jQ(document).on('change','form#addNoticeForm td>input[type="checkbox"]',function(){
+    var id = this.id;
+    var idSplit = id.split('-');
+	if(jQ(this).is(':checked')){
+        jQ('form#addNoticeForm input[type="checkbox"].child-'+idSplit[1]).each(function(e){
+            var self = this;
+            self.checked=true;
+        });
+	}else{
+        jQ('form#addNoticeForm input[type="checkbox"].child-'+idSplit[1]).each(function(e){
+            var self = this;
+            self.checked=false;
+        });
+	}
+});
