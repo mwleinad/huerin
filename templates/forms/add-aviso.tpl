@@ -31,12 +31,12 @@
                             {if $ncol eq 3}
 								<tr>
 								<td style="vertical-align: top">
-									<input type="checkbox" name="dep-{$item.departamentoId}[]" id="" value="{$item.departamentoId}" checked>
+									<input type="checkbox" name="dep-{$item.departamentoId}[]" id="father-{$item.departamentoId}"  value="{$item.departamentoId}" checked>
 								</td>
 								<td style="vertical-align: top">{$item.departamento}
 								    <ul>
                                         {foreach from=$item.roles item=rol key=krol}
-											<li style="list-style: none"><input type="checkbox" name="roles-{$item.departamentoId}[]" value="{$rol.rolId}" checked>{$rol.name}</li>
+											<li style="list-style: none"><input type="checkbox" name="roles-{$item.departamentoId}[]" id="child_{$rol.name|substr:0:5}" class="child-{$item.departamentoId}" value="{$rol.rolId}" checked>{$rol.name}</li>
                                         {/foreach}
 									</ul>
 							    </td>
@@ -44,12 +44,12 @@
                                 {assign var='ncol' value=$ncol-1}
                             {else}
 								<td style="vertical-align: top">
-									<input type="checkbox" name="dep-{$item.departamentoId}[]"  value="{$item.departamentoId}" checked>
+									<input type="checkbox" name="dep-{$item.departamentoId}[]" id="father-{$item.departamentoId}"  value="{$item.departamentoId}" checked>
 								</td>
 								<td style="vertical-align: top">{$item.departamento}
 									<ul>
                                         {foreach from=$item.roles item=rol key=krol}
-											<li style="list-style: none"><input type="checkbox" name="roles-{$item.departamentoId}[]" value="{$rol.rolId}" checked>{$rol.name}</li>
+											<li style="list-style: none"><input type="checkbox" name="roles-{$item.departamentoId}[]" id="child_{$rol.name|substr:0:5}" class="child-{$item.departamentoId}"  value="{$rol.rolId}" checked>{$rol.name}</li>
                                         {/foreach}
 									</ul>
 								</td>
@@ -60,6 +60,16 @@
                                 {/if}
                             {/if}
                         {/foreach}
+						{if $User.tipoPers eq 'Socio'||$User.tipoPers eq 'Admin' ||$User.tipoPers eq 'Coordinador'}
+						<tr>
+							<td style="vertical-align: top">
+								<input type="checkbox" name="sendCustomer" value="">
+							</td>
+							<td style="vertical-align: top">
+								Enviar a cliente
+							</td>
+						</tr>
+						{/if}
 					</table>
 				</div>
 				<hr />
