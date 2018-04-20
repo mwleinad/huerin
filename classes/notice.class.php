@@ -288,7 +288,7 @@ class Notice extends Main
                 {
                     $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
                 }
-                $sendmail->PrepareMultiple($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
+                $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
             }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
