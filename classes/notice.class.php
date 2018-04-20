@@ -32,10 +32,14 @@ class Notice extends Main
 		$this->prioridad = $value;
 	}
 	public function setFecha($value)
-	{
-		$this->fecha = $value;
-	}
-			
+    {
+        $this->fecha = $value;
+    }
+    private $sendCustomer;
+    public function setSendCustomer($value)
+    {
+        $this->sendCustomer = $value;
+    }
 	public function Enumerate()
 	{
 	    global $User,$rol;
@@ -117,19 +121,19 @@ class Notice extends Main
 		return $row;
 	}
         
-        public function GetIp(){
-            foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
-                if (array_key_exists($key, $_SERVER) === true){
-                    foreach (explode(',', $_SERVER[$key]) as $ip){
-                        $ip = trim($ip); // just to be safe
+    public function GetIp(){
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true){
+                foreach (explode(',', $_SERVER[$key]) as $ip){
+                    $ip = trim($ip); // just to be safe
 
-                        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) !== false){
-                            return $ip;
-                        }
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) !== false){
+                        return $ip;
                     }
                 }
             }
-            return 0;
+        }
+        return 0;
     }
     function CheckIfSelectedArea(){
         global $rol;
@@ -142,7 +146,6 @@ class Notice extends Main
                     $owners[$value['departamentoId']]=$_POST['roles-'.$value['departamentoId']];
             }
         }
-
         if(empty($owners)){
             $this->Util()->setError(10001,'error','Es necesario seleccionar por lo menos una area');
             return false;
@@ -152,7 +155,7 @@ class Notice extends Main
 
     }
     public function Save(){
-        global $rol;
+        global $rol,$customer,$User;
         //comprobar que se ha seleccionado  por lo menos una area
         $owners = $this->CheckIfSelectedArea();
 		if($this->Util()->PrintErrors()){
@@ -247,7 +250,7 @@ class Notice extends Main
                     $mails[$usuario['email']] = $usuario['name'];
 
             }
-            $body = nl2br(utf8_decode($this->description));
+            $body = "<pre> ".nl2br(utf8_decode($this->description));
             $body .= "<br><br>El aviso fue creado por ".$this->usuario;
             if(file_exists($destino))
             {
@@ -255,11 +258,42 @@ class Notice extends Main
             }
 
             $sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
+            //si se selecciona enviar a cliente hacer lo siguiente
+            if($this->sendCustomer){
+                //administrador,socio y coordinador pueden seleccionar enviar a cliente
+                //que se obtengan todos los clientes
+                $User['userId'] = 0;
+                $customers = $customer->Enumerate();
+                $clientes =array();
+                $clientesCorreos = array();
+                foreach($customers as $cm=>$vm){
+                    if(empty($vm['contracts'])){
+                        continue;
+                    }
+                    foreach($vm['contracts'] as $cr=>$vr){
+                        if($vr['activo']=="Si"){
+                            array_push($clientes,$vm['customerId']);
+                            if($this->Util()->ValidateEmail(trim($vr['emailContactoAdministrativo'])))
+                                $clientesCorreos[trim($vr['emailContactoAdministrativo'])]=$vr['nombreComercial'];
+                            if($this->Util()->ValidateEmail(trim($vr['emailContactoDirectivo'])))
+                                $clientesCorreos[trim($vr['emailContactoDirectivo'])]=$vr['nombreComercial'];
+                            break;
+                        }
+                    }
+                }
+                //enviar correo al cliente
+                $subject ="BOLETIN INFORMATIVO";
+                $body ='<pre>Despcripcion del aviso <br><br>'.nl2br(utf8_decode($this->description));
+                if(file_exists($destino))
+                {
+                    $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
+                }
+                // $sendmail->PrepareMultiple($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
+            }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();
 		return true;
-				
 	}
 	
 	public function Update(){

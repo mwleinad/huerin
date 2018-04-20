@@ -56,7 +56,6 @@ switch($_POST["type"])
 			$pendiente->setPrioridad($_POST['prioridad']);
 			$pendiente->setDescription($_POST['descripcion']);
 			$pendiente->setUsuario($_POST['usuario']);
-			
 			//$noticeId = $notice->Save();
 			
 			/*if(!$noticeId)
@@ -78,6 +77,11 @@ switch($_POST["type"])
 			$notice->setPrioridad($_POST['prioridad']);
 			$notice->setDescription($_POST['descripcion']);
 			$notice->setUsuario($_POST['usuario']);
+            $notice->setUsuario($_POST['usuario']);
+            if(isset($_POST['sendCustomer']))
+                $notice->setSendCustomer(true);
+            else
+                $notice->setSendCustomer(false);
 			if(!$notice->Save())
 			{
 				echo "fail[#]";
