@@ -192,3 +192,107 @@ function ExportRolesDetail(tipo){
         }
     });
 }
+jQ(document).on('change','form#frmPermisos input[type="checkbox"]',function(){
+    if(jQ(this).is(':checked')){
+        var clss = this.getAttribute('class');
+        var clses = clss.split(' ');
+        var father = clses[0].split('-');
+        if(clses[1])
+           var son = clses[1].split('-');
+        jQ('form#frmPermisos .child-'+father[1]).each(function(){
+            var dclss = this.getAttribute('class');
+            var dcses = dclss.split(' ');
+            var dfather = dcses[0].split('-');
+            this.checked=true;
+            if(jQ('.child-'+dfather[1]).length>0)
+            {
+               deepChecked(dclss,true);
+            }
+        });
+        if(clses[1]){
+            //console.log(clses[1]);
+            jQ('.father-'+son[1]).prop('checked',true);
+            //ir al ultimo nivel
+            var ffirst = document.getElementsByClassName('father-'+son[1])[0].getAttribute('class');
+            var arrayFirst = ffirst.split(' ');
+            if(arrayFirst[1])
+               checkUpLevel(arrayFirst[1],true);
+        }
+
+    }else{
+        var clss = this.getAttribute('class');
+        var clses = clss.split(' ');
+        var father = clses[0].split('-');
+        if(clses[1])
+        var son = clses[1].split('-');
+        jQ('form#frmPermisos .child-'+father[1]).each(function(){
+            var dclss = this.getAttribute('class');
+            var dcses = dclss.split(' ');
+            var dfather = dcses[0].split('-');
+            this.checked=false;
+            if(jQ('.child-'+dfather[1]).length>0)
+            {
+                deepChecked(dclss,false);
+            }
+        });
+        //verificar si al menos uno de los hijos esta activo.
+        if(clses[1]){
+                 var broActives=0;
+                jQ('form#frmPermisos .'+clses[1]).each(function(){
+                           if(jQ(this).is(':checked'))
+                               broActives++;
+                });
+                if(broActives<=0){
+                    jQ('.father-'+son[1]).prop('checked',false);
+                    //ir al ultimo nivel
+                    var ffirst = document.getElementsByClassName('father-'+son[1])[0].getAttribute('class');
+                    var arrayFirst = ffirst.split(' ');
+                    if(arrayFirst[1])
+                        checkUpLevelClean(arrayFirst[1],false);
+                }
+
+        }
+    }
+});
+function deepChecked(dclss,flag){
+    var fchild = dclss.split(' ');
+    var dfather = fchild[0].split('-');
+    jQ('.child-'+dfather[1]).each(function(){
+        var dclss = this.getAttribute('class');
+        var dcses = dclss.split(' ');
+        var dfather = dcses[0].split('-');
+        this.checked=flag;
+        if(jQ('.child-'+dfather[1]).length>0)
+        {
+            deepChecked(dclss,flag);
+        }
+    });
+}
+function checkUpLevel(clase,flag){
+    //ir al ultimo nivel
+    var son = clase.split('-');
+    jQ('.father-'+son[1]).prop('checked',true);
+    var ffirst =document.getElementsByClassName('father-'+son[1])[0].getAttribute('class');
+    var arrayFirst = ffirst.split(' ');
+    if(arrayFirst[1])
+        checkUpLevel(arrayFirst[1],flag);
+
+}
+function checkUpLevelClean(clase,flag){
+    //ir al ultimo nivel
+    var son = clase.split('-');
+    var broActives=0;
+    jQ('form#frmPermisos .'+clase).each(function(){
+        if(jQ(this).is(':checked'))
+            broActives++;
+    });
+    if(broActives<=0){
+        jQ('.father-'+son[1]).prop('checked',false);
+        //ir al ultimo nivel
+        var ffirst = document.getElementsByClassName('father-'+son[1])[0].getAttribute('class');
+        var arrayFirst = ffirst.split(' ');
+        if(arrayFirst[1])
+            checkUpLevelClean(arrayFirst[1],false);
+    }
+
+}
