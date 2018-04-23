@@ -232,7 +232,7 @@
 
 
 
-	$name = 'reporte de bonos';
+	$name = 'reporte_de_bonos';
 	header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
 	header("Content-type:   application/x-msexcel; charset=utf-8");
 	header("Content-Disposition: attachment; filename=".$name.".xls");
