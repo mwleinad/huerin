@@ -1,27 +1,3 @@
-function Calendario(input){
-    var dateNow = jQ("#"+input.id).val();
-    var flag = true;
-    jQuery("#"+input.id).datepicker({
-        format:'yyyy-mm-dd',
-        language:'es',
-        autoclose:true,
-        todayBtn: true,
-        todayBtn: "linked"
-    }).on('changeDate',function(e){
-        if(flag){
-            console.log(e);
-            if(e.currentTarget.value!=dateNow)
-                UpdateDateWorkflow(input);
-            else
-            {
-                console.log('no cambio');
-
-            }
-            flag = false;
-        }
-
-    }).focus();
-}
 function ToggleTask(id)
 {
 	$$('.tasks').each(

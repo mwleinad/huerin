@@ -49,14 +49,7 @@
 
       <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Fecha Ingreso:</div>
-                <div style="float:left">
-                <input class="smallInput small" name="fechaIngreso" id="fechaIngreso" type="text" value="{$post.fechaIngreso}" size="50" maxlength="10" readonly="readonly"/> 
-                </div>
-                <div style="float:left; padding-left:5px">
-                	<a href="javascript:void(0)" onclick="NewCal('fechaIngreso','ddmmyyyy')">
-                	<img src="{$WEB_ROOT}/images/cal.gif" border="0" align="left" />
-                    </a>
-                </div>
+                <input style="width: 20%!important;" class="smallInput medium" name="fechaIngreso" id="fechaIngreso"  onclick="Calendario(this)" type="text" value="{$post.fechaIngreso}" size="50" maxlength="10" readonly="readonly"/>
                 <hr />
 			</div>
 

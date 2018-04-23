@@ -82,8 +82,6 @@ class Servicio extends Contract
 			echo '<br>';
 			
 			$dateExploded = explode("-", $value["inicioOperaciones"]);
-
-
 			//Check if first instance
 			if(!count($value["instancias"]))
 			{	

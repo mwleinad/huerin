@@ -7,12 +7,12 @@
 	include_once('../config.php');
 	include_once(DOC_ROOT.'/libraries.php');
 
-	$user->allowAccess('customer');
+	$user->allowAccess(164);
 
 	extract($_POST);
 	$period = $_POST['period'];
 			$year = $_POST['year'];
-
+            $mesesBase = array(0=>array(),1=>array(),2=>array());
 			$formValues['subordinados'] = $_POST['deep'];
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
@@ -26,33 +26,7 @@
 			$db->UpdateData();
 
 			$contracts = array();
-			if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Gerente'){
-
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-
-					foreach($socios as $res){
-
-						$formValues['respCuenta'] = $res['personalId'];
-						$formValues['subordinados'] = 1;
-
-						$resContracts = $contract->BuscarContract($formValues, true);
-
-						$contracts = @array_merge($contracts, $resContracts);
-
-
-					}//foreach
-
-				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
-				}
-
-			}else{
-				$contracts = $contract->BuscarContract($formValues, true);
-			}//else
+            include_once(DOC_ROOT.'/ajax/filter.php');
 			//echo count($contracts);
 			//print_r($contracts);
 			$idClientes = array();
@@ -119,127 +93,41 @@
 
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
-
 						$sumaTotal = 0;
-
-						if($period == "efm"){
-							for($ii = 1; $ii <= 3; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 34)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 24)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 37)
-									$statusColor['class'] = '';
-
-								$serv['instancias'][$ii] = $statusColor;
-								if($statusColor['class'] == "Completo" || $statusColor['class'] == "CompletoTardio"){
-									$sumaTotal += $infServ['costo'];
-								}
-							}
-						}elseif($period == "amj"){
-							for($ii = 4; $ii <= 6; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 34)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 24)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 37)
-									$statusColor['class'] = '';
-
-								$serv['instancias'][$ii] = $statusColor;
-								if($statusColor['class'] == "Completo" || $statusColor['class'] == "CompletoTardio"){
-									$sumaTotal += $infServ['costo'];
-								}
-							}
-						}elseif($period == "jas"){
-							for($ii = 7; $ii <= 9; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-								if($statusColor['tipoServicioId'] == 34)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 24)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 37)
-									$statusColor['class'] = '';
-
-							$serv['instancias'][$ii] = $statusColor;
-								if($statusColor['class'] == "Completo" || $statusColor['class'] == "CompletoTardio"){
-									$sumaTotal += $infServ['costo'];
-								}
-							}
-						}elseif($period == "ond"){
-							for($ii = 10; $ii <= 12; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-								if($statusColor['tipoServicioId'] == 34)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 24)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 37)
-									$statusColor['class'] = '';
-
-							$serv['instancias'][$ii] = $statusColor;
-								if($statusColor['class'] == "Completo" || $statusColor['class'] == "CompletoTardio"){
-									$sumaTotal += $infServ['costo'];
-								}
-							}
-						}else{
-							for($ii = 1; $ii <= 12; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , date('Y'));
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-								if($statusColor['tipoServicioId'] == 34)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 24)
-									$statusColor['class'] = '';
-
-								if($statusColor['tipoServicioId'] == 37)
-									$statusColor['class'] = '';
-
-							$serv['instancias'][$ii] = $statusColor;
-								if($statusColor['class'] == "Completo" || $statusColor['class'] == "CompletoTardio"){
-									$sumaTotal += $infServ['costo'];
-								}
-							}
-						}
-						/*for($ii = 1; $ii <= 12; $ii++){
-							$statusColor = $workflow->StatusByMonth($serv['servicioId'], $ii , $year);
-
-							//Si es Servicio de Domicilio Fiscal, que no lleve colores
-							if($statusColor['tipoServicioId'] == 16)
-								$statusColor['class'] = '';
-
-							$serv['instancias'][$ii] = $statusColor;
-						}*/
-
+                        $sumaTotal = 0;
+                        switch($period)
+                        {
+                            case 'efm':
+                                $meses = array(1,2,3);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                break;
+                            case 'amj':
+                                $meses = array(4,5,6);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                break;
+                            case 'jas':
+                                $meses = array(7,8,9);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                break;
+                            case 'ond':
+                                $meses = array(10,11,12);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                break;
+                            default:
+                                $meses = array(1,2,3,4,5,6,7,8,9,10,11,12);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                break;
+                        }
 						$serv['sumatotal'] = $sumaTotal;
 						$serv['costo'] = $infServ['costo'];
 
@@ -344,7 +232,7 @@
 
 
 
-	$name = 'Clientes_con_Razones_Sociales';
+	$name = 'reporte de bonos';
 	header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
 	header("Content-type:   application/x-msexcel; charset=utf-8");
 	header("Content-Disposition: attachment; filename=".$name.".xls");
