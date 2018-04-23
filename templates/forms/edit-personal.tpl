@@ -47,16 +47,9 @@
 
       <div class="formLine" style="width:100%; text-align:left">
       	<div style="width:30%;float:left">Fecha Ingreso:</div>
-				<div style="float:left">
-                <input class="smallInput small" name="fechaIngreso" id="fechaIngreso" type="text" value="{$post.fechaIngreso}" size="50" maxlength="10" readonly="readonly"/> 
-                </div>
-                <div style="float:left; padding-left:5px">
-                	<a href="javascript:void(0)" onclick="NewCal('fechaIngreso','ddmmyyyy')">
-                	<img src="{$WEB_ROOT}/images/cal.gif" border="0" align="left" />
-                    </a>
-                </div>            	<hr />
-			</div>
-
+                <input style="width: 20%!important;" class="smallInput medium" name="fechaIngreso" id="fechaIngreso" onclick="return false" type="text" value="{$post.fechaIngreso}" maxlength="10" size="40" readonly="readonly"/>
+                <hr />
+	  </div>
       <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Grupo de Trabajo:</div>
                 <input class="smallInput medium" name="grupo" id="grupo" type="text" value="{$post.grupo}" size="50"/>            	<hr />
