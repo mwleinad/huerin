@@ -155,7 +155,6 @@ switch($_POST["type"])
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$customer->setCustomerId($_POST['customerId']);
 			$info = $customer->Info();
-						
 			$smarty->assign("post", $info);
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-customer-popup.tpl');
 		

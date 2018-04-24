@@ -30,15 +30,15 @@ class Servicio extends Contract
 	private $inicioFactura;
 	public function setInicioFactura($value)
 	{
-		$value = $this->Util()->FormatDateMySql($value);
+		//$value = $this->Util()->FormatDateMySql($value);
 		$this->inicioFactura = $value;
 	}
 
 	private $inicioOperaciones;
 	public function setInicioOperaciones($value)
 	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Inicio Operaciones");
-		$value = $this->Util()->FormatDateMySql($value);
+		//$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Inicio Operaciones");
+		//$value = $this->Util()->FormatDateMySql($value);
 		$this->inicioOperaciones = $value;
 	}
 

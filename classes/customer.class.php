@@ -45,7 +45,7 @@ class Customer extends Main
   public function setFechaAlta($value)
   {
     if ($this->Util()->ValidateRequireField($value, "Fecha Alta")) {
-      $value = $this->Util()->FormatDateMySql($value);
+      //$value = $this->Util()->FormatDateMySql($value);
     }
     $this->fechaAlta = $value;
   }

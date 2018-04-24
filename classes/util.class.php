@@ -708,19 +708,36 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 	}
 
-	function validateDateFormat($date, $field)
+	function validateDateFormat($date, $field,$format='d-m-Y')
 	{
 		//match the format of the date
-		if (preg_match ("/^([0-9]{2})-([0-9]{2})-([0-9]{4})$/", $date, $parts))
-		{
-			//check weather the date is valid of not
-					if(checkdate($parts[2],$parts[1],$parts[3]))
-						return true;
-					else
-					 return $this->setError(10011, "error", "", $field);
-		}
-		else
-			return $this->setError(10011, "error", "", $field);
+        switch($format){
+            case 'd-m-Y':
+                if (preg_match ("/^([0-9]{2})-([0-9]{2})-([0-9]{4})$/", $date, $parts))
+                {
+                    //check weather the date is valid of not
+                    if(checkdate($parts[2],$parts[1],$parts[3]))
+                        return true;
+                    else
+                        return $this->setError(10011, "error", "", $field);
+                }
+                else
+                    return $this->setError(10011, "error", "", $field);
+            break;
+            case 'Y-m-d':
+                if (preg_match ("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $date, $parts))
+                {
+                    //check weather the date is valid of not
+                    if(checkdate($parts[2],$parts[3],$parts[1]))
+                        return true;
+                    else
+                        return $this->setError(10011, "error", "", $field);
+                }
+                else
+                    return $this->setError(10011, "error", "", $field);
+                break;
+        }
+
 	}
 
 	function DP($variable)

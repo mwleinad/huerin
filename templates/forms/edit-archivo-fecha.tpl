@@ -8,8 +8,7 @@
 
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Fecha de vencimiento:</div>
-         <div style="width:30%;float:left"><input  name="datef" id="datef" type="text" value="{$post.date}" size="27"/> </div>
-                <div style="width:30%;float:left"><a href="javascript:NewCal('datef','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a></div>
+                <input style="width:15%!important;" class="smallInput" onclick="CalendarioSimple(this)" name="datef" id="datef" type="text" value="{$post.date}" maxlength="10"/>
 				<hr />
 			</div>	
 

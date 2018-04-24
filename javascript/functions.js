@@ -386,17 +386,24 @@ function Calendario(input){
         todayBtn: "linked"
     }).on('changeDate',function(e){
         if(flag){
-            console.log(e);
             if(e.currentTarget.value!=dateNow)
                 UpdateDateWorkflow(input);
             else
             {
                 console.log('no cambio');
-
             }
             flag = false;
         }
 
+    }).focus();
+}
+function CalendarioSimple(input){
+    jQuery("#"+input.id).datepicker({
+        format:'yyyy-mm-dd',
+        language:'es',
+        autoclose:true,
+        todayBtn: true,
+        todayBtn: "linked"
     }).focus();
 }
 jQ(document).on('change','form#addNoticeForm li>input[type="checkbox"]',function(){

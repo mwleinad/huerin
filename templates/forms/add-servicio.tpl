@@ -15,17 +15,15 @@
             </div>		
 
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">* Fecha Inicio Operaciones:</div>
-         <div style="width:30%;float:left"><input  name="inicioOperaciones" id="inicioOperaciones" type="text" value="{$post.inicioOperacionesMysql}" size="27"/> </div>
-                <div style="width:30%;float:left"><a href="javascript:NewCal('inicioOperaciones','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a></div>
-				<hr />
-        </div>		
+					<div style="width:30%;float:left">* Fecha Inicio Operaciones:</div>
+					<input style="width:20%!important;float:left" class="smallInput medium" name="inicioOperaciones" id="inicioOperaciones"  onclick="CalendarioSimple(this)" type="text" value="{$post.inicioOperacionesMysql}"/>
+					<hr />
+			</div>
             
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Inicio Factura:</div>
-         <div style="width:30%;float:left"><input  name="inicioFactura" id="inicioFactura" type="text" value="{$post.inicioFacturaMysql}" size="27"/> </div>
-                <div style="width:30%;float:left"><a href="javascript:NewCal('inicioFactura','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a></div>
-				<hr />
+        	    <input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)" name="inicioFactura" id="inicioFactura" type="text" value="{$post.inicioFacturaMysql}" size="27"/>
+                <hr />
 			</div>
 
             <div class="formLine" style="width:100%; text-align:left">
