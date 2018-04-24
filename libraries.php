@@ -253,7 +253,17 @@ if($_SESSION['User']['tipoPers']=='Admin')	{
          $User['tipoPers'] = $row['name'];
      }
     $User['roleId'] = $roleId;
+     //find departamento user active
+     if($infoUser['departamentoId']>0)
+         $User['departamentoId']=$infoUser['departamentoId'];
+     else{
+         $rol->setRolId($User['roleId']);
+         $dep = $rol->Info();
+         $User['departamentoId']=$dep['departamentoId'];
+     }
 }
+
+
 $rol->setRolId($User['roleId']);
 $permissions = $rol->GetPermisosByRol();
 $smarty->assign('permissions', $permissions);
@@ -272,7 +282,6 @@ if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $
 $smarty->assign('User',$User);
 $firstDep = $departamentos->GetFirstDep();
 $smarty->assign("firstDep", $firstDep);
-
 function dd($data)
 {
 	echo "<pre>";

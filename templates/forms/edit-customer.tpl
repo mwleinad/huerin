@@ -35,37 +35,11 @@
                 <div style="width:30%;float:left">Activo:</div><input name="active" id="active" type="checkbox" {if $post.active}checked{/if} value="1"/>
                 <hr />       
               </div>
-              
-{*}        <div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">Responsables</div>
-                <hr />
-			</div>           
-
-     <div class="formLine" style="width:100%; text-align:left">
-          <div style="width:30%;float:left">Encargado de la Cuenta:</div>
-          <select name="encargadoCuenta" id="encargadoCuenta" class="smallInput medium">
-          {foreach from=$empleados item=item}
-          	<option value="{$item.personalId}" {if $post.encargadoCuenta == $item.personalId} selected="selected"{/if}>{$item.name}</option>
-          {/foreach}  
-          </select>
-          <hr />       
-        </div>
-
-      <div class="formLine" style="width:100%; text-align:left">
-          <div style="width:30%;float:left">Responsable de la Cuenta:</div>
-          <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
-          {foreach from=$empleados item=item}
-          	<option value="{$item.personalId}" {if $post.responsableCuenta == $item.personalId} selected="selected"{/if}>{$item.name}</option>
-          {/foreach}  
-          </select>
-          <hr />       
-        </div>{*}
 
 		<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Fecha de Alta:</div>
-         <div style="width:30%;float:left"><input  name="fechaAlta" id="fechaAlta" type="text" value="{$post.fechaMysql}" size="27"/> </div>
-                <div style="width:30%;float:left"><a href="javascript:NewCal('fechaAlta','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a></div>
-				<hr />
+                <input  style="width:20%!important;" class="largeInput" onclick="CalendarioSimple(this)" name="fechaAlta" id="fechaAlta" type="text" value="{$post.fechaAlta}" size="27"/>
+                <hr />
         </div>		
 
 		<div class="formLine" style="width:100%; text-align:left">

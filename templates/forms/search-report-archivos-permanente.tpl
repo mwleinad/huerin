@@ -5,7 +5,7 @@
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
-<table width="60%" align="center">
+<table width="80%" align="center">
 <tr style="background-color:#CCC">
     <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 </tr>
@@ -49,23 +49,8 @@
 		<td align="center" style="padding-left: 5px;padding-right: 5px">
 			<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: auto"/>
 		</td>
-        {*}
-    	<td align="center">
-			<select id="facturador" class="smallInput" name="facturador">
-                    <option value="0">Todos</option>
-                    <option value="Huerin">Braun Huerin SC</option>
-                    <option value="Braun">Jacobo Braun</option>
-                    <option value="Efectivo">Efectivo</option>
-			</select>
-		</td>
-        {*}
 		<td align="center" style="padding-left: 5px;padding-right: 5px">
-    	<select name="departamentoId" id="departamentoId"  class="largeInput" >
-      	<option value="" selected="selected">Todos...</option>
-        {foreach from=$departamentos item=depto}
-      	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-        {/foreach}
-      	</select> 
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
 		</td>
 </tr>        
 <tr>

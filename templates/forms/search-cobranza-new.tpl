@@ -5,7 +5,7 @@
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
-<table width="900" align="center">
+<table width="80%" align="center">
 <tr style="background-color:#CCC">
     <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 </tr>
@@ -23,7 +23,7 @@
     <td align="center"></td>
 </tr>
 <tr>	
-    <td align="center">
+    <td style="width:35%; padding:0px 4px 4px 8px;" align="center">
     	<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
@@ -31,8 +31,8 @@
         	 	</div>
          	</div>
 		</td>        
-    <td align="center">
-            <select name="responsableCuenta" id="responsableCuenta"  class="smallInput">
+    <td style="width:35%; padding:0px 4px 4px 8px;" align="center">
+            <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
             {* if $User.roleId=="1" *}
             <option value="0" selected="selected">Todos...</option>
             {* /if *}
@@ -42,37 +42,21 @@
             </select>  
 		</td>    
 
-		<td align="center">
+		<td  style="width: 5%; padding:0px 4px 4px 8px;"align="center">
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
 
-		<td align="center">
+		<td style="width: 5%; padding:0px 4px 4px 8px;" align="center">
 			<input name="atrasados" id="atrasados" type="checkbox"/>
 		</td>  
 		
 
-		   <td align="center">
-    	<select name="departamentoId" id="departamentoId"  class="smallInput">
-      	<option value="" selected="selected">Todos...</option>
-        {foreach from=$departamentos item=depto}
-      	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-        {/foreach}
-      </select>  
+		<td style="width: 15%; padding:0px 4px 4px 8px;" align="center">
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
 		</td>  
 
-
-		<td align="center">    	
-    <select name="year" id="year"  class="smallInput" style="width:100px !important">
-      	<option value="2012" {if $year == "2012"} selected="selected" {/if}>2012</option>
-      	<option value="2013" {if $year == "2013"} selected="selected" {/if}>2013</option>
-      	<option value="2014" {if $year == "2014"} selected="selected" {/if}>2014</option>
-      	<option value="2015" {if $year == "2015"} selected="selected" {/if}>2015</option>
-      	<option value="2016" {if $year == "2016"} selected="selected" {/if}>2016</option>
-      	<option value="2017" {if $year == "2017"} selected="selected" {/if}>2017</option>
-      	<option value="2018" {if $year == "2018"} selected="selected" {/if}>2018</option>
-      	<option value="2019" {if $year == "2019"} selected="selected" {/if}>2010</option>
-      	<option value="2020" {if $year == "2020"} selected="selected" {/if}>2020</option>
-     </select>
+		<td style="width:10%; padding:0px 4px 4px 8px;" align="center">
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
 
     </td>
     </tr>

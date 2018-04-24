@@ -52,6 +52,6 @@
 			$info = $user->Info();
 			$smarty->assign("info", $info);	
 		
-		$fecha = date("d-m-Y");			
+		$fecha = date("Y-m-d");
 		$smarty->assign("fecha", $fecha);	
 ?>

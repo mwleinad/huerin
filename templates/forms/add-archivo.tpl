@@ -4,7 +4,7 @@
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Tipo de Archivo:</div>
-        <select name="tipoArchivoId" id="tipoArchivoId">
+        <select class="smallInput" name="tipoArchivoId" id="tipoArchivoId">
         {foreach from=$tiposArchivo item=item}
         	<option value="{$item.tipoArchivoId}">{$item.descripcion}</option>
         {/foreach}
@@ -16,9 +16,7 @@
 			</div>			
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Fecha de vencimiento:</div>
-				<div style="width:70%;float:left;">
-        <input type="text" name="datef" id="datef" value="{$post.date}" size="30" style="vertical-align: middle;"/><a href="javascript:NewCal('datef','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
-		
+                <input style="width:15%!important;" class="smallInput" type="text" name="datef" id="datef" value="{$post.date}" maxlength="10" onclick="CalendarioSimple(this)" style="vertical-align: middle;"/>
 			</div>
 			</div>
 			<div style="clear:both"></div>
