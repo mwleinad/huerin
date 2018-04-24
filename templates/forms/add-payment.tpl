@@ -17,11 +17,11 @@
 
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Fecha:</div>
-         <div style="width:30%;float:left"><input  name="paymentDate" id="paymentDate" type="text" value="{$fecha}" size="35" class="largeInput"/> </div>
-                <div style="width:30%;float:left"><a href="javascript:NewCal('paymentDate','ddmmyyyy')"><img src="{$WEB_ROOT}/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a></div>
-        </div>		
-        
-      <div style="clear:both"></div>  
+				<div style="width:100%;float:left">
+					<input  style="width:15% !important; float:left;" name="paymentDate" id="paymentDate" type="text" value="{$fecha}" maxlength="10" onclick="CalendarioSimple(this)" class="largeInput"/>
+				</div>
+			</div>
+            <div style="clear:both"></div>
         
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Importe:</div>

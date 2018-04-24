@@ -46,12 +46,7 @@
 			<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: 90%;"/>
 		</td>     	
 		<td align="center" style="padding-left: 5px; padding-right: 5px">
-    	<select name="departamentoId" id="departamentoId"  class="largeInput" style="width: 90%;">
-      	<option value="" selected="selected">Todos...</option>
-        {foreach from=$departamentos item=depto}
-      	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-        {/foreach}
-      	</select> 
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
 		</td>
 </tr>        
 <tr>

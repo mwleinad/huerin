@@ -123,7 +123,7 @@ switch($_POST["type"])
 			$info = $myPersonal;
 			
 			if($info['fechaIngreso'])
-				$info['fechaIngreso'] = date('d-m-Y',strtotime($info['fechaIngreso']));
+				$info['fechaIngreso'] = date('Y-m-d',strtotime($info['fechaIngreso']));
 			
 			$smarty->assign("post", $info);
 			

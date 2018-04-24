@@ -447,8 +447,8 @@ class CxC extends Producto
 	{
 	    $amount = $this->Util()->limpiaNumero($amount);
         $deposito = $this->Util()->limpiaNumero($deposito);
-	    if($this->Util()->validateDateFormat($fecha,'Fecha'))
-	        $fecha = $this->Util()->FormatDateMySql($fecha);
+	    if(!$this->Util()->validateDateFormat($fecha,'Fecha','Y-m-d'))
+	        $fecha = date('Y-m-d');
 
         if($this->Util()->PrintErrors()){ return false; }
 

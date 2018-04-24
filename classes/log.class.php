@@ -77,7 +77,7 @@ class Log extends Util
         if($values['finicial']!="")
             $filter .=" AND log.fecha>='".$values['finicial']." 00:00:00' ";
         if($values['ffinal']!="")
-            $filter .=" AND log.fecha<='".$values['ffinal']." 00:00:00' ";
+            $filter .=" AND log.fecha<='".$values['ffinal']." 23:59:59' ";
 
          $sql = "SELECT date(log.fecha) as fecham,log.*,personal.name as usuario FROM log LEFT JOIN personal ON log.personalId=personal.personalId where 1 ".$filter."   ORDER BY log.fecha ASC";
          $this->Util()->DB()->setQuery($sql);

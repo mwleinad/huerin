@@ -47,7 +47,7 @@
 
       <div class="formLine" style="width:100%; text-align:left">
       	<div style="width:30%;float:left">Fecha Ingreso:</div>
-                <input style="width: 20%!important;" class="smallInput medium" name="fechaIngreso" id="fechaIngreso" onclick="return false" type="text" value="{$post.fechaIngreso}" maxlength="10" size="40" readonly="readonly"/>
+                <input style="width: 20%!important;" class="smallInput medium" name="fechaIngreso" id="fechaIngreso" onclick="CalendarioSimple(this)" type="text" value="{$post.fechaIngreso}" maxlength="10" size="40" readonly="readonly"/>
                 <hr />
 	  </div>
       <div class="formLine" style="width:100%; text-align:left">

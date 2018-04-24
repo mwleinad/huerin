@@ -19,7 +19,7 @@
     <td align="center"></td>
 </tr>
 <tr>	
-    <td align="center">
+    <td style="padding-left: 5px;padding-right: 5px" align="center">
     	<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
@@ -27,25 +27,25 @@
         	 	</div>
          	</div>
 		</td>        
-    <td align="center">
-            <select name="responsableCuenta" id="responsableCuenta"  class="smallInput">
+    <td style="padding-left: 5px;padding-right: 5px" align="center">
+            <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
             {* if $User.roleId=="1" *}
-            <option value="0" selected="selected">Todos...</option>
+            <option value="0" selected="selected">Todos..</option>
             {* /if *}
             {foreach from=$personals item=personal}
             <option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
             {/foreach}
             </select>  
 		</td>    
-		<td align="center">
+		<td style="padding-left: 5px;padding-right: 5px" align="center">
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
-		<td align="center">
+		<td style="padding-left: 5px;padding-right: 5px" align="center">
 			<input name="atrasados" id="atrasados" type="checkbox"/>
 		</td>  
 		
-		   <td align="center">
-    	<select name="departamentoId" id="departamentoId"  class="smallInput">
+		<td style="padding-left: 5px;padding-right: 5px" align="center">
+    	<select name="departamentoId" id="departamentoId"  class="largeInput">
       	<option value="" selected="selected">Todos...</option>
         {foreach from=$departamentos item=depto}
       	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
@@ -54,7 +54,6 @@
 		</td>  
 		
 		<td align="center">
-
         </td>
     </tr>
 <tr>

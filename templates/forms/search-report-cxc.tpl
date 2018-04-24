@@ -5,7 +5,7 @@
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
-<table width="500" align="center">
+<table width="80%" align="center">
 <tr style="background-color:#CCC; width:700px">
     <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de Busqueda</b></td>
 </tr>
@@ -16,7 +16,7 @@
     <td align="center">Facturador</td>
 </tr>
 <tr>	
-    <td align="center">
+    <td  style="width: 35%; padding:0px 4px 4px 8px;" align="center">
     	<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
@@ -24,7 +24,7 @@
         	 	</div>
          	</div>
 		</td>
-        <td align="center">
+        <td style="width: 35%; padding:0px 4px 4px 8px;" align="center">
     	<select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
       	{if $User.tipoPersonal=="Socio" ||  $User.tipoPersonal=="Coordinador" ||  $User.tipoPersonal=="Admin"}
 		<option value="0" selected="selected">Todos...</option>
@@ -34,10 +34,10 @@
         {/foreach}
       </select>  
 		</td>    
-		<td align="center">
+		<td  style="width: 5%; padding:0px 4px 4px 8px;" align="center">
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
-    	<td align="center">
+    	<td  style="width:15%; padding:0px 4px 4px 8px;" align="center">
 			<select id="facturador" class="largeInput" name="facturador">
                     <option value="0">Todos</option>
                     <option value="BHSC">BHSC Contadores SC</option>
@@ -46,13 +46,13 @@
                     <option value="Efectivo">Efectivo</option>
 			</select>
 		</td>
-    <td align="center">
+    <td style="width: 10%; padding:0px 4px 4px 8px;">
         {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
     </td>
 </tr>
 <tr>
-    <td align="center" colspan="4">
-        <div style="margin-left:400px">
+    <td align="center" colspan="5">
+        <div style="display:inline-block;text-align: center;">
         <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
         </div>
     </td>
