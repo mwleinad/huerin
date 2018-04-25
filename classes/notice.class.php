@@ -233,7 +233,7 @@ class Notice extends Main
                 $sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "'";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
-                $subject = "Aviso Nuevo " . $this->usuario;
+                $subject = "AVISO NUEVO " . $this->usuario;
                 $sendmail = new SendMail();
                 $mails = array();
                 foreach ($personal as $key => $usuario) {
@@ -257,7 +257,7 @@ class Notice extends Main
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
 
-                $sendmail->PrepareMultiple($subject, $body, $mails, '', $destino, $fileName, "", "");
+                $sendmail->PrepareMultipleHidden($subject, $body, $mails, '', $destino, $fileName, "", "");
             }
             //si se selecciona enviar a cliente hacer lo siguiente
             if($this->sendCustomer){
@@ -283,7 +283,7 @@ class Notice extends Main
                     }
                 }
                 //enviar correo al cliente
-                $subject ="BOLETIN INFORMATIVO";
+                $subject ="BRAUN HUERIN INFORMA";
                 $body ='<pre>Despcripcion del aviso <br><br>'.nl2br(utf8_decode($this->description));
                 if(file_exists($destino))
                 {
