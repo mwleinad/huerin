@@ -56,13 +56,16 @@ function ActivateFileOption(id)
                     <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank" style="color:#fff">&raquo; Ver </a>
                   {/if}
                   {if in_array(119,$permissions)||$User.isRoot}
+                        {if $User.departamentoId eq $instanciaServicio.departamentoId ||$User.tipoPers eq 'Admin'||$User.tipoPers eq 'Socio'||$User.tipoPers eq 'Coordinador'}
 					    <span><a href="{$WEB_ROOT}/delete_task.php?id={$instanciaServicio.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')" style='color:#fff'>&raquo; Borrar</a></span>
+                        {/if}
                   {/if}
                   <br />
                   {/foreach}	
                   </span>
                     {if $instanciaServicio.status neq "inactiva"}
                         {if in_array(109,$permissions)|| $User.isRoot}
+                            {if $User.departamentoId eq $instanciaServicio.departamentoId ||$User.tipoPers eq 'Admin'||$User.tipoPers eq 'Socio'||$User.tipoPers eq 'Coordinador'}
                               <form method="post" enctype="multipart/form-data" style="font-size:8px">
                               <input type="hidden" id="stepId" name="stepId" value="{$instanciaServicio.steps.$foo.stepId}" />
                               <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
@@ -72,20 +75,23 @@ function ActivateFileOption(id)
                               <input type="file" id="file_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" name="file"  style="font-size:10px; width:70px; display:none" />
                               <input type="submit" id="enviar_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" value="Enviar" class="btnEnviar" onclick="HideButtons()"  style="font-size:10px" />
                               </form>
+                            {/if}
                          {/if}
                     {/if}
                 {else}
                   {if $instanciaServicio.status neq "inactiva"}
                       {if in_array(109,$permissions)|| $User.isRoot}
-                          <form method="post" enctype="multipart/form-data"  style="font-size:8px">
-                             <input type="hidden" id="stepId" name="stepId" value="{$instanciaServicio.steps.$foo.stepId}" />
-                              <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
-                              <input type="hidden" id="servicioId" name="servicioId" value="{$instanciaServicio.instanciaServicioId}" />
-                              <input type="hidden" id="control" name="control" value="1" />
-                              <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
-                              <input type="file" id="file_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" name="file"  style="font-size:10px; width:70px; display:none" />
-                              <input type="submit" id="enviar_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" value="Enviar" class="btnEnviar" onclick="HideButtons()"   style="font-size:10px" disabled="disabled"/>
-                            </form>
+                          {if $User.departamentoId eq $instanciaServicio.departamentoId ||$User.tipoPers eq 'Admin'||$User.tipoPers eq 'Socio'||$User.tipoPers eq 'Coordinador'}
+                               <form method="post" enctype="multipart/form-data"  style="font-size:8px">
+                                 <input type="hidden" id="stepId" name="stepId" value="{$instanciaServicio.steps.$foo.stepId}" />
+                                  <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
+                                  <input type="hidden" id="servicioId" name="servicioId" value="{$instanciaServicio.instanciaServicioId}" />
+                                  <input type="hidden" id="control" name="control" value="1" />
+                                  <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                                  <input type="file" id="file_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" name="file"  style="font-size:10px; width:70px; display:none" />
+                                  <input type="submit" id="enviar_{$instanciaServicio.instanciaServicioId}_{$task.taskId}_{$instanciaServicio.steps.$foo.stepId}" value="Enviar" class="btnEnviar" onclick="HideButtons()"   style="font-size:10px" disabled="disabled"/>
+                                </form>
+                              {/if}
                       {/if}
                   {/if}
                 {/if}
