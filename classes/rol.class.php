@@ -39,6 +39,16 @@ class Rol extends main
         $info = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         return $info;
     }
+    public function getInfoByData($data){
+        $this->setTitulo($data['tipoPersonal']);
+        $roleId = $this->GetIdByName();
+        if($roleId<=0){
+            $roleId=$data['roleId'];
+        }
+        $this->setRolId($roleId);
+        $role = $this->Info();
+        return $role;
+    }
     public function GetIdByName(){
         $sql = "SELECT rolId FROM roles WHERE status='activo' AND name='".$this->titulo."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
