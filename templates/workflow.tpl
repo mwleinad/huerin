@@ -1,5 +1,4 @@
 <div class="grid_16" id="content">
-    
   <div class="grid_9">
   <h1 class="catalogos">Workflow  </h1>
   </div>
@@ -59,43 +58,49 @@
                 {if $task.controlFile}
                   <img src="{$WEB_ROOT}/images/icons/activate.png" />
                   <span style="color:#093"><br />
-                  {foreach from=$task.controlFileInfo item=file}
-                  Version: {$file.version} Fecha: {$file.date}
-                  {if in_array(104,$permissions)||$User.isRoot}
-                    <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
-                  {/if}
-                  {*if $tipoPersonal == "Asistente" || $tipoPersonal == "Socio" || $tipoPersonal == "Gerente" *}
-                  {if in_array(105,$permissions)||$User.isRoot}
-					    <span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
-                  {/if}
-                  <br />
-                  {/foreach}	</span>
+                      {foreach from=$task.controlFileInfo item=file}
+                      Version: {$file.version} Fecha: {$file.date}
+                      {if in_array(104,$permissions)||$User.isRoot}
+                        <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                      {/if}
+                      {if in_array(105,$permissions)||$User.isRoot}
+                          {if $isDep}
+                            <span><a href="{$WEB_ROOT}/delete_task.php?id={$myWorkflow.instanciaServicioId}&delete={$file.taskFileId}" onclick="return confirm('Esta seguro de eliminar este archivo?')">&raquo; Borrar Archivo</a></span>
+                          {/if}
+                      {/if}
+                      <br />
+                      {/foreach}
+                  </span>
                   {if $myWorkflow.status neq "inactiva"}
                     {if in_array(103,$permissions)||$User.isRoot}
-                    <form method="post" enctype="multipart/form-data">
-                      <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
-                      <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
-                      <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
-                      <input type="hidden" id="control" name="control" value="1" />
-                      <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
-                      <input type="file" id="file" name="file" />
-                      <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
-                    </form>
+                        {if $isDep}
+                            <form method="post" enctype="multipart/form-data">
+                              <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
+                              <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
+                              <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
+                              <input type="hidden" id="control" name="control" value="1" />
+                              <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                              <input type="file" id="file" name="file" />
+                              <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
+                            </form>
+                        {/if}
                     {/if}
                    {/if}
                 {else}
                   <img src="{$WEB_ROOT}/images/icons/cancel.png" />
                   {if $myWorkflow.status neq "inactiva"}
                       {if in_array(103,$permissions)||$User.isRoot}
-                          <form method="post" enctype="multipart/form-data">
-                          <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
-                          <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
-                          <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
-                          <input type="hidden" id="control" name="control" value="1" />
-                          <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
-                          <input type="file" id="file" name="file" />
-                          <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
-                          </form>
+                          {if $isDep}
+                              <form method="post" enctype="multipart/form-data">
+                              <input type="hidden" id="stepId" name="stepId" value="{$step.stepId}" />
+                              <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
+                              <input type="hidden" id="servicioId" name="servicioId" value="{$myWorkflow.instanciaServicioId}" />
+                              <input type="hidden" id="control" name="control" value="1" />
+                              <input type="hidden" id="uplToken" name="uplToken" value="{$uplToken}" />
+                              <input type="file" id="file" name="file" />
+                              <input type="submit" value="Enviar" class="btnEnviar" onclick="HideButtons()" />
+                              </form>
+                          {/if}
                       {/if}
                     {/if}
                 {/if}
@@ -125,7 +130,9 @@
       <div class="formLine" style="text-align:center; margin-left:420px">            
       {if $myWorkflow.status neq "inactiva"}
           {if in_array(106,$permissions)||$User.isRoot}
-            <a class="button_notok" id="btnAddCancelWorkFlow" onclick="CancelarWorkFlow({$workFlowId})"><span>Desactivar</span></a>
+            {if $isDep}
+                <a class="button_notok" id="btnAddCancelWorkFlow" onclick="CancelarWorkFlow({$workFlowId})"><span>Desactivar</span></a>
+            {/if}
           {/if}
        {else}
           {if in_array(106,$permissions)||$User.isRoot}

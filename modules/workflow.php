@@ -19,7 +19,21 @@
   
 	$workflow->setInstanciaServicioId($_GET["id"]);
 	$myWorkflow = $workflow->Info();
-	
+	//asignar permiso de borrar y actualizar solo si la instancia pertenece ala misma area del usuario activo
+    switch($User['tipoPers']){
+        case 'Admin':
+        case 'Coordinador':
+        case 'Socio':
+        $isDep = true;
+        break;
+        default:
+            if($User['departamentoId']==$myWorkflow['departamentoId'])
+                $isDep= true;
+            else
+                $isDep=false;
+        break;
+    }
+
 	$result = $workflow->StatusById($_GET["id"]);
   	$db->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
         		   WHERE instanciaServicioId = '".$_GET["id"]."'");
@@ -44,7 +58,8 @@
 	$user->setUserId($User['userId']);
 	$infU = $user->Info();
 	$tipoPersonal = $infU['tipoPersonal'];
-		
+
+    $smarty->assign("isDep", $isDep);
 	$smarty->assign("from", $from);
 	$smarty->assign("uplToken", $uplToken);
 	$smarty->assign("tipoPersonal", $tipoPersonal);
