@@ -102,18 +102,17 @@ switch($_POST["type"])
 						
 						$personal->setPersonalId($personalId);		
 						$infP = $personal->Info();
-						
-						if($infP['tipoPersonal'] == 'Gerente' || $infP['tipoPersonal'] == 'Socio'){
+						//encontrar el rol a que pertenece
+                        $role =  $rol->getInfoByData($infP);
+						if(stripos($role['name'],'gerente')!==false || stripos($role['name'],'socio')!==false ||stripos($role['name'],'coordinador')!==false){
 							$serv['gerente'] = $infP['name'];
-						}elseif($infP['tipoPersonal'] == 'Supervisor'){
-						
+						}elseif(stripos($role['name'] ,'supervisor')!==false ){
 							$serv['supervisor'] = $infP['name'];
-							
 							$personal->setPersonalId($infP['jefeInmediato']);
 							$serv['gerente'] = $personal->GetNameById();
 							
 						}
-                        elseif($infP['tipoPersonal'] == 'Asistente'){
+                        elseif(stripos($role['name'],'asistente')!==false){
                             $serv['auxiliar'] = $infP['name'];
 
                             $personal->setPersonalId($infP['jefeInmediato']);
@@ -121,40 +120,38 @@ switch($_POST["type"])
                             $personal->setPersonalId($jGer['personalId']);
                             $serv['gerente'] = $personal->GetNameById();
 
-                        }elseif($infP['tipoPersonal'] == 'Contador'){
-						
+                        }elseif(stripos($role['name'],'contador')!==false){
 							$serv['contador'] = $infP['name'];
-
 							$personal->setPersonalId($infP['jefeInmediato']);
                             $jSup = $personal->Info();
-                            if($jSup['tipoPersonal']=='Supervisor'){
+                            //encontrar rol del jefe inmediato
+                            $role = $rol->getInfoByData($jSup);
+                            if(stripos($role['name'],'supervisor')!==false ){
                                 $personal->setPersonalId($jSup['personalId']);
                                 $serv['supervisor'] = $personal->GetNameById();
                             }else
                                 $jSup['jefeInmediato']=$infP['jefeInmediato'];
 
-							
 							$personal->setPersonalId($jSup['jefeInmediato']);
 							$serv['gerente'] = $personal->GetNameById();
 							
-						}elseif($infP['tipoPersonal'] == 'Auxiliar') {
-
+						}elseif(stripos($role['name'],'auxiliar')!==false ) {
                             $serv['auxiliar'] = $infP['name'];
-
                             $contadorId = $infP['jefeInmediato'] == 0 ? $infP['personalId'] : $infP['jefeInmediato'];
                             $personal->setPersonalId($contadorId);
                             $jCont = $personal->Info();
-                            if ($jCont['tipoPersonal'] == 'Contador' || $jCont['tipoPersonal']=='Auxiliar') {
+                            //encontrar rol del jefe inmediato
+                            $role = $rol->getInfoByData($jCont);
+                            if (stripos($role['name'],'contador')!==false  || stripos($role['name'],'auxiliar')!==false ) {
                                 $personal->setPersonalId($jCont['personalId']);
                                 $serv['contador'] = $personal->GetNameById();
                             }else
                                 $jCont['jefeInmediato']=$contadorId;
-
-
-                            $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
-                            $personal->setPersonalId($supervisorId);
-                            $jSup = $personal->Info();
-                            if ($jSup['tipoPersonal'] == "Supervisor") {
+                                $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
+                                $personal->setPersonalId($supervisorId);
+                                $jSup = $personal->Info();
+                                $role = $rol->getInfoByData($jSup);
+                            if (stripos($role['name'],'supervisor')!==false ) {
                                 $personal->setPersonalId($jSup['personalId']);
                                 $serv['supervisor'] = $personal->GetNameById();
                             }else
