@@ -849,37 +849,34 @@ function SubordinadosDetails()
 			return $idList;
 	}
 	function findTreeSubordinate($id){
-	    global $personal;
+	    global $personal,$rol;
 	    $cad = array();
         $this->Util()->DB()->setQuery('SELECT name,personalId,jefeInmediato,puesto,tipoPersonal FROM  personal WHERE personalId='.$id);
         $row = $this->Util()->DB()->GetRow();
-	    switch ($row['tipoPersonal']){
+        $role = $rol->getInfoByData($row);
+        $rolArray = explode(' ',$role['name']);
+        $needle = trim($rolArray[0]);
+	    switch ($needle){
+            case 'Coordinador':
+            case 'Socio':
+                $cad=$row;
+             break;
             case 'Gerente':
                 $cad=$row;
                 $personal->setPersonalId($row['jefeInmediato']);
                 $cad['jefeMax'] = $personal->GetNameById();
                 break;
-            case 'Asistente':
-                $cad = $row;
-                $gerenteId = $row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
-                $personal->setPersonalId($gerenteId);
-                $jGer = $personal->Info();
-                if($jGer['tipoPersonal']=='Gerente'||$jGer['tipoPersonal']=='Asistente'){
-                    $personal->setPersonalId($jGer['personalId']);
-                    $cad['gerente'] = $personal->GetNameById();
-                }else
-                    $jGer['jefeInmediato']=$gerenteId;
-
-                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                $personal->setPersonalId($jefeId);
-                $cad['jefeMax'] = $personal->GetNameById();
-            break;
+            case 'Sistemas':
+            case 'Gestoria':
             case 'Supervisor':
                 $cad = $row;
                 $gerenteId = $row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
                 $personal->setPersonalId($gerenteId);
                 $jGer = $personal->Info();
-                if($jGer['tipoPersonal']=='Gerente'||$jGer['tipoPersonal']=='Asistente'){
+                $role = $rol->getInfoByData($jGer);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Gerente'){
                     $personal->setPersonalId($jGer['personalId']);
                     $cad['gerente'] = $personal->GetNameById();
                 }else
@@ -889,12 +886,17 @@ function SubordinadosDetails()
                 $personal->setPersonalId($jefeId);
                 $cad['jefeMax'] = $personal->GetNameById();
             break;
+            case 'Asistente':
+            case 'Cuentas':
             case 'Contador':
                 $cad = $row;
                 $supervisorId = $row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
                 $personal->setPersonalId($supervisorId);
                 $jSup = $personal->Info();
-                if($jSup['tipoPersonal']=='Supervisor'){
+                $role = $rol->getInfoByData($jSup);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Supervisor'){
                     $personal->setPersonalId($jSup['personalId']);
                     $cad['supervisor'] = $personal->GetNameById();
                 }else
@@ -903,7 +905,10 @@ function SubordinadosDetails()
                 $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
                 $personal->setPersonalId($gerenteId);
                 $jGer = $personal->Info();
-                if($jGer['tipoPersonal']=='Gerente' || $jGer['tipoPersonal']=='Asistente'){
+                $role = $rol->getInfoByData($jGer);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Gerente'){//|| $needle=='Asistente'
                     $personal->setPersonalId($jGer['personalId']);
                     $cad['gerente'] = $personal->GetNameById();
                 }else
@@ -913,12 +918,16 @@ function SubordinadosDetails()
                 $personal->setPersonalId($jefeId);
                 $cad['jefeMax'] = $personal->GetNameById();
                 break;
+            case 'Recepcion':
             case 'Auxiliar':
                 $cad = $row;
                 $contadorId =$row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
                 $personal->setPersonalId($contadorId);
                 $jCont = $personal->Info();
-                if($jCont['tipoPersonal']=='Contador' || $jCont['tipoPersonal']=='Auxiliar'){
+                $role = $rol->getInfoByData($jCont);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Contador'){// || $needle=='Auxiliar'
                     $personal->setPersonalId($jCont['personalId']);
                     $cad['contador'] = $personal->GetNameById();
                 }else
@@ -927,7 +936,10 @@ function SubordinadosDetails()
                 $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
                 $personal->setPersonalId($supervisorId);
                 $jSup = $personal->Info();
-                if($jSup['tipoPersonal']=='Supervisor'){
+                $role = $rol->getInfoByData($jSup);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Supervisor'){
                     $personal->setPersonalId($jSup['personalId']);
                     $cad['supervisor'] = $personal->GetNameById();
                 }else
@@ -936,7 +948,10 @@ function SubordinadosDetails()
                 $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
                 $personal->setPersonalId($gerenteId);
                 $jGer = $personal->Info();
-                if($jGer['tipoPersonal']=='Gerente' || $jGer['tipoPersonal']=='Asistente'){
+                $role = $rol->getInfoByData($jGer);
+                $rolArray = explode(' ',$role['name']);
+                $needle = trim($rolArray[0]);
+                if($needle=='Gerente'){// || $needle=='Asistente'
                     $personal->setPersonalId($jGer['personalId']);
                     $cad['gerente'] = $personal->GetNameById();
                 }else
