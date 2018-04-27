@@ -77,7 +77,7 @@ foreach($results as $key => $value){
             $role = $rol->getInfoByData($jSup);
             $rolArray = explode(' ',$role['name']);
             $needle = $rolArray[0];
-            if($needle=='Supervisor'){
+            if($needle=='Supervisor'||$needle=='Gestoria'||$needle=='Sistemas'){
                 $personal->setPersonalId($jSup['personalId']);
                 $cad['supervisor'] = $personal->GetNameById();
             }else
@@ -108,7 +108,7 @@ foreach($results as $key => $value){
             $role = $rol->getInfoByData($jCont);
             $rolArray = explode(' ',$role['name']);
             $needle = $rolArray[0];
-            if($needle=='Contador' || $needle=='Auxiliar'){
+            if($needle=='Contador' || $needle=='Asistente' || $needle=='Cuentas'){
                 $personal->setPersonalId($jCont['personalId']);
                 $cad['contador'] = $personal->GetNameById();
             }else
@@ -120,7 +120,7 @@ foreach($results as $key => $value){
             $role = $rol->getInfoByData($jSup);
             $rolArray = explode(' ',$role['name']);
             $needle = $rolArray[0];
-            if($needle=='Supervisor'){
+            if($needle=='Supervisor' ||$needle=='Gestoria'||$needle=='Sistemas'){
                 $personal->setPersonalId($jSup['personalId']);
                 $cad['supervisor'] = $personal->GetNameById();
             }else
@@ -132,7 +132,7 @@ foreach($results as $key => $value){
             $role = $rol->getInfoByData($jGer);
             $rolArray = explode(' ',$role['name']);
             $needle = $rolArray[0];
-            if($needle=='Gerente' ||$needle=='Asistente'){
+            if($needle=='Gerente'){
                 $personal->setPersonalId($jGer['personalId']);
                 $cad['gerente'] = $personal->GetNameById();
             }else
