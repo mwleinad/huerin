@@ -45,6 +45,17 @@ class Documento extends Contract
 		$this->Util()->ValidateString($value, 10000, 1, 'path');
 		$this->path = $value;
 	}
+	private $dateExpiration;
+    public function setDateExpiration($value)
+    {
+        $this->Util()->ValidateRequireField($value,'Fecha de expiracion');
+        $this->dateExpiration = $value;
+    }
+    public function setFile($FILES)
+    {
+        if($FILES['error']==4)
+            $this->Util()->setError(0,'error',"No se ha adjuntado un archivo");
+    }
 
 	public function getPath()
 	{
@@ -113,12 +124,14 @@ class Documento extends Contract
 				documento
 			(
 				`contractId`,
-				`tipoDocumentoId`
+				`tipoDocumentoId`,
+				`dateExpiration`
 		)
 		VALUES
 		(
 				'".$this->contractId."',
-				'".$this->tipoDocumentoId."'
+				'".$this->tipoDocumentoId."',
+				'".$this->dateExpiration."'
 		);");
 		
 		$id =	$this->Util()->DB()->InsertData();
@@ -134,7 +147,6 @@ class Documento extends Contract
 			$this->Util()->DB()->setQuery("UPDATE documento SET path = '".$target_path_path."' WHERE documentoId = '".$id."'");
 			$this->Util()->DB()->UpdateData();
 		}
-		
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
 		return true;
