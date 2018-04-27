@@ -24,7 +24,7 @@ class User extends Sucursal
 	}
 
 	//private functions
-	function Info()
+	function Info($isRep=false)
 	{
 		if(!$this->userId)
 			$this->userId = $_SESSION["User"]["userId"];
@@ -38,7 +38,7 @@ class User extends Sucursal
             $row["roleId"] =4;
 			$row["name"] = $row["nameContact"];
 		}
-		elseif($_SESSION["User"]["tipoPers"] == 'Admin')
+		elseif($_SESSION["User"]["tipoPers"] == 'Admin' &&!$isRep)
 		{
 		    $sql = "SELECT * FROM user WHERE userId = '1'";
 			$this->Util()->DB()->setQuery($sql);

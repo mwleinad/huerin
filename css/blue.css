@@ -1308,4 +1308,15 @@ ul.menu_arbol ul {
 	cursor: inherit;
 	display: block;
 }
+.actionPopup{
+	text-align: center;
+	padding-bottom: 10px;
+}
+.actionsChild{
+	display: inline-block;
+	margin: auto;
+}
+.msjRequired{
+	float: left;
+}
 

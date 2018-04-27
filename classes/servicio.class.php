@@ -76,17 +76,20 @@ class Servicio extends Contract
 	{
 		$init = microtime();
 		$result = $this->EnumerateActive();
+		$strLog="";
 		foreach($result as $key => $value)
 		{	
-			echo 'servicioId = '.$value['servicioId'].'\n';
-			echo '<br>';
-			
+			echo 'servicioId = '.$value['servicioId'].chr(13).chr(10);
+            echo '<br>';
+            $strLog .="----- INICIO DEL SERVICIO ".$value['servicioId']." -------".chr(13).chr(10);
+			$strLog .=' Creacion de instancia del servicioId = '.$value['servicioId'].' con periodicidad '.$value['periodicidad'].chr(13).chr(10);
 			$dateExploded = explode("-", $value["inicioOperaciones"]);
 			//Check if first instance
 			if(!count($value["instancias"]))
 			{	
 				//si es precierre  debe abrir solo en los meses 7 9 11
 			    if($value["tipoServicioId"]==PRECIERRE){
+                    $strLog .= 'es PRECIERRE';
 			        $mesPre = (int)$dateExploded[1];
 			        switch($mesPre){
                         case 1:case 2:case 3:case 4:case 5:
@@ -103,22 +106,40 @@ class Servicio extends Contract
                             break;
                     }
                 }
-			    $sql = "INSERT INTO  `instanciaServicio` (`servicioId`,`date`,`status`)
-				VALUES ('".$value["servicioId"]."','".$dateExploded[0]."-".$dateExploded[1]."-1','activa');";
-				$this->Util()->DB()->setQuery($sql);
-				$this->Util()->DB()->InsertData();
-				
-				echo $sql.' \n'." <br>";
+                if($value["tipoServicioId"] == RIF )
+                {
+                    $strLog .= 'es RIF';
+                    if($dateExploded[1] % 2 == 1)
+                    {
+                        $dateExploded[1] = $dateExploded[1] + 1;
+                        $strLog .= ' fecha impar cambiar ha:'.$dateExploded[0].'-'.$dateExploded[1].'-01';
+                    }
+                    $strLog .=chr(13).chr(10);
 
+                }
+                //si es RIF y por alguna razon pusieron fecha de inicio operacion un mes impar se crea la primera instancia al primer mes par
+                //posterior a la fecha de inicio de operaciones
+                //crear primera instancia si ya es hora, lo define la fecha de inicio de operaciones.
+                $dateNow = explode('-',date('Y-m-d'));
+                $nowDate = $dateNow[0].'-'.$dateNow[1].'-01';
+                $initOp = $dateExploded[0].'-'.$dateExploded[1].'-01';
+                if($nowDate>=$initOp){
+                    $strLog .='Se crea la primera instancia del servicio = '.$value['servicioId'].' con fecha de inicio operacion='.$value["inicioOperaciones"].chr(13).chr(10);
+                    $sql = "INSERT INTO  `instanciaServicio` (`servicioId`,`date`,`status`)
+				VALUES ('".$value["servicioId"]."','".$dateExploded[0]."-".$dateExploded[1]."-01','activa');";
+                    $this->Util()->DB()->setQuery($sql);
+                    $this->Util()->DB()->InsertData();
+                    echo $sql.' \n'." <br>";
+                    $strLog .=" ".$sql.chr(13).chr(10);
+                }else{
+                    $strLog .='No se crea la primera instancia del servicio = '.$value['servicioId'].' por tener fecha de inicio de operacion='.$value["inicioOperaciones"].chr(13).chr(10);
+                }
 			}else{
-				
 				//Checamos si ya es tiempo de crear otra instancia
-			
 				//Checar ultima fecha de instancia
 				$this->Util()->DB()->setQuery("
-					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status='activa' ORDER BY date DESC LIMIT 1");
+					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa') ORDER BY date DESC LIMIT 1");
 				$ultimoServicio = $this->Util()->DB()->GetSingle();
-
 				switch($value["periodicidad"])
 				{
 					case "Mensual": $substract = "-1 month"; break;
@@ -134,10 +155,13 @@ class Servicio extends Contract
 				$newdate = date ( 'Y-m-d' , $newdate );
 				//--------------------------------------------------------------------------
 				$this->Util()->DB()->setQuery("
-				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status='activa' ORDER BY date ASC LIMIT 1");
+				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa') ORDER BY date ASC LIMIT 1");
 				$primerServicio = $this->Util()->DB()->GetSingle();
 				$startdate=$dateExploded[0]."-".$dateExploded[1]."-01";
-				
+
+                $strLog .='Fecha inicio operacion(se toma el primer dia del mes)= '.$startdate.chr(13).chr(10);
+				$strLog .='Primera instancia creada con fecha  = '.$primerServicio.chr(13).chr(10);
+                $strLog .='Ultima instancia creada con fecha  = '.$ultimoServicio.chr(13).chr(10);
 				echo 'primerServicio = '.$primerServicio.' \n';
 				echo '<br>periodicidad = '.$value["periodicidad"].' \n';
 				echo '<br>ultimoServicio = '.$ultimoServicio.' \n';
@@ -156,21 +180,26 @@ class Servicio extends Contract
 					}
 					$cont=1;
 					//crea los workflows atrasados sucede si se cambia la fecha de inicio de operaciones.
+                    $strLog .='Se crearan instancias atrasadas por cambio en la fecha de inicio de operaciones.'.chr(13).chr(10);
 					while($primerServicio > $startdate)
-					{ echo "<br>vuelta".$cont."-".$startdate.' \n';
-
+					{
+                        echo "<br>vuelta".$cont."-".$startdate.'\n';
+                        $strLog .=' Vuelta '.$cont."   ".$startdate.chr(13).chr(10);
 						$dateExploded = explode("-",$startdate);
 
 						if($value["tipoServicioId"] == RIF )
-						{
+						{    $strLog .= 'es RIF';
 							if($dateExploded[1] % 2 == 1)
 							{
 								$dateExploded[1] = $dateExploded[1] + 1;
+                                $strLog .= ' feha impar cambiar ha:'.$dateExploded[0].'-'.$dateExploded[1].'-01';
 							}
+                            $strLog .=chr(13).chr(10);
 						}
                         $addTemp =  $add;
                         if($value["tipoServicioId"]==PRECIERRE){
                             $mesPre = (int)$dateExploded[1];
+                            $strLog .= 'es PRECIERRE'.chr(13).chr(10);
                             switch($mesPre){
                                 case 1:
                                     $add = "+6 month";
@@ -223,7 +252,7 @@ class Servicio extends Contract
                             }
                         }
 						$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
-							servicioId = ".$value["servicioId"]." AND status='activa'
+							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa')
 						 	AND date = '".$dateExploded[0]."-".$dateExploded[1]."-01'";
 
 						$this->Util()->DB()->setQuery($sql);
@@ -241,10 +270,14 @@ class Servicio extends Contract
 								'activa')";
 							$this->Util()->DB()->setQuery($sql);
 							$this->Util()->DB()->InsertData();
-						}
+                            $strLog .=' Instancia creada:'.chr(13).chr(10);
+                            $strLog .='     '.$sql;
+                            $strLog .=chr(13).chr(10);
+						}else{
+                            $strLog .=' Instancia no creada por tener existencia en la fecha : '.$dateExploded[0]."-".$dateExploded[1]."-01".chr(13).chr(10);
+                        }
 
 						echo '<br>';
-						
 						$startdate = strtotime ( $add , strtotime ( $startdate ) ) ;
 						$startdate = date ( 'Y-m-d' , $startdate );
 						$add=$addTemp;
@@ -253,9 +286,10 @@ class Servicio extends Contract
 				}
 				
 				//--------------------------------------------------------------------------
-	
+                $strLog .='Comprobar si se crearan instancias normales: '.$newdate.'>='.$ultimoServicio.chr(13).chr(10);
 				if($newdate >= $ultimoServicio)
 				{
+				    $strLog .=" Si se creara".chr(13).chr(10);
 					switch($value["periodicidad"])
 					{
 						case "Mensual": $add = "+1 month"; break;
@@ -270,6 +304,7 @@ class Servicio extends Contract
 
                     if($value["tipoServicioId"]==PRECIERRE){
                         $mesPreAdd = (int)$explodedAddedDate[1];
+                        $strLog .= 'es PRECIERRE'.chr(13).chr(10);
                         switch($mesPreAdd){
                             case 1:case 2:case 3:case 4:case 5:
                             case 6:case 7:case 12:
@@ -285,9 +320,20 @@ class Servicio extends Contract
                             break;
                         }
                     }
+                    //comprobar RIF
+                    if($value["tipoServicioId"] == RIF )
+                    {
+                        $strLog .= 'es RIF';
+                        if($explodedAddedDate[1] % 2 == 1)//este caso no deberia suceder debido a que se supone que desde la primera instancia se tomo en cuenta que empieze por un mes par
+                        {
+                            $explodedAddedDate[1] = $explodedAddedDate[1] + 1;
+                            $strLog .= ' fecha impar cambiar ha:'.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01';
+                        }
+                        $strLog .=chr(13).chr(10);
+                    }
 					$sql = "SELECT COUNT(*) FROM instanciaServicio WHERE
-							servicioId = ".$value["servicioId"]." AND status='activa'
-						 	AND date = '".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1'";
+							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa')
+						 	AND date = '".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-01'";
 
 					$this->Util()->DB()->setQuery($sql);
 					$count = $this->Util()->DB()->GetSingle();
@@ -300,33 +346,46 @@ class Servicio extends Contract
 									`status`
 								) VALUES (
 									'".$value["servicioId"]."',
-									'".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-1',
+									'".$explodedAddedDate[0]."-".$explodedAddedDate[1]."-01',
 								'activa')";
 						$this->Util()->DB()->setQuery($sql);
 						$this->Util()->DB()->InsertData();
-					}
-					echo '<br>'.' \n';
+						$strLog .=' Instancia creada:'.chr(13).chr(10);
+						$strLog .=' '.$sql.chr(13).chr(10);
+					}else{
+                        $strLog .=' Instancia no creada por tener existencia en la fecha'.$explodedAddedDate[0]."-".$explodedAddedDate[1]."-01".chr(13).chr(10);
+                    }
+					echo '<br>'.'\n';
 				}
 
 			}
-			
-			echo '<br>'.' \n';
+            $strLog .="----- FIN DEL SERVICIO ".$value['servicioId']." -------".chr(13).chr(10).chr(13).chr(10);
+			echo '<br>'.'\n';
 			echo '*****************';
-			echo '<br>'.' \n';
+			echo '<br>'.'\n';
 			
 		}//foreach
-		
+
 		$end = microtime();
-		
 		echo 'Init = '.$init.' \n';
 		echo '<br>';
 		echo 'End = '.$end.' \n';
-				
 		$tiempo = $end-$init;
-		echo "Script ejecutado en ".$tiempo." Milisegundos \n";
-		
-	}//CreateServiceInstances
+		echo "Script ejecutado en ".$tiempo." Milisegundos\n";
 
+		//guardar el log en  sendFiles
+        $strLog .=" INICIO:".$init." FIN:".$end.chr(13).chr(10);
+        $strLog .="Script ejecutado en ".$tiempo." Milisegundos".chr(13).chr(10);
+        $file = DOC_ROOT."/sendFiles/logInstances.txt";
+        $open = fopen($file,"w");
+        if ( $open ) {
+            fwrite($open,$strLog);
+            fclose($open);
+            //enviar por correo el log
+            $sendmail = new SendMail;
+            $sendmail->Prepare('LOG INSTANCES','Logs','isc061990@outlook.com','HBKRUZPE',$file,'logInstances.txt');
+        }
+	}//CreateServiceInstances
 	public function Enumerate()
 	{
 		global $months;

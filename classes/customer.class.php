@@ -1324,7 +1324,7 @@ class Customer extends Main
 	
 	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
 	{
-		global $User, $page;
+		global $User, $page,$rol;
 		if ($this->active) {
 			$sqlActive = " AND active = '1' ";
 		}
@@ -1429,20 +1429,27 @@ class Customer extends Main
                     $contract = new Contract;
                     $cUser = new User;
                     $cUser->setUserId($value["responsableCuenta"]);
-                    $userInfo = $cUser->Info();
+                    $userInfo = $cUser->Info(true);
                     $contract->setContractId($value['contractId']);
                     $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
                     $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
 
                     $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
-                    switch($treeSub['tipoPersonal']){
+                    $role = $rol->getInfoByData($treeSub);
+                    $rolArray = explode(' ',$role['name']);
+                    $needle = trim($rolArray[0]);
+                    switch($needle){
+                        case 'Coordinador':
+                        case 'Gestoria':
+                        case 'Sistemas':
                         case 'Supervisor':
-                        case 'Asistente':
                         case 'Gerente':
                         case 'socio':
                             $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['name'];
                             break;
+                        case 'Recepcion':
                         case 'Contador':
+                        case 'Asistente':
                         case 'Auxiliar':
                             $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
                             break;

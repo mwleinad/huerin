@@ -12,11 +12,11 @@
   <tr>
 		<td align="left" width="40%" class="tdPad">
         {if (in_array(72,$permissions)&&in_array(73,$permissions))||$User.isRoot}
-    	<a href="{$WEB_ROOT}/add-documento/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Documento', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Documento"/> Agregar Documento</a>
+    	<a href="javascript:;" id="{$contractInfo.contractId}" class="addDocumento"><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Documento"/> Agregar Documento</a>
 		{/if}
-			<div id="contentDocumentos">
+		<div id="contentDocumentos">
 			{include file="{$DOC_ROOT}/templates/lists/documento.tpl"}    
-      </div>
+        </div>
       </td>
 	</tr>
 </tbody>
