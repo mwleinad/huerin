@@ -896,7 +896,7 @@ function SubordinadosDetails()
                 $role = $rol->getInfoByData($jSup);
                 $rolArray = explode(' ',$role['name']);
                 $needle = trim($rolArray[0]);
-                if($needle=='Supervisor'){
+                if($needle=='Supervisor' ||$needle=='Gestoria'||$needle=='Sistemas'){
                     $personal->setPersonalId($jSup['personalId']);
                     $cad['supervisor'] = $personal->GetNameById();
                 }else
@@ -927,7 +927,7 @@ function SubordinadosDetails()
                 $role = $rol->getInfoByData($jCont);
                 $rolArray = explode(' ',$role['name']);
                 $needle = trim($rolArray[0]);
-                if($needle=='Contador'){// || $needle=='Auxiliar'
+                if($needle=='Contador'||$needle=='Asistente'||$needle=='Cuentas'){// || $needle=='Auxiliar'
                     $personal->setPersonalId($jCont['personalId']);
                     $cad['contador'] = $personal->GetNameById();
                 }else
@@ -939,7 +939,7 @@ function SubordinadosDetails()
                 $role = $rol->getInfoByData($jSup);
                 $rolArray = explode(' ',$role['name']);
                 $needle = trim($rolArray[0]);
-                if($needle=='Supervisor'){
+                if($needle=='Supervisor'||$needle=='Gestoria'||$needle=='Sistemas'){
                     $personal->setPersonalId($jSup['personalId']);
                     $cad['supervisor'] = $personal->GetNameById();
                 }else
