@@ -588,7 +588,6 @@ class Personal extends Main
 		$this->Util()->DB()->setQuery($sql);
 
 		return $this->Util()->DB()->GetSingle();
-
 	}
 
 	function Restrict()
@@ -805,9 +804,7 @@ function SubordinadosDetails()
 			
 		}
 		
-	}	
-	
-	
+	}
 	function SubordinadosOrder()
 	{
 		$info = $this->Info();
@@ -982,7 +979,65 @@ function SubordinadosDetails()
         }
         return $result;
     }
+    public function findDeepJefes($personalId,&$jefes=array()){
+        global $rol;
 
+        $this->setPersonalId($personalId);
+        $info = $this->Info();
+        if($info['jefeInmediato']>0) {
+                $this->setPersonalId($info['jefeInmediato']);
+                $info = $this->Info();
+                $role = $rol->getInfoByData($info);
+                $rolArray = explode(' ',$role['name']);
+                $needle = $rolArray[0];
+                switch($needle){
+                    case 'Sistemas':
+                    case 'Gestoria':
+                    case 'Supervisor':
+                     $needle='Supervisor';
+                     break;
+                    case 'Asistente':
+                    case 'Cuentas':
+                    case 'Contador':
+                    $needle='Contador';
+                    break;
+                    case 'Recepcion':
+                    case 'Auxiliar':
+                    $needle='Auxiliar';
+                    break;
+                }
+                $jefes[$needle] = $this->GetNameById();
+                $this->findDeepJefes($info['personalId'],$jefes);
+            }else{
+                $this->setPersonalId($info['jefeInmediato']);
+                $info = $this->Info();
+                $role = $rol->getInfoByData($info);
+                $rolArray = explode(' ',$role['name']);
+                $needle = $rolArray[0];
+                switch($needle){
+                    case 'Sistemas':
+                    case 'Gestoria':
+                    case 'Supervisor':
+                        $needle='Supervisor';
+                        break;
+                    case 'Asistente':
+                    case 'Cuentas':
+                    case 'Contador':
+                        $needle='Contador';
+                        break;
+                    case 'Recepcion':
+                    case 'Auxiliar':
+                        $needle='Auxiliar';
+                        break;
+                }
+                $per =   $this->GetNameById();
+                if($per=='')
+                   $jefes[$needle] ='Sin jefe';
+                else
+                    $jefes[$needle] =$per;
+            }
+
+    }
 }
 
 ?>
