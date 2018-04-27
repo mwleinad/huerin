@@ -896,7 +896,8 @@ function SubordinadosDetails()
                 $role = $rol->getInfoByData($jSup);
                 $rolArray = explode(' ',$role['name']);
                 $needle = trim($rolArray[0]);
-                if($needle=='Supervisor' ||$needle=='Gestoria'||$needle=='Sistemas'){
+            //cuentas por cobrar puede tener jefe inmediato del mismom rol
+                if($needle=='Supervisor' ||$needle=='Gestoria'||$needle=='Sistemas'||$needle=='Cuentas'){
                     $personal->setPersonalId($jSup['personalId']);
                     $cad['supervisor'] = $personal->GetNameById();
                 }else

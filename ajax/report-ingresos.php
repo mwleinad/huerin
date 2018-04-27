@@ -143,7 +143,8 @@ switch($_POST["type"])
                                 $role = $rol->getInfoByData($jSup);
                                 $rolArray = explode(' ',$role['name']);
                                 $needle =trim($rolArray[0]);
-                                if($needle=='Supervisor'){
+                                 //cuentas por cobrar puede tener jefe inmediato del mismom rol
+                                if($needle=='Supervisor'||$needle=='Gestoria'||$needle=='Sistemas' ||$needle=='Cuentas'){
                                     $personal->setPersonalId($jSup['personalId']);
                                     $serv['supervisor'] = $personal->GetNameById();
                                 }else
@@ -174,7 +175,7 @@ switch($_POST["type"])
                                 $role = $rol->getInfoByData($jCont);
                                 $rolArray = explode(' ',$role['name']);
                                 $needle = trim($rolArray[0]);
-                                if($needle=='Contador'){
+                                if($needle=='Contador'||$needle=='Asistente'||$needle=='Cuentas'){
                                     $personal->setPersonalId($jCont['personalId']);
                                     $serv['contador'] = $personal->GetNameById();
                                 }else
