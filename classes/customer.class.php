@@ -1324,7 +1324,7 @@ class Customer extends Main
 	
 	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
 	{
-		global $User, $page,$rol;
+		global $User, $page,$rol,$personal;
 		if ($this->active) {
 			$sqlActive = " AND active = '1' ";
 		}
@@ -1434,10 +1434,17 @@ class Customer extends Main
                     $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
                     $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
 
-                    $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
-                    $role = $rol->getInfoByData($treeSub);
+//                    $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
+//                    $role = $rol->getInfoByData($treeSub);
+//                    $rolArray = explode(' ',$role['name']);
+//                    $needle = trim($rolArray[0]);
+                    $personal->setPersonalId($value['responsableCuenta']);
+                    $infP = $personal->Info();
+                    $role = $rol->getInfoByData($infP);
                     $rolArray = explode(' ',$role['name']);
                     $needle = trim($rolArray[0]);
+                    $jefes = array();
+                    $personal->findDeepJefes($value['responsableCuenta'], $jefes,true);
                     switch($needle){
                         case 'Coordinador':
                         case 'Gestoria':
@@ -1445,13 +1452,13 @@ class Customer extends Main
                         case 'Supervisor':
                         case 'Gerente':
                         case 'socio':
-                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['name'];
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
                             break;
                         case 'Recepcion':
                         case 'Contador':
                         case 'Asistente':
                         case 'Auxiliar':
-                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $treeSub['supervisor'];
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
                             break;
                     }
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
