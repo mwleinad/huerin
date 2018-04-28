@@ -74,219 +74,71 @@ switch($_POST["type"])
 					}	
 										
 					$servicios = array();
-					foreach($con['servicios'] as $serv){
-						
-						//PERSONAL
-						
-						$sql = 'SELECT tipoServ.departamentoId, tipoServ.costoVisual FROM servicio serv
-								LEFT JOIN tipoServicio tipoServ ON tipoServ.tipoServicioId = serv.tipoServicioId
-								WHERE serv.servicioId = "'.$serv['servicioId'].'"';
-						$util->DB()->setQuery($sql);
-						$rowTipoServ = $util->DB()->GetRow();
-						$departamentoId = $rowTipoServ["departamentoId"];
-						$costoVisual = $rowTipoServ["costoVisual"];
-						
-						$resPermisos = explode('-',$con['permisos']);
-						
-						$personalId = 0;
-						foreach($resPermisos as $res2){
-							$value = explode(',',$res2);
-							
-							$idPersonal = $value[1];
-							$idDepto = $value[0];
-							
-							if($idDepto == $departamentoId)
-								$personalId = $idPersonal;
-							
-						}
+					foreach($con['servicios'] as $serv) {
 
-						$personal->setPersonalId($personalId);		
-						$infP = $personal->Info();
-						//encontrar el rol a que pertenece
+                        //PERSONAL
+
+                        $sql = 'SELECT tipoServ.departamentoId, tipoServ.costoVisual FROM servicio serv
+								LEFT JOIN tipoServicio tipoServ ON tipoServ.tipoServicioId = serv.tipoServicioId
+								WHERE serv.servicioId = "' . $serv['servicioId'] . '"';
+                        $util->DB()->setQuery($sql);
+                        $rowTipoServ = $util->DB()->GetRow();
+                        $departamentoId = $rowTipoServ["departamentoId"];
+                        $costoVisual = $rowTipoServ["costoVisual"];
+
+                        $resPermisos = explode('-', $con['permisos']);
+
+                        $personalId = 0;
+                        foreach ($resPermisos as $res2) {
+                            $value = explode(',', $res2);
+
+                            $idPersonal = $value[1];
+                            $idDepto = $value[0];
+
+                            if ($idDepto == $departamentoId)
+                                $personalId = $idPersonal;
+
+                        }
+
+                        $personal->setPersonalId($personalId);
+                        $infP = $personal->Info();
                         $role = $rol->getInfoByData($infP);
                         $rolArray = explode(' ',$role['name']);
                         $needle = trim($rolArray[0]);
                         switch($needle){
-                            case 'Coordinador':
-                            case 'Gerente':
-                            case 'Socio':
-                                $serv['gerente'] = $infP['name'];
-                                break;
                             case 'Sistemas':
                             case 'Gestoria':
                             case 'Supervisor':
-                                $serv['supervisor'] = $infP['name'];
-                                $gerenteId = $infP['jefeInmediato'] == 0 ? $infP['personalId'] : $infP['jefeInmediato'];
-                                $personal->setPersonalId($gerenteId);
-                                $jGer = $personal->Info();
-
-                                $role = $rol->getInfoByData($jGer);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle = trim($rolArray[0]);
-                                if($needle=='Gerente'){//||$needle=='Asistente'
-                                    $personal->setPersonalId($jGer['personalId']);
-                                    $serv['gerente'] = $personal->GetNameById();
-                                }else
-                                    $jGer['jefeInmediato']=$gerenteId;
-
-                                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                                $personal->setPersonalId($jefeId);
-                                $serv['jefeMax'] = $personal->GetNameById();
+                                $needle='supervisor';
                                 break;
                             case 'Asistente':
                             case 'Cuentas':
                             case 'Contador':
-                                $serv['contador'] = $infP['name'];
-                                $supervisorId = $infP['jefeInmediato'] == 0 ? $infP['personalId'] : $infP['jefeInmediato'];
-                                $personal->setPersonalId($supervisorId);
-                                $jSup = $personal->Info();
-                                $role = $rol->getInfoByData($jSup);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle =trim($rolArray[0]);
-                                 //cuentas por cobrar puede tener jefe inmediato del mismom rol
-                                if($needle=='Supervisor'||$needle=='Gestoria'||$needle=='Sistemas' ||$needle=='Cuentas'){
-                                    $personal->setPersonalId($jSup['personalId']);
-                                    $serv['supervisor'] = $personal->GetNameById();
-                                }else
-                                    $jSup['jefeInmediato']=$supervisorId;
-
-                                $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
-                                $personal->setPersonalId($gerenteId);
-                                $jGer = $personal->Info();
-                                $role = $rol->getInfoByData($jGer);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle = trim($rolArray[0]);
-                                if($needle=='Gerente'){
-                                    $personal->setPersonalId($jGer['personalId']);
-                                    $serv['gerente'] = $personal->GetNameById();
-                                }else
-                                    $jGer['jefeInmediato']=$gerenteId;
-
-                                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                                $personal->setPersonalId($jefeId);
-                                $serv['jefeMax'] = $personal->GetNameById();
+                                $needle='contador';
                                 break;
                             case 'Recepcion':
                             case 'Auxiliar':
-                                $serv['auxiliar'] = $infP['name'];
-                                $contadorId = $infP['jefeInmediato'] == 0 ? $infP['personalId'] : $infP['jefeInmediato'];
-                                $personal->setPersonalId($contadorId);
-                                $jCont = $personal->Info();
-                                $role = $rol->getInfoByData($jCont);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle = trim($rolArray[0]);
-                                if($needle=='Contador'||$needle=='Asistente'||$needle=='Cuentas'){
-                                    $personal->setPersonalId($jCont['personalId']);
-                                    $serv['contador'] = $personal->GetNameById();
-                                }else
-                                    $jCont['jefeInmediato']=$contadorId;
-
-                                $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
-                                $personal->setPersonalId($supervisorId);
-                                $jSup = $personal->Info();
-                                $role = $rol->getInfoByData($jSup);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle = trim($rolArray[0]);
-                                if($needle=='Supervisor'){
-                                    $personal->setPersonalId($jSup['personalId']);
-                                    $serv['supervisor'] = $personal->GetNameById();
-                                }else
-                                    $jSup['jefeInmediato']=$supervisorId;
-
-                                $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
-                                $personal->setPersonalId($gerenteId);
-                                $jGer = $personal->Info();
-                                $role = $rol->getInfoByData($jGer);
-                                $rolArray = explode(' ',$role['name']);
-                                $needle = trim($rolArray[0]);
-                                if($needle=='Gerente' ||$needle=='Asistente'){
-                                    $personal->setPersonalId($jGer['personalId']);
-                                    $serv['gerente'] = $personal->GetNameById();
-                                }else
-                                    $jGer['jefeInmediato']=$gerenteId;
-
-                                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                                $personal->setPersonalId($jefeId);
-                                $serv['jefeMax'] = $personal->GetNameById();
+                                $needle='auxiliar';
                                 break;
-                            default:
-                                $serv['auxiliar'] = 'N/E';
-                                $serv['contador'] = 'N/E';
-                                $serv['supervisor'] = 'N/E';
-                                $serv['gerente'] = 'N/E';
-                            break;
+                            case 'Coordinador':
+                            case 'Socio':
+                                $needle='socio';
+                                break;
                         }
-                        /*
-                        $role =  $rol->getInfoByData($infP);
-						if(stripos($role['name'],'gerente')!==false || stripos($role['name'],'socio')!==false ||stripos($role['name'],'coordinador')!==false){
-							$serv['gerente'] = $infP['name'];
-						}elseif(stripos($role['name'] ,'supervisor')!==false ){
-							$serv['supervisor'] = $infP['name'];
-							$personal->setPersonalId($infP['jefeInmediato']);
-							$serv['gerente'] = $personal->GetNameById();
-							
-						}
-                        elseif(stripos($role['name'],'asistente')!==false){
-                            $serv['auxiliar'] = $infP['name'];
-
-                            $personal->setPersonalId($infP['jefeInmediato']);
-                            $jGer = $personal->Info();
-                            $personal->setPersonalId($jGer['personalId']);
-                            $serv['gerente'] = $personal->GetNameById();
-
-                        }elseif(stripos($role['name'],'contador')!==false){
-							$serv['contador'] = $infP['name'];
-							$personal->setPersonalId($infP['jefeInmediato']);
-                            $jSup = $personal->Info();
-                            //encontrar rol del jefe inmediato
-                            $role = $rol->getInfoByData($jSup);
-                            if(stripos($role['name'],'supervisor')!==false ){
-                                $personal->setPersonalId($jSup['personalId']);
-                                $serv['supervisor'] = $personal->GetNameById();
-                            }else
-                                $jSup['jefeInmediato']=$infP['jefeInmediato'];
-
-							$personal->setPersonalId($jSup['jefeInmediato']);
-							$serv['gerente'] = $personal->GetNameById();
-							
-						}elseif(stripos($role['name'],'auxiliar')!==false ) {
-                            $serv['auxiliar'] = $infP['name'];
-                            $contadorId = $infP['jefeInmediato'] == 0 ? $infP['personalId'] : $infP['jefeInmediato'];
-                            $personal->setPersonalId($contadorId);
-                            $jCont = $personal->Info();
-                            //encontrar rol del jefe inmediato
-                            $role = $rol->getInfoByData($jCont);
-                            if (stripos($role['name'],'contador')!==false  || stripos($role['name'],'auxiliar')!==false ) {
-                                $personal->setPersonalId($jCont['personalId']);
-                                $serv['contador'] = $personal->GetNameById();
-                            }else
-                                $jCont['jefeInmediato']=$contadorId;
-                                $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
-                                $personal->setPersonalId($supervisorId);
-                                $jSup = $personal->Info();
-                                $role = $rol->getInfoByData($jSup);
-                            if (stripos($role['name'],'supervisor')!==false ) {
-                                $personal->setPersonalId($jSup['personalId']);
-                                $serv['supervisor'] = $personal->GetNameById();
-                            }else
-                                $jSup['jefeInmediato']=$supervisorId;
-
-                            $gerenteId = $jSup['jefeInmediato']==0?$jSup['personalId']:$jSup['jefeInmediato'];
-                            $personal->setPersonalId($gerenteId);
-                            $jGer = $personal->Info();
-
-							$personal->setPersonalId($jGer['personalId']);
-							$serv['gerente'] = $personal->GetNameById();
-
-						}elseif(empty($infP)){
+                        if(!empty($infP)){
+                            $jefes = array();
+                            $personal->findDeepJefes($personalId, $jefes,true);
+                            $serv['contador'] = $jefes['Contador'];
+                            $serv['supervisor'] = $jefes['Supervisor'];
+                            $serv['gerente'] = $jefes['Gerente'];
+                            $serv['jefeMax'] = $jefes['Socio'];
+                            $serv[$needle] = $jefes['me'];
+                        }else {
                             $serv['auxiliar'] = 'N/E';
                             $serv['contador'] = 'N/E';
                             $serv['supervisor'] = 'N/E';
                             $serv['gerente'] = 'N/E';
-                        }*/
-
-						//END PERSONAL
-						
+                        }
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
 																		
@@ -323,7 +175,6 @@ switch($_POST["type"])
 				$resClientes[] = $clte;
 				
 			}//foreach
-			
 			$smarty->assign('totalMens', $totalMens);
 			$smarty->assign('totalPeriodo', $totalPeriodo);
 			$smarty->assign("clientes", $resClientes);
