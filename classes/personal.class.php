@@ -979,17 +979,20 @@ function SubordinadosDetails()
         }
         return $result;
     }
-    public function findDeepJefes($personalId,&$jefes=array()){
+    public function findDeepJefes($personalId,&$jefes=array(),$me=false){
         global $rol;
 
         $this->setPersonalId($personalId);
         $info = $this->Info();
+        if($me){
+                $jefes['me'] = $info['name'];
+        }
         if($info['jefeInmediato']>0) {
                 $this->setPersonalId($info['jefeInmediato']);
                 $info = $this->Info();
                 $role = $rol->getInfoByData($info);
                 $rolArray = explode(' ',$role['name']);
-                $needle = $rolArray[0];
+                $needle =trim($rolArray[0]);
                 switch($needle){
                     case 'Sistemas':
                     case 'Gestoria':
@@ -1005,6 +1008,10 @@ function SubordinadosDetails()
                     case 'Auxiliar':
                     $needle='Auxiliar';
                     break;
+                    case 'Coordinador':
+                    case 'Socio':
+                        $needle='Socio';
+                    break;
                 }
                 $jefes[$needle] = $this->GetNameById();
                 $this->findDeepJefes($info['personalId'],$jefes);
@@ -1013,7 +1020,7 @@ function SubordinadosDetails()
                 $info = $this->Info();
                 $role = $rol->getInfoByData($info);
                 $rolArray = explode(' ',$role['name']);
-                $needle = $rolArray[0];
+                $needle = trim($rolArray[0]);
                 switch($needle){
                     case 'Sistemas':
                     case 'Gestoria':
@@ -1028,6 +1035,10 @@ function SubordinadosDetails()
                     case 'Recepcion':
                     case 'Auxiliar':
                         $needle='Auxiliar';
+                        break;
+                    case 'Coordinador':
+                    case 'Socio':
+                        $needle='Socio';
                         break;
                 }
                 $per =   $this->GetNameById();
