@@ -124,6 +124,9 @@ switch($_POST["type"])
                             case 'Socio':
                                 $needle='socio';
                                 break;
+                            case 'Gerente':
+                                $needle='gerente';
+                                break;
                         }
                         if(!empty($infP)){
                             $jefes = array();
