@@ -1455,6 +1455,7 @@ class Customer extends Main
                             $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
                             break;
                         case 'Recepcion':
+                        case 'Cuentas':
                         case 'Contador':
                         case 'Asistente':
                         case 'Auxiliar':

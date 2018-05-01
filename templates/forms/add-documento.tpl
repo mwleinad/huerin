@@ -21,7 +21,7 @@
 		<hr>
 		</div>
 		<div class="formLine" style="width:100%; text-align:left; display:none;" id="tagExpiration">
-			<div style="width:30%;float:left">* Fecha de expiración:</div>
+			<div style="width:30%;float:left">* Fecha de suspensión:</div>
 			<div style="width:15%;float:left;vertical-align: middle">
 				<input type="text" name="expiration" id="expiration" value="{$post.dateExpiration}" onclick="CalendarioSimple(this)" class="largeInput" maxlength="10"/>
 			</div>

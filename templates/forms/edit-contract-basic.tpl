@@ -182,8 +182,11 @@
 		<td align="left" width="40%" class="tdPad">* Responsable contabilidad:</td>
 		<td align="left" class="tdPad">
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
+          <option value="">Seleccionar.......</option>
           {foreach from=$empleados item=item}
-          	<option value="{$item.personalId}" {if $contractInfo.responsableCuenta == $item.personalId} selected="selected"{/if}>{$item.name}</option>
+            {if $item.name neq '.'}
+          	    <option value="{$item.personalId}" {if $contractInfo.responsableCuenta == $item.personalId} selected="selected"{/if}>{$item.name}</option>
+            {/if}
           {/foreach}
           </select>
     </td>
@@ -197,15 +200,14 @@
           <select name="permisos[]" id="permisos[]" class="smallInput medium">
           	<option value="">Seleccionar......</option>
           {foreach from=$empleados item=item}
+            {if $item.name neq '.'}
           	<option value="{$depto.departamentoId},{$item.personalId}" {if $permisos.{$depto.departamentoId} == $item.personalId} selected="selected"{/if}>{$item.name}</option>
+            {/if}
           {/foreach}
           </select>
     </td>
 	</tr>
 	{/if}
 {/foreach}
-
-
-
 </tbody>
 </table>

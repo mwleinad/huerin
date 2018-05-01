@@ -184,9 +184,11 @@
 		<td align="left" width="40%" class="tdPad">* Responsable Contabilidad:</td>
 		<td align="left" class="tdPad">
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
-          	<option value="">Seleccionar.......</option>
+          <option value="">Seleccionar.......</option>
           {foreach from=$empleados item=item}
+           {if $item.name neq '.'}
           	<option value="{$item.personalId}" {if $allPerm[1] eq $item.personalId}selected{/if}>{$item.name}</option>
+		   {/if}
           {/foreach}  
           </select>
     </td>
@@ -198,9 +200,11 @@
 		<td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>
 		<td align="left" class="tdPad">
           <select name="permisos[]" id="permisos[]" class="smallInput medium">
-          	<option value="">Seleccionar..</option>
+          <option value="">Seleccionar..</option>
           {foreach from=$empleados item=item}
+           {if $item.name neq '.'}
           	<option value="{$depto.departamentoId},{$item.personalId}" {if $allPerm[$depto.departamentoId] eq $item.personalId}selected{/if}>{$item.name}</option>
+           {/if}
           {/foreach}  
           </select>
     </td>

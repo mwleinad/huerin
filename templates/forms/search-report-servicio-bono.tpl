@@ -26,14 +26,7 @@
 					</div>
 				</td>
 				<td align="center">
-					<select name="responsableCuenta" id="responsableCuenta"  class="largeInput" style="width: 90%;">
-						{* if $User.roleId=="1" *}
-						<option value="0" selected="selected">Todos...</option>
-						{* /if *}
-						{foreach from=$personals item=personal}
-						<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
-						{/foreach}
-					</select>
+                    {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
 				</td>
 				<td align="center">
 					<input name="deep" id="deep" type="checkbox"/>
