@@ -37,14 +37,7 @@
          	</div>
 		</td>
         <td align="center" style="padding-left: 5px;padding-right: 5px">
-            <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
-            {* if $User.roleId=="1" *}
-            <option value="0" selected="selected">Todos...</option>
-            {* /if *}
-            {foreach from=$personals item=personal}
-            <option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name|truncate:20:"..."}</option>
-            {/foreach}
-            </select>
+            {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
 		</td>    
 		<td align="center" style="padding-left: 5px;padding-right: 5px">
 			<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: auto"/>

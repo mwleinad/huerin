@@ -188,7 +188,7 @@ class Personal extends Main
 						personal a 
 						LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
 						LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
-					".$sqlFilter.$sqlActive."
+					".$sqlFilter.$sqlActive." 
 					ORDER BY
 						a.name ASC";
 	
