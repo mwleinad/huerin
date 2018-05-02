@@ -27,15 +27,8 @@
         	 	</div>
          	</div>
 		</td>        
-    <td align="center">
-            <select name="responsableCuenta" id="responsableCuenta"  class="smallInput">
-            {* if $User.roleId=="1" *}
-            <option value="0" selected="selected">Todos...</option>
-            {* /if *}
-            {foreach from=$personals item=personal}
-            <option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
-            {/foreach}
-            </select>
+    	<td align="center">
+        	{include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl" class='smallInput'}
 		</td>    
 		<td align="center">
 			<input name="deep" id="deep" type="checkbox"/>

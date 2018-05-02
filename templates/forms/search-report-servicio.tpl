@@ -29,34 +29,26 @@
          	</div>
 		</td>        
     <td align="center">
-            <select name="responsableCuenta" id="responsableCuenta"  class="smallInput">
-            {* if $User.roleId=="1" *}
-            <option value="0" selected="selected">Todos...</option>
-            {* /if *}
-            {foreach from=$personals item=personal}
-            <option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
-            {/foreach}
-            </select>  
-		</td>    
-		<td align="center">
-			<input name="deep" id="deep" type="checkbox"/>
-		</td>  
-		<td align="center">
-			<input name="atrasados" id="atrasados" type="checkbox"/>
-		</td>  
-		
-		   <td align="center">
-    	<select name="departamentoId" id="departamentoId"  class="smallInput">
-      	<option value="" selected="selected">Todos...</option>
-        {foreach from=$departamentos item=depto}
-      	<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-        {/foreach}
-      </select>  
-		</td>
-		<td align="center">
-			{include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+        {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
+    </td>
+    <td align="center">
+        <input name="deep" id="deep" type="checkbox"/>
+    </td>
+    <td align="center">
+        <input name="atrasados" id="atrasados" type="checkbox"/>
+    </td>
 
-        </td>
+    <td align="center">
+        <select name="departamentoId" id="departamentoId"  class="largeInput">
+        <option value="" selected="selected">Todos...</option>
+        {foreach from=$departamentos item=depto}
+        <option value="{$depto.departamentoId}" >{$depto.departamento}</option>
+        {/foreach}
+        </select>
+    </td>
+    <td align="center">
+        {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+    </td>
     </tr>
 <tr>
     <td colspan="6" align="center">
