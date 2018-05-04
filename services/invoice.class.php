@@ -168,6 +168,8 @@ class Invoice extends Comprobante
        //3. Servicios que su fecha de inicio de factura no son 0000-00-00 o Posteriores al año o mes actual.
        $noInstanciasHuerin=0;
        $noInstancias=0;
+       $whitInvoice=0;
+       $whitInvoiceHuerin=0;
        //obtener las instancias de los servicios y exluir los que ya tienen factura
        foreach($servicesHuerin as $key => $servicio)
        {
@@ -178,7 +180,8 @@ class Invoice extends Comprobante
                 LEFT JOIN customer ON customer.customerId = contract.customerId
                 WHERE servicio.servicioId = '".$servicio["servicioId"]."' AND MONTH(date) = '".$month."' AND YEAR(date) = '".$year."'");
            $row = $this->Util()->DB()->GetRow();
-           //si no tiene instancia y no es RIF se ignora
+
+           //si no tiene instancia y tampoco es RIF se ignora
            if(empty($row)&&$servicio['tipoServicioId']!=RIF)
            {
                $noInstanciasHuerin++;
@@ -187,14 +190,27 @@ class Invoice extends Comprobante
                continue;
            }elseif($servicio['tipoServicioId']==RIF){
                //si el mes del RIF es donde no se creo instancia entonces llenar los datos manualmente.
+               //de lo contrario seguira su curso.
                if(empty($row)){
-
+                   $this->Util()->DB()->setQuery("SELECT *, servicio.costo AS costoServicio, contract.name AS name FROM servicio
+                LEFT JOIN contract ON contract.contractId = servicio.contractId
+                LEFT JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+                LEFT JOIN customer ON customer.customerId = contract.customerId
+                WHERE servicio.servicioId = '".$servicio["servicioId"]."' ");
+                $row = $this->Util()->DB()->GetRow();
+                $row['comprobanteId'] =0;
                }
            }
-           //si existe instancia y tiene su comprobante emitido se ignora
+           //comprobar si la instancia del mes en cuestion no tenga comprobante emitido , de existir se excluye.
+           /*if($row['comprobanteId']!=0){//RIF que no este en el mes siempre salteara esta condicion.
+               $whitInvoiceHuerin++;
+               $whitInvoice++;
+               continue;
+           }*/
            $servicesHuerin[$key] = $row;
        }
        $noInstanciasBraun=0;
+       $whitInvoiceBraun=0;
        foreach($servicesBraun as $key => $servicio)
        {
            $this->Util()->DB()->setQuery("SELECT *, servicio.costo AS costoServicio, contract.name AS name FROM instanciaServicio
@@ -205,24 +221,48 @@ class Invoice extends Comprobante
                 WHERE servicio.servicioId = '".$servicio["servicioId"]."' AND MONTH(date) = '".$month."' AND YEAR(date) = '".$year."'");
            $row = $this->Util()->DB()->GetRow();
 
-           if(empty($row))
+           //si no tiene instancia y tampoco es RIF se ignora
+           if(empty($row)&&$servicio['tipoServicioId']!=RIF)
            {
                $noInstanciasBraun++;
                $noInstancias++;
                unset($servicesBraun[$key]);
                continue;
+           }elseif($servicio['tipoServicioId']==RIF){
+               //si el mes del RIF es donde no se creo instancia entonces llenar los datos manualmente.
+               //de lo contrario seguira su curso.
+               if(empty($row)){
+                   $this->Util()->DB()->setQuery("SELECT *, servicio.costo AS costoServicio, contract.name AS name FROM servicio
+                LEFT JOIN contract ON contract.contractId = servicio.contractId
+                LEFT JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+                LEFT JOIN customer ON customer.customerId = contract.customerId
+                WHERE servicio.servicioId = '".$servicio["servicioId"]."' ");
+                   $row = $this->Util()->DB()->GetRow();
+                  $row['comprobanteId'] =0;
+               }
            }
+           //comprobar si la instancia del mes en cuestion no tenga comprobante emitido , de existir se excluye.
+           /*if($row['comprobanteId']!=0){//RIF que no este en el mes siempre salteara esta condicion.
+               $whitInvoiceBraun++;
+               $whitInvoice++;
+               continue;
+           }*/
            $servicesBraun[$key] = $row;
        }
+       $porFacturar = count($servicesHuerin) + count($servicesBraun);
+       $cadLog .="SIN INSTANCIAS .".$noInstancias." SIN INSTANCIAS HUERIN=".$noInstanciasHuerin." SIN INSTANCIAS BRAUN=".$noInstanciasBraun.chr(13).chr(10);
+       $cadLog .="POR FACTURAR .".$porFacturar.chr(13).chr(10);
+       $cadLog .="POR FACTURAR HUERIN = ".count($servicesHuerin)." POR FACTURAR BRAUN =".count($servicesBraun).chr(13).chr(10).chr(13).chr(10);
 
+       $cadLog .="BEFORE HUERIN = ".count($servicesHuerin)." BEFORE BRAUN =".count($servicesBraun).chr(13).chr(10);
        //facturadas
-       foreach($servicesHuerin as $key => $servicio)
+      /* foreach($servicesHuerin as $key => $servicio)
        {
            if($servicio["comprobanteId"] != 0)
            {
                $data["facturadaBraun"]++;
                $data["facturada"]++;
-               unset($data["serviciosBraun"][$key]);
+               unset($servicesHuerin[$key]);
                continue;
            }
 
@@ -232,7 +272,7 @@ class Invoice extends Comprobante
            }
        }
 
-       foreach($data["serviciosHuerin"] as $key => $servicio)
+       foreach($servicesBraun as $key => $servicio)
        {
            if($servicio["comprobanteId"] != 0)
            {
@@ -248,15 +288,18 @@ class Invoice extends Comprobante
            }
 
        }
-       //	exit();
-
        if(!$data["facturada"])
        {
            $data["facturada"] = 0;
        }
 
-       $data["totalFacturadas"] = count($data["serviciosHuerin"]) + count($data["serviciosBraun"]);
-
+       $data["totalFacturadas"] = count($servicesHuerin) + count($servicesBraun);
+       $cadLog .="TOTAL FACTURADAS = ".$data['facturada']." FACTURADAS HUERIN  =".$data['facturadaHuerin']." FACTURADAS BRAUN =".$data['facturadaBraun'].chr(13).chr(10);
+       $cadLog .="POR FACTURAR .".$data['totalFacturadas'].chr(13).chr(10);
+       $cadLog .="POR FACTURAR HUERIN = ".count($servicesHuerin)." POR FACTURAR BRAUN =".count($servicesBraun).chr(13).chr(10);
+*/
+       return $cadLog;
+       exit;
        ?>
        <tr>
            <td>Facturadas</td>
