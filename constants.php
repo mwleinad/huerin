@@ -44,11 +44,13 @@ define("CC_EMAILS", serialize($CC_EMAILS));
 
 define("SERVICIO_CONTABILIDAD", $servicioContabilidad);
 define("RIF", 8);
+define("RIFAUDITADO", 55);
 define("ANUAL", 11);
 define("DIM", 19);
 define("IDBRAUN", 56);
 define("IDHUERIN", 13);
 define("PRECIERRE", 36);
+define("PRECIERREAUDITADO", 52);
 define("INICIO_ADEUDO", '2018-01-01');
 
 ?>
