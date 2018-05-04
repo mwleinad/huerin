@@ -169,7 +169,7 @@ class Servicio extends Contract
 			{	
 				//si es precierre  debe abrir solo en los meses 7 9 11
 			    if($value["tipoServicioId"]==PRECIERRE || $value["tipoServicioId"]==PRECIERREAUDITADO){
-                    $strLog .= 'es PRECIERRE';
+                    $strLog .= 'es PRECIERRE'.chr(13).chr(10);
 			        $mesPre = (int)$dateExploded[1];
 			        $monthMod = $this->OverwriteMonth($mesPre);
                     $dateExploded[1] =$monthMod['monthNew'];
@@ -203,6 +203,7 @@ class Servicio extends Contract
                 }else{
                     $strLog .='No se crea la primera instancia del servicio = '.$value['servicioId'].' por  que '.date('Y-m-d').">=".$initOp." no se cumple ".chr(13).chr(10);
                     $strLog .="----- FIN DEL SERVICIO ".$value['servicioId']." -------".chr(13).chr(10).chr(13).chr(10);
+                    continue;
                 }
 			}else{
 				//Checamos si ya es tiempo de crear otra instancia
@@ -420,7 +421,7 @@ class Servicio extends Contract
             fclose($open);
             //enviar por correo el log
             $sendmail = new SendMail;
-            $sendmail->Prepare('LOG INSTANCES','Logs','isc061990@outlook.com','HBKRUZPE',$file,'logInstances.txt');
+            $sendmail->Prepare('LOG INSTANCES','Logs','isc061990@outlook.com','HBKRUZPE',$file,'logInstances.txt','','',FROM_MAIL);
         }
 	}//CreateServiceInstances
 	public function Enumerate()
@@ -537,6 +538,7 @@ class Servicio extends Contract
      */
     public function EnumerateServiceForInstances($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
     {
+        global $User;
         if($customer != 0)
             $sqlCustomer = " AND customer.customerId = '".$customer."'";
 
@@ -567,6 +569,9 @@ class Servicio extends Contract
 				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
+        //se realizara esto para evitar que se creen instancias para contratos
+        $User["userId"] = 0;
+        $User["roleId"] = 1;
       /*
         foreach($result as $key => $value){
             $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio
