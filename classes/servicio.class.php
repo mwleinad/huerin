@@ -135,10 +135,8 @@ class Servicio extends Contract
 	    //se usa EnumerateServiceForInstances por que no nos importa el usuario en este caos, todos los servicios saldra.
         //eso evitara foreachs en los permisos.
         $strLog="";
-		$init = microtime();
         $timeStart = date("d-m-Y").' a las '.date('H:i:s');
 		$result = $this->EnumerateServiceForInstances();
-		$strLog .=" INICIO :".$timeStart." a   ".$time.chr(13).chr(10);
 		$totInstCreate=0;
 		$excluidos =0;
 		foreach($result as $key => $value)
@@ -378,7 +376,7 @@ class Servicio extends Contract
                             continue;
                         }
                     }
-                    $nextDate = date('Y-m-d',$explodedAddedDate[0]."-".$explodedAddedDate[1]."-01");
+                    $nextDate = $explodedAddedDate[0]."-".$explodedAddedDate[1]."-01";
                     $sql = "SELECT count(instanciaServicioId) FROM instanciaServicio WHERE
 							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa')
 						 	AND date = '".$nextDate."'";
