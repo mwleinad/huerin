@@ -532,7 +532,8 @@ class Servicio extends Contract
     /* funcion  EnumerateServiceForInstances
      * Esta funcion enumera todos los servicios que se crearan sus instancias
      * no deberia filtrarse por que es una tarea automatica.
-     * Solo deben sacar los servicios de las razones sociales de los clientes que se encuentren activos si esta activo no debe sacar nada.
+     * Solo deben sacar los servicios de las razones sociales de los clientes que se encuentren activos los que no no  debe sacar nada.
+     * los contratos que tengan en su campo permisos vacio no debe sacarlos.
      */
     public function EnumerateServiceForInstances($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
     {
@@ -559,7 +560,7 @@ class Servicio extends Contract
 				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo
 				FROM servicio 
 				INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId  AND tipoServicio.status='1'
-				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si'
+				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si' AND contract.permisos!=''
 				INNER JOIN customer ON contract.customerId = customer.customerId AND customer.active = '1'
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
 				WHERE servicio.status = 'activo' 
