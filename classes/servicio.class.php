@@ -534,7 +534,8 @@ class Servicio extends Contract
      * Esta funcion enumera todos los servicios que se crearan sus instancias
      * no deberia filtrarse por que es una tarea automatica.
      * Solo deben sacar los servicios de las razones sociales de los clientes que se encuentren activos los que no no  debe sacar nada.
-     * los contratos que tengan en su campo permisos vacio no debe sacarlos.
+     * los contratos que tengan en su campo permisos vacio no debe sacarlos. con eso se podria dar por echo que solo se obtendra
+     * contratos que al menos tenga un responsable. y asi evitar foreach
      */
     public function EnumerateServiceForInstances($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
     {
@@ -569,7 +570,7 @@ class Servicio extends Contract
 				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-        //se realizara esto para evitar que se creen instancias para contratos
+        //se realizara esto para evitar que se creen instancias para contratos  no tienen ningun responsable.
         $User["userId"] = 0;
         $User["roleId"] = 1;
       /*

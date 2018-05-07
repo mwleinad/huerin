@@ -92,7 +92,6 @@ class Cfdi extends Comprobante
         $myImpuestos = urlencode(serialize($_SESSION["impuestos"]));
 
         $userId = $data["userId"];
-
         $totales = $this->GetTotalDesglosado($data);
         if($vs->Util()->PrintErrors()){ return false; }
 
@@ -231,7 +230,6 @@ class Cfdi extends Comprobante
         }
 
         $data["nodoReceptor"] = $nodoReceptor;
-
         //checar si nos falta unidad en alguno
         foreach($_SESSION["conceptos"] as $concepto)
         {
@@ -240,7 +238,6 @@ class Cfdi extends Comprobante
                 $vs->Util()->setError(10048, "error", "El campo de Unidad no puede ser vacio");
             }
         }
-
         //workaround para mostrar observaciones en la vista previa
         $_SESSION['observaciones'] = $data["observaciones"];
 
@@ -291,20 +288,19 @@ class Cfdi extends Comprobante
 
         //XML sin sello
         $xml = new Xml($data);
-        $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
 
+        $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
         //XML con sello
         $xmlConSello = $this->stamp($empresa, $serie, $data, $xml, $totales);
 
         if($data['format'] == 'vistaPrevia'){
             return $xmlConSello;
         }
-
         //Timbrado PAC
         include_once(DOC_ROOT."/services/Pac.php");
         $pac = new Pac33;
 
-        $response = $pac->GetCfdi($xmlConSello);
+        $response = $pac->GetCfdi($xmlConSello);//sucede error de retenciones
 
         $_SESSION['errorPac'] = '';
         if($response['worked'] == false)
@@ -336,7 +332,18 @@ class Cfdi extends Comprobante
             case "USD": $data["tiposDeMoneda"] = "dolar"; break;
             case "EUR": $data["tiposDeMoneda"] = "euro"; break;
         }
-
+        //comprobar de donde procede la factura
+        switch($data['procedencia']){
+            case 'whithInstance':
+                $data['procedencia'] = 'fromInstance';
+            break;
+            case 'rifWhithoutInstance':
+                $data['procedencia'] = 'fromRifNoInstance';
+            break;
+            default:
+                $data['procedencia'] = 'manual';
+            break;
+        }
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 			INSERT INTO `comprobante` (
 				`comprobanteId`,
@@ -376,6 +383,8 @@ class Cfdi extends Comprobante
 				`impuestos`,
 				`cadenaOriginal`,
 				`timbreFiscal`,
+				`procedencia`,
+				`servicioId`,				
 				`version`
 			) VALUES
 			(
@@ -416,6 +425,8 @@ class Cfdi extends Comprobante
 				'".$myImpuestos."',
 				'".$data["cadenaOriginal"]."',
 				'".$cadenaOriginalTimbreSerialized."',
+				'".$data['procedencia']."',
+				'".$data['servicioId']."',
 				'3.3'
 			)");
         $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
