@@ -1,0 +1,8 @@
+ALTER TABLE `comprobante`
+	ADD COLUMN `procedencia` VARCHAR(50) NOT NULL AFTER `cxcSaldoFavor`,
+	ADD COLUMN `servicioId` INT(11) NOT NULL DEFAULT '0' AFTER `procedencia`;
+
+ALTER TABLE `comprobante`
+	ALTER `procedencia` DROP DEFAULT;
+ALTER TABLE `comprobante`
+	CHANGE COLUMN `procedencia` `procedencia` ENUM('fromInstance','fromRifNoInstance','manual') NOT NULL AFTER `cxcSaldoFavor`;
