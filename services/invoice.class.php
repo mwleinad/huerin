@@ -25,7 +25,7 @@ class Invoice extends Comprobante
        $emisorBraun = $this->Util()->DB()->GetRow();
 
        // solo se sacaran los clientes con estatus active=1 evitar un foreach
-       $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE active='1' AND customerId=931 AND customerId != 280");
+       $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE active='1' AND customerId != 280");
        $clientes = $this->Util()->DB()->GetResult();
        $customerNoCon=0;
        $allCont=0;
