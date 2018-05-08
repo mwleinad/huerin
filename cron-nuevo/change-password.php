@@ -22,7 +22,7 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+$timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
 $sql =  "SELECT * FROM personal WHERE active='1' ORDER BY personalId ASC ";
 $util->DB()->setQuery($sql);
 $results =  $util->DB()->GetResult();
@@ -57,7 +57,7 @@ foreach($results as $key =>$item){
 
             $sendmail = new SendMail;
             $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA") ;
-            echo "Contraseña cambiada correctamente para ".$item['username']." y correo enviado a ".$item['email'];
+            echo "Contraseña cambiada correctamente para ".$item['username']." y correo enviado a ".$item['email'].chr(13).chr(10);
             echo "<br>";
             $mod++;
         }
@@ -65,6 +65,8 @@ foreach($results as $key =>$item){
         $nomod++;
     }
 }
-echo "total modificados  ".$mod;
+$end = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
+echo "total modificados  ".$mod.chr(13).chr(10);
 echo "<br>";
-echo "total no modificados  ".$nomod;
+echo "total no modificados  ".$nomod.chr(13).chr(10);
+echo "Script ejecutado de  ".$timeStart." HASTA ".$end.chr(13).chr(10);
