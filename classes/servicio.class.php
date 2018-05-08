@@ -419,9 +419,11 @@ class Servicio extends Contract
         if ( $open ) {
             fwrite($open,$strLog);
             fclose($open);
-            //enviar por correo el log
-            $sendmail = new SendMail;
-            $sendmail->Prepare('LOG INSTANCES','Logs','isc061990@outlook.com','HBKRUZPE',$file,'logInstances.txt','','',FROM_MAIL);
+            //enviar por correo el log solo si se crearon instancias.
+            if($totInstCreate>0) {
+                $sendmail = new SendMail;
+                $sendmail->Prepare('LOG INSTANCES', 'Logs', 'isc061990@outlook.com', 'HBKRUZPE', $file, 'logInstances.txt', '', '', FROM_MAIL);
+            }
         }
 	}//CreateServiceInstances
 	public function Enumerate()
