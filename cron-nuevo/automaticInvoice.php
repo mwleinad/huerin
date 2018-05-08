@@ -41,7 +41,8 @@ $mask = DOC_ROOT.'/temp/20_B_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));
 $entry ="";
-$entry = $invoice->CreateInvoicesAutomatic();
+$res = $invoice->CreateInvoicesAutomatic();
+$entry .=$res['log'];
 $time = date("d-m-Y").' a las '.date('H:i:s');
 $entry .= "Cron ejecutado desde ".$timeStart." hasta $time Hrs.".chr(13).chr(10);;
 $file = DOC_ROOT."/sendFiles/logInvoices.txt";
@@ -49,8 +50,10 @@ $open = fopen($file,"w");
 if ( $open ) {
     fwrite($open,$entry);
     fclose($open);
-    //enviar por correo el log
-    $sendmail = new SendMail;
-    $sendmail->Prepare('LOG INVOICES','Logs invoices','isc061990@outlook.com','HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
+    //enviar por correo el log solo si se crearon facturas
+    if($res['totalContract']>0){
+        $sendmail = new SendMail;
+        $sendmail->Prepare('LOG INVOICES','Logs invoices','isc061990@outlook.com','HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
+    }
 
 }

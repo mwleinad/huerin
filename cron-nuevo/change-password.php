@@ -57,7 +57,7 @@ foreach($results as $key =>$item){
 
             $sendmail = new SendMail;
             $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA") ;
-            echo "Contraseña cambiada correctamente para ".$item['username']." y correo enviado a ".$item['email'].chr(13).chr(10);
+            echo "Contraseña cambiada correctamente para ".$item['username']." y correo enviado a ".$item['email'].'\n'.chr(13).chr(10);
             echo "<br>";
             $mod++;
         }
@@ -66,7 +66,7 @@ foreach($results as $key =>$item){
     }
 }
 $end = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
-echo "total modificados  ".$mod.chr(13).chr(10);
+echo "total modificados".'\n'.$mod.chr(13).chr(10);
 echo "<br>";
-echo "total no modificados  ".$nomod.chr(13).chr(10);
-echo "Script ejecutado de  ".$timeStart." HASTA ".$end.chr(13).chr(10);
+echo "total no modificados".'\n'.$nomod.chr(13).chr(10);
+echo "Script ejecutado de  ".$timeStart." HASTA ".$end.'\n'.chr(13).chr(10);
