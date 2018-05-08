@@ -602,6 +602,9 @@ class Invoice extends Comprobante
            break;
 
        }/// END LOOP CREATE INVOICE
-      return $cadLog;
+
+       $cad['log']=$cadLog;
+       $cad['totalContract'] =count($contratos);
+      return $cad;
    }
 }
