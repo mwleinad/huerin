@@ -26,7 +26,7 @@
 <tr>
     <td align="center" class="" title="{$item.nameContact}">
         <span id="comentario-{$item.servicioId}">{$item.comentario}</span>
-        {if $User.roleId < 4}
+        {if in_array(117,$permissions)||$User.isRoot}
         <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.servicioId}" onclick="ModifyComment({$item.servicioId})"  title="Editar"/>
         {/if}
     </td>
@@ -47,47 +47,16 @@
                         {/if}
                       {/if}"
         title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
-        <div style="cursor:pointer" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}', '{$item.rfc}', '{$year}')">
+        <div style="cursor:pointer" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}', '{$item.rfc}', '{$year}')"{/if}>
             {$item.nombreServicio|truncate:5:""}
             {if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696">(Inactivo)</span>{/if}
+            {if in_array(99,$permissions)||$User.isRoot}
             <a href="{$WEB_ROOT}/download_tasks.php?id={$instanciaServicio.instanciaServicioId}" style="color:#FFF;font-weight:bold">Archivos</a>
+            {/if}
         </div>
     </td>
     {/foreach}
 </tr>
-
-
-{*foreach from=$clientes item=cliente key=key}
-{foreach from=$cliente.contracts item=contract key=keyContract}
-{foreach from=$contract.instanciasServicio item=servicio key=keyServicio}
-<tr>
-    <td align="center" class="" title="{$contract.responsable.name}">{$cliente.nameContact}</td>
-    <td align="center" class="" title="{$contract.responsable.name}">{$servicio.responsable}</td>
-    <td align="center" class="" title="{$contract.responsable.name}">{$contract.name}</td>
-    {foreach from=$servicio.instancias item=instanciaServicio}
-    <td align="center"
-        class="{if $instanciaServicio.status neq 'inactiva'}
-      						{if $instanciaServicio.class eq 'CompletoTardio'}
-      							st{'Completo'} txtSt{'Completo'}
-      						{else}
-      							{if $instanciaServicio.class eq 'Iniciado'}
-      								st{'PorCompletar'} txtSt{'PorCompletar'}
-      							{else}
-      								st{$instanciaServicio.class} txtSt{$instanciaServicio.class}
-      							{/if}
-      						{/if}
-      					{/if}"
-        title="{$servicio.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
-        <div style="cursor:pointer" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')">
-            {$servicio.nombreServicio|truncate:5:""}
-            {if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696">(Inactivo)</span>{/if}
-            <a href="{$WEB_ROOT}/download_tasks.php?id={$instanciaServicio.instanciaServicioId}" style="color:#FFF;font-weight:bold">Archivos</a>
-        </div>
-    </td>
-    {/foreach}
-</tr>
-{/foreach}
-{/foreach*}
 {foreachelse}
 <tr>
     <td colspan="15" align="center">Ning&uacute;n registro encontrado.</td>

@@ -134,16 +134,17 @@ function doSearch(){
 				method:'post',
 				parameters: $('frmSearch').serialize(true),
 				onLoading: function(){
-					$("loading").style.display = "block";
+					$("loading-img").style.display = "block";
 					$('contenido').innerHTML = "";
+                    $('btnBuscar').style.display = "none";
 				},
 				onSuccess: function(transport){
 					var response = transport.responseText || "Ocurrio un error durante la conexion al servidor. Por Favor Trate de Nuevo";
 					var splitResponse = response.split("[#]");
 
-					$("loading").style.display = "none";
-
+					$("loading-img").style.display = "none";
 					$('contenido').innerHTML = response;
+                    $('btnBuscar').style.display = "block";
 				},
 				onFailure: function(){ alert('Something went wrong...') }
 			});

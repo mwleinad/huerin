@@ -35,6 +35,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'document-general',
 		'document-sellado',
 		'contract',
+        'contract-customer',
 		'contract-new',
 		'contract-edit',
 		'contract-view',

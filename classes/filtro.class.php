@@ -38,6 +38,7 @@ class Filtro extends Util
 		global $rol;
 	    $withPermission = false;
         //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar(el gerente igual debe ser limitado)
+        //hasta este apartado el rol cliente no debe tener problemas por que ya esta filtrado a que solo sus contratos pueda ver.
         $rol->setRolId($roleId);
         $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
 		//if el rol del usuario tiene privilegio de ver todos los contrartos

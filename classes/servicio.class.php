@@ -472,9 +472,7 @@ class Servicio extends Contract
     
 		if($departamentoId!="")
 		  $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
-		
-		//$debug = "servicioId = 5307 AND ";
-		//$debug = '';
+
 		$sql = "SELECT servicioId,  customer.nameContact AS clienteName, 
 				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, 
@@ -491,22 +489,27 @@ class Servicio extends Contract
 				ORDER BY clienteName, razonSocialName, nombreServicio ASC";						
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
+		//si el usuario es cliente convertir el userId y rolId a 1 para que funcione con todos los privilegios pero solo
+        //sobre sus contratos.
+		if(count($User['roleId']) == 4){
+			$rolId= 1;
+			$userId=0;
+		}else{
+            $rolId= $User['roleId'];
+            $userId=$User['userId'];
+        }
 
-		if(count($User) == 1){
-			$User["roleId"] = 1;
-		}
 		//echo $User["roleId"];
-		
 		foreach($result as $key => $value){
 			//echo $value["customerId"];
 			$filtro = new Filtro;
 			$contract = new Contract;
 			$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-			$data["subordinados"] = $filtro->Subordinados($User["userId"]);
+			$data["subordinados"] = $filtro->Subordinados($userId);
 
-			$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
+			$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $userId);
 			
-			$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["subordinadosPermiso"], $data["conPermiso"]);
+			$data["withPermission"] = $filtro->WithPermission($rolId, $data["subordinadosPermiso"], $data["conPermiso"]);
 			if($data["withPermission"] === false){
 				unset($result[$key]);
 				continue;
@@ -517,7 +520,7 @@ class Servicio extends Contract
 			$result[$key]["formattedInicioOperaciones"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
 
 			$this->Util()->DB()->setQuery("SELECT * FROM instanciaServicio
-			WHERE servicioId = '".$value["servicioId"]."' AND status='activa' 	
+			WHERE servicioId = '".$value["servicioId"]."' AND status IN('activa','completa')	
 			ORDER BY date DESC");
 			$result[$key]["instancias"] = $this->Util()->DB()->GetResult();
 						
@@ -528,9 +531,7 @@ class Servicio extends Contract
 			}
 			
 		}//foreach
-				
 		return $result;
-		
 	}
     /* funcion  EnumerateServiceForInstances
      * Esta funcion enumera todos los servicios que se crearan sus instancias

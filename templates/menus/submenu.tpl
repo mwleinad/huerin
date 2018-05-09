@@ -1,5 +1,6 @@
 <div id="tabs">
      <div class="container">
+      {if $User.roleId!=4}
        <ul>
         	{if $mainMnu == "archivos"}
           	    {foreach from=$resDepartamentos item=item}
@@ -175,8 +176,7 @@
                 <span>Pagos y Activaciones</span></a></li>
                 {/if}
             {/if}
-
-
        </ul>
+      {/if}
     </div>
 </div>
