@@ -1,0 +1,2 @@
+ALTER TABLE `notice`
+	ADD COLUMN `sendCustomer` ENUM('Si','No') NULL DEFAULT NULL AFTER `ip`;
