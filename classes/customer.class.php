@@ -280,8 +280,128 @@ class Customer extends Main
     }
     return $result;
   }
-
-	public function Enumerate($type = "subordinado", $customerId = 0, $tipo = ""){
+  /*
+   * EnumerateOptimizado
+   * Quitar ordenamiento ASC (quita mucho tiempo)
+   * Quitar el foreach de encontrar los subordinados por cada servicio eso se hace en el foreach de contratos.
+   */
+  public function EnumerateOptimizado($type = "subordinado", $customerId = 0, $tipo = ""){
+        global $User, $page,$rol;
+        if ($customerId) {
+            $add = " AND customerId = '".$customerId."' ";
+            if ($page == "report-servicio") {
+                $User["roleId"] = 1;
+            }
+        }
+        if ($tipo == "Activos") {
+            $addActivo = " AND active = '1' ";
+        } elseif ($tipo == "Inactivos") {
+            $addActivo = " AND active = '0' ";
+        } else {
+            $addActivo = " AND active = '1' ";
+        }
+        $sql = "SELECT 	*  FROM customer  WHERE 1 ".$sqlActive." ".$add." ".$addActivo."";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $count = 0;
+        $personal = new Personal;
+        $personal->setPersonalId($User["userId"]);
+        $subordinados = $personal->Subordinados();
+        foreach ($result as $key => $val) {
+            $allEmailsCliente=array();
+            $sql = "SELECT contract.* FROM contract WHERE customerId = '".$val["customerId"]."' AND activo = 'Si' ORDER BY contractId ASC";
+            $this->Util()->DB()->setQuery($sql);
+            $result[$key]["contracts"] = $this->Util()->DB()->GetResult();
+            $result[$key]["servicios"] = count($result[$key]["contracts"]);
+            //de todas las cuentas, revisar si al menos una esta asignada a nosotros
+            $showCliente = false;
+            $result[$key]["servicios"] = 0;
+            foreach ($result[$key]["contracts"] as $keyContract => $value) {
+                $contract = new Contract;
+                $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
+                //checar servicios del contrato para saber si lo debemos mostrar o no
+                $this->Util()->DB->setQuery(
+                    "SELECT 
+					servicioId, nombreServicio, departamentoId 
+				  FROM 
+					servicio 
+				  LEFT JOIN 
+					tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+				  WHERE 
+					contractId = '".$value["contractId"]."' AND servicio.status = 'activo' AND tipoServicio.status='1' "
+                );
+                $serviciosContrato = $this->Util()->DB()->GetResult();
+                $cUser = new User;
+                $cUser->setUserId($value["responsableCuenta"]);
+                $userInfo = $cUser->Info();
+                $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
+                if ($type == "propio") {
+                    //si es propio pero es administrador debe ver el de todos
+                    if($User['tipoPers']=='Admin'){
+                        $subordinadosPermiso = array();
+                        foreach ($subordinados as $sub) {
+                            array_push($subordinadosPermiso, $sub["personalId"]);
+                        }
+                    }else{
+                        $subordinadosPermiso = array(
+                            $_SESSION['User']["userId"]);
+                    }
+                }else{
+                    $subordinadosPermiso = array();
+                    foreach ($subordinados as $sub) {
+                        array_push($subordinadosPermiso, $sub["personalId"]);
+                    }
+                    //si no es admin se agrega al array (admin no tiene userId valido)
+                    //se usa la $_SESSION por que $User se cambio al mandar a llamar esta funcion
+                    if($User['tipoPers']!='Admin')
+                         array_push($subordinadosPermiso, $_SESSION['User']['userId']);
+                }
+                //comprobar privilegios del rol o permisos del usuario acti
+                $rol->setRolId($User['roleId']);
+                $unlimitedRol = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+                $unlimited=false;
+                if ($unlimitedRol) {
+                   $unlimited=true;
+                } else {
+                    foreach ($subordinadosPermiso as $usuarioPermiso) {
+                        if (in_array($usuarioPermiso, $conPermiso)) {
+                            $unlimited = true;
+                            break;
+                        }
+                    }
+                }
+                foreach ($serviciosContrato as $servicio) {
+                    if($unlimited)
+                        $result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+                }
+                if (count($result[$key]["contracts"][$keyContract]['instanciasServicio']) > 0) {
+                    $showCliente = true;
+                    $result[$key]["servicios"]++;
+                    //si el contrato se va mostrar obtener todos sus emails.
+                    $razon = new Razon;
+                    $razon->setContractId($value["contractId"]);
+                    $emailsContract = $razon->getEmailContractByArea('all');
+                    $emailTemp=array();
+                    foreach($emailsContract['allEmails'] as $vemail)
+                    {
+                        if($this->Util()->ValidateEmail(trim($vemail)))
+                           $emailTemp[trim($vemail)]=trim($value['name']);
+                    }
+                     $allEmailsCliente = array_merge($allEmailsCliente,$emailTemp);
+                } else {
+                    unset($result[$key]["contracts"][$keyContract]);
+                }
+            }
+            $result[$key]['allEmails'] = $allEmailsCliente;
+            $rol->setRolId($User['roleId']);
+            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+            if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
+                unset($result[$key]);
+            }
+        }//foreach cliente
+        return $result;
+  }//EnumerateOptimizado
+  public function Enumerate($type = "subordinado", $customerId = 0, $tipo = ""){
 	
     	global $User, $page,$rol;
 		   
@@ -291,7 +411,6 @@ class Customer extends Main
         		$User["roleId"] = 1;
       		}
     	}
-    
     	if ($tipo == "Activos") {
       		$addActivo = " AND active = '1' ";
     	} elseif ($tipo == "Inactivos") {
@@ -312,12 +431,9 @@ class Customer extends Main
     	$result = $this->Util()->DB()->GetResult();
     	
 		$count = 0;
-		
-    	$personal = new Personal;
-		
+     	$personal = new Personal;
     	$personal->setPersonalId($User["userId"]);
     	$subordinados = $personal->Subordinados();
-    			
     	foreach ($result as $key => $val) {
 			$sql = "SELECT
 					contract.*
@@ -338,9 +454,7 @@ class Customer extends Main
       		foreach ($result[$key]["contracts"] as $keyContract => $value) {
 			
           		$contract = new Contract;
-
           		$conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-
           		//checar servicios del contrato para saber si lo debemos mostrar o no
           		$this->Util()->DB->setQuery(
 				  "SELECT 
@@ -357,14 +471,12 @@ class Customer extends Main
           		$serviciosContrato = $this->Util()->DB()->GetResult();
           
           		$cUser = new User;
-          	
 				//agregar o no agregar servicio a arreglo de contratos?
           		foreach ($serviciosContrato as $servicio) {
 					$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
 					$cUser->setUserId($value["responsableCuenta"]);
 					$userInfo = $cUser->Info();
 					$result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
-            
 					if ($type == "propio") {
 					    //si es propio pero es administrador debe ver el de todos
                         if($User['tipoPers']=='Admin'){
@@ -399,7 +511,6 @@ class Customer extends Main
               			}
             		} 
           		}
-          
           		if (count($result[$key]["contracts"][$keyContract]['instanciasServicio']) > 0) {
             		$showCliente = true;
             		$result[$key]["servicios"]++;
@@ -418,8 +529,7 @@ class Customer extends Main
 		return $result;
 		
 	}//Enumerate
-	
-	public function EnumerateBest($type = 'subordinado', $customerId = 0, $tipo = ""){
+  public function EnumerateBest($type = 'subordinado', $customerId = 0, $tipo = ""){
 	
     	global $page;
 		
@@ -439,7 +549,6 @@ class Customer extends Main
     	$result = $this->Util()->DB()->GetResult();
     			
 		$count = 0;
-		
     	$personal = new Personal;		
     	$personal->setPersonalId($User["userId"]);
     	$subordinados = $personal->Subordinados();
