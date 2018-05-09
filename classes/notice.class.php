@@ -164,6 +164,11 @@ class Notice extends Main
 		if($this->Util()->PrintErrors()){
 			return false; 
 		}
+		if($this->sendCustomer)
+		    $enviadoCliente = "Si";
+		else
+            $enviadoCliente = "No";
+
         $ip = $this->GetIp();
 		$sqlQuery = "INSERT INTO 
 					notice 
@@ -172,15 +177,17 @@ class Notice extends Main
 						fecha,
 						description,
 						priority,
-                        ip
+                        ip,
+                        sendCustomer
 					)
 				 VALUES 
 					(			
 						'".$this->usuario."',			
 						'".$this->fecha."',
-						'".$this->description."',
+						'".trim($this->description)."',
 						'".$this->prioridad."',
-                        '".$ip."'
+                        '".$ip."',
+                        '".$enviadoCliente."'
 					)";
 								
 		$this->Util()->DB()->setQuery($sqlQuery);
@@ -225,7 +232,7 @@ class Notice extends Main
            return false;
         }else{
             //si el archivo se subio correctamente se procede a guardar los permisos y enviar por correo de lo contrario se realiza un rollbac
-            //siempre y cuando
+            //solo se usara para avisos que por lo menos se selecciono  una area.
             if(!empty($owners)) {
                 $this->Util()->DB()->setQuery($sqlOwn);
                 $this->Util()->DB()->ExecuteQuery();
@@ -262,35 +269,30 @@ class Notice extends Main
             //si se selecciona enviar a cliente hacer lo siguiente
             if($this->sendCustomer){
                 //administrador,socio y coordinador pueden seleccionar enviar a cliente
-                //que se obtengan todos los clientes
-                $User['userId'] = 0;
-                $customers = $customer->Enumerate();
+                //modificar varibale global temporalmente para que administrador,socio,coordinador pueda sacar todos los clientes.
+                //$User se vuelve a igualar ala $_SESSION['User'] en algun momento no importa.
+                $User['userId']=0;
+                $customers = $customer->EnumerateOptimizado();
                 $clientes =array();
+                //enviar a los correos de administrativo,directivo,contabilidad de cada una de las razones sociales del cliente
+                //si se repiten los correos se usara el contactName de la ultima razon encontrada.
                 $clientesCorreos = array();
                 foreach($customers as $cm=>$vm){
                     if(empty($vm['contracts'])){
                         continue;
                     }
-                    foreach($vm['contracts'] as $cr=>$vr){
-                        if($vr['activo']=="Si"){
-                            array_push($clientes,$vm['customerId']);
-                            if($this->Util()->ValidateEmail(trim($vr['emailContactoAdministrativo'])))
-                                $clientesCorreos[trim($vr['emailContactoAdministrativo'])]=$vr['nombreComercial'];
-                            if($this->Util()->ValidateEmail(trim($vr['emailContactoDirectivo'])))
-                                $clientesCorreos[trim($vr['emailContactoDirectivo'])]=$vr['nombreComercial'];
-                            break;
-                        }
-                    }
+                    $clientesCorreos = array_merge($clientesCorreos,$vm['allEmails']);
                 }
                 //enviar correo al cliente
                 $subject ="BRAUN HUERIN INFORMA";
-                $body ='<pre>Despcripcion del aviso <br><br>'.nl2br(utf8_decode($this->description));
+                $body ='<pre>Despcripcion del aviso :<br><br>'.nl2br(utf8_decode($this->description));
                 if(file_exists($destino))
                 {
                     $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
                 }
                 //desactivar asta que confime rogelio
-               // $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");
+               /* $sendmail = new SendMail();
+                $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");*/
             }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');

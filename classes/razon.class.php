@@ -41,8 +41,19 @@ class Razon extends Contract
            case 'Administracion':
            case 'administracion':
                 $emails = $this->Util()->ExplodeEmails($row['emailContactoAdministrativo']);
+                if(!is_array($emails))
+                    $emails = array();
                 if($mainCustomer)
                     @array_push($emails,$row['email']);
+           break;
+           case 'all':
+               $emails = array();
+               $emailsAdmin = $this->Util()->ExplodeEmails($row['emailContactoAdministrativo']);
+               $emailsDirectivo = $this->Util()->ExplodeEmails($row['emailContactoDirectivo']);
+               $emailsContabilidad = $this->Util()->ExplodeEmails($row['emailContactoContabilidad']);
+               $emails = array_merge($emails,$emailsAdmin,$emailsDirectivo,$emailsContabilidad);
+               if($mainCustomer)
+                   @array_push($emails,$row['email']);
            break;
 
        }
