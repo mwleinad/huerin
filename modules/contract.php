@@ -10,6 +10,9 @@
 			
 	//Obtenemos los Tipos de Contrato
 	$categories = $contCat->Enumerate();
+	//si por alguna razon el usuario cliente quisiera ingresar con otro id obligar a que sea exclusivo de el.
+     if($_SESSION['User']['roleId']==4)
+         $_GET['id']= $_SESSION['User']['userId'];
 	
 	$val = split('-',$_GET['id']);
 	
