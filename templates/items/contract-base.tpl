@@ -1,10 +1,10 @@
 {foreach from=$contracts item=item key=key}
     <tr id="1">
-            <td align="center" class="id">{$item.contractId}</td>
-            <td align="center" class="id">{$item.name}</td>
-            <td align="center" class="id">{$item.type}</td>
-            <td align="center">{$item.rfc}</td>
-            <td align="left">
+        <td align="center" class="id">{$item.contractId}</td>
+        <td align="center" class="id">{$item.name}</td>
+        <td align="center" class="id">{$item.type}</td>
+        <td align="center">{$item.rfc}</td>
+        <td align="left">
         {foreach from=$departamentos item=depto}
             {assign var="idDepto" value="{$depto.departamentoId}"}
 
@@ -14,12 +14,15 @@
             {/if}
         {/foreach}
         </td>
-        {if (in_array(86,$permissions) or in_array(85,$permissions)) || $User.isRoot} <!-- inicio col servicios -->
+        <td align="left">
+            {$item.activo}
+        </td>
+        {if (in_array(86,$permissions) or in_array(85,$permissions)) || $User.isRoot ||($User.roleId eq 4&&$showServices)} <!-- inicio col servicios -->
         <td align="center">
         {if $item.activo == 'Si'}
             {$item.noServicios}
             {if $item.noServicios > 0}
-                {if in_array(86,$permissions)|| $User.isRoot}
+                {if in_array(86,$permissions)|| $User.isRoot ||($User.roleId eq 4&&$showServices)}
                     <a href="{$WEB_ROOT}/services/id/{$item.contractId}" onclick="return parent.GB_show('Servicios de Razon Social', this.href,500,970) ">
                         <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Servicios"/>
                     </a>

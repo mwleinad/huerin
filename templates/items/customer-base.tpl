@@ -11,7 +11,7 @@
 			{if $item.contracts.0.fake == 1}
                     	0
            	{else}
-            	{$item.contracts|count}                
+            	{$item.totalContracts}
           	{/if}	
        		{if $item.contracts|count > 0 && (in_array(62,$permissions)|| $User.isRoot)}
         		<a href="{$WEB_ROOT}/contract/id/{$item.customerId}">

@@ -59,12 +59,17 @@ class ContractRep extends Main
         $resContratos = $this->Util()->DB()->GetResult();
 
         $contratos = array();
+        $skip=false;
+        //si el usuario que busca es cliente(roleId =4) debe ingresar por default dentro del arrat de contratos solo los de el.
+        if($_SESSION['User']['roleId']==4)
+            $skip=true;
+
         foreach($resContratos as $res){
             if($res['permisos']=="")
                 continue;
 
             $encontrado = $this->findPermission($res, $formValues['respCuenta']);
-            if($encontrado == false) {
+            if($encontrado == false &&!$skip) {
                 continue;
             }
             //Checamos Servicios

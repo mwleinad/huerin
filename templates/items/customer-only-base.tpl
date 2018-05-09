@@ -8,24 +8,19 @@
         <td align="center">{$item.password|wordwrap:20:"<br />\n":TRUE}</td>
         <td align="center" class="id">
             {if $item.active == 1 || $item.active ==0}
-                {if $item.contracts.0.fake == 1}
+                {if $item.contracts.0.fake== 1}
                     0
                 {else}
-                    {if $User.roleId < 4}
-                    {$item.contracts|count}
-                    {else}
-                    {$item.contractsInactivos}
-                    {/if}
+                    {$item.totalContracts}
                 {/if}
-                {if $item.contracts|count > 0}
-                    <a href="{$WEB_ROOT}/contract/id/{$item.customerId}">
+                {if $item.contracts|count > 0 && (in_array(62,$permissions)|| $User.isRoot)}
+                    <a href="{$WEB_ROOT}/contract-customer/id/{$item.customerId}">
                         <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Razones Sociales"/>
                     </a>
-                {/if}
-                {if $canEdit}
-                    <a href="{$WEB_ROOT}/contract-new/id/{$item.customerId}">
-                        <img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Razon Social"/>
-                    </a>
+                    <br />
+                    <a href="{$WEB_ROOT}/contract/id/{$item.customerId}-activos">{$item.contractsActivos} Act.</a>
+                    <br />
+                    <a href="{$WEB_ROOT}/contract/id/{$item.customerId}-inactivos">{$item.contractsInactivos} Inact.</a>
                 {/if}
             {else}
                 N/A
