@@ -1522,13 +1522,10 @@ class Contract extends Main
 		$contratos = array();
 
 		foreach($resContratos as $res){
-
             $encontrado = $this->contratWithPermission($res, $respCuenta, $skip);
-
 			if($encontrado == false) {
                 continue;
             }
-
 			//Checamos Servicios
 			$sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
@@ -1539,21 +1536,16 @@ class Contract extends Main
 			$this->Util()->DB()->setQuery($sql);
 			$res["servicios"] = $this->Util()->DB()->GetResult();
 			$res["noServicios"] = count($res["servicios"]);
-
-
 			//Si no tiene departamento asignado lo borro
 			if ($res["servicios"][0]['departamentoId'] == "")
             {
                 continue;
             }
-
 			$contratos[] = $res;
-
 		}//foreach
 		//INCLUIR SUBORDINADOS
 		if(!$formValues['subordinados'])
 			return $contratos;
-
 
 		$personal->setPersonalId($respCuenta);
 		$subordinados = $personal->Subordinados();
@@ -1581,7 +1573,6 @@ class Contract extends Main
                 if($encontrado == false) {
                     continue;
                 }
-
 				//Checamos Servicios
 				$sql = "SELECT * FROM servicio
 						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
@@ -1605,7 +1596,6 @@ class Contract extends Main
 
 	}//BuscarContract
 
-
   /**
   * Enumerate
   *
@@ -1626,7 +1616,7 @@ class Contract extends Main
 			$add .= ' AND contract.activo = "No"';
 
     	$personal = new Personal;
-    	$personal->setPersonalId($User["userId"]);
+    	$personal->setPersonalId($User["userId"]);//si se pasa 0 se obtiene todos los subordinados desde socio asta el mas bajo
     	$subordinados = $personal->Subordinados();
 
         $sql = "SELECT
@@ -1652,75 +1642,70 @@ class Contract extends Main
     $result = $this->Util()->DB()->GetResult();
 
     foreach ($result as $key => $value) {
-			$contract = new Contract;
-			$conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
+        $contract = new Contract;
+        $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 
-      //checar servicios del contrato para saber si lo debemos mostrar o no
-			$this->Util()->DB->setQuery(
-					"SELECT
+        //checar servicios del contrato para saber si lo debemos mostrar o no
+        $this->Util()->DB->setQuery(
+            "SELECT
 						servicioId, nombreServicio, departamentoId
 					FROM
 						servicio
 					LEFT JOIN
 						tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE
-						contractId = '".$value["contractId"]."' AND servicio.status = 'activo' AND tipoServicio.status='1'
+						contractId = '" . $value["contractId"] . "' AND servicio.status = 'activo' AND tipoServicio.status='1'
 					ORDER BY
 						nombreServicio ASC"
-			);
-			$serviciosContrato = $this->Util()->DB()->GetResult();
-			$result[$key]["noServicios"] = count($serviciosContrato);
+        );
+        $serviciosContrato = $this->Util()->DB()->GetResult();
+        $result[$key]["noServicios"] = count($serviciosContrato);
+        //si tiene servicios se le muestra el cliente por default pero si no tuviera servicios se evaluaria si tiene los permisos.
+        if ($result[$key]["noServicios"] == 0) {
+            $showCliente = true;
+        } else {
+            $user = new User;
+            //sacar el control de permisos del foreach de abajo se puede hacer desde aqui.
+            $user->setUserId($value["responsableCuenta"]);
+            $userInfo = $user->Info();
+            $result[$key]["responsable"] = $userInfo;
+            if ($type == "propio") {
+                $subordinadosPermiso = array(
+                    $User["userId"]);
+            } else {
+                $subordinadosPermiso = array();
+                foreach ($subordinados as $sub) {
+                    array_push($subordinadosPermiso, $sub["personalId"]);
+                }
+                array_push($subordinadosPermiso, $User["userId"]);
+            }
+            //agregar o no agregar servicio a arreglo de contratos?
+            foreach ($serviciosContrato as $servicio) {
+                $responsableId = $result[$key]['permisos'][$servicio['departamentoId']];
+                //comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
+                // el usuario esta dentro de los permisos del contrato
+                $rol->setRolId($User['roleId']);
+                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array(''));
+                if ($unlimited) {//para el rol cliente siempre va arrojar que es ilimitado pero solo de sus propios contratos. desde arriba ya viene filtrado por el customerId
+                    $result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+                } else {
+                    foreach ($subordinadosPermiso as $usuarioPermiso) {//
+                        if (in_array($usuarioPermiso, $conPermiso)) {
+                            $result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
+                            break;
+                        }//if
+                    }//foreach
+                }//if
+            }//foreach
+            if (count($result[$key]['instanciasServicio']) > 0) {
+                $showCliente = true;
+                $result[$key]["servicios"]++;
+            } else {
+                unset($result[$key]);
+            }
 
-			if($result[$key]["noServicios"] == 0)
-			{
-				$showCliente = true;
-			}
-			else
-			{
-				$user = new User;
-				//agregar o no agregar servicio a arreglo de contratos?
-						foreach ($serviciosContrato as $servicio) {
-							$responsableId = $result[$key]['permisos'][$servicio['departamentoId']];
-
-							$user->setUserId($value["responsableCuenta"]);
-							$userInfo = $user->Info();
-							$result[$key]["responsable"] = $userInfo;
-
-							if ($type == "propio") {
-								$subordinadosPermiso = array(
-									$User["userId"]);
-							} else {
-								$subordinadosPermiso = array();
-								foreach ($subordinados as $sub) {
-									array_push($subordinadosPermiso, $sub["personalId"]);
-								}
-								array_push($subordinadosPermiso, $User["userId"]);
-							}
-							//comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
-                            // el usuario esta dentro de los permisos del contrato
-                            $rol->setRolId($User['roleId']);
-                            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array(''));
-							if ($unlimited) {
-								$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-                            } else {
-								foreach ($subordinadosPermiso as $usuarioPermiso) {
-									if (in_array($usuarioPermiso, $conPermiso)) {
-										$result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-										break;
-									}//if
-								}//foreach
-							}//if
-						}//foreach
-
-						if (count($result[$key]['instanciasServicio']) > 0) {
-							$showCliente = true;
-							$result[$key]["servicios"]++;
-						} else {
-							unset($result[$key]);
-						}
-
-					}
-				}
+           }
+        }
         $rol->setRolId($User['roleId']);
         $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'),array(''));
         if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {

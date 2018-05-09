@@ -265,9 +265,7 @@ switch($_POST["type"])
 					$idContracts[] = $contractId;				
 					$contratosClte[$customerId][] = $res;
 				}
-								
 			}//foreach
-						
 			$clientes = array();
 			foreach($idClientes as $customerId){
 				
@@ -279,13 +277,10 @@ switch($_POST["type"])
 				$clientes[] = $infC;
 				
 			}//foreach
-			
 			$resClientes = array();
 			foreach($clientes as $clte){
-
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
-
 					//Checamos Permisos
 					$resPermisos = explode('-',$con['permisos']);
 					foreach($resPermisos as $res){

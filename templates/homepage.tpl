@@ -42,7 +42,7 @@
                 {/if}
             {/if}
           <div class="portlet-content nopadding borderGray" style="text-align:center;display: flex;flex-direction: column">
-              {if empty($permissions)}
+              {if empty($permissions)&&$User.roleId!=4}
                   <div style="background-color: rgba(162,67,48,0.97);">
                       <p style="overflow-wrap:break-word;color: #FFFFFF;font-weight: bold;"> Su cuenta no se encuentra configurada, contactese con el administrador de sistema</p>
                   </div>

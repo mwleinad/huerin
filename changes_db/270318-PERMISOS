@@ -1636,3 +1636,8 @@ INSERT INTO `rolesPermisos` (`rolId`, `permisoId`, `date`) VALUES
 	(25, 174, '2018-04-06'),
 	(25, 176, '2018-04-06'),
 	(25, 179, '2018-04-06');
+
+
+//agregados 08-05-2018
+
+INSERT INTO `huerin`.`permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Solo ver', '86', '4');

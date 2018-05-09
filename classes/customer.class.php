@@ -1383,14 +1383,13 @@ class Customer extends Main
             $result[$key]["servicios"] = count($result[$key]["contracts"]);
 						
 			$countContracts = count($result[$key]["contracts"]);
-			
+            $result[$key]["totalContracts"] = $result[$key]["contractsActivos"]+$result[$key]["contractsInactivos"];
 			$result[$key]["servicios"] = 0;
 
 			if($countContracts > 0){
 				$result[$key]["showCliente"] = 0;
 				
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
-                  //echo "<pre style='text-align: left'>";
                     $oPer =  new Personal;
                     $permisosArray = explode('-',$value['permisos']);
                     foreach($permisosArray as $pk=>$vp){
@@ -1434,10 +1433,6 @@ class Customer extends Main
                     $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
                     $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
 
-//                    $treeSub = $oPer->findTreeSubordinate($value['responsableCuenta']);
-//                    $role = $rol->getInfoByData($treeSub);
-//                    $rolArray = explode(' ',$role['name']);
-//                    $needle = trim($rolArray[0]);
                     $personal->setPersonalId($value['responsableCuenta']);
                     $infP = $personal->Info();
                     $role = $rol->getInfoByData($infP);
@@ -1466,7 +1461,7 @@ class Customer extends Main
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
 
-					//si no tiene servicios y es un admin o un asistente hay que mostrar el cliente por default
+					//si no tiene servicios y es un coordinador o un socio hay que mostrar el cliente por default
 					if($result[$key]["showCliente"] == 0)
 					{
 						$result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
@@ -1494,7 +1489,7 @@ class Customer extends Main
 				$result[$key]["contracts"][0]["fake"] = 1;
 			}
 			$filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
-   	}//foreach
+   	    }//foreach
         return $result;
 		
 	}//SuggestCustomerCatalog
@@ -1505,7 +1500,7 @@ class Customer extends Main
 					  "SELECT servicioId, nombreServicio, departamentoId 
 					  FROM servicio 
 					  LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  WHERE contractId = '".$id."' AND servicio.status = 'activo'          
+					  WHERE contractId = '".$id."' AND servicio.status = 'activo'  and tipoServicio.status='1'        
 					  ORDER BY nombreServicio ASC"
 					);
 					$serviciosContrato = $this->Util()->DB()->GetResult();

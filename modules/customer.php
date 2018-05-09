@@ -1,7 +1,12 @@
 <?php
     //comprobar permiso nivel uno
     $user->allowAccess(2);
-/* End Session Control */
+    //si es cliente aunque tenga permiso en modulo cliente debe redireccionar solo al apartado de customer-only
+    if($_SESSION['User']['roleId']==4){
+        header('Location: '.WEB_ROOT.'/customer-only');
+        exit;
+    }
+    /* End Session Control */
     if($_GET["tipo"]=='')
         $_GET["tipo"] = "Activos";
 
