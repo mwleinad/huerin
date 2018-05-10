@@ -130,13 +130,19 @@ class Servicio extends Contract
         $cad['monthNew'] = $monthNew;
         return $cad;
     }
+    /*
+     * funcion CreateServiceInstances
+     * Crear instancias para los servicios existentes
+     * al comprobar instancia se toma en cuenta el status baja para casos en que se dieron de baja y no se requiera trabajar
+     * de esta manera no se duplica o vuelve a crear la instancia correspondiente
+     */
 	public function CreateServiceInstances()
 	{
 	    //se usa EnumerateServiceForInstances por que no nos importa el usuario en este caos, todos los servicios saldra.
         //eso evitara foreachs en los permisos.
         $strLog="";
         $timeStart = date("d-m-Y").' a las '.date('H:i:s');
-		$result = $this->EnumerateServiceForInstances();
+		$result = $this->EnumerateServiceForInstances(1320);
 		$totInstCreate=0;
 		$excluidos =0;
 		foreach($result as $key => $value)
@@ -147,13 +153,13 @@ class Servicio extends Contract
             $fechaOperacion = $dateExploded[0]."-".$dateExploded[1]."-01";
             //comprobar instancias
             $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio
-			WHERE servicioId = '".$value["servicioId"]."' AND status IN('activa','completa')  LIMIT 5");
+			WHERE servicioId = '".$value["servicioId"]."' AND status IN('activa','completa','baja')  LIMIT 5");
             $instancias = $this->Util()->DB()->GetResult();
             $currentMonth = date('Y')."-".date("m")."-01";
             //si tiene instancias creadas comprobar que ya exista uno del mes en que se este ejecutando para excluirlo
             //ya no tiene por que iterarse si tiene una instancia en el mes actual
             if(!empty($instancias)){
-                $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND  status IN('activa','completa') AND date='".$currentMonth."' LIMIT 1");
+                $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND  status IN('activa','completa','baja') AND date='".$currentMonth."' LIMIT 1");
                 $exist = $this->Util()->DB()->GetRow();
                 //excluir servicio si ya existe instancia en el mes actual
                 if(!empty($exist))
@@ -207,9 +213,9 @@ class Servicio extends Contract
                 }
 			}else{
 				//Checamos si ya es tiempo de crear otra instancia
-				//Checar ultima fecha de instancia
+				//Checar ultima fecha de instancia tomar en cuenta status= baja para que no se creen instancias de mas cuando no debe
 				$this->Util()->DB()->setQuery("
-					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa') ORDER BY date DESC LIMIT 1");
+					SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa','baja') ORDER BY date DESC LIMIT 1");
 				$ultimoServicio = $this->Util()->DB()->GetSingle();
 				switch($value["periodicidad"])
 				{
@@ -222,7 +228,7 @@ class Servicio extends Contract
                         // si es eventual, comprobar que en la fecha de inicioOperaciones tenga instancia creada
                         $strLog .="EL SERVICIO =".$value['servicioId']." ES EVENTUAL  con fecha de inicio operacion =".$value['inicioOperaciones'].chr(13).chr(10);
                        /* $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."'
-                                                        AND status IN ('activa','completa')  AND date='".$fechaOperacion."' ");
+                                                        AND status IN ('activa','completa','baja')  AND date='".$fechaOperacion."' ");
                         $existInstancia = $this->Util()->DB()->GetSingle();
                         if($existInstancia)
                             $strLog .="Tiene instancia creada en la fecha =".$fechaOperacion.chr(13).chr(10);
@@ -251,7 +257,7 @@ class Servicio extends Contract
 				$newdate = date ( 'Y-m-d' , $newdate );
 				//--------------------------------------------------------------------------
 				$this->Util()->DB()->setQuery("
-				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa') ORDER BY date ASC LIMIT 1");
+				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa','baja') ORDER BY date ASC LIMIT 1");
 				$primerServicio = $this->Util()->DB()->GetSingle();
 				$startdate=$dateExploded[0]."-".$dateExploded[1]."-01";
 
@@ -297,7 +303,7 @@ class Servicio extends Contract
                                 $dateExploded[1]=$dateMod['monthNew'];
                         }
                         $nextDate = $dateExploded[0]."-".$dateExploded[1]."-01";
-						 $sql = "SELECT COUNT(*) FROM instanciaServicio WHERE servicioId = ".$value["servicioId"]." AND status IN ('activa','completa')
+						 $sql = "SELECT COUNT(*) FROM instanciaServicio WHERE servicioId = ".$value["servicioId"]." AND status IN ('activa','completa','baja')
 						 	AND date ='".$nextDate."' ";
 						$this->Util()->DB()->setQuery($sql);
 						$count = $this->Util()->DB()->GetSingle();
@@ -377,9 +383,10 @@ class Servicio extends Contract
                             continue;
                         }
                     }
+                    // tomar en cuenta las intancias en status baja para no crear de nuevo si por alguna razon se dio de baja
                     $nextDate = $explodedAddedDate[0]."-".$explodedAddedDate[1]."-01";
                     $sql = "SELECT count(instanciaServicioId) FROM instanciaServicio WHERE
-							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa')
+							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa','baja')
 						 	AND date = '".$nextDate."'";
 					$this->Util()->DB()->setQuery($sql);
 					$count = $this->Util()->DB()->GetSingle();

@@ -21,7 +21,6 @@ function ToggleTask(id)
         onSuccess: function(transport){
           var response = transport.responseText || "no response text";
           var splitResponse = response.split("[#]");
-          
           window.location = WEB_ROOT+"/report-servicio";
         },
         onFailure: function(){ alert('Something went wrong...') }

@@ -400,7 +400,7 @@ class Workflow extends Servicio
 	public function Info()
 	{
     	if($this->tipoOperacion == "reporteMensual")
-      		$add = " AND instanciaServicio.status != 'inactiva'";
+      		$add = " AND instanciaServicio.status != 'baja'";
 
 		$this->Util()->DB()->setQuery("SELECT *, customer.name AS customerName, contract.name AS contractName,
 		instanciaServicio.status AS status  FROM instanciaServicio 
@@ -541,7 +541,7 @@ class Workflow extends Servicio
 			$row["completoTardio"] = "Si";
 		
 		if($row["completedSteps"] == $row["totalSteps"]){
-      		if($row['status'] != "inactiva") {
+      		if($row['status'] != "baja") {
 				$this->Util()->DB()->setQuery("
 				  UPDATE
 					instanciaServicio
@@ -561,7 +561,7 @@ class Workflow extends Servicio
 			
 		}else{
 		
-      		if($row['status'] != "inactiva") {
+      		if($row['status'] != "baja") {
         		$this->Util()->DB()->setQuery("
           		UPDATE instanciaServicio
           		SET status = 'activa'
