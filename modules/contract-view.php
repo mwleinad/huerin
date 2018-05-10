@@ -4,10 +4,17 @@
     $user->allowAccess(2);
     $user->allowAccess(62);
     $user->allowAccess(66);
-
+    $contractId = intval($_GET['contId']);
 	/* End Session Control */
-	
-	$contractId = intval($_GET['contId']);
+	//para cliente comprobar que el id del contrato pertenece a el de lo contratio redireccionarlo a su perfil
+    if($_SESSION['User']['roleId']==4){
+        $contract->setContractId($_GET["contId"]);
+        $infoC= $contract->Info();
+        if($_SESSION['User']['userId']!=$infoC['customerId']){
+            header('Location: '.WEB_ROOT.'/customer-only');
+        }
+    }
+
 	
 //	$customer->setCustomerId($_GET["id"]);
 //	$infoCustomer = $customer->Info();
