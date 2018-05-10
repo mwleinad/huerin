@@ -5,7 +5,9 @@
      $user->allowAccess(62);//level 2
      $user->allowAccess(64);//level 3
 	/* End Session Control */
-
+        if($_SESSION['User']['roleId']==4){
+            header('Location: '.WEB_ROOT.'/customer-only');
+        }
 	if($_POST)
 	{
 		//print_r($_POST);
