@@ -78,49 +78,48 @@ class Servicio extends Contract
 
         switch($month){
             case 1:
-                $add = "+6 month";
-                $monthNew=7;
+                $add = "+5 month";
+                $monthNew=6;
                 break;
             case 2:
-                $add = "+5 month";
-                $monthNew=7;
+                $add = "+4 month";
+                $monthNew=6;
                 break;
             case 3:
-                $add = "+4 month";
-                $monthNew=7;
+                $add = "+3 month";
+                $monthNew=6;
                 break;
             case 4:
-                $add = "+3 month";
-                $monthNew=7;
+                $add = "+2 month";
+                $monthNew=6;
                 break;
             case 5:
-                $add = "+2 month";
-                $monthNew=7;
+                $add = "+1 month";
+                $monthNew=6;
                 break;
             case 6:
-                $add = "+1 month";
-                $monthNew=7;
+                $monthNew=6;
                 break;
             case 7:
-                $monthNew=7;
-                break;
-            case 12://si ponen esta fecha pasa a ser del año siguiente
-                $add = "+7 month";
-                $monthNew=7;
+                $add = "+1 month";
+                $monthNew=8;
                 break;
             case 8:
-                $add = "+1 month";
-                $monthNew=9;
+                $monthNew=8;
                 break;
             case 9:
-                $monthNew=9;
+                $add = "+1 month";
+                $monthNew=10;
                 break;
             case 10:
-                $add = "+1 month";
-                $monthNew=11;
+                $monthNew=10;
                 break;
             case 11:
-                $monthNew=11;
+                $add = "+1 month";
+                $monthNew=12;
+                break;
+            case 12:
+                $monthNew=12;
                 break;
         }
         if($monthNew>0 && $monthNew<10)
@@ -135,6 +134,7 @@ class Servicio extends Contract
      * Crear instancias para los servicios existentes
      * al comprobar instancia se toma en cuenta el status baja para casos en que se dieron de baja y no se requiera trabajar
      * de esta manera no se duplica o vuelve a crear la instancia correspondiente
+     * si es precierre  debe abrir solo en los meses 6,8,10,12S
      */
 	public function CreateServiceInstances()
 	{
@@ -142,7 +142,7 @@ class Servicio extends Contract
         //eso evitara foreachs en los permisos.
         $strLog="";
         $timeStart = date("d-m-Y").' a las '.date('H:i:s');
-		$result = $this->EnumerateServiceForInstances(1320);
+		$result = $this->EnumerateServiceForInstances();
 		$totInstCreate=0;
 		$excluidos =0;
 		foreach($result as $key => $value)
@@ -172,27 +172,30 @@ class Servicio extends Contract
             }
 			//Check if first instance
 			if(empty($instancias))
-			{	
-				//si es precierre  debe abrir solo en los meses 7 9 11
+			{
 			    if($value["tipoServicioId"]==PRECIERRE || $value["tipoServicioId"]==PRECIERREAUDITADO){
-                    $strLog .= 'es PRECIERRE'.chr(13).chr(10);
+                    $strLog .= ' es PRECIERRE'.chr(13).chr(10);
+                    $strLog .= ' FECHA SISTEMA : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
 			        $mesPre = (int)$dateExploded[1];
 			        $monthMod = $this->OverwriteMonth($mesPre);
                     $dateExploded[1] =$monthMod['monthNew'];
+                    $strLog .= ' FECHA MODIFICADA : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
                 }
                 //si es RIF y por alguna razon pusieron fecha de inicio operacion un mes impar se crea la primera instancia al primer mes par
                 //posterior a la fecha de inicio de operaciones
                 if($value["tipoServicioId"] == RIF || $value["tipoServicioId"] == RIFAUDITADO)
                 {
-                    $strLog .= 'es RIF';
+                    $strLog .= ' es RIF'.chr(13).chr(10);
+                    $strLog .= ' FECHA SISTEMA : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
                     if($dateExploded[1] % 2 == 1)
                     {
                         $dateExploded[1] = $dateExploded[1] + 1;
                         if($dateExploded[1]>0&&$dateExploded[1]<10)
                             $dateExploded[1] = "0".$dateExploded[1];
-                        $strLog .= ' fecha impar cambiar ha:'.$dateExploded[0].'-'.$dateExploded[1].'-01';
+                        $strLog .= ' FECHA MODIFICADA A :'.$dateExploded[0].'-'.$dateExploded[1].'-01';
                     }
                     $strLog .=chr(13).chr(10);
+
 
                 }
                 //crear primera instancia si ya es hora, lo define la fecha de inicio de operaciones.
