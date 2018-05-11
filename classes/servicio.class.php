@@ -285,7 +285,9 @@ class Servicio extends Contract
                         $strLog .=' Vuelta '.$cont."   ".$startdate.chr(13).chr(10);
 						$dateExploded = explode("-",$startdate);
 						if($value["tipoServicioId"] == RIF || $value["tipoServicioId"] == RIFAUDITADO )
-						{    $strLog .= 'es RIF';
+						{
+						    $strLog .='es RIF'.chr(13).chr(10);
+                            $strLog .= ' FECHA SISTEMA : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
 							if($dateExploded[1] % 2 == 1)
 							{
 								$dateExploded[1] = $dateExploded[1] + 1;
@@ -293,17 +295,21 @@ class Servicio extends Contract
                                  $dateExploded[1] = "0".$dateExploded[1];
                                 $strLog .= ' feha impar cambiar ha:'.$dateExploded[0].'-'.$dateExploded[1].'-01';
 							}
+                            $strLog .= ' FECHA MODIFICADA A : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
                             $strLog .=chr(13).chr(10);
 						}
                         $addTemp =  $add;
                         if($value["tipoServicioId"]==PRECIERRE || $value["tipoServicioId"]==PRECIERREAUDITADO){
                             $mesPre = (int)$dateExploded[1];
                             $strLog .= 'es PRECIERRE'.chr(13).chr(10);
+                            $strLog .= ' FECHA SISTEMA : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
                             $dateMod = $this->OverwriteMonth($mesPre);
                             if($dateMod['add']!="")
                                 $add =$dateMod['add'];
                             if($dateMod['monthNew']>0)
                                 $dateExploded[1]=$dateMod['monthNew'];
+
+                            $strLog .= ' FECHA MODIFICADA A : '.$dateExploded[0].'-'.$dateExploded[1].'-01'.chr(13).chr(10);
                         }
                         $nextDate = $dateExploded[0]."-".$dateExploded[1]."-01";
 						 $sql = "SELECT COUNT(*) FROM instanciaServicio WHERE servicioId = ".$value["servicioId"]." AND status IN ('activa','completa','baja')
@@ -356,8 +362,10 @@ class Servicio extends Contract
                     if($value["tipoServicioId"]==PRECIERRE || $value["tipoServicioId"]==PRECIERREAUDITADO){
                         $mesPreAdd = (int)$explodedAddedDate[1];
                         $strLog .= 'es PRECIERRE'.chr(13).chr(10);
+                        $strLog .= ' FECHA SISTEMA : '.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01'.chr(13).chr(10);
                         $monthMod2 = $this->OverwriteMonth($mesPreAdd);
                         $explodedAddedDate[1] = $monthMod2['monthNew'];
+                        $strLog .= ' FECHA MODIFICADA A : '.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01'.chr(13).chr(10);
                         //comprobar si ya debe crearse la instancia de precierre con su nueva fecha.
                         $datePrecierre = $explodedAddedDate[0]."-".$explodedAddedDate[1]."-01";
                         if(date("Y-m-d")<$datePrecierre){
@@ -369,7 +377,8 @@ class Servicio extends Contract
                     //comprobar RIF
                     if($value["tipoServicioId"] == RIF || $value["tipoServicioId"] == RIFAUDITADO )
                     {
-                        $strLog .= 'es RIF';
+                        $strLog .= 'es RIF'.chr(13).chr(10);
+                        $strLog .= ' FECHA SISTEMA : '.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01'.chr(13).chr(10);
                         if($explodedAddedDate[1] % 2 == 1)//este caso no deberia suceder debido a que se supone que desde la primera instancia se tomo en cuenta que empieze por un mes par
                         {
                             $explodedAddedDate[1] = $explodedAddedDate[1] + 1;
@@ -379,6 +388,7 @@ class Servicio extends Contract
                             $strLog .= ' fecha impar cambiar ha:'.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01';
                         }
                         $strLog .=chr(13).chr(10);
+                        $strLog .= ' FECHA MODIFICADA A : '.$explodedAddedDate[0].'-'.$explodedAddedDate[1].'-01'.chr(13).chr(10);
                         $dateRif = $explodedAddedDate[0]."-".$explodedAddedDate[1]."-01";
                         if(date("Y-m-d")<$dateRif){
                             $strLog.="No se crea instancia por que no se cumpple ".date('Y-m-d')."<".$dateRif.chr(13).chr(10);
