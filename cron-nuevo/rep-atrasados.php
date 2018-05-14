@@ -20,7 +20,7 @@ include_once(DOC_ROOT.'/libraries.php');
 
 $inicioFin = $util->inicio_fin_semana(date('Y-m-d'));
 
-$sql = "SELECT * FROM personal WHERE rol NOT IN('Socio','Coordinador') 
+$sql = "SELECT * FROM personal WHERE tipoPersonal NOT IN('Socio','Coordinador') 
         AND (lastSendEmail < DATE(NOW()) OR lastSendEmail IS NULL) ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);

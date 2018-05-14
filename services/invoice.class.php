@@ -37,10 +37,8 @@ class Invoice extends Comprobante
        foreach($clientes as $key => $cliente)
        {
            //obtener solos los contratos que se encuentren activos
-           $this->Util()->DB()->setQuery("SELECT * FROM contract WHERE
-			customerId = '".$cliente["customerId"]."' 
-			AND contractId NOT IN(18, 24, 677, 651, 622, 581, 872, 875, 881, 936, 1236, 1315, 1407, 1440, 1441, 1562, 1702, 1731, 1858, 1941, 2058)
-			AND activo='Si' ");
+           //AND contractId NOT IN(18, 24, 677, 651, 622, 581, 872, 875, 881, 936, 1236, 1315, 1407, 1440, 1441, 1562, 1702, 1731, 1858, 1941, 2058)(se quito);
+           $this->Util()->DB()->setQuery("SELECT * FROM contract WHERE customerId = '".$cliente["customerId"]."' AND activo='Si' ");
 
            $contratos = $this->Util()->DB()->GetResult();
            if(count($contratos) == 0)
