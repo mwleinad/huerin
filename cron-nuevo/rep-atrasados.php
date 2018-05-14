@@ -17,9 +17,9 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+$timeStart = date("d-m-Y").' a las '.date('H:i:s');
 $inicioFin = $util->inicio_fin_semana(date('Y-m-d'));
-
+$cadLog="";
 $sql = "SELECT * FROM personal WHERE tipoPersonal NOT IN('Socio','Coordinador') 
         AND (lastSendEmail < DATE(NOW()) OR lastSendEmail IS NULL) ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
@@ -30,11 +30,11 @@ $sql = "UPDATE instanciaServicio SET class = 'PorIniciar'
 $db->setQuery($sql);
 $db->UpdateData();
 $arrayBase =  array();
+$con = 0;
 foreach($employees as $key=>$itemEmploye) {
     if(!$util->ValidateEmail(trim($itemEmploye['email'])))
     {
-        echo $itemEmploye['personalId']." correo no valido : ".$itemEmploye['email'];
-        echo "<br>";
+        $cadLog .=$itemEmploye['personalId']." correo no valido : ".$itemEmploye['email'].chr(13).chr(10);
         $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
         $db->setQuery($up);
         $db->UpdateData();
@@ -52,6 +52,7 @@ foreach($employees as $key=>$itemEmploye) {
     $contracts = $contractRep->BuscarContractV2($persons,true,$deptos);
     if(empty($contracts))
     {
+        $cadLog .=$itemEmploye['personalId']." sin contratos asignados : ".$itemEmploye['email'].chr(13).chr(10);
         $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
         $db->setQuery($up);
         $db->UpdateData();
@@ -172,9 +173,24 @@ foreach($employees as $key=>$itemEmploye) {
     $toName = $itemEmploye["name"];
     $attachment = DOC_ROOT . "/sendFiles/".$fileNameDay.".xlsx";
 
-    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
+    //$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+    $cadLog .="ACTUALIZACION REALIZADA : ".$up.chr(13).chr(10);
+    $cadLog .=$itemEmploye['personalId']." correo enviado a : ".$itemEmploye['email'].chr(13).chr(10);
     $db->setQuery($up);
     $db->UpdateData();
     unlink($attachment);
+    $con++;
+}
+$time = date("d-m-Y").' a las '.date('H:i:s');
+$cadLog .= "Cron ejecutado desde ".$timeStart." el $time Hrs.".chr(13).chr(10);
+$file = DOC_ROOT."/cron-nuevo/atrasadosLog.txt";
+$open = fopen($file,"w");
+if ( $open ) {
+    fwrite($open, $cadLog);
+    fclose($open);
+    if ($con > 0) {
+        $sendmail = new SendMail;
+        $sendmail->Prepare('LOG ATRASADOS', 'logs atrasados', 'isc061990@outlook.com', 'HBKRUZPE', $file, 'atrasadosLog.txt', '', '', FROM_MAIL);
+    }
 }
