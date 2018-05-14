@@ -57,7 +57,7 @@ class InstanciaServicio extends  Servicio
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE (instanciaServicio.date >='2015-01-01' AND instanciaServicio.date<DATE(NOW()))
+				WHERE (instanciaServicio.date >='2017-01-01' AND instanciaServicio.date<DATE(NOW()))
 				AND instanciaServicio.class IN ('PorIniciar','PorCompletar')
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
