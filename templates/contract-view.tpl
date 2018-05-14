@@ -16,7 +16,7 @@
   <div class="clear"></div>
   
   <div class="portlet">
-			{if $canEdit && $User["userId"] == 13}
+     {if in_array(64,$permissions)||$User.isRoot}
       <div class="portlet-content nopadding borderGray" style="text-align:center">
       	<form action="http://comprobantedigital.mx/sistema/fromBraun.php" method="POST" target="_blank">
          	<input type="hidden" id="fromBraun" name="fromBraun" value="Si" />
@@ -59,7 +59,7 @@
           <input type="submit" value="Genera cuenta en Comprobante Digital" />
          </form>  
       </div> 
-      {/if}    
+    {/if}
 
       <div class="portlet-content nopadding borderGray" id="contenido">
           {include file="forms/view-contract-new.tpl"}            
