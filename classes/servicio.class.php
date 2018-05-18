@@ -843,6 +843,14 @@ class Servicio extends Contract
 
 		return $row;
 	}
+	public function InfoLog(){
+        $this->Util()->DB()->setQuery("SELECT a.costo,a.tipoServicioId,a.inicioOperaciones,a.inicioFactura,c.name,c.permisos FROM servicio a
+		LEFT JOIN tipoServicio b ON b.tipoServicioId = a.tipoServicioId
+		LEFT JOIN contract c ON c.contractId = a.contractId
+		WHERE a.servicioId = '".$this->servicioId."'");
+        $row = $this->Util()->DB()->GetRow();
+        return $row;
+    }
 	
 	public function Historial()
 	{
@@ -1131,7 +1139,7 @@ class Servicio extends Contract
         if($this->Util()->PrintErrors())
             return false;
 
-        $before = $this->Info();
+        $before = $this->InfoLog();
         $setDate = "";
         switch($this->tipoBaja){
             case 'complete':
@@ -1146,8 +1154,7 @@ class Servicio extends Contract
         $this->Util()->DB()->setQuery("UPDATE servicio SET status = '".$active."' ".$setDate." WHERE servicioId = '".$this->servicioId."'");
         $this->Util()->DB()->UpdateData();
 
-        $this->Util()->DB()->setQuery("SELECT * FROM servicio WHERE servicioId = '".$this->servicioId."'");
-        $after = $this->Util()->DB()->GetRow();
+        $after = $this->InfoLog();
 
         //Guardamos el Log
         $log->setPersonalId($User['userId']);

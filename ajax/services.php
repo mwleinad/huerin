@@ -81,7 +81,7 @@ switch($_POST["type"])
 			{
 				//Guardamos el Log de Eventos
 				$servicio->setServicioId($servicioId);
-				$newServicio = $servicio->Info();
+				$newServicio = $servicio->InfoLog();
 				
 				$log->setPersonalId($User['userId']);
 				$log->setFecha(date('Y-m-d H:i:s'));
