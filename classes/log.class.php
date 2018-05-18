@@ -132,6 +132,11 @@ class Log extends Util
                     }
                 break;
             case 'customer'://en la edicion de cliente este deberia llegarle en teoria solo a jacobo y rogelio que son los que revisan operaciones.
+                //enviar a solo los gerentes, socio y coordinador
+                $sqlp  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                $this->Util()->DB()->setQuery($sqlp);
+                $persons= $this->Util()->DB()->GetResult();
+
                 $sql  ="SELECT nameContact FROM customer  WHERE customerId='".$this->tablaId."' ";
                 $this->Util()->DB()->setQuery($sql);
                 $cliente= $this->Util()->DB()->GetSingle();
@@ -174,6 +179,8 @@ class Log extends Util
         $correosJefes=array();
         if(!empty($jefes))
         {
+            //si jefes no esta vacio hay que agregar a ROGELIO ya que es coordinador
+            array_push($jefes,32);
             $jefes = array_unique($jefes);
             $ids = implode(',',$jefes);
             $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
