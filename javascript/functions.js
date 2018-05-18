@@ -399,7 +399,7 @@ function Calendario(input){
 }
 function CalendarioSimple(input){
     jQuery("#"+input.id).datepicker({
-        format:'yyyy-mm-dd',
+        format:'dd-mm-yyyy',
         language:'es',
         autoclose:true,
         todayBtn: true,
@@ -484,3 +484,9 @@ jQ(document).on('change','form#addNoticeForm input[type="checkbox"]#allSelected'
         });
 	}
 });
+function close_popup(){
+    $('fview').innerHTML='';
+    $('fview').hide();
+    grayOut(false);
+    return;
+}

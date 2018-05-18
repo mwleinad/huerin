@@ -38,15 +38,192 @@ class Log extends Util
 	public function setNewValue($value){
 		$this->newValue = $value;		
 	}
-	
 	public function Save(){
 				
-		$sql = "INSERT INTO log (personalId, fecha, tabla, tablaId, action, oldValue, newValue)
+		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
 				 VALUES ('".$this->personalId."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
 				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";								
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
-	
+
+
+		$body ="<pre>";
+		//quien realizo el cambio
+        $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$this->personalId.'" ');
+        $who = $this->Util()->DB()->GetSingle();
+        $encargados=  array();
+        $jefes = array();
+        //componer mensaje de accion
+        switch($this->action){
+            case 'Insert':
+                $accion = "ha sido dado de alta ";
+            break;
+            case 'Update':
+                $accion ="ha sido modificada ";
+            break;
+            case 'Baja':
+                $accion="ha sido  dado de baja ";
+            break;
+            case 'Reactivacion':
+                $accion="ha sido reactivado ";
+            break;
+            case 'Delete':
+                $accion="ha sido eliminado ";
+             break;
+        }
+        //encontrar tabla que se modifico
+        switch($this->tabla){//se comprueba de que tabla se hace la modificacion.
+            case 'contract':
+                $sql  ="SELECT a.permisos,a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->tablaId."' ";
+                $this->Util()->DB()->setQuery($sql);
+                $contrato = $this->Util()->DB()->GetRow();
+                $permisos = explode('-',$contrato['permisos']);
+
+                foreach($permisos as $perm){
+                    list($dep,$per) = explode(',',$perm);
+                    if($per>0)
+                    {
+                        $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
+                        $row = $this->Util()->DB()->GetRow();
+                        if($this->Util()->ValidateEmail($row['email'])){
+                            $encargados[$row['email']] = $row['name'];
+                            //encontramos los jefes de forma ascendente de los encargados de cuenta
+                            $personal= new Personal();
+                            $yourJefes= $personal->Jefes($row['personalId']);
+                            $jefes = array_merge($jefes,$yourJefes);
+                        }
+
+                    }
+                }
+                $body .="La sigiuiente razon social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
+                $body .=$accion."  por el colaborador ".$who."<br>";
+                break;
+            case 'servicio':
+                $sql  ="SELECT c.nombreServicio,b.name as razon,b.permisos FROM servicio a 
+                                  INNER JOIN contract b ON a.contractId=b.contractId 
+                                  INNER JOIN tipoServicio c ON a.tipoServicioId=c.tipoServicioId WHERE a.servicioId='".$this->tablaId."' ";
+                $this->Util()->DB()->setQuery($sql);
+                $registro = $this->Util()->DB()->GetRow();
+                $permisos = explode('-',$registro['permisos']);
+                foreach($permisos as $perm){
+                    list($dep,$per) = explode(',',$perm);
+                    if($per>0)
+                    {
+                        $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
+                        $row = $this->Util()->DB()->GetRow();
+                        if($this->Util()->ValidateEmail($row['email'])){
+                            $encargados[$row['email']] = $row['name'];
+                            //encontramos los jefes de forma ascendente de los encargados de cuenta
+                            $personal= new Personal();
+                            $yourJefes= $personal->Jefes($row['personalId']);
+                            $jefes = array_merge($jefes,$yourJefes);
+                        }
+
+                    }
+
+                }
+                if($this->action=="Insert"){
+                    $body .="El servicio ".$registro['nombreServicio']." ".$accion."  para la razon ".$registro['razon']."<br>";
+                    $body .="por el colaborador ".$who."<br>";
+                }
+                else{
+                    $body .="El servicio ".$registro['nombreServicio']." de la razon social(contrato) ".$registro['razon']."<br>";
+                    $body .=$accion." por el colaborador ".$who."<br>";
+                    }
+                break;
+            case 'customer'://en la edicion de cliente este deberia llegarle en teoria solo a jacobo y rogelio que son los que revisan operaciones.
+                //enviar a solo los gerentes, socio y coordinador
+                $sqlp  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                $this->Util()->DB()->setQuery($sqlp);
+                $persons= $this->Util()->DB()->GetResult();
+                foreach($persons as $per)
+                {
+                    if($this->Util()->ValidateEmail($per['email']))
+                        $encargados[$per['email']] = $per['name'];
+                }
+
+                $sql  ="SELECT nameContact FROM customer  WHERE customerId='".$this->tablaId."' ";
+                $this->Util()->DB()->setQuery($sql);
+                $cliente= $this->Util()->DB()->GetSingle();
+                $body .="El cliente : ".$cliente."<br>";
+                $body .=$accion." por el colaborador ".$who."<br>";
+            break;
+
+        }
+		switch($this->action){
+            case 'Update'://si es update se necesitaria comparar que cambio se realizo
+                  $changes = $this->FindOnlyChanges($this->oldValue,$this->newValue);
+                  if(empty($changes['after']))
+                      return false;
+                  $body .="<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
+                  $body .="<table>
+                        <thead>
+                          <tr>
+                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion anterior</th>
+                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion nueva</th>
+                          </tr>
+                          <tr>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-right:1px solid;border-bottom:1px solid;font-size:14px;font-weight: bold'>Valor</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Valor</th>
+                          </tr>
+                        </thead><tbody>";
+                  foreach($changes['after'] as $ck=>$vc){
+                       $body .="<tr>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".$changes['before'][$ck]['valor']."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
+                                </tr>";
+                  }
+                    $body .="</tbody>";
+            break;
+            case 'Baja':
+            case 'Insert'://si es update se necesitaria comparar que cambio se realizo
+                $changes = $this->FindFieldDetail($this->newValue);
+                if(!empty($changes)) {
+                    $body .= "<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
+                    $body .= "<table>
+                        <thead>
+                          <tr>
+                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion detallada</th>
+                          </tr>
+                          <tr>
+                            <th style='text-align: left;border-right:1px solid;border-bottom: 1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom: 1px solid;font-size:14px;font-weight: bold'>Valor</th>            
+                          </tr>
+                        </thead><tbody>";
+                    foreach ($changes as $ck => $vc) {
+                        $body .= "<tr>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom: 1px solid'>" . $changes[$ck]['campo'] . ": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . $changes[$ck]['valor'] . "</td>                                 
+                                </tr>";
+                    }
+                    $body .= "</tbody>";
+                }
+                break;
+        }
+        //encontrar correos de los jefes de cada encargado, esto siempre se debe cumplor debido  a que todos tiene jefe inmediato hasta llegar a jacobo
+        $correosJefes=array();
+        if(!empty($jefes))
+        {
+            //si jefes no esta vacio hay que agregar a ROGELIO ya que es coordinador
+            array_push($jefes,32);
+            $jefes = array_unique($jefes);
+            $ids = implode(',',$jefes);
+            $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
+            $resultJefes = $this->Util()->DB()->GetResult();
+            foreach($resultJefes as $var){
+                if($this->Util()->ValidateEmail($var['email'])){
+                    $correosJefes[$var['email']] =$var['name'];
+                }
+            }
+        }
+        $encargados = array_merge($encargados,$correosJefes);
+        $mail = new SendMail();
+        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $mail->PrepareMultipleHidden($subject,$body,$encargados,'',"","","","",FROM_MAIL);
 		return true;				
 	}
 	
@@ -84,6 +261,160 @@ class Log extends Util
          $result = $this->Util()->DB()->GetResult();
 
          return $result;
+    }
+    function FindOnlyChanges($before,$after){
+	     $beforeUnserialize = unserialize($before);
+	     $afterUnserialize = unserialize($after);
+	     $news=array();
+         $olds=array();
+	     $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta');
+	     foreach($beforeUnserialize as $key =>$value){
+             if(in_array($key,$llavesExcluidas))
+                 continue;
+
+             $cad = array();
+             $cad2=array();
+             if(trim($value)!=trim($afterUnserialize[$key]))
+             {
+                 $field = $this->FindNameField($key);
+                 switch($key){
+                     case 'sociedadId':
+                         $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                     break;
+                     case 'responsableCuenta':
+                         $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         break;
+                     default:
+                     case 'tipoServicioId':
+                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         break;
+                     case 'permisos':
+                         $valorBefore="";
+                         $valorAfter="";
+                         //desglozar los permisos antetiores
+                         $permisosBefore = explode("-",$beforeUnserialize[$key]);
+                         $depsBefore = array();
+                         foreach($permisosBefore as $pb){
+                             list($depb,$perb) = explode(',',$pb);
+                             $depsBefore[$depb] = $perb;
+                         }
+                         $permisosAfter = explode("-",$afterUnserialize[$key]);
+                         $depsAfter = array();
+                         foreach($permisosAfter as $pa){
+                             list($depa,$pera) = explode(',',$pa);
+                             $depsAfter[$depa] = $pera;
+                         }
+                         foreach($depsBefore as $kb=>$vb){
+                             if($depsBefore[$kb]==$depsAfter[$kb])
+                                 unset($depsAfter[$kb]);
+                         }
+
+                         if(!empty($depsAfter)){
+                            foreach($depsAfter as $ka=>$va){
+                                $this->Util()->DB()->setQuery(" SELECT departamento FROM departamentos WHERE departamentoId='".$ka."' ");
+                                $nameDep = $this->Util()->DB()->GetSingle() ;
+                                $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$ka]."' ");
+                                $persBefore = $this->Util()->DB()->GetSingle() ;
+                                $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$ka]."' ");
+                                $persAfter = $this->Util()->DB()->GetSingle() ;
+
+                                $valorBefore .="Encargado de ".$nameDep." : ".$persBefore."<br>";
+                                $valorAfter .="Encargado de ".$nameDep." : ".$persAfter."<br>";
+                            }
+                         }
+                     break;
+                     default:
+                         $valorBefore =$beforeUnserialize[$key];
+                         $valorAfter = $afterUnserialize[$key];
+                     break;
+
+                 }
+                 $cad2['valor'] = $valorBefore;
+                 $cad2['campo'] = $field;
+                 $olds[] = $cad2;
+                 $cad['valor'] =$valorAfter;
+                 $cad['campo'] = $field;
+                 $news[] =  $cad;
+             }
+	     }
+
+      $data['before']=$olds;
+	  $data['after'] = $news;
+	  return $data;
+    }
+    function FindFieldDetail($elements){
+        $allElements = unserialize($elements);
+        $news=array();
+        $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql');
+        foreach($allElements as $key =>$value){
+            if(in_array($key,$llavesExcluidas))
+                continue;
+
+            $cad = array();
+            $field = $this->FindNameField($key);
+            switch($key){
+                case 'sociedadId':
+                    $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    break;
+                case 'responsableCuenta':
+                    $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    break;
+                default:
+                case 'tipoServicioId':
+                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$allElements[$key]."' ");
+                    $valorAfter = $this->Util()->DB()->GetSingle();
+                    break;
+                case 'permisos':
+                    $valorBefore="";
+                    //encontrar los encargados
+                    $permisosBefore = explode("-",$allElements[$key]);
+                    $depsBefore = array();
+                    foreach($permisosBefore as $pb){
+                        list($depb,$perb) = explode(',',$pb);
+                        $depsBefore[$depb] = $perb;
+                    }
+
+                    if(!empty($depsBefore)){
+                        foreach($depsBefore as $ka=>$va){
+                            $this->Util()->DB()->setQuery(" SELECT departamento FROM departamentos WHERE departamentoId='".$ka."' ");
+                            $nameDep = $this->Util()->DB()->GetSingle() ;
+                            $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$ka]."' ");
+                            $persBefore = $this->Util()->DB()->GetSingle() ;
+                            $valorBefore .="Encargado de ".$nameDep." : ".$persBefore."<br>";
+                        }
+                    }
+                    break;
+                default:
+                    $valorBefore =$allElements[$key];
+                break;
+            }
+
+                $cad['valor'] =$valorBefore;
+                $cad['campo'] = $field;
+                $news[] =  $cad;
+        }
+        return $news;
+    }
+    function FindNameField($key){
+	    $this->Util()->DB()->setQuery('SELECT name FROM nameFields WHERE clave="'.$key.'" ');
+	    $field =$this->Util()->DB()->GetSingle();
+	    if(!$field)
+	        $field ="Campo indefinido";
+
+        return $field;
     }
 
   		

@@ -45,7 +45,7 @@ class Customer extends Main
   public function setFechaAlta($value)
   {
     if ($this->Util()->ValidateRequireField($value, "Fecha Alta")) {
-      //$value = $this->Util()->FormatDateMySql($value);
+      $value = $this->Util()->FormatDateMySql($value);
     }
     $this->fechaAlta = $value;
   }
@@ -847,7 +847,7 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
 
-    //Guardamos el Log
+    //Guardamos  y enviamos el Log
     $log->setPersonalId($User['userId']);
     $log->setFecha(date('Y-m-d H:i:s'));
     $log->setTabla('customer');
@@ -885,7 +885,7 @@ class Customer extends Main
 
   public function Save()
   {
-    global $User;
+    global $User,$log;
     if($this->Util()->PrintErrors()){ return false; }
 
     $this->Util()->DB()->setQuery("
@@ -919,6 +919,15 @@ class Customer extends Main
     $sql = "SELECT * FROM customer WHERE customerId = '".$customerId."'";
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
+      //Guardamos el Log
+    $log->setPersonalId($User['userId']);
+    $log->setFecha(date('Y-m-d H:i:s'));
+    $log->setTabla('customer');
+    $log->setTablaId($customerId);
+    $log->setAction('Baja');
+    $log->setOldValue('');
+    $log->setNewValue(serialize($newData));
+    $log->Save();
 
     //actualizar historial
     $this->Util()->DB()->setQuery("
@@ -947,7 +956,7 @@ class Customer extends Main
 
   public function Delete()
   {
-    global $User;
+    global $User,$log;
     if($this->Util()->PrintErrors()){ return false; }
 
 /*    $this->Util()->DB()->setQuery("
@@ -983,6 +992,15 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
 
+      //Guardamos  y enviamos el Log
+    $log->setPersonalId($User['userId']);
+    $log->setFecha(date('Y-m-d H:i:s'));
+    $log->setTabla('customer');
+    $log->setTablaId($this->customerId);
+    $log->setAction('Baja');
+    $log->setOldValue('');
+    $log->setNewValue(serialize($newData));
+    $log->Save();
     //actualizar historial
     $this->Util()->DB()->setQuery("
 			INSERT INTO

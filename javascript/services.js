@@ -1,13 +1,14 @@
+var AJAX_PATH = WEB_ROOT+'/ajax/services.php';
 Event.observe(window, 'load', function() {
 	//Event.observe($('addCustomer'), "click", AddCustomerDiv);
 
 	AddEditCustomerListeners = function(e) {
 		var el = e.element();
-		var del = el.hasClassName('spanDelete');
+		var del = el.hasClassName('spanActivate');
 		var id = el.identify();
 		if(del == true)
 		{
-			DeleteCustomerPopup(id);
+			ActivateService(id);
 			return;
 		}
 
@@ -16,12 +17,63 @@ Event.observe(window, 'load', function() {
 		{
 			EditServicioPopup(id);
 		}
+		var down= el.hasClassName('spanDown');
+        if(down == true)
+        {
+            DownServicioPopUp(id);
+        }
 	}
 
 	$('contenido').observe("click", AddEditCustomerListeners);
 
 });
-
+function DownServicioPopUp(id){
+    grayOut(true);
+    $('fview').show();
+    if(id == 0)
+    {
+        $('fview').hide();
+        grayOut(false);
+        return;
+    }
+    new Ajax.Request(WEB_ROOT+'/ajax/services.php',
+        {
+            method:'post',
+            parameters: {type: "downService", servicioId:id},
+            onSuccess: function(transport){
+                var response = transport.responseText || "no response text";
+                FViewOffSet(response);
+                Event.observe($('closePopUpDiv'), "click", function(){ DownServicioPopUp(0); });
+                Event.observe($('btnDownServicio'), "click", DownServicio);
+            },
+            onFailure: function(){ alert('Something went wrong...') }
+        });
+}
+function DownServicio(){
+    jQ.ajax({
+        url: AJAX_PATH,
+        data: jQ('#frmDownServicio').serialize(true),
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#loading-img').show();
+            jQ('#btnDownServicio').hide();
+        },
+        success: function(response){
+            var splitResp = response.split("[#]");
+            console.log(response);
+            if(splitResp[0]=='ok')
+            {
+                jQ('#contenido').html(splitResp[2]);
+                ShowStatusPopUp(splitResp[1]);
+                close_popup();
+            }else{
+                jQ('#loading-img').hide();
+                jQ('#btnDownServicio').show();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        },
+    });
+}
 function Historial(id)
 {
 	grayOut(true);
@@ -96,9 +148,9 @@ function EditServicio()
 	});
 }
 
-function DeleteCustomerPopup(id)
+function ActivateService(id)
 {
-	var message = "Realmente deseas eliminar este servicio?";
+	var message = "Realmente deseas activar este servicio?";
 	if(!confirm(message))
 	{
 		return;
@@ -106,7 +158,7 @@ function DeleteCustomerPopup(id)
 	new Ajax.Request(WEB_ROOT+'/ajax/services.php',
 	{
 		method:'post',
-		parameters: {type: "deleteService", servicioId: id, contractId: $('contractId').value},
+		parameters: {type: "activateService", servicioId: id, contractId: $('contractId').value},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
@@ -180,3 +232,11 @@ function UpdateCosto()
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
+
+jQ(document).on('change','#tipoBaja',function(){
+    if(this.value=='partial')
+        jQ('#tagLastDatetWorkflow').show();
+    else
+        jQ('#tagLastDatetWorkflow').hide();
+
+});
