@@ -38,7 +38,7 @@
 
 		<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Fecha de Alta:</div>
-                <input  style="width:20%!important;" class="largeInput" onclick="CalendarioSimple(this)" name="fechaAlta" id="fechaAlta" type="text" value="{$post.fechaAlta}" size="27"/>
+                <input  style="width:20%!important;" class="largeInput" onclick="CalendarioSimple(this)" name="fechaAlta" id="fechaAlta" type="text" value="{$post.fechaMysql}" maxlength="10"/>
                 <hr />
         </div>		
 

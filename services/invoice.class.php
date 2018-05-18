@@ -8,6 +8,11 @@
 
 class Invoice extends Comprobante
 {
+    /*
+     * function CreateInvoicesAutomatic
+     * Se toma en cuenta las intancias en status baja, se aplica mas para rif que se brinca los meses impares
+     * y solo aplica solo para meses anteriores a mayo 2018, ya que en esos meses aun se creaban los workflos de los meses impares y ya tienen factura creada hay que dejarlos asi.
+     */
    function CreateInvoicesAutomatic(){
        global $months;
        $cadLog="";

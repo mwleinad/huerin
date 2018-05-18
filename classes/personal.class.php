@@ -389,6 +389,7 @@ class Personal extends Main
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = '".$this->personalId."'");
 		$row = $this->Util()->DB()->GetRow();
+		$row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
 		return $row;
 	}
 
