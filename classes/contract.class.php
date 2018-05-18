@@ -2004,7 +2004,7 @@ class Contract extends Main
     }
     /** $this->Util()->DB()->InsertData(); */
       $responsables = $this->getAllResponsables($newData);
-
+      /*
       $personal = new Personal;
       $sendmail = new SendMail();
       foreach($responsables as $key => $value)
@@ -2018,7 +2018,7 @@ class Contract extends Main
           $subject = $body;
           $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
           //break;
-      }
+      }*/
     $this->Util()->setError(10029, "complete");
     $this->Util()->PrintErrors();
     return $contractId;
@@ -2510,7 +2510,7 @@ class Contract extends Main
     return true;
   }
 
-    function getAllResponsables($contract)
+    function c($contract)
     {
         $resPermisos = explode('-',$contract['permisos']);
         $personal = new Personal();
