@@ -14,7 +14,7 @@ switch($_POST["type"])
           </select>    
     <?php
 
-		break;
+	break;
 	case "buscarServiciosActivos":
 	       
 		   $User["userId"] = $_POST["responsableCuenta"];
@@ -72,7 +72,6 @@ switch($_POST["type"])
 			$servicio->setInicioOperaciones($_POST['inicioOperaciones']);
 			
 			$servicioId = $servicio->Save();
-			
 			if(!$servicioId)
 			{
 				echo "fail[#]";
@@ -115,31 +114,16 @@ switch($_POST["type"])
 			
 		break;
 		
-	case "deleteService":
-			
+	case "activateService":
 			$servicioId = $_POST['servicioId'];
-			
 			$servicio->setServicioId($servicioId);
-			if($servicio->Delete())
-			{
-				//Guardamos el Log de Eventos
-				$infoServicio = $servicio->Info();
-				
-				/*$log->setPersonalId($User['userId']);
-				$log->setFecha(date('Y-m-d H:i:s'));
-				$log->setTabla('servicio');
-				$log->setTablaId($servicioId);
-				$log->setAction('Delete');
-				$log->setOldValue(serialize($infoServicio));
-				$log->setNewValue('');
-				$log->Save();*/
-			
+			if($servicio->ActivateService())
+            {
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
 				echo "[#]";
 				$servicio->setContractId($_POST['contractId']);
 				$servicios = $servicio->Enumerate();
-		
 				$smarty->assign("servicios", $servicios);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
@@ -225,9 +209,9 @@ switch($_POST["type"])
         $servicio->CancelWorkFlow();
         echo "ok[#]";
         $_SESSION['msgOk'] = 1;
-				break;
+	break;
     case "activateWorkFlow":
-      $servicio->setInstanciaServicioId($_POST['instanciaServicioId']);	
+        $servicio->setInstanciaServicioId($_POST['instanciaServicioId']);
       	$servicio->setStatus("activa");	
         $servicio->CancelWorkFlow();
         echo "ok[#]";
@@ -246,8 +230,40 @@ switch($_POST["type"])
            echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
+    break;
+    case 'downService':
+        $serviceId = $_POST['servicioId'];
+        $smarty->assign('post',$_POST);
+        $smarty->display(DOC_ROOT.'/templates/boxes/down-servicio-popup.tpl');
 
+    break;
+    case 'doDownServicio':
+        $tipo = $_POST['tipoBaja'];
+        $servicioId = $_POST['servicioId'];
+        $servicio->setTipoBaja($tipo);
+        $servicio->setServicioId($servicioId);
+        if($tipo=='partial')
+            $servicio->setLastDateWorkflow($_POST['lastDateWorkflow']);
 
+        if($servicio->DownServicio())
+        {
+            //find info servicio
+            $servicio->setServicioId($servicioId);
+            $info = $servicio->Info();
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $servicio->setContractId($info['contractId']);
+            $servicios = $servicio->Enumerate();
+
+            $smarty->assign("servicios", $servicios);
+            $smarty->assign("DOC_ROOT", DOC_ROOT);
+            $smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+        }
 
     break;
 		

@@ -14,12 +14,12 @@
         </div>
 		<div class="formLine" style="width:100%; text-align:left">
 			<div style="width:30%;float:left">* Fecha Inicio Operaciones:</div>
-			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)" name="inicioOperaciones" id="inicioOperaciones" type="text" value="{$post.inicioOperaciones}" maxlength="10" />
+			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)" name="inicioOperaciones" id="inicioOperaciones" type="text" value="{$post.inicioOperacionesMysql}" maxlength="10" />
 			<hr />
         </div>
 		<div class="formLine" style="width:100%; text-align:left">
 			<div style="width:30%;float:left">Inicio Factura:</div>
-			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)"  name="inicioFactura" id="inicioFactura" type="text" value="{$post.inicioFactura}" />
+			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)"  name="inicioFactura" id="inicioFactura" type="text" value="{$post.inicioFacturaMysql}" />
 			<hr />
 		</div>
 

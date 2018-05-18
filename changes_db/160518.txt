@@ -1,0 +1,75 @@
+ALTER TABLE `servicio`
+	CHANGE COLUMN `status` `status` ENUM('activo','baja','bajaParcial') NOT NULL DEFAULT 'activo' AFTER `costo`,
+	ADD COLUMN `lastDateWorkflow` DATE NULL DEFAULT NULL AFTER `lastUpdated`;
+
+
+
+-- Volcando estructura para tabla huerin.namefields
+DROP TABLE IF EXISTS `nameFields`;
+CREATE TABLE IF NOT EXISTS `nameFields` (
+  `fieldId` int(11) NOT NULL AUTO_INCREMENT,
+  `clave` varchar(100) NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`fieldId`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
+
+-- Volcando datos para la tabla huerin.namefields: ~3 rows (aproximadamente)
+DELETE FROM `nameFields`;
+INSERT INTO `nameFields` (`fieldId`, `clave`, `name`) VALUES
+	(1, 'inicioOperaciones', 'Fecha de inicio de operaciones'),
+	(2, 'inicioFactura', 'Fecha de inicio de facturacion'),
+	(3, 'costo', 'Costo'),
+	(4, 'type', 'Tipo de persona'),
+	(5, 'name', 'Nombre'),
+	(6, 'telefono', 'Telefono'),
+	(7, 'nombreComercial', 'Nombre comercial'),
+	(8, 'direccionComercial', 'Direccion comercial'),
+	(9, 'noExtComercial', 'N° exterior de dir. comercial'),
+	(10, 'noIntComercial', 'N° interior de dir. comercial'),
+	(11, 'coloniaComercial', 'Colonia de dir. comercial'),
+	(12, 'municipioComercial', 'Municipio de dir. comercial'),
+	(13, 'estadoComercial', 'Estado de dir. comercial'),
+	(14, 'cpComercial', 'Codigo postal de dir. comercial'),
+	(15, 'address', 'Direccion'),
+	(16, 'noExtAddress', 'N° exterior'),
+	(17, 'noIntAddress', 'N° interior'),
+	(18, 'coloniaAddress', 'Colonia'),
+	(19, 'municipioAddress', 'Municipio'),
+	(20, 'estadoAddress', 'Estado'),
+	(21, 'paisAddress', 'Pais'),
+	(22, 'cpAddress', 'Codigo postal'),
+	(23, 'nameContactoAdministrativo', 'Contacto administrativo'),
+	(24, 'emailContactoAdministrativo', 'Correo contacto administrativo'),
+	(25, 'telefonoContactoAdministrativo', 'Telefono contacto administrativo'),
+	(26, 'nameContactoContabilidad', 'Contacto contabilidad'),
+	(27, 'emailContactoContabilidad', 'Correo contacto de contabilidad'),
+	(28, 'telefonoContactoContabilidad', 'Telefono contacto de contabilidad'),
+	(29, 'nameContactoDirectivo', 'Contacto directivo'),
+	(30, 'emailContactoDirectivo', 'Correo contacto directivo'),
+	(31, 'telefonoContactoDirectivo', 'Telefono contacto directivo'),
+	(32, 'telefonoCelularDirectivo', 'N° celular contacto directivo'),
+	(33, 'claveCiec', 'Clave CIEC'),
+	(34, 'claveFiel', 'Clave FIEL'),
+	(35, 'claveIdse', 'Clave IDSE'),
+	(36, 'claveIsn', 'Clave ISN'),
+	(37, 'claveSip', 'Clave SIP'),
+	(38, 'sociedadId', 'Tipo de sociedad'),
+	(39, 'observaciones', 'Observaciones'),
+	(40, 'rfc', 'RFC'),
+	(41, 'activo', 'Contrato activo'),
+	(42, 'responsableCuenta', 'Responsable de cuenta'),
+	(43, 'facturador', 'Facturador'),
+	(44, 'comentario', 'Comentario'),
+	(45, 'metodoDePago', 'Metodo de pago'),
+	(46, 'noCuenta', 'Numero de cuenta'),
+	(47, 'phone', 'Numero de telefono'),
+	(48, 'email', 'Correo electronico'),
+	(49, 'nameContact', 'Nombre del cliente'),
+	(50, 'fechaAlta', 'Fecha de alta'),
+	(51, 'password', 'Contraseña'),
+	(52, 'noFactura13', 'No factura 13'),
+	(53, 'cxcSaldoFavor', 'Saldo a favor'),
+	(54, 'tipoServicioId', 'Tipo de servicio'),
+	(55, 'permisos', 'Encargados de cuenta');
+
+

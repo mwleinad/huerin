@@ -2106,15 +2106,15 @@ class Contract extends Main
 		$this->Util()->DB()->setQuery($sql);
     	$newData = $this->Util()->DB()->GetRow();
 
-	  //Guardamos el Log
-      $log->setPersonalId($User['userId']);
-      $log->setFecha(date('Y-m-d H:i:s'));
-      $log->setTabla('contract');
-      $log->setTablaId($this->contractId);
-      $log->setAction('Update');
-      $log->setOldValue(serialize($oldData));
-      $log->setNewValue(serialize($newData));
-      $log->Save();
+         //Guardamos y enviamos log
+         $log->setPersonalId($User['userId']);
+         $log->setFecha(date('Y-m-d H:i:s'));
+         $log->setTabla('contract');
+         $log->setTablaId($this->contractId);
+         $log->setAction('Update');
+         $log->setOldValue(serialize($oldData));
+         $log->setNewValue(serialize($newData));
+         $log->Save();
 
       //actualizar historial
       $this->Util()->DB()->setQuery("
@@ -2137,8 +2137,7 @@ class Contract extends Main
 				'".$User["userId"]."'
 		);");
       $this->Util()->DB()->InsertData();
-      $subject = "La rason social ".$this->name." fue modificada por ".$_SESSION["User"]["username"];
-
+      /*$subject = "La rason social ".$this->name." fue modificada por ".$_SESSION["User"]["username"];
       $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = 66 OR personalId = '".IDHUERIN."' OR (tipoPersonal = 'Gerente' && departamentoId = '1')");
       $personal = $this->Util()->DB()->GetResult();
       $sendmail = new SendMail();
@@ -2160,7 +2159,7 @@ class Contract extends Main
           $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
           //	break;
       }
-      //exit;
+      //exit;*/
 
         $fp = fopen(DOC_ROOT.'/contracts.log','a');
 		fwrite($fp,"OLD DATA\n");
