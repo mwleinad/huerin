@@ -81,6 +81,10 @@ class Log extends Util
 
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
+                    //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
+                    if($dep==26||$dep=32)
+                        continue;
+
                     if($per>0)
                     {
                         $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
@@ -107,6 +111,10 @@ class Log extends Util
                 $permisos = explode('-',$registro['permisos']);
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
+                    //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
+                    if($dep==26||$dep=32)
+                        continue;
+
                     if($per>0)
                     {
                         $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
