@@ -19,7 +19,7 @@
 		<td align="center">
 		{if $item.status == 'activo'}
 			{if in_array(88,$permissions) || $User.isRoot}
-				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDown" id="{$item.servicioId}" title="Desactivar"/>
+				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanActivate" id="{$item.servicioId}" title="Desactivar"/>
 			{/if}
 		{else}
 			{if in_array(90,$permissions) || $User.isRoot}

@@ -82,7 +82,7 @@ class Log extends Util
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
                     //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
-                    if($dep==26||$dep=32)
+                    if($dep==26||$dep==32)
                         continue;
 
                     if($per>0)
@@ -112,7 +112,7 @@ class Log extends Util
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
                     //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
-                    if($dep==26||$dep=32)
+                    if($dep==26||$dep==32)
                         continue;
 
                     if($per>0)
@@ -187,6 +187,7 @@ class Log extends Util
                   }
                     $body .="</tbody>";
             break;
+            case 'Reactivacion';
             case 'Baja':
             case 'Insert'://si es update se necesitaria comparar que cambio se realizo
                 $changes = $this->FindFieldDetail($this->newValue);
