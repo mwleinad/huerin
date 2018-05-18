@@ -150,7 +150,7 @@ function EditServicio()
 
 function ActivateService(id)
 {
-	var message = "Realmente deseas activar este servicio?";
+	var message = "Realmente deseas eliminar este servicio?";
 	if(!confirm(message))
 	{
 		return;

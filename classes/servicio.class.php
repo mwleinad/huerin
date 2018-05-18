@@ -844,7 +844,7 @@ class Servicio extends Contract
 		return $row;
 	}
 	public function InfoLog(){
-        $this->Util()->DB()->setQuery("SELECT a.costo,a.tipoServicioId,a.inicioOperaciones,a.inicioFactura,c.name,c.permisos FROM servicio a
+        $this->Util()->DB()->setQuery("SELECT a.status,a.costo,a.tipoServicioId,a.inicioOperaciones,a.inicioFactura,c.name,c.permisos FROM servicio a
 		LEFT JOIN tipoServicio b ON b.tipoServicioId = a.tipoServicioId
 		LEFT JOIN contract c ON c.contractId = a.contractId
 		WHERE a.servicioId = '".$this->servicioId."'");
@@ -993,29 +993,39 @@ class Servicio extends Contract
 
 		if($this->Util()->PrintErrors()){ return false; }
 		
-		$info = $this->Info();
-		
-		$this->Util()->DB()->setQuery("
+		$info = $this->InfoLog();
+
+        if($info["status"] == 'activo')
+        {
+            $active = 'baja';
+            $complete = "El servicio fue dado de baja correctamente";
+        }
+        else
+        {
+            $active = 'activo';
+            $complete = "El servicio fue dado de alta correctamente";
+        }
+
+        $this->Util()->DB()->setQuery("
 			UPDATE
 				servicio
-			SET status = 'activo'
+			SET status = '".$active."'
 			WHERE
 				servicioId = '".$this->servicioId."'");
-		$this->Util()->DB()->UpdateData();
+        $this->Util()->DB()->UpdateData();
 
-		$this->Util()->DB()->setQuery("
-			SELECT * FROM
-				servicio
-			WHERE
-				servicioId = '".$this->servicioId."'");
-		$servicio = $this->Util()->DB()->GetRow();
+        $servicio = $this->InfoLog();
 
         //Guardamos el Log
         $log->setPersonalId($User['userId']);
         $log->setFecha(date('Y-m-d H:i:s'));
         $log->setTabla('servicio');
         $log->setTablaId($this->servicioId);
-        $log->setAction('Reactivacion');
+        if($active=="activo")
+            $log->setAction('Reactivacion');
+        elseif($active=='baja')
+            $log->setAction('Baja');
+
         $log->setOldValue(serialize($info));
         $log->setNewValue(serialize($servicio));
         $log->Save();
@@ -1041,7 +1051,7 @@ class Servicio extends Contract
 				'".$servicio["inicioFactura"]."'
 		);");
 		$this->Util()->DB()->InsertData();
-		$this->Util()->setError(3, "complete", 'Servicio activado correctamente');
+		$this->Util()->setError(3, "complete", $complete);
 		$this->Util()->PrintErrors();
 
 		return true;
