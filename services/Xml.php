@@ -637,7 +637,7 @@ class Xml extends Producto{
 
         if(!$this->isNomina())
         {
-            //se cambiaron los impuestos
+            //impuestos version inicial.
             /*$this->CargaAtt($impuestos, array(
                     "TotalImpuestosRetenidos" => $this->Util()->CadenaOriginalVariableFormat($this->totalImpuestosRetenidos,true,false),
                     "TotalImpuestosTrasladados" => $this->Util()->CadenaOriginalVariableFormat($this->totalImpuestosTrasladados, true, false))
