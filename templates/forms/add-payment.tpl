@@ -18,7 +18,7 @@
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Fecha:</div>
 				<div style="width:100%;float:left">
-					<input  style="width:15% !important; float:left;" name="paymentDate" id="paymentDate" type="text" value="{$fecha}" maxlength="10" onclick="CalendarioSimple(this)" class="largeInput"/>
+					<input  style="width:15% !important; float:left;" name="paymentDate" id="paymentDate" type="text" value="{$fecha|date_format:'d-m-Y'}" maxlength="10" onclick="CalendarioSimple(this)" class="largeInput"/>
 				</div>
 			</div>
             <div style="clear:both"></div>
