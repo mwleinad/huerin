@@ -1002,6 +1002,7 @@ function SubordinadosDetails()
                      break;
                     case 'Asistente':
                     case 'Cuentas':
+                    case 'cxc':
                     case 'Contador':
                     $needle='Contador';
                     break;

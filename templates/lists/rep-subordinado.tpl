@@ -18,7 +18,7 @@
 {assign var='totalDeposito' value="0"}
 {foreach from=$registros item=item key=key}
 		<tr>
-			<td align="center">{$item.name}</td>
+			<td align="center">{if $item.auxiliar eq ''}--{else}{$item.auxiliar}{/if}</td>
 			<td align="center">{if $item.contador eq ''}--{else}{$item.contador}{/if}</td>
 			<td align="center">{if $item.supervisor eq ''}--{else}{$item.supervisor}{/if}</td>
 			<td align="center">{if $item.gerente eq ''}--{else}{$item.gerente}{/if}</td>
