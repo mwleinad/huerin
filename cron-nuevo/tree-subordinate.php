@@ -33,16 +33,44 @@ $db->setQuery($sql);
 $results = $db->GetResult();
 $new = array();
 foreach($results as $key => $value){
+    $cad=$value;
     $role = $rol->getInfoByData($value);
     $rolArray = explode(' ',$role['name']);
-    $needle = trim($rolArray[0]);
+    $needle = strtolower(trim($rolArray[0]));
     $jefes=array();
-    $personal->findDeepJefes($value['personalId'],$jefes);
-    $cad=$value;
+    $personal->findDeepJefes($value['personalId'],$jefes,true);
+
+
     $cad['contador'] = $jefes['Contador'];
     $cad['supervisor'] = $jefes['Supervisor'];
     $cad['gerente'] = $jefes['Gerente'];
     $cad['jefeMax'] = $jefes['Socio'];
+
+    switch($needle){
+        case 'gerente':
+            $cad['gerente'] = $jefes['me'];
+            break;
+        case 'sistemas':
+        case 'gestoria':
+        case 'supervisor':
+            $cad['supervisor'] = $jefes['me'];
+            break;
+        case 'asistente':
+        case 'cuentas':
+        case 'cxc':
+        case 'contador':
+           $cad['contador'] = $jefes['me'];
+        break;
+        case 'recepcion':
+        case 'auxiliar':
+           $cad['auxiliar'] = $jefes['me'];
+        break;
+        case 'coordinador':
+        case 'socio':
+            $cad['jefeMax'] = $jefes['me'];
+            break;
+    }
+
     $new[] = $cad;
 }
 $html = '<html>
