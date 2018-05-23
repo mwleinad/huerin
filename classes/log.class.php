@@ -99,6 +99,21 @@ class Log extends Util
 
                     }
                 }
+                //si no tiene ningun encargado se envia a los gerentes , coordinador y socio.
+                if($contrato['permisos']=="")
+                {
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                    $this->Util()->DB()->setQuery($sqlo);
+                    $persons= $this->Util()->DB()->GetResult();
+                    foreach($persons as $pers)
+                    {
+                        if($this->Util()->ValidateEmail($pers['email']))
+                            $encargados[$pers['email']] = $pers['name'];
+                    }
+                }
+
+
+
                 $body .="La sigiuiente razon social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
                 $body .=$accion."  por el colaborador ".$who."<br>";
                 break;
@@ -129,6 +144,18 @@ class Log extends Util
 
                     }
 
+                }
+                //si no tiene ningun encargado se envia a los gerentes , coordinador y socio.
+                if($registro['permisos']=="")
+                {
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                    $this->Util()->DB()->setQuery($sqlo);
+                    $persons= $this->Util()->DB()->GetResult();
+                    foreach($persons as $pers)
+                    {
+                        if($this->Util()->ValidateEmail($pers['email']))
+                            $encargados[$pers['email']] = $pers['name'];
+                    }
                 }
                 if($this->action=="Insert"){
                     $body .="El servicio ".$registro['nombreServicio']." ".$accion."  para la razon ".$registro['razon']."<br>";
