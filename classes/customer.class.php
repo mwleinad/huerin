@@ -924,7 +924,7 @@ class Customer extends Main
     $log->setFecha(date('Y-m-d H:i:s'));
     $log->setTabla('customer');
     $log->setTablaId($customerId);
-    $log->setAction('Baja');
+    $log->setAction('Insert');
     $log->setOldValue('');
     $log->setNewValue(serialize($newData));
     $log->Save();
