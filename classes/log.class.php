@@ -99,21 +99,21 @@ class Log extends Util
 
                     }
                 }
-                //si no tiene ningun encargado se envia a los gerentes , coordinador y socio.
+                //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if($contrato['permisos']=="")
                 {
-                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
                     $this->Util()->DB()->setQuery($sqlo);
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
                     {
+                        if($pers['departamentoId']==26||$pers['departamentoId']==32)
+                            continue;
+
                         if($this->Util()->ValidateEmail($pers['email']))
                             $encargados[$pers['email']] = $pers['name'];
                     }
                 }
-
-
-
                 $body .="La sigiuiente razon social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
                 $body .=$accion."  por el colaborador ".$who."<br>";
                 break;
@@ -145,14 +145,17 @@ class Log extends Util
                     }
 
                 }
-                //si no tiene ningun encargado se envia a los gerentes , coordinador y socio.
+                //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if($registro['permisos']=="")
                 {
-                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
                     $this->Util()->DB()->setQuery($sqlo);
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
                     {
+                        if($pers['departamentoId']==26||$pers['departamentoId']==32)
+                        continue;
+
                         if($this->Util()->ValidateEmail($pers['email']))
                             $encargados[$pers['email']] = $pers['name'];
                     }
@@ -167,12 +170,15 @@ class Log extends Util
                     }
                 break;
             case 'customer'://en la edicion de cliente este deberia llegarle en teoria solo a jacobo y rogelio que son los que revisan operaciones.
-                //enviar a solo los gerentes, socio y coordinador
-                $sqlp  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%' AND departamentoId='1') OR personalId IN (".IDHUERIN.",32)";
+                //enviar a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
+                $sqlp  ="SELECT email,name,departamentoId FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
                 $this->Util()->DB()->setQuery($sqlp);
                 $persons= $this->Util()->DB()->GetResult();
                 foreach($persons as $per)
                 {
+                    if($per['departamentoId']==26||$per['departamentoId']==32)
+                        continue;
+
                     if($this->Util()->ValidateEmail($per['email']))
                         $encargados[$per['email']] = $per['name'];
                 }
