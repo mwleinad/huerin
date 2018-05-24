@@ -100,7 +100,7 @@ class Log extends Util
                     }
                 }
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
-                if($contrato['permisos']=="")
+                if(empty($encargados))
                 {
                     $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
                     $this->Util()->DB()->setQuery($sqlo);
@@ -146,7 +146,7 @@ class Log extends Util
 
                 }
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
-                if($registro['permisos']=="")
+                if(empty($encargados))
                 {
                     $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
                     $this->Util()->DB()->setQuery($sqlo);
