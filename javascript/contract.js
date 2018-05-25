@@ -51,15 +51,23 @@ function AddService()
 	{
 		method:'post',
 		parameters: $('addServicioForm').serialize(true),
+        onLoading:function() {
+            $('loading-img').style.display='block';
+            $('addServiceButton').style.display='none';
+        },
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
+                $('loading-img').style.display='none';
+                $('addServiceButton').style.display='block';
 				ShowStatusPopUp(splitResponse[1])
 			}
 			else
 			{
+                $('loading-img').style.display='none';
+                $('addServiceButton').style.display='block';
 				ShowStatusPopUp(splitResponse[1])
 				$('contenido').innerHTML = splitResponse[2];
 				AddContractDiv(0);

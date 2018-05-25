@@ -32,10 +32,15 @@
                 <hr />
 			</div> 
 			<div style="clear:both"></div>
-			* Campos requeridos
-            <div class="formLine" style="text-align:center; margin-left:300px">            
-                <a class="button_grey" id="addServiceButton"><span>Agregar</span></a>           
-            </div>			
+			<div class="actionPopup">
+				<span class="msjRequired">* Campos requeridos </span><br>
+				<div class="actionsChild">
+					<img  src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
+				</div>
+				<div class="actionsChild">
+					<a class="button_grey" id="addServiceButton"><span>Agregar</span></a>
+				</div>
+			</div>
 		</fieldset>
 	</form>
 </div>
