@@ -93,7 +93,6 @@ function Historial(id)
 			var response = transport.responseText || "no response text";
 			FViewOffSet(response);
 			Event.observe($('closePopUpDiv'), "click", function(){ EditServicioPopup(0); });
-			Event.observe($('editCustomer'), "click", EditServicio);
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
@@ -118,7 +117,7 @@ function EditServicioPopup(id)
 			var response = transport.responseText || "no response text";
 			FViewOffSet(response);
 			Event.observe($('closePopUpDiv'), "click", function(){ EditServicioPopup(0); });
-			Event.observe($('editCustomer'), "click", EditServicio);
+			Event.observe($('editCustomer'), "click", function(){EditServicio();});
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
@@ -130,11 +129,17 @@ function EditServicio()
 	{
 		method:'post',
 		parameters: $('editCustomerForm').serialize(true),
+        onLoading:function(){
+			$('editCustomer').style.display="none"
+            $('loading-img').style.display="block"
+        },
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
+                $('editCustomer').style.display="block"
+                $('loading-img').style.display="none"
 				ShowStatusPopUp(splitResponse[1])
 			}
 			else

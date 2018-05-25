@@ -49,8 +49,13 @@ class Log extends Util
 
 		$body ="<pre>";
 		//quien realizo el cambio
+
         $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$this->personalId.'" ');
         $who = $this->Util()->DB()->GetSingle();
+
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $who="Administrador de sistema(desarrollador)";
+
         $encargados=  array();
         $jefes = array();
         //componer mensaje de accion
@@ -326,13 +331,6 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                      break;
-                     case 'responsableCuenta':
-                         $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$beforeUnserialize[$key]."' ");
-                         $valorBefore = $this->Util()->DB()->GetSingle();
-                         $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$afterUnserialize[$key]."' ");
-                         $valorAfter = $this->Util()->DB()->GetSingle();
-                         break;
-                     default:
                      case 'tipoServicioId':
                          $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
@@ -347,12 +345,17 @@ class Log extends Util
                          $depsBefore = array();
                          foreach($permisosBefore as $pb){
                              list($depb,$perb) = explode(',',$pb);
+                             if($depb<=0 || $perb<=0)
+                                 continue;
+
                              $depsBefore[$depb] = $perb;
                          }
                          $permisosAfter = explode("-",$afterUnserialize[$key]);
                          $depsAfter = array();
                          foreach($permisosAfter as $pa){
                              list($depa,$pera) = explode(',',$pa);
+                             if($depa<=0 || $pera<=0)
+                                 continue;
                              $depsAfter[$depa] = $pera;
                          }
                          foreach($depsBefore as $kb=>$vb){
@@ -396,7 +399,7 @@ class Log extends Util
     function FindFieldDetail($elements){
         $allElements = unserialize($elements);
         $news=array();
-        $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql');
+        $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','responsableCuenta');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
@@ -408,11 +411,6 @@ class Log extends Util
                     $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
-                case 'responsableCuenta':
-                    $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$allElements[$key]."' ");
-                    $valorBefore = $this->Util()->DB()->GetSingle();
-                    break;
-                default:
                 case 'tipoServicioId':
                     $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
@@ -426,6 +424,9 @@ class Log extends Util
                     $depsBefore = array();
                     foreach($permisosBefore as $pb){
                         list($depb,$perb) = explode(',',$pb);
+                        if($depb<=0 || $perb<=0)
+                            continue;
+
                         $depsBefore[$depb] = $perb;
                     }
 
