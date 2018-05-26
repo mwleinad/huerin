@@ -187,7 +187,7 @@ class Documento extends Contract
                 $totalTipos--;
                 continue;
             }
-            $this->Util()->DB()->setQuery('SELECT required  FROM requerimentsPersons WHERE resource="Documento" AND (type="Ambos" OR type="'.$item['type'].'") AND relacionId='.$value['tipoDocumentoId'].'');
+            $this->Util()->DB()->setQuery('SELECT required  FROM requerimentsPersons WHERE resource="Documento" AND (type="Ambos" OR type="'.$item['type'].'") AND relacionId="'.$value['tipoDocumentoId'].'"');
             $isRequired = $this->Util()->DB()->GetSingle();
             if($isRequired=="")
                 $isRequired='none';
