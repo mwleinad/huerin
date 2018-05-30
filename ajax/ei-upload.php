@@ -35,13 +35,15 @@ switch($_POST['type']){
             $fp = fopen($file_temp,'r');
             $fila=1;
             switch($_POST['tipo-ei']){
-                case 'imp-rsocial':
+                case 'imp-encargados':
                     $fila=1;
                     $upDo=0;
                     $logFileGlobal="";
                     $htmlglob ="";
                     $stringNoResp="";
                     $addRes=0;
+                    $noUpdate=0;
+                    $contratoNotFound=0;
                     while(($row=fgetcsv($fp,4096,","))==true){
                         $html="";
                         $logFil="";
@@ -61,6 +63,7 @@ switch($_POST['type']){
                         {
                             $logFil .="este no pasa ".$row[1]."<br>";
                             $fila++;
+                            $contratoNotFound++;
                             continue;
                         }
                         foreach($permisos_actuales as $val) {
@@ -253,17 +256,86 @@ switch($_POST['type']){
                         unset($deptosNew);
                         $fila++;
                     }
+
+                    $htmlglob .=" total de contratos actualizados : ".$upDo."<br>";
+                    echo "ok[#]";
+                    echo $htmlglob;
+                    echo $logFilGlobal;
+                    echo "<br>contratos que no tenian responsable en una area<br><br>";
+                    echo $stringNoResp;
+                    echo '<br>Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
+                    echo 'Total de contratos que no se actualizaron por tener informacion correcta '.$noUpdate;
+                    echo '<br>Total de contratos no encontrados '.$contratoNotFound.'<br>';
                     break;
+                case 'imp-data-customer-contract':
+                    $fila=1;
+                    $upDo=0;
+                    $logFileGlobal="";
+                    $contCustomer=0;
+                    $contContract =0;
+                    while(($row=fgetcsv($fp,4096,","))==true) {
+                        if ($fila == 1) {
+                            $fila++;
+                            continue;
+                        }
+                        //actualizamos los datos del cliente en la tabla customer
+                        $sqlc = "UPDATE customer 
+                                 SET nameContact='".trim($row[2])."',
+                                 phone='".trim($row[3])."',
+                                 email='".trim($row[4])."',
+                                 password='".trim($row[5])."' 
+                                 WHERE customerId='".$row[0]." '
+                                 ";
+                        $db->setQuery($sqlc);
+                        $upc = $db->UpdateData();
+                        if($upc>0){
+                            $contCustomer++;
+                            $logFileGlobal .="---<br>El cliente ".$row[2]." con ID=".$row[0]." ha sido actualizado.<br>";
+                        }
+                        else
+                            $logFileGlobal .="--<br>Ningun cambio realizado para el cliente ".$row[2]." con ID=".$row[0].".<br>";
+                        //actualizamos datos del contrato del cliente
+                        $sqlr = "UPDATE contract 
+                                 SET name='".trim($row[10])."',
+                                 rfc='".trim($row[13])."',
+                                 nombreComercial='".trim($row[16])."',
+                                 direccionComercial='".trim($row[17])."',
+                                 nameContactoAdministrativo='".trim($row[19])."',
+                                 emailContactoAdministrativo='".trim($row[20])."',
+                                 telefonoContactoAdministrativo='".trim($row[21])."',
+                                 nameContactoContabilidad='".trim($row[22])."',
+                                 emailContactoContabilidad='".trim($row[23])."',
+                                 telefonoContactoContabilidad='".trim($row[24])."',
+                                 nameContactoDirectivo='".trim($row[25])."',
+                                 emailContactoDirectivo='".trim($row[26])."',
+                                 telefonoContactoDirectivo='".trim($row[27])."',
+                                 telefonoCelularDirectivo='".trim($row[28])."',
+                                 claveCiec='".trim($row[29])."',
+                                 claveFiel='".trim($row[30])."',
+                                 claveIdse='".trim($row[31])."',
+                                 claveIsn='".trim($row[32])."',
+                                 facturador='".trim($row[33])."',
+                                 metodoDePago='".trim($row[34])."',
+                                 noCuenta='".trim($row[35])."'
+                                 WHERE contractId='".$row[1]." '
+                                 ";
+                        $db->setQuery($sqlr);
+                        $upr = $db->UpdateData();
+                        if($upr>0) {
+                            $contContract++;
+                            $logFileGlobal .= "La razon social " . $row[10] . " con ID=" . $row[1] . " ha sido actualizado. ----<br>";
+                        }
+                        else
+                            $logFileGlobal .="Ningun cambio realizado en la razon social ".$row[10]." con ID=".$row[1].". ----<br>";
+                    }
+                    echo "ok[#]";
+                    echo $logFileGlobal;
+                    echo "Total clientes actualizados = ".$contCustomer."<br>";
+                    echo "Total contratos actualizados =".$contContract."<br>";
+                break;
             }
-            $htmlglob .=" total de contratos actualizados : ".$upDo."<br>";
             fclose($fp);
-            echo "ok[#]";
-            echo $htmlglob;
-            echo  $logFilGlobal;
-            echo "<br>contratos que no tenian responsable en una area<br><br>";
-            echo $stringNoResp;
-            echo '<br>Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
-            echo 'Total de contratos que no se actualizaron por tener informacion correcta '.$noUpdate;
+
         }
     break;
 }

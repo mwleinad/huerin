@@ -13,7 +13,8 @@
                 <td>
                     <select name="tipo-ei" id="tipo-ei" class="largeInput medium2">
                         <option value="">Seleccionar..</option>
-                        <option value="imp-rsocial">Importar razones sociales</option>
+                        <option value="imp-encargados">Importar encargados de area</option>
+                        <option value="imp-data-customer-contract">Importar datos de cliente-contratos</option>
                     </select>
                 </td>
                 <td align="center">
