@@ -2002,9 +2002,9 @@ class Contract extends Main
       }
 
     }
-    /** $this->Util()->DB()->InsertData(); */
+    /** $this->Util()->DB()->InsertData();
       $responsables = $this->getAllResponsables($newData);
-      /*
+
       $personal = new Personal;
       $sendmail = new SendMail();
       foreach($responsables as $key => $value)
@@ -2012,7 +2012,7 @@ class Contract extends Main
           $personal->setPersonalId($value);
           $userInfo = $personal->Info();
           $to = $userInfo["email"];
-//          $to = "comprobantefiscal@braunhuerin.com.mx";
+          $to = "comprobantefiscal@braunhuerin.com.mx";
           $toName = $userInfo["name"];
           $body = "Razon social: ".$newData["name"]." fue dada de alta, el alta fue hecha por ".$_SESSION["User"]["username"];
           $subject = $body;

@@ -314,7 +314,7 @@ class Log extends Util
 	     $afterUnserialize = unserialize($after);
 	     $news=array();
          $olds=array();
-	     $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta');
+	     $llavesExcluidas =array('lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -338,6 +338,8 @@ class Log extends Util
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
                      case 'permisos':
+                         $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos order by departamento ASC");
+                         $arrayDeps = $this->Util()->DB()->GetResult();
                          $valorBefore="";
                          $valorAfter="";
                          //desglozar los permisos antetiores
@@ -358,24 +360,28 @@ class Log extends Util
                                  continue;
                              $depsAfter[$depa] = $pera;
                          }
-                         foreach($depsBefore as $kb=>$vb){
-                             if($depsBefore[$kb]==$depsAfter[$kb])
-                                 unset($depsAfter[$kb]);
+                         if(!is_array($arrayDeps))
+                             $arrayDeps = array();
+
+                         foreach($arrayDeps as $kad=>$vad){
+                             if($depsBefore[$vad['departamentoId']]==$depsAfter[$vad['departamentoId']])
+                                continue;
+
+                             $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
+                             $persBefore = $this->Util()->DB()->GetSingle() ;
+
+                             $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$vad['departamentoId']]."' ");
+                             $persAfter = $this->Util()->DB()->GetSingle();
+
+                             if($persBefore=="")
+                                 $persBefore ="Sin encargado";
+                             if($persAfter=="")
+                                 $persAfter ="Sin encargado";
+
+                             $valorBefore .="Encargado de ".$vad['departamento']." : ".$persBefore."<br>";
+                             $valorAfter  .="Encargado de ".$vad['departamento']." : ".$persAfter."<br>";
                          }
 
-                         if(!empty($depsAfter)){
-                            foreach($depsAfter as $ka=>$va){
-                                $this->Util()->DB()->setQuery(" SELECT departamento FROM departamentos WHERE departamentoId='".$ka."' ");
-                                $nameDep = $this->Util()->DB()->GetSingle() ;
-                                $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$ka]."' ");
-                                $persBefore = $this->Util()->DB()->GetSingle() ;
-                                $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$ka]."' ");
-                                $persAfter = $this->Util()->DB()->GetSingle() ;
-
-                                $valorBefore .="Encargado de ".$nameDep." : ".$persBefore."<br>";
-                                $valorAfter .="Encargado de ".$nameDep." : ".$persAfter."<br>";
-                            }
-                         }
                      break;
                      default:
                          $valorBefore =$beforeUnserialize[$key];
@@ -418,6 +424,8 @@ class Log extends Util
                     $valorAfter = $this->Util()->DB()->GetSingle();
                     break;
                 case 'permisos':
+                    $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos order by departamento ASC");
+                    $arrayDeps = $this->Util()->DB()->GetResult();
                     $valorBefore="";
                     //encontrar los encargados
                     $permisosBefore = explode("-",$allElements[$key]);
@@ -430,14 +438,13 @@ class Log extends Util
                         $depsBefore[$depb] = $perb;
                     }
 
-                    if(!empty($depsBefore)){
-                        foreach($depsBefore as $ka=>$va){
-                            $this->Util()->DB()->setQuery(" SELECT departamento FROM departamentos WHERE departamentoId='".$ka."' ");
-                            $nameDep = $this->Util()->DB()->GetSingle() ;
-                            $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$ka]."' ");
-                            $persBefore = $this->Util()->DB()->GetSingle() ;
-                            $valorBefore .="Encargado de ".$nameDep." : ".$persBefore."<br>";
-                        }
+                    foreach($arrayDeps as $ak=>$av){
+                        $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$av['departamentoId']]."' ");
+                        $persBefore = $this->Util()->DB()->GetSingle() ;
+                        if($persBefore=="")
+                            $persBefore ="Sin encargado";
+
+                        $valorBefore .="Encargado de ".$av['departamento']." : ".$persBefore."<br>";
                     }
                     break;
                 default:
