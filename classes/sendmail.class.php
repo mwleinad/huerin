@@ -65,7 +65,7 @@ class SendMail extends Main
                 {
                     $mail->AddBCC($ccEmail, $ccName);
                 }
-                $mail->AddBCC('isc061990@outlook.com','COPIA CARBON');
+                $mail->AddBCC(EMAIL_DEV,'COPIA CARBON');
             }
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
@@ -93,7 +93,7 @@ class SendMail extends Main
 			    return false;
 
 	}
-    public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
+    public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
         $mail = new PHPMailer(); // defaults to using php "mail()"
 
@@ -104,6 +104,9 @@ class SendMail extends Main
            $mail->AddBCC($correo, $name);
 
         }
+        if($sendDesarrollador)
+            $mail->AddBCC(EMAIL_DEV,'Desarrollador');
+
         $mail->Subject    = $subject;
         $mail->MsgHTML($body);
         $mail->IsSMTP();

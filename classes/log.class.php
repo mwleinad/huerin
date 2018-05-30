@@ -270,7 +270,7 @@ class Log extends Util
         $encargados = array_merge($encargados,$correosJefes);
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $mail->PrepareMultipleHidden($subject,$body,$encargados,'',"","","","",FROM_MAIL);
+        $mail->PrepareMultipleHidden($subject,$body,$encargados,'',"","","","",'noreply@braunhuerin.com.mx',true);
 		return true;				
 	}
 	
