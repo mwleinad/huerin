@@ -424,6 +424,8 @@ class Log extends Util
                     $valorAfter = $this->Util()->DB()->GetSingle();
                     break;
                 case 'permisos':
+                    $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos order by departamento ASC");
+                    $arrayDeps = $this->Util()->DB()->GetResult();
                     $valorBefore="";
                     //encontrar los encargados
                     $permisosBefore = explode("-",$allElements[$key]);
@@ -436,14 +438,13 @@ class Log extends Util
                         $depsBefore[$depb] = $perb;
                     }
 
-                    if(!empty($depsBefore)){
-                        foreach($depsBefore as $ka=>$va){
-                            $this->Util()->DB()->setQuery(" SELECT departamento FROM departamentos WHERE departamentoId='".$ka."' ");
-                            $nameDep = $this->Util()->DB()->GetSingle() ;
-                            $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$ka]."' ");
-                            $persBefore = $this->Util()->DB()->GetSingle() ;
-                            $valorBefore .="Encargado de ".$nameDep." : ".$persBefore."<br>";
-                        }
+                    foreach($arrayDeps as $ak=>$av){
+                        $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$av['departamentoId']]."' ");
+                        $persBefore = $this->Util()->DB()->GetSingle() ;
+                        if($persBefore=="")
+                            $persBefore ="Sin encargado";
+
+                        $valorBefore .="Encargado de ".$av['departamento']." : ".$persBefore."<br>";
                     }
                     break;
                 default:
