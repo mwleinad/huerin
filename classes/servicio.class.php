@@ -157,6 +157,13 @@ class Servicio extends Contract
 		{
             $strLog .="----- INICIO DEL SERVICIO ".$value['nombreServicio']."=>".$value['servicioId']." DEL CLIENTE ".$value['razonSocialName']." -------".chr(13).chr(10);
 			$strLog .=' Creacion de instancia del servicioId = '.$value['servicioId'].' con periodicidad '.$value['periodicidad'].chr(13).chr(10);
+			//comprobar si la fecha de inicio de operaciones es valida de lo contrario no debe crear instancia.
+            if(!$this->Util()->isValidateDate($value['inicioOperaciones'],'Y-m-d')) {
+                $strLog .= "----- Fecha  no valida inicio operaciones =".$value['inicioOperaciones'].chr(13) . chr(10) . chr(13) . chr(10);
+                $strLog .= "----- FIN DEL SERVICIO " . $value['servicioId'] . " -------" . chr(13) . chr(10) . chr(13) . chr(10);
+                continue;
+            }
+
 			$dateExploded = explode("-", $value["inicioOperaciones"]);
             $fechaOperacion = $dateExploded[0]."-".$dateExploded[1]."-01";
             //comprobar instancias
