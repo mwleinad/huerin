@@ -356,7 +356,7 @@ class Customer extends Main
                     if($User['tipoPers']!='Admin')
                          array_push($subordinadosPermiso, $_SESSION['User']['userId']);
                 }
-                //comprobar privilegios del rol o permisos del usuario acti
+                //comprobar privilegios del rol o permisos del usuario activo
                 $rol->setRolId($User['roleId']);
                 $unlimitedRol = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
                 $unlimited=false;
