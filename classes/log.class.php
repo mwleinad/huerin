@@ -314,7 +314,8 @@ class Log extends Util
 	     $afterUnserialize = unserialize($after);
 	     $news=array();
          $olds=array();
-	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId');
+	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
+             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -403,7 +404,8 @@ class Log extends Util
     function FindFieldDetail($elements){
         $allElements = unserialize($elements);
         $news=array();
-        $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId');
+        $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
+            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
