@@ -364,9 +364,7 @@ class Log extends Util
                              $arrayDeps = array();
 
                          foreach($arrayDeps as $kad=>$vad){
-                             if($depsBefore[$vad['departamentoId']]==$depsAfter[$vad['departamentoId']])
-                                continue;
-
+                           
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
                              $persBefore = $this->Util()->DB()->GetSingle() ;
 
