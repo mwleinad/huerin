@@ -32,10 +32,11 @@
 	<td colspan="6" align="center">Ning&uacute;n registro encontrado.</td>
 </tr>
 {/foreach}
-<tr>
-	<td colspan="4"></td>
+<tr>s
+	<td colspan="3"></td>
 	<td align="right"><b>TOTAL MONTO CANCELADO</b></td>
-	<td align="center">{$totalMonto|number_format:2:'.':','}</td>
+	<td align="center">$ {$totalMonto|number_format:2:'.':','}</td>
+	<td colspan=""></td>
 </tr>
 </tbody>
 </table>
