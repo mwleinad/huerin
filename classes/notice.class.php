@@ -209,6 +209,7 @@ class Notice extends Main
 	   $extension = explode(".",$archivo);
 	   $doUpload = false;
        $destino ="";
+       $fileName="";
        if($_FILES["path"]['name']&&$_FILES["path"]['error']===0&&$noticeId)
         {
             $prefijo = "notice_".$_POST["usuario"].$noticeId;
@@ -291,8 +292,8 @@ class Notice extends Main
                     $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
                 }
                 //desactivar asta que confime rogelio
-               /* $sendmail = new SendMail();
-                $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, '', $destino, $fileName, "", "");*/
+                $sendmail = new SendMail();
+                $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
             }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
