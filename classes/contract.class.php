@@ -2902,7 +2902,11 @@ class Contract extends Main
         return $data;
     }
     public function getTotalIguala(){
-      $sql = "SELECT SUM(a.costo) FROM servicio a INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId  AND b.status='1' WHERE a.contractId='".$this->contractId."' AND a.status='activo' AND b.departamentoId IN(1,24)";
+      $sql = "SELECT SUM(a.costo) FROM servicio a 
+              INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId  AND b.status='1' 
+              WHERE a.contractId='".$this->contractId."' 
+              AND a.status='activo' AND  TO_DAYS(STR_TO_DATE(a.inicioFactura,'%Y-%m-%d')) IS NOT NULL
+              AND b.departamentoId IN(1,24)";
       $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
       $single =  $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
       return $single;
