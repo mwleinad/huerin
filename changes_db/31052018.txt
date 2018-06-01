@@ -1,0 +1,1 @@
+INSERT INTO `huerin`.`namefields` (`clave`, `name`) VALUES ('regimenId', 'Regimen fiscal');
