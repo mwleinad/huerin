@@ -344,6 +344,7 @@ class Invoice extends Comprobante
        }//foreach
        $cadLog .="TOTAL DE CONTRATOS = ".count($contratos).chr(13).chr(10);
        unset($_SESSION["conceptos"]);
+       $countInvoice=0;
        foreach($contratos as $contractId => $servicios){
            $this->Util()->DB()->setQuery("SELECT facturador FROM contract WHERE contractId = '".$contractId."'");
            $value['facturador'] = $this->Util()->DB()->GetSingle();
@@ -600,10 +601,14 @@ class Invoice extends Comprobante
                    $this->Util()->DB()->UpdateData();
                    $cadLog .="Actualizada las intancias siguientes : ".chr(13).chr(10);
                    $cadLog .=trim($sql).chr(13).chr(10);
+
                }
            }
-           break;
+           $countInvoice++;
 
+           //romper el ciclo cada  6 facturas generadas
+           if($countInvoice>=2)
+           break;
        }/// END LOOP CREATE INVOICE
 
        $cad['log']=$cadLog;
