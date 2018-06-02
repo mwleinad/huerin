@@ -607,7 +607,7 @@ class Invoice extends Comprobante
            $countInvoice++;
 
            //romper el ciclo cada  7 facturas generadas
-           if($countInvoice>=7)
+           if($countInvoice>=3)
            break;
        }/// END LOOP CREATE INVOICE
 
