@@ -15,6 +15,7 @@
                         <option value="">Seleccionar..</option>
                         <option value="imp-encargados">Importar encargados de area</option>
                         <option value="imp-data-customer-contract">Importar datos de cliente-contratos</option>
+                        <option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
                     </select>
                 </td>
                 <td align="center">
