@@ -36,5 +36,23 @@ jQ(document).ready(function(){
             }
         });
     });
+    if(jQ('#formato').length>0){
+        jQ('#formato').change(function(){
+            if(this.value=="")
+                return;
+            var tipo = this.value;
+           jQ.ajax({
+              method:'post',
+              url:WEB_ROOT+'/ajax/exp-imp-layout.php',
+              data:{type:tipo} ,
+              success:function(response){
+                  window.location=response;
+              } ,
+              error:function () {
+                  alert('Error al descargar layout');
+              }
+           });
+        })
+    }
 
 });
