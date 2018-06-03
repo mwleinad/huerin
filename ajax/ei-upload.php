@@ -393,11 +393,12 @@ switch($_POST['type']){
                         {
                            $logCancel .="Hubo un problema al cancelar la factura con FOLIO FISCAL".$row[0].". Por favor permite que pasen al menos 24 horas antes de intentar de nuevo.<br>";
                            $logCancel .='response fail : '.print_r($response["cancelaCFDiReturn"]);
-                           break;
+                        }else{
+                            $logCancel .=" FOLIO FISCAL".$row[0].". cancelado correctamente.<br>";
+                            $logCancel .='response : '.print_r($response["cancelaCFDiReturn"]);
                         }
 
-                        $logCancel .=" FOLIO FISCAL".$row[0].". cancelado correctamente.";
-                        $logCancel .='response : '.print_r($response["cancelaCFDiReturn"]);
+
                         //cancelar uno ala vez
                         break;
                     }
