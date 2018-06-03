@@ -333,9 +333,79 @@ switch($_POST['type']){
                     echo "Total clientes actualizados = ".$contCustomer."<br>";
                     echo "Total contratos actualizados =".$contContract."<br>";
                 break;
+                case 'imp-new-razon':
+                    $logFileGlobal="";
+                    $contCustomer=0;
+                    $contContract =0;
+                    $ejecutar = false;
+                    $allSql = "";
+                    while(($row=fgetcsv($fp,4096,","))==true) {
+                        $sqlRow = "";
+                      //comprobar que el cliente exista
+                        $sqlc ="SELECT customerId FROM customer where nameContact='".$row[0]."' ";
+                        $db->setQuery($sqlc);
+                        $customerId = $db->GetSingle();
+                        if(!$customerId){
+                            echo "ok[#]";
+                            echo "Proceso interrumpido";
+                            echo 'El cliente '.$row[0]." no se encuntra registrado";
+                            exit;
+                        }
+                        //comprobar por rfc y nombre la razon social si no se encuentra registrada
+                        $sqlrazon =  "SELECT contractId FROM contract WHERE name='".$row[1]."' OR rfc='".$row[2]."' ";
+                        $db->setQuery($sqlrazon);
+                        $contractId = $db->GetSingle();
+                    }
+                break;
+                case 'cancelar-uuid':
+                    $logCancel = "";
+                    $fila=1;
+                    $user1 = USER_PAC;
+                    $pw1 = PW_PAC;
+                    $pac = new Pac;
+                    $rfcObj =new Rfc();
+
+                    //get password
+                    $root = DOC_ROOT."/empresas/21/certificados/30/password.txt";
+                    $fh = fopen($root, 'r');
+                    $password = fread($fh, filesize($root));
+                    fclose($fh);
+
+                    $path = DOC_ROOT."/empresas/21/certificados/30/00001000000402946663.cer.pfx";
+                    if(!$password)
+                    {
+                        $util->setError('', "error", "Tienes que actualizar tu certificado para que podamos obtener el password");
+                        $util->PrintErrors();
+                        echo "fail[#]";
+                        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+                        exit;
+                    }
+                    while(($row=fgetcsv($fp,4096,","))==true) {
+                        if ($fila == 1) {
+                            $fila++;
+                            continue;
+                        }
+                        //cancelar los cfdi
+                        $rfcObj->setRfcId(30);
+                        $nodoEmisorRfc = $rfcObj->InfoRfc();
+                        $response = $pac->CancelaCfdi($user1, $pw1, $nodoEmisorRfc["rfc"], $row[0], $path, $password);
+                        if(!$response["cancelaCFDiReturn"]["text"])
+                        {
+                           $logCancel .="Hubo un problema al cancelar la factura con FOLIO FISCAL".$row[0].". Por favor permite que pasen al menos 24 horas antes de intentar de nuevo.<br>";
+                           $logCancel .='response fail : '.print_r($response["cancelaCFDiReturn"]);
+                           break;
+                        }
+
+                        $logCancel .=" FOLIO FISCAL".$row[0].". cancelado correctamente.";
+                        $logCancel .='response : '.print_r($response["cancelaCFDiReturn"]);
+                        //cancelar uno ala vez
+                        break;
+                    }
+                    echo "ok[#]";
+                    echo $logCancel;
+                break;
             }
             fclose($fp);
-
         }
     break;
 }

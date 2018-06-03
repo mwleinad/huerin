@@ -3,7 +3,13 @@
     <div class="grid_9">
         <h1 class="catalogos">Exportar e importar datos</h1>
     </div>
-    <div class="grid_6" id="eventbox">
+    <div class="grid_6"  id="eventbox">
+
+            <label>Descargar layout</label>
+            <select  class="smallInput " name="formato" id="formato">
+                <option value="">Seleccionar</option>
+                <option value="imp-razon">Layaout de nueva razon social</option>
+            </select>
     </div>
     <div class="clear">
     </div>
