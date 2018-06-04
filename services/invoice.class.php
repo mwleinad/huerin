@@ -30,7 +30,7 @@ class Invoice extends Comprobante
        $emisorBraun = $this->Util()->DB()->GetRow();
 
        // solo se sacaran los clientes con estatus active=1 evitar un foreach
-       $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE active='1' AND customerId != 280");
+       $this->Util()->DB()->setQuery("SELECT * FROM customer WHERE active='1' AND customerId=614");
        $clientes = $this->Util()->DB()->GetResult();
        $customerNoCon=0;
        $allCont=0;
@@ -206,7 +206,7 @@ class Invoice extends Comprobante
                $noInstancias++;
                unset($servicesHuerin[$key]);
                continue;
-           }elseif($servicio['tipoServicioId']==RIF||$servicio['tipoServicioId']==RIFAUDITADO){
+           }elseif(empty($row)&&($servicio['tipoServicioId']==RIF||$servicio['tipoServicioId']==RIFAUDITADO)){
                //Comprobar si el mes actual es par si es par  debe tener instancia creada en ese mes el RIF por lo tanto debe ignorarse y quitar
                //ese servicio por no tener instancia creada.
                if(date('m')%2==0)
@@ -272,9 +272,9 @@ class Invoice extends Comprobante
                $noInstancias++;
                unset($servicesBraun[$key]);
                continue;
-           }elseif($servicio['tipoServicioId']==RIF||$servicio['tipoServicioId']==RIFAUDITADO){
+           }elseif(empty($row)&&($servicio['tipoServicioId']==RIF||$servicio['tipoServicioId']==RIFAUDITADO)){
                //Comprobar si el mes actual es par si es par  debe tener instancia creada en ese mes el RIF por lo tanto debe ignorarse y quitar
-               //ese servicio por no tener instancia creada.
+               //ese servicio si esta vacio
                if(date('m')%2==0)
                {
                    $noInstanciasBraun++;
