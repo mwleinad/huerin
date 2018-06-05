@@ -282,7 +282,8 @@ class Notice extends Main
                     if(empty($vm['contracts'])){
                         continue;
                     }
-                    $clientesCorreos = array_merge($clientesCorreos,$vm['allEmails']);
+                    if(!empty($vm['allEmails']))
+                        $clientesCorreos = array_merge($clientesCorreos,$vm['allEmails']);
                 }
                 //enviar correo al cliente
                 $subject ="BRAUN HUERIN INFORMA";
