@@ -300,9 +300,9 @@ class Notice extends Main
         $this->Util()->PrintErrors();
 		return true;
 	}
-	
+
+
 	public function Update(){
-		
 		if($this->Util()->PrintErrors()){ 
 			return false; 
 		}
