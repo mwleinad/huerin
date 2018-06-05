@@ -333,9 +333,9 @@ class Log extends Util
                          $valorAfter = $this->Util()->DB()->GetSingle();
                      break;
                      case 'tipoServicioId':
-                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
+                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
-                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$afterUnserialize[$key]."' ");
+                         $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
                      case 'permisos':
@@ -418,9 +418,9 @@ class Log extends Util
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
                 case 'tipoServicioId':
-                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$allElements[$key]."' ");
+                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
-                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tiposervicio WHERE tipoServicioId='".$allElements[$key]."' ");
+                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorAfter = $this->Util()->DB()->GetSingle();
                     break;
                 case 'permisos':
