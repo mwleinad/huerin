@@ -382,11 +382,10 @@ class Customer extends Main
                     $razon->setContractId($value["contractId"]);
                     $emailsContract = $razon->getEmailContractByArea('all');
                     $emailTemp=array();
-                    if(!is_array($emailsContract['allEmails']))
-                        echo $value['name'].chr(13).chr(10);
 
-                   // if(!is_array($emailsContract['allEmails']))
-                       // $emailsContract['allEmails']=array();
+                    if(!is_array($emailsContract['allEmails']))
+                       $emailsContract['allEmails']=array();
+
                     foreach($emailsContract['allEmails'] as $vemail)
                     {
                         if($this->Util()->ValidateEmail(trim($vemail)))
