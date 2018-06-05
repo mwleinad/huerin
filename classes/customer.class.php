@@ -289,9 +289,6 @@ class Customer extends Main
         global $User, $page,$rol;
         if ($customerId) {
             $add = " AND customerId = '".$customerId."' ";
-            if ($page == "report-servicio") {
-                $User["roleId"] = 1;
-            }
         }
         if ($tipo == "Activos") {
             $addActivo = " AND active = '1' ";
