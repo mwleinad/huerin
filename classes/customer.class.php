@@ -379,16 +379,18 @@ class Customer extends Main
                     $razon->setContractId($value["contractId"]);
                     $emailsContract = $razon->getEmailContractByArea('all');
                     $emailTemp=array();
-
                     if(!is_array($emailsContract['allEmails']))
                        $emailsContract['allEmails']=array();
 
-                    foreach($emailsContract['allEmails'] as $vemail)
-                    {
-                        if($this->Util()->ValidateEmail(trim($vemail)))
-                           $emailTemp[trim($vemail)]=trim($value['name']);
+                    if(!empty($emailsContract['allEmails'])){
+                        foreach($emailsContract['allEmails'] as $vemail)
+                        {
+                            if($this->Util()->ValidateEmail(trim($vemail)))
+                                $emailTemp[trim($vemail)]=trim($value['name']);
+                        }
+                        $allEmailsCliente = array_merge($allEmailsCliente,$emailTemp);
                     }
-                     $allEmailsCliente = array_merge($allEmailsCliente,$emailTemp);
+
                 } else {
                     unset($result[$key]["contracts"][$keyContract]);
                 }
