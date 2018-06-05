@@ -1,4 +1,4 @@
-var AJAX_PATH = WEB_ROOT+'/ajax/ei-upload.php'
+var AJAX_PATH = WEB_ROOT+'/ajax/import-data.php'
 jQ(document).ready(function(){
 
     jQ('#btnRun').on('click',function() {

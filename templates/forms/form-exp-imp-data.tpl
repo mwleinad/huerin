@@ -1,6 +1,5 @@
 <div align="center">
     <form name="frmFile" id="frmFile" action="" method="post">
-        <input type="hidden" name="type" id="type" value="importar-datos">
         <table width="900" align="center">
             <tr style="background-color:#CCC">
                 <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Opciones de Exportacion e importacion</b></td>
@@ -11,11 +10,12 @@
             </tr>
             <tr>
                 <td>
-                    <select name="tipo-ei" id="tipo-ei" class="largeInput medium2">
+                    <select name="type" id="type" class="largeInput medium2">
                         <option value="">Seleccionar..</option>
-                        <option value="imp-encargados">Importar encargados de area</option>
+                        <option value="update-customer-contract">Actualizar cliente - razon social</option>
                         <option value="imp-data-customer-contract">Importar datos de cliente-contratos</option>
                         <option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
+                        <option value="test-funcion">Test funcion</option>
                     </select>
                 </td>
                 <td align="center">
