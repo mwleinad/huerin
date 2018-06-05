@@ -395,7 +395,6 @@ class Customer extends Main
                     unset($result[$key]["contracts"][$keyContract]);
                 }
             }
-            dd($allEmailsCliente);
             $result[$key]['allEmails'] = $allEmailsCliente;
             $rol->setRolId($User['roleId']);
             $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
