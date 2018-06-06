@@ -265,7 +265,7 @@ class Notice extends Main
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
 
-                $sendmail->PrepareMultipleVisible($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISOS DE PLATAFORMA',true);
+                $sendmail->PrepareMultipleVisible($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
             }
             //si se selecciona enviar a cliente hacer lo siguiente
             if($this->sendCustomer){
