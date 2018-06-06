@@ -293,7 +293,7 @@ class Notice extends Main
                     $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
                 }
                 //desactivar asta que confime rogelio
-                dd($clientesCorreos);
+               
                 $sendmail = new SendMail();
                 $sendmail->PrepareMultipleHidden($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
             }
