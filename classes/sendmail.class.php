@@ -133,6 +133,46 @@ class SendMail extends Main
             return false;
 
     }
+    public function PrepareMultipleHidden2($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
+    {
+        $mail = new PHPMailer(); // defaults to using php "mail()"
+
+        $mail->AddReplyTo($from, $fromName);
+        $mail->SetFrom($from, $fromName);
+        foreach($to as $correo => $name)
+        {
+            $mail->AddBCC($correo, $name);
+
+        }
+        if($sendDesarrollador)
+            $mail->AddBCC(EMAIL_DEV,'Desarrollador');
+
+        $mail->Subject    = $subject;
+        $mail->MsgHTML($body);
+        $mail->IsSMTP();
+        $mail->SMTPAuth   = true;
+        $mail->Host       = "mail.avantika.com.mx";
+        $mail->Port       = 587;
+        $mail->Username   = "smtp@avantika.com.mx";
+        $mail->Password   = "smtp1234";
+        //		$mail->SMTPSecure="ssl";
+        $mail->SMTPDebug=1;
+
+        if($attachment != "")
+        {
+            $mail->AddAttachment($attachment, $fileName);
+        }
+
+        if($attachment2 != "")
+        {
+            $mail->AddAttachment($attachment2, $fileName2);
+        }
+        if($mail->Send())
+            return true;
+        else
+            return false;
+
+    }
 
 }
 
