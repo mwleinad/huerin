@@ -382,14 +382,14 @@ class Customer extends Main
                     if(!is_array($emailsContract['allEmails']))
                        $emailsContract['allEmails']=array();
 
-                    if(!empty($emailsContract['allEmails'])){
-                        foreach($emailsContract['allEmails'] as $vemail)
-                        {
-                            if($this->Util()->ValidateEmail(trim($vemail)))
-                                $emailTemp[trim($vemail)]=trim($value['name']);
-                        }
-                        $allEmailsCliente = array_merge($allEmailsCliente,$emailTemp);
+
+                    foreach($emailsContract['allEmails'] as $vemail)
+                    {
+                        if($this->Util()->ValidateEmail(trim($vemail)))
+                            $emailTemp[trim($vemail)]=trim($value['name']);
                     }
+                    $allEmailsCliente = array_merge($allEmailsCliente,$emailTemp);
+
 
                 } else {
                     unset($result[$key]["contracts"][$keyContract]);
