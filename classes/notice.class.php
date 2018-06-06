@@ -241,7 +241,7 @@ class Notice extends Main
                 $sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "'";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
-                $subject = "AVISO NUEVO " . $this->usuario;
+                $subject = "AVISO NUEVO DE " . $this->usuario;
                 $sendmail = new SendMail();
                 $mails = array();
                 foreach ($personal as $key => $usuario) {
@@ -265,7 +265,7 @@ class Notice extends Main
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
 
-                $sendmail->PrepareMultipleHidden($subject, $body, $mails, '', $destino, $fileName, "", "");
+                $sendmail->PrepareMultipleVisible($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
             }
             //si se selecciona enviar a cliente hacer lo siguiente
             if($this->sendCustomer){
@@ -290,12 +290,11 @@ class Notice extends Main
                 $body ='<pre>Despcripcion del aviso :<br><br>'.nl2br(utf8_decode($this->description));
                 if(file_exists($destino))
                 {
-                    $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
+                    $body .= "<br><br> Revisar archivo adjunto.";
                 }
                 //desactivar asta que confime rogelio
-               
                 $sendmail = new SendMail();
-                $sendmail->PrepareMultipleHidden2($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
+                $sendmail->PrepareMultipleVisible($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
             }
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
