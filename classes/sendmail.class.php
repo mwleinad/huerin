@@ -160,6 +160,11 @@ class SendMail extends Main
         }
         $mail->MsgHTML($body);
         // agregar un remitente
+        if($sendDesarrollador){
+            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR-FIRST');
+            $mail->Send();
+            $mail->ClearAddresses();
+        }
         foreach($to as $correo => $name)
         {
             $mail->Subject    = $subject." A ".$name;
