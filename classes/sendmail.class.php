@@ -164,19 +164,22 @@ class SendMail extends Main
         $lote =1;
         $totalCont =1;
         $totalCorreo = count($to);
+        $logSend ="";
         foreach($to as $correo => $name)
         {
             if($cont>=50|$totalCont==$totalCorreo){
                 //resetear contador
                 $cont=1;
-                $lote++;
                 $add= "notice".$lote."@braunhuerin.com.mx";
                 //$add="isc061990@gmail.com";
                 //$mail->AddAddress($add,'Notice'.$lote);
                 $mail->Send();
+                $logSend.="Lote ".$lote." enviado".chr(13).chr(10);
+                $lote++;
                 $mail->clearAllRecipients();
 
             }else {
+                $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
                 $mail->AddBCC($correo, $name);
                 $cont++;
             }
@@ -184,9 +187,19 @@ class SendMail extends Main
         }
         $mail->clearAllRecipients();
         if($sendDesarrollador){
+            $file = trim('f'.strtotime(date('Y-m-d H:i:s')).".txt");
+            $filePath = DOC_ROOT."/sendFiles/".$file;
+            $open = fopen($filePath,"w");
+            if ( $open ) {
+                fwrite($open, $logSend);
+                fclose($open);
+                $mail->AddAttachment($filePath, $file);
+            }
+
             $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR'.date('Y-m-d H:i:s',time()));
             $mail->Send();
             $mail->clearAllRecipients();
+            @unlink($filePath);
         }
         $mail->SmtpClose();
         unset($mail);
