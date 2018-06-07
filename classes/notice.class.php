@@ -241,7 +241,7 @@ class Notice extends Main
                 $sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "'";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
-                $subject = "AVISO NUEVO DE " . $this->usuario;
+                $subject = "AVISO  NUEVO DE " . $this->usuario;
                 $sendmail = new SendMail();
                 $mails = array();
                 foreach ($personal as $key => $usuario) {
@@ -262,6 +262,7 @@ class Notice extends Main
                 }
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
                 $body .= "<br><br>El aviso fue creado por " . $this->usuario;
+                $body .= "<br><br><small>Aviso".$noticeId."</small>";
                 if (file_exists($destino)) {
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
