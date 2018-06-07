@@ -256,7 +256,8 @@ class Notice extends Main
                     $depId = !$infoRol['departamentoId'] ? $usuario['departamentoId'] : $infoRol['departamentoId'];
                     // si el rol de usuario esta permitido que lo vea o que sea el coordinador o socio le llegara
                     if ((array_key_exists($depId, $owners) && in_array($roleId, $owners[$depId])) || ($usuario['tipoPersonal'] == 'Socio' || $usuario['tipoPersonal'] == 'Coordinador'))
-                        $mails[$usuario['email']] = $usuario['name'];
+                         if($this->Util()->ValidateEmail($usuario['email']))
+                             $mails[$usuario['email']] = $usuario['name'];
 
                 }
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
@@ -265,16 +266,15 @@ class Notice extends Main
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
 
-                $sendmail->PrepareMultipleVisible($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
+                $sendmail->PrepareMultipleNotice($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
             }
             //si se selecciona enviar a cliente hacer lo siguiente
-            if($this->sendCustomer){
+            /*if($this->sendCustomer){
                 //administrador,socio y coordinador pueden seleccionar enviar a cliente
                 //modificar varibale global temporalmente para que administrador,socio,coordinador pueda sacar todos los clientes.
                 //$User se vuelve a igualar ala $_SESSION['User'] en algun momento no importa.
                 $User['userId']=0;
                 $customers = $customer->EnumerateOptimizado();
-                $clientes =array();
                 //enviar a los correos de administrativo,directivo,contabilidad de cada una de las razones sociales del cliente
                 //si se repiten los correos se usara el contactName de la ultima razon encontrada.
                 $clientesCorreos = array();
@@ -294,8 +294,8 @@ class Notice extends Main
                 }
                 //desactivar asta que confime rogelio
                 $sendmail = new SendMail();
-                $sendmail->PrepareMultipleVisible($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
-            }
+                $sendmail->PrepareMultipleNotice($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
+            }*/
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();

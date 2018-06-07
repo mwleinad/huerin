@@ -19,10 +19,10 @@ class SendMail extends Main
 			$mail->MsgHTML($body);
             $mail->IsSMTP();
 			$mail->SMTPAuth   = true;
-			$mail->Host       = "mail.avantika.com.mx";
-			$mail->Port       = 587;
-			$mail->Username   = "smtp@avantika.com.mx";
-			$mail->Password   = "smtp1234";
+            $mail->Host       = SMTP_HOST2;
+            $mail->Port       = SMTP_PORT2;
+            $mail->Username   = SMTP_USER2;
+            $mail->Password   = SMTP_PASS2;
 	//		$mail->SMTPSecure="ssl";
 			$mail->SMTPDebug = 0;
 
@@ -71,10 +71,10 @@ class SendMail extends Main
 			$mail->MsgHTML($body);
             $mail->IsSMTP();
 			$mail->SMTPAuth   = true;
-			$mail->Host       = "mail.avantika.com.mx";
-			$mail->Port       = 587;
-			$mail->Username   = "smtp@avantika.com.mx";
-			$mail->Password   = "smtp1234";
+            $mail->Host       = SMTP_HOST2;
+            $mail->Port       = SMTP_PORT2;
+            $mail->Username   = SMTP_USER2;
+            $mail->Password   = SMTP_PASS2;
 	//		$mail->SMTPSecure="ssl";
 			$mail->SMTPDebug=0;
 
@@ -111,10 +111,10 @@ class SendMail extends Main
         $mail->MsgHTML($body);
         $mail->IsSMTP();
         $mail->SMTPAuth   = true;
-        $mail->Host       = "mail.avantika.com.mx";
-        $mail->Port       = 587;
-        $mail->Username   = "smtp@avantika.com.mx";
-        $mail->Password   = "smtp1234";
+        $mail->Host       = SMTP_HOST2;
+        $mail->Port       = SMTP_PORT2;
+        $mail->Username   = SMTP_USER2;
+        $mail->Password   = SMTP_PASS2;
         //		$mail->SMTPSecure="ssl";
         $mail->SMTPDebug=0;
 
@@ -133,7 +133,7 @@ class SendMail extends Main
             return false;
 
     }
-    public function PrepareMultipleVisible($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
+    public function PrepareMultipleNotice($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
         //crear un objeto mail por cada correo
         $mail = new PHPMailer(); // defaults to using php "mail()"
@@ -143,12 +143,13 @@ class SendMail extends Main
         $mail->MsgHTML($body);
         $mail->IsSMTP();
         $mail->SMTPAuth   = true;
-        $mail->Host       = "mail.avantika.com.mx";
-        $mail->Port       = 587;
-        $mail->Username   = "smtp@avantika.com.mx";
-        $mail->Password   = "smtp1234";
+        $mail->Host       = SMTP_HOST2;
+        $mail->Port       = SMTP_PORT2;
+        $mail->Username   = SMTP_USER2;
+        $mail->Password   = SMTP_PASS2;
         //		$mail->SMTPSecure="ssl";
-        $mail->SMTPDebug=1;
+        $mail->SMTPDebug=0;
+        $mail->SMTPKeepAlive=true;
         if($attachment != "")
         {
             $mail->AddAttachment($attachment, $fileName);
@@ -158,26 +159,37 @@ class SendMail extends Main
         {
             $mail->AddAttachment($attachment2, $fileName2);
         }
-        $mail->MsgHTML($body);
-        // agregar un remitente
-        if($sendDesarrollador){
-            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR-FIRST');
-            $mail->Send();
-            $mail->ClearAddresses();
-        }
+
+        $cont=1;
+        $lote =1;
+        $totalCont =1;
+        $totalCorreo = count($to);
         foreach($to as $correo => $name)
         {
-            $mail->Subject    = $subject." A ".$name;
-            $mail->AddAddress($correo, $name);
-            $mail->Send();
-            $mail->ClearAddresses();
-        }
+            if($cont>=50|$totalCont==$totalCorreo){
+                //resetear contador
+                $cont=1;
+                $lote++;
+                $add= "notice".$lote."@braunhuerin.com.mx";
+                //$add="isc061990@gmail.com";
+                //$mail->AddAddress($add,'Notice'.$lote);
+                $mail->Send();
+                $mail->clearAllRecipients();
 
-        if($sendDesarrollador){
-            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR');
-            $mail->Send();
-            $mail->ClearAddresses();
+            }else {
+                $mail->AddBCC($correo, $name);
+                $cont++;
+            }
+            $totalCont++;
         }
+        $mail->clearAllRecipients();
+        if($sendDesarrollador){
+            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR'.date('Y-m-d H:i:s',time()));
+            $mail->Send();
+            $mail->clearAllRecipients();
+        }
+        $mail->SmtpClose();
+        unset($mail);
 
     }
 
