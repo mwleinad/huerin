@@ -4,10 +4,15 @@ define("USER_PAC", "STI070725SAA");
 define("PW_PAC", "oobrotcfl");
 
 /** SMTP **/
-define('SMTP_HOST','');
-define('SMTP_PORT','');
-define('SMTP_USER','');
-define('SMTP_PASS','');
+define('SMTP_HOST','mail.avantika.com.mx');
+define('SMTP_PORT','587');
+define('SMTP_USER','smtp@avantika.com.mx');
+define('SMTP_PASS','smtp12345');
+
+define('SMTP_HOST2','mail.braunhuerin.com.mx');
+define('SMTP_PORT2','587');
+define('SMTP_USER2','avisos@braunhuerin.com.mx');
+define('SMTP_PASS2','Av1s0s');
 
 /** PAGINACION **/
 define('ITEMS_PER_PAGE', '15');
