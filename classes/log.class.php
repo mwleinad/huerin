@@ -464,7 +464,7 @@ class Log extends Util
 	    if(!$field)
 	        $field ="Campo indefinido";
 
-        return $field;
+        return utf8_decode($field);
     }
 
   		
