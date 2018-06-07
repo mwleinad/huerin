@@ -135,64 +135,43 @@ class SendMail extends Main
     }
     public function PrepareMultipleVisible($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
+        //crear un objeto mail por cada correo
+        $mail = new PHPMailer(); // defaults to using php "mail()"
+        $mail->AddReplyTo($from, $fromName);
+        $mail->SetFrom($from, $fromName);
+        $mail->Subject    = $subject;
+        $mail->MsgHTML($body);
+        $mail->IsSMTP();
+        $mail->SMTPAuth   = true;
+        $mail->Host       = "mail.avantika.com.mx";
+        $mail->Port       = 587;
+        $mail->Username   = "smtp@avantika.com.mx";
+        $mail->Password   = "smtp1234";
+        //		$mail->SMTPSecure="ssl";
+        $mail->SMTPDebug=1;
+        if($attachment != "")
+        {
+            $mail->AddAttachment($attachment, $fileName);
+        }
+
+        if($attachment2 != "")
+        {
+            $mail->AddAttachment($attachment2, $fileName2);
+        }
+        $mail->MsgHTML($body);
+        // agregar un remitente
         foreach($to as $correo => $name)
         {
-            //crear un objeto mail por cada correo
-            $mail = new PHPMailer(); // defaults to using php "mail()"
-
-            $mail->AddReplyTo($from, $fromName);
-            $mail->SetFrom($from, $fromName);
-            $mail->Subject    = $subject;
-            $mail->MsgHTML($body);
-            $mail->IsSMTP();
-            $mail->SMTPAuth   = true;
-            $mail->Host       = "mail.avantika.com.mx";
-            $mail->Port       = 587;
-            $mail->Username   = "smtp@avantika.com.mx";
-            $mail->Password   = "smtp1234";
-            //		$mail->SMTPSecure="ssl";
-            $mail->SMTPDebug=1;
-            if($attachment != "")
-            {
-                $mail->AddAttachment($attachment, $fileName);
-            }
-
-            if($attachment2 != "")
-            {
-                $mail->AddAttachment($attachment2, $fileName2);
-            }
+            $mail->Subject    = $subject." A ".$name;
             $mail->AddAddress($correo, $name);
             $mail->Send();
-            unset($mail);
+            $mail->ClearAddresses();
         }
+
         if($sendDesarrollador){
-            //crear un objeto mail por cada correo
-            $mail = new PHPMailer(); // defaults to using php "mail()"
-
-            $mail->AddReplyTo($from, $fromName);
-            $mail->SetFrom($from, $fromName);
-            $mail->Subject    = $subject;
-            $mail->MsgHTML($body);
-            $mail->IsSMTP();
-            $mail->SMTPAuth   = true;
-            $mail->Host       = "mail.avantika.com.mx";
-            $mail->Port       = 587;
-            $mail->Username   = "smtp@avantika.com.mx";
-            $mail->Password   = "smtp1234";
-            //		$mail->SMTPSecure="ssl";
-            $mail->SMTPDebug=1;
-            if($attachment != "")
-            {
-                $mail->AddAttachment($attachment, $fileName);
-            }
-
-            if($attachment2 != "")
-            {
-                $mail->AddAttachment($attachment2, $fileName2);
-            }
-            $mail->AddAddress(EMAIL_DEV, 'DESARROLLADOR');
+            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR');
             $mail->Send();
-            unset($mail);
+            $mail->ClearAddresses();
         }
 
     }
