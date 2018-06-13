@@ -82,7 +82,11 @@ class Util extends Error
 		$date = explode("-", $date);
 		return $date[2]."-".$date[1]."-".$date[0];
 	}
-
+    function FormatDateMySqlSlash($date)
+    {
+        $date = explode("/", $date);
+        return $date[2]."-".$date[1]."-".$date[0];
+    }
 	function FormatDateMySqlBack($date)
 	{
 		$this->FormatDateMySql($date);
@@ -754,7 +758,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
                 }
                 else
                     return false;
-                break;
+            break;
             case 'Y-m-d':
                 if (preg_match ("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $date, $parts))
                 {
@@ -766,7 +770,19 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
                 }
                 else
                     return false;
-                break;
+            break;
+            case 'd/m/Y':
+                if (preg_match ("/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/", $date, $parts))
+                {
+                    //check weather the date is valid of not
+                    if(checkdate($parts[2],$parts[1],$parts[3]))
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                    return false;
+            break;
         }
     }
 

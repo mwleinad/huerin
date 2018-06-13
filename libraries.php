@@ -116,12 +116,12 @@ if($_GET['page'] == 'add-payment') {
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");
+include_once(DOC_ROOT."/classes/validar.class.php");
 
 
 
 $db = new DB;
 $dbRemote = new DBRemote;
-
 $error = new Error;
 $util = new Util;
 $main = new Main;
@@ -193,6 +193,7 @@ $archivos = new Archivos();
 $objectSerie=  new Serie;
 $expediente=  new Expediente;
 $rol=  new Rol;
+$valida = new Validar();
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");

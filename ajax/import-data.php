@@ -24,347 +24,205 @@ if($util->PrintErrors()){
 }
 
 //tratar el archivo
-$file_temp = $_FILES['file']['tmp_name'];
-$fp = fopen($file_temp,'r');
-$fila=1;
+
 switch($_POST['type']){
     case 'update-customer-contract':
-        //comprobar el archivo si tiene el formato correcto, que coincida los datos de cliente y razon
         $cad = "";
-        while(($row=fgetcsv($fp,4096,","))==true) {
-            if($fila==1)
-            {
-                $fila++;
-                continue;
-            }
-            //comprobar que id del contrato pertenezca al cliente y que el cliente le pertenezca el contrato
-            $sql1 = "SELECT a.contractId,b.customerId FROM contract a INNER JOIN customer b ON a.customerId=b.customerId AND b.customerId='".$row[0]."' WHERE a.contractId='".$row[1]."' ";
-            $db->setQuery($sql1);
-            $findData = $db->GetRow();
-            if(empty($findData))
-            {
-                $util->setError(0,'error','No se encontro razon social del cliente o no coincide la informacion en la fila '.$fila);
-            }
-            //si cambia nombre de razon  comprobar que no exista en otro registro(existen duplicados de razones por cliente por lo que se quita la validacion del contrato que sea solo por cliente)
-            $sql2 = "SELECT contractId FROM contract WHERE name='".$row[10]."' AND customerId!='".$row[0]."' AND contractId!='".$row[1]."' ";
-            $db->setQuery($sql2);
-            $findRazon = $db->GetRow();
-            if(!empty($findRazon))
-            {
-                $util->setError(0,'error',"La razon social ".trim($row[10])." de la fila ".$fila." ya se encuentra en uso con el cliente con ID=".$findRazon['contractId']);
-                $cad .="La razon social ".trim($row[10])." de la fila ".$fila." ya se encuentra en uso con el cliente con ID=".$findRazon['contractId'].chr(13).chr(10);
-            }
-           $fila++;
-        }
-        if($util->PrintErrors()){
+        $isValid = $valida->ValidateLayoutCustomerRazon($_FILES);
+        if(!$isValid){
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
             echo"[#]";
             echo $cad;
             exit;
         }
-
-
+        $contActualizado=0;
+        $contNoActualizado=0;
+        $contratoNoEncontrado=0;
+        $sqlCustomer ="UPDATE customer SET";
+        $strNameContact="";$strTelContact="";$strEmailContact="";$strPassContact="";$strAltaCustomer="";
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
         $fila=1;
-        $upDo=0;
-        $logFileGlobal="";
-        $htmlglob ="";
-        $stringNoResp="";
-        $addRes=0;
-        $noUpdate=0;
-        $contratoNotFound=0;
+        $idsCustomer=array();
+        $generalCustomerLog="";
+        $generalContractLog="";
         while(($row=fgetcsv($fp,4096,","))==true){
-            $html="";
-            $logFil="";
-            $noResp ="";
+           $strCust ="";
+           $strContract="";
+           $logCustLocal ="";
+           $logContractLocal ="";
             if($fila==1)
             {
                 $fila++;
                 continue;
             }
             $total =count($row);
-            //actualizar campos de cliente
+            //dejar esto por si se actualizara masivo
+            /*$strNameContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[2]);
+            $strTelContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[3]);
+            $strEmailContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[4]);
+            $strPassContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[5]);
+            $strAltaCustomer .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$util->FormatDateMySqlSlash($row[7]));
+            $idsCustomer[] =$row[0];*/
 
-            $db->setQuery('SELECT * from contract WHERE contractId="'.$row[1].'"');
-            $contrato_actual = $db->GetRow();
-            $dptos=array();
-            $deptosNew =  array();
-            $permisos_actuales = explode("-",$contrato_actual['permisos']);
-            if(empty($contrato_actual))//||((trim($row[40])==""||trim($row[40])=="--")&&(trim($row[41])==""||trim($row[41])=="--"))
+            $customer->setCustomerId($row[0]);
+            $beforeCustomer = $customer->Info();
+            $strCust ="UPDATE customer SET nameContact ='".$row[2]."', phone='".$row[3]."',email='".$row[4]."', password='".$row[5]."',fechaAlta='".$row[7]."' where customerId ='".$row[0]."'";
+            $db->setQuery($strCust);
+            $upCustomer =  $db->UpdateData();
+            if($upCustomer>0){
+                $customer->setCustomerId($row[0]);
+                $afterCustomer = $customer->Info();
+                //guardar en log
+                $log->setPersonalId($_SESSION['User']['userId']);
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla('customer');
+                $log->setTablaId($row[0]);
+                $log->setAction('Update');
+                $log->setOldValue(serialize($beforeCustomer));
+                $log->setNewValue(serialize($afterCustomer));
+                $log->SaveOnly();
+
+                $changes = $log->FindOnlyChanges(serialize($beforeCustomer),serialize($afterCustomer));
+                if(!empty($changes['after'])){
+                    $logCustLocal ="<p>El cliente ".$beforeCustomer['nameContact']." ha sido modificado</p>";
+                    $logCustLocal .=$log->PrintInFormatText($changes);
+                }
+                $contActualizado++;
+            }else{
+                $contNoActualizado++;
+            }
+            //concatenar log de updates de clientes
+            $generalCustomerLog .=$logCustLocal;
+            //comprobar si se actualizara los datos del contrato.
+            //encontrar cambios en encargados
+            $contract->setContractId($row[1]);
+            $permisos= $contract->ValidateEncargados($row);
+            if(!$permisos)
             {
-                $logFil .="este no pasa ".$row[1]."<br>";
+                $contratoNoEncontrado++;
+                $contratosIngorados .="La razon social con ID=".$row[1]." de la fila ".$fila." no se encuentra registrada";
                 $fila++;
-                $contratoNotFound++;
                 continue;
             }
-            foreach($permisos_actuales as $val) {
-                $dep = explode(',', $val);
-                $dptos[$dep[0]] = $dep[1];
-            }
-            //resetear permisos nuevos por cada iteracion
-            $deptosNew =array();
-            //encontrar id de responsables.
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(1,$dptos)&&$dptos[1]>0){
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[38])."' ");
-                $respConId =  $db->GetSingle();
-                $logFil .="Contabiliad:".$row[38]."(".$respConId.") <-> ";
-                if($dptos[1]!=$respConId&&$respConId>0)
-                    $deptosNew[1] = $respConId;
-                else
-                    $deptosNew[1] =$dptos[1];
-
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[38])."' ");
-                $respConId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respConId){
-                    $noResp .="res conta add => ".$row[38]."(".$respConId.") <->";
-                    $logFil .="Contabiliad:".$row[38]."(".$respConId.") <-> ";
-                    $deptosNew[1] =$respConId;
+            //contrato antes de actualizar
+            $changes=array();
+            $contract->setContractId($row[1]);
+            $beforeContract = $contract->Info();
+            //encontrar regimen
+            $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
+            $regimenId=$db->GetSingle();
+            $strContract ="UPDATE contract SET 
+                            permisos='".$permisos."',
+                            type='".$row[12]."',
+                            regimenId='".$regimenId."',
+                            name='".$row[10]."',
+                            nombreComercial='".$row[16]."',
+                            direccionComercial='".$row[17]."',
+                            nameContactoAdministrativo='".$row[19]."',
+                            emailContactoAdministrativo='".$row[20]."',
+                            telefonoContactoAdministrativo='".$row[21]."',
+                            nameContactoContabilidad='".$row[22]."',
+                            emailContactoContabilidad='".$row[23]."',
+                            telefonoContactoContabilidad='".$row[24]."',
+                            nameContactoDirectivo='".$row[25]."',
+                            emailContactoDirectivo='".$row[26]."',
+                            telefonoContactoDirectivo='".$row[27]."',
+                            telefonoCelularDirectivo='".$row[28]."',
+                            claveCiec='".$row[29]."',
+                            claveFiel='".$row[30]."',
+                            claveIdse='".$row[31]."',
+                            claveIsn='".$row[32]."',
+                            rfc='".$row[13]."',
+                            facturador='".$row[33]."',
+                            metodoDePago='".$row[34]."',
+                            noCuenta='".$row[35]."'
+                            WHERE contractId='".$row[1]."' ";
+            $strContract .=chr(13).chr(10);
+            $db->setQuery($strContract);
+            $upContract =  $db->UpdateData();
+            if($upContract>0){
+                $contract->setContractId($row[1]);
+                $afterContract = $contract->Info();
+                //guardar en log
+                $log->setPersonalId($_SESSION['User']['userId']);
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla('contract');
+                $log->setTablaId($row[1]);
+                $log->setAction('Update');
+                $log->setOldValue(serialize($beforeContract));
+                $log->setNewValue(serialize($afterContract));
+                $log->SaveOnly();
+                $changes = $log->FindOnlyChanges(serialize($beforeContract),serialize($afterContract));
+                if(!empty($changes['after'])){
+                    $logContractLocal ="<p>La razon social ".$beforeContract['name']." del cliente ".$beforeContract['nameContact']." ha sido modificado</p>";
+                    $logContractLocal .=$log->PrintInFormatText($changes);
                 }
-
-
-            }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(8,$dptos)&&$dptos[8]>0) {
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[39]) . "' ");
-                $respNomId = $db->GetSingle();
-                $logFil .="Nomina:".$row[39]."(".$respNomId.") <-> ";
-                if ($dptos[8] != $respNomId&&$respNomId>0)
-                    $deptosNew[8] = $respNomId;
-                else
-                    $deptosNew[8] =$dptos[8];
+                $contActualizado++;
             }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[39])."' ");
-                $respNomId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respNomId){
-                    $noResp .="res nomina add => ".$row[39]."(".$respNomId.") <->";
-                    $logFil .="Nomina:".$row[39]."(".$respNomId.") <-> ";
-                    $deptosNew[8] =$respNomId;
-                }
-
-
+                $contNoActualizado++;
             }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(21,$dptos)&&$dptos[21]>0) {
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[40]) . "' ");
-                $respAdmId = $db->GetSingle();
-                $logFil .="Admin:".$row[40]."(".$respAdmId.") <-> ";
-                if ($dptos[21] != $respAdmId&&$respAdmId>0)
-                    $deptosNew[21] = $respAdmId;
-                else
-                    $deptosNew[21] =$dptos[21];
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[40])."' ");
-                $respAdmId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respAdmId){
-                    $noResp .="res admin add => ".$row[40]."(".$respAdmId.") <->";
-                    $logFil .="Admin:".$row[40]."(".$respAdmId.") <-> ";
-                    $deptosNew[21]=$respAdmId;
-                }
-            }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(22,$dptos)&&$dptos[22]>0) {
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[41]) . "' ");
-                $respJurId = $db->GetSingle();
-                $logFil .="Jurid:".$row[41]."(".$respJurId.") <-> ";
-                if ($dptos[22] != $respJurId&&$respJurId>0)
-                    $deptosNew[22] = $respJurId;
-                else
-                    $deptosNew[22] =$dptos[22];
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[41])."' ");
-                $respJurId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respJurId){
-                    $noResp .="res juridi add => ".$row[41]."(".$respJurId.") <->";
-                    $logFil .="Jurid:".$row[41]."(".$respJurId.") <-> ";
-                    $deptosNew[22]=$respJurId;
-                }
-            }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(24,$dptos)&&$dptos[24]>0) {
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[42]) . "' ");
-                $respImmId = $db->GetSingle();
-                $logFil .="Imms:".$row[42]."(".$respImmId.") <-> ";
-                if ($dptos[24] != $respImmId&&$respImmId>0)
-                    $deptosNew[24] = $respImmId;
-                else
-                    $deptosNew[24] =$dptos[24];
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[42])."' ");
-                $respImmId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respImmId){
-                    $noResp .="res Imm add => ".$row[42]."(".$respImmId.") <->";
-                    $logFil .="Jurid:".$row[42]."(".$respImmId.") <-> ";
-                    $deptosNew[24]=$respImmId;
-                }
-            }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(26,$dptos)&&$dptos[26]>0) {
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[43]) . "' ");
-                $respMsjId = $db->GetSingle();
-                $logFil .="Mensaje :".$row[43]."(".$respMsjId.") <-> ";
-                if ($dptos[26] != $respMsjId&&$respMsjId>0)
-                    $deptosNew[26] = $respMsjId;
-                else
-                    $deptosNew[26] =$dptos[26];
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[43])."' ");
-                $respMsjId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respMsjId){
-                    $noResp .="res Imm add => ".$row[43]."(".$respMsjId.") <->";
-                    $logFil .="Jurid:".$row[43]."(".$respMsjId.") <-> ";
-                    $deptosNew[26]=$respMsjId;
-                }
-            }
-            /*--------------------------------------------------------------------------------------*/
-            if(array_key_exists(31,$dptos)&&$dptos[31]>0) {
-
-                $db->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[44]) . "' ");
-                $respAudId = $db->GetSingle();
-                $logFil .="Audit :".$row[44]."(".$respAudId.") <-> ";
-                if ($dptos[31] != $respAudId&&$respAudId>0)
-                    $deptosNew[31] = $respAudId;
-                else
-                    $deptosNew[31] =$dptos[31];
-            }else{
-                //no tiene reposable o el responsable es nulo
-                $db->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[44])."' ");
-                $respAudId =  $db->GetSingle();
-                //si el responsable existe se agrega
-                if($respAudId){
-                    $noResp .="res audit add => ".$row[44]."(".$respAudId.") <->";
-                    $logFil .="Jurid:".$row[44]."(".$respAudId.") <-> ";
-                    $deptosNew[31]=$respAudId;
-                }
-            }
-            //concatenar nuevos permisos
-            $per = array();
-            foreach($deptosNew as $kp=>$valp){
-                $cad= $kp.",".$valp;
-                array_push($per,$cad);
-            }
-          if($noResp!=""){
-              $addRes++;
-              $noResp .= ' ===> '.$row[1].'<br>';
-          }
-          $stringNoResp .=$noResp;
-          $logFil .= ' =|'.$row[1].'<br>';
-          $html.= $contrato_actual['permisos']."<=>".implode("-",$per);
-          $html.= "<br>";
-           if($contrato_actual['permisos']!=implode("-",$per)){
-
-               /*$logFilGlobal .=$logFil;
-               $html .='UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ';
-               $html .="<br><br>";
-               $upDo++;*/
-               $db->setQuery('UPDATE contract SET permisos="'.implode('-',$per).'" WHERE contractId="'.$row[1].'" ');
-               $up = $db->UpdateData();
-               if($up>0){
-                   $upDo++;
-                   $html .=$db->getQuery();
-                   $html .="<br><br>";
-               }
-           }else{
-              $html="";
-              $noUpdate++;
-           }
-           $htmlglob .=$html;
-            unset($per);
-            unset($dptos);
-            unset($deptosNew);
+            $generalContractLog .=$logContractLocal;
             $fila++;
         }
-
-        $htmlglob .=" total de contratos actualizados : ".$upDo."<br>";
-        echo "ok[#]";
-        echo $htmlglob;
-        echo $logFilGlobal;
-        echo "<br>contratos que no tenian responsable en una area<br><br>";
-        echo $stringNoResp;
-        echo '<br>Total de contratos que no tenian un responsable en cualquiera de las areas '.$addRes."<br>";
-        echo 'Total de contratos que no se actualizaron por tener informacion correcta '.$noUpdate;
-        echo '<br>Total de contratos no encontrados '.$contratoNotFound.'<br>';
-        break;
-    case 'imp-data-customer-contract':
-        $fila=1;
-        $upDo=0;
-        $logFileGlobal="";
-        $contCustomer=0;
-        $contContract =0;
-        while(($row=fgetcsv($fp,4096,","))==true) {
-            if ($fila == 1) {
-                $fila++;
-                continue;
+        //concatenar sql para cliente para una sola consulta
+        /* $sqlCustomer."  nameContact=CASE customerId ".$strNameContact." END,
+                             phone=CASE customerId ".$strTelContact." END, 
+                             email=CASE customerId ".$strEmailContact." END,
+                             password=CASE customerId ".$strPassContact." END,
+                             fechaAlta=CASE customerId ".$strAltaCustomer." END WHERE customerId IN(".implode(',',array_unique($idsCustomer)).")";*/
+        $file1="";
+        $nameFile1="";
+        if($generalCustomerLog!="") {
+            $nameFile1 = "BITACORA CLIENTES.html";
+            $file1 = DOC_ROOT . "/sendFiles/".$nameFile1;
+            $open = fopen($file1, "w");
+            if ($open) {
+                fwrite($open, $generalCustomerLog);
+                fclose($open);
             }
-            //actualizamos los datos del cliente en la tabla customer
-            $sqlc = "UPDATE customer 
-                     SET nameContact='".trim($row[2])."',
-                     phone='".trim($row[3])."',
-                     email='".trim($row[4])."',
-                     password='".trim($row[5])."' 
-                     WHERE customerId='".$row[0]." '
-                     ";
-            $db->setQuery($sqlc);
-            $upc = $db->UpdateData();
-            if($upc>0){
-                $contCustomer++;
-                $logFileGlobal .="---<br>El cliente ".$row[2]." con ID=".$row[0]." ha sido actualizado.<br>";
-            }
-            else
-                $logFileGlobal .="--<br>Ningun cambio realizado para el cliente ".$row[2]." con ID=".$row[0].".<br>";
-            //actualizamos datos del contrato del cliente
-            $sqlr = "UPDATE contract 
-                     SET name='".trim($row[10])."',
-                     rfc='".trim($row[13])."',
-                     nombreComercial='".trim($row[16])."',
-                     direccionComercial='".trim($row[17])."',
-                     nameContactoAdministrativo='".trim($row[19])."',
-                     emailContactoAdministrativo='".trim($row[20])."',
-                     telefonoContactoAdministrativo='".trim($row[21])."',
-                     nameContactoContabilidad='".trim($row[22])."',
-                     emailContactoContabilidad='".trim($row[23])."',
-                     telefonoContactoContabilidad='".trim($row[24])."',
-                     nameContactoDirectivo='".trim($row[25])."',
-                     emailContactoDirectivo='".trim($row[26])."',
-                     telefonoContactoDirectivo='".trim($row[27])."',
-                     telefonoCelularDirectivo='".trim($row[28])."',
-                     claveCiec='".trim($row[29])."',
-                     claveFiel='".trim($row[30])."',
-                     claveIdse='".trim($row[31])."',
-                     claveIsn='".trim($row[32])."',
-                     facturador='".trim($row[33])."',
-                     metodoDePago='".trim($row[34])."',
-                     noCuenta='".trim($row[35])."'
-                     WHERE contractId='".$row[1]." '
-                     ";
-            $db->setQuery($sqlr);
-            $upr = $db->UpdateData();
-            if($upr>0) {
-                $contContract++;
-                $logFileGlobal .= "La razon social " . $row[10] . " con ID=" . $row[1] . " ha sido actualizado. ----<br>";
-            }
-            else
-                $logFileGlobal .="Ningun cambio realizado en la razon social ".$row[10]." con ID=".$row[1].". ----<br>";
         }
+        $file2="";
+        $nameFile2="";
+        if($generalContractLog!="") {
+            $nameFile2 = "BITACORA RAZONESSOCIALES.html";
+            $file2 = DOC_ROOT."/sendFiles/".$nameFile2;
+            $open = fopen($file2,"w");
+            if ( $open ) {
+                fwrite($open, $generalContractLog);
+                fclose($open);
+            }
+        }
+
+        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $db->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
+        $who = $db->GetSingle();
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $who="Administrador de sistema(desarrollador)";
+
+        $body ="<p>Se han realizado cambios en informacion de cliente y razones sociales por el colaborador ".$who.". </p>";
+        $body .="<p>En los archivos adjuntos encontrara de manera detallada los cambios realizados por el usuario, favor de descargar el documento y abrir en su navegador predeterminado. </p>";
+        $encargados=array();
+        $sendmail = new SendMail();
+
+        if($generalContractLog!=""||$generalCustomerLog!="")
+            $sendmail->PrepareMultipleHidden($subject,$body,$encargados,"",$file1,$nameFile1,$file2,$nameFile2,'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+
+        if(is_file($file1))
+            unlink($file1);
+        if(is_file($file2))
+            unlink($file2);
+
+        $util->setError(0,'complete',$contActualizado." registros actualizados");
+        $util->setError(0,'complete',$contNoActualizado." registros no actualizados por tener informacion correcta");
+        $util->setError(0,'complete',$contratoNoEncontrado." registros no encontrados en el sistema");
+        $util->PrintErrors();
         echo "ok[#]";
-        echo $logFileGlobal;
-        echo "Total clientes actualizados = ".$contCustomer."<br>";
-        echo "Total contratos actualizados =".$contContract."<br>";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
     break;
-    case 'imp-new-razon':
+    case 'imp-new-customer':
         $logFileGlobal="";
         $contCustomer=0;
         $contContract =0;
@@ -436,10 +294,21 @@ switch($_POST['type']){
         echo "ok[#]";
         echo $logCancel;
     break;
-    case 'test-funcion':
-        $User['userId']=0;
-        $customers = $customer->EnumerateOptimizado();
+    case 'killnotuse':
 
+        $db->setQuery('select contractId from contract where activo="Si"  ');
+        $result = $db->GetResult();
+
+        foreach($result as $key =>$value){
+            $emailAdmin ="contactoadmin".$key."@aristasoluciones.com";
+            $emailConta ="contactoconta".$key."@aristasoluciones.com";
+            $emailDir ="contactodir".$key."@aristasoluciones.com";
+
+
+            /*$db->setQuery("UPDATE contract SET emailContactoAdministrativo='".$emailAdmin."',
+                                  emailContactoContabilidad='".$emailConta."',
+                                  emailContactoDirectivo='".$emailDir."' WHERE contractId='".$value['contractId']."' ");
+            $db->UpdateData();*/
+        }
       break;
 }
-fclose($fp);
