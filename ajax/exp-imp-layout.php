@@ -6,7 +6,7 @@ include_once(DOC_ROOT.'/libraries.php');
 session_start();
 include(DOC_ROOT.'/libs/excel/PHPExcel.php');
 switch($_POST['type']){
-    case 'imp-razon':
+    case 'layout-razon':
         $book =  new PHPExcel();
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
@@ -28,6 +28,7 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow(13,1,'C.P');
         $sheet->setCellValueByColumnAndRow(14,1,'METODO DE PAGO');
         $sheet->setCellValueByColumnAndRow(15,1,'No. CUENTA');
+        $sheet->setCellValueByColumnAndRow(16,1,'CLAVE SIPARE');
         $sheet->setCellValueByColumnAndRow(17,1,'DIRECCION COMERCIAL');
         $sheet->setCellValueByColumnAndRow(18,1,'CONTACTO ADMINISTRATIVO');
         $sheet->setCellValueByColumnAndRow(19,1,'EMAIL ADMINISTRATIVO');
@@ -50,6 +51,8 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow(36,1,'RESP. IMSS');
         $sheet->setCellValueByColumnAndRow(37,1,'RESP. MENSAJERIA');
         $sheet->setCellValueByColumnAndRow(38,1,'RESP. AUDITORIA');
+        $sheet->setCellValueByColumnAndRow(39,1,'TIPO DE REGIMEN');
+        $sheet->setCellValueByColumnAndRow(40,1,'TIPO DE SOCIEDAD');
 
 
 
@@ -71,7 +74,7 @@ switch($_POST['type']){
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
         break;
-    case 'imp-customer':
+    case 'layout-customer':
         $book =  new PHPExcel();
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');

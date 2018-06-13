@@ -8,8 +8,8 @@
             <label>Descargar layout</label>
             <select  class="smallInput " name="formato" id="formato">
                 <option value="">Seleccionar</option>
-                <option value="imp-razon">Layaout de nueva razon social</option>
-                <option value="imp-customer">Layaout de nuevo cliente</option>
+                <option value="layout-razon">Layaout de nueva razon social</option>
+               <!-- <option value="layout-customer">Layaout de nuevo cliente</option>-->
             </select>
     </div>
     <div class="clear">

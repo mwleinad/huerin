@@ -3066,6 +3066,66 @@ class Contract extends Main
         return $permisos;
 
     }
+    function ConcatenarEncargados($row=array()){
+        $permisos ="";
+        $deptos=array();
+        //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
+        if($row[32]!="" and $row[32]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[32]))."'");
+            $idCont=$this->Util()->DB()->GetSingle();
+            if($idCont)
+                $deptos[1]=$idCont;
+        }
+        if($row[33]!="" and $row[33]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[33]))."'");
+            $idNom=$this->Util()->DB()->GetSingle();
+            if($idNom)
+                $deptos[8]=$idNom;
+        }
+        if($row[34]!="" and $row[34]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[34]))."'");
+            $idAdmin=$this->Util()->DB()->GetSingle();
+            if($idAdmin)
+                $deptos[21]=$idAdmin;
+        }
+        if($row[35]!="" and $row[35]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[35]))."'");
+            $idJur=$this->Util()->DB()->GetSingle();
+            if($idJur)
+                $deptos[22]=$idJur;
+
+        }
+        if($row[36]!="" and $row[36]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[36]))."'");
+            $idImss=$this->Util()->DB()->GetSingle();
+            if($idImss)
+                $deptos[24]=$idImss;
+        }
+        if($row[37]!="" and $row[37]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[37]))."'");
+            $idMen=$this->Util()->DB()->GetSingle();
+            if($idMen)
+                $deptos[26]=$idMen;
+        }
+        if($row[38]!="" and $row[38]!="--" ){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[38]))."'");
+            $idAud=$this->Util()->DB()->GetSingle();
+            if($idAud)
+                $deptos[31]=$idAud;
+        }
+
+        $permisosArray=array();
+        foreach($deptos as $dep=>$per){
+            $cad ="";
+            $cad =$dep.",".$per;
+            $permisosArray[]=$cad;
+        }
+
+        $permisos = implode('-',$permisosArray);
+
+        return $permisos;
+    }
+
 }
 
 ?>
