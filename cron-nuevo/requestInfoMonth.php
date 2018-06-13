@@ -44,7 +44,8 @@ include_once(DOC_ROOT.'/libraries.php');
         $correos=array();
         $razon->setContractId($value['contractId']);
         $correos = $razon->getEmailContractByArea('administracion');
-        $correosGeneral = array_merge($correosGeneral,$correos['allEmails']);
+        if(is_array($correos['allEmails']))
+            $correosGeneral = array_merge($correosGeneral,$correos['allEmails']);
 
     }
     $correosGeneral = array_unique($correosGeneral);
