@@ -256,7 +256,7 @@ class Log extends Util
                     }
                     $body .= "</tbody></table>";
                 }
-                break;
+            break;
         }
         //encontrar correos de los jefes de cada encargado, esto siempre se debe cumplor debido  a que todos tiene jefe inmediato hasta llegar a jacobo
         $correosJefes=array();
@@ -475,9 +475,12 @@ class Log extends Util
 
         return utf8_decode($field);
     }
-    function PrintInFormatText($changes){
-        $html ="Cambios realizados<br>";
-        $html .="<table>
+    function PrintInFormatText($changes,$tipo='complete'){
+	    $html="";
+	    switch($tipo){
+            case 'complete':
+                $html .="Cambios realizados<br>";
+                $html .="<table>
                         <thead>
                           <tr>
                             <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion anterior</th>
@@ -490,15 +493,38 @@ class Log extends Util
                             <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Valor</th>
                           </tr>
                         </thead><tbody>";
-        foreach($changes['after'] as $ck=>$vc){
-            $html .="<tr>
+                foreach($changes['after'] as $ck=>$vc){
+                    $html .="<tr>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".$changes['before'][$ck]['valor']."</td>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
                                 </tr>";
+                }
+                $html .="</tbody></table><br>";
+            break;
+            case 'simple':
+                if(!empty($changes)) {
+                    $html .="Informacion detallada del registro<br>";
+                    $html .="<table>
+                        <thead>
+                          <tr>
+                            <th style='text-align: left;border-right:1px solid;border-bottom: 1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom: 1px solid;font-size:14px;font-weight: bold'>Valor</th>            
+                          </tr>
+                        </thead><tbody>";
+                    foreach ($changes as $ck => $vc) {
+                        $html .= "<tr>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom: 1px solid'>" . $changes[$ck]['campo'] . ": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . $changes[$ck]['valor'] . "</td>                                 
+                                </tr>";
+                    }
+                    $html .= "</tbody></table>";
+                }
+            break;
+
         }
-        $html .="</tbody></table><br>";
+
         return $html;
     }
 }//Log
