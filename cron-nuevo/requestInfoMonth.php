@@ -33,7 +33,7 @@ include_once(DOC_ROOT.'/libraries.php');
     $db->setQuery($sql);
     $result  = $db->GetResult();
     if(empty($result)){
-        $logBody ="<p>No se encontro razones sociales atrasadas en la recepcion de informacion correspondiente al mes de ".$util->GetMonthByKey(5)." de ".date('Y')."</p>";
+        $logBody ="<p>No se encontro razones sociales atrasadas en la recepcion de informacion correspondiente al mes de ".$util->GetMonthByKey((int)date('m'))." de ".date('Y')."</p>";
         $sendmail->Prepare('LOG SOLICITUD MENSUAL DE INFO',$logBody,'avisos@braunhuerin.com.mx','','','','','','noreply@braunhuerin.com.mx','CRON EMPTY');
         exit;
     }
@@ -57,7 +57,7 @@ include_once(DOC_ROOT.'/libraries.php');
         $subject ="RECEPCION DE INFORMACION";
         $body .="<div style='width:550px;overflow-wrap: break-word; text-align: justify'>";
         $body .="<p>Buen dia estimados.</p>";
-        $body .="<p>A efectos de iniciar nuestros trabajos de registro y proceso de su información financiera correspondientes al mes de ".$util->GetMonthByKey(5)." de ".date('Y').", agradeceremos nos informen la fecha en que podemos contar con la documentación electrónica del mes (XML y PDF), tal como se señala en los archivos adjuntos, estas deben incluir los estados de cuenta bancarios originales.</p>";
+        $body .="<p>A efectos de iniciar nuestros trabajos de registro y proceso de su información financiera correspondientes al mes de ".$util->GetMonthByKey((int)date('m'))." de ".date('Y').", agradeceremos nos informen la fecha en que podemos contar con la documentación electrónica del mes (XML y PDF), tal como se señala en los archivos adjuntos, estas deben incluir los estados de cuenta bancarios originales.</p>";
         $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p>";
         $body .="<p>Cabe señalar que el envío de la documentación e información, debe ser dentro de los 5 primeros días de mes.</p>";
         $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p></div>";
