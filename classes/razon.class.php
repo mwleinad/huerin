@@ -36,7 +36,7 @@ class Razon extends Contract
        if(!$area)
            return false;
 
-       switch($area)
+       switch(strtolower($area))
        {
            case 'Administracion':
            case 'administracion':
@@ -46,6 +46,20 @@ class Razon extends Contract
                 if($mainCustomer)
                     @array_push($emails,$row['email']);
            break;
+           case 'contabilidad':
+               $emails = $this->Util()->ExplodeEmails($row['emailContactoContabilidad']);
+               if(!is_array($emails))
+                   $emails = array();
+               if($mainCustomer)
+                   @array_push($emails,$row['email']);
+           break;
+           case 'directivo':
+               $emails = $this->Util()->ExplodeEmails($row['emailContactoDirectivo']);
+               if(!is_array($emails))
+                   $emails = array();
+               if($mainCustomer)
+                   @array_push($emails,$row['email']);
+               break;
            case 'all':
                $emails = array();
                $emailsAdmin = $this->Util()->ExplodeEmails($row['emailContactoAdministrativo']);
