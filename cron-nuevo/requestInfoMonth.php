@@ -65,5 +65,6 @@ include_once(DOC_ROOT.'/libraries.php');
         $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.docx";
         echo count($correosFinal);
         $correosFinal=array();
+        $correosFinal['rzetina@braunhuerin.com.mx']="Rogelio Zetina";
         $sendmail->PrepareMultipleNotice($subject,utf8_decode($body),$correosFinal,'',$adjunto,'REGLAS_DE_PAPELERIA.docx','','','noreply@braunhuerin.com.mx','BRAUN&HUERIN',true);
     }
