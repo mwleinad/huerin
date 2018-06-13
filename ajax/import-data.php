@@ -207,7 +207,7 @@ switch($_POST['type']){
         $sendmail = new SendMail();
 
         if($generalContractLog!=""||$generalCustomerLog!="")
-            $sendmail->PrepareMultipleHidden($subject,$body,$encargados,"",$file1,$nameFile1,$file2,$nameFile2,'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+            $sendmail->PrepareMultipleNotice($subject,$body,$encargados,"",$file1,$nameFile1,$file2,$nameFile2,'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
 
         if(is_file($file1))
             unlink($file1);
@@ -239,7 +239,6 @@ switch($_POST['type']){
             $sociedadId ="";
             $strCust = "";
             $strContract = "";
-            $logCustLocal = "";
             $logContractLocal = "";
             if ($fila == 1) {
                 $fila++;
@@ -380,7 +379,7 @@ switch($_POST['type']){
         $encargados=array();
         $sendmail = new SendMail();
         if($generalContractLog!="")
-            $sendmail->PrepareMultipleHidden($subject,$body,$encargados,"",$file,$nameFile,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+            $sendmail->PrepareMultipleNotice($subject,$body,$encargados,"",$file,$nameFile,"","",'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
 
         if(is_file($file))
             unlink($file);
