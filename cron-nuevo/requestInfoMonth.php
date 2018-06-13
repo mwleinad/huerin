@@ -62,7 +62,7 @@ include_once(DOC_ROOT.'/libraries.php');
         $body .="<p>Cabe señalar que el envío de la documentación e información, debe ser dentro de los 5 primeros días de mes.</p>";
         $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p></div>";
 
-        $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.DOCX";
+        $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.docx";
         echo count($correosFinal);
         $correosFinal=array();
         $sendmail->PrepareMultipleNotice($subject,utf8_decode($body),$correosFinal,'',$adjunto,'REGLAS_DE_PAPELERIA.docx','','','noreply@braunhuerin.com.mx','BRAUN&HUERIN',true);
