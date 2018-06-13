@@ -94,6 +94,10 @@
 				<li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if ($page == "customer" && $tipo == "Inactivos")}class="current"{/if}>
                 <span>Listado Inactivos</span></a></li>
 				{/if}
+                {if in_array(181,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/exp-imp-data" {if ($page == "exp-imp-data")}class="current"{/if}>
+                    <span>Importar desde archivo</span></a></li>
+                {/if}
             {/if}
 
             {if $mainMnu == "reportes"}

@@ -38,6 +38,13 @@ class Log extends Util
 	public function setNewValue($value){
 		$this->newValue = $value;		
 	}
+	public function SaveOnly(){
+        $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
+				 VALUES ('".$this->personalId."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
+				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->InsertData();
+    }
 	public function Save(){
 				
 		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
@@ -247,7 +254,7 @@ class Log extends Util
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . $changes[$ck]['valor'] . "</td>                                 
                                 </tr>";
                     }
-                    $body .= "</tbody>";
+                    $body .= "</tbody></table>";
                 }
                 break;
         }
@@ -359,6 +366,7 @@ class Log extends Util
                              list($depa,$pera) = explode(',',$pa);
                              if($depa<=0 || $pera<=0)
                                  continue;
+
                              $depsAfter[$depa] = $pera;
                          }
                          if(!is_array($arrayDeps))
@@ -369,6 +377,7 @@ class Log extends Util
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
                              $persBefore = $this->Util()->DB()->GetSingle() ;
 
+
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$vad['departamentoId']]."' ");
                              $persAfter = $this->Util()->DB()->GetSingle();
 
@@ -377,8 +386,8 @@ class Log extends Util
                              if($persAfter=="")
                                  $persAfter ="Sin encargado";
 
-                             $valorBefore .="Encargado de ".$vad['departamento']." : ".$persBefore."<br>";
-                             $valorAfter  .="Encargado de ".$vad['departamento']." : ".$persAfter."<br>";
+                             $valorBefore .="Encargado de ".$vad['departamento']." : ".utf8_decode($persBefore)."<br>";
+                             $valorAfter  .="Encargado de ".$vad['departamento']." : ".utf8_decode($persAfter)."<br>";
                          }
 
                      break;
@@ -444,7 +453,7 @@ class Log extends Util
                         if($persBefore=="")
                             $persBefore ="Sin encargado";
 
-                        $valorBefore .="Encargado de ".$av['departamento']." : ".$persBefore."<br>";
+                        $valorBefore .="Encargado de ".$av['departamento']." : ".$persBefore."<br>".chr(13).chr(10);
                     }
                     break;
                 default:
@@ -466,6 +475,30 @@ class Log extends Util
 
         return utf8_decode($field);
     }
-
-  		
+    function PrintInFormatText($changes){
+        $html ="Cambios realizados<br>";
+        $html .="<table>
+                        <thead>
+                          <tr>
+                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion anterior</th>
+                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion nueva</th>
+                          </tr>
+                          <tr>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-right:1px solid;border-bottom:1px solid;font-size:14px;font-weight: bold'>Valor</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Valor</th>
+                          </tr>
+                        </thead><tbody>";
+        foreach($changes['after'] as $ck=>$vc){
+            $html .="<tr>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".$changes['before'][$ck]['valor']."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
+                                </tr>";
+        }
+        $html .="</tbody></table><br>";
+        return $html;
+    }
 }//Log

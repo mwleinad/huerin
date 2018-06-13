@@ -16,19 +16,16 @@ jQ(document).ready(function(){
                 jQ('#' + id).hide();
             },
             success: function (response) {
-                console.log(response);
                 jQ('#' + id).show();
                 var splitResp = response.split("[#]");
                 if(splitResp[0]=='ok'){
-                       jQ('#loading-img').hide();
-                      jQ('#contenido').html(splitResp[1]);
+                    jQ('#loading-img').hide();
+                    ShowStatusPopUp(splitResp[1]);
                 }
                 else{
                     jQ('#loading-img').hide();
                     ShowStatusPopUp(splitResp[1]);
                 }
-
-
             },
             error: function () {
                 jQ('#' + id).show();

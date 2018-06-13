@@ -1,7 +1,7 @@
 <div class="grid_16" id="content">
 
     <div class="grid_9">
-        <h1 class="catalogos">Exportar e importar datos</h1>
+        <h1 class="catalogos">Importar desde archivo</h1>
     </div>
     <div class="grid_6"  id="eventbox">
 
@@ -9,6 +9,7 @@
             <select  class="smallInput " name="formato" id="formato">
                 <option value="">Seleccionar</option>
                 <option value="imp-razon">Layaout de nueva razon social</option>
+                <option value="imp-customer">Layaout de nuevo cliente</option>
             </select>
     </div>
     <div class="clear">

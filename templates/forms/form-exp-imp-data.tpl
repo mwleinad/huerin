@@ -12,10 +12,11 @@
                 <td>
                     <select name="type" id="type" class="largeInput medium2">
                         <option value="">Seleccionar..</option>
-                        <option value="update-customer-contract">Actualizar cliente - razon social</option>
-                        <option value="imp-data-customer-contract">Importar datos de cliente-contratos</option>
-                        <option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
-                        <option value="test-funcion">Test funcion</option>
+                        <option value="update-customer-contract">Actualizar cliente - razones sociales</option>
+                        <option value="imp-new_customer">Importar clientes nuevos</option>
+                        <option value="imp-new-contract">Importar razones sociales nuevos</option>
+                        <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
+                        <option value="test-funcion">Test funcion</option>-->
                     </select>
                 </td>
                 <td align="center">

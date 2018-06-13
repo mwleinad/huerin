@@ -2916,6 +2916,156 @@ class Contract extends Main
        $row = $this->Util()->DB()->GetRow();
        return $row;
     }
+    /*
+     * funcion ValidateEncargados
+     * @parametros
+     * $row informacion de contrato(contractId, permisos, etc).
+     * @devuelve
+     * FALSE = en caso de que el contrato no exista.
+     * permisos=un string con los permisos nuevos en caso de que hubo cambio.
+     */
+    public function ValidateEncargados($row=array()){
+        $permisos ="";
+        $this->Util()->DB()->setQuery('SELECT permisos,contractId from contract WHERE contractId="'.$row[1].'" ');
+        $contrato_actual = $this->Util()->DB()->GetRow();
+        $dptos=array();
+        if(empty($contrato_actual))//||((trim($row[40])==""||trim($row[40])=="--")&&(trim($row[41])==""||trim($row[41])=="--"))
+        {
+            return false;
+        }
+        $permisos_actuales = explode("-",$contrato_actual['permisos']);
+        foreach($permisos_actuales as $val) {
+            $dep = explode(',', $val);
+            $dptos[$dep[0]] = $dep[1];
+        }
+        $deptosNew =array();
+        //encontrar id de responsables.
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(1,$dptos)&&$dptos[1]>0){
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[38])."' ");
+            $respConId =  $this->Util()->DB()->GetSingle();
+            if($dptos[1]!=$respConId&&$respConId>0)
+                $deptosNew[1] = $respConId;
+            else
+                $deptosNew[1] =$dptos[1];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[38])."' ");
+            $respConId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respConId){
+                $deptosNew[1] =$respConId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(8,$dptos)&&$dptos[8]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[39]) . "' ");
+            $respNomId = $this->Util()->DB()->GetSingle();
+            if ($dptos[8] != $respNomId&&$respNomId>0)
+                $deptosNew[8] = $respNomId;
+            else
+                $deptosNew[8] =$dptos[8];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[39])."' ");
+            $respNomId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respNomId){
+                $deptosNew[8] =$respNomId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(21,$dptos)&&$dptos[21]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[40]) . "' ");
+            $respAdmId = $this->Util()->DB()->GetSingle();
+            if ($dptos[21] != $respAdmId&&$respAdmId>0)
+                $deptosNew[21] = $respAdmId;
+            else
+                $deptosNew[21] =$dptos[21];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[40])."' ");
+            $respAdmId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respAdmId){
+                $deptosNew[21]=$respAdmId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(22,$dptos)&&$dptos[22]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[41]) . "' ");
+            $respJurId = $this->Util()->DB()->GetSingle();
+            if ($dptos[22] != $respJurId&&$respJurId>0)
+                $deptosNew[22] = $respJurId;
+            else
+                $deptosNew[22] =$dptos[22];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[41])."' ");
+            $respJurId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respJurId){
+                $deptosNew[22]=$respJurId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(24,$dptos)&&$dptos[24]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[42]) . "' ");
+            $respImmId = $this->Util()->DB()->GetSingle();
+            if ($dptos[24] != $respImmId&&$respImmId>0)
+                $deptosNew[24] = $respImmId;
+            else
+                $deptosNew[24] =$dptos[24];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[42])."' ");
+            $respImmId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respImmId){
+                $deptosNew[24]=$respImmId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(26,$dptos)&&$dptos[26]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[43]) . "' ");
+            $respMsjId = $this->Util()->DB()->GetSingle();
+            if ($dptos[26] != $respMsjId&&$respMsjId>0)
+                $deptosNew[26] = $respMsjId;
+            else
+                $deptosNew[26] =$dptos[26];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[43])."' ");
+            $respMsjId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respMsjId){
+                $deptosNew[26]=$respMsjId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        if(array_key_exists(31,$dptos)&&$dptos[31]>0) {
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[44]) . "' ");
+            $respAudId = $this->Util()->DB()->GetSingle();
+            if ($dptos[31] != $respAudId&&$respAudId>0)
+                $deptosNew[31] = $respAudId;
+            else
+                $deptosNew[31] =$dptos[31];
+        }else{
+            $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[44])."' ");
+            $respAudId =  $this->Util()->DB()->GetSingle();
+            //si el responsable existe se agrega
+            if($respAudId){
+                $deptosNew[31]=$respAudId;
+            }
+        }
+        /*--------------------------------------------------------------------------------------*/
+        $per = array();
+        foreach($deptosNew as $kp=>$valp){
+            $cad= $kp.",".$valp;
+            array_push($per,$cad);
+        }
+
+        $permisos =implode('-',$per);
+        unset($per);
+        unset($dptos);
+        unset($deptosNew);
+        return $permisos;
+
+    }
 }
 
 ?>
