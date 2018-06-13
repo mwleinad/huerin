@@ -167,6 +167,11 @@ class SendMail extends Main
         $logSend ="";
         foreach($to as $correo => $name)
         {
+            if($totalCorreo==1){
+                $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
+                $mail->AddAddress($correo, $name);
+                $cont++;
+            }
             if($cont>=50|$totalCont==$totalCorreo){
                 //resetear contador
                 $cont=1;
