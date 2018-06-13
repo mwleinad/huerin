@@ -388,6 +388,10 @@ class Validar extends Main
                $this->Util()->setError(0,'error','Falta cel. directivo en la fila '.$fila);
                break;
            }
+           if($row[39]==""){
+               $this->Util()->setError(0,'error','Falta tipo de regimen en la fila '.$fila);
+               break;
+           }
            if(mb_strtolower($row[2])=="persona moral"){
                if($row[40]==""){
                    $this->Util()->setError(0,'error','Falta tipo de sociedad en la fila '.$fila);
