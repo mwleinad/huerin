@@ -68,7 +68,7 @@ switch($_POST['type']){
 
             $customer->setCustomerId($row[0]);
             $beforeCustomer = $customer->Info();
-            $strCust ="UPDATE customer SET nameContact ='".$row[2]."', phone='".$row[3]."',email='".$row[4]."', password='".$row[5]."',fechaAlta='".$row[7]."' where customerId ='".$row[0]."'";
+            $strCust ="UPDATE customer SET nameContact ='".$row[2]."', phone='".$row[3]."',email='".$row[4]."', password='".$row[5]."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."' where customerId ='".$row[0]."'";
             $db->setQuery($strCust);
             $upCustomer =  $db->UpdateData();
             if($upCustomer>0){
@@ -348,7 +348,7 @@ switch($_POST['type']){
                 $log->SaveOnly();
                 $changes = $log->FindFieldDetail(serialize($infoReg));
                 if(!empty($changes)){
-                    $logContractLocal ="<p>Alta de la razon social ".$infoReg['name']." del cliente ".$row['0']."</p>";
+                    $logContractLocal ="<p>Alta de la razon social ".utf8_decode($infoReg['name'])." del cliente ".$row['0']."</p>";
                     $logContractLocal .=$log->PrintInFormatText($changes,'simple');
                 }
                 $conAgregado++;
