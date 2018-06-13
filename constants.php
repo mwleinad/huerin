@@ -11,8 +11,8 @@ define('SMTP_PASS','smtp12345');
 
 define('SMTP_HOST2','mail.braunhuerin.com.mx');
 define('SMTP_PORT2','587');
-define('SMTP_USER2','plataforma@braunhuerin.com.mx');
-define('SMTP_PASS2','Pl4t4f0rm4');
+define('SMTP_USER2','avisos@braunhuerin.com.mx');
+define('SMTP_PASS2','Av1s0s');
 
 /** PAGINACION **/
 define('ITEMS_PER_PAGE', '15');
