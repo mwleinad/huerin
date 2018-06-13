@@ -213,10 +213,179 @@ switch($_POST['type']){
             unlink($file1);
         if(is_file($file2))
             unlink($file2);
-
+        fclose($fp);
         $util->setError(0,'complete',$contActualizado." registros actualizados");
         $util->setError(0,'complete',$contNoActualizado." registros no actualizados por tener informacion correcta");
         $util->setError(0,'complete',$contratoNoEncontrado." registros no encontrados en el sistema");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+    break;
+    case 'imp-new-contract':
+        $isValid = $valida->ValidateLayoutNewContract($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo"[#]";
+            exit;
+        }
+        $generalContractLog="";
+        $fila=1;
+        $conAgregado=0;
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            $sociedadId ="";
+            $strCust = "";
+            $strContract = "";
+            $logCustLocal = "";
+            $logContractLocal = "";
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+
+            $sql = "SELECT customerId FROM customer WHERE nameContact='".$row[0]."' ";
+            $db->setQuery($sql);
+            $customerId = $db->GetSingle();
+
+            if(strtolower($row[2])=="persona moral"){
+                $db->setQuery("SELECT sociedadId FROM  sociedad WHERE lower(replace(nombreSociedad,' ',''))='".strtolower(str_replace(' ','',$row[40]))."' ");
+                $sociedadId=$db->GetSingle();
+            }
+            $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[39]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[2]))."' ");
+            $regimenId=$db->GetSingle();
+            $permisos = $contract->ConcatenarEncargados($row);
+            $sqlInsert = "INSERT INTO contract(
+                          customerId,
+                          type,
+                          regimenId,
+                          name,
+                          telefono,
+                          nombreComercial,
+                          direccionComercial,
+                          address,
+                          noExtAddress,
+                          noIntAddress,
+                          coloniaAddress,
+                          municipioAddress,
+                          estadoAddress,
+                          paisAddress,
+                          cpAddress,
+                          nameContactoAdministrativo,
+                          emailContactoAdministrativo,
+                          telefonoContactoAdministrativo,
+                          nameContactoContabilidad,
+                          emailContactoContabilidad,
+                          telefonoContactoContabilidad,
+                          nameContactoDirectivo,
+                          emailContactoDirectivo,
+                          telefonoContactoDirectivo,
+                          telefonoCelularDirectivo,
+                          claveCiec,
+                          claveFiel,
+                          claveIdse,
+                          claveIsn,
+                          claveSip,
+                          sociedadId,
+                          rfc,
+                          facturador,
+                          permisos,
+                          metodoDePago,
+                          noCuenta)
+                          VALUES(
+                          '".$customerId."',
+                          '".$row[2]."',
+                          '".$regimenId."',
+                          '".utf8_encode($row[1])."',
+                          '',
+                          '".utf8_encode($row[5])."',
+                          '".utf8_encode($row[17])."',
+                          '".$row[6]."',
+                          '".$row[7]."',
+                          '".$row[8]."',
+                          '".$row[9]."',
+                          '".$row[10]."',
+                          '".$row[11]."',
+                          '".$row[12]."',
+                          '".$row[13]."',
+                          '".utf8_encode($row[18])."',
+                          '".$row[19]."',
+                          '".$row[20]."',
+                          '".$row[21]."',
+                          '".$row[22]."',
+                          '".$row[23]."',
+                          '".$row[24]."',
+                          '".$row[25]."',
+                          '".$row[26]."',
+                          '".$row[27]."',
+                          '".$row[28]."',
+                          '".$row[29]."',
+                          '".$row[30]."',
+                          '".$row[31]."',
+                          '".$row[16]."',
+                          '".$sociedadId."',
+                          '".$row[4]."',
+                          '".$row[3]."',
+                          '".$permisos."',
+                          '".$row[14]."',
+                          '".$row[15]."'
+                          )";
+            $db->setQuery($sqlInsert);
+            $registroId =  $db->InsertData();
+            if($registroId>0)
+            {
+                $contract->setContractId($registroId);
+                $infoReg = $contract->Info();
+                //guardar en log
+                $log->setPersonalId($_SESSION['User']['userId']);
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla('contract');
+                $log->setTablaId($registroId);
+                $log->setAction('Insert');
+                $log->setOldValue('');
+                $log->setNewValue(serialize($infoReg));
+                $log->SaveOnly();
+                $changes = $log->FindFieldDetail(serialize($infoReg));
+                if(!empty($changes)){
+                    $logContractLocal ="<p>Alta de la razon social ".$infoReg['name']." del cliente ".$row['0']."</p>";
+                    $logContractLocal .=$log->PrintInFormatText($changes,'simple');
+                }
+                $conAgregado++;
+                $generalContractLog .=$logContractLocal;
+            }
+
+        }
+        fclose($fp);
+        $file="";
+        $nameFile="";
+        if($generalContractLog!="") {
+            $nameFile= "BITACORA ALTARAZON.html";
+            $file = DOC_ROOT."/sendFiles/".$nameFile;
+            $open = fopen($file,"w");
+            if ( $open ) {
+                fwrite($open, $generalContractLog);
+                fclose($open);
+            }
+        }
+        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $db->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
+        $who = $db->GetSingle();
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $who="Administrador de sistema(desarrollador)";
+
+        $body ="<p>Se han agregado razones sociales en plataforma por el colaborador ".$who.". </p>";
+        $body .="<p>En el archivo adjunto se detallan los movimientos realizados, favor de descargar el documento y abrir en su navegador predeterminado. </p>";
+        $encargados=array();
+        $sendmail = new SendMail();
+        if($generalContractLog!="")
+            $sendmail->PrepareMultipleHidden($subject,$body,$encargados,"",$file,$nameFile,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+
+        if(is_file($file))
+            unlink($file);
+
+        $util->setError(0,'complete',$conAgregado." registros agregados a plataforma.");
         $util->PrintErrors();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');

@@ -13,7 +13,7 @@
                     <select name="type" id="type" class="largeInput medium2">
                         <option value="">Seleccionar..</option>
                         <option value="update-customer-contract">Actualizar cliente - razones sociales</option>
-                        <option value="imp-new_customer">Importar clientes nuevos</option>
+                        <!--<option value="imp-new-customer">Importar clientes nuevos</option>-->S
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
                         <option value="test-funcion">Test funcion</option>-->
