@@ -322,7 +322,7 @@ class Log extends Util
 	     $news=array();
          $olds=array();
 	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador');
+             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -337,6 +337,12 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
                          $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                     break;
+                     case 'regimenId':
+                         $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                      break;
                      case 'tipoServicioId':
@@ -414,7 +420,7 @@ class Log extends Util
         $allElements = unserialize($elements);
         $news=array();
         $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador');
+            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
@@ -426,6 +432,10 @@ class Log extends Util
                     $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
+                case 'regimenId':
+                    $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                break;
                 case 'tipoServicioId':
                     $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
@@ -496,9 +506,9 @@ class Log extends Util
                 foreach($changes['after'] as $ck=>$vc){
                     $html .="<tr>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".$changes['before'][$ck]['valor']."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".utf8_decode($changes['before'][$ck]['valor'])."</td>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".utf8_decode($vc['valor'])."</td>
                                 </tr>";
                 }
                 $html .="</tbody></table><br>";
@@ -516,7 +526,7 @@ class Log extends Util
                     foreach ($changes as $ck => $vc) {
                         $html .= "<tr>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom: 1px solid'>" . $changes[$ck]['campo'] . ": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . $changes[$ck]['valor'] . "</td>                                 
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . utf8_decode($changes[$ck]['valor']) . "</td>                                 
                                 </tr>";
                     }
                     $html .= "</tbody></table>";
