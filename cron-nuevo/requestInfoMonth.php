@@ -28,7 +28,7 @@ include_once(DOC_ROOT.'/libraries.php');
     $sql ="SELECT c.name,c.contractId,b.servicioId FROM instanciaServicio a 
         INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo'
         INNER JOIN contract c ON c.contractId=b.contractId AND c.activo='Si'
-        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=05 AND YEAR(a.date)=".date('Y')."
+        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=".date('m')." AND YEAR(a.date)=".date('Y')."
         GROUP BY b.contractId ORDER BY c.NAME ASC";
     $db->setQuery($sql);
     $result  = $db->GetResult();
