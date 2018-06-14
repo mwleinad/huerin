@@ -28,13 +28,13 @@ include_once(DOC_ROOT.'/libraries.php');
     $sql ="SELECT c.name,c.contractId,b.servicioId FROM instanciaServicio a 
         INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo'
         INNER JOIN contract c ON c.contractId=b.contractId AND c.activo='Si'
-        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=".date('m')." AND YEAR(a.date)=".date('Y')."
+        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=05 AND YEAR(a.date)=".date('Y')."
         GROUP BY b.contractId ORDER BY c.NAME ASC";
     $db->setQuery($sql);
     $result  = $db->GetResult();
     if(empty($result)){
         $logBody ="<p>No se encontro razones sociales atrasadas en la recepcion de informacion correspondiente al mes de ".$util->GetMonthByKey((int)date('m'))." de ".date('Y')."</p>";
-        $sendmail->Prepare('LOG SOLICITUD MENSUAL DE INFO',$logBody,'avisos@braunhuerin.com.mx','','','','','','noreply@braunhuerin.com.mx','CRON EMPTY');
+        $sendmail->Prepare('LOG SOLICITUD MENSUAL DE INFO',$logBody,EMAIL_DEV,'','','','','','noreply@braunhuerin.com.mx','CRON EMPTY');
         exit;
     }
 
@@ -47,12 +47,18 @@ include_once(DOC_ROOT.'/libraries.php');
         if(is_array($correos['allEmails']))
             $correosGeneral = array_merge($correosGeneral,$correos['allEmails']);
 
+        $razon->setContractId($value['contractId']);
+        $correos = $razon->getEmailContractByArea('contabilidad');
+        if(is_array($correos['allEmails']))
+            $correosGeneral = array_merge($correosGeneral,$correos['allEmails']);
+
     }
     $correosGeneral = array_unique($correosGeneral);
     $correosFinal=array();
     if(!empty($correosGeneral)){
         foreach($correosGeneral as $var)
             $correosFinal[$var]='VARIOS';
+
         //preparar el cuerpo del mensajes
         $subject ="RECEPCION DE INFORMACION";
         $body .="<div style='width:550px;overflow-wrap: break-word; text-align: justify'>";
@@ -60,11 +66,9 @@ include_once(DOC_ROOT.'/libraries.php');
         $body .="<p>A efectos de iniciar nuestros trabajos de registro y proceso de su información financiera correspondientes al mes de ".$util->GetMonthByKey((int)date('m'))." de ".date('Y').", agradeceremos nos informen la fecha en que podemos contar con la documentación electrónica del mes (XML y PDF), tal como se señala en los archivos adjuntos, estas deben incluir los estados de cuenta bancarios originales.</p>";
         $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p>";
         $body .="<p>Cabe señalar que el envío de la documentación e información, debe ser dentro de los 5 primeros días de mes.</p>";
-        $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p></div>";
+        $body .="<p>Agradeciendo su apoyo, reciban un cordial saludo.</p></br>";
+        $body .="<p>No responder a este correo, favor de dirigirse con el encargado de su cuenta, Gracias!!</p></div>";
 
         $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.docx";
-        echo count($correosFinal);
-        $correosFinal=array();
-        $correosFinal['rzetina@braunhuerin.com.mx']="Rogelio Zetina";
         $sendmail->PrepareMultipleNotice($subject,utf8_decode($body),$correosFinal,'',$adjunto,'REGLAS_DE_PAPELERIA.docx','','','noreply@braunhuerin.com.mx','BRAUN&HUERIN',true);
     }
