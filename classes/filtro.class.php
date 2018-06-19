@@ -40,7 +40,7 @@ class Filtro extends Util
         //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar(el gerente igual debe ser limitado)
         //hasta este apartado el rol cliente no debe tener problemas por que ya esta filtrado a que solo sus contratos pueda ver.
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH'));
 		//if el rol del usuario tiene privilegio de ver todos los contrartos
 		if($unlimited){
 			$withPermission = true;
@@ -132,14 +132,17 @@ class Filtro extends Util
 		
 		return $subordinadosPermiso;
 	}
-	
+	/*
+	 * funcion showByDefault
+	 * comprobar el rol si es de tipo ilimitado pasando pezados de nombre de roles que son limitados
+	 * devuelve 1 si el rol es ilimitado o bien el userId de la session activa sea igual al id encargado de dar de alta a los clientes(supervisor juridico RHH)
+	 */
 	function ShowByDefault($servicios, $roleId)
 	{
 	    global $rol;
-        //comprobar el rol si es de tipo ilimitado pasando nombre de roles que queremos limitar
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
-		if(count($servicios) == 0 && $unlimited ){
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH'));
+		if((count($servicios) == 0 && $unlimited)){
 			return 1;
 		}
 		return 0;
@@ -162,7 +165,7 @@ class Filtro extends Util
 	    global $rol;
 	    //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH'));
 		if (
 			($showCliente === 0 && 
 				(!$unlimited)//($roleId > 1 && $roleId < 4)
