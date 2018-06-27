@@ -1320,12 +1320,16 @@ class Comprobante extends Producto
 			$sqlSearch .= ' AND (customer.nameContact LIKE "%'.$values['nombre'].'%" OR contract.name LIKE "%'.$values['nombre'].'%")';
 		}//if
 
-		if($values['mes']){
+		if($values['mes'] && $values['status_activo'] != '0'){
 			$sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.$values['mes'];
-		}//if
+		}elseif($values['mes'] && $values['status_activo'] == '0'){
+            $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fechaPedimento) = '.$values['mes'];
+        }
 
-		if($values['anio'])
+		if($values['anio'] && $values['status_activo'] != '0' )
 			$sqlSearch .= ' AND EXTRACT(YEAR FROM c.fecha) = '.intval($values['anio']);
+		elseif($values['anio'] && $values['status_activo'] == '0')
+            $sqlSearch .= ' AND EXTRACT(YEAR FROM c.fechaPedimento) = '.intval($values['anio']);
 
 		if($values['status_activo'] != '')
 			$sqlSearch .= ' AND c.status = "'.$values['status_activo'].'"';
@@ -1439,6 +1443,7 @@ class Comprobante extends Producto
 			}
 			$card['nombre'] = $usr['nombre'];
 			$card['fecha'] = date('d/m/Y',strtotime($val['fecha']));
+            $card['fechaPedimento'] = date('d/m/Y',strtotime($val['fechaPedimento']));
 			$card['subTotal'] = $val['subTotal'];
 			$card['porcentajeDescuento'] = $val['porcentajeDescuento'];
 			$card['descuento'] = $val['descuento'];

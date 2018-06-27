@@ -677,7 +677,7 @@ class Empresa extends Main
 			return false;
 		}
 
-		$sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.$date.'" WHERE comprobanteId = '.$id_comprobante;
+		$sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.$date.'",usuarioCancelacion="'.$_SESSION['User']['userId'].'" WHERE comprobanteId = '.$id_comprobante;
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
 

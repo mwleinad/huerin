@@ -1,0 +1,2 @@
+ALTER TABLE `comprobante` ADD COLUMN `usuarioCancelacion` INT(11) NULL AFTER `motivoCancelacion`;
+ALTER TABLE `comprobante` ADD COLUMN `fechaCancelacion` DATETIME NULL DEFAULT NULL AFTER `usuarioCancelacion`;

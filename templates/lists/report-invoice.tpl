@@ -8,7 +8,7 @@
     {/if}
 {foreachelse}
     <tr>
-        <td colspan="10">No se encontraron resultados</td>
+        <td colspan="12">No se encontraron resultados</td>
     </tr>
 {/foreach}
 </tbody>
