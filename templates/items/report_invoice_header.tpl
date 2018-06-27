@@ -6,7 +6,8 @@
         <th style="width: 5%;" scope="col">Estatus</th>
         <th style="width: 20%;" scope="col">Concepto</th>
         <th style="width: 20%;" scope="col">Razon social</th>
-        <th style="width: 10%;" scope="col">Fecha</th>
+        <th style="width: 10%;" scope="col">Fecha emision</th>
+        <th style="width: 10%;" scope="col">Fecha cancelacion</th>
         <th style="width: 5%;" scope="col">Subtotal</th>
         <th style="width: 5%;" scope="col">IVA</th>
         <th style="width: 5%;" scope="col">Total</th>
