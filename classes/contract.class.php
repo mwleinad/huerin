@@ -1685,7 +1685,7 @@ class Contract extends Main
                 //comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
                 // el usuario esta dentro de los permisos del contrato
                 $rol->setRolId($User['roleId']);
-                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH'));
+                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH','Cobrar RRHH'));
                 if ($unlimited) {//para el rol cliente siempre va arrojar que es ilimitado pero solo de sus propios contratos. desde arriba ya viene filtrado por el customerId
                     $result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
                 } else {
@@ -1707,7 +1707,7 @@ class Contract extends Main
            }
         }
         $rol->setRolId($User['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'),array('Juridico RRHH'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'),array('Juridico RRHH','Cobrar RRHH'));
         if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
