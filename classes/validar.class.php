@@ -23,6 +23,15 @@ class Validar extends Main
                 $fila++;
                 continue;
             }
+            //comprobar que el cliente se encuentra en el sistema
+            $sqlc = "SELECT customerId FROM customer  WHERE customerId='".$row[0]."' ";
+            $this->Util()->DB()->setQuery($sqlc);
+            $findCustomer = $this->Util()->DB()->GetRow();
+            if(empty($findCustomer))
+            {
+                $this->Util()->setError(0,'error','El cliente de la fila '.$fila." no se encuentra registrado");
+                break;
+            }
             //campos que no deberan estar vacio
             //nombre de cliente
             if($row[2]=="")
