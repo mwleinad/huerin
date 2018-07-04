@@ -104,7 +104,7 @@ foreach($contratos as $kc=>$valc){
                 $enviarLog=true;
 
             if(IDSUP){
-                $enviara=array(EMAIL_DEV=>$valc['razon'],'rzetina@braunhuerin.com.mx'=>$valc['razon']);
+                $enviara=array('rzetina@braunhuerin.com.mx'=>$valc['razon']);
             }
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);
             unlink($file);
