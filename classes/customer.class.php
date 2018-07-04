@@ -1518,7 +1518,6 @@ class Customer extends Main
 
 			if($countContracts > 0){
 				$result[$key]["showCliente"] = 0;
-				
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
                     $oPer =  new Personal;
                     $permisosArray = explode('-',$value['permisos']);
@@ -1591,9 +1590,10 @@ class Customer extends Main
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
 
-					//si no tiene servicios y es un coordinador o un socio hay que mostrar el cliente por default
-					if($result[$key]["showCliente"] == 0)
+					//si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
+					if($result[$key]["showCliente"] == 0 || count($serviciosContrato)==0)
 					{
+
 						$result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
 						if($result[$key]["showCliente"] > 0)
 						{
@@ -1606,13 +1606,11 @@ class Customer extends Main
 						$data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
 						//Si es usuario de contabilidad
 						$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
-
 					}//foreach
-					//si hay instancias de servcicio se muestra el cliente si no no
-					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
+					//contratos sin servicio se eliminan
+					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract,$User['']);
 			
 				}//foreach
-				
 			}else{				
 				$result[$key]["contracts"][0]["customerId"] = $val["customerId"];
 				$result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
@@ -1623,6 +1621,71 @@ class Customer extends Main
         return $result;
 		
 	}//SuggestCustomerCatalog
+    public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
+    {
+        if ($customerId)
+            $add = " AND a.customerId = '".$customerId."' ";
+
+        if ($tipo == "Activos")
+            $addActivo = " AND a.active = '1' ";
+        elseif ($tipo == "Inactivos")
+            $addActivo = " AND (a.active = '0' OR (a.active = '1' AND b.activo = 'No' ))";
+        else
+            $addActivo = " AND a.active = '1' ";
+
+        if($limite)
+            $addLimite = " LIMIT 15";
+        else
+            $addLimite = "";
+
+        $sql = "SELECT a.customerId,a.fechaAlta, a.nameContact, b.contractId, b.name,a.active,b.permisos
+				FROM customer a
+			    INNER JOIN contract b ON b.customerId = a.customerId	
+				WHERE 1 ".$sqlActive." ".$add." ".$addActivo." ".$addWhere."	
+				ORDER BY a.nameContact,b.name ASC 
+			".$addLimite."";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $oPer =  new Personal;
+        foreach ($result as $key => $val)
+        {
+            $permisosArray = explode('-',$val['permisos']);
+            foreach($permisosArray as $pk=>$vp) {
+                $dp = explode(',', $vp);
+                switch ($dp[0]) {
+                    case 1:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respContabilidad"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 8:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respNominas"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 31:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respAuditoria"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 24:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respImss"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 22:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respJuridico"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 21:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respAdministracion"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                    case 26:
+                        $oPer->setPersonalId($dp[1]);
+                        $result[$key]["respMensajeria"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
+                        break;
+                }
+            }
+        }//foreach
+        return $result;
+    }//GetListRazones()
 	
 	function GetServicesByContract($id){
 							//Checar servicios del contrato para saber si lo debemos mostrar o no

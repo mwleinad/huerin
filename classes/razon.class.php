@@ -34,7 +34,7 @@ class Razon extends Contract
        $row = $this->Util()->DB()->GetRow();
 
        if(!$area)
-           return false;
+           return $emails;
 
        switch(strtolower($area))
        {
@@ -73,7 +73,7 @@ class Razon extends Contract
        }
 
        if(count($emails)<=0)
-           return false;
+           return $emails;
 
        $row['allEmails'] = $emails;
        return $row;
@@ -85,7 +85,7 @@ class Razon extends Contract
        $this->setContractId($compInfo['userId']);
        $contratoEmails =  $this->getEmailContractByArea('administracion',false);
 
-       if(empty($contratoEmails['allEmails'])|| !$contratoEmails)
+       if(empty($contratoEmails))
            return false;
        $correos = array();
        foreach($contratoEmails['allEmails'] as $val){

@@ -23,6 +23,15 @@ class Validar extends Main
                 $fila++;
                 continue;
             }
+            //comprobar que el cliente se encuentra en el sistema
+            $sqlc = "SELECT customerId FROM customer  WHERE customerId='".$row[0]."' ";
+            $this->Util()->DB()->setQuery($sqlc);
+            $findCustomer = $this->Util()->DB()->GetRow();
+            if(empty($findCustomer))
+            {
+                $this->Util()->setError(0,'error','El cliente de la fila '.$fila." no se encuentra registrado");
+                break;
+            }
             //campos que no deberan estar vacio
             //nombre de cliente
             if($row[2]=="")
@@ -487,6 +496,133 @@ class Validar extends Main
        return true;
 
    }
+    public function ValidateLayoutOnlyEncargado($FILES){
+        $file_temp = $FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if(count($row)!=11)
+            {
+                $this->Util()->setError(0,'error','Archivo no valido');
+                break;
+            }
+            if($fila==1)
+            {
+                $fila++;
+                continue;
+            }
+            //comprobar que el cliente se encuentra en el sistema
+            $sqlc = "SELECT customerId FROM customer  WHERE customerId='".$row[0]."' ";
+            $this->Util()->DB()->setQuery($sqlc);
+            $findCustomer = $this->Util()->DB()->GetRow();
+            if(empty($findCustomer))
+            {
+                $this->Util()->setError(0,'error','El cliente de la fila '.$fila." no se encuentra registrado");
+                break;
+            }
+            //campos que no deberan estar vacio
+            //nombre de cliente
+            if($row[2]=="")
+            {
+                $this->Util()->setError(0,'error','Falta nombre del cliente  en la fila '.$fila);
+                break;
+            }
+            //nombre de razon social
+            if($row[3]==""){
+                $this->Util()->setError(0,'error','Falta razon social en la fila '.$fila);
+                break;
+            }
+            //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
+            if($row[4]!="" and $row[4]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[4])."'");
+                $idCont=$this->Util()->DB()->GetSingle();
+                if(!$idCont)
+                {
+                    $this->Util()->setError(0,'error','Responsable de contabilidad de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[5]!="" and $row[5]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[5]))."' ");
+                $idNom=$this->Util()->DB()->GetSingle();
+                if(!$idNom)
+                {
+                    $this->Util()->setError(0,'error','Responsable de nomina de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[6]!="" and $row[6]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[6]))."'");
+                $idAdmin=$this->Util()->DB()->GetSingle();
+                if(!$idAdmin)
+                {
+                    $this->Util()->setError(0,'error','Responsable de administracion de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[7]!="" and $row[7]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[7]))."'");
+                $idJur=$this->Util()->DB()->GetSingle();
+                if(!$idJur)
+                {
+                    $this->Util()->setError(0,'error','Responsable de juridico de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[8]!="" and $row[8]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[8]))."'");
+                $idImss=$this->Util()->DB()->GetSingle();
+                if(!$idImss)
+                {
+                    $this->Util()->setError(0,'error','Responsable de imss de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[9]!="" and $row[9]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[9]))."'");
+                $idMen=$this->Util()->DB()->GetSingle();
+                if(!$idMen)
+                {
+                    $this->Util()->setError(0,'error','Responsable de mensajeria de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[10]!="" and $row[10]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[10]))."'");
+                $idAud=$this->Util()->DB()->GetSingle();
+                if(!$idAud)
+                {
+                    $this->Util()->setError(0,'error','Responsable de auditoria de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            //comprobar que id del contrato pertenezca al cliente y que el cliente le pertenezca el contrato
+            $sql1 = "SELECT a.contractId,b.customerId FROM contract a INNER JOIN customer b ON a.customerId=b.customerId AND b.customerId='".$row[0]."' WHERE a.contractId='".$row[1]."' ";
+            $this->Util()->DB()->setQuery($sql1);
+            $findData = $this->Util()->DB()->GetRow();
+            if(empty($findData))
+            {
+                $this->Util()->setError(0,'error','No se encontro razon social del cliente o no coincide la informacion en la fila '.$fila);
+                break;
+            }
+            //si cambia nombre de razon  comprobar que no exista en otro registro(existen duplicados de razones por cliente por lo que se quita la validacion del contrato que sea solo por cliente)
+            //(hay duplicados de razones sociales, ignorar esta condicion se hara depues de haber hecho la correccion de eso)
+            /*$sql2 = "SELECT contractId FROM contract WHERE name='".$row[10]."' AND customerId!='".$row[0]."' AND contractId!='".$row[1]."' ";
+            $db->setQuery($sql2);
+            $findRazon = $db->GetRow();
+            if(!empty($findRazon))
+            {
+                $this->Util()->setError(0,'error',"La razon social ".trim($row[10])." de la fila ".$fila." ya se encuentra en uso con el cliente con ID=".$findRazon['contractId']);
+                $cad .="La razon social ".trim($row[10])." de la fila ".$fila." ya se encuentra en uso con el cliente con ID=".$findRazon['contractId'].chr(13).chr(10);
+            }*/
+            $fila++;
+        }
+        fclose($fp);
+        if($this->Util()->PrintErrors())
+            return false;
+
+        return true;
+    }
 
 
 }

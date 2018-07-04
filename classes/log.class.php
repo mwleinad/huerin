@@ -66,17 +66,26 @@ class Log extends Util
         $encargados=  array();
         $jefes = array();
         //componer mensaje de accion
+        $wherehuerin="";
+        $excluyehuerin=false;
+        $defaultId= array(32);
         switch($this->action){
             case 'Insert':
                 $accion = "ha sido dado de alta ";
             break;
             case 'Update':
+                $excluyehuerin = true;
+                $wherehuerin = " AND personalId!='".IDHUERIN."'";
+                array_push($defaultId,IDHUERIN);
                 $accion ="ha sido modificada ";
             break;
             case 'Baja':
                 $accion="ha sido  dado de baja ";
             break;
             case 'Reactivacion':
+                $excluyehuerin = true;
+                $wherehuerin = " AND personalId!='".IDHUERIN."'";
+                array_push($defaultId,IDHUERIN);
                 $accion="ha sido reactivado ";
             break;
             case 'Delete':
@@ -99,10 +108,10 @@ class Log extends Util
 
                     if($per>0)
                     {
-                        $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
+                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ".$wherehuerin);
                         $row = $this->Util()->DB()->GetRow();
-                        if($this->Util()->ValidateEmail($row['email'])){
-                            $encargados[$row['email']] = $row['name'];
+                        if($this->Util()->ValidateEmail(trim($row['email']))){
+                            $encargados[trim($row['email'])] = $row['name'];
                             //encontramos los jefes de forma ascendente de los encargados de cuenta
                             $personal= new Personal();
                             $yourJefes= $personal->Jefes($row['personalId']);
@@ -114,7 +123,7 @@ class Log extends Util
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if(empty($encargados))
                 {
-                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).")";
                     $this->Util()->DB()->setQuery($sqlo);
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
@@ -122,8 +131,8 @@ class Log extends Util
                         if($pers['departamentoId']==26||$pers['departamentoId']==32)
                             continue;
 
-                        if($this->Util()->ValidateEmail($pers['email']))
-                            $encargados[$pers['email']] = $pers['name'];
+                        if($this->Util()->ValidateEmail(trim($pers['email'])))
+                            $encargados[trim($pers['email'])] = $pers['name'];
                     }
                 }
                 $body .="La sigiuiente razon social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
@@ -144,10 +153,10 @@ class Log extends Util
 
                     if($per>0)
                     {
-                        $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$per.'" ');
+                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ".$wherehuerin);
                         $row = $this->Util()->DB()->GetRow();
-                        if($this->Util()->ValidateEmail($row['email'])){
-                            $encargados[$row['email']] = $row['name'];
+                        if($this->Util()->ValidateEmail(trim($row['email']))){
+                            $encargados[trim($row['email'])] = $row['name'];
                             //encontramos los jefes de forma ascendente de los encargados de cuenta
                             $personal= new Personal();
                             $yourJefes= $personal->Jefes($row['personalId']);
@@ -160,7 +169,7 @@ class Log extends Util
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if(empty($encargados))
                 {
-                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
+                    $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).")";
                     $this->Util()->DB()->setQuery($sqlo);
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
@@ -169,7 +178,7 @@ class Log extends Util
                         continue;
 
                         if($this->Util()->ValidateEmail($pers['email']))
-                            $encargados[$pers['email']] = $pers['name'];
+                            $encargados[trim($pers['email'])] = trim($pers['name']);
                     }
                 }
                 if($this->action=="Insert"){
@@ -183,7 +192,7 @@ class Log extends Util
                 break;
             case 'customer'://en la edicion de cliente este deberia llegarle en teoria solo a jacobo y rogelio que son los que revisan operaciones.
                 //enviar a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
-                $sqlp  ="SELECT email,name,departamentoId FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".IDHUERIN.",32)";
+                $sqlp  ="SELECT email,name,departamentoId FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).")";
                 $this->Util()->DB()->setQuery($sqlp);
                 $persons= $this->Util()->DB()->GetResult();
                 foreach($persons as $per)
@@ -192,7 +201,7 @@ class Log extends Util
                         continue;
 
                     if($this->Util()->ValidateEmail($per['email']))
-                        $encargados[$per['email']] = $per['name'];
+                        $encargados[trim($per['email'])] = $per['name'];
                 }
 
                 $sql  ="SELECT nameContact FROM customer  WHERE customerId='".$this->tablaId."' ";
@@ -265,19 +274,28 @@ class Log extends Util
             //si jefes no esta vacio hay que agregar a ROGELIO ya que es coordinador
             array_push($jefes,32);
             $jefes = array_unique($jefes);
+
+            //comprobar si se excluye a huerin
+            if($excluyehuerin){
+                $index = array_search(IDHUERIN,$jefes);
+                if($index)
+                    unset($jefes[$index]);
+            }
+
+
             $ids = implode(',',$jefes);
             $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
             $resultJefes = $this->Util()->DB()->GetResult();
             foreach($resultJefes as $var){
-                if($this->Util()->ValidateEmail($var['email'])){
-                    $correosJefes[$var['email']] =$var['name'];
+                if($this->Util()->ValidateEmail(trim($var['email']))){
+                    $correosJefes[trim($var['email'])] =$var['name'];
                 }
             }
         }
         $encargados = array_merge($encargados,$correosJefes);
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $mail->PrepareMultipleHidden($subject,$body,$encargados,'',"","","","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+        $mail->PrepareMultipleNotice($subject,$body,$encargados,'',"","","","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
 		return true;				
 	}
 	
