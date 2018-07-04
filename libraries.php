@@ -117,7 +117,7 @@ if($_GET['page'] == 'add-payment') {
 include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");
 include_once(DOC_ROOT."/classes/validar.class.php");
-include_once(DOC_ROOT."/classes/createPdfNotification.class.php");
+include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
 
 
 
