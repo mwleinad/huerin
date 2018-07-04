@@ -1,7 +1,7 @@
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
 <thead>
 	<tr>
-		<th align="center" width="60">Comentario</th>
+		<!--<th align="center" width="60">Comentario</th>-->
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">C. Asignado</th>
 		<th align="center" width="60">Razon Social</th>
@@ -24,6 +24,7 @@
 	</pre>
 {foreach from=$cleanedArray item=item key=key}
 		<tr>
+			<!--
 			<td align="center" class="" title="{$item.nameContact}">
 				<span id="comentario-{$item.servicioId}">{$item.comentario}</span>
                     {if in_array(117,$permissions)||$User.isRoot}
@@ -32,7 +33,7 @@
 					{if in_array(99,$permissions)||$User.isRoot}
 						<a href="{$WEB_ROOT}/download_all_tasks.php?id={$item.servicioId}" style="color:#FFF;font-weight:bold"><img src="{$WEB_ROOT}/images/b_disc.png" class="spanEdit" id="{$item.servicioId}" title="Descargar todos los archivos"/></a>
 					{/if}
-			</td>
+			</td>-->
     		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     		<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
     		<td align="center" class="" title="{$item.name}">{$item.name}</td>
