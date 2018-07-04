@@ -81,6 +81,14 @@ $mail = new SendMail();
 $oe = array();
 $enviarLog =false;
 foreach($contratos as $kc=>$valc){
+    if(IDSUP){
+        $personal->setPersonalId(IDSUP);
+        $subordinados = $personal->Subordinados();
+        $idSubordinados = $util->ConvertToLineal($subordinados, 'personalId');
+        $continuar = $filtro->findPermission($valc,$idSubordinados);
+        if(!$continuar)
+            continue;
+    }
     $enviara = array();
     if($createPdf->CreateFileNotificationToContract($valc)){
         $nameFile = "pendientes_".$valc['contractId'].".pdf";
