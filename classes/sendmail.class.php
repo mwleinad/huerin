@@ -171,9 +171,8 @@ class SendMail extends Main
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
                 $mail->AddAddress($correo, $name);
                 $cont++;
-                $totalCont++;
             }
-            if($cont>=50||$totalCont>$totalCorreo){
+            if($cont>=50||$totalCont==$totalCorreo){
                 //resetear contador
                 $cont=1;
                 $add= "notice".$lote."@braunhuerin.com.mx";
