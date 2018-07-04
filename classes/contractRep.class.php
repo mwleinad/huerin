@@ -8,7 +8,7 @@
 session_start();
 class ContractRep extends Main
 {
-    private function findPermission($contrato, $respsCuenta){
+    public function findPermission($contrato, $respsCuenta){
         $split = split('-',$contrato['permisos']);
         foreach($split as $sp){
             $split2 = split(',',$sp);
