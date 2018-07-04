@@ -30,7 +30,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $db->setQuery('SET SESSION group_concat_max_len = 10240');
 $db->ExecuteQuery();
 $db->CleanQuery();
-$sql ="SELECT a.servicioId,e.nombreServicio,c.contractId,c.name as razon,GROUP_CONCAT(DISTINCT a.date) as meses  FROM instanciaServicio a 
+$sql ="SELECT a.servicioId,e.nombreServicio,c.contractId,c.permisos,c.name as razon,GROUP_CONCAT(DISTINCT a.date) as meses  FROM instanciaServicio a 
        INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo'
        INNER JOIN contract c ON b.contractId=c.contractId AND c.activo='Si'
        INNER JOIN customer d ON c.customerId=d.customerId AND d.active='1'
@@ -42,13 +42,29 @@ $result = $db->GetResult();
 $contratos=array();
 $idContracts=array();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
+$filtro = new ContractRep();
+$count=1;
 foreach($result as $key => $value){
     $meses=array();
-  //comprobar que los clientes
+    if(IDSUP){
+        $personal->setPersonalId(IDSUP);
+        $subordinados = $personal->Subordinados();
+        $idSubordinados = $util->ConvertToLineal($subordinados, 'personalId');
+        $continuar = $filtro->findPermission($value,$idSubordinados);
+        if(!$continuar)
+            continue;
+    }
+
     $contratoId = $value['contractId'];
     $servicioId = $value['servicioId'];
-    if(!in_array($contratoId,$idContracts))
+    if(!in_array($contratoId,$idContracts)){
         array_push($idContracts,$contratoId);
+        if(ITER_LIMIT){//se usa para pruebas limitar cantidad de contratos
+            if($count>ITER_LIMIT)
+                break;
+        }
+    }
+
 
     $contratos[$contratoId]["razon"]=$value['razon'];
     $contratos[$contratoId]["contractId"]=$value['contractId'];
@@ -56,6 +72,8 @@ foreach($result as $key => $value){
     $meses = explode(',',$value['meses']);
     rsort($meses);
     $contratos[$contratoId]['servicios'][$servicioId]['instancias'] = $meses;
+
+    $count++;
 }
 $createPdf = new CreatePdfNotification();
 $razon  = new Razon();
@@ -85,6 +103,9 @@ foreach($contratos as $kc=>$valc){
             if($valc===end($contratos))
                 $enviarLog=true;
 
+            if(IDSUP){
+                $enviara=array(EMAIL_DEV=>$valc['razon'],'rzetina@braunhuerin.com.mx'=>$valc['razon']);
+            }
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);
             unlink($file);
         }
@@ -96,7 +117,7 @@ $sql1 ="SELECT a.servicioId,d.nombreServicio,c.contractId,c.name as razon  FROM 
        INNER JOIN customer e ON c.customerId=e.customerId AND e.active='1' 
        INNER JOIN tipoServicio d ON b.tipoServicioId=d.tipoServicioId AND d.status='1' AND d.periodicidad!='Eventual'
        WHERE b.contractId NOT IN(".implode(',',$idContracts).")
-       AND a.class IN('Completo','CompletoTardio') AND a.date>='2017-01-01' AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)))  GROUP BY b.contractId ";
+       AND a.class IN('Completo','CompletoTardio') AND a.date>='2017-01-01' AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH)))  GROUP BY b.contractId ";
 $db->setQuery($sql1);
 $enregla = $db->GetResult();
 if(!is_array($enregla))
@@ -104,6 +125,7 @@ if(!is_array($enregla))
 
 $enviarLog=false;
 $body ="";
+$count=1;
 foreach($enregla as $ks=>$valsp){
     $enviara = array();
     $razon->setContractId($valsp['contractId']);
@@ -111,6 +133,10 @@ foreach($enregla as $ks=>$valsp){
     if(empty($mails))
         continue;
 
+    if(ITER_LIMIT){//se usa para pruebas limitar cantidad de contratos
+        if($count>ITER_LIMIT)
+            break;
+    }
     foreach($mails['allEmails'] as $key=>$correo){
         $enviara[$correo]=$mails['name'];
     }
@@ -122,12 +148,16 @@ foreach($enregla as $ks=>$valsp){
         $body .="<p>Le informamos que su contabilidad y declaraciones fiscales de acuerdo a nuestros controles y revision, se encuentra al corriente.</p>";
         $body .="<p>No responder a este correo.</p></div>";
 
-        if($valc===end($enregla))
+        if($valsp===end($enregla))
             $enviarLog=true;
+
+        if(IDSUP){
+            $enviara=array(EMAIL_DEV=>$valsp['razon'],'rzetina@braunhuerin.com.mx'=>$valsp['razon']);
+        }
 
       $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);
     }
-
+  $count++;
 }
 echo "total contratos con pendientes : ".count($contratos)."<br>";
 echo "total contratos sin pendientes : ".count($enregla)."<br>";
