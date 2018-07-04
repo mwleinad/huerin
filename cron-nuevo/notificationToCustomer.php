@@ -152,7 +152,7 @@ foreach($enregla as $ks=>$valsp){
             $enviarLog=true;
 
         if(IDSUP){
-            $enviara=array(EMAIL_DEV=>$valsp['razon'],'rzetina@braunhuerin.com.mx'=>$valsp['razon']);
+            $enviara=array('rzetina@braunhuerin.com.mx'=>$valsp['razon']);
         }
 
       $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);
