@@ -98,8 +98,10 @@ switch($_POST['type']){
             //comprobar si se actualizara los datos del contrato.
             //encontrar cambios en encargados
             $contract->setContractId($row[1]);
-            $permisos= $contract->ValidateEncargados($row);
-            if(!$permisos)
+            $encargados = array();
+            $encargados = array($row[1],$row[38],$row[39],$row[40],$row[41],$row[42],$row[43],$row[44]);
+            $permisos= $contract->ValidateEncargados($encargados);
+            if($permisos===false)
             {
                 $contratoNoEncontrado++;
                 $contratosIngorados .="La razon social con ID=".$row[1]." de la fila ".$fila." no se encuentra registrada";
@@ -139,7 +141,6 @@ switch($_POST['type']){
                             metodoDePago='".$row[34]."',
                             noCuenta='".$row[35]."'
                             WHERE contractId='".$row[1]."' ";
-            $strContract .=chr(13).chr(10);
             $db->setQuery($strContract);
             $upContract =  $db->UpdateData();
             if($upContract>0){
@@ -203,11 +204,11 @@ switch($_POST['type']){
 
         $body ="<p>Se han realizado cambios en informacion de cliente y razones sociales por el colaborador ".$who.". </p>";
         $body .="<p>En los archivos adjuntos encontrara de manera detallada los cambios realizados por el usuario, favor de descargar el documento y abrir en su navegador predeterminado. </p>";
-        $encargados=array();
+        $encargadosEmail=array();
         $sendmail = new SendMail();
 
         if($generalContractLog!=""||$generalCustomerLog!="")
-            $sendmail->PrepareMultipleNotice($subject,$body,$encargados,"",$file1,$nameFile1,$file2,$nameFile2,'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
+            $sendmail->PrepareMultipleNotice($subject,$body,$encargadosEmail,"",$file1,$nameFile1,$file2,$nameFile2,'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
 
         if(is_file($file1))
             unlink($file1);
@@ -388,6 +389,114 @@ switch($_POST['type']){
         $util->PrintErrors();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+    break;
+    case 'update-only-encargado':
+        $isValid = $valida->ValidateLayoutOnlyEncargado($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo"[#]";
+            echo $cad;
+            exit;
+        }
+        $contActualizado=0;
+        $contNoActualizado=0;
+        $contratoNoEncontrado=0;
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        $idsCustomer=array();
+        $generalLog="";
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            $logLocal = "";
+            $permisos="";
+            //comprobar permisos
+            if($fila==1)
+            {
+                $fila++;
+                continue;
+            }
+            $contract->setContractId($row[1]);
+            $encargados=array();
+            $encargados = array($row[1],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10]);
+            $permisos= $contract->ValidateEncargados($encargados);
+            if($permisos===false)
+            {
+                $contratoNoEncontrado++;
+                echo $contratosIngorados .="La razon social con ID=".$row[1]." de la fila ".$fila." no se encuentra registrada";
+                $fila++;
+                continue;
+            }
+            $db->setQuery('SELECT permisos from contract WHERE contractId="'.$row[1].'" ');
+            $permisosActual = $db->GetRow();
+
+            if(trim($permisosActual['permisos'])!=trim($permisos))
+            {
+                $changes=array();
+                $contract->setContractId($row[1]);
+                $beforeContract = $contract->Info();
+                $strContract ="UPDATE contract SET permisos='".$permisos."' WHERE contractId='".$row[1]."' ";
+                $db->setQuery($strContract);
+                $upContract =  $db->UpdateData();
+                if($upContract>0) {
+                    $contract->setContractId($row[1]);
+                    $afterContract = $contract->Info();
+                    //guardar en log
+                    $log->setPersonalId($_SESSION['User']['userId']);
+                    $log->setFecha(date('Y-m-d H:i:s'));
+                    $log->setTabla('contract');
+                    $log->setTablaId($row[1]);
+                    $log->setAction('Update');
+                    $log->setOldValue(serialize($beforeContract));
+                    $log->setNewValue(serialize($afterContract));
+                    $log->SaveOnly();
+                    $changes = $log->FindOnlyChanges(serialize($beforeContract), serialize($afterContract));
+                    if (!empty($changes['after'])) {
+                        $logLocal = "<p>La razon social " . $beforeContract['name'] . " del cliente " . $beforeContract['nameContact'] . " ha sido modificado</p>";
+                        $logLocal .= $log->PrintInFormatText($changes);
+                    }
+                    $contActualizado++;
+                }
+            }else{
+                $contNoActualizado++;
+            }
+            $generalLog .=$logLocal;
+            $fila++;
+        }
+        fclose($fp);
+        $file2="";
+        $nameFile2="";
+        if($generalLog!="") {
+            $nameFile2 = "BITACORA-CAMBIO-DE-ENCARGADOS.html";
+            $file2 = DOC_ROOT."/sendFiles/".$nameFile2;
+            $open = fopen($file2,"w");
+            if ( $open ) {
+                fwrite($open, $generalLog);
+                fclose($open);
+            }
+        }
+        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $db->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
+        $who = $db->GetSingle();
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $who="Administrador de sistema(desarrollador)";
+
+        $body ="<p>Se han realizado cambios en los encargados de area en algunos contratos por el colaborador ".$who.". </p>";
+        $body .="<p>Adjunto a este correo encontrara un archivo que detalla los cambios realizados, favor de descargar el documento y abrir en su navegador predeterminado. </p>";
+        $encargadosEmail=array();
+        $sendmail = new SendMail();
+        if($generalLog!="")
+            $sendmail->PrepareMultipleNotice($subject,$body,$encargadosEmail,"",'','',$file2,$nameFile2,'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
+        if(is_file($file2))
+            unlink($file2);
+        $util->setError(0,'complete',$contActualizado." registros actualizados");
+        $util->setError(0,'complete',$contNoActualizado." registros no actualizados por tener informacion correcta");
+        $util->setError(0,'complete',$contratoNoEncontrado." registros no encontrados en el sistema");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
 
     break;
     case 'imp-new-customer':

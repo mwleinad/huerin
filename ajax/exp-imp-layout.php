@@ -100,4 +100,54 @@ switch($_POST['type']){
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
     break;
+
+    case 'layout-update-encargado':
+        $book =  new PHPExcel();
+        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('layoutRazon');
+        $sheet->setCellValueByColumnAndRow(0,1,'No.CLIENTE');
+        $sheet->setCellValueByColumnAndRow(1,1,'No.CONTRATO');
+        $sheet->setCellValueByColumnAndRow(2,1,'CLIENTE');
+        $sheet->setCellValueByColumnAndRow(3,1,'RAZON');
+        $sheet->setCellValueByColumnAndRow(4,1,'RES. CONTABILIDAD');
+        $sheet->setCellValueByColumnAndRow(5,1,'RES. NOMINA');
+        $sheet->setCellValueByColumnAndRow(6,1,'RES. ADMIN');
+        $sheet->setCellValueByColumnAndRow(7,1,'RES. JURIDICO');
+        $sheet->setCellValueByColumnAndRow(8,1,'RES. IMSS');
+        $sheet->setCellValueByColumnAndRow(9,1,'RES. MENSAJERIA');
+        $sheet->setCellValueByColumnAndRow(10,1,'RES. AUDITORIA');
+
+        $result = $customer->GetListRazones('','',0,'Activos',false);
+        $row=2;
+        foreach($result as $key=>$value){
+            $sheet->setCellValueByColumnAndRow(0,$row,$value['customerId']);
+            $sheet->setCellValueByColumnAndRow(1,$row,$value['contractId']);
+            $sheet->setCellValueByColumnAndRow(2,$row,$value['nameContact']);
+            $sheet->setCellValueByColumnAndRow(3,$row,$value['name']);
+            $sheet->setCellValueByColumnAndRow(4,$row,$value['respContabilidad']);
+            $sheet->setCellValueByColumnAndRow(5,$row,$value['respNominas']);
+            $sheet->setCellValueByColumnAndRow(6,$row,$value['respAdministracion']);
+            $sheet->setCellValueByColumnAndRow(7,$row,$value['respJuridico']);
+            $sheet->setCellValueByColumnAndRow(8,$row,$value['respImss']);
+            $sheet->setCellValueByColumnAndRow(9,$row,$value['respMensajeria']);
+            $sheet->setCellValueByColumnAndRow(10,$row,$value['respAuditoria']);
+
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer= PHPExcel_IOFactory::createWriter($book, 'CSV');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col <= PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile= "layaout_update_encargados.csv";
+        $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
+
+    break;
 }
