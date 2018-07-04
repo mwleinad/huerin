@@ -72,24 +72,25 @@ class Log extends Util
         switch($this->action){
             case 'Insert':
                 $accion = "ha sido dado de alta ";
+                array_push($defaultId,IDHUERIN);
             break;
             case 'Update':
                 $excluyehuerin = true;
                 $wherehuerin = " AND personalId!='".IDHUERIN."'";
-                array_push($defaultId,IDHUERIN);
                 $accion ="ha sido modificada ";
             break;
             case 'Baja':
                 $accion="ha sido  dado de baja ";
+                array_push($defaultId,IDHUERIN);
             break;
             case 'Reactivacion':
                 $excluyehuerin = true;
                 $wherehuerin = " AND personalId!='".IDHUERIN."'";
-                array_push($defaultId,IDHUERIN);
                 $accion="ha sido reactivado ";
             break;
             case 'Delete':
                 $accion="ha sido eliminado ";
+                array_push($defaultId,IDHUERIN);
              break;
         }
         //encontrar tabla que se modifico
