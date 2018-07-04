@@ -81,14 +81,7 @@ $mail = new SendMail();
 $oe = array();
 $enviarLog =false;
 foreach($contratos as $kc=>$valc){
-    if(IDSUP){
-        $personal->setPersonalId(IDSUP);
-        $subordinados = $personal->Subordinados();
-        $idSubordinados = $util->ConvertToLineal($subordinados, 'personalId');
-        $continuar = $filtro->findPermission($valc,$idSubordinados);
-        if(!$continuar)
-            continue;
-    }
+
     $enviara = array();
     if($createPdf->CreateFileNotificationToContract($valc)){
         $nameFile = "pendientes_".$valc['contractId'].".pdf";
@@ -140,6 +133,15 @@ foreach($enregla as $ks=>$valsp){
     $mails = $razon->getEmailContractByArea('all');
     if(empty($mails))
         continue;
+
+    if(IDSUP){
+        $personal->setPersonalId(IDSUP);
+        $subordinados = $personal->Subordinados();
+        $idSubordinados = $util->ConvertToLineal($subordinados, 'personalId');
+        $continuar = $filtro->findPermission($valsp,$idSubordinados);
+        if(!$continuar)
+            continue;
+    }
 
     if(ITER_LIMIT){//se usa para pruebas limitar cantidad de contratos
         if($count>ITER_LIMIT)
