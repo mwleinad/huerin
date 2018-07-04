@@ -112,7 +112,7 @@ foreach($contratos as $kc=>$valc){
         }
     }
 }
-$sql1 ="SELECT a.servicioId,d.nombreServicio,c.contractId,c.name as razon  FROM instanciaServicio a 
+$sql1 ="SELECT a.servicioId,d.nombreServicio,c.permisos,c.contractId,c.name as razon  FROM instanciaServicio a 
        INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo'
        INNER JOIN contract c ON b.contractId=c.contractId AND c.activo='Si'
        INNER JOIN customer e ON c.customerId=e.customerId AND e.active='1' 
