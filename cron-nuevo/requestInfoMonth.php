@@ -28,7 +28,7 @@ include_once(DOC_ROOT.'/libraries.php');
     $sql ="SELECT c.name,c.contractId,b.servicioId,c.permisos FROM instanciaServicio a 
         INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo'
         INNER JOIN contract c ON c.contractId=b.contractId AND c.activo='Si'
-        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=MONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH))  AND YEAR(a.date)=YEAR(DATE_ADD(CURDATE(),INTERVAL -1 MONTH))
+        WHERE a.status='activa' AND a.class IN('PorIniciar')  AND MONTH(a.date)=MONTH(DATE_ADD(CURDATE(),INTERVAL -3 MONTH))  AND YEAR(a.date)=YEAR(DATE_ADD(CURDATE(),INTERVAL -3 MONTH))
         GROUP BY b.contractId ORDER BY c.NAME ASC";
     $db->setQuery($sql);
     $result  = $db->GetResult();
@@ -92,7 +92,7 @@ include_once(DOC_ROOT.'/libraries.php');
         $body .="<p>No responder a este correo, favor de dirigirse con el encargado de su cuenta, Gracias!!</p></div>";
 
         if(IDSUP){
-            $correosFinal=array(EMAIL_DEV=>'Desarollo','rzetina@braunhuerin.com.mx'=>'ROGELIO');
+            $correosFinal=array('rzetina@braunhuerin.com.mx'=>'ROGELIO');
         }
         $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.docx";
         $sendmail->PrepareMultipleNotice($subject,utf8_decode($body),$correosFinal,'',$adjunto,'REGLAS_DE_PAPELERIA.docx','','','noreply@braunhuerin.com.mx','BRAUN&HUERIN',true);
