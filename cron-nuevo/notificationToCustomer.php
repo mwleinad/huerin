@@ -64,15 +64,12 @@ foreach($result as $key => $value){
                 break;
         }
     }
-
-
     $contratos[$contratoId]["razon"]=$value['razon'];
     $contratos[$contratoId]["contractId"]=$value['contractId'];
     $contratos[$contratoId]['servicios'][$servicioId]['nombre'] = $value['nombreServicio'];
     $meses = explode(',',$value['meses']);
     rsort($meses);
     $contratos[$contratoId]['servicios'][$servicioId]['instancias'] = $meses;
-
     $count++;
 }
 $createPdf = new CreatePdfNotification();
@@ -105,7 +102,7 @@ foreach($contratos as $kc=>$valc){
                 $enviarLog=true;
 
             if(IDSUP){
-                $enviara=array('rzetina@braunhuerin.com.mx'=>$valc['razon']);
+                $enviara=array(EMAIL_DEV=>$valsp['razon'],'isc061990@gmail.com'=>$valsp['razon']);
             }
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);
             unlink($file);
@@ -142,7 +139,6 @@ foreach($enregla as $ks=>$valsp){
         if(!$continuar)
             continue;
     }
-
     if(ITER_LIMIT){//se usa para pruebas limitar cantidad de contratos
         if($count>ITER_LIMIT)
             break;
@@ -162,7 +158,7 @@ foreach($enregla as $ks=>$valsp){
             $enviarLog=true;
 
         if(IDSUP){
-            $enviara=array('rzetina@braunhuerin.com.mx'=>$valsp['razon']);
+            $enviara=array(EMAIL_DEV=>$valsp['razon'],'isc061990@gmail.com'=>$valsp['razon']);
         }
 
       $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION BRAUN&HUERIN',$enviarLog);

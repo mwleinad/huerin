@@ -92,7 +92,7 @@ include_once(DOC_ROOT.'/libraries.php');
         $body .="<p>No responder a este correo, favor de dirigirse con el encargado de su cuenta, Gracias!!</p></div>";
 
         if(IDSUP){
-            $correosFinal=array('rzetina@braunhuerin.com.mx'=>'ROGELIO');
+            $correosFinal=array(EMAIL_DEV=>$valsp['razon'],'isc061990@gmail.com'=>$valsp['razon']);
         }
         $adjunto =DOC_ROOT."/REGLAS_DE_PAPELERIA.docx";
         $sendmail->PrepareMultipleNotice($subject,utf8_decode($body),$correosFinal,'',$adjunto,'REGLAS_DE_PAPELERIA.docx','','','noreply@braunhuerin.com.mx','BRAUN&HUERIN',true);
