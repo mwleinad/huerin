@@ -1665,6 +1665,7 @@ class Contract extends Main
         echo "<br>".count($serviciosContrato)."<br>";
         //si no tiene servicios no se debe mostrar el contrato de lo contrario se debe verificar sus permisos.
         if ($result[$key]["noServicios"] == 0) {
+            echo "eee ".$value['contractId']."<br>";
             $showCliente = false;
         } else {
             $user = new User;
@@ -1704,7 +1705,8 @@ class Contract extends Main
                 $showCliente = true;
                 $result[$key]["servicios"]++;
             } else {
-                echo "se elimina".dd($result[$key])."<br>";
+                echo "se elimina";
+                dd($result[$key]);
                 unset($result[$key]);
             }
 
