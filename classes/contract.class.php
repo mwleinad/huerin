@@ -1660,9 +1660,9 @@ class Contract extends Main
         );
         $serviciosContrato = $this->Util()->DB()->GetResult();
         $result[$key]["noServicios"] = count($serviciosContrato);
-        //si tiene servicios se le muestra el cliente por default pero si no tuviera servicios se evaluaria si tiene los permisos.
+        //si no tiene servicios no se debe mostrar el contrato de lo contrario se debe verificar sus permisos.
         if ($result[$key]["noServicios"] == 0) {
-            $showCliente = true;
+            $showCliente = false;
         } else {
             $user = new User;
             //sacar el control de permisos del foreach de abajo se puede hacer desde aqui.
@@ -1707,7 +1707,7 @@ class Contract extends Main
            }
         }
         $rol->setRolId($User['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar'),array('Juridico RRHH','Cobrar RRHH'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH','Cobrar RRHH'));
         if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {
           unset($result[$key]);
         }
