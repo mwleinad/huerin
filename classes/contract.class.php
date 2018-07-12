@@ -1618,6 +1618,7 @@ class Contract extends Main
     	$personal = new Personal;
     	$personal->setPersonalId($User["userId"]);//si se pasa 0 se obtiene todos los subordinados desde socio asta el mas bajo
     	$subordinados = $personal->Subordinados();
+        dd($subordinados);
 
         $sql = "SELECT
             *,
@@ -1640,7 +1641,7 @@ class Contract extends Main
 
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
-
+    dd($result);
     foreach ($result as $key => $value) {
         $contract = new Contract;
         $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
@@ -1658,8 +1659,10 @@ class Contract extends Main
 					ORDER BY
 						nombreServicio ASC"
         );
+        dd($serviciosContrato);
         $serviciosContrato = $this->Util()->DB()->GetResult();
         $result[$key]["noServicios"] = count($serviciosContrato);
+        echo "<br>".count($serviciosContrato)."<br>";
         //si no tiene servicios no se debe mostrar el contrato de lo contrario se debe verificar sus permisos.
         if ($result[$key]["noServicios"] == 0) {
             $showCliente = false;
@@ -1701,6 +1704,7 @@ class Contract extends Main
                 $showCliente = true;
                 $result[$key]["servicios"]++;
             } else {
+                echo "se elimina".dd($result[$key])."<br>";
                 unset($result[$key]);
             }
 
