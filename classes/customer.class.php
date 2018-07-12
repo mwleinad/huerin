@@ -1501,8 +1501,8 @@ class Customer extends Main
 		$filtro = new Filtro;
 		$data["subordinados"] = $filtro->Subordinados($User["userId"]);
 
-    foreach ($result as $key => $val) 
-		{
+    foreach ($result as $key => $val)
+    {
 			$result[$key]["showCliente"] = 1;
 			$result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
 			
@@ -1515,7 +1515,6 @@ class Customer extends Main
 			$countContracts = count($result[$key]["contracts"]);
             $result[$key]["totalContracts"] = $result[$key]["contractsActivos"]+$result[$key]["contractsInactivos"];
 			$result[$key]["servicios"] = 0;
-
 			if($countContracts > 0){
 				$result[$key]["showCliente"] = 0;
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
@@ -1589,9 +1588,8 @@ class Customer extends Main
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
-
 					//si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
-					if($result[$key]["showCliente"] == 0 || count($serviciosContrato)==0)
+					if($result[$key]["showCliente"] == 0)
 					{
 
 						$result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
@@ -1608,7 +1606,7 @@ class Customer extends Main
 						$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
 					}//foreach
 					//contratos sin servicio se eliminan
-					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract,$User['']);
+					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
 			
 				}//foreach
 			}else{				
@@ -1616,6 +1614,7 @@ class Customer extends Main
 				$result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
 				$result[$key]["contracts"][0]["fake"] = 1;
 			}
+
 			$filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
    	    }//foreach
         return $result;
