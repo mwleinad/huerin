@@ -304,11 +304,11 @@ class Rol extends main
         //comprobar nombre de rol por trozos de nombre
         $lim=0;
         foreach($incluye as $inc){
-            if(stripos($row['name'],$inc)!==false)
+            if(stripos(strtolower($row['name']),$inc)!==false)
               $lim++;
         }
         foreach($except as $excep){
-            if(stripos($row['name'],$excep)!==false)
+            if(stripos(strtolower($row['name']),$excep)!==false)
                 $lim--;
         }
         if($lim>0)
