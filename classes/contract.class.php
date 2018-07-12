@@ -1662,10 +1662,10 @@ class Contract extends Main
         dd($serviciosContrato);
         $serviciosContrato = $this->Util()->DB()->GetResult();
         $result[$key]["noServicios"] = count($serviciosContrato);
-        echo "<br>".count($serviciosContrato)."<br>";
+        echo "<br>" . count($serviciosContrato) . "<br>";
         //si no tiene servicios no se debe mostrar el contrato de lo contrario se debe verificar sus permisos.
         if ($result[$key]["noServicios"] == 0) {
-            echo "eee ".$value['contractId']."<br>";
+            echo "eee " . $value['contractId'] . "<br>";
             $showCliente = false;
         } else {
             $user = new User;
@@ -1689,7 +1689,7 @@ class Contract extends Main
                 //comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
                 // el usuario esta dentro de los permisos del contrato
                 $rol->setRolId($User['roleId']);
-                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH','Cobrar RRHH'));
+                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH', 'Cobrar RRHH'));
                 if ($unlimited) {//para el rol cliente siempre va arrojar que es ilimitado pero solo de sus propios contratos. desde arriba ya viene filtrado por el customerId
                     $result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
                 } else {
@@ -1710,14 +1710,13 @@ class Contract extends Main
                 unset($result[$key]);
             }
 
-           }
         }
         $rol->setRolId($User['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH','Cobrar RRHH'));
-        if (($showCliente === false&&!$unlimited) || ($showCliente === false && $type == "propio")) {
-          unset($result[$key]);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH', 'Cobrar RRHH'));
+        if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
+            unset($result[$key]);
         }
-
+    }
     return $result;
   }
 
