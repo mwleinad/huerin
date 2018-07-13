@@ -5,7 +5,7 @@ if(isset($_GET['page'])&&$_GET['page'] == 'cfdi33-generate-pdf') {
   //error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
 
   date_default_timezone_set('America/Mexico_City');
-  header('Content-type: text/html; charset=iso-8859-1');
+  header('Content-type: text/html; charset=utf-8');
 } else {
   ini_set("session.cookie_lifetime","86400");
   ini_set("session.gc_maxlifetime","86400");
