@@ -3,53 +3,6 @@
 
 //$info = $empresa->Info();
 //$smarty->assign("info", $info);
-switch($_SERVER['HTTP_HOST'])
-{
-    case "localhost": //Configuracion Local
-
-        if(strpos($_SERVER['REQUEST_URI'],'huerin_test')){
-            $webRoot = "http://".$_SERVER['HTTP_HOST']."/huerin_test";
-            $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin_test";
-            $sqlUser = "root";
-            $sqlPw = "admonavanti";
-            $sqlHost = "52.7.45.195:63306";
-            $projectStatus = "test";
-            $servicioContabilidad = 1;
-        }else{
-            $webRoot = "http://".$_SERVER['HTTP_HOST'];
-            $docRoot = $_SERVER['DOCUMENT_ROOT'];
-            $sqlPw = "root";
-            $sqlHost = "localhost";
-            $projectStatus = "produccion";
-            $servicioContabilidad = 2;
-        }
-
-        break;
-
-    case "52.7.45.195": //Server de Pruebas
-        $webRoot = "http://".$_SERVER['HTTP_HOST']."/huerin_test";
-        $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin_test";
-        $sqlUser = "root";
-        $sqlPw = "admonavanti";
-        $sqlHost = "52.7.45.195:63306";
-        $projectStatus = "test";
-        $servicioContabilidad = 1;
-        break;
-
-    default:         //Server de Produccion
-        $webRoot = "http://".$_SERVER['HTTP_HOST'];
-        $docRoot = $_SERVER['DOCUMENT_ROOT'];
-        $sqlPw = "root";
-        $sqlHost = "localhost";
-        $projectStatus = "produccion";
-        $repStatus = "produccion";
-        $emailDev = "isc061990@outlook.com";
-        $servicioContabilidad = 2;
-        break;
-}
-echo $webRoot."<br>";
-echo $docRoot;
-exit;
 
 if(!$_GET['filename']) {
   echo "No hay nombre de archivo";
