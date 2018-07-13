@@ -2,7 +2,7 @@
 
 if(isset($_GET['page'])&&$_GET['page'] == 'cfdi33-generate-pdf') {
   ini_set("display_errors", "ON");
-  error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
+  //error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
 
   date_default_timezone_set('America/Mexico_City');
   header('Content-type: text/html; charset=iso-8859-1');
@@ -32,7 +32,7 @@ if(isset($_GET['page'])&&$_GET['page'] == 'cfdi33-generate-pdf') {
   mb_language('uni');
   mb_regex_encoding('UTF-8');
   ob_start('mb_output_handler');
-};
+}
 
 
 
