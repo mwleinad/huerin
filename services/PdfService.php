@@ -45,7 +45,8 @@ class PdfService extends Producto{
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
-        $dompdf = new Dompdf();
+        $dompdf = new Dompdf(array(
+            'debugLayout' => true,));
 
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
