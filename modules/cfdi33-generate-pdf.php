@@ -17,3 +17,4 @@ include_once(DOC_ROOT."/services/XmlReaderService.php");
 $pdfService = new PdfService;
 
 $pdfService->generate($info["empresaId"], $_GET['filename'], $_GET['type']);
+exit;
