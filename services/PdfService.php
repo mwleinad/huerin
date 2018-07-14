@@ -75,7 +75,7 @@ class PdfService extends Producto{
         $dompdf->setPaper('A4', 'portrait');
 
         $dompdf->render();
-
+        ob_end_clean();
         if($type == 'download') {
             $dompdf->stream($fileName.'.pdf');
         } else if($type == 'view') {
