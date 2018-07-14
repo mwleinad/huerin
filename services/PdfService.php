@@ -18,7 +18,7 @@ class PdfService extends Producto{
     }
 
     public function generate($empresaId, $fileName, $type = 'download') {
-
+        ob_end_clean();
         $xmlReaderService = new XmlReaderService;
 
         //No se envio un nombre de archivo, buscar la serie y folio del comprobante
@@ -45,8 +45,7 @@ class PdfService extends Producto{
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
-        $dompdf = new Dompdf(array(
-            'debugLayout' => true,));
+        $dompdf = new Dompdf();
 
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
@@ -75,7 +74,7 @@ class PdfService extends Producto{
         $dompdf->setPaper('A4', 'portrait');
 
         $dompdf->render();
-        ob_end_clean();
+
         if($type == 'download') {
             $dompdf->stream($fileName.'.pdf');
         } else if($type == 'view') {
