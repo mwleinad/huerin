@@ -18,7 +18,6 @@ class PdfService extends Producto{
     }
 
     public function generate($empresaId, $fileName, $type = 'download') {
-        ob_end_clean();
         $xmlReaderService = new XmlReaderService;
 
         //No se envio un nombre de archivo, buscar la serie y folio del comprobante
