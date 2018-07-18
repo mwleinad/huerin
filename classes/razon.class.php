@@ -82,15 +82,21 @@ class Razon extends Contract
        global $comprobante;
        global $sendmail;
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
-       $this->setContractId($compInfo['userId']);
-       $contratoEmails =  $this->getEmailContractByArea('administracion',false);
+       if(SEND_FACT_CUSTOMER=='SI'){
+           $this->setContractId($compInfo['userId']);
+           $contratoEmails =  $this->getEmailContractByArea('administracion',false);
 
-       if(empty($contratoEmails))
-           return false;
-       $correos = array();
-       foreach($contratoEmails['allEmails'] as $val){
-              $correos[$val] = $from33==true?utf8_decode($contratoEmails["name"]):$contratoEmails["name"];
+           if(empty($contratoEmails))
+               return false;
+           $correos = array();
+           foreach($contratoEmails['allEmails'] as $val){
+               $correos[$val] = $from33==true?utf8_decode($contratoEmails["name"]):$contratoEmails["name"];
+           }
+       }else{
+           $correos = array();
        }
+
+
 
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
