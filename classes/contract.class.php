@@ -1662,7 +1662,7 @@ class Contract extends Main
         if ($result[$key]["noServicios"] == 0) {
             $showCliente = false;
             $rol->setRolId($User['roleId']);
-            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH', 'Cobrar RRHH'));
+            $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH'));
             if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
                 unset($result[$key]);
             }
@@ -1688,7 +1688,7 @@ class Contract extends Main
                 //comprobar si el rol pertenece al grupo de privilegios avanzados, de lo contrario comprobar si
                 // el usuario esta dentro de los permisos del contrato
                 $rol->setRolId($User['roleId']);
-                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH', 'Cobrar RRHH'));
+                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH'));
                 if ($unlimited) {//para el rol cliente siempre va arrojar que es ilimitado pero solo de sus propios contratos. desde arriba ya viene filtrado por el customerId
                     $result[$key]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
                 } else {
@@ -2159,6 +2159,7 @@ class Contract extends Main
       //exit;*/
 
         $fp = fopen(DOC_ROOT.'/contracts.log','a');
+        chmod(DOC_ROOT.'/contracts.log',0756);
 		fwrite($fp,"OLD DATA\n");
 		fwrite($fp,json_encode($oldData));
 		fwrite($fp,"\n\nNEW DATA\n");
