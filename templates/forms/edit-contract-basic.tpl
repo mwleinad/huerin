@@ -150,7 +150,7 @@
         <td align="left" class="tdPad">
             <select name="metodoDePago" id="metodoDePago" class="largeInput">
                 <option value="01" {if $contractInfo.metodoDePago == "01"} selected {/if}>Efectivo</option>
-                <option value="02" {if $contractInfo.metodoDePago == "01"} selected {/if}>Cheque</option>
+                <option value="02" {if $contractInfo.metodoDePago == "02"} selected {/if}>Cheque</option>
                 <option value="03" {if $contractInfo.metodoDePago == "03"} selected {/if}>Transferencia</option>
                 <option value="04" {if $contractInfo.metodoDePago == "04"} selected {/if}>Tarjetas de Credito</option>
                 <option value="05" {if $contractInfo.metodoDePago == "05"} selected {/if}>Monederos electrónicos</option>
