@@ -39,8 +39,9 @@ cron-nuevo/changepassword.txt
 cron-nuevo/contractslog.txt
 cron-nuevo/sendrazon.txt
 cron-nuevo/*.txt
-
-
+cron/*.txt
+cron/templates_c
+exportar.pdf
 cron/.facturas_log.txt.swp
 export/templates_c
 contracts.log
