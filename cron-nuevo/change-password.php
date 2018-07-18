@@ -29,15 +29,13 @@ $results =  $util->DB()->GetResult();
 $mod=0;
 $nomod=0;
 foreach($results as $key =>$item){
-    $fecha = strtotime('+3 month', strtotime($item['lastChangePassword']));
+    /*$fecha = strtotime('+3 month', strtotime($item['lastChangePassword']));
     $month3 = date('Y-m-d',$fecha);
 
     if(date('Y-m-d')<$month3){
         $nomod++;
         continue;
-    }
-
-
+    }*/
     $cadena = $util->generateRandomString(6,true);
 
     $util->DB()->setQuery('UPDATE personal SET passwd="'.$cadena.'" WHERE personalId='.$item['personalId'].'');
