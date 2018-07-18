@@ -29,8 +29,8 @@ switch($_SERVER['HTTP_HOST'])
     case 'localhost':
         define("SEND_TO", "administracion@emfrich.com.mx");
         define("SEND_TO1", "jeje@braunhuerin.com.mx ");
-        define("SEND_TO2", "isc061990@gmail.com");
-        define("SEND_TO3", "leasib_666@hotmail.com");
+        define("SEND_TO2", "de@gmail.com");
+        define("SEND_TO3", "desarrollo@hotmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
     break;
