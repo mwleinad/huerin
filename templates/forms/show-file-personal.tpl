@@ -34,6 +34,9 @@
                                   <a href="{$WEB_ROOT}/expedientes/{$item.personalId}/{$item.path}" title="Descargar" style="cursor:pointer" target="_blank">
                                       <img src="{$WEB_ROOT}/images/downCloud24.png">
                                   </a>
+                                  <a href="javascript:void(0);" onclick="deleteExpediente({$item.expedienteId},{$item.personalId})" title="Eliminar archivo" style="cursor:pointer">
+                                      <img src="{$WEB_ROOT}/images/deleteCloud24.png">
+                                  </a>
                               {/if}
                               {*include file="{$DOC_ROOT}/templates/forms/custom-dropzone.tpl" id="{$item.personalId}{$item.expedienteId}"*}
 

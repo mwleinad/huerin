@@ -1080,6 +1080,39 @@ function SubordinadosDetails()
         $this->Util()->PrintErrors();
 	    return  true;
     }
+    public function unlinkExpendiente($expedienteId,$perId){
+        $base_path = DOC_ROOT.'/expedientes';
+        //almacenar el archivo en el servidor
+        $dir_employe = $base_path.'/'.$perId;
+        //comprobar si tiene un archivo actualmente y eliminarlo
+        $sqlc ="SELECT path FROM personalExpedientes  WHERE personalId='".$perId."' AND expedienteId='".$expedienteId."'";
+        $this->Util()->DB()->setQuery($sqlc);
+        $nameFile = $this->Util()->DB()->GetSingle();
+        $file = $dir_employe.'/'.$nameFile;
+        if(file_exists($file)&&is_file($file)){
+            if(unlink($file))
+            {
+                $sql ="UPDATE personalExpedientes SET path=null,fecha=null WHERE personalId='".$perId."' AND expedienteId='".$expedienteId."'";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->UpdateData();
+                $this->Util()->setError(0,'complete','Archivo eliminado correctamente');
+                $this->Util()->PrintErrors();
+                return true;
+            }
+            else{
+                $this->Util()->setError(0,'error','Error al eliminar archivo');
+                $this->Util()->PrintErrors();
+                return false;
+
+            }
+        }
+        else{
+            $this->Util()->setError(0,'error','Error al encontrar archivo');
+            $this->Util()->PrintErrors();
+            return false;
+        }
+     }
+    
 }
 
 ?>
