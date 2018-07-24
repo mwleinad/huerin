@@ -2,6 +2,7 @@
     <tr id="1">
         <td align="center" class="id">{$item.contractId}</td>
         <td align="center" class="id">{$item.name}</td>
+        {if $User.roleId eq 5 || $User.roleId eq 1}
         <td align="center" class="id">{$item.type}</td>
         <td align="center">{$item.rfc}</td>
         <td align="left">
@@ -17,6 +18,7 @@
         <td align="left">
             {$item.activo}
         </td>
+        {/if}
         {if (in_array(86,$permissions) or in_array(85,$permissions)) || $User.isRoot ||($User.roleId eq 4&&$showServices)} <!-- inicio col servicios -->
         <td align="center">
         {if $item.activo == 'Si'}
