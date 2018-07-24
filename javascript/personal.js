@@ -31,14 +31,15 @@ Event.observe(window, 'load', function() {
 function changePassword(){
 	var conf = confirm('¿ Esta seguro de realizar esta accion ?');
 
-	if(!confirm)
+	if(!conf)
 		return;
+
     jQ.ajax({
         url: WEB_ROOT+'/ajax/personal.php',
         data: {type:'changePass'},
         type: 'POST',
         beforeSend: function () {
-        	jQ('#loadPrint').html("<p>Espere un momento...</p>");
+        	jQ('#loadPrint').html("<p>Espere un momento cambiando contraseñas...</p>");
             jQ('#loadPrint').show();
         },
         success: function (response) {
