@@ -300,7 +300,7 @@ function LoadBoxDropzone(){
         var sp=(this.id).split('_');
         var existFile = jQ('#exist_file'+sp[1]+sp[2]).val();
         if(existFile)
-            var defaultMessage = 'Ya existe un archivo, haga click en el icono de abajo <img src="'+WEB_ROOT+'/images/downCloud24.png"> para vista preliminar, de lo contrario arraste o click  en esta zona para actualizar';
+            var defaultMessage = 'Ya existe un archivo, haga click en el icono de abajo <img src="'+WEB_ROOT+'/images/downCloud24.png"> para vista preliminar, de lo contrario arraste o click  en esta zona para actualizar<br>Si desea eliminar archivo click en  <img src="'+WEB_ROOT+'/images/deleteCloud24.png">' ;
         else
             var defaultMessage = 'Arraste o click en esta zona para subir archivo';
         jQ(this).dropzone({
