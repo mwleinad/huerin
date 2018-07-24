@@ -1051,6 +1051,35 @@ function SubordinadosDetails()
             }
 
     }
+    public function changePassword(){
+        $sendmail = new SendMail;
+        $sql =  "SELECT * FROM personal WHERE active='1' ORDER BY personalId ASC ";
+        $this->Util()->DB()->setQuery($sql);
+        $results =  $this->Util()->DB()->GetResult();
+
+        foreach($results as $key =>$item){
+            $cadena ="";
+            $cadena = $this->Util()->generateRandomString(6,true);
+            $this->Util()->DB()->setQuery('UPDATE personal SET passwd="'.$cadena.'" WHERE personalId='.$item['personalId'].'');
+            if($this->Util()->DB()->UpdateData()){
+                $this->Util()->DB()->setQuery('UPDATE personal SET lastChangePassword="'.date('Y-m-d').'" WHERE personalId='.$item['personalId'].'');
+                $body="ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
+                SE HA REALIZADO EL CAMBIO DE CONTRASE&Ntilde;A DE SU CUENTA, CIERRE SU SESSION SI SE ENCUENTRA ACTUALMENTE EN LA PLATAFORMA E INGRESE NUEVAMENTE CON LOS SIGUIENTES DATOS:  <br>
+                USUARIO:".$item['username']." <br>
+                PASSWD:".$cadena." 
+                <br><br>
+                Este correo se creo automaticamente, favor de no responder.
+                ";
+                $subject="CAMBIO DE CONTRASEÑA";
+                $to = $item['email'];
+                $toName= $item['name'];
+                $sendmail->Prepare($subject, $body, $to, $toName, '', "", "", "",'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA") ;
+            }
+        }
+        $this->Util()->setError(0,"complete","Se han cambiado las contraseñas correctamente");
+        $this->Util()->PrintErrors();
+	    return  true;
+    }
 }
 
 ?>

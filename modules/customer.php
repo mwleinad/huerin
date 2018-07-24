@@ -33,8 +33,8 @@
 <?php
 	}
 
-    $result = $customer->SuggestCustomerCatalog("", $type = "subordinado", $customerId = 0, $_GET["tipo"]);
-    $smarty->assign("customers", $result);
+    //$result = $customer->SuggestCustomerCatalog("", $type = "subordinado", $customerId = 0, $_GET["tipo"]);
+    //$smarty->assign("customers", $result);
 	
 	if(isset($_SESSION["tipoMod"]))
 	    unset($_SESSION["tipoMod"]);

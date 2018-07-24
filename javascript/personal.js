@@ -28,7 +28,39 @@ Event.observe(window, 'load', function() {
 	$('contenido').observe("click", AddEditPersonalListeners);
 
 });
+function changePassword(){
+	var conf = confirm('¿ Esta seguro de realizar esta accion ?');
 
+	if(!conf)
+		return;
+
+    jQ.ajax({
+        url: WEB_ROOT+'/ajax/personal.php',
+        data: {type:'changePass'},
+        type: 'POST',
+        beforeSend: function () {
+        	jQ('#loadPrint').html("<p>Espere un momento cambiando contraseñas...</p>");
+            jQ('#loadPrint').show();
+        },
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                jQ('#loadPrint').html("");
+                jQ('#load-print').hide();
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#contenido').html(splitResp[2]);
+            }
+            else{
+                jQ('#loadPrint').html("");
+                jQ('#loadPrint').hide();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
 function EditPersonalPopup(id)
 {
 	grayOut(true);
