@@ -4,6 +4,5 @@ $user->allowAccess(52);//level 2
 $departamentos->SetPage($_GET["p"]);
 $resDepartamentos = $departamentos->Enumerate();
 $smarty->assign("resDepartamentos", $resDepartamentos);
-
-	$smarty->assign('mainMnu','catalogos');
+$smarty->assign('mainMnu','catalogos');
 ?>
