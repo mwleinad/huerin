@@ -61,6 +61,35 @@ function changePassword(){
         }
     });
 }
+function deleteExpediente(id,personalId){
+    var conf = confirm('¿ Esta seguro de realizar esta accion ?');
+
+    if(!conf)
+        return;
+
+    jQ.ajax({
+        url: WEB_ROOT+'/ajax/personal.php',
+        data: {type:'deleteExpediente',id:id,personalId:personalId},
+        type: 'POST',
+        beforeSend: function () {
+        },
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#content-expedientes').html('');
+                jQ('#content-expedientes').html(splitResp[2]);
+                LoadBoxDropzone();
+            }
+            else{
+                ShowStatusPopUp(splitResp[1]);
+            }
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
 function EditPersonalPopup(id)
 {
 	grayOut(true);
@@ -271,7 +300,7 @@ function LoadBoxDropzone(){
         var sp=(this.id).split('_');
         var existFile = jQ('#exist_file'+sp[1]+sp[2]).val();
         if(existFile)
-            var defaultMessage = 'Ya existe un archivo, para ver dar click en el icono de abajo  <img src="'+WEB_ROOT+'/images/downCloud24.png">, de lo contrario arraste o click  en esta zona para actualizar';
+            var defaultMessage = 'Ya existe un archivo, haga click en el icono de abajo <img src="'+WEB_ROOT+'/images/downCloud24.png"> para vista preliminar, de lo contrario arraste o click  en esta zona para actualizar<br>Si desea eliminar archivo click en  <img src="'+WEB_ROOT+'/images/deleteCloud24.png">' ;
         else
             var defaultMessage = 'Arraste o click en esta zona para subir archivo';
         jQ(this).dropzone({
@@ -307,7 +336,7 @@ function LoadBoxDropzone(){
                 this.on('success',function(file,response){
                     var splitResp = response.split('[#]');
                     if(splitResp[0]=='ok') {
-                        jQ('#content-files').html(splitResp[1]);
+                        jQ('#content-expedientes').html(splitResp[1]);
                         LoadBoxDropzone();
                     }
                     else

@@ -254,6 +254,25 @@ switch($_POST["type"])
 		}
 
 	break;
+	case "deleteExpediente":
+           if($personal->unlinkExpendiente($_POST['id'],$_POST['personalId'])){
+               echo "ok[#]";
+               $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+               echo "[#]";
+               $personal->setPersonalId($_POST['personalId']);
+               $myPersonal = $personal->Info();
+               $expedientes = $personal->GetExpedientes();
+
+               $smarty->assign("DOC_ROOT", DOC_ROOT);
+               $smarty->assign("info", $myPersonal);
+               $smarty->assign("expedientes", $expedientes);
+               $smarty->display(DOC_ROOT.'/templates/forms/show-file-personal.tpl');
+
+		   }else{
+               echo "fail[#]";
+               $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		   }
+	break;
 		
 }
 ?>

@@ -11,6 +11,6 @@
 		<img src="{$WEB_ROOT}/images/draganddrop.png" border="0" alt="mueve" />
 	</div>
 </div>
-<div class="wrapper" id="content-files">
+<div class="wrapper" id="content-expedientes">
 	{include file="{$DOC_ROOT}/templates/forms/show-file-personal.tpl"}
 </div>
