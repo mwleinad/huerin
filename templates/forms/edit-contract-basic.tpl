@@ -185,7 +185,7 @@
           <option value="">Seleccionar.......</option>
           {foreach from=$empleados item=item}
             {if $item.name neq '.'}
-          	    <option value="{$item.personalId}" {if $contractInfo.responsableCuenta == $item.personalId} selected="selected"{/if}>{$item.name}</option>
+          	    <option value="{$item.personalId}" {if $permisos[1]== $item.personalId} selected="selected"{/if}>{$item.name}</option>
             {/if}
           {/foreach}
           </select>

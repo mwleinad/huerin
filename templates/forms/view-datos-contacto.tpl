@@ -22,27 +22,27 @@
     <tr>
 			<td align="left" width="40%">Telefono Contacto Administrativo (Pagos)</td>
 			<td align="left">{$infoRazonSocial.telefonoContactoAdministrativo}</td>
-		</tr>    
-
+	</tr>
+	{if $User.roleId eq 5 || $User.roleId eq 1}
     <tr>
 			<td align="left" width="40%">Nombre Contacto Contabilidad (Documentacion)</td>
 			<td align="left">{$infoRazonSocial.nameContactoContabilidad}</td>
-		</tr>    
+	</tr>
 
     <tr>
 			<td align="left" width="40%">Email Contacto Contabilidad (Documentacion)</td>
 			<td align="left">{$infoRazonSocial.emailContactoContabilidad}</td>
-		</tr>    
+	</tr>
 
     <tr>
 			<td align="left" width="40%">Telefono Contacto Contabilidad (Documentacion)</td>
 			<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
-		</tr>    
+	</tr>
 
     <tr>
 			<td align="left" width="40%">Nombre Contacto Directivo</td>
 			<td align="left">{$infoRazonSocial.nameContactoDirectivo}</td>
-		</tr>    
+	</tr>
 
     <tr>
 			<td align="left" width="40%">Email Contacto Directivo</td>
@@ -52,12 +52,13 @@
     <tr>
 			<td align="left" width="40%">Telefono Oficina Contacto Directivo</td>
 			<td align="left">{$infoRazonSocial.telefonoContactoDirectivo}</td>
-		</tr>    
+	</tr>
 
     <tr>
 			<td align="left" width="40%">Telefono Celular Contacto Directivo</td>
 			<td align="left">{$infoRazonSocial.telefonoCelularDirectivo}</td>
-		</tr>    
+	</tr>
+	{/if}
 
 </tbody>
 </table>
