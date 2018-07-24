@@ -600,7 +600,7 @@ class Servicio extends Contract
 				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,
 				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo
 				FROM servicio 
-				INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId  AND tipoServicio.status='1'
+				INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId  AND tipoServicio.status='1' AND tipoServicio.tipoServicioId NOT IN(16,17)
 				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si' AND contract.permisos!=''
 				INNER JOIN customer ON contract.customerId = customer.customerId AND customer.active = '1'
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
