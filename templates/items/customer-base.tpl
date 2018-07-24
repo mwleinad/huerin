@@ -2,10 +2,11 @@
 	<tr>
 		<td align="center">{$item.customerId}</td>
 		<td align="center">{$item.nameContact|wordwrap:20:"<br />\n":TRUE}</td>
+        {if $User.roleId eq 5 || $User.roleId eq 1}
         <td align="center">{$item.phone|wordwrap:20:"<br />\n":TRUE}</td>
         <td align="center">{$item.email|wordwrap:20:"<br />\n":TRUE}</td>
-            
-        <td align="center">{$item.password|wordwrap:20:"<br />\n":TRUE}</td>        
+        <td align="center">{$item.password|wordwrap:20:"<br />\n":TRUE}</td>
+        {/if}
 		<td align="center" class="id">
         {if $item.active == 1 || $item.active ==0}
 			{if $item.contracts.0.fake == 1}
@@ -33,7 +34,9 @@
         	N/A
         {/if}
         </td>
+        {if $User.roleId eq 5 || $User.roleId eq 1}
         <td align="center">{if $item.active}Si{else}No{/if}</td>
+        {/if}
         <td align="center">{$item.fechaAlta|date_format:"d-m-Y"}</td>
 		<td align="center">
         {if $item.active == 1}
