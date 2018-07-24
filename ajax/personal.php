@@ -238,7 +238,22 @@ switch($_POST["type"])
         $smarty->assign("expedientes", $expedientes);
         $smarty->display(DOC_ROOT.'/templates/boxes/show-file-personal-popup.tpl');
 
-        break;
+    break;
+	case "changePass":
+
+        if($personal->changePassword())
+		{
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $resPersonals = $personal->Enumerate();
+            $smarty->assign("personals", $resPersonals);
+            $smarty->assign("DOC_ROOT", DOC_ROOT);
+            $smarty->display(DOC_ROOT.'/templates/lists/personal.tpl');
+
+		}
+
+	break;
 		
 }
 ?>
