@@ -32,7 +32,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
-$qp = "select personalId,email from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
+$qp = "select personalId,email,name from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
 $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
