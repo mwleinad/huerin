@@ -61,7 +61,7 @@ foreach($contadores as $key=>$value){
        INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
        INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
        INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
-       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC";
+       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC LIMIT 50";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
 
