@@ -34,4 +34,22 @@ class CreatePdfNotification
         else
             return false;
     }
+    function CreateFileNotificationToEncargados($data=array(),$personalId){
+        global $monthsComplete;
+        $file = "pendientes_".$personalId.".pdf";
+        $dompdf = new Dompdf();
+        $this->smarty->assign('meses',$monthsComplete);
+        $this->smarty->assign('data',$data);
+        $html = $this->smarty->fetch(DOC_ROOT.'/templates/molds/moldWorkflowPendingByEncargado.tpl');
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $content = $dompdf->output();
+        file_put_contents(DOC_ROOT.'/sendFiles/'.$file,$content);
+        //si se creo retornar true
+        if(file_exists(DOC_ROOT."/sendFiles/".$file))
+            return true;
+        else
+            return false;
+    }
 }
