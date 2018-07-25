@@ -61,7 +61,7 @@ foreach($contadores as $key=>$value){
        INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
        INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
        INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
-       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC  LIMIT 50 ";
+       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
 
@@ -85,7 +85,7 @@ foreach($contadores as $key=>$value){
         $body .="<p>Le informamos que la contabilidad y declaraciones fiscales de los clientes presentes en el documento adjunto. Tiene pendientes.</p>";
         $body .="<p>Revisar archivo adjunto para mas informacion.</p><br>";
         $body .="<p>No responder a este correo,Gracias!!</p></div>";
-        $enviara=array(EMAIL_DEV=>'correo1','isc061990@gmail.com'=>'correo2');
+        $enviara=array(EMAIL_DEV=>'correo1','rzetina@braunhuerin.com.mx'=>'correo2');
         $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA',true);
         unlink($file);
     }
