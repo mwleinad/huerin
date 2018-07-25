@@ -61,7 +61,7 @@ foreach($contadores as $key=>$value){
        INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
        INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
        INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
-       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY a.date ASC  LIMIT 50 ";
+       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC  LIMIT 50 ";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
 
@@ -81,8 +81,7 @@ foreach($contadores as $key=>$value){
         $nameFile = "pendientes_".$value['personalId'].".pdf";
         $file=DOC_ROOT."/sendFiles/".$nameFile;
         $subjetc ="OPINION NEGATIVA DE  DECLARACIONES Y OPINIONES";
-        $body ="<p>".$value['name']."</p>";
-        $body .="<p>Estimado usuario:</p>";
+        $body ="<p>Estimado usuario:".$value['name']."</p>";
         $body .="<p>Le informamos que la contabilidad y declaraciones fiscales de los clientes presentes en el documento adjunto. Tiene pendientes.</p>";
         $body .="<p>Revisar archivo adjunto para mas informacion.</p><br>";
         $body .="<p>No responder a este correo,Gracias!!</p></div>";
