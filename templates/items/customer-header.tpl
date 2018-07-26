@@ -12,7 +12,6 @@
      <th width="30">Activo</th>
     {/if}
     <th width="100">Fecha Alta</th>
-	<th>Acciones</th>
-
+	<th width="50">Acciones</th>
 	</tr>
 </thead>

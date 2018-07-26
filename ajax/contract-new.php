@@ -25,13 +25,22 @@ switch($_POST["action"])
 			$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
 			$contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
 			$contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
-			$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
-			$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
-			$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
-			$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
-			$contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
-			$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
-			$contract->setClaveFiel($_POST['claveFiel']);
+			if(isset($_POST['nameContactoContabilidad']))
+				$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
+    		if(isset($_POST['emailContactoContabilidad']))
+				$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
+    		if(isset($_POST['telefonoContactoContabilidad']))
+				$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
+    		if(isset($_POST['nameContactoDirectivo']))
+				$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
+    		if(isset($_POST['emailContactoDirectivo']))
+    			$contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
+    		if(isset($_POST['telefonoContactoDirectivo']))
+    			$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
+    		if(isset($_POST['telefonoCelularDirectivo']))
+    			$contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
+
+    		$contract->setClaveFiel($_POST['claveFiel']);
 			$contract->setClaveCiec($_POST['claveCiec']);
 			$contract->setClaveIdse($_POST['claveIdse']);
 			$contract->setClaveIsn($_POST['claveIsn']);

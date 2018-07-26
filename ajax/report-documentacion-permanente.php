@@ -9,7 +9,6 @@
 	switch($_POST["type"])
 	{
 		case "search":
-								
 				$formValues['cliente']=$_POST["rfc"];
 				$formValues['razonSocial']=$_POST["rfc2"];
 				$formValues['departamentoId']=$_POST["departamentoId"];
@@ -19,9 +18,8 @@
 						
 				$tiposDocumentos = $tipoDocumento->Enumerate();
 				$smarty->assign('tiposDocumentos',$tiposDocumentos);
-					
 				$totalDocumentos=count($tiposDocumentos);
-				
+
 				if($totalDocumentos%2 != 0)
 					{$totalDocumentos+=1;}
 				
@@ -29,37 +27,10 @@
 				$smarty->assign('totalDocumentos',$totalDocumentos);			
 				$smarty->assign('mainMnu','reportes');
 				
-				$documentos = $documento->EnumerateAll();			
-				
+				$documentos = $documento->EnumerateAll();
 				$contracts = array();
-				if($User['tipoPersonal'] == 'Asistente' || $User['tipoPersonal'] == 'Socio'){
-					
-					//Si seleccionaron TODOS
-					if($formValues['respCuenta'] == 0){
-					
-						$personal->setActive(1);
-						$socios = $personal->ListSocios();
-						
-						foreach($socios as $res){
-							
-							$formValues['respCuenta'] = $res['personalId'];
-							$formValues['subordinados'] = 1;
-							
-							$resContracts = $contract->BuscarContract($formValues, true);
-							
-							$contracts = @array_merge($contracts, $resContracts);
-							
-							
-						}//foreach
-					
-					}else{
-						$contracts = $contract->BuscarContract($formValues, true);
-					}
-				
-				}else{
-					$contracts = $contract->BuscarContract($formValues, true);
-				}//else				
-				
+
+				include_once(DOC_ROOT.'/ajax/filter.php');
 				
 				foreach($contracts as $key => $value)
 				{
