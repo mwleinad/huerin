@@ -2037,8 +2037,30 @@ class Contract extends Main
 		$this->Util()->DB()->setQuery($sql);
     	$oldData = $this->Util()->DB()->GetRow();
 
-		//Actualizamos
+    	//Cuando se edita solo se actualiza los contactos modificados.
+         $contactos ="";
+         if(strlen($this->nameContactoAdministrativo)>0)
+            $contactos .="nameContactoAdministrativo = '".$this->nameContactoAdministrativo."',";
+         if(strlen($this->emailContactoAdministrativo)>0)
+            $contactos .="emailContactoAdministrativo = '".$this->emailContactoAdministrativo."',";
+         if(strlen($this->telefonoContactoAdministrativo)>0)
+            $contactos .="telefonoContactoAdministrativo = '".$this->telefonoContactoAdministrativo."',";
+         if(strlen($this->nameContactoContabilidad)>0)
+             $contactos .= "nameContactoContabilidad = '".$this->nameContactoContabilidad."',";
+         if(strlen($this->emailContactoContabilidad)>0)
+             $contactos .= "emailContactoContabilidad = '".$this->emailContactoContabilidad."',";
+         if(strlen($this->telefonoContactoContabilidad)>0)
+             $contactos .= "telefonoContactoContabilidad = '".$this->telefonoContactoContabilidad."',";
+          if(strlen($this->nameContactoDirectivo)>0)
+              $contactos .= "nameContactoDirectivo = '".$this->nameContactoDirectivo."',";
+          if(strlen($this->emailContactoDirectivo)>0)
+              $contactos .= "emailContactoDirectivo = '".$this->emailContactoDirectivo."',";
+          if(strlen($this->telefonoContactoDirectivo)>0)
+              $contactos .= "telefonoContactoDirectivo = '".$this->telefonoContactoDirectivo."',";
+          if(strlen($this->telefonoCelularDirectivo)>0)
+              $contactos .= "telefonoCelularDirectivo = '".$this->telefonoCelularDirectivo."',";
 
+		//Actualizamos
 		$sql = "UPDATE
 			  contract
 			SET
@@ -2051,16 +2073,7 @@ class Contract extends Main
 			  `name` = '".$this->name."',
 			  nombreComercial = '".$this->nombreComercial."',
 			  direccionComercial = '".$this->direccionComercial."',
-			  nameContactoAdministrativo = '".$this->nameContactoAdministrativo."',
-			  emailContactoAdministrativo = '".$this->emailContactoAdministrativo."',
-			  telefonoContactoAdministrativo = '".$this->telefonoContactoAdministrativo."',
-			  nameContactoContabilidad = '".$this->nameContactoContabilidad."',
-			  emailContactoContabilidad = '".$this->emailContactoContabilidad."',
-			  telefonoContactoContabilidad = '".$this->telefonoContactoContabilidad."',
-			  nameContactoDirectivo = '".$this->nameContactoDirectivo."',
-			  emailContactoDirectivo = '".$this->emailContactoDirectivo."',
-			  telefonoContactoDirectivo = '".$this->telefonoContactoDirectivo."',
-			  telefonoCelularDirectivo = '".$this->telefonoCelularDirectivo."',
+              ".$contactos." 
 			  claveCiec = '".$this->claveCiec."',
 			  claveFiel = '".$this->claveFiel."',
 			  claveIdse = '".$this->claveIdse."',
