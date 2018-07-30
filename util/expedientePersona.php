@@ -15,19 +15,22 @@ $personas = $db->GetResult();
 $expedientes =  $expediente->Enumerate();
 $expedientes = $util->ConvertToLineal($expedientes,'expedienteId');
 $llave = array_search(13,$expedientes);
+
 unset($expedientes[$llave]);
 foreach($personas as $key=>$person){
+    $local = $expedientes;
     $sqli="";
+    $find=array();
     $sqle ="SELECT expedienteId FROM personalExpedientes WHERE personalId='".$person['personalId']."' ";
     $db->setQuery($sqle);
     $finds = $db->GetResult();
     $finds = $util->ConvertToLineal($finds,'expedienteId');
     foreach($finds as $fn){
-        $k = array_search($fn,$expedientes);
-        unset($expedientes[$k]);
+        $k = array_search($fn,$local);
+        unset($local[$k]);
     }
 
-    if(count($expedientes)<=0){
+    if(count($local)<=0){
         echo "ID :".$person['personalId']."<br>";
         echo "En orden<br><br>";
         continue;
@@ -35,8 +38,8 @@ foreach($personas as $key=>$person){
 
     $sqli = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
 
-    foreach($expedientes as $exp){
-        if($exp===end($expedientes))
+    foreach($local as $exp){
+        if($exp===end($local))
             $sqli .="(".$person['personalId'].",".$exp.");";
         else
             $sqli .="(".$person['personalId'].",".$exp."),";
