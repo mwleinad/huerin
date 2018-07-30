@@ -58,10 +58,14 @@
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
                 <span>Departamentos</span></a></li>
                 {/if}
-                {if in_array(56,$permissions)|| $User.isRoot}
+                {if in_array(182,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/expediente" {if $page == "expediente"}class="current"{/if}>
+                    <span>Expedientes</span></a></li>
+                {/if}
+                {*if in_array(56,$permissions)|| $User.isRoot}
 				<li><a href="{$WEB_ROOT}/mantenimiento" {if $page == "mantenimiento"}class="current"{/if}>
                 <span>Mantenimiento</span></a></li>
-                {/if}
+                {/if*}
 
 
             {/if}

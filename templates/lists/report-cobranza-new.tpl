@@ -1,7 +1,6 @@
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
 <thead>
 	<tr>
-		<th align="center" width="60">Comentarios</th>
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Razon Social</th>
 		<th align="center" width="60">Responsable</th>
@@ -24,10 +23,6 @@
 	</pre>
 {foreach from=$cleanedArray item=item key=key}
 		<tr>
-			<td align="center" class="" title="{$item.nameContact}">
-				<span id="comentario-{$item.contractId}">{$item.comentario}</span><br>
-				<img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.contractId}" onclick="ModifyComment({$item.contractId})"  title="Editar"/>
-			</td>
 			<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     		<td align="center" class="" title="{$item.name}">{$item.name}</td>
 			<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
