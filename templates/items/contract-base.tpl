@@ -1,43 +1,54 @@
 {foreach from=$contracts item=item key=key}
     <tr id="1">
-        <td align="center" class="id">{$item.contractId}</td>
-        <td align="center" class="id">{$item.name}</td>
-        {if $User.roleId eq 5 || $User.roleId eq 1}
-        <td align="center" class="id">{$item.type}</td>
-        <td align="center">{$item.rfc}</td>
-        <td align="left">
-        {foreach from=$departamentos item=depto}
-            {assign var="idDepto" value="{$depto.departamentoId}"}
+        {if in_array(200,$permissions) || $User.isRoot}
+            <td align="center" class="id">{$item.contractId}</td>
+        {/if}
+        {if in_array(201,$permissions) || $User.isRoot}
+            <td align="center" class="id">{$item.name}</td>
+        {/if}
+        {if in_array(202,$permissions) || $User.isRoot}
+            <td align="center" class="id">{$item.type}</td>
+        {/if}
+        {if in_array(203,$permissions) || $User.isRoot}
+            <td align="center">{$item.rfc}</td>
+        {/if}
+        {if in_array(204,$permissions) || $User.isRoot}
+            <td align="left">
+            {foreach from=$departamentos item=depto}
+                {assign var="idDepto" value="{$depto.departamentoId}"}
 
-            {if $item.responsables2.$idDepto}
-                <b>{$depto.departamento}:</b> {$item.responsables.$idDepto}
-                <br />
-            {/if}
-        {/foreach}
-        </td>
-        <td align="left">
-            {$item.activo}
-        </td>
-        {/if}
-        {if (in_array(86,$permissions) or in_array(85,$permissions)) || $User.isRoot ||($User.roleId eq 4&&$showServices)} <!-- inicio col servicios -->
-        <td align="center">
-        {if $item.activo == 'Si'}
-            {$item.noServicios}
-            {if $item.noServicios > 0}
-                {if in_array(86,$permissions)|| $User.isRoot ||($User.roleId eq 4&&$showServices)}
-                    <a href="{$WEB_ROOT}/services/id/{$item.contractId}" onclick="return parent.GB_show('Servicios de Razon Social', this.href,500,970) ">
-                        <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Servicios"/>
-                    </a>
+                {if $item.responsables2.$idDepto}
+                    <b>{$depto.departamento}:</b> {$item.responsables.$idDepto}
+                    <br />
                 {/if}
-            {/if}
-            {if in_array(85,$permissions)|| $User.isRoot}
-                <img class="spanAddService" id="{$item.contractId}" src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Servicios"/>
-            {/if}
-        {else}
-            N/A
+            {/foreach}
+            </td>
         {/if}
-        </td>
-        {/if} <!--fin col servicios-->
+        {if in_array(205,$permissions) || $User.isRoot}
+            <td align="left">
+                {$item.activo}
+            </td>
+        {/if}
+        {if in_array(206,$permissions) || $User.isRoot}
+            <td align="center">
+            {if $item.activo == 'Si'}
+                {$item.noServicios}
+                {if $item.noServicios > 0}
+                    {if in_array(86,$permissions)|| $User.isRoot ||($User.roleId eq 4&&$showServices)}
+                        <a href="{$WEB_ROOT}/services/id/{$item.contractId}" onclick="return parent.GB_show('Servicios de Razon Social', this.href,500,970) ">
+                            <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Servicios"/>
+                        </a>
+                    {/if}
+                {/if}
+                {if in_array(85,$permissions)|| $User.isRoot}
+                    <img class="spanAddService" id="{$item.contractId}" src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Servicios"/>
+                {/if}
+            {else}
+                N/A
+            {/if}
+            </td>
+        {/if}
+        {if in_array(207,$permissions) || $User.isRoot}
         <td align="center">
             {if $item.activo == 'Si'}
                 {if in_array(65,$permissions) || $User.isRoot}
@@ -59,6 +70,7 @@
             {/if}
 
         </td>
+       {/if}
     </tr>
 {foreachelse}
 <tr><td colspan="6" align="center">No se encontr&oacute; ning&uacute;n registro.</td></tr>

@@ -9,11 +9,11 @@
 	</tr>
 </thead>
 <tbody id="tbDatosContacto">
+	{if in_array(186,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">Nombre Contacto Administrativo (Pagos)</td>
 			<td align="left">{$infoRazonSocial.nameContactoAdministrativo}</td>
-		</tr>    
-
+	</tr>
     <tr>
 			<td align="left" width="40%">Email Contacto Administrativo (Pagos)</td>
 			<td align="left">{$infoRazonSocial.emailContactoAdministrativo}</td>
@@ -23,7 +23,8 @@
 			<td align="left" width="40%">Telefono Contacto Administrativo (Pagos)</td>
 			<td align="left">{$infoRazonSocial.telefonoContactoAdministrativo}</td>
 	</tr>
-	{if $User.roleId eq 5 || $User.roleId eq 1}
+	{/if}
+	{if in_array(187,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">Nombre Contacto Contabilidad (Documentacion)</td>
 			<td align="left">{$infoRazonSocial.nameContactoContabilidad}</td>
@@ -38,7 +39,8 @@
 			<td align="left" width="40%">Telefono Contacto Contabilidad (Documentacion)</td>
 			<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
 	</tr>
-
+	{/if}
+	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">Nombre Contacto Directivo</td>
 			<td align="left">{$infoRazonSocial.nameContactoDirectivo}</td>
