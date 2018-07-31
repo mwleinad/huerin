@@ -32,6 +32,7 @@ class ContractRep extends Main
         if($formValues['razonSocial'])
             $sqlFilter = " AND contract.nombreComercial LIKE '%".$formValues['razonSocial']."%'";
 
+
         if($formValues['departamentoId'])
             $sqlDepto = " AND tipoServicio.departamentoId='".$formValues['departamentoId']."'";
 
