@@ -8,6 +8,7 @@ class DB
 	private $sqlResult = NULL;
 	
 	private $conn_id = false;
+	private $pdo =NULL;
 
 	private $sqlHost;
 	private $sqlDatabase;
@@ -84,14 +85,29 @@ class DB
 		$this->sqlPassword = SQL_PASSWORD;
 	}
 
-  public function DatabaseConnect() 
-	{
-    $this->conn_id = mysql_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, 1);
-    mysql_select_db($this->sqlDatabase, $this->conn_id) or die("<br/>".mysql_error()."<br/>");
-		mysql_query("SET NAMES utf8;");
-		mysql_query("SET CHARACTER SET utf8;");
-  }
-	
+    public function DatabaseConnect()
+    {
+        $this->conn_id = mysql_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, 1);
+        mysql_select_db($this->sqlDatabase, $this->conn_id) or die("<br/>".mysql_error()."<br/>");
+            mysql_query("SET NAMES utf8;");
+            mysql_query("SET CHARACTER SET utf8;");
+    }
+    public function ExistPdo(){
+        $this->pdo = new PDO("mysql:host=$this->sqlHost;dbname=$this->sqlDatabase",$this->sqlUser,$this->sqlPassword);
+    }
+    public function ExecuteQueryPdo(){
+
+	        $this->ExistPdo();
+
+	    $this->sqlResult = $this->pdo->query($this->query);
+        $this->sqlResult->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    public function GetResultPdo(){
+        $retArray = array();
+	    $this->ExecuteQueryPdo();
+
+        return $this->sqlResult;
+    }
 	public function ExecuteQuery()
 	{
   	if(!$this->conn_id)
@@ -100,7 +116,7 @@ class DB
 
 		//TODO we might want to add some security in the queries here, but that can be done later, this is the place
 
-		if($this->projectStatus == "test")
+		if($this->projectStatus == "teste")
 		{
 				//echo "<br><br>".$this->query."<br><br>";
 //				print_r(debug_backtrace());
@@ -112,21 +128,17 @@ class DB
 		}	
 	}
 	
-  function GetResult()
-	{
-  	$retArray = array();
-
-		$this->ExecuteQuery();
-		
-	  while($rs=mysql_fetch_assoc($this->sqlResult))
-		{
-	    	$retArray[] = $rs;
-		}	
-
-    $this->CleanQuery();
-
-    return $retArray;
-  }
+    function GetResult()
+        {
+        $retArray = array();
+            $this->ExecuteQuery();
+            while($rs=mysql_fetch_assoc($this->sqlResult))
+            {
+                $retArray[] = $rs;
+            }
+            $this->CleanQuery();
+        return $retArray;
+      }
 
   function GetTotalRows()
 	{
