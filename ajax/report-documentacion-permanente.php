@@ -15,8 +15,8 @@
 				$formValues['respCuenta'] = $_POST['responsableCuenta'];
 				$formValues['facturador'] = $_POST['facturador'];
 				$formValues['subordinados'] = $_POST['subordinados'];
-						
-				$tiposDocumentos = $tipoDocumento->Enumerate();
+
+            	$tiposDocumentos = $tipoDocumento->Enumerate();
 				$smarty->assign('tiposDocumentos',$tiposDocumentos);
 				$totalDocumentos=count($tiposDocumentos);
 
