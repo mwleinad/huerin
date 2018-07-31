@@ -9,6 +9,7 @@
 	</tr>
 </thead>
 <tbody id="tbDatosContacto">
+    {if in_array(186,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Administrativo (Pagos)</td>
 			<td align="left"><input name="nameContactoAdministrativo" id="nameContactoAdministrativo" type="text" value="{$bse.nameContactoAdministrativo}" class="smallInput medium" size="50"/></td>
@@ -22,8 +23,9 @@
     <tr>
 			<td align="left" width="40%">* Telefono Contacto Administrativo (Pagos)</td>
 			<td align="left"><input name="telefonoContactoAdministrativo" id="telefonoContactoAdministrativo" type="text" value="{$bse.telefonoContactoAdministrativo}" class="smallInput medium" size="50"/></td>
-		</tr>    
-
+	</tr>
+	{/if}
+	{if in_array(187,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Contabilidad (Documentacion)</td>
 			<td align="left"><input name="nameContactoContabilidad" id="nameContactoContabilidad" type="text" value="{$bse.nameContactoContabilidad}" class="smallInput medium" size="50"/></td>
@@ -37,8 +39,9 @@
     <tr>
 			<td align="left" width="40%">* Telefono Contacto Contabilidad (Documentacion)</td>
 			<td align="left"><input name="telefonoContactoContabilidad" id="telefonoContactoContabilidad" type="text" value="{$bse.telefonoContactoContabilidad}" class="smallInput medium" size="50"/></td>
-		</tr>    
-
+	</tr>
+	{/if}
+	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Directivo</td>
 			<td align="left"><input name="nameContactoDirectivo" id="nameContactoDirectivo" type="text" value="{$bse.nameContactoDirectivo}" class="smallInput medium" size="50"/></td>
@@ -57,7 +60,8 @@
     <tr>
 			<td align="left" width="40%">* Telefono Celular Contacto Directivo</td>
 			<td align="left"><input name="telefonoCelularDirectivo" id="telefonoCelularDirectivo" type="text" value="{$bse.telefonoCelularDirectivo}" class="smallInput medium" size="50"/></td>
-		</tr>    
+	</tr>
+	{/if}
 
 </tbody>
 </table>

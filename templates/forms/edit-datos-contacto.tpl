@@ -9,11 +9,11 @@
 	</tr>
 </thead>
 <tbody id="tbDatosContacto">
+    {if in_array(186,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Administrativo (Pagos)</td>
 			<td align="left"><input name="nameContactoAdministrativo" id="nameContactoAdministrativo" type="text" value="{$contractInfo.nameContactoAdministrativo}" class="smallInput medium" size="50"/></td>
-		</tr>    
-
+	</tr>
     <tr>
 			<td align="left" width="40%">* Email Contacto Administrativo (Pagos)</td>
 			<td align="left"><input name="emailContactoAdministrativo" id="emailContactoAdministrativo" type="text" value="{$contractInfo.emailContactoAdministrativo}" class="smallInput medium" size="50"/></td>
@@ -23,7 +23,8 @@
 			<td align="left" width="40%">* Telefono Contacto Administrativo (Pagos)</td>
 			<td align="left"><input name="telefonoContactoAdministrativo" id="telefonoContactoAdministrativo" type="text" value="{$contractInfo.telefonoContactoAdministrativo}" class="smallInput medium" size="50"/></td>
 	</tr>
-	{if $User.roleId eq 5 || $User.roleId eq 1}
+	{/if}
+	{if in_array(187,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Contabilidad (Documentacion)</td>
 			<td align="left"><input name="nameContactoContabilidad" id="nameContactoContabilidad" type="text" value="{$contractInfo.nameContactoContabilidad}" class="smallInput medium" size="50"/></td>
@@ -37,6 +38,8 @@
 			<td align="left" width="40%">* Telefono Contacto Contabilidad (Documentacion)</td>
 			<td align="left"><input name="telefonoContactoContabilidad" id="telefonoContactoContabilidad" type="text" value="{$contractInfo.telefonoContactoContabilidad}" class="smallInput medium" size="50"/></td>
 	</tr>
+	{/if}
+	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Directivo</td>
 			<td align="left"><input name="nameContactoDirectivo" id="nameContactoDirectivo" type="text" value="{$contractInfo.nameContactoDirectivo}" class="smallInput medium" size="50"/></td>
@@ -55,8 +58,6 @@
 			<td align="left" width="40%">* Telefono Celular Contacto Directivo</td>
 			<td align="left"><input name="telefonoCelularDirectivo" id="telefonoCelularDirectivo" type="text" class="smallInput medium" size="50" value="{$contractInfo.telefonoCelularDirectivo}"/></td>
 	</tr>
-   {/if}
-    
-
+	{/if}
 </tbody>
 </table>
