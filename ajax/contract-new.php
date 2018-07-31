@@ -22,9 +22,12 @@ switch($_POST["action"])
 			$contract->setRegimenId($_POST['regimenId']);
 			$contract->setNombreComercial($_POST['nombreComercial']);
 			$contract->setDireccionComercial($_POST['direccionComercial']);
-			$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
-			$contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
-			$contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
+    		if(isset($_POST['nameContactoAdministrativo']))
+				$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
+    		if(isset($_POST['emailContactoAdministrativo']))
+				$contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
+    		if(isset($_POST['telefonoContactoAdministrativo']))
+    			$contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
 			if(isset($_POST['nameContactoContabilidad']))
 				$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
     		if(isset($_POST['emailContactoContabilidad']))
