@@ -13,7 +13,16 @@ class InstanciaServicio extends  Servicio
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
         $sql = "SELECT 
+                CASE tipoServicioId 
+                WHEN 16 THEN ''
+                WHEN 17 THEN ''
+                WHEN 34 THEN ''
+                WHEN 24 THEN ''
+                WHEN 27 THEN ''
+                ELSE
                 class
+                END 
+                AS class
                 ,MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
@@ -22,7 +31,7 @@ class InstanciaServicio extends  Servicio
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."'  ORDER BY instanciaServicio.instanciaServicioId DESC " ;
+				AND servicio.servicioId = '".$servicioId."'  ORDER BY instanciaServicio.instanciaServicioId DESC" ;
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
 
@@ -32,9 +41,39 @@ class InstanciaServicio extends  Servicio
         }
         return $base;
     }
+    function getInstanciaByServicio12($servicioId, $year)
+    {
+        $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
+            10=>array(),11=>array(),12=>array());
+
+        $sql = "CALL getInstancias(".$year.", ".$servicioId.",'all'); ";
+        $this->Util()->DB()->setQuery($sql);
+        $data = $this->Util()->DB()->GetResultPdo();
+        foreach($data as $key => $value)
+        {
+            $base[$value['mes']] =  $value;
+        }
+        return $base;
+    }
+    function getInstanciaAtrasado12($servicioId,$year){
+
+        $sql = "CALL getInstancias(".$year.", ".$servicioId.",'atrasados'); ";
+        $this->Util()->DB()->setQuery($sql);
+        $data = $this->Util()->DB()->GetResult();
+        return $data;
+    }
     function getInstanciaAtrasado($servicioId,$year){
         $sql = "SELECT 
-                class,
+                CASE tipoServicioId 
+                    WHEN 16 THEN ''
+                    WHEN 17 THEN ''
+                    WHEN 34 THEN ''
+                    WHEN 24 THEN ''
+                    WHEN 27 THEN ''
+                    ELSE
+                    class
+                END 
+                AS class,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId

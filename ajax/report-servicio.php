@@ -23,7 +23,6 @@ switch($_POST["type"])
 		break;
 	case "searchNivelUno":
         $year = $_POST['year'];
-
         $formValues['subordinados'] = $_POST['deep'];
         $formValues['respCuenta'] = $_POST['responsableCuenta'];
         $formValues['departamentoId'] = $_POST["departamentoId"];
@@ -235,7 +234,6 @@ switch($_POST["type"])
 	case "sendEmail":
 	case "graph":
 			$year = $_POST['year'];
-			
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
@@ -244,10 +242,10 @@ switch($_POST["type"])
 
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
-					WHERE class = ''";
+					WHERE class = '' ";
 			$db->setQuery($sql);
 			$db->UpdateData();
-						
+
 			$contracts = array();
     		include_once(DOC_ROOT.'/ajax/filter.php');
 			$idClientes = array();
@@ -321,7 +319,6 @@ switch($_POST["type"])
 						{
 							$servicios[] = $serv;
 						}
-						
 					}//foreach
 					$con['instanciasServicio'] = $servicios;
 					$contratos[] = $con;
@@ -349,7 +346,6 @@ switch($_POST["type"])
 						}
 				}
 			}
-			
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
