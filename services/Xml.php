@@ -756,8 +756,8 @@ class Xml extends Producto{
             'ImpPagado' => $this->Util()->CadenaOriginalFormat($infoPagos['impPagado'],2,false),
             'ImpSaldoInsoluto' => $this->Util()->CadenaOriginalFormat($infoPagos['impSaldoInsoluto'],2,false),
         ];
-
-        if($this->data['tiposDeMonedaPago'] != 'peso'){
+        //solo se cumple si el tipo de moneda con el que se va pagar es diferente a pesos pero ademas los campos monedaDR y monedaP sean diferentes
+        if($this->data['tiposDeMonedaPago'] != 'peso'&&$doctoRelacionadoData['MonedaDR']!=$pagoData['MonedaP']){
             $doctoRelacionadoData['TipoCambioDR'] = $this->Util()->CadenaOriginalFormat($this->data['tiposDeCambioPago'],4,false);
         }
 
