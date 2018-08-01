@@ -116,7 +116,7 @@ class DB
 
 		//TODO we might want to add some security in the queries here, but that can be done later, this is the place
 
-		if($this->projectStatus == "teste")
+		if($this->projectStatus == "test")
 		{
 				//echo "<br><br>".$this->query."<br><br>";
 //				print_r(debug_backtrace());
