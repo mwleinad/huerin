@@ -140,7 +140,7 @@
             <div class="controlSm"><input name="porcentajeIEPS" id="porcentajeIEPS" type="text" value="{$post.porcentajeIEPS}" size="12"  class="largeInput"  onblur="UpdateIepsConcepto()"/></div>
 
             <div class="titleLabel">Sucursal:</div>
-            <div class="controlSm">
+            <div class="controlMd">
             <select name="sucursalId" id="sucursalId"  class="largeInput" style="width:185px">
             {foreach from=$sucursales item=sucursal}
             <option value="{$sucursal.sucursalId}">{$sucursal.identificador}</option>
