@@ -1321,10 +1321,13 @@ ul.menu_arbol ul {
 }
 .formLine{
 	margin-bottom: 10px !important;
-	padding-left: 8px;
-	padding-right: 8px;
 }
-.formLine > .titleLabel{
+.formLineFact{
+	margin-bottom: 10px !important;
+	padding-right: 8px;
+	margin-left: 8px;
+}
+.formLineFact > .titleLabel{
 	text-align: left;
 	vertical-align: middle;
 	width: 90px;
@@ -1333,35 +1336,35 @@ ul.menu_arbol ul {
 	padding-left: 15px;
 	padding-right: 15px;
 }
-.formLine > .controlLg{
+.formLineFact > .controlLg{
 	box-sizing: border-box;
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 350px;
 	float: left;
 }
-.formLine > .controlMd{
+.formLineFact > .controlMd{
 	box-sizing: border-box;
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 175px;
 	float: left;
 }
-.formLine > .controlSm{
+.formLineFact > .controlSm{
 	box-sizing: border-box;
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 88px;
 	float: left;
 }
-.formLine > .controlXsm{
+.formLineFact > .controlXsm{
 	box-sizing: border-box;
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 44px;
 	float: left;
 }
-.formLine > .moreBtnControl{
+.formLineFact > .moreBtnControl{
 	padding-left: 20px;
 	box-sizing: border-box;
 	width: 250px;
@@ -1376,6 +1379,7 @@ ul.menu_arbol ul {
 	float:left;
 	font-size: 15px;
 	padding-right: 15px;
+
 }
 
 

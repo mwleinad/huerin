@@ -15,7 +15,7 @@
 				<div>
         	Sobrescribir Fecha y Folio
         </div>
-        <div class="formLine" style="text-align:left;">
+        <div class="formLineFact" style="text-align:left;">
         <div style="width:90px;float:left">Fecha:</div>
         <div style="width:40px;float:left">D&iacute;a:</div>
         <div style="width:60px;float:left"><input name="fechaSobreDia" id="fechaSobreDia" type="text" value="{$post.rfc}" size="2" class="largeInput" placeholder="dd" maxlength="2"/>
@@ -39,7 +39,7 @@
 				<div>
         	<span id="loadingDivDatosFactura"></span>
         </div>
-        <div class="formLine" style="text-align:left;">
+        <div class="formLineFact" style="text-align:left;">
         <div class="titleLabel">B&uacute;sca RFC o Raz&oacute;n Social:</div>
         <div class="controlMd"><input name="rfc" id="rfc" type="text" value="{$post.rfc}" class="largeInput" autocomplete="off"/>
         <div style="position:relative">
@@ -55,7 +55,7 @@
 
       </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="titleLabel">Forma de Pago:(*)</div>
           <div class="controlLg">
             <select name="formaDePago" id="formaDePago"  class="largeInput">
@@ -77,84 +77,82 @@
             <hr />
         </div>
 		<div id="facturaOpciones" style="display:none">
-        <div class="formLine">
-            <div class="titleLabel">% de IVA:</div>
-            <div class="controlSm">
-             <select name="tasaIva" id="tasaIva" class="largeInput" style="width:100px">
-            {foreach from=$ivas item=iva}
-            <option value="{$iva}">{$iva}</option> <br />
-            {/foreach}
-            </select></div>
-
-            <div class="titleLabel">Tipo de Moneda:</div>
-            <div class="controlSm">
-             <select name="tiposDeMoneda" id="tiposDeMoneda"  class="largeInput" >
-            {foreach from=$tiposDeMoneda item=moneda}
-            <option value="{$moneda.tipo}">{$moneda.moneda}</option>
-            {/foreach}
-            </select></div>
-
-            <div class="titleLabel">Tipo de Cambio:</div>
-            <div class="controlSm"><input name="tipoDeCambio" id="tipoDeCambio" type="text" value="{$post.tipoDeCambio}" maxlength="7"  class="largeInput" /></div>
-
-            <div class="titleLabel">% de Descuento:</div>
-            <div class="controlXsm"> <input name="porcentajeDescuento" id="porcentajeDescuento" type="text" value="{$post.porcentajeDescuento}" maxlength="5"  class="largeInput" /></div>
-
-            <div style="clear:both"></div>
-          </div>
-        <div class="formLine">
-            <div class="titleLabel">Metodo de Pago:</div>
-            <div class="controlLg">
-                <select name="metodoDePago" id="metodoDePago"  class="largeInput">
-                {foreach from=$metodosDePago item=metodoDePago}
-                    <option value="{$metodoDePago.c_MetodoPago}"
-                        {if $metodoDePago.c_MetodoPago == "PUE"} selected{/if}
-                    >{$metodoDePago.descripcion}</option> <br />
-                {/foreach}
-                </select>
-            </div>
-            <div class="titleLabel">Condiciones de Pago:</div>
-            <div class="controlLg"><input name="condicionesDePago" id="condicionesDePago" type="text" value="{$post.condicionesDePago}" class="largeInput" style="width:390px"/></div>
-            <div style="clear:both"></div>
-          </div>
-
-
-        <div class="formLine">
-            <div class="titleLabel">% Retenci&oacute;n Iva:</div>
-            <div class="controlSm">
-                <select name="porcentajeRetIva" id="porcentajeRetIva"  class="largeInput">
-                {foreach from=$retIvas item=iva}
+            <div class="formLineFact">
+                <div class="titleLabel">% de IVA:</div>
+                <div class="controlSm">
+                 <select name="tasaIva" id="tasaIva" class="largeInput" style="width:100px">
+                {foreach from=$ivas item=iva}
                 <option value="{$iva}">{$iva}</option> <br />
                 {/foreach}
-                </select>
-            </div>
-            <div class="titleLabel">% Retenci&oacute;n ISR:</div>
-            <div class="controlSm">
-                <select name="porcentajeRetIsr" id="porcentajeRetIsr"  class="largeInput">
-                {foreach from=$retIsrs item=isr}
-                <option value="{$isr}">{$isr}</option> <br />
+                </select></div>
+
+                <div class="titleLabel">Tipo de Moneda:</div>
+                <div class="controlSm">
+                 <select name="tiposDeMoneda" id="tiposDeMoneda"  class="largeInput" >
+                {foreach from=$tiposDeMoneda item=moneda}
+                <option value="{$moneda.tipo}">{$moneda.moneda}</option>
                 {/foreach}
-                </select>
-            </div>
-            <div class="titleLabel">% IEPS:</div>
-            <div class="controlSm"><input name="porcentajeIEPS" id="porcentajeIEPS" type="text" value="{$post.porcentajeIEPS}" size="12"  class="largeInput"  onblur="UpdateIepsConcepto()"/></div>
+                </select></div>
 
-            <div class="titleLabel">Sucursal:</div>
-            <div class="controlMd">
-            <select name="sucursalId" id="sucursalId"  class="largeInput" style="width:185px">
-            {foreach from=$sucursales item=sucursal}
-            <option value="{$sucursal.sucursalId}">{$sucursal.identificador}</option>
-            {/foreach}
-            </select></div>
+                <div class="titleLabel">Tipo de Cambio:</div>
+                <div class="controlSm"><input name="tipoDeCambio" id="tipoDeCambio" type="text" value="{$post.tipoDeCambio}" maxlength="7"  class="largeInput" /></div>
 
-            <div style="clear:both"></div>
-          </div>
-            <div class="formLine">
-                <hr />
-            </div>
+                <div class="titleLabel">% de Descuento:</div>
+                <div class="controlXsm"> <input name="porcentajeDescuento" id="porcentajeDescuento" type="text" value="{$post.porcentajeDescuento}" maxlength="5"  class="largeInput" /></div>
+
+                <div style="clear:both"></div>
+              </div>
+            <div class="formLineFact">
+                <div class="titleLabel">Metodo de Pago:</div>
+                <div class="controlLg">
+                    <select name="metodoDePago" id="metodoDePago"  class="largeInput">
+                    {foreach from=$metodosDePago item=metodoDePago}
+                        <option value="{$metodoDePago.c_MetodoPago}"
+                            {if $metodoDePago.c_MetodoPago == "PUE"} selected{/if}
+                        >{$metodoDePago.descripcion}</option> <br />
+                    {/foreach}
+                    </select>
+                </div>
+                <div class="titleLabel">Condiciones de Pago:</div>
+                <div class="controlLg"><input name="condicionesDePago" id="condicionesDePago" type="text" value="{$post.condicionesDePago}" class="largeInput" style="width:390px"/></div>
+                <div style="clear:both"></div>
+              </div>
+            <div class="formLineFact">
+                <div class="titleLabel">% Retenci&oacute;n Iva:</div>
+                <div class="controlSm">
+                    <select name="porcentajeRetIva" id="porcentajeRetIva"  class="largeInput">
+                    {foreach from=$retIvas item=iva}
+                    <option value="{$iva}">{$iva}</option> <br />
+                    {/foreach}
+                    </select>
+                </div>
+                <div class="titleLabel">% Retenci&oacute;n ISR:</div>
+                <div class="controlSm">
+                    <select name="porcentajeRetIsr" id="porcentajeRetIsr"  class="largeInput">
+                    {foreach from=$retIsrs item=isr}
+                    <option value="{$isr}">{$isr}</option> <br />
+                    {/foreach}
+                    </select>
+                </div>
+                <div class="titleLabel">% IEPS:</div>
+                <div class="controlSm"><input name="porcentajeIEPS" id="porcentajeIEPS" type="text" value="{$post.porcentajeIEPS}" size="12"  class="largeInput"  onblur="UpdateIepsConcepto()"/></div>
+
+                <div class="titleLabel">Sucursal:</div>
+                <div class="controlMd">
+                <select name="sucursalId" id="sucursalId"  class="largeInput" style="width:185px">
+                {foreach from=$sucursales item=sucursal}
+                <option value="{$sucursal.sucursalId}">{$sucursal.identificador}</option>
+                {/foreach}
+                </select></div>
+
+                <div style="clear:both"></div>
+              </div>
 		</div>
+        <div class="formLine" id="jumpfacturaOpciones" style="display:none">
+            <hr />
+        </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="titleLabel">Seleccionar Serie:</div>
           <div class="controlLg">
               <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
@@ -171,7 +169,6 @@
                 {/foreach}
               </select>
           </div>
-
 {*
         <div style="width:190px;float:left">Generar cuenta por cobrar?<br>
         <span style="color: #f00;">Por default la factura se considerara pagada</span></div>
@@ -189,7 +186,7 @@
       		<div style="clear:both"></div>
         </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="titleLabel">Uso CFDi:</div>
           <div class="controlLg">
           <select name="usoCfdi" id="usoCfdi"  class="largeInput" style="width:315px">
@@ -201,7 +198,7 @@
        		<div style="clear:both"></div>
         </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="titleLabel">CFDi relacionado Serie:</div>
           <div class="controlSm">
           <input name="cfdiRelacionadoSerie" id="cfdiRelacionadoSerie" type="text" value="" placeholder="A" class="largeInput" size="6"/></div>
@@ -218,12 +215,11 @@
                 <option value="{$relacion.c_TipoRelacion}">{$relacion.descripcion}</option>
             {/foreach}
           </select>
-
-       		<div style="clear:both"></div>
+          <div style="clear:both"></div>
         </div>
 
         {if $info.empresaId == 113}
-        <div class="formLine">
+        <div class="formLineFact">
         	<div style="width:90px;float:left">Tiempo Limite:</div>
           	<div style="width:135px;float:left">
             <input name="tiempoLimite" id="tiempoLimite" type="text" value="" size="18"  class="largeInput"/>
@@ -232,18 +228,18 @@
         {/if}
 
 {if $version == "auto" && ($info.empresaId == 39 || $info.empresaId == 180)}
-      <div class="formLine">
+      <div class="formLineFact">
           <div style="width:90px;float:left">% ISH:</div>
           <div style="width:126px;float:left"><input name="porcentajeISH" id="porcentajeISH" type="text" value="2"  size="12"  class="largeInput"/></div>
       		<div style="clear:both"></div>
         </div>
 {/if}
      <div class="formLine">
- 					<hr />
-        </div>
+        <hr />
+     </div>
 
 <span id="loadingDivConcepto"></span>
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="colDiv">Cantidad</div>
           <div class="colDiv"># Identificacion</div>
           <div class="colDiv">Unidad</div>
@@ -256,7 +252,7 @@
     <form id="conceptoForm" name="conceptoForm">
             <input type="hidden" id="type" name="type" value="agregarConcepto" />		<!--enviar $totalconceptos-->
 				<input type="hidden" id="totalConceptos" value="$conceptos" >
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="colDiv">
           <input name="cantidad" id="cantidad" type="text" value="{$post.cantidad}"  size="8" class="largeInput" placeholder="Cantidad"/></div>
           <div class="colDiv">
@@ -286,7 +282,7 @@
       		<div style="clear:both"></div>
         </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="colDiv">Clv Prod o Serv</div>
           <div class="colDiv">Clave Unidad</div>
           <div class="colDiv">C. Predial</div>
@@ -297,7 +293,7 @@
       		<div style="clear:both"></div>
         </div>
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div class="colDiv">
               <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="84111500"  size="8" class="largeInput" placeholder=""/></div>
           <div class="colDiv">
@@ -328,13 +324,13 @@
         {if $expiredImpuestos}
       	    Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
         {else}
-                <div class="formLine">
+                <div class="formLineFact">
                     <div style="width:500px;float:left"><b>Extras para impuestos (Si es 0, no se mostrara)</b></div>
                     <div style="width:100px;float:left">Subtotal</div>
                     <div style="width:100px;float:left">IVA</div>
                     <div style="clear:both"></div>
                 </div>
-                <div class="formLine">
+                <div class="formLineFact">
                     <div style="width:500px;float:left">
                       <input name="amortizacionFiniquito" id="amortizacionFiniquito" type="text" size="48" class="largeInput" placeholder="" value="IMPORTE DE LA ESTIMACION No 01 (UNO) Y FINIQUITO"/></div>
                     <div style="width:100px;float:left">
@@ -345,12 +341,12 @@
                     </div>
                     <div style="clear:both"></div>
                 </div>
-<div class="formLine">
+<div class="formLineFact">
                     <div style="width:300px;float:left">Amortizacion del anticipo</div>
                     <div style="width:200px;float:left">IVA Amortizacion</div>
                     <div style="clear:both"></div>
                 </div>
-                <div class="formLine">
+                <div class="formLineFact">
                     <div style="width:300px;float:left">
                       <input name="amortizacion" id="amortizacion" type="text" size="28" class="largeInput" placeholder="" value="0.00"/></div>
                     <div style="width:200px;float:left">
@@ -361,15 +357,17 @@
             {/if}
             {/if}
 
-      <div class="formLine">
+      <div class="formLineFact">
           <div style="width:900px;float:left;">
-          <textarea placeholder="Escribe tu concepto aqui" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide" style="font-family: Courier New, Courier, monospace !important">{$post.descripcion}</textarea>
-</div>
+            <textarea placeholder="Escribe tu concepto aqui" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide" style="font-family: Courier New, Courier, monospace !important">{$post.descripcion}</textarea>
+          </div>
       		<div style="clear:both"></div>
       		<span style="color: #f00; font-weight: bold">La descripcion solo puede tener un maximo de 1000 caracteres. Nueva regla del SAT! </span>
- 					<hr />
-        </div>
-			</form>
+      </div>
+	  </form>
+    <div class="formLine">
+        <hr />
+    </div>
       <b>Conceptos Cargados:</b>
 			<div id="conceptos">
             {if $conceptos|count > 0}
@@ -380,21 +378,19 @@
 
       	</div>
       <br /><br />
-
-
-
-
-     <div class="formLine">
+     <div class="formLineFact">
           <div>Observaciones</div>
           <div><textarea placeholder="Observaciones" name="observaciones" cols="33" rows="5" id="observaciones" class="largeInput wide"></textarea></div>
- 					<hr />
-  		</div>
+  	 </div>
+     <div class="formLine">
+        <hr />
+     </div>
 
     {if $info.moduloImpuestos == "Si"}
         {if $expiredImpuestos}
       	    Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
         {else}
-        <div class="formLine">
+        <div class="formLineFact">
 		    <div style="width:300px;float:left; cursor:pointer" onclick="ToggleDiv('impuestosOpciones')">[+] Mostrar Formulario de Impuestos<br /><br /></div>
 		</div>
 		<span id="loadingDivImpuesto"></span>
@@ -402,7 +398,7 @@
 
         <div style="clear:both"></div>
         <div id="impuestosOpciones" style="display:none">
-            <div class="formLine">
+            <div class="formLineFact">
                 <div style="width:80px;float:left">Tasa %:</div>
                 <div style="width:350px;float:left">Impuesto</div>
                 <div style="width:80px;float:left">IVA%</div>
@@ -411,7 +407,7 @@
             <div style="clear:both"></div>
 
             <form id="impuestoForm" name="impuestoForm">
-            <div class="formLine">
+            <div class="formLineFact">
                 <div style="width:80px;float:left">
                     <input name="tasa" id="tasa" type="text" value="{$post.tasa}"  size="5" class="largeInput"/>
                 </div>
@@ -437,7 +433,6 @@
                     <span>Agregar Impuesto</span>
                     </div>
                 <div style="clear:both"></div>
-                <hr />
               </div>
             </form>
         Impuestos Cargados:
@@ -445,26 +440,25 @@
             Ninguno (Has click en Agregar Impuesto o Retenci&oacute;n para agregar)
         </div>
         <br /><br />
-        <div class="formLine" style="float:left; width:180px">
+        <div class="formLineFact" style="float:left; width:180px">
             <div>Autorizo:</div>
             <div><textarea name="autorizo" id="autorizo" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-        <div class="formLine"  style="float:left; width:180px">
+        <div class="formLineFact"  style="float:left; width:180px">
             <div>Recibi&oacute;:</div>
             <div><textarea name="recibio" id="recibio" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-        <div class="formLine"  style="float:left; width:180px">
+        <div class="formLineFact"  style="float:left; width:180px">
             <div>VoBo:</div>
             <div><textarea name="vobo" id="vobo" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-        <div class="formLine"  style="float:left; width:180px">
+        <div class="formLineFact"  style="float:left; width:180px">
             <div>Reviso:</div>
             <div><textarea name="reviso" id="reviso" class="largeInput" style="text-align:center"></textarea></div>
         </div>
-        <div class="formLine"  style="float:left; width:180px">
+        <div class="formLineFact"  style="float:left; width:180px">
             <div>Pago:</div>
             <div><textarea name="pago" id="pago" class="largeInput" style="text-align:center"></textarea></div>
-            <hr />
         </div>
         <div style="clear:both"></div>
             </div>
@@ -472,7 +466,7 @@
 {/if}
             <div style="clear:both"></div>
 
-     	<div class="formLine">
+     	<div class="formLineFact">
         	<div>Totales Desglosados</div>
           	<div id="totalesDesglosadosDiv">
 			{if $totalDesglosado|count > 0}
@@ -483,11 +477,12 @@
           	</div>
             <br />
             <div id="showFactura"></div>
- 			<hr />
 		</div>
+        <div class="formLine">
+            <hr />
+        </div>
 
-
-	    <div class="formLine" style="width: 100%;text-align:center;" id="reemplazarBoton">
+	    <div class="formLineFact" style="width: 100%;text-align:center;" id="reemplazarBoton">
         <a class="button" id="generarFactura" name="generarFactura"><span>Generar Comprobante</span></a>
         <a class="button" id="vistaPrevia" name="vistaPrevia"><span>Vista Previa</span></a>
 		{if $ticketId>0}

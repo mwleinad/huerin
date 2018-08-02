@@ -363,6 +363,9 @@ function ToggleSpecifiedDiv(id)
 function ToggleDiv(id)
 {
 	$(id).toggle();
+	if(jQ('#jump'+id).length>0)
+        $('jump'+id).toggle();
+
 }
 function SetDateCalendar(input){
     var dateNow = jQ("#"+input.id).val();
