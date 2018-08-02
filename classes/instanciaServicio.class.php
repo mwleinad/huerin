@@ -16,9 +16,6 @@ class InstanciaServicio extends  Servicio
                 CASE tipoServicioId 
                 WHEN 16 THEN ''
                 WHEN 17 THEN ''
-                WHEN 34 THEN ''
-                WHEN 24 THEN ''
-                WHEN 27 THEN ''
                 ELSE
                 class
                 END 
@@ -67,9 +64,6 @@ class InstanciaServicio extends  Servicio
                 CASE tipoServicioId 
                     WHEN 16 THEN ''
                     WHEN 17 THEN ''
-                    WHEN 34 THEN ''
-                    WHEN 24 THEN ''
-                    WHEN 27 THEN ''
                     ELSE
                     class
                 END 
