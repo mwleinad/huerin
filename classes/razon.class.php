@@ -8,7 +8,36 @@
 
 class Razon extends Contract
 {
+   public function findEncargadoAdministracion(){
+       $admin = array();
+       $this->Util()->DB()->setQuery(
+           "SELECT contractId,permisos FROM contract WHERE contractId = '".$this->getContractId()."'"
+       );
+       $row = $this->Util()->DB()->GetRow();
 
+       $permisos = explode('-',$row['permisos']);
+       if(!is_array($permisos))
+           $permisos =  array();
+
+       $id=0;
+       foreach ($permisos as $permiso) {
+           list($depa, $resp) = explode(",", $permiso);
+           if($depa == 21) {
+               $id = $resp;
+               break;
+           }
+       }
+       if($id){
+           $this->Util()->DB()->setQuery(
+               "SELECT email,name FROM personal WHERE personalId = '".$id."'"
+           );
+           $correo = $this->Util()->DB()->GetRow();
+           if($this->Util()->ValidateEmail($correo['email'])){
+               $admin = $correo;
+           }
+       }
+       return $admin;
+   }
    public function getEmailContractByArea($area=false,$mainCustomer=false){
        $emails=array();
        $this->Util()->DB()->setQuery(
@@ -95,9 +124,17 @@ class Razon extends Contract
        }else{
            $correos = array();
        }
+       //encontrar el encargado de administracion
+       $this->setContractId($compInfo['userId']);
+       $eadmin = $this->findEncargadoAdministracion();
+       $encargados = unserialize(CC_EMAILS);
+       if(!is_array($encargados))
+           $encargados = array();
 
-
-
+       if(!empty($eadmin)){
+           $admin = array($eadmin['email']=>$eadmin['name']);
+           $encargados = array_merge($encargados,$admin);
+       }
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
@@ -231,7 +268,7 @@ class Razon extends Contract
         if($from33)
             $body = utf8_decode($body);
 
-       if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,unserialize(CC_EMAILS)))
+       if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
        {
            //se actualiza que se envio por correo el comprobante
            $this->Util()->DB()->setQuery("UPDATE comprobante SET sent = 'si' WHERE comprobanteId='".$id_comprobante."' ");
