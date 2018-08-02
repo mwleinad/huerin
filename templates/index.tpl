@@ -4,14 +4,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Plataforma Operativa Huerin Braun, S.C.</title>
 
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/960.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/reset.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/text.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/blue.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/jquery-ui/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/960.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/reset.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/text.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/blue.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/grid.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/wide/override.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/jquery-ui/jquery-ui.css?{$timestamp}" />
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css?{$timestamp}" />
 {if $page == 'report-servicio-drill'}
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap-theme.css" />
