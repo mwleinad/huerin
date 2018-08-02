@@ -31,5 +31,5 @@
 
     <br />
     <br />
-    <a href="{$WEB_ROOT}/sistema/nueva-factura">Crear nuevo comprobante</a>
+    <a href="{$WEB_ROOT}/cfdi33-generate">Crear nuevo comprobante</a>
 </div>

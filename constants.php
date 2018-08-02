@@ -27,24 +27,24 @@ define("BALANCE_YEAR", "2013");
 switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
-        define("SEND_TO", "administracion@emfrich.com.mx");
-        define("SEND_TO1", "jeje@braunhuerin.com.mx ");
-        define("SEND_TO2", "de@gmail.com");
-        define("SEND_TO3", "desarrollo@hotmail.com");
+        define("SEND_TO", "leasib_666@hotmail.com");
+        //define("SEND_TO1", "jeje@braunhuerin.com.mx ");
+        //define("SEND_TO2", "de@gmail.com");
+        //define("SEND_TO3", "desarrollo@hotmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
     break;
     default:
         define("SEND_TO", "asanchez@braunhuerin.com.mx");
-        define("SEND_TO1", "cobranzabh1@braunhuerin.com.mx ");
-        define("SEND_TO2", "cobranzabh2@braunhuerin.com.mx ");
-        define("SEND_TO3", "cobranzabh3@braunhuerin.com.mx");
+        //define("SEND_TO1", "cobranzabh1@braunhuerin.com.mx ");
+        //define("SEND_TO2", "cobranzabh2@braunhuerin.com.mx ");
+        //define("SEND_TO3", "cobranzabh3@braunhuerin.com.mx");
         define("FROM_MAIL", "facturacionbh@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
     break;
 }
 
-$CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN',SEND_TO1=>'COBRANZA1',SEND_TO2=>'COBRANZA2',SEND_TO3=>'COBRANZA3');
+$CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN');
 define("CC_EMAILS", serialize($CC_EMAILS));
 
 define("SERVICIO_CONTABILIDAD", $servicioContabilidad);
