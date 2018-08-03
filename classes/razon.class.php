@@ -164,7 +164,7 @@ class Razon extends Contract
        if($compInfo['tiposComprobanteId']==10)
        {
            $fromName = "COBRANZA B&H";
-           $subject  =  $from33?utf8_decode($contratoEmails['name']):$contratoEmails['name'];
+           $subject  = "COMPLEMENTO DE PAGO CON FOLIO No.".$serie.$folio;
 
        }
        else{
