@@ -1,9 +1,11 @@
-
-<p><b>Clientes con pendientes</b></p>
+<html>
+<p><b>CLIENTES CON PENDIENTES</b></p>
 <p></p>
 {foreach from=$data item=one key=keyone}
-<p>{$one.razon}</p>
-    <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a" border="1">
+    <p><b>{$one.razon}</b></p>
+    <div><p><b>Servicios</b></p>
+    {$one.servicios}</div><hr />
+   {* <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a" border="1">
         <thead>
         </thead>
         <tbody>
@@ -12,18 +14,18 @@
                 <td colspan="2"><b>{$item.nombreServicio}</b></td>
             </tr>
             <tr>
-                <td><b>Mes</b></td>
                 <td><b>Año</b></td>
+                <td><b>Meses</b></td>
             </tr
-            {foreach from=$item.meses item=item2}
-                {assign var=dateArray value="-"|explode:$item2}
+            {*foreach from=$item.dtm item=item2}
+                {assign var=dateArray value=":"|explode:$item2}
                 <tr>
-                    <td>{$meses[$dateArray[1]]}</td>
                     <td>{$dateArray[0]}</td>
+                    <td>{$dateArray[1]}</td>
                 </tr>
             {/foreach}
         {/foreach}
         </tbody>
-    </table>
-
+    </table> *}
 {/foreach}
+</html>

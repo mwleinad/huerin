@@ -29,6 +29,8 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
+
+
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
@@ -42,7 +44,11 @@ $db->setQuery($qs);
 $db->ExecuteQuery();
 $idContracts = array();
 $contractsSevices = array();
+
 foreach($contadores as $key=>$value){
+    //resetear array por cada contador.
+    $contractsSevices=array();
+    $idContracts = array();
     //obtener subordinados de cada empleaod si existe
     $personal->setPersonalId($value['personalId']);
     $subordinados = $personal->Subordinados();
@@ -57,35 +63,52 @@ foreach($contadores as $key=>$value){
 
     $idContratos =  $util->ConvertToLineal($contratos,'contractId');
     //obtener servicios atrasados
-    $sql ="SELECT a.servicioId,d.contractId,c.nombreServicio,GROUP_CONCAT(DISTINCT a.date) as meses,d.name as razon  FROM instanciasTemp a 
-       INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
-       INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
-       INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
-       WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId  ORDER BY YEAR(a.date) DESC LIMIT 50";
+    $qs = "SET lc_time_names = 'es_MX'";
+    $db->setQuery($qs);
+    $db->ExecuteQuery();
+    $sql ="SELECT servicioId, contractId,nombreServicio,GROUP_CONCAT(meses separator '|')  as dtm,razon FROM (
+          SELECT a.servicioId,d.contractId,c.nombreServicio,CONCAT(year(a.date),':',GROUP_CONCAT(DISTINCT MONTHNAME(a.date) ORDER BY date ASC)) as meses,d.name as razon  FROM instanciasTemp a 
+          INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
+          INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
+          INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
+          WHERE a.class IN('PorIniciar','PorCompletar') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId,YEAR(a.date)  ORDER BY YEAR(a.date) DESC,MONTH(a.date)) tmpInstans GROUP BY servicioId";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
-
+    $count =0;
     foreach($contracts as $kc=>$vc){
         $contractId = $vc['contractId'];
         if(!in_array($contractId,$idContracts)){
-            $vc['meses']=explode(',',$vc['meses']);
             array_push($idContracts,$contractId);
             $contractsSevices[$contractId]['razon'] =$vc['razon'];
-            $contractsSevices[$contractId]["servicios"][] = $vc;
+            $vc['dtm']=explode('|',$vc['dtm']);
+            $contractsSevices[$contractId]["servicios"] .= $vc['nombreServicio'];;
+            $complemento="";
+            foreach($vc['dtm'] as $m){
+                $itm = explode(':',$m);
+                $complemento .='<p>'.$itm[0]."   |  ".$itm[1].'<p>';
+            }
+            $contractsSevices[$contractId]["servicios"] .= $complemento;
         }else{
-            $vc['meses']=explode(',',$vc['meses']);
-            $contractsSevices[$contractId]["servicios"][] = $vc;
+            $vc['dtm']=explode('|',$vc['dtm']);
+            $contractsSevices[$contractId]["servicios"] .= $vc['nombreServicio'];
+            $complemento="";
+            foreach($vc['dtm'] as $m){
+                $itm = explode(':',$m);
+                $complemento .='<p>'.$itm[0]."   |  ".$itm[1].'</p>';
+            }
+            $contractsSevices[$contractId]["servicios"] .= $complemento;
         }
+        $count++;
     }
     if($createPdf->CreateFileNotificationToEncargados($contractsSevices,$value['personalId'])){
-        $nameFile = "pendientes_".$value['personalId'].".pdf";
+       $nameFile = "pendientes_".$value['personalId'].".pdf";
         $file=DOC_ROOT."/sendFiles/".$nameFile;
         $subjetc ="OPINION NEGATIVA DE  DECLARACIONES Y OPINIONES";
         $body ="<p>Estimado usuario:".$value['name']."</p>";
         $body .="<p>Le informamos que la contabilidad y declaraciones fiscales de los clientes presentes en el documento adjunto. Tiene pendientes.</p>";
         $body .="<p>Revisar archivo adjunto para mas informacion.</p><br>";
         $body .="<p>No responder a este correo,Gracias!!</p></div>";
-        $enviara=array(EMAIL_DEV=>'correo1','rzetina@braunhuerin.com.mx'=>'correo2');
+        $enviara=array(EMAIL_DEV=>'correo1');
         $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA',true);
         unlink($file);
     }
