@@ -33,7 +33,7 @@ switch($_SERVER['HTTP_HOST'])
         //define("SEND_TO3", "desarrollo@hotmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
-        define("PATHWKHTML",'/util/wkhtmltox/bin/wkhtmltopdf');
+        define("PATHWKHTML",DOC_ROOT.'/util/wkhtmltox/bin/wkhtmltopdf');
     break;
     default:
         define("SEND_TO", "asanchez@braunhuerin.com.mx");
