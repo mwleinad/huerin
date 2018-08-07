@@ -29,8 +29,6 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-
-
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
@@ -57,12 +55,14 @@ foreach($contadores as $key=>$value){
     $deptos = $util->ConvertToLineal($subordinados, 'dptoId');
     array_unshift($personas, $value['personalId']);
     array_unshift($deptos, $value['departamentoId']);
+    $deptos = array_unique($deptos);
     $contratos = $contractRep->SearchOnlyContract($personas,true);
     if(empty($contratos))
         continue;
     $idContratos =  $util->ConvertToLineal($contratos,'contractId');
     if(!empty($deptos))
         $depto =" AND c.departamentoId IN (".implode(',',$deptos).")";
+
     //obtener servicios atrasados
     $qs = "SET lc_time_names = 'es_MX'";
     $db->setQuery($qs);
