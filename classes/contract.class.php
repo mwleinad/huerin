@@ -3032,19 +3032,19 @@ class Contract extends Main
             }
         }
         /*--------------------------------------------------------------------------------------*/
-        if(array_key_exists(26,$dptos)&&$dptos[26]>0) {
+        if(array_key_exists(33,$dptos)&&$dptos[33]>0) {
             $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='" . trim($row[6]) . "' ");
             $respMsjId = $this->Util()->DB()->GetSingle();
-            if ($dptos[26] != $respMsjId&&$respMsjId>0)
-                $deptosNew[26] = $respMsjId;
+            if ($dptos[33] != $respMsjId&&$respMsjId>0)
+                $deptosNew[33] = $respMsjId;
             else
-                $deptosNew[26] =$dptos[26];
+                $deptosNew[33] =$dptos[33];
         }else{
             $this->Util()->DB()->setQuery("SELECT personalId FROM personal WHERE name='".trim($row[6])."' ");
             $respMsjId =  $this->Util()->DB()->GetSingle();
             //si el responsable existe se agrega
             if($respMsjId){
-                $deptosNew[26]=$respMsjId;
+                $deptosNew[33]=$respMsjId;
             }
         }
         /*--------------------------------------------------------------------------------------*/
@@ -3116,7 +3116,7 @@ class Contract extends Main
             $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[37]))."'");
             $idMen=$this->Util()->DB()->GetSingle();
             if($idMen)
-                $deptos[26]=$idMen;
+                $deptos[33]=$idMen;
         }
         if($row[38]!="" and $row[38]!="--" ){
             $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".strtolower(trim($row[38]))."'");
