@@ -39,7 +39,7 @@ $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
 //CREATE VIEW INSTANCIASERVICIO WHERE DATE >=2017-01-01
-$qs = "CREATE OR REPLACE VIEW instanciasTemp AS SELECT DISTINCT(a.date),a.servicioId,a.class,a.status FROM instanciaServicio a INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo' WHERE a.status!='baja' AND a.date >='2017-01-01' " ;
+$qs = "CREATE OR REPLACE VIEW instanciasTemp AS SELECT a.instanciaServicioId,a.date,a.servicioId,a.class,a.status FROM instanciaServicio a INNER JOIN servicio b ON a.servicioId=b.servicioId AND b.status='activo' WHERE a.status!='baja' AND a.date >='2017-01-01' group by a.date,a.servicioId ORDER BY date ASC " ;
 $db->setQuery($qs);
 $db->ExecuteQuery();
 $idContracts = array();
@@ -109,7 +109,7 @@ foreach($contadores as $key=>$value){
         $body .="<p>Revisar archivo adjunto para mas informacion.</p><br>";
         $body .="<p>No responder a este correo,Gracias!!</p></div>";
         $enviara=array(EMAIL_DEV=>'correo1');
-        $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA',true);
+        $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
         unlink($file);
     }
     break;
