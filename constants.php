@@ -42,7 +42,7 @@ switch($_SERVER['HTTP_HOST'])
         //define("SEND_TO3", "cobranzabh3@braunhuerin.com.mx");
         define("FROM_MAIL", "facturacionbh@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
-        define("PATHWKHTML",'/usr/bin/wkhtmltox/bin/wkhtmltopdf');
+        define("PATHWKHTML",'/usr/bin/wkhtmltopdf');
     break;
 }
 
