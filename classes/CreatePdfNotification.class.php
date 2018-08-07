@@ -38,7 +38,7 @@ class CreatePdfNotification
 
         global $monthsComplete;
         $file = "pendientes_".$personalId.".pdf";
-        $pdf = new Pdf(['binary' => PATHWKHTML,'ignoreWarnings' => true,'commandOptions' => ['useExec' => true],'ecoding' => 'UTF-8',]);
+        $pdf = new Pdf(['binary' => PATHWKHTML,'ignoreWarnings' => true,'commandOptions' => ['useExec' => true],'encoding' => 'UTF-8',]);
 
         $this->smarty->assign('meses',$monthsComplete);
         $this->smarty->assign('data',$data);
