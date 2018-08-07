@@ -26,7 +26,7 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+exit;
 $db->setQuery('SET SESSION group_concat_max_len = 10240');
 $db->ExecuteQuery();
 $db->CleanQuery();

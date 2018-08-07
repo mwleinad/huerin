@@ -45,3 +45,7 @@ exportar.pdf
 cron/.facturas_log.txt.swp
 export/templates_c
 contracts.log
+util/wkhtmltox
+composer.lock
+phpunit.xml
+*.swp
