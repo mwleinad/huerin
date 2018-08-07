@@ -46,21 +46,23 @@ $idContracts = array();
 $contractsSevices = array();
 
 foreach($contadores as $key=>$value){
-    $depto = "";
+    $deptos = array();
     //resetear array por cada contador.
     $contractsSevices=array();
     $idContracts = array();
     //obtener subordinados de cada empleaod si existe
     $personal->setPersonalId($value['personalId']);
-    $subordinados = $personal->Subordinados();
+    $subordinados = $personal->Subordinados(true);
     $personas = $util->ConvertToLineal($subordinados, 'personalId');
+    $deptos = $util->ConvertToLineal($subordinados, 'dptoId');
     array_unshift($personas, $value['personalId']);
+    array_unshift($deptos, $value['departamentoId']);
     $contratos = $contractRep->SearchOnlyContract($personas,true);
     if(empty($contratos))
         continue;
     $idContratos =  $util->ConvertToLineal($contratos,'contractId');
-    if($value['departamentoId'])
-        $depto =" AND c.departamentoId='".$value['departamentoId']."' ";
+    if(!empty($deptos))
+        $depto =" AND c.departamentoId IN (".implode(',',$deptos).")";
     //obtener servicios atrasados
     $qs = "SET lc_time_names = 'es_MX'";
     $db->setQuery($qs);

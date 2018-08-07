@@ -91,7 +91,7 @@ class InstanciaServicio extends  Servicio
 				FROM instanciaServicio 
 				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (instanciaServicio.date >='2017-01-01' AND instanciaServicio.date<DATE(NOW()))
-				AND instanciaServicio.class IN ('PorIniciar','PorCompletar')
+				AND instanciaServicio.class IN ('PorIniciar','PorCompletar','Iniciado')
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
 				AND instanciaServicio.status != 'baja'		
