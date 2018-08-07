@@ -5,9 +5,13 @@
  * Date: 17/01/2018
  * Time: 08:03 PM
  */
-
+/*
+     * los servicios domicilio fiscal(16),facturacion(17) y representacion legal fiel(24) saldran en reporte pero sin color
+     * estos servicios no tienen seguimiento de sus workflows
+     */
 class InstanciaServicio extends  Servicio
 {
+
     function getInstanciaByServicio($servicioId, $year)
     {
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),

@@ -104,7 +104,7 @@ class Log extends Util
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
                     //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
-                    if($dep==26||$dep==32)
+                    if($dep==33||$dep==32)
                         continue;
 
                     if($per>0)
@@ -129,7 +129,7 @@ class Log extends Util
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
                     {
-                        if($pers['departamentoId']==26||$pers['departamentoId']==32)
+                        if($pers['departamentoId']==33||$pers['departamentoId']==32)
                             continue;
 
                         if($this->Util()->ValidateEmail(trim($pers['email'])))
@@ -149,7 +149,7 @@ class Log extends Util
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
                     //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
-                    if($dep==26||$dep==32)
+                    if($dep==33||$dep==32)
                         continue;
 
                     if($per>0)
@@ -175,7 +175,7 @@ class Log extends Util
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
                     {
-                        if($pers['departamentoId']==26||$pers['departamentoId']==32)
+                        if($pers['departamentoId']==33||$pers['departamentoId']==32)
                         continue;
 
                         if($this->Util()->ValidateEmail($pers['email']))
@@ -198,7 +198,7 @@ class Log extends Util
                 $persons= $this->Util()->DB()->GetResult();
                 foreach($persons as $per)
                 {
-                    if($per['departamentoId']==26||$per['departamentoId']==32)
+                    if($per['departamentoId']==33||$per['departamentoId']==32)
                         continue;
 
                     if($this->Util()->ValidateEmail($per['email']))
