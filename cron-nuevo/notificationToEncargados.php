@@ -32,7 +32,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
-$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32) LIMIT 5";
+$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
 $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
@@ -102,7 +102,7 @@ foreach($contadores as $key=>$value){
         $count++;
     }
     if($createPdf->CreateFileNotificationToEncargados($contractsSevices,$value['personalId'])){
-       $nameFile = "pendientes_".$value['personalId'].".pdf";
+        $nameFile = "pendientes_".$value['personalId'].".pdf";
         $file=DOC_ROOT."/sendFiles/".$nameFile;
         $subjetc ="OPINION NEGATIVA DE  DECLARACIONES Y OPINIONES";
         $body ="<div style='text-align: justify'><p>Estimado usuario:".$value['name']."</p>";
@@ -110,10 +110,13 @@ foreach($contadores as $key=>$value){
         $body .="<p>En el documento adjunto, detallamos la informaci&oacute;n.</p><br>";
         $body .="<p>Gracias!!</p>";
         $body .="<p>No responder a este correo!!</p></div>";
-        $enviara=array(EMAIL_DEV=>'correo1');
-        $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
+        //$enviara=array(EMAILDEV=>'correo1');
+        //enviar solamente si el correo es valido
+        if($util->ValidateEmail($value['email'])){
+            $enviara =array($value['email']=>$value['name']);
+            $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
+        }
         unlink($file);
-
     }
 }
 $time = date("d-m-Y").' a las '.date('H:i:s');
