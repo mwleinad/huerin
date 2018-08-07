@@ -34,7 +34,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
-$qp = "select personalId,email,name from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
+$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
 $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
@@ -46,6 +46,7 @@ $idContracts = array();
 $contractsSevices = array();
 
 foreach($contadores as $key=>$value){
+    $depto = "";
     //resetear array por cada contador.
     $contractsSevices=array();
     $idContracts = array();
@@ -54,14 +55,12 @@ foreach($contadores as $key=>$value){
     $subordinados = $personal->Subordinados();
     $personas = $util->ConvertToLineal($subordinados, 'personalId');
     array_unshift($personas, $value['personalId']);
-    /*$subq ="SELECT a.name as razon,a.contractId FROM contract a INNER JOIN customer c ON a.customerId=c.customerId AND c.active='1' INNER JOIN contractPermiso b  ON a.contractId=b.contractId AND b.personalId IN(".implode(',',$personas).") WHERE a.activo='Si' GROUP BY b.contractId";
-    $db->setQuery($subq);
-    $contratos = $db->GetResult();*/
     $contratos = $contractRep->SearchOnlyContract($personas,true);
     if(empty($contratos))
         continue;
-
     $idContratos =  $util->ConvertToLineal($contratos,'contractId');
+    if($value['departamentoId'])
+        $depto =" AND c.departamentoId='".$value['departamentoId']."' ";
     //obtener servicios atrasados
     $qs = "SET lc_time_names = 'es_MX'";
     $db->setQuery($qs);
@@ -70,7 +69,7 @@ foreach($contadores as $key=>$value){
           SELECT a.servicioId,d.contractId,c.nombreServicio,CONCAT(year(a.date),':',GROUP_CONCAT(DISTINCT MONTHNAME(a.date) ORDER BY date ASC)) as meses,d.name as razon  FROM instanciasTemp a 
           INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
           INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
-          INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'
+          INNER JOIN tipoServicio c ON b.tipoServicioId=c.tipoServicioId AND c.status='1' AND c.periodicidad!='Eventual'  ".$depto."
           WHERE a.class IN('PorIniciar','PorCompletar','Iniciado') AND a.date<=(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -2 MONTH))) GROUP BY a.servicioId,YEAR(a.date)  ORDER BY YEAR(a.date) DESC,MONTH(a.date)) tmpInstans GROUP BY servicioId";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
