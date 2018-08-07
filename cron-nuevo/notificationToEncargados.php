@@ -32,7 +32,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
-$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
+$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32) LIMIT 15";
 $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
@@ -86,7 +86,7 @@ foreach($contadores as $key=>$value){
             $complemento="";
             foreach($vc['dtm'] as $m){
                 $itm = explode(':',$m);
-                $complemento .='<p>'.$itm[0]."   |  ".$itm[1].'<p>';
+                $complemento .='<p>'.$itm[0]."   |  ".str_replace(',',', ',$itm[1]).'<p>';
             }
             $contractsSevices[$contractId]["servicios"] .= $complemento;
         }else{
@@ -95,7 +95,7 @@ foreach($contadores as $key=>$value){
             $complemento="";
             foreach($vc['dtm'] as $m){
                 $itm = explode(':',$m);
-                $complemento .='<p>'.$itm[0]."   |  ".$itm[1].'</p>';
+                $complemento .='<p>'.$itm[0]."   |  ".str_replace(',',', ',$itm[1]).'</p>';
             }
             $contractsSevices[$contractId]["servicios"] .= $complemento;
         }
@@ -105,15 +105,16 @@ foreach($contadores as $key=>$value){
        $nameFile = "pendientes_".$value['personalId'].".pdf";
         $file=DOC_ROOT."/sendFiles/".$nameFile;
         $subjetc ="OPINION NEGATIVA DE  DECLARACIONES Y OPINIONES";
-        $body ="<p>Estimado usuario:".$value['name']."</p>";
-        $body .="<p>Le informamos que la contabilidad y declaraciones fiscales de los clientes presentes en el documento adjunto. Tiene pendientes.</p>";
-        $body .="<p>Revisar archivo adjunto para mas informacion.</p><br>";
-        $body .="<p>No responder a este correo,Gracias!!</p></div>";
+        $body ="<div style='text-align: justify'><p>Estimado usuario:".$value['name']."</p>";
+        $body .="<p>Le informamos que en nuestros controles internos de plataforma Braun Huerin, detectamos inconsistencias u omisiones de los clientes presentes a su cargo.</p>";
+        $body .="<p>En el documento adjunto, detallamos la informaci&oacute;n.</p><br>";
+        $body .="<p>Gracias!!</p>";
+        $body .="<p>No responder a este correo!!</p></div>";
         $enviara=array(EMAIL_DEV=>'correo1');
         $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
         unlink($file);
+
     }
-    break;
 }
 $time = date("d-m-Y").' a las '.date('H:i:s');
 echo  "Cron ejecutado desde ".$timeStart." hasta $time Hrs.".chr(13).chr(10);
