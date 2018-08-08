@@ -20,7 +20,7 @@ jQ(document).ready(function(){
                 var splitResp =  response.split("[#]");
                 jQ('#' + id).show();
                 jQ('#loading-img').hide();
-                jQ('#contenido').html("<div style='width:500px;text-align:center;margin:0 auto;'><a href='"+splitResp[0]+"' title='Descargar excel'><img src='"+WEB_ROOT+"/images/excel.png' /></a><br>"+"<a href='"+splitResp[1]+"' title='Descargar zip'><img src='"+WEB_ROOT+"/images/icons/zip-icon.png' /></a></div>");
+                jQ('#contenido').html("<div style='width:500px;text-align:center;margin:0 auto;'><a href='"+splitResp[0]+"' title='Descargar excel'><img src='"+WEB_ROOT+"/images/excel.PNG' /></a><br>"+"<a href='"+splitResp[1]+"' title='Descargar zip'><img src='"+WEB_ROOT+"/images/icons/zip-icon.png' /></a></div>");
             },
             error: function () {
                 jQ('#' + id).show();
