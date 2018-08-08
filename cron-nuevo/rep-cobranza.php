@@ -44,7 +44,6 @@ $zip =  new ZipArchive();
 $file_name = 'XMLS-'.strtoupper($util->GetMonthByKey($mes)).'.ZIP';
 $file_zip =DOC_ROOT.'/sendFiles/'.$file_name;
 if($zip->open($file_zip,ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)===true) {
-    echo 'Creado en' . $file_zip . '\n';
     foreach ($payments as $kp => $vp) {
         $archivo_xml = "SIGN_" . $vp['empresaId'] . '_' . $vp['serief'] . '_' . $vp['foliof'] . '.xml';
         $enlace_xml = DOC_ROOT . '/empresas/' . $vp['empresaId'] . '/certificados/' . $vp['rfcId'] . '/facturas/xml/' . $archivo_xml;
