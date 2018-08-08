@@ -5,5 +5,8 @@
 	{include file="{$DOC_ROOT}/templates/items/avisos-base.tpl"}
 </tbody>
 </table>
-
-<br />
+<div class="pagination" style="text-align: right">
+    {if count($notices.pages)}
+        {include file="{$DOC_ROOT}/templates/lists/pages_new.tpl" pages=$notices.pages}
+    {/if}
+</div>

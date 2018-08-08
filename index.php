@@ -56,6 +56,7 @@ include_once(DOC_ROOT.'/libraries.php');
 			'report-archivos-permanente',
 			'report-bonos',
 			'report-cobranza-ejercicio-new',
+        	'report-cobranza-mensual',
 			'report-cobranza-ejercicio',
 			'report-invoice',
 			'log',

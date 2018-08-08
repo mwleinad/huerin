@@ -805,6 +805,14 @@ class Empresa extends Main
 		
 		return $result;
 	}
+    function GetListEmpresas()
+    {
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM rfc WHERE rfcId!=1 AND activo='si' ");
+
+        $result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+
+        return $result;
+    }
 
 }//empresa
 
