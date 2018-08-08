@@ -131,7 +131,11 @@
                 {/if}
                 {if in_array(165,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
-                    <span>Reporte Cobranza</span></a></li>
+                    <span>Cobranza anual</span></a></li>
+                {/if}
+                {if in_array(208,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if}>
+                    <span>Cobranza mensual</span></a></li>
                 {/if}
                 {if in_array(167,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">

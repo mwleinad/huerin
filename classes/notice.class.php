@@ -51,6 +51,7 @@ class Notice extends Main
 		$sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
 		$this->Util()->DB()->setQuery('SELECT * FROM notice ORDER BY noticeId DESC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
+
 		//comprobar si el usuario esta permitido que ve el aviso
         foreach($result as $key => $value){
             if($User['tipoPersonal']!='Admin'&&$User['tipoPersonal']!='Socio'&&$User['tipoPersonal']!='Coordinador'){
