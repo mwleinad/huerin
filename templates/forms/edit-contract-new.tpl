@@ -1,4 +1,4 @@
-<form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post">
+<form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post" autocomplete="off">
 <input type="hidden" name="contractId" value="{$contractInfo.contractId}" />
 <input type="hidden" name="action" value="edit" />
 
