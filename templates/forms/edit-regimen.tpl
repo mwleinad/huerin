@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="editRegimenForm" name="editRegimenForm" method="post">
+	<form id="editRegimenForm" name="editRegimenForm" method="post" autocomplete="off">
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Nombre del Regimen:</div><input name="regimenName" id="regimenName" type="text" value="{$post.nombreRegimen}" size="50"/>

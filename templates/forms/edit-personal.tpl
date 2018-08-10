@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="editPersonalForm" name="editPersonalForm" method="post">
+	<form id="editPersonalForm" name="editPersonalForm" method="post" autocomplete="off">
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Nombre Completo:</div>
