@@ -1,4 +1,4 @@
-<form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post">
+<form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post" autocomplete="off">
 <input type="hidden" name="action" value="save" />
 
 	{include file="{$DOC_ROOT}/templates/forms/add-contract-basic.tpl"}

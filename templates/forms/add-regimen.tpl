@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="addRegimenForm" name="addRegimenForm" method="post">
+	<form id="addRegimenForm" name="addRegimenForm" method="post" autocomplete="off">
 			<input type="hidden" id="type" name="type" value="saveAddRegimen"/>
 			<input type="hidden" id="regimenId" name="regimenId" value="{$post.regimenId}"/>
 		<fieldset>

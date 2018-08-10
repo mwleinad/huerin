@@ -54,7 +54,7 @@ class ContractRep extends Main
 				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
 				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
 				WHERE 1 ".$sqlFilter."
-				ORDER BY contract.name ASC";
+				ORDER BY customer.nameContact ASC,contract.name ASC";
 
         $this->Util()->DB()->setQuery($sql);
         $resContratos = $this->Util()->DB()->GetResult();

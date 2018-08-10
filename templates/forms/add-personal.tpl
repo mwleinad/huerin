@@ -1,14 +1,14 @@
 <div id="divForm">
-	<form id="addPersonalForm" name="addPersonalForm" method="post">
+	<form id="addPersonalForm" name="addPersonalForm" method="post" autocomplete="off">
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">* Nombre Completo:</div>
-                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50"/>
+                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50" />
 				<hr />
             </div>		
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Tel&eacute;fono:</div>
-                <input class="smallInput medium" name="phone" id="phone" type="text" value="{$post.phone}" size="50"/>            	<hr />
+                <input class="smallInput medium" name="phone" id="phone" type="text" value="{$post.phone}" size="50" />            	<hr />
 			</div>
 
             <div class="formLine" style="width:100%; text-align:left">
