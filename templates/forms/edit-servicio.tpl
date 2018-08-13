@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="editCustomerForm" name="editCustomerForm" method="post">
+	<form id="editCustomerForm" name="editCustomerForm" method="post" autocomplete="off">
 	<input type="hidden" id="type" name="type" value="saveEditServicio"/>
 	<input type="hidden" id="customerId" name="servicioId" value="{$post.servicioId}"/>
 		<fieldset>
