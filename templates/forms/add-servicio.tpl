@@ -1,5 +1,5 @@
 <div id="divForm">
-	<form id="addServicioForm" name="addServicioForm" method="post">
+	<form id="addServicioForm" name="addServicioForm" method="post" autocomplete="off">
 	<input type="hidden" id="type" name="type" value="saveAddServicio"/>
 	<input type="hidden" id="contractId" name="contractId" value="{$contractId}"/>
 		<fieldset>
