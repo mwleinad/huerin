@@ -43,13 +43,13 @@ class Notice extends Main
 	public function Enumerate()
 	{
 	    global $User,$rol;
-	    $this->Util()->DB()->setQuery('SELECT COUNT(*) FROM notice');
+	    $this->Util()->DB()->setQuery('SELECT COUNT(*) FROM notice WHERE status="vigente" ');
 		$total = $this->Util()->DB()->GetSingle();
 
 		$pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/homepage");
 
 		$sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-		$this->Util()->DB()->setQuery('SELECT * FROM notice ORDER BY noticeId DESC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT * FROM notice WHERE status="vigente" ORDER BY noticeId DESC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
 
 		//comprobar si el usuario esta permitido que ve el aviso
