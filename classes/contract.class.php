@@ -1999,23 +1999,6 @@ class Contract extends Main
       }
 
     }
-    /** $this->Util()->DB()->InsertData();
-      $responsables = $this->getAllResponsables($newData);
-
-      $personal = new Personal;
-      $sendmail = new SendMail();
-      foreach($responsables as $key => $value)
-      {
-          $personal->setPersonalId($value);
-          $userInfo = $personal->Info();
-          $to = $userInfo["email"];
-          $to = "comprobantefiscal@braunhuerin.com.mx";
-          $toName = $userInfo["name"];
-          $body = "Razon social: ".$newData["name"]." fue dada de alta, el alta fue hecha por ".$_SESSION["User"]["username"];
-          $subject = $body;
-          $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
-          //break;
-      }*/
     $this->Util()->setError(10029, "complete");
     $this->Util()->PrintErrors();
     return $contractId;
@@ -2497,24 +2480,6 @@ class Contract extends Main
 				'".$User["userId"]."'
 		);");
       $this->Util()->DB()->InsertData();
-
-      $responsables = $this->getAllResponsables($info);
-
-      $personal = new Personal;
-      $sendmail = new SendMail();
-      foreach($responsables as $key => $value)
-      {
-          $personal->setPersonalId($value);
-          $userInfo = $personal->Info();
-          $to = $userInfo["email"];
-//          $to = "comprobantefiscal@braunhuerin.com.mx";
-          $toName = $userInfo["name"];
-          $body = $complete.".Razon social: ".$info["name"]." fue hecha por ".$_SESSION["User"]["username"];
-          $subject = $body;
-          $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
-//          break;
-      }
-
 
     $this->Util()->setError(10031, "complete");
     $this->Util()->PrintErrors();
