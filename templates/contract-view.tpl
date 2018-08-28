@@ -18,7 +18,7 @@
   <div class="portlet">
      {if in_array(64,$permissions)||$User.isRoot}
       <div class="portlet-content nopadding borderGray" style="text-align:center">
-      	<form action="http://comprobantedigital.mx/sistema/fromBraun.php" method="POST" target="_blank">
+      	<form action="https://comprobantedigital.mx/sistema/fromBraun.php" method="POST" target="_blank">
          	<input type="hidden" id="fromBraun" name="fromBraun" value="Si" />
          	<input type="hidden" id="productId" name="productId" value="v3" />
          	<input type="hidden" id="emailPersonal" name="emailPersonal" value="{$infoRazonSocial.email}" />

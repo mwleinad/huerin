@@ -2782,8 +2782,11 @@ class Contract extends Main
   *
   * @return devuelve una lista de resultados de busqueda
   */
-  public function Suggest($value)
+  public function Suggest($value,$active=false)
   {
+      $activos = '';
+   if($active)
+       $activos = "  AND contract.activo='Si'  ";
 
     $this->Util()->DB()->setQuery(
         "SELECT
@@ -2800,6 +2803,7 @@ class Contract extends Main
           customer.nameContact LIKE '%".$value."%')
 					AND customer.active = '1'
 					AND contract.customerId > 0
+					$activos
         ORDER BY
           customer.nameContact ASC, contract.name ASC
         LIMIT

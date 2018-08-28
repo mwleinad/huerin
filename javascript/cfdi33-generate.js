@@ -6,7 +6,7 @@ function SuggestUser()
 {
     new Ajax.Request(WEB_ROOT+'/ajax/suggest.php',
         {
-            parameters: {value: $('rfc').value},
+            parameters: {value: $('rfc').value,activos:true},
             method:'post',
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
