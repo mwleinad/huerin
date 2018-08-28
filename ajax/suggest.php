@@ -5,7 +5,7 @@ include_once(DOC_ROOT.'/libraries.php');
 
 //$user->setEmpresaId($_SESSION["empresaId"], 1);
 //$user->setRfcId($user->getRfcActive());
-$result = $contract->Suggest($_POST["value"]);
+$result = $contract->Suggest($_POST["value"],$_POST['activos']);
 if(!$result)
 {
 ?>
