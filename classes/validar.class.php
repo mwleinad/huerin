@@ -534,7 +534,7 @@ class Validar extends Main
             }
             //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
             if($row[4]!="" and $row[4]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[4])."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower($row[4])."'");
                 $idCont=$this->Util()->DB()->GetSingle();
                 if(!$idCont)
                 {
@@ -543,8 +543,7 @@ class Validar extends Main
                 }
             }
             if($row[5]!="" and $row[5]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[5]))."' ");
-                echo $this->Util()->DB()->getQuery();
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[5]))."' ");
                 $idNom=$this->Util()->DB()->GetSingle();
                 if(!$idNom)
                 {
@@ -553,7 +552,7 @@ class Validar extends Main
                 }
             }
             if($row[6]!="" and $row[6]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[6]))."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[6]))."'");
                 $idAdmin=$this->Util()->DB()->GetSingle();
                 if(!$idAdmin)
                 {
@@ -562,7 +561,7 @@ class Validar extends Main
                 }
             }
             if($row[7]!="" and $row[7]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[7]))."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[7]))."'");
                 $idJur=$this->Util()->DB()->GetSingle();
                 if(!$idJur)
                 {
@@ -571,7 +570,7 @@ class Validar extends Main
                 }
             }
             if($row[8]!="" and $row[8]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[8]))."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[8]))."'");
                 $idImss=$this->Util()->DB()->GetSingle();
                 if(!$idImss)
                 {
@@ -580,7 +579,7 @@ class Validar extends Main
                 }
             }
             if($row[9]!="" and $row[9]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[9]))."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[9]))."'");
                 $idMen=$this->Util()->DB()->GetSingle();
                 if(!$idMen)
                 {
@@ -589,7 +588,7 @@ class Validar extends Main
                 }
             }
             if($row[10]!="" and $row[10]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[10]))."'");
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[10]))."'");
                 $idAud=$this->Util()->DB()->GetSingle();
                 if(!$idAud)
                 {
