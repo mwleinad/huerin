@@ -544,6 +544,7 @@ class Validar extends Main
             }
             if($row[5]!="" and $row[5]!="--" ){
                 $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[5]))."' ");
+                echo $this->Util()->DB()->getQuery();
                 $idNom=$this->Util()->DB()->GetSingle();
                 if(!$idNom)
                 {
