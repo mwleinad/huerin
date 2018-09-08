@@ -198,7 +198,7 @@ class DB
 		return $this->UpdateData();
   }
 	
-  function CleanQuery()
+  public function CleanQuery()
 	{
     @mysql_free_result($this->sqlResult);
     //$this->query = "";

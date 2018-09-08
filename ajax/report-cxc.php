@@ -29,8 +29,27 @@ switch($_POST["type"])
 			$values['subordinados'] = $_POST['deep'];
 			$values['cliente'] = $_POST['cliente'];
 			$values['anio'] = $_POST['year'];
+			//si subordinados esta activo se busca todos los subordinados
+			$encargados = array();
+			$empleados = array();
+			if($values['respCuenta'] == 0) {
+                $personal->setActive(1);
+                $empleados = $personal->ListAll();
+                $empleados = $util->ConvertToLineal($empleados, 'personalId');
+            }else{
+                array_push($encargados,$values['respCuenta']);
+                if($values['subordinados']){
+                    $personal->setPersonalId($values['respCuenta']);
+                    $empleados = $personal->Subordinados();
+                    if(!empty($empleados))
+                        $empleados = $util->ConvertToLineal($empleados,'personalId');
 
-			$listCxc = $cxc->SearchCuentasPorCobrar($values);
+                }
+			}
+			$encargados = array_merge($encargados,$empleados);
+			$values['respCuenta'] =  array_unique($encargados);
+
+			$listCxc = $cxc->searchCxC($values);
 			$totales =  array();
 			foreach($listCxc['items'] as $key => $value)
 			{
@@ -39,9 +58,8 @@ switch($_POST["type"])
 				$totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$value['saldo'];
 				$totales[$value['nombre']]['nameContact']=$value['nameContact'];
 				$totales[$value['nombre']]['facturador']=$value['facturador'];
-				$totales[$value['nombre']]['payments'][]=$value;
+				$totales[$value['nombre']]['facturas'][]=$value;
 			}
-			
 			$smarty->assign("totales", $totales);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-cxc.tpl');

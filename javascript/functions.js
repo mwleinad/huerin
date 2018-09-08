@@ -340,8 +340,6 @@ function printExcel(id, type)
 function ToggleSpecifiedDiv(id)
 {
 	var myId;
-
-	console.log(id);
 	$$('#contenido tr.class-'+id).each(function(e){
 		myId = e.identify();
 		console.log(myId);
@@ -493,3 +491,11 @@ function close_popup(){
     grayOut(false);
     return;
 }
+
+jQ(document).on('click','.showPayment',function (e) {
+	e.preventDefault();
+   var id =  this.id;
+   var clase =  this.className;
+   console.log('.'+clase+'-'+id);
+   jQ('.'+clase+'-'+id).toggle();
+});
