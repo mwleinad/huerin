@@ -45,9 +45,10 @@ switch($_SERVER['HTTP_HOST'])
         define("PATHWKHTML",'/usr/bin/wkhtmltopdf');
     break;
 }
-
+$facturadores =  ["'BHSC'","'Huerin'","'Braun'","'Efectivo'"];
 $CC_EMAILS =  array(SEND_TO=>'ARACELI SANCHEZ GALVAN');
 define("CC_EMAILS", serialize($CC_EMAILS));
+define("FACTURADOR",serialize($facturadores));
 
 define("SERVICIO_CONTABILIDAD", $servicioContabilidad);
 define("RIF", 8);

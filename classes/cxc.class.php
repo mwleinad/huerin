@@ -173,8 +173,82 @@ class CxC extends Producto
 			return $data;
 		}
 	}//SearchComprobantesByRfc
-	
-		function SearchCuentasPorCobrar($values){
+
+    function searchCxC($values){
+        $id_empresa = $_SESSION['empresaId'];
+	    //descomponer la tabla de permisos de los contratos en tablas
+        /*$this->Util()->DB()->setQuery('CALL desglosarPermisos() ');
+        $this->Util()->DB()->ExecuteQuery();
+        $this->Util()->DB()->CleanQuery();
+*/    $anio =  $values['anio'];
+	  $ffact ="";
+	  $innerPer = "";
+	  $mainFilter ="";
+      if($values['facturador'])
+          $ffact .="  AND co.facturador IN ('".$values['facturador']."')";
+      else
+          $ffact .= " AND co.facturador IN(".implode(',',unserialize(FACTURADOR)).")";
+
+      if($values['serie'])
+          $mainFilter .= "  AND cm.serie='".$values['serie']."' ";
+      if($values['folio'])
+          $mainFilter .= "  AND cm.folio>='".$values['folio']."' ";
+      if($values['folioA'])
+            $mainFilter .= " AND cm.folio<='".$values['folioA']."' ";
+      if($values['nombre'])
+         $mainFilter .= ' AND (cu.nameContact LIKE "%'.$values['nombre'].'%" OR co.name LIKE "%'.$values['nombre'].'%")';
+
+      $innerPer .=" inner join contractPermiso p ON co.contractId=p.contractId AND p.personalId IN (".implode(',',$values['respCuenta']).") ";
+
+      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,co.facturador from comprobante cm
+                 inner join contract co ON cm.userId=co.contractId $ffact
+                 $innerPer
+                 inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
+                 where cm.status='1' and year(cm.fecha)= $anio AND cm.tiposComprobanteId not in(10)
+                 $mainFilter
+                 group by cm.comprobanteId order by trim(char(09) from trim(cu.nameContact)) ASC,trim(char(09) from trim(co.name)) ASC,cm.fecha DESC
+                ";
+        $this->Util()->DBSelect($id_empresa)->setQuery($sql);
+        $comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();
+        $items =[];
+        foreach($comprobantes as $key => $val){
+
+            $card['serie']=$val['serie'];
+            $card['folio']=$val['folio'];
+            $card['nameContact']=$val['nameContact'];
+            $card['nombre']=$val['nombreComercial'];
+            $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
+            $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
+            $card['cxcDiscount']=0;
+            $card['status']=$val['status'];
+            $card['total'] = $val['total'];
+            $card['total_formato'] = $val['total'];
+            $card['comprobanteId'] = $val['comprobanteId'];
+            $card['facturador'] = $val['facturador'];
+
+            //get payments for comprobanteId
+            $sqlQuery = "SELECT amount,paymentDate,deposito,payment.metodoDePago as mpago,concat(comprobante.serie,comprobante.folio) as folioPago FROM payment
+                          inner join comprobante ON payment.comprobantePagoId=comprobante.comprobanteId
+						WHERE payment.comprobanteId = '".$val["comprobanteId"]."'";
+
+            $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+            $card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
+
+            $sqlQuery = "SELECT SUM(amount) FROM payment
+						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+            $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+            $card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
+
+            //saldo
+            $card['saldo'] = $card["total"] - $card["payment"];
+            $items[$key] = $card;
+        }
+        $data["items"] = $items;
+        $data["pages"] = $pages;
+        $data["total"] = count($items);
+        return $data;
+    }
+	function SearchCuentasPorCobrar($values){
 
 		//print_r($values);
 		//Viene del Buscador o viene del Modulo
@@ -193,9 +267,7 @@ class CxC extends Producto
 		else
 		{
 			global $user;
-
 			$sqlSearch = '';
-			//echo $values['facturador'];
 			if($values['facturador']){
 				if($values['facturador']!="Efectivo")
 				{
