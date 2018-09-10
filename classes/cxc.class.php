@@ -174,13 +174,13 @@ class CxC extends Producto
 		}
 	}//SearchComprobantesByRfc
 
+
     function searchCxC($values){
-        $id_empresa = $_SESSION['empresaId'];
-	    //descomponer la tabla de permisos de los contratos en tablas
-        /*$this->Util()->DB()->setQuery('CALL desglosarPermisos() ');
-        $this->Util()->DB()->ExecuteQuery();
-        $this->Util()->DB()->CleanQuery();
-*/    $anio =  $values['anio'];
+      $id_empresa = $_SESSION['empresaId'];
+      $permiso = new Permiso();
+      //descomponer la tabla de permisos de los contratos en tablas
+      $permiso->doPermisos();
+      $anio =  $values['anio'];
 	  $ffact ="";
 	  $innerPer = "";
 	  $mainFilter ="";

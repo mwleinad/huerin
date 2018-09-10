@@ -118,6 +118,7 @@ include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");
 include_once(DOC_ROOT."/classes/validar.class.php");
 include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
+include_once(DOC_ROOT."/classes/permiso.class.php");
 
 
 
