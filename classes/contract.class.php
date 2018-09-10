@@ -1836,6 +1836,7 @@ class Contract extends Main
   public function Save()
   {
       global $User,$log;
+      $permiso = new Permiso();
     /** if ($this->Util()->PrintErrors()){ return 0; } */
 
     $this->Util()->DB()->setQuery(
@@ -1937,7 +1938,10 @@ class Contract extends Main
           '".$this->claveIsn."')"
     );
 
-    $contractId = $this->Util()->DB()->InsertData();
+      $contractId = $this->Util()->DB()->InsertData();
+      //insertar nuevos permisos en la tabla contractPermiso
+      $permiso->setContractId($contractId);
+      $permiso->doPermiso();
 
       $sql = "SELECT * FROM contract WHERE contractId = '".$contractId."'";
       $this->Util()->DB()->setQuery($sql);
@@ -2012,6 +2016,7 @@ class Contract extends Main
   public function UpdateMyContract()
   {
       global $User,$log;
+      $permiso =  new Permiso();
     	//if ($this->Util()->PrintErrors()){ return false; }
 
 		//Obtenemos los datos de la BD antes de actualizar para el Log
@@ -2089,6 +2094,10 @@ class Contract extends Main
 			  contractId = '".$this->contractId."'";
 		$this->Util()->DB()->setQuery($sql);
     	$this->Util()->DB()->UpdateData();
+
+    	//insertar nuevos permisos en la tabla contractPermiso
+        $permiso->setContractId($this->contractId);
+        $permiso->doPermiso();
 
     	$this->Util()->setError(10030, "complete");
     	$this->Util()->PrintErrors();
