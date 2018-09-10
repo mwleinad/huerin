@@ -179,7 +179,7 @@ class CxC extends Producto
       $id_empresa = $_SESSION['empresaId'];
       $permiso = new Permiso();
       //descomponer la tabla de permisos de los contratos en tablas
-      $permiso->doPermisos();
+      //$permiso->doPermisos();
       $anio =  $values['anio'];
 	  $ffact ="";
 	  $innerPer = "";
