@@ -43,8 +43,6 @@ $db->ExecuteQuery();
 $idContracts = array();
 $contractsSevices = array();
 foreach($contadores as $key=>$value){
-    if($value['personalId']!=32)
-         continue;
     //resetear array por cada contador.
     $deptos = array();
     $personas = [];
@@ -123,7 +121,7 @@ foreach($contadores as $key=>$value){
         if($util->ValidateEmail($value['email'])){
             $enviara =array($value['email']=>$value['name']);
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
-            echo "enviado a ".$value['email'];
+            echo "enviado a ".$value['email'].chr(13).chr(10);
         }
         unlink($file);
     }
