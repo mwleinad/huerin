@@ -32,7 +32,7 @@ include_once(DOC_ROOT.'/libraries.php');
 $createPdf = new CreatePdfNotification();
 $mail = new SendMail();
 //descomponer los permisos en una tabla para hacer consultas directas
-$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.",32)";
+$qp = "select personalId,email,name,departamentoId from personal where active='1' and personalId NOT IN(".IDHUERIN.",".IDBRAUN.")";
 $db->setQuery($qp);
 $contadores =  $db->GetResult();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);
@@ -43,18 +43,25 @@ $db->ExecuteQuery();
 $idContracts = array();
 $contractsSevices = array();
 foreach($contadores as $key=>$value){
-    $deptos = array();
+    if($value['personalId']!=32)
+         continue;
     //resetear array por cada contador.
+    $deptos = array();
+    $personas = [];
     $contractsSevices=array();
     $idContracts = array();
-    //obtener subordinados de cada empleaod si existe
-    $personal->setPersonalId($value['personalId']);
-    $subordinados = $personal->Subordinados(true);
-    $personas = $util->ConvertToLineal($subordinados, 'personalId');
-    $deptos = $util->ConvertToLineal($subordinados, 'dptoId');
+    //obtener subordinados, excepto del id 32=rogelio
+    if($value['personalId']!=32){
+        $personal->setPersonalId($value['personalId']);
+        $subordinados = $personal->Subordinados(true);
+        $personas = $util->ConvertToLineal($subordinados, 'personalId');
+        $deptos = $util->ConvertToLineal($subordinados, 'dptoId');
+        array_unshift($deptos, $value['departamentoId']);
+        $deptos = array_unique($deptos);
+    }
+
     array_unshift($personas, $value['personalId']);
-    array_unshift($deptos, $value['departamentoId']);
-    $deptos = array_unique($deptos);
+    dd($personas);
     $contratos = $contractRep->SearchOnlyContract($personas,true);
     if(empty($contratos))
         continue;
@@ -66,7 +73,7 @@ foreach($contadores as $key=>$value){
     $qs = "SET lc_time_names = 'es_MX'";
     $db->setQuery($qs);
     $db->ExecuteQuery();
-    $sql ="SELECT servicioId, contractId,nombreServicio,GROUP_CONCAT(meses separator '|')  as dtm,razon FROM (
+    echo $sql ="SELECT servicioId, contractId,nombreServicio,GROUP_CONCAT(meses separator '|')  as dtm,razon FROM (
           SELECT a.servicioId,d.contractId,c.nombreServicio,CONCAT(year(a.date),':',GROUP_CONCAT(DISTINCT MONTHNAME(a.date) ORDER BY date ASC)) as meses,d.name as razon  FROM instanciasTemp a 
           INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
           INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
@@ -115,7 +122,7 @@ foreach($contadores as $key=>$value){
         //$enviara=array(EMAILDEV=>'correo1');
         //enviar solamente si el correo es valido
         if($util->ValidateEmail($value['email'])){
-            $enviara =array($value['email']=>$value['name']);
+            $enviara =array('isc061990@outlook.com'=>$value['name']);
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
         }
         unlink($file);
