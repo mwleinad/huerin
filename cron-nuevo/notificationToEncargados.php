@@ -61,7 +61,6 @@ foreach($contadores as $key=>$value){
     }
 
     array_unshift($personas, $value['personalId']);
-    dd($personas);
     $contratos = $contractRep->SearchOnlyContract($personas,true);
     if(empty($contratos))
         continue;
@@ -73,7 +72,7 @@ foreach($contadores as $key=>$value){
     $qs = "SET lc_time_names = 'es_MX'";
     $db->setQuery($qs);
     $db->ExecuteQuery();
-    echo $sql ="SELECT servicioId, contractId,nombreServicio,GROUP_CONCAT(meses separator '|')  as dtm,razon FROM (
+    $sql ="SELECT servicioId, contractId,nombreServicio,GROUP_CONCAT(meses separator '|')  as dtm,razon FROM (
           SELECT a.servicioId,d.contractId,c.nombreServicio,CONCAT(year(a.date),':',GROUP_CONCAT(DISTINCT MONTHNAME(a.date) ORDER BY date ASC)) as meses,d.name as razon  FROM instanciasTemp a 
           INNER JOIN servicio b ON a.servicioId=b.servicioId  and b.status='activo'
           INNER JOIN contract d ON b.contractId=d.contractId AND d.contractId IN(".implode(',',$idContratos).")
@@ -122,8 +121,9 @@ foreach($contadores as $key=>$value){
         //$enviara=array(EMAILDEV=>'correo1');
         //enviar solamente si el correo es valido
         if($util->ValidateEmail($value['email'])){
-            $enviara =array('isc061990@outlook.com'=>$value['name']);
+            $enviara =array($value['email']=>$value['name']);
             $mail->PrepareMultipleNotice($subjetc,$body,$enviara,'',$file,$nameFile,"","","noreply@braunhuerin.com.mx",'NOTIFICACION PLATAFORMA');
+            echo "enviado a ".$value['email'];
         }
         unlink($file);
     }
