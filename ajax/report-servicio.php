@@ -274,7 +274,6 @@ switch($_POST["type"])
 				$clientes[] = $infC;
 				
 			}//foreach
-dd($clientes);
 			$resClientes = array();
 			foreach($clientes as $clte){
 				$contratos = array();
@@ -326,7 +325,6 @@ dd($clientes);
 				$clte['contracts'] = $contratos;
 				$resClientes[] = $clte;
 			}//foreach
-            dd($resClientes);
 			$cleanedArray = array();
 			foreach($resClientes as $key => $cliente)
 			{
@@ -356,6 +354,9 @@ dd($clientes);
 					{
 						$sortedArray[] = $cleanedArrayValue;
 						unset($cleanedArrayValue[$keyCleaned]);
+					}elseif($cleanedArrayValue["responsable"]==''){
+                        $sortedArray[] = $cleanedArrayValue;
+                        unset($cleanedArrayValue[$keyCleaned]);
 					}
 				}
 			}
