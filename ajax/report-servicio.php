@@ -5,7 +5,6 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 session_start();
-
 switch($_POST["type"])
 {
 	case "goToWorkflow":
@@ -326,7 +325,6 @@ switch($_POST["type"])
 				$clte['contracts'] = $contratos;
 				$resClientes[] = $clte;
 			}//foreach
-
 			$cleanedArray = array();
 			foreach($resClientes as $key => $cliente)
 			{
@@ -355,7 +353,10 @@ switch($_POST["type"])
 					if($personalValue["name"] == $cleanedArrayValue["responsable"])
 					{
 						$sortedArray[] = $cleanedArrayValue;
-						unset($cleanedArrayValue[$keyCleaned]);
+						unset($cleanedArray[$keyCleaned]);
+					}elseif($cleanedArrayValue["responsable"]==''){
+                        $sortedArray[] = $cleanedArrayValue;
+                        unset($cleanedArray[$keyCleaned]);
 					}
 				}
 			}
