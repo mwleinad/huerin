@@ -5,7 +5,7 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 session_start();
-
+dd($_POST);
 switch($_POST["type"])
 {
 	case "goToWorkflow":
