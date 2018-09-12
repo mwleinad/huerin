@@ -5,7 +5,6 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 session_start();
-dd($_POST);
 switch($_POST["type"])
 {
 	case "goToWorkflow":
@@ -233,7 +232,6 @@ switch($_POST["type"])
 	case "search":
 	case "sendEmail":
 	case "graph":
-		dd($_POST);
 			$year = $_POST['year'];
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
