@@ -346,7 +346,6 @@ switch($_POST["type"])
 			}
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
-			dd($cleanedArray);
 			foreach($personalOrdenado as $personalKey => $personalValue)
 			{
 				foreach($cleanedArray as $keyCleaned => $cleanedArrayValue)
@@ -354,10 +353,10 @@ switch($_POST["type"])
 					if($personalValue["name"] == $cleanedArrayValue["responsable"])
 					{
 						$sortedArray[] = $cleanedArrayValue;
-						unset($cleanedArrayValue[$keyCleaned]);
+						unset($cleanedArray[$keyCleaned]);
 					}elseif($cleanedArrayValue["responsable"]==''){
                         $sortedArray[] = $cleanedArrayValue;
-                        unset($cleanedArrayValue[$keyCleaned]);
+                        unset($cleanedArray[$keyCleaned]);
 					}
 				}
 			}
