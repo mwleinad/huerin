@@ -45,7 +45,7 @@ class ContractRep extends Main
         //Contratos Activos
         $sqlFilter .= ' AND contract.activo = "Si"';
 
-        $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
+        echo $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 				personal.jefeGerente, personal.jefeContador, customer.nameContact
 				FROM contract
@@ -74,7 +74,7 @@ class ContractRep extends Main
                 continue;
             }
             //Checamos Servicios
-            $sql = "SELECT * FROM servicio
+            echo $sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
 					AND servicio.status = 'activo' AND tipoServicio.status='1'
