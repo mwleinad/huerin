@@ -247,7 +247,6 @@ switch($_POST["type"])
 
 			$contracts = array();
     		include_once(DOC_ROOT.'/ajax/filter.php');
-    		dd($contracts);
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
@@ -275,6 +274,7 @@ switch($_POST["type"])
 				$clientes[] = $infC;
 				
 			}//foreach
+dd($clientes);
 			$resClientes = array();
 			foreach($clientes as $clte){
 				$contratos = array();
@@ -326,7 +326,7 @@ switch($_POST["type"])
 				$clte['contracts'] = $contratos;
 				$resClientes[] = $clte;
 			}//foreach
-
+            dd($resClientes);
 			$cleanedArray = array();
 			foreach($resClientes as $key => $cliente)
 			{
