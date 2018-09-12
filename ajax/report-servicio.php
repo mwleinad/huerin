@@ -346,6 +346,7 @@ switch($_POST["type"])
 			}
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
+			dd($cleanedArray);
 			foreach($personalOrdenado as $personalKey => $personalValue)
 			{
 				foreach($cleanedArray as $keyCleaned => $cleanedArrayValue)
