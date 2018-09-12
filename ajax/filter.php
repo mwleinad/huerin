@@ -18,6 +18,7 @@ if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User
             unset($subordinados);
         }//foreac
         $idPersons = array_unique($idPersons);
+        dd($idPersons);
         $formValues['respCuenta'] =  $idPersons;
         $contracts = $contractRep->BuscarContract($formValues, true);
 
