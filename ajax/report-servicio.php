@@ -233,6 +233,7 @@ switch($_POST["type"])
 	case "search":
 	case "sendEmail":
 	case "graph":
+		dd($_POST);
 			$year = $_POST['year'];
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
