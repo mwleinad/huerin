@@ -353,10 +353,10 @@ switch($_POST["type"])
 					if($personalValue["name"] == $cleanedArrayValue["responsable"])
 					{
 						$sortedArray[] = $cleanedArrayValue;
-						unset($cleanedArrayValue[$keyCleaned]);
+						unset($cleanedArray[$keyCleaned]);
 					}elseif($cleanedArrayValue["responsable"]==''){
                         $sortedArray[] = $cleanedArrayValue;
-                        unset($cleanedArrayValue[$keyCleaned]);
+                        unset($cleanedArray[$keyCleaned]);
 					}
 				}
 			}
