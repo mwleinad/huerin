@@ -248,6 +248,7 @@ switch($_POST["type"])
 
 			$contracts = array();
     		include_once(DOC_ROOT.'/ajax/filter.php');
+    		dd($contracts);
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
