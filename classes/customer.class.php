@@ -961,25 +961,19 @@ class Customer extends Main
   {
     global $User,$log;
     if($this->Util()->PrintErrors()){ return false; }
-
-/*    $this->Util()->DB()->setQuery("
-      DELETE FROM
-        customer
-      WHERE
-        customerId = '".$this->customerId."'");
-*/
-    
     $info = $this->Info();
     
     if($info["active"] == '1')
     {
       $active = 0;
       $complete = "El cliente fue dado de baja correctamente";
+      $action ='baja';
     }
     else
     {
       $active = 1;
       $complete = "El cliente fue dado de alta correctamente";
+      $action = "Reactivacion";
     }
     
     $this->Util()->DB()->setQuery("
@@ -1000,7 +994,7 @@ class Customer extends Main
     $log->setFecha(date('Y-m-d H:i:s'));
     $log->setTabla('customer');
     $log->setTablaId($this->customerId);
-    $log->setAction('Baja');
+    $log->setAction($action);
     $log->setOldValue('');
     $log->setNewValue(serialize($newData));
     $log->Save();
