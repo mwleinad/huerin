@@ -967,7 +967,7 @@ class Customer extends Main
     {
       $active = 0;
       $complete = "El cliente fue dado de baja correctamente";
-      $action ='baja';
+      $action ='Baja';
     }
     else
     {
