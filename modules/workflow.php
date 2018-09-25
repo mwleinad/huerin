@@ -19,6 +19,8 @@
   
 	$workflow->setInstanciaServicioId($_GET["id"]);
 	$myWorkflow = $workflow->Info();
+	//nominas e imms comparten informacion, ambos pueden actualizar y eliminar los archivos entre esas areas
+	$fltDeps = [8,24];
 	//asignar permiso de borrar y actualizar solo si la instancia pertenece ala misma area del usuario activo
     switch($User['tipoPers']){
         case 'Admin':
@@ -28,6 +30,8 @@
         break;
         default:
             if($User['departamentoId']==$myWorkflow['departamentoId'])
+                $isDep= true;
+            elseif(in_array($User['departamentoId'],$fltDeps) && in_array($myWorkflow['departamentoId'],$fltDeps))
                 $isDep= true;
             else
                 $isDep=false;
