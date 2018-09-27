@@ -15,6 +15,7 @@
 				$formValues['respCuenta'] = $_POST['responsableCuenta'];
 				$formValues['facturador'] = $_POST['facturador'];
 				$formValues['subordinados'] = $_POST['subordinados'];
+                $formValues['activos'] = true;
 
             	$tiposDocumentos = $tipoDocumento->Enumerate();
 				$smarty->assign('tiposDocumentos',$tiposDocumentos);
@@ -30,21 +31,15 @@
 				$documentos = $documento->EnumerateAll();
 				$contracts = array();
 
-				include_once(DOC_ROOT.'/ajax/filter.php');
-				
+				include_once(DOC_ROOT.'/ajax/filterOnlyContract.php');
 				foreach($contracts as $key => $value)
 				{
-					foreach($documentos as $keyDocto => $valueDocto)
-					{
-						if($contracts[$key]['contractId']==$documentos[$keyDocto]['contractId'])
-						{
-							$contracts[$key]['documentos'][]=$documentos[$keyDocto];
-						}
-					}
+                    $documento->setContractId($value['contractId']);
+                    $documents = $documento->GetDocContract($value,$formValues['departamentoId']);
+					$contracts[$key]['documentos'] =  $documents['docs'];
 				}
 
-				$personalOrdenado = $personal->ArrayOrdenadoPersonal();
-
+				/*$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 				$sortedArray = array();
 				foreach($personalOrdenado as $personalKey => $personalValue)
 				{
@@ -57,13 +52,8 @@
 							unset($cleanedArrayValue[$keyCleaned]);
 						}
 					}
-				}
-
-				$smarty->assign('contracts', $sortedArray);
-
-				$values['nombre'] = $_POST['rfc'];
-				$values['facturador'] = $_POST['facturador'];
-	
+				}*/
+				$smarty->assign('contracts', $contracts);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/report-documentacion-permanente.tpl');
 				

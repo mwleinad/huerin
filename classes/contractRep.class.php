@@ -196,6 +196,15 @@ class ContractRep extends Main
         $sqlFilter = "";
         if($activos)
             $sqlFilter .= " AND customer.active = '1'";
+        if($formValues['cliente'])
+            $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
+
+        if($formValues['razonSocial'])
+            $sqlFilter = " AND contract.nombreComercial LIKE '%".$formValues['razonSocial']."%'";
+
+        if($formValues['facturador'])
+            $sqlFilter .= ' AND contract.facturador = "'.$formValues['facturador'].'"';
+
         //Contratos Activos
         $sqlFilter .= ' AND contract.activo = "Si"';
 
@@ -217,17 +226,11 @@ class ContractRep extends Main
         foreach($resContratos as $res) {
             if ($res['permisos'] == "")
                 continue;
-
             $encontrado = $this->findPermission($res, $formValues);
             if ($encontrado == false) {
                 continue;
             }
             $permisos = explode('-',$res['permisos']);
-           /* $filesExp = $this->CheckExpirationFiel($res['contractId']);
-
-            if(empty($filesExp))
-                continue;
-            $res['filesExpirate'] = $filesExp;*/
             foreach($permisos as $pk=>$vp){
                 $dp = explode(',',$vp);
                 switch($dp[0]){
@@ -291,5 +294,62 @@ class ContractRep extends Main
             $contratos[] =  $res;
         }
         return $contratos;
+    }
+    public function findContracts($filter=[]){
+        $sqlFilter ="";
+        $dpto = "";
+        $fcustomer = "";
+        if($filter['activos'])
+            $fcustomer .= " AND c.active = '1'";
+        if($filter['cliente'])
+            $fcustomer .=" AND c.nameContact LIKE '%".$filter['cliente']."%'";
+
+        if($filter['razonSocial'])
+            $sqlFilter = " AND a.nombreComercial LIKE '%".$filter['razonSocial']."%'";
+
+        if($filter['facturador'])
+            $sqlFilter .= ' AND a.facturador = "'.$filter['facturador'].'"';
+
+        //Contratos Activos
+         $sqlFilter .= ' AND a.activo = "Si"';
+        if($filter['departamentoId'])
+            $dpto .=" and b.departamentoId='".$filter['departamentoId']."' ";
+
+        $sql = "SELECT a.*, a.name AS name, a.encargadoCuenta AS encargadoCuenta,c.nameContact,c.phone as customerPhone,c.email as customerEmail,
+                c.fechaAlta,c.active as customerActive,r.nombreRegimen as nomRegimen
+				FROM contract a
+				INNER JOIN contractPermiso p ON a.contractId=p.contractId AND p.personalId IN(".implode(',',$filter["respCuenta"]).")
+				INNER JOIN customer c ON a.customerId = c.customerId $fcustomer
+				LEFT JOIN regimen r ON a.regimenId = r.regimenId
+				WHERE 1 ".$sqlFilter."
+				group by a.contractId
+				ORDER BY  c.nameContact asc, a.name asc ";
+        $this->Util()->DB()->setQuery($sql);
+        $contracts = $this->Util()->DB()->GetResult();
+        foreach ($contracts as $key =>$value){
+             $this->Util()->DB()->setQuery("select a.* from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId
+					                             where a.contractId = '".$value["contractId"]."' and a.status = 'activo' and b.status='1' $dpto 
+					                             order by b.nombreServicio asc");
+             $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
+            //los que no tengan servicios se ignoran.
+             if(empty($contracts[$key]['servicios'])){
+                 unset($contracts[$key]);
+                 continue;
+             }
+             $nameEncargados = $this->encargadosArea($value['contractId']);
+             foreach($nameEncargados as $val ){
+                 $contracts[$key]['resp'.ucfirst(strtolower($val['departamento']))] = $val['personalId'];
+                 $contracts[$key]['name'.ucfirst(strtolower($val['departamento']))] = $val['name'];
+             }
+        }
+        return $contracts;
+    }
+    public function encargadosArea($contractId){
+        $this->Util()->DB()->setQuery("select b.name,c.departamento,a.personalId  from contractPermiso a 
+                                             inner join personal b on a.personalId=b.personalId
+                                             inner join departamentos c on a.departamentoId=c.departamentoId
+                                             where a.contractId='".$contractId."'
+                                      ");
+        return $this->Util()->DB()->GetResult();
     }
 }
