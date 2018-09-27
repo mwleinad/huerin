@@ -1069,10 +1069,6 @@ class Customer extends Main
       contract.rfc LIKE '%".$value."%') AND contract.activo = 'Si') 
       OR customer.nameContact LIKE '%".$value."%'
     ) ORDER BY customer.nameContact ASC, contract.name ASC LIMIT 10");
-/*    $this->Util()->DB()->setQuery("SELECT contract.*, customer.nameContact FROM contract
-    LEFT JOIN customer ON customer.customerId = contract.customerId 
-    WHERE customer.active = '1' AND (contract.name LIKE '%".$value."%' OR contract.rfc LIKE '%".$value."%' OR customer.nameContact LIKE '%".$value."%') ORDER BY customer.nameContact ASC, contract.name ASC LIMIT 10");
-*/
 
     $result = $this->Util()->DB()->GetResult();
     $rol->setRolId($User['roleId']);
@@ -1117,62 +1113,6 @@ class Customer extends Main
     }
     return $result;
   }  
-
-/*  public function SuggestCustomer($value)
-  {
-    global $User;
-    
-    $this->Util()->DB()->setQuery(
-        "SELECT 
-          customer.nameContact, customer.customerId, contract.responsableCuenta, contract.permisos
-        FROM 
-          customer
-        LEFT JOIN 
-          contract ON contract.customerId = customer.customerId 
-        WHERE 
-          customer.active = '1' 
-          AND (contract.name LIKE '%".$value."%' 
-                OR contract.rfc LIKE '%".$value."%' 
-                OR customer.nameContact LIKE '%".$value."%')  
-        GROUP BY 
-          customer.customerId 
-        ORDER BY 
-          customer.nameContact ASC 
-        LIMIT 
-          10"
-    );
-
-    $result = $this->Util()->DB()->GetResult();
-    foreach ($result as $key => $value) {
-      $personal = new Personal;
-      $personal->setPersonalId($User["userId"]);
-      $subordinados = $personal->Subordinados();
-      
-      $subordinadosPermiso = array();
-      foreach ($subordinados as $sub) {
-        array_push($subordinadosPermiso, $sub["personalId"]);
-      }
-      array_push($subordinadosPermiso, $User["userId"]);
-      
-      //Obtenemos la lista de personas que tienen acceso al contrato
-      $contract = new Contract;
-      $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-      
-      $show = false;
-      foreach ($subordinadosPermiso as $usuarioPermiso) {
-        if (in_array($usuarioPermiso, $conPermiso)) {
-          $show = true;
-          continue;
-        }
-      }
-      
-      if (!$show && $User["roleId"] != 1 && $User["roleId"] != 4) {
-        unset($result[$key]);
-      }
-    }
-    return $result;
-  }  */
-	
   public function SuggestCustomer($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limit = 25)
   {
     global $User, $page,$rol;
@@ -1590,6 +1530,7 @@ class Customer extends Main
 	}//SuggestCustomerCatalog
     public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
     {
+        $creport = new ContractRep();
         if ($customerId)
             $add = " AND a.customerId = '".$customerId."' ";
 
@@ -1613,42 +1554,12 @@ class Customer extends Main
 			".$addLimite."";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-        $oPer =  new Personal;
         foreach ($result as $key => $val)
         {
-            $permisosArray = explode('-',$val['permisos']);
-            foreach($permisosArray as $pk=>$vp) {
-                $dp = explode(',', $vp);
-                switch ($dp[0]) {
-                    case 1:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respContabilidad"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 8:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respNominas"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 31:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respAuditoria"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 24:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respImss"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 22:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respJuridico"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 21:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respAdministracion"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                    case 26:
-                        $oPer->setPersonalId($dp[1]);
-                        $result[$key]["respMensajeria"] = strlen($oPer->GetNameById()) > 2 ? $oPer->GetNameById() : '--';
-                        break;
-                }
+            $nameEncargados = $creport->encargadosArea($val['contractId']);
+            foreach($nameEncargados as $var ){
+                $result[$key]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
+                $result[$key]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
             }
         }//foreach
         return $result;
@@ -1690,122 +1601,36 @@ class Customer extends Main
 			return $result;
 	}
 
-  public function DeleteInactivos()
-  {
-      
-    $sql = "DELETE 
-        FROM 
-          customer 
-        WHERE 
-          active = '0'";
-    $this->Util()->DB()->setQuery($sql);
+      public function DeleteInactivos()
+      {
 
-    $result = $this->Util()->DB()->DeleteData();
-
-    $sql = "DELETE 
-        FROM 
-          contract 
-        WHERE 
-          activo = 'No'";
-    $this->Util()->DB()->setQuery($sql);
-
-    $result = $this->Util()->DB()->DeleteData();
-    
-  }
-
-  public function HistorialAll()
-  {
-    $this->Util()->DB()->setQuery("
-			SELECT customerChanges.*, personal.name AS personalName, customer.customerId, customer.nameContact FROM customerChanges
-			JOIN personal ON personal.personalId = customerChanges.personalId
-			JOIN customer ON customer.customerId = customerChanges.customerId
-			ORDER BY customerChanges.customerChangesId DESC");
-    $data =$this->Util()->DB()->GetResult();
-
-    return $data;
-  }
-    public function findAllRazonesDetail($filter=[])
-    {
-        global $User,$rol,$personal;
-        $strFilter="";
-        $personal->setPersonalId(0);
-        $subordinados = $personal->Subordinados();
-        $filter["respCuenta"] = $this->Util()->ConvertToLineal($subordinados,'personalId');
-        $report = new ContractRep();
-
-        if ($filter['activos']) {
-            $strFilter .= " AND c.active = '1' ";
-        }else{
-            $strFilter .= " AND (c.active = '0' OR (c.active = '1' AND b.activo = 'No' ))";
-        }
-        if ($filter['customerId']) {
-            $strFilter .= " AND c.customerId = '".$filter['customerId']."' ";
-        }
-
-        if (strlen($filter['like']) > 1) {
-            $strFilter .= " AND (a.name LIKE '%".$filter['like']."%' 
-					OR a.rfc LIKE '%".$filter['like']."%' 
-					OR c.nameContact LIKE '%".$filter['like']."%')  ";
-        }
-
-        $sql = "SELECT c.* FROM customer c
-			    LEFT JOIN contract a ON a.customerId = c.customerId	
-				WHERE 1 ".$strFilter." 
-			    GROUP BY c.customerId 	
-				ORDER BY c.nameContact ASC 
-			".$addLimite."";
+        $sql = "DELETE 
+            FROM 
+              customer 
+            WHERE 
+              active = '0'";
         $this->Util()->DB()->setQuery($sql);
-        $result = $this->Util()->DB()->GetResult();
-        foreach ($result as $key => $val)
-        {
-            $result[$key]["showCliente"] = 1;
-            $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
-            $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
-            $filter['customerId'] =$val['customerId'];
-            $result[$key]["contracts"] = $report->findContracts($filter);
 
-            $countContracts = count($result[$key]["contracts"]);
-            $result[$key]["totalContracts"] = $result[$key]["contractsActivos"]+$result[$key]["contractsInactivos"];
-            $result[$key]["servicios"] = 0;
-            if($countContracts > 0){
-                $result[$key]["showCliente"] = 1;
-                foreach ($result[$key]["contracts"] as $keyContract => $value) {
-                    $contract = new Contract;
-                    $contract->setContractId($value['contractId']);
-                    $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
-                    $result[$key]["contracts"][$keyContract]["responsable"] = $value['nameContabilidad'];
-                    $personal->setPersonalId($value['respContabilidad']);
-                    $infP = $personal->Info();
-                    $role = $rol->getInfoByData($infP);
-                    $rolArray = explode(' ',$role['name']);
-                    $needle = trim($rolArray[0]);
-                    $jefes = array();
-                    $personal->findDeepJefes($value['respContabilidad'], $jefes,true);
-                    switch($needle){
-                        case 'Coordinador':
-                        case 'Gestoria':
-                        case 'Sistemas':
-                        case 'Supervisor':
-                        case 'Gerente':
-                        case 'socio':
-                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
-                            break;
-                        case 'Recepcion':
-                        case 'Cuentas':
-                        case 'Contador':
-                        case 'Asistente':
-                        case 'Auxiliar':
-                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
-                            break;
-                    }
-                }//foreach
-            }else{
-                $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
-                $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
-                $result[$key]["contracts"][0]["fake"] = 1;
-            }
-        }//foreach
-        return $result;
-    }
-  
+        $result = $this->Util()->DB()->DeleteData();
+
+        $sql = "DELETE 
+            FROM 
+              contract 
+            WHERE 
+              activo = 'No'";
+        $this->Util()->DB()->setQuery($sql);
+
+        $result = $this->Util()->DB()->DeleteData();
+      }
+      public function HistorialAll()
+      {
+        $this->Util()->DB()->setQuery("
+                SELECT customerChanges.*, personal.name AS personalName, customer.customerId, customer.nameContact FROM customerChanges
+                JOIN personal ON personal.personalId = customerChanges.personalId
+                JOIN customer ON customer.customerId = customerChanges.customerId
+                ORDER BY customerChanges.customerChangesId DESC");
+        $data =$this->Util()->DB()->GetResult();
+
+        return $data;
+      }
 }
