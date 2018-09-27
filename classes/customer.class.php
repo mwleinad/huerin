@@ -1750,5 +1750,88 @@ class Customer extends Main
 
     return $data;
   }
+    public function findAllRazonesDetail($filter=[])
+    {
+        global $User,$rol,$personal;
+        $strFilter="";
+        $personal->setPersonalId(0);
+        $subordinados = $personal->Subordinados();
+        $filter["respCuenta"] = $this->Util()->ConvertToLineal($subordinados,'personalId');
+        $report = new ContractRep();
+
+        if ($filter['activos']) {
+            $strFilter .= " AND c.active = '1' ";
+        }else{
+            $strFilter .= " AND (c.active = '0' OR (c.active = '1' AND b.activo = 'No' ))";
+        }
+        if ($filter['customerId']) {
+            $strFilter .= " AND c.customerId = '".$filter['customerId']."' ";
+        }
+
+        if (strlen($filter['like']) > 1) {
+            $strFilter .= " AND (a.name LIKE '%".$filter['like']."%' 
+					OR a.rfc LIKE '%".$filter['like']."%' 
+					OR c.nameContact LIKE '%".$filter['like']."%')  ";
+        }
+
+        $sql = "SELECT c.* FROM customer c
+			    LEFT JOIN contract a ON a.customerId = c.customerId	
+				WHERE 1 ".$strFilter." 
+			    GROUP BY c.customerId 	
+				ORDER BY c.nameContact ASC 
+			".$addLimite."";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        foreach ($result as $key => $val)
+        {
+            $result[$key]["showCliente"] = 1;
+            $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
+            $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
+            $filter['customerId'] =$val['customerId'];
+            $result[$key]["contracts"] = $report->findContracts($filter);
+
+            $countContracts = count($result[$key]["contracts"]);
+            $result[$key]["totalContracts"] = $result[$key]["contractsActivos"]+$result[$key]["contractsInactivos"];
+            $result[$key]["servicios"] = 0;
+            if($countContracts > 0){
+                $result[$key]["showCliente"] = 1;
+                foreach ($result[$key]["contracts"] as $keyContract => $value) {
+                    $contract = new Contract;
+                    $contract->setContractId($value['contractId']);
+                    $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
+                    $result[$key]["contracts"][$keyContract]["responsable"] = $value['nameContabilidad'];
+                    $personal->setPersonalId($value['respContabilidad']);
+                    $infP = $personal->Info();
+                    $role = $rol->getInfoByData($infP);
+                    $rolArray = explode(' ',$role['name']);
+                    $needle = trim($rolArray[0]);
+                    $jefes = array();
+                    $personal->findDeepJefes($value['respContabilidad'], $jefes,true);
+                    switch($needle){
+                        case 'Coordinador':
+                        case 'Gestoria':
+                        case 'Sistemas':
+                        case 'Supervisor':
+                        case 'Gerente':
+                        case 'socio':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
+                            break;
+                        case 'Recepcion':
+                        case 'Cuentas':
+                        case 'Contador':
+                        case 'Asistente':
+                        case 'Auxiliar':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
+                            break;
+                    }
+                }//foreach
+            }else{
+                $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
+                $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
+                $result[$key]["contracts"][0]["fake"] = 1;
+            }
+        }//foreach
+        return $result;
+    }
   
 }
