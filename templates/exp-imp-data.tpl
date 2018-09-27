@@ -10,7 +10,9 @@
                 <option value="">Seleccionar</option>
                 <option value="layout-razon">Layout de nueva razon social</option>
                 <option value="layout-update-encargado">Layout actualizar encargados de area</option>
-               <!-- <option value="layout-customer">Layaout de nuevo cliente</option>-->
+                {if $User.isRoot}
+                <option value="doPermiso">Reconstruir permisos</option>
+                {/if}
             </select>
     </div>
     <div class="clear">
