@@ -300,9 +300,17 @@ class ContractRep extends Main
         $dpto = "";
         $fcustomer = "";
         if($filter['activos'])
+        {
             $fcustomer .= " AND c.active = '1'";
+            $sqlFilter .= ' AND a.activo = "Si"';
+        }else{
+            $sqlFilter .= " AND (c.active = '0' OR (c.active = '1' AND a.activo = 'No' ))";
+        }
+
         if($filter['cliente'])
             $fcustomer .=" AND c.nameContact LIKE '%".$filter['cliente']."%'";
+        if($filter['customerId'])
+            $fcustomer .=" AND c.customerId  = '".$filter['customerId']."' ";
 
         if($filter['razonSocial'])
             $sqlFilter = " AND a.nombreComercial LIKE '%".$filter['razonSocial']."%'";
@@ -310,8 +318,6 @@ class ContractRep extends Main
         if($filter['facturador'])
             $sqlFilter .= ' AND a.facturador = "'.$filter['facturador'].'"';
 
-        //Contratos Activos
-         $sqlFilter .= ' AND a.activo = "Si"';
         if($filter['departamentoId'])
             $dpto .=" and b.departamentoId='".$filter['departamentoId']."' ";
 
