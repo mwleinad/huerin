@@ -582,6 +582,11 @@ switch($_POST['type']){
         echo "ok[#]";
         echo $logCancel;
     break;
+    case 'doPermiso':
+        $opermiso->doPermisos();
+        echo "ok[#]";
+        echo "Permisos actualizados";
+    break;
     case 'killnotuse':
 
         $db->setQuery('select contractId from contract where activo="Si"  ');
