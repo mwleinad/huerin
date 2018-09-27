@@ -16,6 +16,9 @@
                         <!--<option value="imp-new-customer">Importar clientes nuevos</option>-->
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
+                        {if $User.isRoot}
+                            <option value="doPermiso">Reconstruir permisos</option>
+                        {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
