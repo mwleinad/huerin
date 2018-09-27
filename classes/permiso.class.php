@@ -45,9 +45,13 @@ class Permiso extends Main
         }
         return true;
     }
-    public function doPermisos(){
+    public function doPermisos($inactive=false){
+        $where ="";
 
-        $sql =  "select contractId,permisos from contract where activo='Si' ";
+        if($inactive)
+            $where .= "where activo='No' ";
+
+        $sql =  "select contractId,permisos from contract $where ";
         $this->Util()->DB()->setQuery($sql);
         $contratos = $this->Util()->DB()->GetResult();
 
