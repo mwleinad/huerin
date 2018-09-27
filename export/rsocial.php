@@ -12,19 +12,9 @@ $user->allowAccess(167);
 
 extract($_POST);
 
-//Array ( [cliente] => 0 [cuenta] => 17 [type] => Activos [rfc] =>  [responsableCuenta] => 0 [deep] => on )
-$responsableCuenta = $_POST['responsableCuenta'];
-
-$rfc = '';
-$tipo = 'Activos';
-$_POST['deep'] = "on";
-
-if($_POST['deep'])
-    $subor = 'subordinado';
-else
-    $subor = 'propio';
-
-$clientes = $customer->SuggestCustomerCatalog($rfc, $subor, $customerId = 0, $tipo);
+$filter["activos"] = true;
+$filter["type"] ="subordinado";
+$clientes = $customer->findAllRazonesDetail($filter);
 
 $x .=
 "<table border=\"1\">
@@ -130,15 +120,15 @@ foreach($clientes as $res){
 					<td style=\"text-align:center;\">".$con['facturador']."</td>
 					<td style=\"text-align:center;\">".$con['metodoDePago']."</td>
 					<td style=\"text-align:center;\">".$con['noCuenta']."</td>
-					<td style=\"text-align:center;\">".$con['responsable']["name"]."</td>
+					<td style=\"text-align:center;\">".$con['responsable']."</td>
 					<td style=\"text-align:center;\">".$con['supervisadoBy']."</td>
-					<td style=\"text-align:center;\">".$con['respContabilidad']."</td>
-					<td style=\"text-align:center;\">".$con['respNominas']."</td>
-					<td style=\"text-align:center;\">".$con['respAdministracion']."</td>
-					<td style=\"text-align:center;\">".$con['respJuridico']."</td>
-					<td style=\"text-align:center;\">".$con['respImss']."</td>
-					<td style=\"text-align:center;\">".$con['respMensajeria']."</td>
-					<td style=\"text-align:center;\">".$con['respAuditoria']."</td>
+					<td style=\"text-align:center;\">".$con['nameContabilidad']."</td>
+					<td style=\"text-align:center;\">".$con['nameNominas']."</td>
+					<td style=\"text-align:center;\">".$con['nameAdministracion']."</td>
+					<td style=\"text-align:center;\">".$con['nameJuridico']."</td>
+					<td style=\"text-align:center;\">".$con['nameImss']."</td>
+					<td style=\"text-align:center;\">".$con['nameMensajeria']."</td>
+					<td style=\"text-align:center;\">".$con['nameAuditoria']."</td>
 				</tr>";
 
         }//foreach
