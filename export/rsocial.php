@@ -14,6 +14,7 @@ extract($_POST);
 
 $filter["activos"] = true;
 $filter["type"] ="subordinado";
+$filter["sinServicios"] =true;
 $clientes = $customer->findAllRazonesDetail($filter);
 
 $x .=
