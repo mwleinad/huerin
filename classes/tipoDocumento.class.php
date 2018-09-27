@@ -29,7 +29,7 @@ class TipoDocumento extends Main
 
 	public function Enumerate()
 	{
-		$this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" ORDER BY tipoDocumentoId ASC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT * FROM tipoDocumento WHERE status="1" ORDER BY nombre ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
 		return $result;
 	}
