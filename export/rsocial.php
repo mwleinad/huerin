@@ -11,11 +11,16 @@ include_once(DOC_ROOT.'/libraries.php');
 $user->allowAccess(167);
 
 extract($_POST);
+$rfc = '';
+$tipo = 'Activos';
+$_POST['deep'] = "on";
 
-$filter["activos"] = true;
-$filter["type"] ="subordinado";
-$filter["sinServicios"] =true;
-$clientes = $customer->findAllRazonesDetail($filter);
+if($_POST['deep'])
+    $subor = 'subordinado';
+else
+    $subor = 'propio';
+
+$clientes = $customer->SuggestCustomerCatalog($rfc, $subor, $customerId = 0, $tipo);
 
 $x .=
 "<table border=\"1\">

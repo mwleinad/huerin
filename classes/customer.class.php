@@ -1449,6 +1449,7 @@ class Customer extends Main
 	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
 	{
 		global $User, $page,$rol,$personal;
+		$report = new ContractRep();
 		if ($this->active) {
 			$sqlActive = " AND active = '1' ";
 		}
@@ -1512,56 +1513,29 @@ class Customer extends Main
 			if($countContracts > 0){
 				$result[$key]["showCliente"] = 0;
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
-                    $oPer =  new Personal;
-                    $permisosArray = explode('-',$value['permisos']);
-                    foreach($permisosArray as $pk=>$vp){
-                        $dp = explode(',',$vp);
-                        switch($dp[0]){
-                            case 1:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respContabilidad"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 8:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respNominas"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 31:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respAuditoria"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 24:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respImss"] =strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 22:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respJuridico"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 21:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respAdministracion"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                            case 26:
-                                $oPer->setPersonalId($dp[1]);
-                                $result[$key]["contracts"][$keyContract]["respMensajeria"] = strlen($oPer->GetNameById())>2?$oPer->GetNameById():'--';
-                            break;
-                        }
+                    $nameEncargados = $this->encargadosArea($value['contractId']);
+                    foreach($nameEncargados as $var ){
+                        $result[$key]["contracts"][$keyContract]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
+                        $result[$key]["contracts"][$keyContract]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
                     }
+                    //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
+                    $idResponsable = $result[$key]["contracts"][$keyContract]['respContabilidad'];
+                    if(!$idResponsable)
+                        $idResponsable=0;
+
+                    $result[$key]["contracts"][$keyContract]["responsable"] =  $result[$key]["contracts"][$keyContract]['nameContabilidad'];
                     $contract = new Contract;
-                    $cUser = new User;
-                    $cUser->setUserId($value["responsableCuenta"]);
-                    $userInfo = $cUser->Info(true);
                     $contract->setContractId($value['contractId']);
                     $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
-                    $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
 
-                    $personal->setPersonalId($value['responsableCuenta']);
+
+                    $personal->setPersonalId($idResponsable);
                     $infP = $personal->Info();
                     $role = $rol->getInfoByData($infP);
                     $rolArray = explode(' ',$role['name']);
                     $needle = trim($rolArray[0]);
                     $jefes = array();
-                    $personal->findDeepJefes($value['responsableCuenta'], $jefes,true);
+                    $personal->findDeepJefes($idResponsable, $jefes,true);
                     switch($needle){
                         case 'Coordinador':
                         case 'Gestoria':
@@ -1579,7 +1553,7 @@ class Customer extends Main
                             $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
                             break;
                     }
-					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
+					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $idResponsable);
 	
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
 					//si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
