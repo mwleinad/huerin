@@ -177,7 +177,7 @@ class Documento extends Contract
         foreach($tipos as $key => $value)
         {
             $dptos =  explode(",",$value['dptosId']);
-            if(!in_array($dep,$dptos))
+            if($dep && !in_array($dep,$dptos))
             {
                 $cad['nombreDoc']=$value['nombre'];
                 $cad['fileExist'] = false;
@@ -195,11 +195,13 @@ class Documento extends Contract
             $this->Util()->DB()->setQuery('select * from documento where tipoDocumentoId='.$value['tipoDocumentoId'].' AND contractId='.$this->contractId.' order by documentoId  DESC');
             $row = $this->Util()->DB()->GetRow();
             $cad=$row;
+            $file ="";
             switch($isRequired){
                 case 'Obligatorio':
                     $file = DOC_ROOT."/documentos/".$row["contractId"]."_".$row["path"];
-                    if(file_exists($file))
+                    if(file_exists($file)){
                         $cad['fileExist'] = true;
+                    }
                     else{
                         $noFile++;
                         $cad['fileExist'] = false;
