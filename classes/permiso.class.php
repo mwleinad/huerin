@@ -28,8 +28,13 @@ class Permiso extends Main
         foreach($permisos as $perm)
         {
             list($dep,$id) =  explode(',',$perm);
-            if($dep>0&&$id>0)
+            if($dep>0&&$id>0){
+                if($dep==26)
+                    $dep=33;
+
                 $sqlComp .= "($this->contractId,$dep,$id),";
+            }
+
         }
 
         if($sqlComp!=""){
@@ -61,8 +66,13 @@ class Permiso extends Main
             foreach($permisos as $perm)
             {
                 list($dep,$id) =  explode(',',$perm);
-                if($dep>0&&$id>0)
+                if($dep>0&&$id>0){
+                    if($dep==26)
+                        $dep=33;
+
                     $sqlComp .= "($idContrato,$dep,$id),";
+                }
+
             }
 
             if($sqlComp!=""){
