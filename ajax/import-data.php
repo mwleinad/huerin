@@ -22,7 +22,7 @@ if($util->PrintErrors()){
     $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     exit;
 }
-
+$opermiso =  new Permiso();
 //tratar el archivo
 
 switch($_POST['type']){
@@ -144,6 +144,10 @@ switch($_POST['type']){
             $db->setQuery($strContract);
             $upContract =  $db->UpdateData();
             if($upContract>0){
+                //si se actualizo la razon se debe actualizar los permisos en la tabla
+                $opermiso->setContractId($row[1]);
+                $opermiso->doPermiso();
+
                 $contract->setContractId($row[1]);
                 $afterContract = $contract->Info();
                 //guardar en log
@@ -336,6 +340,10 @@ switch($_POST['type']){
             $registroId =  $db->InsertData();
             if($registroId>0)
             {
+                //si se actualizo la razon se debe actualizar los permisos en la tabla
+                $opermiso->setContractId($registroId);
+                $opermiso->doPermiso();
+
                 $contract->setContractId($registroId);
                 $infoReg = $contract->Info();
                 //guardar en log
@@ -440,6 +448,9 @@ switch($_POST['type']){
                 $db->setQuery($strContract);
                 $upContract =  $db->UpdateData();
                 if($upContract>0) {
+                    //si se actualizo la razon se debe actualizar los permisos en la tabla contractPermiso
+                    $opermiso->setContractId($row[1]);
+                    $opermiso->doPermiso();
                     $contract->setContractId($row[1]);
                     $afterContract = $contract->Info();
                     //guardar en log
