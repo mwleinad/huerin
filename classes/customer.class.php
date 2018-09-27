@@ -1449,7 +1449,7 @@ class Customer extends Main
 	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
 	{
 		global $User, $page,$rol,$personal;
-		$report = new ContractRep();
+		$creport = new ContractRep();
 		if ($this->active) {
 			$sqlActive = " AND active = '1' ";
 		}
@@ -1513,7 +1513,7 @@ class Customer extends Main
 			if($countContracts > 0){
 				$result[$key]["showCliente"] = 0;
 				foreach ($result[$key]["contracts"] as $keyContract => $value) {
-                    $nameEncargados = $this->encargadosArea($value['contractId']);
+                    $nameEncargados = $creport->encargadosArea($value['contractId']);
                     foreach($nameEncargados as $var ){
                         $result[$key]["contracts"][$keyContract]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
                         $result[$key]["contracts"][$keyContract]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
