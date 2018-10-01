@@ -119,6 +119,7 @@ include_once(DOC_ROOT."/classes/razon.class.php");
 include_once(DOC_ROOT."/classes/validar.class.php");
 include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
 include_once(DOC_ROOT."/classes/permiso.class.php");
+include_once(DOC_ROOT."/classes/dropzone.class.php");
 
 
 
@@ -196,6 +197,7 @@ $objectSerie=  new Serie;
 $expediente=  new Expediente;
 $rol=  new Rol;
 $valida = new Validar();
+$dropzone = new Dropzone();
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");

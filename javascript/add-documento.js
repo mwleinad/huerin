@@ -1,54 +1,26 @@
-var AJAX_PATH = WEB_ROOT+'/ajax/add-documento.php'
-jQ(document).ready(function(){
-    if(jQ('.addDocumento').length){
-        jQ('.addDocumento').on('click',function() {
-             var id =  this.id;
-             grayOut(true);
-             jQ('#fview').show();
-            jQ.ajax({
-                url: AJAX_PATH,
-                data: {type:'openAddDocumento',contractId:id},
-                type: 'POST',
-                success:function (response) {
-                    FViewOffSet('');
-                    FViewOffSet(response);
-                }
-
-            })
-        });
-    }
-});
-jQ(document).on('click','#addDocumento',function(){
-    var id = this.id;
-    var form = jQ(this).parents('form:first')
-    var fd =  new FormData(form[0]);
+var AJAX_PATH = WEB_ROOT+'/ajax/add-documento.php';
+jQ(document).on('click','.addFile',function () {
+    var tipo =  jQ(this).data('tipo');
+    var id =  jQ(this).data('id');
+    grayOut(true);
+    jQ('#fview').show();
     jQ.ajax({
         url: AJAX_PATH,
-        data: fd,
-        processData: false,
-        contentType: false,
+        data: {type:'openModalFile',contractId:id,tipo:tipo},
         type: 'POST',
-        beforeSend: function(){
-            jQ('#loading-img').show();
-            jQ('#'+id).hide();
-        },
-        success: function(response){
-            var splitResp = response.split("[#]");
-            console.log(response);
-            if(splitResp[0]=='ok')
-            {
-                jQ('#contentDocumentos').html(splitResp[2]);
-                ShowStatusPopUp(splitResp[1]);
-                close_popup();
-            }else{
-                jQ('#loading-img').hide();
-                jQ('#'+id).show();
-                ShowStatusPopUp(splitResp[1]);
+        success:function (response) {
+            var resSplit =  response.split("[#]");
+            FViewOffSet('');
+            FViewOffSet(resSplit[0]);
+            customOptions = {
+                url:AJAX_PATH,
             }
-        },
-    });
+            createDropzone('#idDropzone',customOptions);
+        }
+    })
 
-});
+    }
+);
 jQ(document).on('click','#closePopUpDiv',function(){
     close_popup();
 });
@@ -65,3 +37,5 @@ function close_popup(){
     grayOut(false);
     return;
 }
+
+
