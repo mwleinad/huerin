@@ -20,7 +20,7 @@ class InstanciaServicio extends  Servicio
 
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
-
+        $sinceMonth ="";
         if($foperaciones=="0000-00-00")
             return $base;
 
@@ -28,10 +28,9 @@ class InstanciaServicio extends  Servicio
         //si año de IO es superior al año solicitado se ignora aunque tengan workflows creados.
         if(!($year>=$fecha[0]))
             return $base;
-
-        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones.
-        $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
-
+        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones. esto es solo para el año de IO lo demas no debe evaluar esto
+        if($year==$fecha[0])
+            $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
 
         $sql = "SELECT 
                 CASE tipoServicioId 
