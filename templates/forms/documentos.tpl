@@ -12,8 +12,8 @@
   <tr>
 		<td align="left" width="40%" class="tdPad">
         {if (in_array(72,$permissions)&&in_array(73,$permissions))||$User.isRoot}
-    	<a href="javascript:;" id="{$contractInfo.contractId}" class="addDocumento"><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Documento"/> Agregar Documento</a>
-		{/if}
+            <a href="javascript:;" data-id="{$contractInfo.contractId}" data-tipo="documento" class="addFile"><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar documento"/> Agregar documento</a>
+        {/if}
 		<div id="contentDocumentos">
 			{include file="{$DOC_ROOT}/templates/lists/documento.tpl"}    
         </div>
