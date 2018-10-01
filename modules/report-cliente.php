@@ -53,7 +53,7 @@
 				$servicio->setServicioId($serv['servicioId']);
 				$infServ = $servicio->Info();
 				$noCompletados = 0;
-                $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year);
+                $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones']);
                 if(!$serv['instancias'])
                     continue;
                 $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);

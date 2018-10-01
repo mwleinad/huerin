@@ -13,7 +13,7 @@
   <tr>
     <td align="left" width="40%" class="tdPad">
     {if in_array(68,$permissions)||$User.isRoot}
-    <a href="{$WEB_ROOT}/add-archivo/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Archivo', this.href,300,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Archivo"/> Agregar Archivos</a>
+        <a href="javascript:;" data-id="{$contractInfo.contractId}" data-tipo="archivo" class="addFile"><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar archivo"/> Agregar archivo</a>
     {/if}
     <div id="contentArchivos">
         {include file="{$DOC_ROOT}/templates/lists/archivo.tpl"}

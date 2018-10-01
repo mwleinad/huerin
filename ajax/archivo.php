@@ -45,9 +45,8 @@ switch($_POST["type"])
 				echo "[#]";
 				
 				//Checamos los permisos para eliminar DOCs y Archivos
-	
 				$permisoDel = array('Gerente','Socio','Asistente');
-				
+
 				$allowDelete = 0;
 				if(in_array($User['tipoPersonal'], $permisoDel))
 					$allowDelete = 1;

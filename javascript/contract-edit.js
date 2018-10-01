@@ -9,9 +9,8 @@ Event.observe(window, 'load', function() {
 			return;
 		}
 	}
-
 	$('contentDocumentos').observe("click", AddEditDocumentoListeners);
-  
+
 	AddEditRequerimientoListeners = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('spanDelete');
@@ -22,9 +21,8 @@ Event.observe(window, 'load', function() {
 			return;
 		}
 	}
-
 	$('contentRequerimientos').observe("click", AddEditRequerimientoListeners);
-	
+
 	AddEditArchivoListeners = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('spanDelete');
@@ -35,14 +33,13 @@ Event.observe(window, 'load', function() {
 			DeleteArchivoPopup(id);
 			return;
 		}
-    del = el.hasClassName('spanEdit');
+    	del = el.hasClassName('spanEdit');
 		if(del == true)
 		{
 			EditArchivoFechaPopup(id);
       return;
 		}
 	}
-
 	$('contentArchivos').observe("click", AddEditArchivoListeners);	
 
 	AddEditImpuestoListeners = function(e) {
@@ -57,21 +54,19 @@ Event.observe(window, 'load', function() {
 		}
 	}
 
-	$('contentImpuestos').observe("click", AddEditImpuestoListeners);	
+	//$('contentImpuestos').observe("click", AddEditImpuestoListeners);
 
 	AddEditObligacionListeners = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('spanDelete');
 		var id = el.identify();
-
 		if(del == true)
 		{
 			DeleteObligacionPopup(id);
 			return;
 		}
 	}
-
-	$('contentObligaciones').observe("click", AddEditObligacionListeners);	
+	//$('contentObligaciones').observe("click", AddEditObligacionListeners);
 
 });
 
@@ -278,7 +273,7 @@ function DeleteRequerimientoPopup(id)
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			ShowStatus(splitResponse[1])
-			$('contentRequerimiento').innerHTML = splitResponse[2];
+			$('contentRequerimientos').innerHTML = splitResponse[2];
 				AddRequerimientoDiv(0);
 		},
 		onFailure: function(){ alert('Something went wrong...') }

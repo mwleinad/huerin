@@ -13,11 +13,12 @@
   <tr>
 		<td align="left" width="40%" class="tdPad">
         {if in_array(81,$permissions)||$User.isRoot}
-    	<a href="{$WEB_ROOT}/add-requerimiento/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Requerimiento', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Requerimiento"/> Agregar Requerimiento</a>
+            <a href="javascript:;" data-id="{$contractInfo.contractId}" data-tipo="requerimiento" class="addFile"><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar requermiento"/> Agregar Requerimiento</a>
+    	<!-- <a href="{$WEB_ROOT}/add-requerimiento/id/{$contractInfo.contractId}" onclick="return parent.GB_show('Agregar Requerimiento', this.href,200,970) "><img src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Requerimiento"/> Agregar Requerimiento</a>-->
 		{/if}
-			<div id="contentRequerimientos">
+		<div id="contentRequerimientos">
 			{include file="{$DOC_ROOT}/templates/lists/requerimiento.tpl"}    
-      </div>
+        </div>
       </td>
 	</tr>
 

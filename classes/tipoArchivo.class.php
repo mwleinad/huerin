@@ -29,7 +29,7 @@ class TipoArchivo extends Main
 
 	public function Enumerate()
 	{
-		$this->Util()->DB()->setQuery('SELECT * FROM tipoArchivo WHERE status="1" ORDER BY tipoArchivoId ASC '.$sql_add);
+		$this->Util()->DB()->setQuery('SELECT *,descripcion as nombre,tipoArchivoId as id FROM tipoArchivo WHERE status="1" ORDER BY tipoArchivoId ASC '.$sql_add);
 		$result = $this->Util()->DB()->GetResult();
 		return $result;
 	}
