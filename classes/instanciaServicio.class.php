@@ -8,14 +8,31 @@
 /*
      * los servicios domicilio fiscal(16),facturacion(17) y representacion legal fiel(24) saldran en reporte pero sin color
      * estos servicios no tienen seguimiento de sus workflows
+     * Comprobar la fecha de inicio de operaciones para llevar control de que se mostrara.
+     *  - Si la fecha de inicio de operaciones se modifico y este servicio ya tiene workflows creados en fechas anteriores al nuevo inicio de operaciones
+     *        se debe ignorar las anteriores
      */
 class InstanciaServicio extends  Servicio
 {
 
-    function getInstanciaByServicio($servicioId, $year)
+    function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00")
     {
+
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
+
+        if($foperaciones=="0000-00-00")
+            return $base;
+
+        $fecha =  explode('-',$foperaciones);
+        //si año de IO es superior al año solicitado se ignora aunque tengan workflows creados.
+        if(!($year>=$fecha[0]))
+            return $base;
+
+        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones.
+        $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
+
+
         $sql = "SELECT 
                 CASE tipoServicioId 
                 WHEN 16 THEN ''
@@ -28,7 +45,7 @@ class InstanciaServicio extends  Servicio
                 ,MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12) 
+				WHERE (MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12)  $sinceMonth)
 				AND YEAR(instanciaServicio.date) = '".$year."'
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
