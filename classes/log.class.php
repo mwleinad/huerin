@@ -73,24 +73,27 @@ class Log extends Util
             case 'Insert':
                 $accion = "ha sido dado de alta ";
                 array_push($defaultId,IDHUERIN);
+                array_push($defaultId,290);
             break;
             case 'Update':
                 $excluyehuerin = true;
-                $wherehuerin = " AND personalId!='".IDHUERIN."'";
+                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290 ";
                 $accion ="ha sido modificada ";
             break;
             case 'Baja':
                 $accion="ha sido  dado de baja ";
                 array_push($defaultId,IDHUERIN);
+                array_push($defaultId,290);
             break;
             case 'Reactivacion':
                 $excluyehuerin = true;
-                $wherehuerin = " AND personalId!='".IDHUERIN."'";
+                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
                 $accion="ha sido reactivado ";
             break;
             case 'Delete':
                 $accion="ha sido eliminado ";
                 array_push($defaultId,IDHUERIN);
+                array_push($defaultId,290);
              break;
         }
         //encontrar tabla que se modifico
@@ -272,10 +275,10 @@ class Log extends Util
         $correosJefes=array();
         if(!empty($jefes))
         {
-            //si jefes no esta vacio hay que agregar a ROGELIO ya que es coordinador
+            //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
             array_push($jefes,32);
+            array_push($jefes,290);
             $jefes = array_unique($jefes);
-
             //comprobar si se excluye a huerin
             if($excluyehuerin){
                 $index = array_search(IDHUERIN,$jefes);
@@ -292,7 +295,7 @@ class Log extends Util
                     $correosJefes[trim($var['email'])] =$var['name'];
                 }
             }
-        }
+        }s
         $encargados = array_merge($encargados,$correosJefes);
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
