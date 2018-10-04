@@ -503,6 +503,7 @@ class Personal extends Main
 				roleId,
 				departamentoId,
 				fechaIngreso,
+				lastChangePassword,
 				active
 		)
 		VALUES
@@ -525,6 +526,7 @@ class Personal extends Main
 				'".trim($this->tipoPersonal)."',
 				'".trim($this->roleId)."',
 				'".$this->departamentoId."',
+				'".$this->fechaIngreso."',
 				'".$this->fechaIngreso."',
 				'".$this->active."'
 		);");
