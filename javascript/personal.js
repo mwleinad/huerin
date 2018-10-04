@@ -1,5 +1,6 @@
+Dropzone.autoDiscover=false;
 Event.observe(window, 'load', function() {
-	Dropzone.autoDiscover=false;
+
 	if(document.getElementById("addPersonal"))
 			Event.observe($('addPersonal'), "click", AddPersonalDiv);
 
@@ -314,7 +315,6 @@ function LoadBoxDropzone(){
             dictRemoveFile:'Eliminar',
             maxFileSize:2,
             autoProcessQueue: true,
-            autoQueue:true,
             maxFiles:1,
             uploadMultiple:false,
             acceptedFiles:'application/pdf,image/jpeg,image/png',
