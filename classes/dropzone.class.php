@@ -80,7 +80,6 @@ class Dropzone extends main
       $nombreArchivo = preg_replace("/&#?[a-z0-9]+;/i","", basename( $_FILES["file"]['name']));
       $nombreArchivo = str_replace(" ","", $nombreArchivo);
       $nombreArchivo = strtolower($nombreArchivo);
-      $nombreArchivo = $id.$nombreArchivo;
       $target_path = $this->ruta.$this->relacionId."_". $nombreArchivo;
        //mover archivo a destino, si es satisfactorio se actualiza datos en table de lo contrario hacer rollback
       if(move_uploaded_file($_FILES["file"]['tmp_name'], $target_path)) {
