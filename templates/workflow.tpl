@@ -9,13 +9,13 @@
               <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
               Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
             <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  {if in_array(116,$permissions)||$User.isRoot}onclick="Calendario(this)"{/if} value="{$myWorkflow.date}" />
-      </span> |{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/{$from}">Regresar</a><br />
+      </span> |{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/report-servicio">Regresar</a><br />
       </form>
   <div class="clearfix"></div>
   <div class="portlet">
       <div class="portlet-content nopadding borderGray" id="contenido" style="padding:15px">
             {foreach from=$myWorkflow.steps item=step}
-            <div class="boxStep {if $step.stepCompleted}completeStep{else}incompleteStep{/if} " id="step-{$step.stepId}" data-id="{$step.stepId}" {*if in_array(102,$permissions)||$User.isRoot}onclick="ToggleTask({$step.stepId})"{/if*} >
+            <div class="{if in_array(102,$permissions)||$User.isRoot}boxStep{/if} {if $step.stepCompleted}completeStep{else}incompleteStep{/if} " id="step-{$step.stepId}" data-id="{$step.stepId}" {*if in_array(102,$permissions)||$User.isRoot}onclick="ToggleTask({$step.stepId})"{/if*} >
                 Paso No. {$step.step}<br /><b>{$step.nombreStep}</b><br />
                 {if in_array(102,$permissions)||$User.isRoot}
                  &raquo; Click para Ver Tareas &laquo;
