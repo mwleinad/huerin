@@ -25,10 +25,8 @@
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/lista.css" />
-
-
 {if $page == "login"}
-<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
+	<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
 {/if}
 <script src="{$WEB_ROOT}/javascript/js-config.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript">
@@ -47,17 +45,15 @@
 <script src="{$WEB_ROOT}/calendar/js/jscal2.js"></script>
 <script src="{$WEB_ROOT}/calendar/js/unicode-letter.js"></script>
 <script src="{$WEB_ROOT}/calendar/js/es.js"></script>
-<!--<script src="{$WEB_ROOT}/javascript/clearbox.js"></script>-->
 {/if}
 
 <style type="text/css">
 {if $page == "docs-files" || $page == "sellado-files" || $page == "services" || $page == "add-documento" || $page == "add-requerimiento" || $page == "add-archivo" || $page == "add-impuesto" || $page == "add-obligacion" || $page == "service-steps"}
-body { background:; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
+	body { background:; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
 {else}
-body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
+	body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
 {/if}
 </style>
-    
 <!--[if IE]>
 <script language="javascript" type="text/javascript" src="js/flot/excanvas.pack.js"></script>
 <![endif]-->
@@ -66,7 +62,7 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 <script src="js/pngfix.js"></script>
 <script>
     DD_belatedPNG.fix('#menu ul li a span span');
-</script>        
+</script>
 <![endif]-->
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
@@ -75,18 +71,19 @@ body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font
 <script>var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
-{/if}
-{if $section == 'consultar-facturas'}
-<script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
-{/if}
 <script src="{$WEB_ROOT}/javascript/datetimepicker.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
-{if $page eq 'contract-edit' || $page eq 'contract-view'}
+<script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
+{/if}
+{if $section == 'consultar-facturas'}
+<script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
+{/if}
+
+{if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow'}
 	<script src="{$WEB_ROOT}/javascript/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
 	<script src="{$WEB_ROOT}/javascript/add-documento.js?{$timestamp}" type="text/javascript"></script>
 {/if}

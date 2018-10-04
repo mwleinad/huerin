@@ -8,7 +8,12 @@ class Task extends Step
 		$this->Util()->ValidateInteger($value);
 		$this->taskId = $value;
 	}
-
+	public $workId;
+    public function setWorkflowId($value)
+    {
+        $this->Util()->ValidateInteger($value);
+        $this->workId = $value;
+    }
 
 	private $diaVencimiento;
 	public function setDiaVencimiento($value)
@@ -56,8 +61,6 @@ class Task extends Step
 		$this->Util()->ValidateString($value, 255, 0, 'Control Tres');
 		$this->control3 = $value;
 	}
-
-
 	public function Enumerate()
 	{
 		global $months;
@@ -160,6 +163,78 @@ class Task extends Step
 		$this->Util()->PrintErrors();
 		return true;
 	}
+	public function checkTasksByStep()
+    {
+        global $workflow;
+        //workflowId  es la instanciaServicioId viene desde url
+        $this->Util()->DB()->setQuery("SELECT * FROM task 
+                                              WHERE stepId = '" . $this->getStepId() . "'");
+        $data['tasks'] = $this->Util()->DB()->GetResult();
+        $data["totalTasks"] = count($data["tasks"]);
+        $data['completedTasks'] = 0;
+        $data['stepId']=$this->getStepId();
+
+        $porcentajeTotal = 0;
+        $porcentajeDone = 0;
+        foreach ($data['tasks'] as $keyTask => $valueTask) {
+
+            $porcentajeTotal += 100;
+            $data["tasks"][$keyTask]["controlFile"] = 0;
+            if ($valueTask["control"]) {
+                //Checar si ya se subio ese archivo
+                $this->Util()->DB()->setQuery("SELECT  *  FROM taskFile 
+                    WHERE servicioId = '" .$this->workId . "' AND stepId = '" . $valueTask["stepId"] . "' AND taskId = '" . $valueTask["taskId"] . "' AND control = 1 ORDER BY version DESC");
+                $filesTask = $this->Util()->DB()->GetResult();
+
+                if (count($filesTask) > 0) {
+                    $data["tasks"][$keyTask]["controlFile"] = 1;
+                }
+                $data["tasks"][$keyTask]["controlFileInfo"] = $filesTask;
+
+            } else {
+                $data["tasks"][$keyTask]["controlFile"] = 1;
+            }//else
+
+            $data["tasks"][$keyTask]["controlFile2"] = 1;
+            $data["tasks"][$keyTask]["controlFile3"] = 1;
+            $data["tasks"][$keyTask]["taskCompleted"] = 0;
+            if ($data["tasks"][$keyTask]["controlFile"] + $data["tasks"][$keyTask]["controlFile2"] + $data["tasks"][$keyTask]["controlFile3"] == 3) {
+
+                $porcentajeDone += 100;
+                $data["tasks"][$keyTask]["taskCompleted"] = 1;
+                $data["completedTasks"]++;
+            }//if
+
+        }//foreach
+        if ($porcentajeTotal == 0)
+            $porcentajeTotal = 1;
+
+        $realPercent = $porcentajeDone / ($porcentajeTotal * 100);
+        if ($realPercent == 0)
+            $data["class"] = "PorIniciar";
+        elseif ($realPercent > 0 && $realPercent < 70)
+            $data["class"] = "Iniciado";
+        elseif ($realPercent >= 70 && $realPercent < 100)
+            $data["class"] = "PorCompletar";
+        else
+            $data["class"] = "Completo";
+
+        $data["stepCompleted"] = 0;
+        if ($data["completedTasks"] == $data["totalTasks"]) {
+            $data["stepCompleted"] = 1;
+        }//if
+         $workflow->setInstanciaServicioId($this->workId);
+         $data['workflow'] = $workflow->infoWorkflow();
+
+
+        //comprobar que el step anterior este completo de lo contrario no puede avanzar
+
+        /*$this->Util()->DB()->setQuery("SELECT * FROM step
+			WHERE servicioId = '".$_POST["tipoServicioId"]."' AND stepId < '".$value["stepId"]."' LIMIT 1");
+        $row["steps"][$key]["prevStep"] = $this->Util()->DB()->GetRow();*/
+
+        return $data;
+    }
 
 }
 

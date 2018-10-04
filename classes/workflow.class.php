@@ -590,11 +590,9 @@ class Workflow extends Servicio
 			$version = $this->Util()->DB()->GetSingle()+ 1;
 			
 
-		$target_path = $folder ."/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext; 
-		
+		$target_path = $folder ."/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext;
 		$target_path_path = basename( $_FILES["file"]['name']); 
 		if(move_uploaded_file($_FILES["file"]['tmp_name'], $target_path)) {
-			
 				$this->Util()->DB()->setQuery("
 					INSERT INTO `taskFile` 
 					(
@@ -621,10 +619,9 @@ class Workflow extends Servicio
 				$this->Util()->DB()->InsertData();
         
 				$result = $this->StatusById($this->instanciaServicioId);
-        $this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
-        WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
-        $this->Util()->DB()->UpdateData();
-        
+                $this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
+                WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
+                $this->Util()->DB()->UpdateData();
 				//enviar al jefe inmediato
 				if($version > 1)
 				{
@@ -668,11 +665,14 @@ class Workflow extends Servicio
 					
 					$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName, $attachment2, $fileName2, "admin@avantikdads.com", "Administrador del Sistema") ;
 				}
+				$this->Util()->setError(0,'complete','Archivo guardado correctamente');
+                $this->Util()->PrintErrors();
                 return true;
 			}
 		else
 		{
-			echo "No se pudo subir el archivo";
+            $this->Util()->setError(0,'error','Error al guardar archivo');
+            $this->Util()->PrintErrors();
 			return false;
 		}
 		
@@ -693,6 +693,10 @@ class Workflow extends Servicio
 		$nomFile = $file['servicioId'].'_'.$file['stepId'].'_'.$file['taskId'].'_'.$file['control'].'_'.$file['version'].'.'.$file['ext'];
 		
 		@unlink(DOC_ROOT.'/tasks/'.$nomFile);
+        $this->Util()->setError(0,'complete','Archivo eliminado correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+		return true;
 	}
     function GetStatusByComprobante($contratoId,$year){
 	    $monthBase = array(1=>array('class'=>'#000000'),2=>array('class'=>'#000000'),3=>array('class'=>'#000000'),4=>array('class'=>'#000000'),
@@ -833,9 +837,19 @@ class Workflow extends Servicio
 		$data["class"] = $class;
 		
 		return $data;
-	}	
+	}
+	public function infoWorkflow(){
+
+        $this->Util()->DB()->setQuery("SELECT c.periodicidad,a.status,a.instanciaServicioId,c.departamentoId  FROM instanciaServicio a 
+		LEFT JOIN servicio b ON a.servicioId = b.servicioId
+		LEFT JOIN tipoServicio c ON b.tipoServicioId = c.tipoServicioId
+		WHERE a.instanciaServicioId = '".$this->instanciaServicioId."' ");
+        $row = $this->Util()->DB()->GetRow();
+        return  $row;
+    }
 
 }
+
 
 
 
