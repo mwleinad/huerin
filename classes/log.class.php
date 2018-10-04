@@ -295,7 +295,7 @@ class Log extends Util
                     $correosJefes[trim($var['email'])] =$var['name'];
                 }
             }
-        }s
+        }
         $encargados = array_merge($encargados,$correosJefes);
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
