@@ -1381,5 +1381,65 @@ ul.menu_arbol ul {
 	padding-right: 15px;
 
 }
+/*estilos para los workflows*/
+/*estilo para cuadro de step*/
+.completeStep{
+	cursor:pointer;
+	width:150px;
+	float:left;
+	height:100px;
+	min-height:100px;
+	border:solid;
+	border-width:1px;
+	margin:5px;
+	padding:5px;
+	text-align:center;
+	background-color:#006633;
+	color:#FFFFFF
+}
+.incompleteStep{
+	cursor:pointer;
+	width:150px;
+	float:left;
+	height:100px;
+	min-height:100px;
+	border:solid;
+	border-width:1px;
+	margin:5px;
+	padding:5px;
+	text-align:center;
+	background-color:#C00;
+	color:#FFFFFF
+}
+.arrowStep{
+	width:50px;
+	float:left;
+	height:70px;
+	min-height:70px;
+	border:solid;
+	border-width:0px;
+	margin:0px;
+	padding:5px
+}
+.arrowStep:before{
+	content: '';
+	display: inline-block;
+	height: 50%;
+	vertical-align: middle;
+}
+.arrowStep>img{
+	vertical-align: middle;
+}
+.zoneTaskShow{
+	border:solid; 
+	border-width:1px; 
+	margin:10px; 
+	padding:10px;
+	display: block;
+}
+.zoneTaskHiden{
+	display: none;
+}
+
 
 

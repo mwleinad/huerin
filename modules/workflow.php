@@ -4,14 +4,6 @@
     $user->allowAccess(3);//level 1
     $user->allowAccess(100);//level 2s
     /* End Session Control */
-    if($_POST && $_FILES)
-	{
-		if($_SESSION['uplToken'] == $_POST['uplToken']){
-    		$workflow->setInstanciaServicioId($_GET["id"]);
-			$workflow->UploadControl();			
-		}
-	}
-	
 	$uplToken = rand();
 	$_SESSION['uplToken'] = $uplToken;
 	

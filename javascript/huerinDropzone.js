@@ -70,6 +70,24 @@ var constructTemplate = (customOptions) => {
        );
    }
 };
+//for save file whit aditional form elements
+var normalOptions= (customOptions) => {
+    optionsH = {
+        // The configuration we've talked about above
+        url: customOptions.url != null ? customOptions.url : WEB_ROOT + "/ajax/add-documento.php",
+        dictDefaultMessage: 'Click o arastre un archivo para agregar',
+        autoProcessQueue: true,
+        addRemoveLinks: true,
+        parallelUploads: 1,
+        maxFiles: 1,
+        dictRemoveFile: 'Eliminar'
+    }
+    if(customOptions!=null){
+        Object.keys(customOptions).forEach(
+            (key) => { optionsH.key=customOptions[key];}
+    );
+    }
+};
 var createDropzone =(element,options) => {
     'use strict';
     if(options==null){
@@ -80,4 +98,16 @@ var createDropzone =(element,options) => {
     }
     options = optionsH;
     new Dropzone(element,options);
+};
+var dropzoneDefault =(element,options) => {
+    'use strict';
+    if(options==null){
+        normalOptions();
+    }
+    else{
+        normalOptions(options);
+    }
+    options = optionsH;
+    var myDropzone =  new Dropzone(element,options);
+    return myDropzone;
 };
