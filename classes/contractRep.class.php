@@ -333,12 +333,13 @@ class ContractRep extends Main
         $this->Util()->DB()->setQuery($sql);
         $contracts = $this->Util()->DB()->GetResult();
         foreach ($contracts as $key =>$value){
-            //si $filter['sinServicios'] es verdadero no se evalua esto
-            if(!$filter['sinServicios']){
-                $this->Util()->DB()->setQuery("select a.* from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId
+
+                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId
 					                             where a.contractId = '".$value["contractId"]."' and a.status = 'activo' and b.status='1' $dpto 
 					                             order by b.nombreServicio asc");
                 $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
+            //si $filter['sinServicios'] es verdadero no se evalua esto
+            if(!$filter['sinServicios']){
                 //los que no tengan servicios se ignoran.
                 if(empty($contracts[$key]['servicios'])){
                     unset($contracts[$key]);

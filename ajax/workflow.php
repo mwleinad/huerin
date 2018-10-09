@@ -9,6 +9,7 @@ switch($_POST["type"])
        $task->setStepId($_POST['stepId']);
        $task->setWorkflowId($_POST['idWorkFlow']);
        $data =  $task->checkTasksByStep();
+       $data['isDrill'] = $_POST["drill"];
 
        //comprobar departamento del usuario logueado
         $fltDeps = [8,24];

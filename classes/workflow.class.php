@@ -840,12 +840,50 @@ class Workflow extends Servicio
 	}
 	public function infoWorkflow(){
 
-        $this->Util()->DB()->setQuery("SELECT c.periodicidad,a.status,a.instanciaServicioId,c.departamentoId  FROM instanciaServicio a 
+        $this->Util()->DB()->setQuery("SELECT c.periodicidad,a.status,a.instanciaServicioId,c.departamentoId,a.date,d.name as razon,e.nameContact as cliente  FROM instanciaServicio a 
 		LEFT JOIN servicio b ON a.servicioId = b.servicioId
 		LEFT JOIN tipoServicio c ON b.tipoServicioId = c.tipoServicioId
+		LEFT JOIN contract d ON b.contractid = d.contractId
+		LEFT JOIN customer e ON d.customerId = e.customerId
 		WHERE a.instanciaServicioId = '".$this->instanciaServicioId."' ");
         $row = $this->Util()->DB()->GetRow();
         return  $row;
+    }
+    public function listStepByWorkflow($filter){
+         global $task;
+        $date = explode("-", $filter["finstancia"]);
+        if($filter["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016)
+        {
+            $this->Util()->DB()->setQuery("SELECT * FROM step 
+		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."'");
+        }
+        elseif($filter["tipoServicioId"] == 3 && $date["0"] < 2016)
+        {
+            $this->Util()->DB()->setQuery("SELECT * FROM step 
+		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."'");
+        }
+        else
+        {
+            $this->Util()->DB()->setQuery("SELECT * FROM step 
+		WHERE servicioId = '".$filter["tipoServicioId"]."'");
+
+        }
+        //Get Steps
+        $steps = $this->Util()->DB()->GetResult();
+        $data["completedSteps"] = 0;
+        $ii=1;
+        foreach($steps as $key => $value){
+            $task->setStepId($value["stepId"]);
+            $task->setWorkflowId($_POST['instanciaId']);
+            $tasks =  $task->checkTasksByStep();
+            $steps[$key]['isComplete'] = $tasks["stepCompleted"];
+            $steps[$key]['instanciaId'] = $_POST["instanciaId"];
+            $steps[$key]['class'] = $tasks["class"];
+            $steps[$key]['step'] = $ii;
+            $ii++;
+
+        }//foreach
+        return $steps;
     }
 
 }
