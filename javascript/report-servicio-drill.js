@@ -152,7 +152,8 @@ function loadArbol(){
     return {"id":"node_153904606372013","text":"Node #454454545","icon":"fa fa-folder icon-lg icon-state-danger","children":true,"type":"root"};
 }
 function doDrill() {
-   jQ('#tree1').jstree('refresh');
+   //se elimina si existe un objeto jstree
+   jQ('#tree1').jstree('destroy');
    jQ('#tree1').jstree({
         "core":{
           "data":{
