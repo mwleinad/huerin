@@ -25,10 +25,11 @@
       <!--<form class="dropzone" id="frmFileSp"><input type="submit" value="btn"></form>-->
       <div class="portlet-content nopadding borderGray">
          <div style="text-align:center" id="msg-advertencia"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
-         <div id="contenido" style="width:50%; float:left" class="tree-demo jstree jstree-1 jstree-default">
-             {* include file="lists/report-servicio-level-one.tpl" *}
+         <div id="contenido" style="width:50%; float:left;font-size: 15px" >
+             <div id="tree1" class="tree-demo">
+             </div>
          </div>
-          <div id="contenido2" style="width:50%; float: right; border-left: 1px; display: block ">
+          <div id="contenido2" style="width:50%; float: right; border-left: 1px; text-align: center;">
 
           </div>
       </div>

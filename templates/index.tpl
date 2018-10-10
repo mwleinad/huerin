@@ -13,12 +13,13 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/jquery-ui/jquery-ui.css?{$timestamp}" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/dropzone/dropzone.css?{$timestamp}" />
 {if $page == 'report-servicio-drill'}
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/bootstrap/css/bootstrap-theme.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/font-awesome/css/font-awesome.min.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/tree/style.min.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/components-rounded.min.css" />
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/bootstrap/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/bootstrap/css/bootstrap-theme.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/font-awesome/css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/jstree/dist/themes/default/style.min.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/components-rounded.min.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
+	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/styles/custom.css" />
 {/if}
 <link href="{$WEB_ROOT}/libs/bootstrap-select/css/bootstrap-select.min.css"  />
 <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
@@ -77,16 +78,21 @@
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
-<script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jstree/dist/jstree.min.js?{$timestamp}"></script>
+
+
+
 {/if}
 {if $section == 'consultar-facturas'}
 <script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 
-{if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow'}
+{if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow' || $page eq 'report-servicio-drill'}
 	<script src="{$WEB_ROOT}/javascript/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
 	<script src="{$WEB_ROOT}/javascript/add-documento.js?{$timestamp}" type="text/javascript"></script>
 {/if}
+	<script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/ui-tree.js?{$timestamp}"></script>
+	<script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
 
 </head>
 

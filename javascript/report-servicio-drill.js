@@ -124,10 +124,8 @@ function ShowContractTable(id)
 }
 
 function doSearch(){
-	
-	$('type').value = "searchNivelUno";
-	
-	new Ajax.Request(WEB_ROOT+'/ajax/report-servicio.php',
+	$('type').value = "levelOne";
+	new Ajax.Request(WEB_ROOT+'/ajax/report-drill.php',
 	{
 		method:'post',
 		parameters: $('frmSearch').serialize(true),
@@ -142,12 +140,95 @@ function doSearch(){
 			
 			$("loading").style.display = "none";
             $("msg-advertencia").style.display = "none";
-			$('contenido').innerHTML = response;
+			///$('contenido').innerHTML = response;
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
+function loadArbol(){
+
+    return {"id":"node_153904606372013","text":"Node #454454545","icon":"fa fa-folder icon-lg icon-state-danger","children":true,"type":"root"};
+}
+function doDrill() {
+   //se elimina si existe un objeto jstree
+   jQ('#tree1').jstree('destroy');
+   jQ('#tree1').jstree({
+        "core":{
+          "data":{
+               "url":WEB_ROOT+"/ajax/report-drill.php",
+               "data": function (node) {
+                   if (node.id === "#"){
+                       var form = new FormData(document.getElementById('frmSearch'));
+                       form.set("type", "levelOne");
+                       return form;
+                    }
+                   else
+                   {
+                       var form = new FormData(document.getElementById('frmSearch'));
+                       var datos =  node.data.datos;
+                       jQ.each(datos,function (key,value) {
+                           form.append(key,value);
+                           }
+                       );
+                       return form;;
+                   }
+               },
+			   "beforeSend":function(){
+               	jQ('#contenido2').html("");
+			   },
+               processData: false,
+               contentType:false,
+               "type":"post",
+            }
+          },
+        "types" : {
+            "default" : {
+                "icon" : "fa fa-folder  icon-state-warning icon-lg"
+            },
+            "file" : {
+                "icon" : "fa fa-file icon-state-warning icon-lg"
+            }
+        },
+        "plugins": ["types"]
+    });
+   UITree.eventClickTasks("#tree1","#contenido2");
+}
+jQ(document).on('click','.deleteFileWorkflow',function () {
+	var datos =  jQ(this).data('datos');
+    var form = new FormData();
+    jQ.each(datos,function (key,value) {
+        form.append(key,value);
+    });
+    form.set('type','deleteFileTask');
+    form.append('taskFileId',jQ(this).data('file'));
+    form.append('stepId',jQ(this).data('step'));
+    var con = confirm('Esta seguro de eliminar este archivo');
+    if(!con)
+        return;
+
+    jQ.ajax({
+        url: WEB_ROOT+"/ajax/add-documento.php",
+        data: form,
+        processData: false,
+        contentType:false,
+        dataType:'json',
+        type: 'POST',
+        beforeSend: function(){
+        },
+        success: function(data){
+            if(data.message=='ok'){
+                jQ("#contenido2").html(data.templateRefresh);
+                jQ("#tree1").jstree("refresh");
+                ShowStatusPopUp(data.notificacion);
+            }else{
+                ShowStatusPopUp(data.notificacion);
+            }
+        },
+    });
+});
+
 
 function showGraph(){
 
