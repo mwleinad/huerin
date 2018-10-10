@@ -126,13 +126,13 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow(1,$row,$value['contractId']);
             $sheet->setCellValueByColumnAndRow(2,$row,$value['nameContact']);
             $sheet->setCellValueByColumnAndRow(3,$row,$value['name']);
-            $sheet->setCellValueByColumnAndRow(4,$row,$value['respContabilidad']);
-            $sheet->setCellValueByColumnAndRow(5,$row,$value['respNominas']);
-            $sheet->setCellValueByColumnAndRow(6,$row,$value['respAdministracion']);
-            $sheet->setCellValueByColumnAndRow(7,$row,$value['respJuridico']);
-            $sheet->setCellValueByColumnAndRow(8,$row,$value['respImss']);
-            $sheet->setCellValueByColumnAndRow(9,$row,$value['respMensajeria']);
-            $sheet->setCellValueByColumnAndRow(10,$row,$value['respAuditoria']);
+            $sheet->setCellValueByColumnAndRow(4,$row,$value['nameContabilidad']);
+            $sheet->setCellValueByColumnAndRow(5,$row,$value['nameNominas']);
+            $sheet->setCellValueByColumnAndRow(6,$row,$value['nameAdministracion']);
+            $sheet->setCellValueByColumnAndRow(7,$row,$value['nameJuridico']);
+            $sheet->setCellValueByColumnAndRow(8,$row,$value['nameImss']);
+            $sheet->setCellValueByColumnAndRow(9,$row,$value['nameMensajeria']);
+            $sheet->setCellValueByColumnAndRow(10,$row,$value['nameAuditoria']);
 
             $row++;
         }
