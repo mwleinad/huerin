@@ -238,7 +238,7 @@ switch($_POST["type"])
 
     break;
     case 'doDownServicio':
-        $tipo = $_POST['tipoBaja'];
+        $tipo = 'partial';
         $servicioId = $_POST['servicioId'];
         $servicio->setTipoBaja($tipo);
         $servicio->setServicioId($servicioId);

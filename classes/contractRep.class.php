@@ -74,10 +74,11 @@ class ContractRep extends Main
                 continue;
             }
             //Checamos Servicios
-            $sql = "SELECT * FROM servicio
+            $sql = "SELECT *,servicio.status as servicioStatus FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='1'
+					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
+                    AND tipoServicio.status='1'
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
             $this->Util()->DB()->setQuery($sql);
@@ -134,7 +135,7 @@ class ContractRep extends Main
            $sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='1'
+					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
             $this->Util()->DB()->setQuery($sql);
@@ -335,7 +336,7 @@ class ContractRep extends Main
         foreach ($contracts as $key =>$value){
 
                 $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId
-					                             where a.contractId = '".$value["contractId"]."' and a.status = 'activo' and b.status='1' $dpto 
+					                             where a.contractId = '".$value["contractId"]."' and a.status IN ('activo','bajaParcial') and b.status='1' $dpto 
 					                             order by b.nombreServicio asc");
                 $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
             //si $filter['sinServicios'] es verdadero no se evalua esto

@@ -51,7 +51,10 @@ switch($_POST["type"]) {
         $smarty->display(DOC_ROOT.'/templates/lists/level-one.tpl');
     break;
     case 'findInstancias':
-        $instancias = $instanciaServicio->getInstanciaByServicio($_POST['servicioId'],$_POST['year'],$_POST['initOp']);
+        $isParcial =  false;
+        if($_POST['status']=="bajaParcial")
+            $isParcial = true;
+        $instancias = $instanciaServicio->getInstanciaByServicio($_POST['servicioId'],$_POST['year'],$_POST['initOp'],$isParcial);
         $smarty->assign("instancias", $instancias);
         $smarty->display(DOC_ROOT.'/templates/lists/instanciasDrill.tpl');
     break;

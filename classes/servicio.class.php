@@ -142,7 +142,9 @@ class Servicio extends Contract
      * Crear instancias para los servicios existentes
      * al comprobar instancia se toma en cuenta el status baja para casos en que se dieron de baja y no se requiera trabajar
      * de esta manera no se duplica o vuelve a crear la instancia correspondiente
-     * si es precierre  debe abrir solo en los meses 6,8,10,12S
+     * si es precierre  debe abrir solo en los meses 6,8,10,12
+     * si el servicio tiene bajaParcial se debe comprobar que la instancia a crear sea <= lastDateWorkflow
+     * si es la primera instancia a crear no puede haber bajaParcial y si la hay se crea normal.
      */
 	public function CreateServiceInstances()
 	{
@@ -150,11 +152,12 @@ class Servicio extends Contract
         //eso evitara foreachs en los permisos.
         $strLog="";
         $timeStart = date("d-m-Y").' a las '.date('H:i:s');
-		$result = $this->EnumerateServiceForInstances();
+		$result = $this->EnumerateServiceForInstances(1320);
 		$totInstCreate=0;
 		$excluidos =0;
 		foreach($result as $key => $value)
 		{
+		    $doCreate = true;
             $strLog .="----- INICIO DEL SERVICIO ".$value['nombreServicio']."=>".$value['servicioId']." DEL CLIENTE ".$value['razonSocialName']." -------".chr(13).chr(10);
 			$strLog .=' Creacion de instancia del servicioId = '.$value['servicioId'].' con periodicidad '.$value['periodicidad'].chr(13).chr(10);
 			//comprobar si la fecha de inicio de operaciones es valida de lo contrario no debe crear instancia.
@@ -282,7 +285,7 @@ class Servicio extends Contract
                 $strLog .='Fecha inicio operacion(se toma el primer dia del mes)= '.$startdate.chr(13).chr(10);
 				$strLog .='Primera instancia creada con fecha  = '.$primerServicio.chr(13).chr(10);
                 $strLog .='Ultima instancia creada con fecha  = '.$ultimoServicio.chr(13).chr(10);
-				if($primerServicio > $startdate)
+				if($primerServicio > $startdate)//solo sucede si se cambia la fecha de inicio de operaciones a una fecha inferior al primer workflow
 				{
 					switch($value["periodicidad"])
 					{
@@ -373,7 +376,7 @@ class Servicio extends Contract
 					$addedDate = strtotime ( $add , strtotime ( $ultimoServicio ) ) ;
 					$addedDate = date ( 'Y-m-d' , $addedDate );
 					$explodedAddedDate = explode("-", $addedDate);
-
+                    //comprobar precierres
                     if($value["tipoServicioId"]==PRECIERRE || $value["tipoServicioId"]==PRECIERREAUDITADO){
                         $mesPreAdd = (int)$explodedAddedDate[1];
                         $strLog .= 'es PRECIERRE'.chr(13).chr(10);
@@ -415,10 +418,18 @@ class Servicio extends Contract
                     $nextDate = $explodedAddedDate[0]."-".$explodedAddedDate[1]."-01";
                     $sql = "SELECT count(instanciaServicioId) FROM instanciaServicio WHERE
 							servicioId = ".$value["servicioId"]." AND status IN ('activa','completa','baja')
-						 	AND date = '".$nextDate."'";
+						 	AND date = '".$nextDate."' ";
 					$this->Util()->DB()->setQuery($sql);
 					$count = $this->Util()->DB()->GetSingle();
-					if($count == 0) {
+                    // si tiene bajaParcial es un hecho que lastDateWorkflow es una fecha valida.
+                    if($value['status']=='bajaParcial'){
+                        $dateParcial = $this->Util()->getFirstDate($value['lastDateWorkflow']);
+                        if($nextDate>$dateParcial){
+                            $doCreate = false;
+                            $strLog .="Servicio con baja temporal, ultima fecha valida ".$value['lastDateWorkflow']." => ".$dateParcial.chr(13).chr(10);
+                        }
+                    }
+					if($count == 0&&$doCreate) {
 						$sql = "
 								INSERT INTO  `instanciaServicio` (
 									`servicioId` ,
@@ -434,7 +445,7 @@ class Servicio extends Contract
 						$strLog .=' '.trim($sql).chr(13).chr(10);
                         $totInstCreate++;
 					}else{
-                        $strLog .=' Instancia no creada por tener existencia en la fecha'.$nextDate.chr(13).chr(10);
+                        $strLog .=' Instancia no creada por tener existencia en la fecha '.$nextDate." o es un servicio con baja temporal".chr(13).chr(10);
                     }
 				}else{
                     $strLog .=" No se creara instancias consecutivas(normales)".chr(13).chr(10);
@@ -446,7 +457,7 @@ class Servicio extends Contract
 
         $time = date("d-m-Y").' a las '.date('H:i:s');
 		//guardar el log en  sendFiles
-        $strLog .=" TOTAL SERVICIOS EXCLUIDOS= ".$excluidos;
+        $strLog .="TOTAL SERVICIOS EXCLUIDOS= ".$excluidos;
         $strLog .="TOTAL INSTANCIAS CREADAS =".$totInstCreate.chr(13).chr(10).chr(13).chr(10);
         $strLog .= "Cron ejecutado desde ".$timeStart." Hasta $time Hrs.";
         $file = DOC_ROOT."/sendFiles/logInstances.txt";
@@ -570,10 +581,12 @@ class Servicio extends Contract
 	}
     /* funcion  EnumerateServiceForInstances
      * Esta funcion enumera todos los servicios que se crearan sus instancias
-     * no deberia filtrarse por que es una tarea automatica.
+     * no debe filtrarse por encargados por que es una tarea automatica.
      * Solo deben sacar los servicios de las razones sociales de los clientes que se encuentren activos los que no no  debe sacar nada.
      * los contratos que tengan en su campo permisos vacio no debe sacarlos. con eso se podria dar por echo que solo se obtendra
      * contratos que al menos tenga un responsable. y asi evitar foreach
+     * Para servicios con baja temporal se toman en cuenta , al crear la instancia se debe checar si el mes que esta ejecutandose
+     * esta tarea sea <= la fecha del ultimo workflow
      */
     public function EnumerateServiceForInstances($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
     {
@@ -593,7 +606,7 @@ class Servicio extends Contract
         if($departamentoId!="")
             $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 
-        $sql = "SELECT servicioId,  customer.nameContact AS clienteName, 
+        $sql = "SELECT servicioId,  customer.nameContact AS clienteName,servicio.status,servicio.lastDateWorkflow,
 				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, 
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
@@ -604,7 +617,7 @@ class Servicio extends Contract
 				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si' AND contract.permisos!=''
 				INNER JOIN customer ON contract.customerId = customer.customerId AND customer.active = '1'
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
-				WHERE servicio.status = 'activo' 
+				WHERE (servicio.status = 'activo' OR servicio.status ='bajaParcial')
 				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
@@ -851,7 +864,7 @@ class Servicio extends Contract
 		return $row;
 	}
 	public function InfoLog(){
-        $this->Util()->DB()->setQuery("SELECT a.status,a.costo,a.tipoServicioId,a.inicioOperaciones,a.inicioFactura,c.name,c.permisos FROM servicio a
+        $this->Util()->DB()->setQuery("SELECT a.servicioId,a.status,a.costo,a.tipoServicioId,a.inicioOperaciones,a.inicioFactura,c.name,c.permisos FROM servicio a
 		LEFT JOIN tipoServicio b ON b.tipoServicioId = a.tipoServicioId
 		LEFT JOIN contract c ON c.contractId = a.contractId
 		WHERE a.servicioId = '".$this->servicioId."'");
@@ -861,7 +874,12 @@ class Servicio extends Contract
 	
 	public function Historial()
 	{
-		$this->Util()->DB()->setQuery("SELECT historyChanges.*, personal.name FROM historyChanges 
+		$this->Util()->DB()->setQuery("SELECT historyChanges.*, 
+        CASE historychanges.personalId
+         WHEN 999990000 THEN 'Administrador'
+         ELSE
+          personal.name
+         END AS name  FROM historyChanges 
 		LEFT JOIN personal ON personal.personalId = historyChanges.personalId
 		WHERE servicioId = '".$this->servicioId."'");
 		$result = $this->Util()->DB()->GetResult();
@@ -1055,7 +1073,7 @@ class Servicio extends Contract
 				'".$servicio["status"]."',
 				'".$servicio["costo"]."',
 				'".$User["userId"]."',
-				'".$servicio["inicioFactura"]."'
+				'".$servicio["inicioOperaciones"]."'
 		);");
 		$this->Util()->DB()->InsertData();
 		$this->Util()->setError(3, "complete", $complete);
@@ -1158,13 +1176,17 @@ class Servicio extends Contract
 
         $before = $this->InfoLog();
         $setDate = "";
+        $action = "Baja";
         switch($this->tipoBaja){
             case 'complete':
                 $active = 'baja';
+                $action = "Baja";
             break;
             case 'partial':
                 $active ='bajaParcial';
                 $setDate = ",lastDateWorkflow='".$this->lastDateWorkflow."' ";
+                $message ="EL servicio se ha dado de baja temporalmente.";
+                $action = "bajaParcial";
             break;
         }
 
@@ -1178,7 +1200,7 @@ class Servicio extends Contract
         $log->setFecha(date('Y-m-d H:i:s'));
         $log->setTabla('servicio');
         $log->setTablaId($this->servicioId);
-        $log->setAction('Baja');
+        $log->setAction($action);
         $log->setOldValue(serialize($before));
         $log->setNewValue(serialize($after));
         $log->Save();
@@ -1201,10 +1223,10 @@ class Servicio extends Contract
                     '".$after["status"]."',
                     '".$after["costo"]."',
                     '".$User["userId"]."',
-                    '".$after["inicioFactura"]."'
+                    '".$after["inicioOperaciones"]."'
             );");
         $this->Util()->DB()->InsertData();
-        $this->Util()->setError(3, "complete", 'El servicio se ha dado de baja correctamente.');
+        $this->Util()->setError(3, "complete", $message);
         $this->Util()->PrintErrors();
 
        return true;

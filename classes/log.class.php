@@ -85,6 +85,11 @@ class Log extends Util
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,290);
             break;
+            case 'bajaParcial':
+                $accion="ha sido  dado de baja temporalmente ";
+                array_push($defaultId,IDHUERIN);
+                array_push($defaultId,290);
+                break;
             case 'Reactivacion':
                 $excluyehuerin = true;
                 $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
@@ -247,6 +252,7 @@ class Log extends Util
             break;
             case 'Reactivacion';
             case 'Baja':
+            case 'bajaParcial':
             case 'Insert'://si es update se necesitaria comparar que cambio se realizo
                 $changes = $this->FindFieldDetail($this->newValue);
                 if(!empty($changes)) {

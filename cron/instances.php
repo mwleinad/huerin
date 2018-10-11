@@ -7,7 +7,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+	$docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
 }
 else
 {
@@ -16,7 +16,7 @@ else
 
 	define('DOC_ROOT', $docRoot);
 
-	session_save_path("/tmp");
+	session_save_path("c:/xampp/tmp");
 
 	include_once(DOC_ROOT.'/init_cron.php');
     include_once(DOC_ROOT.'/constants.php');

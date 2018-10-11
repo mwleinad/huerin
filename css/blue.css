@@ -727,6 +727,9 @@ opacity:0.7 !important;
 
 .spanGetCE,
 .spanEdit,
+.spanDown,
+.spanHistory,
+.spanActivate,
 .spanDelete{
 	cursor:pointer;
 }

@@ -293,13 +293,17 @@ switch($_POST["type"])
 					}
 					$servicios = array();
 					foreach($con['servicios'] as $serv){
+						$isParcial =  false;
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
 						$noCompletados = 0;
-                        $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones']);
+						if($serv['servicioStatus']=='bajaParcial')
+							$isParcial = true;
+
+                        $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         if(!$serv['instancias'])
                             continue;
-                        $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
+                        $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         $noCompletados = count($atrasados);
 
 						$tipoServicio->setTipoServicioId($infServ['tipoServicioId']);

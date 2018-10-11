@@ -14,12 +14,13 @@
     </td>  
 	<td align="center">{$item.formattedInicioOperaciones}</td>
     <td align="center">{$item.formattedInicioFactura}</td>
-	<td align="center">{$item.status}</td>
+	<td align="center">{if $item.status eq 'bajaParcial'}Baja temporal{else}{$item.status}{/if}</td>
     {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions) || $User.isRoot}
 		<td align="center">
 		{if $item.status == 'activo'}
 			{if in_array(88,$permissions) || $User.isRoot}
-				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanActivate" id="{$item.servicioId}" title="Desactivar"/>
+				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanActivate" id="{$item.servicioId}" title="Desactivar" />
+				<img src="{$WEB_ROOT}/images/icons/down.png" class="spanDown" id="{$item.servicioId}" title="Baja temporal" />
 			{/if}
 		{else}
 			{if in_array(90,$permissions) || $User.isRoot}
@@ -30,7 +31,7 @@
 		<img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.servicioId}" title="Editar"/>
 		{/if}
 		{if in_array(89,$permissions) || $User.isRoot}
-		<img src="{$WEB_ROOT}/images/icons/calendar.png" class="" id="{$item.servicioId}" title="Historial de Cambios" onclick="Historial({$item.servicioId})"/>
+		<img src="{$WEB_ROOT}/images/icons/calendar.png" class="spanHistory" id="{$item.servicioId}" title="Historial de Cambios" onclick="Historial({$item.servicioId})"/>
 		{/if}
 		</td>
     {/if}
