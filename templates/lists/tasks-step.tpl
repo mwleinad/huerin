@@ -1,3 +1,8 @@
+{if $data.isDrill}
+    Cliente: <b> {$data.workflow.cliente}</b> | Razon Social: <b>{$data.workflow.razon}</b> | Fecha:
+    {$data.workflow.date} | <a href="{$WEB_ROOT}/download_tasks.php?id={$data.workflow.instanciaServicioId}" style="font-weight:bold">Descargar Archivos</a>
+{/if}
+<div class="clearfix"></div>
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a">
     <thead>
     <tr>
@@ -28,7 +33,7 @@
                                 {/if}
                   {if in_array(105,$permissions)||$User.isRoot}
                                 {if $isDep}
-                                    <span><a href="javascript:;" data-file="{$file.taskFileId}" data-step="{{$data.stepId}}" class="deleteFileWorkflow">&raquo; Borrar Archivo</a></span>
+                                    <span><a href="javascript:;" data-file="{$file.taskFileId}" data-step="{{$data.stepId}}" class="deleteFileWorkflow" data-datos='{ "idWorkFlow":{$data.workflow.instanciaServicioId} }'>&raquo; Borrar Archivo</a></span>
                                 {/if}
                             {/if}
                   <br />

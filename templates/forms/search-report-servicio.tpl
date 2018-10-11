@@ -53,7 +53,7 @@
 <tr>
     <td colspan="6" align="center">
         <div style="margin-left:380px">
-        <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
+        <a class="button_grey" id="btnBuscar" {if $page eq "report-servicio-drill"} onClick="doDrill()"{else} onclick="doSearch()"{/if}><span>Buscar</span></a>
         </div>
     </td>
 </tr>

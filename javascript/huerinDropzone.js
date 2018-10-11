@@ -1,4 +1,35 @@
 var optionsH = {};
+
+var createDropzoneDrill= (idForm,contenedor,options,node)=>{
+    if(jQ(idForm).length) {
+        jQ('form'+idForm).each(
+            function() {
+                var objDrop = dropzoneDefault(this, options);
+                objDrop.on('sending', function (file, xhr, formData) {
+                    formData.append('type', 'saveFromWorkflow');
+                });
+                objDrop.on("maxfilesexceeded", function (file) {
+                    this.removeAllFiles();
+                    this.addFile(file);
+                });
+                objDrop.on("complete", function (file) {
+                    this.removeFile(file);
+                });
+                objDrop.on('success', function (file, data) {
+                    if(data.message=='ok'){
+                        jQ(contenedor).html(data.templateRefresh);
+                        jQ("#tree1").jstree("refresh");
+                        ShowStatusPopUp(data.notificacion);
+                    }else{
+                        ShowStatusPopUp(data.notificacion);
+                    }
+                });
+            }
+
+        );
+
+    }
+}
 var constructTemplate = (customOptions) => {
    optionsH = {
        // The configuration we've talked about above
@@ -111,3 +142,5 @@ var dropzoneDefault =(element,options) => {
     var myDropzone =  new Dropzone(element,options);
     return myDropzone;
 };
+
+
