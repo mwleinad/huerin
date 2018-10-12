@@ -4,10 +4,11 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-
+echo $_SERVER['DOCUMENT_ROOT'];
+exit;
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
+	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
 else
 {
@@ -16,7 +17,7 @@ else
 
 	define('DOC_ROOT', $docRoot);
 
-	session_save_path("c:/xampp/tmp");
+	session_save_path("/tmp");
 
 	include_once(DOC_ROOT.'/init_cron.php');
     include_once(DOC_ROOT.'/constants.php');
