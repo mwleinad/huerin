@@ -4,15 +4,13 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-echo $_SERVER['DOCUMENT_ROOT'];
-exit;
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 {
 	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
 else
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+	$docRoot = $_SERVER['DOCUMENT_ROOT']."/dev/huerin";
 }
 
 	define('DOC_ROOT', $docRoot);

@@ -152,7 +152,7 @@ class Servicio extends Contract
         //eso evitara foreachs en los permisos.
         $strLog="";
         $timeStart = date("d-m-Y").' a las '.date('H:i:s');
-		$result = $this->EnumerateServiceForInstances(1320);
+		$result = $this->EnumerateServiceForInstances(17);
 		$totInstCreate=0;
 		$excluidos =0;
 		foreach($result as $key => $value)
