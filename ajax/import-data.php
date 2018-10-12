@@ -583,7 +583,7 @@ switch($_POST['type']){
         echo $logCancel;
     break;
     case 'doPermiso':
-        $opermiso->doPermisos(true);
+        $opermiso->doPermisos(false);
         echo "ok[#]";
         echo "Permisos actualizados";
     break;
