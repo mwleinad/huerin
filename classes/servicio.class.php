@@ -875,7 +875,7 @@ class Servicio extends Contract
 	public function Historial()
 	{
 		$this->Util()->DB()->setQuery("SELECT historyChanges.*, 
-        CASE historychanges.personalId
+        CASE historyChanges.personalId
          WHEN 999990000 THEN 'Administrador'
          ELSE
           personal.name
