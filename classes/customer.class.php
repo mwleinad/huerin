@@ -1420,7 +1420,7 @@ class Customer extends Main
 		else 
 			$addLimite = "";
    
-		echo $sql = "SELECT 
+		$sql = "SELECT 
 						customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name,
 			customer.phone, customer.email, customer.password,customer.active 
 						FROM customer
@@ -1525,7 +1525,6 @@ class Customer extends Main
 
 			$filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
    	    }//foreach
-        dd($result);
         return $result;
 		
 	}//SuggestCustomerCatalog
