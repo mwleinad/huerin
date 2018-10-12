@@ -1652,7 +1652,7 @@ class Contract extends Main
 					LEFT JOIN
 						tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE
-						contractId = '" . $value["contractId"] . "' AND servicio.status IN('activo','bajaTemporal') AND tipoServicio.status='1'
+						contractId = '" . $value["contractId"] . "' AND servicio.status IN('activo','bajaParcial') AND tipoServicio.status='1'
 					ORDER BY
 						nombreServicio ASC"
         );
