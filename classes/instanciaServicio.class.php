@@ -17,19 +17,22 @@ class InstanciaServicio extends  Servicio
 
     function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00",$isParcial =  false)
     {
+        $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
+            10=>array(),11=>array(),12=>array());
         $ftrTemporal = "";
         if($isParcial){
             //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
             $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
             $ylast =  $this->Util()->DB()->GetSingle();
-            if($ylast==$year)
+            //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
+            if($year>$ylast)
+                return $base;
+
+            if($year==$ylast)
                 $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
 
+
         }
-
-
-        $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
-            10=>array(),11=>array(),12=>array());
         $sinceMonth ="";
         if($foperaciones=="0000-00-00")
             return $base;
@@ -91,14 +94,27 @@ class InstanciaServicio extends  Servicio
         return $data;
     }
     function getInstanciaAtrasado($servicioId,$year,$foperaciones="0000-00-00",$isParcial =  false){
-
+        $data = [];
         $ftrTemporal = "";
-        if($isParcial)
-            $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow)";
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow por default no hay atrasados.
+            if($year>$ylast)
+                return $data;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+        }
         $sinceMonth ="";
         if($foperaciones=="0000-00-00")
         {
             $fecha =  explode('-',$foperaciones);
+            //si año de IO es superior al año solicitado se retorna atrasados vacio.
+            if(!($year>=$fecha[0]))
+                return $data;
+
             if($year==$fecha[0])
                 $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
         }
