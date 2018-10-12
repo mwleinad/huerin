@@ -322,7 +322,7 @@ class ContractRep extends Main
         if($filter['departamentoId'])
             $dpto .=" and b.departamentoId='".$filter['departamentoId']."' ";
 
-        $sql = "SELECT a.*, a.name AS name, a.encargadoCuenta AS encargadoCuenta,c.nameContact,c.phone as customerPhone,c.email as customerEmail,
+        echo $sql = "SELECT a.*, a.name AS name, a.encargadoCuenta AS encargadoCuenta,c.nameContact,c.phone as customerPhone,c.email as customerEmail,
                 c.fechaAlta,c.active as customerActive,r.nombreRegimen as nomRegimen
 				FROM contract a
 				INNER JOIN contractPermiso p ON a.contractId=p.contractId AND p.personalId IN(".implode(',',$filter["respCuenta"]).")
