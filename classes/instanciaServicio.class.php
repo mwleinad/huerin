@@ -19,7 +19,7 @@ class InstanciaServicio extends  Servicio
     {
         $ftrTemporal = "";
         if($isParcial)
-            $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow)";
+            $ftrTemporal .=  " AND (MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) AND YEAR(instanciaServicio.date)<=YEAR(servicio.lastDateWorkflow))";
 
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
