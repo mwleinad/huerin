@@ -18,8 +18,15 @@ class InstanciaServicio extends  Servicio
     function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00",$isParcial =  false)
     {
         $ftrTemporal = "";
-        if($isParcial)
-            $ftrTemporal .=  " AND (MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) AND YEAR(instanciaServicio.date)=YEAR(servicio.lastDateWorkflow))";
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            if($ylast==$year)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+
+        }
+
 
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
