@@ -10,7 +10,7 @@ if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 }
 else
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT']."/dev/huerin";
+	$docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
 
 	define('DOC_ROOT', $docRoot);
