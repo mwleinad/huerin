@@ -30,16 +30,22 @@
                 <td align="center" style="background-color:{$instanciaServicio.class}; {if $instanciaServicio.class == '#00ff00'} color: #000; {else} color: #fff; {/if} font-weight: bold">
 				{if $instanciaServicio.class != '#000000'}
                 	${$instanciaServicio.total|number_format:2:".":","}
-
 					<br>
 					{if $instanciaServicio.status == 1}
 						<img src="{$WEB_ROOT}/images/icons/details.png" class="spanDetails{if $instanciaServicio.efectivo} spanEfectivo{/if}" id="{$instanciaServicio.comprobanteId}" border="0" alt="Ver Detalle de Pagos" title="Ver Detalle de Pagos" style="cursor:pointer" />
-
 						{if $instanciaServicio.class == "#ff0000"}
 							<a href="{$WEB_ROOT}/add-payment/{if !$instanciaServicio.efectivo}id{else}isid{/if}/{$instanciaServicio.comprobanteId}" target="_blank"><img src="{$WEB_ROOT}/images/dollar.png" class="" id="{$instanciaServicio.comprobanteId}" border="0" alt="Agregar Pago" title="Agregar Pago" /></a>
 						{/if}
+						{if $instanciaServicio.version == '3.3'}
+							<a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=SIGN_{$instanciaServicio.xml}&type=view" title="Ver PDF">
+								<img src="{$WEB_ROOT}/images/icons/ver_factura.png" height="16" width="16" border="0"/>
+							</a>
+						{else}
+							<a href="{$WEB_ROOT}/sistema/ver-pdf/item/{$instanciaServicio.comprobanteId}" target="_blank" title="Ver Factura">
+								<img src="{$WEB_ROOT}/images/icons/ver_factura.png" border="0" width="16" />
+							</a>
+						{/if}
 
-						<a href="{$WEB_ROOT}/sistema/ver-pdf/item/{$instanciaServicio.comprobanteId}" target="_blank"><img src="{$WEB_ROOT}/images/icons/ver_factura.png" id="{$instanciaServicio.comprobanteId}" border="0" alt="Ver Factura" width="16" title="Ver Factura" /></a>
 					{else}
 						Cancelada
 					{/if}

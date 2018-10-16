@@ -20,214 +20,6 @@ switch($_POST["type"])
 			echo "ok";
 		
 		break;
-	case "searchNivelUno":
-        $year = $_POST['year'];
-        $formValues['subordinados'] = $_POST['deep'];
-        $formValues['respCuenta'] = $_POST['responsableCuenta'];
-        $formValues['departamentoId'] = $_POST["departamentoId"];
-        $formValues['cliente'] = $_POST["rfc"];
-        $formValues['atrasados'] = $_POST["atrasados"];
-
-        //Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
-
-        $sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
-					WHERE class = ''";
-        $db->setQuery($sql);
-        $db->UpdateData();
-
-        $contracts = array();
-        include_once(DOC_ROOT.'/ajax/filter.php');
-        $idClientes = array();
-        $idContracts = array();
-        $contratosClte = array();
-		$nameRazones = array();
-        foreach($contracts as $res){
-            $contractId = $res['contractId'];
-            $customerId = $res['customerId'];
-            $nameRazon = $res['name'];
-
-            if(!in_array($customerId,$idClientes))
-                $idClientes[] = $customerId;
-
-            if(!in_array($contractId,$idContracts)){
-                $idContracts[] = $contractId;
-                $contratosClte[$customerId][] = $res;
-            }
-        }//foreach
-        $clientes = array();
-        foreach($idClientes as $customerId){
-
-            $customer->setCustomerId($customerId);
-            $infC = $customer->Info();
-            $infC['contracts'] = $contratosClte[$customerId];
-            $clientes[] = $infC;
-        }//foreach
-        $resClientes = array();
-        foreach($clientes as $clte){
-            $contratos = array();
-            foreach($clte['contracts'] as $con){
-                $resPermisos = explode('-',$con['permisos']);
-                foreach($resPermisos as $res){
-                    $value = explode(',',$res);
-
-                    $idPersonal = $value[1];
-                    $idDepto = $value[0];
-
-                    $personal->setPersonalId($idPersonal);
-                    $nomPers = $personal->GetDataReport();
-
-                    $permisos[$idDepto] = $nomPers;
-                    $permisos2[$idDepto] = $idPersonal;
-                }
-                $servicios = array();
-                foreach($con['servicios'] as $serv){
-                    $servicio->setServicioId($serv['servicioId']);
-                    $infServ = $servicio->Info();
-                    $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones']);
-                    if(!$serv['instancias'])
-                    	continue;
-                    $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year);
-                    $noCompletados = count($atrasados);
-                    $tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
-                    $deptoId = $tipoServicio->GetField('departamentoId');
-
-                    $serv['responsable'] = $permisos[$deptoId];
-
-                    if($formValues['atrasados'])
-                    {
-                        if($noCompletados > 0)
-                        {
-                            $servicios[] = $serv;
-                        }
-                    }
-                    else
-                    {
-                        $servicios[] = $serv;
-                    }
-
-                }//foreach
-                $con['instanciasServicio'] = $servicios;
-
-                $contratos[] = $con;
-
-            }//foreach
-            $clte['contracts'] = $contratos;
-
-            $resClientes[] = $clte;
-
-        }//foreach
-
-        $cleanedArray = array();
-
-        //$cleanedArray = $resClientes;
-
-        /*foreach($resClientes as $key => $cliente)
-        {
-            foreach($cliente["contracts"] as $keyContract => $contract)
-            {
-                foreach($contract["instanciasServicio"] as $keyServicio => $servicio)
-                {
-                    $card["comentario"] = $servicio["comentario"];
-                    $card["servicioId"] = $servicio["servicioId"];
-                    $card["nameContact"] = $cliente["nameContact"];
-                    $card["tipoPersonal"] = $servicio["responsable"]["tipoPersonal"];
-                    $card["responsable"] = $servicio["responsable"]["name"];
-                    $card["name"] = $contract["name"];
-                    $card["instanciasServicio"] = $servicio["instancias"];;
-                    $card["nombreServicio"] = $servicio["nombreServicio"];;
-                    $cleanedArray[] = $card;
-                }
-            }
-        }*/
-		$newArray = array();
-
-		foreach ($resClientes as $key => $cliente)
-		{
-			$customerId = $cliente["customerId"];
-		    //$customerRazones[$customerId]["razones"] = array();
-
-            //$cliente["razones"] = array();
-			$detailRazon =array();
-            $cad =  array();
-            $cntXrzn=  array();
-			foreach($cliente["contracts"] as $keyContract => $contract){
-				$razon = $contract["name"];
-				if(in_array($razon, $cad))
-				{
-				   $cntXrzn[$razon][] =  $contract;
-				}else{
-				   $cad[]= $razon;
-				   $cr['nombreRazon'] = $contract['name'];
-				   $cr['rfc'] = $contract['rfc'];
-				   $detailRazon [] = $cr;
-				   $cntXrzn[$razon][] = $contract;
-				}
-			}
-		  $newR =  array();
-		  foreach($detailRazon as $rn){
-		  	 $cad2["nombreRazon"]=$rn['nombreRazon'];
-		  	 $cad2["rfc"]=$rn['rfc'];
-		  	 $cad2["totalContract"] = count($cntXrzn[$rn['nombreRazon']]);
-		  	 $cad2["contractXrazon"] = $cntXrzn[$rn['nombreRazon']];
-			 $newR[]= $cad2;
-		  }
-		  $cliente["razones"] = $newR;
-		  unset($cliente["contracts"]);
-		  $newArray[] = $cliente;
-		}
-		$groupService = array();
-		$newCustomer = array();
-		foreach($newArray as $key => $cliente)
-		{
-			$serviciosPorRazon =  array();
-			foreach($cliente["razones"] as $ky => $razon)
-			{
-				$servXrzn = array();
-				$insXserv =  array();
-				$arrayServicios = array();
-				$detailServices = array();
-				foreach($razon["contractXrazon"] as $ky2 => $val2)
-                {
-                  foreach($val2['instanciasServicio'] as $ky3 => $val3)
-				  {
-				  	$tipoId =  $val3["tipoServicioId"];
-				  	if(in_array($tipoId,$arrayServicios))
-					{
-                        $insXserv[$tipoId][]= $val3;
-					}
-					else{
-                        $arrayServicios [] =  $tipoId;
-                        $cd["nombreServicio"] = $val3["nombreServicio"];
-                        $cd["tipoServicioId"] = $tipoId;
-                        $cd["servicioId"] = $val3["servicioId"];
-
-                        $detailServices[] = $cd;
-                        $insXserv[$tipoId] = $val3['instancias'];
-
-					}
-				  }
-
-				  foreach($detailServices as $ky4 => $val4){
-                    $val4["instanciasXservicio"] = $insXserv[$val4['tipoServicioId']];
-                    $servXrzn[] = $val4;
-				  }
-
-			    }
-			    unset($razon['contractXrazon']);
-			    $razon["servicios"] = $servXrzn;
-                $cliente["razones"][$ky] = $razon;
-			}
-
-         $newCustomer[] = $cliente;
-		}
-        $clientesMeses = array();
-        $smarty->assign("cleanedArray", $sortedArray);
-        $smarty->assign("clientes", $newCustomer);
-        $smarty->assign("clientesMeses", $clientesMeses);
-        $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-level-one.tpl');
-
-    break;
 	case "search":
 	case "sendEmail":
 	case "graph":
@@ -237,7 +29,6 @@ switch($_POST["type"])
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
 			$formValues['atrasados'] = $_POST["atrasados"];
-
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
 					WHERE class = '' ";
@@ -250,10 +41,8 @@ switch($_POST["type"])
 			$idContracts = array();
 			$contratosClte = array();
 			foreach($contracts as $res){
-				
 				$contractId = $res['contractId'];
 				$customerId = $res['customerId'];
-				
 				if(!in_array($customerId,$idClientes))
 					$idClientes[] = $customerId;
 				
@@ -333,8 +122,10 @@ switch($_POST["type"])
 			{
 				foreach($cliente["contracts"] as $keyContract => $contract)
 				{
+				        $count = count($contract["instanciasServicio"]);
 						foreach($contract["instanciasServicio"] as $keyServicio => $servicio)
 						{
+                           $card["totalcontracts"] = count($contract["instanciasServicio"]);
 							$card["comentario"] = $servicio["comentario"];
 							$card["servicioId"] = $servicio["servicioId"];
 							$card["nameContact"] = $cliente["nameContact"];
@@ -342,12 +133,23 @@ switch($_POST["type"])
 							$card["responsable"] = $servicio["responsable"]["name"];
 							$card["name"] = $contract["name"];
 							$card["instanciasServicio"] = $servicio["instancias"];;
-							$card["nombreServicio"] = $servicio["nombreServicio"];;
+							$card["nombreServicio"] = $servicio["nombreServicio"];
 							$cleanedArray[] = $card;
+							if($count<=1)
+							{
+								$card2=[];
+                                $statusColor =  $workflow->GetStatusByComprobante($contract['contractId'], $year,'I');
+                                $card2["instanciasServicio"]=$statusColor['serv'];
+                                $card2["isRowCobranza"] =  true;
+                                array_push($cleanedArray,$card2);
+							}
+							$count--;
 						}
 				}
 			}
-			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
+			//dd($cleanedArray);exit;
+			//dd($cleanedArray);exit;
+			/*$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
 			{
@@ -362,9 +164,9 @@ switch($_POST["type"])
                         unset($cleanedArray[$keyCleaned]);
 					}
 				}
-			}
+			}*/
 			$clientesMeses = array();
-			$smarty->assign("cleanedArray", $sortedArray);
+			$smarty->assign("cleanedArray", $cleanedArray);
 			$smarty->assign("clientes", $resClientes);
 			$smarty->assign("clientesMeses", $clientesMeses);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
