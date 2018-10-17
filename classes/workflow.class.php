@@ -698,15 +698,28 @@ class Workflow extends Servicio
         return true;
 		return true;
 	}
-    function GetStatusByComprobante($contratoId,$year){
+	/*
+	 * funcion getStatusByComprobante
+	 * recibe id del contrato, el año, y tipo
+	 * tipo pueden ser
+	 * A = todos los documentos
+	 * I = todos los ingresos
+	 * E = todos los egresos
+	 * P = pagos
+	 */
+    function GetStatusByComprobante($contratoId,$year,$tipo='A'){
+	    $ftrTipo = "";
+	    if($tipo=='I')
+	        $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
+
 	    $monthBase = array(1=>array('class'=>'#000000'),2=>array('class'=>'#000000'),3=>array('class'=>'#000000'),4=>array('class'=>'#000000'),
             5=>array('class'=>'#000000'),6=>array('class'=>'#000000'),7=>array('class'=>'#000000'),8=>array('class'=>'#000000'),
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-        $sql = "SELECT a.comprobanteId, a.userId, a.total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes FROM comprobante a 
+        $sql = "SELECT a.comprobanteId, a.userId, a.total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
                 LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
-				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1'
+				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
 				GROUP BY a.comprobanteId,MONTH(a.fecha) ORDER BY a.fecha ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();

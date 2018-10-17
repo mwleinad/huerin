@@ -65,6 +65,11 @@ class ContractRep extends Main
         if($_SESSION['User']['roleId']==4)
             $skip=true;
 
+        //para el año 2018 en adelaten el servicio DIM no debe aparecer para nadie.
+        $noInclude = "";
+        if($formValues['year']>=2018)
+            $noInclude = " AND lower(tipoServicio.nombreServicio) NOT LIKE '%dim%' ";
+
         foreach($resContratos as $res){
             if($res['permisos']=="")
                 continue;
@@ -74,11 +79,12 @@ class ContractRep extends Main
                 continue;
             }
             //Checamos Servicios
-            $sql = "SELECT * FROM servicio
+           $sql = "SELECT *,servicio.status as servicioStatus FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='1'
-					".$sqlDepto."
+					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
+                    AND tipoServicio.status='1'
+					".$sqlDepto." $noInclude
 					ORDER BY tipoServicio.nombreServicio ASC";
             $this->Util()->DB()->setQuery($sql);
             $res["servicios"] = $this->Util()->DB()->GetResult();
@@ -134,7 +140,7 @@ class ContractRep extends Main
            $sql = "SELECT * FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='1'
+					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
             $this->Util()->DB()->setQuery($sql);
@@ -332,10 +338,13 @@ class ContractRep extends Main
 				ORDER BY  c.nameContact asc, a.name asc ";
         $this->Util()->DB()->setQuery($sql);
         $contracts = $this->Util()->DB()->GetResult();
+        $noInclude = "";
+        if($filter['year']>=2018)
+            $noInclude = " AND lower(b.nombreServicio) NOT LIKE '%dim%' ";
         foreach ($contracts as $key =>$value){
 
-                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId
-					                             where a.contractId = '".$value["contractId"]."' and a.status = 'activo' and b.status='1' $dpto 
+                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId $noInclude
+					                             where a.contractId = '".$value["contractId"]."' and a.status IN ('activo','bajaParcial') and b.status='1' $dpto 
 					                             order by b.nombreServicio asc");
                 $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
             //si $filter['sinServicios'] es verdadero no se evalua esto

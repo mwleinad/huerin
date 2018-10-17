@@ -15,6 +15,8 @@
 	<pre>
   <table border="1" width="100%">
   <tr>
+	<th>Movimiento</th>
+	<th>Fecha movimiento</th>
   	<th>Inicio Operaciones</th>
   	<th>Inicio Factura</th>
   	<th>Costo</th>
@@ -22,6 +24,8 @@
   </tr>
   {foreach from=$historial item=item}
   <tr>
+	<td>{if $item.status eq 'bajaParcial'}Baja temporal{elseif $item.status eq 'baja'}Baja{elseif $item.status eq 'activo'}Alta{/if}</td>
+	<td>{$item.fecha}</td>
   	<td>{$item.inicioOperaciones}</td>
   	<td>{$item.inicioFactura}</td>
   	<td>{$item.costo}</td>
