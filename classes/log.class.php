@@ -46,10 +46,16 @@ class Log extends Util
         $this->Util()->DB()->InsertData();
     }
 	public function Save(){
-				
+
+	    if($this->action=="bajaParcial")
+	        $act = 'Baja';
+	    else
+            $act = $this->action;
+
+
 		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
 				 VALUES ('".$this->personalId."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";								
+				 '".$act."', '".$this->oldValue."', '".$this->newValue."')";
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
