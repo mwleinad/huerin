@@ -1433,6 +1433,13 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
     function getLastDayMonth($anio,$mes){
         return date("d",(mktime(0,0,0,$mes+1,1,$anio)-1));
     }
+    function getFirstDate($date){
+        $fecha =  explode('-',$date);
+        $month = $fecha[1];
+        $year = $fecha[0];
+        $day =  date("d",mktime(0,0,0,$month,1,$year));
+        return date('Y-m-d',mktime(0,0,0,$month,$day,$year));
+    }
     public function inicio_fin_semana($fecha){
 
         $diaInicio="Monday";

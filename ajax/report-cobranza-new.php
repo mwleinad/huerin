@@ -146,7 +146,7 @@ switch($_POST["type"])
 					$con['responsable'] = $personal->Info();
 
 					$serv = array();
-                    $statusColor =  $workflow->GetStatusByComprobante($con['contractId'], $year);
+                    $statusColor =  $workflow->GetStatusByComprobante($con['contractId'], $year,'I');
 					$con['instanciasServicio'] =$statusColor['serv'];
 
 					if($formValues['atrasados'] && $statusColor['noComplete'] > 0)

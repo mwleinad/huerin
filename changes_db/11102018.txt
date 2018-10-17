@@ -1,0 +1,5 @@
+ALTER TABLE `historyChanges`
+	CHANGE COLUMN `status` `status` ENUM('activo','baja','bajaParcial') NOT NULL AFTER `costo`;
+
+ALTER TABLE  `servicio` CHANGE  `status`  `status` ENUM(  'activo',  'baja',  'bajaParcial' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'activo';
+ALTER TABLE  `servicio` ADD  `lastDateWorkflow` DATE NULL DEFAULT NULL AFTER  `lastUpdated` ;

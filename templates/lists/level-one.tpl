@@ -12,7 +12,8 @@
                                     "contractId":{$lev2.contractId},
                                     "servicioId":{$serv.servicioId},
                                     "type":"findInstancias",
-                                    "initOp":"{$serv.inicioOperaciones}"
+                                    "initOp":"{$serv.inicioOperaciones}",
+                                    "status":"{$serv.status}"
                                      }'>{$serv.nombreServicio}
                                 </li>
                             {/foreach}

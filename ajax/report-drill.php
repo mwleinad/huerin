@@ -12,6 +12,7 @@ switch($_POST["type"]) {
         $formValues['departamentoId'] = $_POST["departamentoId"];
         $formValues['cliente'] = $_POST["rfc"];
         $formValues['atrasados'] = $_POST["atrasados"];
+        $formValues['year'] = $year;
         $formValues['activos'] = true;
         $formValues['sinServicios'] = false;//si se pasa departamentoId se debe evaluar que si el contrato esta sin servicio no debe salir
 
@@ -51,7 +52,10 @@ switch($_POST["type"]) {
         $smarty->display(DOC_ROOT.'/templates/lists/level-one.tpl');
     break;
     case 'findInstancias':
-        $instancias = $instanciaServicio->getInstanciaByServicio($_POST['servicioId'],$_POST['year'],$_POST['initOp']);
+        $isParcial =  false;
+        if($_POST['status']=="bajaParcial")
+            $isParcial = true;
+        $instancias = $instanciaServicio->getInstanciaByServicio($_POST['servicioId'],$_POST['year'],$_POST['initOp'],$isParcial);
         $smarty->assign("instancias", $instancias);
         $smarty->display(DOC_ROOT.'/templates/lists/instanciasDrill.tpl');
     break;

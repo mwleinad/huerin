@@ -15,11 +15,24 @@
 class InstanciaServicio extends  Servicio
 {
 
-    function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00")
+    function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00",$isParcial =  false)
     {
-
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
+        $ftrTemporal = "";
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
+            if($year>$ylast)
+                return $base;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+
+
+        }
         $sinceMonth ="";
         if($foperaciones=="0000-00-00")
             return $base;
@@ -44,7 +57,7 @@ class InstanciaServicio extends  Servicio
                 ,MONTH(instanciaServicio.date) as mes,instanciaServicio.date as finstancia,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE (MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12)  $sinceMonth)
+				WHERE (MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12)  $sinceMonth $ftrTemporal)
 				AND YEAR(instanciaServicio.date) = '".$year."'
 				AND (servicio.status != 'baja'
       			OR servicio.status != 'inactiva')
@@ -80,7 +93,32 @@ class InstanciaServicio extends  Servicio
         $data = $this->Util()->DB()->GetResult();
         return $data;
     }
-    function getInstanciaAtrasado($servicioId,$year){
+    function getInstanciaAtrasado($servicioId,$year,$foperaciones="0000-00-00",$isParcial =  false){
+        $data = [];
+        $ftrTemporal = "";
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow por default no hay atrasados.
+            if($year>$ylast)
+                return $data;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+        }
+        $sinceMonth ="";
+        if($foperaciones=="0000-00-00")
+        {
+            $fecha =  explode('-',$foperaciones);
+            //si año de IO es superior al año solicitado se retorna atrasados vacio.
+            if(!($year>=$fecha[0]))
+                return $data;
+
+            if($year==$fecha[0])
+                $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
+        }
+
         $sql = "SELECT 
                 CASE tipoServicioId 
                     WHEN 16 THEN ''
@@ -93,7 +131,7 @@ class InstanciaServicio extends  Servicio
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE MONTH(instanciaServicio.date) < MONTH(NOW())
+				WHERE MONTH(instanciaServicio.date) < MONTH(NOW()) $ftrTemporal $sinceMonth
 				AND YEAR(instanciaServicio.date) = '".$year."'
 				AND instanciaServicio.class IN ('PorIniciar','PorCompletar','Iniciado')
 				AND (servicio.status != 'baja'
