@@ -29,6 +29,7 @@ switch($_POST["type"])
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
 			$formValues['atrasados'] = $_POST["atrasados"];
+            $formValues['year'] = $year;
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
 					WHERE class = '' ";

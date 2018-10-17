@@ -22,7 +22,7 @@
 		{foreach from=$cleanedArray item=item key=key}
 		{if $item.isRowCobranza}
 			<tr>
-				<td colspan="3" align="center"><b>Total cobranza</b></td>
+				<td colspan="3" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
                     {if $instanciaServicio.class == '#000000'}
                         <td>
@@ -30,14 +30,9 @@
                         </td>
                     {else}
 					<td align="center"
-						style="
-								{if $instanciaServicio.class == '#000000'}
-								{else}
-								background-color:{$instanciaServicio.class};
-								{/if}
-								{if $instanciaServicio.class == '#00ff00'}
-								color: #000; {else}
-								color: #fff; {/if}
+						style="{if $instanciaServicio.class == '#00ff00'}
+								color: #28a119; {else}
+								color: #d94438; {/if}
 								font-weight: bold
 								">
 						{if $instanciaServicio.class != '#000000'}

@@ -12,6 +12,7 @@ switch($_POST["type"]) {
         $formValues['departamentoId'] = $_POST["departamentoId"];
         $formValues['cliente'] = $_POST["rfc"];
         $formValues['atrasados'] = $_POST["atrasados"];
+        $formValues['year'] = $year;
         $formValues['activos'] = true;
         $formValues['sinServicios'] = false;//si se pasa departamentoId se debe evaluar que si el contrato esta sin servicio no debe salir
 
