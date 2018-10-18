@@ -176,11 +176,18 @@ class Servicio extends Contract
             $currentMonth = date('Y')."-".date("m")."-01";
             //si tiene instancias creadas comprobar que ya exista uno del mes en que se este ejecutando para excluirlo
             //ya no tiene por que iterarse si tiene una instancia en el mes actual
+            //si la fecha de inicio de operaciones cambia aunque tenga instancia creada en el mes actual se tiene que iterar.
             if(!empty($instancias)){
                 $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND  status IN('activa','completa','baja') AND date='".$currentMonth."' LIMIT 1");
                 $exist = $this->Util()->DB()->GetRow();
-                //excluir servicio si ya existe instancia en el mes actual
-                if(!empty($exist))
+
+                //--------------------------------------------------------------------------
+                $this->Util()->DB()->setQuery("
+				SELECT date FROM instanciaServicio WHERE servicioId = '".$value["servicioId"]."' AND status IN ('activa','completa','baja') ORDER BY date ASC LIMIT 1");
+                $firstWorkflow= $this->Util()->DB()->GetSingle();
+
+                //excluir servicio si ya existe instancia en el mes actual y que tambien la condicion el primer workflow sea > que la de inicio de operaciones no se cumpla
+                if(!empty($exist)&&!($firstWorkflow>$fechaOperacion))
                 {
                     $excluidos++;
                     $strLog .=" SE EXCLUYE SERVICIO POR TENER INSTANCIA CREADA EN EL MES ACTUAL".chr(13).chr(10);
