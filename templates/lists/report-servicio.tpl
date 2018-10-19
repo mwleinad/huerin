@@ -45,7 +45,7 @@
 									</a>
 								{else}
 									<a href="{$WEB_ROOT}/sistema/ver-pdf/item/{$instanciaServicio.comprobanteId}" target="_blank" title="Ver factura">
-										<img src="{$WEB_ROOT}/images/icons/ver_factura.png" border="0" width="16" />
+									<img src="{$WEB_ROOT}/images/icons/ver_factura.png" border="0" width="16" />
 									</a>
 								{/if}
 							    {else}
