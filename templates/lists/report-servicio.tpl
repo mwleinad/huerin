@@ -20,7 +20,7 @@
 	</tr>
 </thead>
 		{foreach from=$cleanedArray item=item key=key}
-		{if $item.isRowCobranza}
+		{if $item.isRowCobranza && (in_array(210,$permissions) ||$User.isRoot)}
 			<tr>
 				<td colspan="3" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
