@@ -30,25 +30,24 @@
                         </td>
                     {else}
 					<td align="center"
-						style="{if $instanciaServicio.class == '#00ff00'}
-								color: #28a119; {else}
-								color: #d94438; {/if}
+						style="	{if $instanciaServicio.class == '#000000'}
+								{else}
+										background-color:{$instanciaServicio.class};
+								{/if}
+								{if $instanciaServicio.class == '#00ff00'}
+								color: #000000; {else}
+								color: #ffffff; {/if}
 								font-weight: bold
 								">
 						{if $instanciaServicio.class != '#000000'}
 							$ {$instanciaServicio.total|number_format:2:".":","}
 							<br>
+
 							{if $instanciaServicio.status == 1}
-								{if $instanciaServicio.version == '3.3'}
-									<a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=SIGN_{$instanciaServicio.xml}&type=view" title="Ver factura">
-										<img src="{$WEB_ROOT}/images/icons/ver_factura.png" height="16" width="16" border="0"/>
-									</a>
-								{else}
-									<a href="{$WEB_ROOT}/sistema/ver-pdf/item/{$instanciaServicio.comprobanteId}" target="_blank" title="Ver factura">
-									<img src="{$WEB_ROOT}/images/icons/ver_factura.png" border="0" width="16" />
-									</a>
-								{/if}
-							    {else}
+								<a href="javascript:;" target="_blank" title="Ver detalles" class="detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
+									<img src="{$WEB_ROOT}/images/icons/details.png" border="0" width="16" />
+								</a>
+							{else}
 								Cancelada
 							{/if}
 						{/if}
