@@ -720,7 +720,7 @@ class Workflow extends Servicio
         $sql = "SELECT a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
                 LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
-				GROUP MONTH(a.fecha) ORDER BY a.fecha ASC";
+				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         $noComplete=0;
