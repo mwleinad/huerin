@@ -140,6 +140,7 @@ switch($_POST["type"])
 							{
 								$card2=[];
                                 $statusColor =  $workflow->GetStatusByComprobante($contract['contractId'], $year,'I');
+                                $card2["contractId"] =  $contract['contractId'];
                                 $card2["instanciasServicio"]=$statusColor['serv'];
                                 $card2["isRowCobranza"] =  true;
                                 array_push($cleanedArray,$card2);

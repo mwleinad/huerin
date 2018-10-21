@@ -33,4 +33,10 @@ switch($_POST["type"])
        $smarty->assign('data',$data);
        $smarty->display(DOC_ROOT."/templates/lists/tasks-step.tpl");
     break;
+    case 'viewFacturas':
+          $datos = json_decode($_POST['datos']);
+          $facturas = $workflow->getDetailCobranzaByContract($datos->contractId,$datos->year,$datos->mes);
+          $smarty->assign('results',$facturas);
+          $smarty->display(DOC_ROOT."/templates/boxes/detail-facturas-cobranza-popup.tpl");
+    break;
 }

@@ -717,7 +717,8 @@ class Workflow extends Servicio
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-        $sql = "SELECT a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
+        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.amount) as payment,
+                MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
                 LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
 				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
@@ -725,6 +726,7 @@ class Workflow extends Servicio
         $result = $this->Util()->DB()->GetResult();
         $noComplete=0;
         foreach($result as $key=>$value){
+            //encontrar los
             if(!in_array($value['mes'],$months))
             {
                 array_push($months,$value['mes']);
@@ -897,6 +899,33 @@ class Workflow extends Servicio
 
         }//foreach
         return $steps;
+    }
+    /*
+     * funcion getDetailCobranzaByContract obtiene las facturas del contrato dado
+     * del mes y año proporcionado.
+     */
+    public function getDetailCobranzaByContract($contractId,$year,$month,$cancelados=true){
+        global $monthsComplete;
+        if(!$cancelados)
+            $filtro =  " and a.status='1' ";
+
+       $sql =  "select case
+                   when a.total=sum(b.amount)
+                   then 'Pagado'
+                   else
+                   'Pendiente por liquidar' 
+                 end as pagado,a.folio,a.serie,a.total,a.status,a.comprobanteId,sum(b.amount) as totalPagos,a.procedencia,a.fecha 
+                from comprobante a
+                left join payment b on a.comprobanteId=b.comprobanteId  where a.userId='$contractId' and month(a.fecha)=$month and year(a.fecha)=$year $filtro and a.tiposComprobanteId IN(1,3,4) 
+                group by a.comprobanteId order by a.fecha desc";
+        $this->Util()->DB()->setQuery($sql);
+        $result['items'] = $this->Util()->DB()->GetResult();
+
+        $sql1= "select name from contract where contractId = '".$contractId."' ";
+        $this->Util()->DB()->setQuery($sql1);
+        $result['razon'] = $this->Util()->DB()->GetSingle();
+        $result['mes'] = $monthsComplete["0".$month];
+        return $result;
     }
 
 }
