@@ -699,7 +699,7 @@ class Workflow extends Servicio
 		return true;
 	}
 	/*
-	 * funcion getStatusByComprobante
+	 * funcion getStatusByComprobante | la sumatoria de monto total de cobranza debe ser por mes y tomar en cuenta manuales  y automaticas.
 	 * recibe id del contrato, el año, y tipo
 	 * tipo pueden ser
 	 * A = todos los documentos
@@ -717,10 +717,10 @@ class Workflow extends Servicio
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-        $sql = "SELECT a.comprobanteId, a.userId, a.total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
+        $sql = "SELECT a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.amount) as payment,MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
                 LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
-				GROUP BY a.comprobanteId,MONTH(a.fecha) ORDER BY a.fecha ASC";
+				GROUP MONTH(a.fecha) ORDER BY a.fecha ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         $noComplete=0;
