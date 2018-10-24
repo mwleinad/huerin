@@ -7,7 +7,7 @@ $smarty->assign("info", $info);
 
 /*$empresa->Util()->DB()->setQuery("SELECT * FROM usuario");
 $result = $empresa->Util()->DB->GetResult();*/
-echo $_SESSION['empresaId'];
+
 $rfc->setEmpresaId($_SESSION["empresaId"], 1);
 $smarty->assign("empresaRfcs", $rfc->GetRfcsByEmpresa());
 //$empresa->hasPermission($_GET['section']);

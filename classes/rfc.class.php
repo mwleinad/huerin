@@ -30,7 +30,7 @@ class Rfc extends Empresa
 	function GetRfcsByEmpresa()
 	{
 		$this->Util()->DBSelect($this->empresaId)->setQuery("SELECT * FROM rfc WHERE empresaId ='".$this->getEmpresaId()."'");
-		echo $this->Util()->DBSelect($this->empresaId)->query;
+		//echo $this->Util()->DBSelect($this->empresaId)->query;
 		$empresaRfcs = $this->Util()->DBSelect($this->getEmpresaId())->GetResult();
 	
 		return $empresaRfcs;
