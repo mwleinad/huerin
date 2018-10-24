@@ -506,8 +506,10 @@ class Contract extends Main
         $this->noCuenta = $value;
     }
 
-  public function setContractId($value)
+  public function setContractId($value,$required=false)
   {
+    if($required)
+      $this->Util()->ValidateRequireField($value,"Razones sociales");
     $this->Util()->ValidateInteger($value);
     $this->contractId = $value;
   }

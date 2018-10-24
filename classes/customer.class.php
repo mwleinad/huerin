@@ -1439,6 +1439,7 @@ class Customer extends Main
     foreach ($result as $key => $val)
     {
 			$result[$key]["showCliente"] = 1;
+            $result[$key]["doBajaTemporal"] = 0;
 			$result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
 			
 			$result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
@@ -1632,5 +1633,24 @@ class Customer extends Main
         $data =$this->Util()->DB()->GetResult();
 
         return $data;
+      }
+      /*
+       * funcion getListContratos
+       * encuentra la lista de razones sociales del cliente dado
+       * la razon social debe tener servicios activos para que pueda ser listado
+       * solo se obtienen razones sociales activos.
+       */
+      public function  getListContratos()
+      {
+          $sql  = "select a.contractId,a.name,a.activo from contract a 
+                   inner join  servicio b on a.contractId=b.contractId and b.status='activo'
+                   where a.customerId='".$this->customerId."' and a.activo='Si' 
+                   group by a.contractId
+                   order by a.name asc 
+                  ";
+          $this->Util()->DB()->setQuery($sql);
+          $results = $this->Util()->DB()->GetResult();
+
+          return $results;
       }
 }

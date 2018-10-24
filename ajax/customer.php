@@ -214,6 +214,26 @@ switch($_POST["type"])
 			}
 			
 		break;
+	case 'openModalBajaTemporal':
+		$customer->setCustomerId($_POST['id']);
+		$contratos =  $customer->getListContratos();
+
+		$smarty->assign('contratos',$contratos);
+        $smarty->assign('post',$_POST);
+		$smarty->display(DOC_ROOT."/templates/boxes/down-service-from-customer-popup.tpl");
+	break;
+	case 'doBajaTemporal':
+		  $servicio->setContractId($_POST['contractId'],true);
+          $servicio->setLastDateWorkflow($_POST['lastDateWorkflow']);
+		  if($servicio->doBajaTemporalServicesByContrato()){
+
+              echo "ok[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		  }else{
+              echo "fail[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		  }
+	break;
 		
 }
 ?>

@@ -53,12 +53,15 @@
         {if in_array(198,$permissions) || $User.isRoot}
             <td align="center">
             {if $item.active == 1}
-              {if in_array(59,$permissions)|| $User.isRoot}
+                {if in_array(59,$permissions)|| $User.isRoot}
                 <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.customerId}" title="Desactivar"/>
-              {/if}
-              {if (in_array(58,$permissions)|| $User.isRoot) && $item.active == 1}
+                {/if}
+                {if (in_array(58,$permissions)|| $User.isRoot)}
                     <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.customerId}" title="Editar"/>
-              {/if}
+                {/if}
+                {if (in_array(211,$permissions)|| $User.isRoot) && $item.doBajaTemporal}
+                    <img src="{$WEB_ROOT}/images/icons/down.png" class="spanDown bajaTemporal" id="{$item.customerId}" title="Baja temporal"/>
+                {/if}
             {else}
                 {if (in_array(93,$permissions)&& in_array(91,$permissions))|| $User.isRoot}
                     <img src="{$WEB_ROOT}/images/icons/activate.png" class="spanDelete" id="{$item.customerId}" title="Activar"/>
