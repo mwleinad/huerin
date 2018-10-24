@@ -327,11 +327,9 @@ jQ(document).on('click','#btnDownServicio',function (e) {
                 jQ('#btnDownServicio').show();
                 ShowStatusPopUp(splitResp[1])
 			}
-
-
         },
         error:function (error) {
-
+              alert("Error!!!")
         }
     });
 })
