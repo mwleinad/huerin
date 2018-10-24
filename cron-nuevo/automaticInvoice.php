@@ -33,7 +33,7 @@ if (!isset($_SESSION))
 {
     session_start();
 }
-$_SESSION['empresaId'] = 15;
+$_SESSION['empresaId'] = IDEMPRESA;
 $mask = DOC_ROOT.'/temp/15_A_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));

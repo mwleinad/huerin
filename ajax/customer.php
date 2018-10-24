@@ -214,6 +214,50 @@ switch($_POST["type"])
 			}
 			
 		break;
+	case 'openModalBajaTemporal':
+		$customer->setCustomerId($_POST['id']);
+		$contratos =  $customer->getListContratos('activo');
+
+        $_POST['typeSave'] = "doBajaTemporal";
+		$_POST['title']="Baja temporal de servicios";
+		$smarty->assign('contratos',$contratos);
+        $smarty->assign('post',$_POST);
+		$smarty->display(DOC_ROOT."/templates/boxes/down-service-from-customer-popup.tpl");
+	break;
+    case 'openModalReactiveTemporal':
+        $customer->setCustomerId($_POST['id']);
+        $contratos =  $customer->getListContratos('bajaParcial');
+
+        $_POST['reactive']=true;
+        $_POST['typeSave'] = "doReactiveTemporal";
+        $_POST['title']="Reactivacion de servicios";
+        $smarty->assign('contratos',$contratos);
+        $smarty->assign('post',$_POST);
+        $smarty->display(DOC_ROOT."/templates/boxes/down-service-from-customer-popup.tpl");
+        break;
+	case 'doBajaTemporal':
+		  $servicio->setContractId($_POST['contractId'],true);
+          $servicio->setLastDateWorkflow($_POST['lastDateWorkflow']);
+		  if($servicio->doBajaTemporalServicesByContrato('activo','bajaParcial')){
+
+              echo "ok[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		  }else{
+              echo "fail[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		  }
+	break;
+    case 'doReactiveTemporal':
+        $servicio->setContractId($_POST['contractId'],true);
+        if($servicio->doBajaTemporalServicesByContrato('bajaParcial','activo')){
+
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+    break;
 		
 }
 ?>

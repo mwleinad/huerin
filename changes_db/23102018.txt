@@ -1,0 +1,5 @@
+ALTER TABLE `log`
+	CHANGE COLUMN `action` `action` ENUM('Insert','Update','Delete','Reactivacion','Baja','bajaParcial') NOT NULL AFTER `tablaId`;
+ALTER TABLE `historyChanges`
+    	CHANGE COLUMN `status` `status` ENUM('activo','baja','bajaParcial','reactivacion') NOT NULL AFTER `costo`;
+INSERT INTO `permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Baja temporal', '91', '2');

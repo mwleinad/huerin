@@ -289,3 +289,63 @@ function ExportExcel(){
 	$("addCustomerFormSearch").submit();
 	
 }
+jQ(document).on('click','.bajaTemporal',function (e) {
+    e.preventDefault();
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/customer.php",
+        type:'post',
+        data:{type:'openModalBajaTemporal',id:this.id},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error:function (error) {
+
+        }
+    });
+})
+jQ(document).on('click','#btnDownServicio',function (e) {
+    e.preventDefault();
+	var form =  jQ(this).parents('form:first');
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/customer.php",
+        type:'post',
+        data:form.serialize(true),
+		beforeSend:function(){
+        	jQ('#loading-img').show();
+            jQ('#btnDownServicio').hide();
+		},
+        success:function (response) {
+        	var splitResp =  response.split("[#]");
+        	if(splitResp[0]=='ok'){
+        		close_popup();
+                ShowStatusPopUp(splitResp[1])
+                BuscarServiciosActivos();
+			}else{
+                jQ('#loading-img').hide();
+                jQ('#btnDownServicio').show();
+                ShowStatusPopUp(splitResp[1])
+			}
+        },
+        error:function (error) {
+              alert("Error!!!")
+        }
+    });
+})
+jQ(document).on('click','.reactiveTemp',function (e) {
+    e.preventDefault();
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/customer.php",
+        type:'post',
+        data:{type:'openModalReactiveTemporal',id:this.id},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error:function (error) {
+
+        }
+    });
+})

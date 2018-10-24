@@ -937,30 +937,6 @@ class Servicio extends Contract
 		
 		$this->Util()->DB()->InsertData();
 
-		/*
-		$subject = "El servicio de ".$infoServicio["nombreServicio"]." del la razon social ".$infoServicio["name"]." ha sido actualizado";
-
-		$this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = 66 OR personalId = '".IDHUERIN."' OR (tipoPersonal = 'Gerente' && departamentoId = '1')");
-		$personal = $this->Util()->DB()->GetResult();
-		$sendmail = new SendMail();
-		
-		if($infoServicio["costo"] == $this->costo)
-		{
-			$this->Util()->setError(1, "complete");
-			$this->Util()->PrintErrors();
-			return true;
-		}
-		
-		foreach($personal as $key => $personal)
-		{
-			$to = $personal["email"];
-//			$to = "comprobantefiscal@braunhuerin.com.mx";
-			$toName = $personal["name"];
-			$body = "El servicio de ".$infoServicio["nombreServicio"]." del la razon social ".$infoServicio["name"]." ha sido actualizado<br>La actualization fue hecha por:".$_SESSION["User"]["username"]."<br>El costo era de ".$infoServicio["costo"]." el nuevo costo es de ".$this->costo;
-			$sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
-		//	break;
-		} */
-
 		$this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -1030,11 +1006,13 @@ class Servicio extends Contract
         if($info["status"] == 'activo')
         {
             $active = 'baja';
+            $action =  "baja";
             $complete = "El servicio fue dado de baja correctamente";
         }
         else
         {
             $active = 'activo';
+            $action =  "reactivacion";
             $complete = "El servicio fue dado de alta correctamente";
         }
 
@@ -1077,7 +1055,7 @@ class Servicio extends Contract
 		(
 				'".$servicio["servicioId"]."',
 				'".$servicio["inicioFactura"]."',
-				'".$servicio["status"]."',
+				'".$action."',
 				'".$servicio["costo"]."',
 				'".$User["userId"]."',
 				'".$servicio["inicioOperaciones"]."'
@@ -1238,5 +1216,70 @@ class Servicio extends Contract
 
        return true;
     }
+    public function doBajaTemporalServicesByContrato($initialState,$endState){
+	    global $log,$User;
+        if($this->Util()->PrintErrors())
+            return false;
 
+        //hay que iterar servicio por servicio para guardar su historial
+        $sql ="select * from servicio where contractId='".$this->getContractId()."' and status='".$initialState."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $servicios = $this->Util()->DB()->GetResult();
+
+
+        switch ($endState){
+            case 'bajaParcial':
+                $dateWorflow = " ,lastDateWorkflow='" . $this->lastDateWorkflow . "' ";
+                $action ="bajaParcial";
+                $message =  "Se ha realizado la baja temporal de los servicios.";
+            break;
+            case 'activo':
+                $dateWorflow ="";
+                $action ="Reactivacion";
+                $message =  "Se ha realizado la reactivación de los servicios.";
+            break;
+
+        }
+        foreach($servicios as $key=>$value) {
+            $this->setServicioId($value['servicioId']);
+            $before = $this->InfoLog();
+            $this->Util()->DB()->setQuery("UPDATE servicio SET status = '".$endState."' $dateWorflow  WHERE servicioId = '" . $value['servicioId'] . "'");
+            $this->Util()->DB()->UpdateData();
+            $after = $this->InfoLog();
+            //Guardamos el Log
+            $log->setPersonalId($User['userId']);
+            $log->setFecha(date('Y-m-d H:i:s'));
+            $log->setTabla('servicio');
+            $log->setTablaId($value['servicioId']);
+            $log->setAction($action);
+            $log->setOldValue(serialize($before));
+            $log->setNewValue(serialize($after));
+            $log->Save();
+            //actualizar historial
+            $this->Util()->DB()->setQuery("
+			INSERT INTO
+			 historyChanges
+			(
+				`servicioId`,
+				`inicioFactura`,
+				`status`,
+				`costo`,
+				`personalId`,
+				`inicioOperaciones`
+            )
+            VALUES
+            (
+                    '" . $after["servicioId"] . "',
+                    '" . $after["inicioFactura"] . "',
+                    '" . lcfirst($action) . "',
+                    '" . $after["costo"] . "',
+                    '" . $User["userId"] . "',
+                    '" . $after["inicioOperaciones"] . "'
+            )");
+            $this->Util()->DB()->InsertData();
+        }
+        $this->Util()->setError(0,"complete",$message);
+        $this->Util()->PrintErrors();
+        return true;
+    }
 }

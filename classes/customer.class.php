@@ -1439,6 +1439,8 @@ class Customer extends Main
     foreach ($result as $key => $val)
     {
 			$result[$key]["showCliente"] = 1;
+            $result[$key]["doBajaTemporal"] = 0;
+            $result[$key]["haveTemporal"] = 0;
 			$result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
 			
 			$result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
@@ -1494,8 +1496,15 @@ class Customer extends Main
                             break;
                     }
 					$data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $idResponsable);
-	
+	                //obtiene servicios activos
 					$serviciosContrato = $this->GetServicesByContract($value["contractId"]);
+					//si no tiene servicios activos un contrato comprobar si tiene baja temporal en sus servicios
+
+                    //evaluamos quienes tienen servicios con status baja temporal, con un contrato que exista se muestra el boton  verde
+                    $parciales = $this->GetServicesByContract($value["contractId"],'bajaParcial');
+                    if(!empty($parciales)&&$value['activo']=='Si')
+                        $result[$key]["haveTemporal"]=1;
+
 					//si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
 					if($result[$key]["showCliente"] == 0)
 					{
@@ -1526,7 +1535,6 @@ class Customer extends Main
 			$filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
    	    }//foreach
         return $result;
-		
 	}//SuggestCustomerCatalog
     public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
     {
@@ -1565,13 +1573,13 @@ class Customer extends Main
         return $result;
     }//GetListRazones()
 	
-	function GetServicesByContract($id){
+	function GetServicesByContract($id,$tipo="activo"){
 							//Checar servicios del contrato para saber si lo debemos mostrar o no
 					$this->Util()->DB->setQuery(
 					  "SELECT servicioId, nombreServicio, departamentoId 
 					  FROM servicio 
 					  LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  WHERE contractId = '".$id."' AND servicio.status = 'activo'  and tipoServicio.status='1'        
+					  WHERE contractId = '".$id."' AND servicio.status = '".$tipo."'  and tipoServicio.status='1'        
 					  ORDER BY nombreServicio ASC"
 					);
 					$serviciosContrato = $this->Util()->DB()->GetResult();
@@ -1632,5 +1640,24 @@ class Customer extends Main
         $data =$this->Util()->DB()->GetResult();
 
         return $data;
+      }
+      /*
+       * funcion getListContratos
+       * encuentra la lista de razones sociales del cliente dado
+       * la razon social debe tener servicios activos para que pueda ser listado
+       * solo se obtienen razones sociales activos.
+       */
+      public function  getListContratos($tipo)
+      {
+          $sql  = "select a.contractId,a.name,a.activo from contract a 
+                   inner join  servicio b on a.contractId=b.contractId and b.status='".$tipo."'
+                   where a.customerId='".$this->customerId."' and a.activo='Si' 
+                   group by a.contractId
+                   order by a.name asc 
+                  ";
+          $this->Util()->DB()->setQuery($sql);
+          $results = $this->Util()->DB()->GetResult();
+
+          return $results;
       }
 }
