@@ -60,7 +60,10 @@
                     <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.customerId}" title="Editar"/>
                 {/if}
                 {if (in_array(211,$permissions)|| $User.isRoot) && $item.doBajaTemporal}
-                    <img src="{$WEB_ROOT}/images/icons/down.png" class="spanDown bajaTemporal" id="{$item.customerId}" title="Baja temporal"/>
+                    <img src="{$WEB_ROOT}/images/icons/iconDown.png" class="spanDown bajaTemporal" id="{$item.customerId}" title="Baja temporal de servicios"/>
+                {/if}
+                {if (in_array(212,$permissions)|| $User.isRoot) && $item.haveTemporal}
+                    <img src="{$WEB_ROOT}/images/icons/iconUp.png" class="spanDown reactiveTemp" id="{$item.customerId}" title="Reactivar servicios"/>
                 {/if}
             {else}
                 {if (in_array(93,$permissions)&& in_array(91,$permissions))|| $User.isRoot}

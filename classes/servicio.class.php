@@ -1216,20 +1216,34 @@ class Servicio extends Contract
 
        return true;
     }
-    public function doBajaTemporalServicesByContrato(){
+    public function doBajaTemporalServicesByContrato($initialState,$endState){
 	    global $log,$User;
         if($this->Util()->PrintErrors())
             return false;
 
         //hay que iterar servicio por servicio para guardar su historial
-        $sql ="select * from servicio where contractId='".$this->getContractId()."' and status='activo' ";
+        $sql ="select * from servicio where contractId='".$this->getContractId()."' and status='".$initialState."' ";
         $this->Util()->DB()->setQuery($sql);
         $servicios = $this->Util()->DB()->GetResult();
 
+
+        switch ($endState){
+            case 'bajaParcial':
+                $dateWorflow = " ,lastDateWorkflow='" . $this->lastDateWorkflow . "' ";
+                $action ="bajaParcial";
+                $message =  "Se ha realizado la baja temporal de los servicios.";
+            break;
+            case 'activo':
+                $dateWorflow ="";
+                $action ="Reactivacion";
+                $message =  "Se ha realizado la reactivación de los servicios.";
+            break;
+
+        }
         foreach($servicios as $key=>$value) {
             $this->setServicioId($value['servicioId']);
             $before = $this->InfoLog();
-            $this->Util()->DB()->setQuery("UPDATE servicio SET status = 'bajaParcial', lastDateWorkflow='" . $this->lastDateWorkflow . "' WHERE servicioId = '" . $value['servicioId'] . "'");
+            $this->Util()->DB()->setQuery("UPDATE servicio SET status = '".$endState."' $dateWorflow  WHERE servicioId = '" . $value['servicioId'] . "'");
             $this->Util()->DB()->UpdateData();
             $after = $this->InfoLog();
             //Guardamos el Log
@@ -1237,7 +1251,7 @@ class Servicio extends Contract
             $log->setFecha(date('Y-m-d H:i:s'));
             $log->setTabla('servicio');
             $log->setTablaId($value['servicioId']);
-            $log->setAction('bajaParcial');
+            $log->setAction($action);
             $log->setOldValue(serialize($before));
             $log->setNewValue(serialize($after));
             $log->Save();
@@ -1257,16 +1271,15 @@ class Servicio extends Contract
             (
                     '" . $after["servicioId"] . "',
                     '" . $after["inicioFactura"] . "',
-                    '" . $after["status"] . "',
+                    '" . lcfirst($action) . "',
                     '" . $after["costo"] . "',
                     '" . $User["userId"] . "',
                     '" . $after["inicioOperaciones"] . "'
             )");
             $this->Util()->DB()->InsertData();
         }
-        $this->Util()->setError(0,"complete","Se ha realizado la baja temporal de los servicios.");
+        $this->Util()->setError(0,"complete",$message);
         $this->Util()->PrintErrors();
         return true;
     }
-
 }

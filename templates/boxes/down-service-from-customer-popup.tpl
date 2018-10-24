@@ -5,8 +5,8 @@
 		</div>
 	</div>
 	<div id="ftitl">
-		<div class="flabel">Baja temporal</div>
-		<div id="vtitl"><span title="Titulo">Baja temporal de servicios</span></div>
+		<div class="flabel">{$post.title}</div>
+		<div id="vtitl"><span title="Titulo">{$post.title}</span></div>
 	</div>
 	<div id="draganddrop" style="position:absolute;top:45px;left:640px">
 		<img src="{$WEB_ROOT}/images/draganddrop.png" border="0" alt="mueve" />

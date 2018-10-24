@@ -153,10 +153,10 @@ class Filtro extends Util
 		if (count($instancias) > 0)
 		{
 			$result[$key]["servicios"]++;
-			//solo los contratos activos pueden ser tomados en cuenta para mostrar el boton de baja temporal
-			if($result[$key]['contracts'][$keyContract]['activo']=='Si')
+			//solo los contratos activos pueden ser tomados en cuenta para mostrar los botones de baja temporal
+			if($result[$key]['contracts'][$keyContract]['activo']=='Si'){
                 $result[$key]["doBajaTemporal"]=1;
-
+            }
 			return 1;
 		} 
 

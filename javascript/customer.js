@@ -290,20 +290,20 @@ function ExportExcel(){
 	
 }
 jQ(document).on('click','.bajaTemporal',function (e) {
-	e.preventDefault();
-	jQ.ajax({
-		url:WEB_ROOT+"/ajax/customer.php",
-		type:'post',
-		data:{type:'openModalBajaTemporal',id:this.id},
-		success:function (response) {
+    e.preventDefault();
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/customer.php",
+        type:'post',
+        data:{type:'openModalBajaTemporal',id:this.id},
+        success:function (response) {
             grayOut(true);
             $('fview').show();
             FViewOffSet(response);
         },
-		error:function (error) {
+        error:function (error) {
 
         }
-	});
+    });
 })
 jQ(document).on('click','#btnDownServicio',function (e) {
     e.preventDefault();
@@ -330,6 +330,22 @@ jQ(document).on('click','#btnDownServicio',function (e) {
         },
         error:function (error) {
               alert("Error!!!")
+        }
+    });
+})
+jQ(document).on('click','.reactiveTemp',function (e) {
+    e.preventDefault();
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/customer.php",
+        type:'post',
+        data:{type:'openModalReactiveTemporal',id:this.id},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error:function (error) {
+
         }
     });
 })

@@ -1,0 +1,1 @@
+INSERT INTO `huerin`.`permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Reactivar servicios', '91', '2');
