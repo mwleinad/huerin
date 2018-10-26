@@ -82,7 +82,7 @@ class ContractRep extends Main
            $sql = "SELECT *,servicio.status as servicioStatus FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
+					AND servicio.status IN('activo','bajaParcial','readonly')
                     AND tipoServicio.status='1'
 					".$sqlDepto." $noInclude
 					ORDER BY tipoServicio.nombreServicio ASC";
@@ -344,7 +344,7 @@ class ContractRep extends Main
         foreach ($contracts as $key =>$value){
 
                 $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId $noInclude
-					                             where a.contractId = '".$value["contractId"]."' and a.status IN ('activo','bajaParcial') and b.status='1' $dpto 
+					                             where a.contractId = '".$value["contractId"]."' and a.status IN ('activo','bajaParcial','readonly') and b.status='1' $dpto 
 					                             order by b.nombreServicio asc");
                 $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
             //si $filter['sinServicios'] es verdadero no se evalua esto

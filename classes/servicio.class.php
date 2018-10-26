@@ -483,7 +483,12 @@ class Servicio extends Contract
 	{
 		global $months;
 		
-		$sql = "SELECT *,servicio.status,servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual 
+		$sql = "SELECT *,case 
+                WHEN servicio.status = 'activo' THEN 'Activo'
+                WHEN servicio.status = 'baja' THEN 'Baja'
+                WHEN servicio.status = 'bajaParcial' THEN 'Baja temporal'
+                WHEN servicio.status = 'readonly' THEN 'Activo / Solo lectura'
+                END AS estado,servicio.status,servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual 
 				FROM servicio 
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
@@ -881,14 +886,22 @@ class Servicio extends Contract
 	
 	public function Historial()
 	{
-		$this->Util()->DB()->setQuery("SELECT historyChanges.*, 
-        CASE historyChanges.personalId
-         WHEN 999990000 THEN 'Administrador'
+		$this->Util()->DB()->setQuery("SELECT a.*, 
+        CASE a.personalId
+        WHEN 999990000 THEN 'Administrador'
          ELSE
-          personal.name
-         END AS name  FROM historyChanges 
-		LEFT JOIN personal ON personal.personalId = historyChanges.personalId
-		WHERE servicioId = '".$this->servicioId."'");
+          b.name
+         END AS name, 
+        CASE 
+         WHEN a.status='activo' THEN 'Alta'
+         WHEN a.status='baja' THEN 'Baja'
+         WHEN a.status='bajaParcial' THEN 'Baja temporal'
+         WHEN a.status='reactivacion' THEN 'Reactivacion'
+         WHEN a.status='readonly' THEN 'Reactivacion/Solo lectura'
+        END AS  movimiento 
+        FROM historyChanges a
+		LEFT JOIN personal b ON b.personalId = a.personalId
+		WHERE a.servicioId = '".$this->servicioId."' ");
 		$result = $this->Util()->DB()->GetResult();
 		
 		return $result;
@@ -994,7 +1007,11 @@ class Servicio extends Contract
 		
 		return $servicioId;
 	}
-
+    /*
+     * funcion ActivateService reactiva un servicio que se encuentra en status baja o baja temporal.
+     * Si se encuentra en status baja la reactivacion pasa a ser de solo lectura no creara workflows utilizar el status readonly
+     * Si se encuentra en status bajaParcial la reactivacion hara que el servicio pase a status activo
+     */
 	public function ActivateService()
 	{
 		global $User,$log;
@@ -1002,28 +1019,28 @@ class Servicio extends Contract
 		if($this->Util()->PrintErrors()){ return false; }
 		
 		$info = $this->InfoLog();
-
-        if($info["status"] == 'activo')
-        {
-            $active = 'baja';
-            $action =  "baja";
-            $complete = "El servicio fue dado de baja correctamente";
+        switch($info['status']){
+            case 'readonly':
+            case 'activo':
+                $active = 'baja';
+                $action =  "Baja";
+                $complete = "El servicio fue dado de baja correctamente.";
+            break;
+            case 'bajaParcial':
+                $active = 'activo';
+                $action =  "Reactivacion";
+                $complete = "El servicio ha sido reactivado correctamente.";
+            break;
+            case 'baja':
+                $active = 'readonly';
+                $action =  "readonly";
+                $complete = "El servicio ha sido reactivado para solo lectura.";
+            break;
         }
-        else
-        {
-            $active = 'activo';
-            $action =  "reactivacion";
-            $complete = "El servicio fue dado de alta correctamente";
-        }
-
-        $this->Util()->DB()->setQuery("
-			UPDATE
-				servicio
-			SET status = '".$active."'
-			WHERE
-				servicioId = '".$this->servicioId."'");
+        $this->Util()->DB()->setQuery("UPDATE servicio
+			                                 SET status = '".$active."'
+			                                 WHERE servicioId = '".$this->servicioId."' ");
         $this->Util()->DB()->UpdateData();
-
         $servicio = $this->InfoLog();
 
         //Guardamos el Log
@@ -1031,39 +1048,16 @@ class Servicio extends Contract
         $log->setFecha(date('Y-m-d H:i:s'));
         $log->setTabla('servicio');
         $log->setTablaId($this->servicioId);
-        if($active=="activo")
-            $log->setAction('Reactivacion');
-        elseif($active=='baja')
-            $log->setAction('Baja');
-
+        $log->setAction($action);
         $log->setOldValue(serialize($info));
         $log->setNewValue(serialize($servicio));
         $log->Save();
-		//actualizar historial
-		$this->Util()->DB()->setQuery("
-			INSERT INTO
-				historyChanges
-			(
-				`servicioId`,
-				`inicioFactura`,
-				`status`,
-				`costo`,
-				`personalId`,
-				`inicioOperaciones`
-		)
-		VALUES
-		(
-				'".$servicio["servicioId"]."',
-				'".$servicio["inicioFactura"]."',
-				'".$action."',
-				'".$servicio["costo"]."',
-				'".$User["userId"]."',
-				'".$servicio["inicioOperaciones"]."'
-		);");
-		$this->Util()->DB()->InsertData();
+
+		//actualizar historial del servicio
+        $log->saveHistoryChangesServicios($servicio['servicioId'],$servicio['inicioFactura'],lcfirst($action),$servicio['costo'],$User['userId'],$servicio['inicioOperaciones']);
+
 		$this->Util()->setError(3, "complete", $complete);
 		$this->Util()->PrintErrors();
-
 		return true;
 	}
 

@@ -1,1 +1,8 @@
 INSERT INTO `huerin`.`permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Reactivar servicios', '91', '2');
+ALTER TABLE `servicio`
+	CHANGE COLUMN `status` `status` ENUM('activo','baja','bajaParcial','readonly') NOT NULL DEFAULT 'activo' AFTER `costo`;
+	ALTER TABLE `historyChanges`
+    	CHANGE COLUMN `status` `status` ENUM('activo','baja','bajaParcial','reactivacion','readonly','modificacion') NOT NULL AFTER `costo`;
+
+ALTER TABLE `log`
+	CHANGE COLUMN `action` `action` ENUM('Insert','Update','Delete','Reactivacion','Baja','bajaParcial','readonly') NOT NULL AFTER `tablaId`;

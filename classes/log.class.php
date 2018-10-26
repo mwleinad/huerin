@@ -95,6 +95,11 @@ class Log extends Util
                 $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
                 $accion="ha sido reactivado ";
             break;
+            case 'readonly':
+                $excluyehuerin = true;
+                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
+                $accion="ha sido reactivado para solo lectura ";
+            break;
             case 'Delete':
                 $accion="ha sido eliminado ";
                 array_push($defaultId,IDHUERIN);
@@ -253,6 +258,7 @@ class Log extends Util
             case 'Reactivacion';
             case 'Baja':
             case 'bajaParcial':
+            case 'readonly':
             case 'Insert'://si es update se necesitaria comparar que cambio se realizo
                 $changes = $this->FindFieldDetail($this->newValue);
                 if(!empty($changes)) {
@@ -564,5 +570,28 @@ class Log extends Util
         }
 
         return $html;
+    }
+    public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00'){
+        $this->Util()->DB()->setQuery("
+			INSERT INTO
+				historyChanges
+			(
+				`servicioId`,
+				`inicioFactura`,
+				`status`,
+				`costo`,
+				`personalId`,
+				`inicioOperaciones`
+		    )
+		    VALUES
+		    (
+				'".$servicioId."',
+				'".$initFactura."',
+				'".$status."',
+				'".$costo."',
+				'".$personalId."',
+				'".$initOperaciones."'
+		    )");
+        $this->Util()->DB()->InsertData();
     }
 }//Log

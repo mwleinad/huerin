@@ -12,6 +12,8 @@ class Invoice extends Comprobante
      * function CreateInvoicesAutomatic
      * Se toma en cuenta las intancias en status baja, se aplica mas para rif que se brinca los meses impares
      * y solo aplica solo para meses anteriores a mayo 2018, ya que en esos meses aun se creaban los workflos de los meses impares y ya tienen factura creada hay que dejarlos asi.
+     * se toman en cuenta los servicios en status bajaParcial, si se crean o no su factura en el mes corriente dependera de si tiene workflow creado
+     * - dejar pendiente como trabajar con rif cuando esta en bajaParcial, ya que en los meses impares crea factura sin workflow.
      */
    function CreateInvoicesAutomatic(){
        global $months;
@@ -85,7 +87,7 @@ class Invoice extends Comprobante
         else
          $idContracts =0;
        $this->Util()->DB()->setQuery("SELECT * FROM servicio
-		WHERE contractId IN(".$idContracts.") AND status='activo' AND costo>0  AND inicioFactura!='0000-00-00' ");
+		WHERE contractId IN(".$idContracts.") AND status IN('activo','bajaParcial') AND costo>0  AND inicioFactura!='0000-00-00' ");
        $this->Util()->DB()->getQuery();
        $servicesHuerin= $this->Util()->DB()->GetResult();
        $allServiceHuerin= count($servicesHuerin);
@@ -100,7 +102,7 @@ class Invoice extends Comprobante
        else
         $idContractsBraun =0;
        $this->Util()->DB()->setQuery("SELECT * FROM servicio
-		WHERE contractId IN(".$idContractsBraun.") AND status='activo' AND costo>0  AND inicioFactura!='0000-00-00' ");
+		WHERE contractId IN(".$idContractsBraun.") AND status IN('activo','bajaParcial') AND costo>0  AND inicioFactura!='0000-00-00' ");
         $this->Util()->DB()->getQuery();
        $servicesBraun= $this->Util()->DB()->GetResult();
        $allServiceBraun=count($servicesBraun);
