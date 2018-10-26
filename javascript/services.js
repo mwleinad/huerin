@@ -4,15 +4,8 @@ Event.observe(window, 'load', function() {
 
 	AddEditCustomerListeners = function(e) {
 		var el = e.element();
-		var del = el.hasClassName('spanActivate');
+		var del = el.hasClassName('spanEdit');
 		var id = el.identify();
-		if(del == true)
-		{
-			ActivateService(id);
-			return;
-		}
-
-		del = el.hasClassName('spanEdit');
 		if(del == true)
 		{
 			EditServicioPopup(id);
@@ -237,7 +230,7 @@ function UpdateCosto()
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
-
+//nuevos eventos con jQuery
 jQ(document).on('change','#tipoBaja',function(){
     if(this.value=='partial')
         jQ('#tagLastDatetWorkflow').show();
@@ -245,3 +238,25 @@ jQ(document).on('change','#tipoBaja',function(){
         jQ('#tagLastDatetWorkflow').hide();
 
 });
+
+jQ(document).on('click','.spanActivate',function (e) {
+	e.preventDefault();
+	var message = jQ(this).data('message');
+    if(!confirm('Esta seguro de '+message+' este servicio.'))
+    {
+        return;
+    }
+
+    jQ.ajax({
+		url:WEB_ROOT+"/ajax/services.php",
+		type:"post",
+		data:{type:"activateService",servicioId:this.id,contractId: jQ('#contractId').val()},
+		success:function (response) {
+            var splitResponse = response.split("[#]");
+            ShowStatus(splitResponse[1]);
+            jQ('#contenido').html(splitResponse[2]);
+        },
+		error: function(){ alert('Something went wrong...') }
+	})
+
+})

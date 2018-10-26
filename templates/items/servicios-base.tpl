@@ -14,20 +14,20 @@
     </td>  
 	<td align="center">{$item.formattedInicioOperaciones}</td>
     <td align="center">{$item.formattedInicioFactura}</td>
-	<td align="center">{if $item.status eq 'bajaParcial'}Baja temporal{else}{$item.status}{/if}</td>
+	<td align="center">{$item.estado}</td>
     {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions) || $User.isRoot}
 		<td align="center">
-		{if $item.status == 'activo'}
+		{if $item.status == 'activo' || $item.status == 'readonly'}
 			{if in_array(88,$permissions) || $User.isRoot}
-				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanActivate" id="{$item.servicioId}" title="Desactivar" />
+				<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanActivate" id="{$item.servicioId}" title="Baja definitiva" data-message="desactivar" />
 				<img src="{$WEB_ROOT}/images/icons/iconDown.png" class="spanDown" id="{$item.servicioId}" title="Baja temporal" />
 			{/if}
 		{else}
 			{if in_array(90,$permissions) || $User.isRoot}
-				<img src="{$WEB_ROOT}/images/icons/activate.png" class="spanActivate" id="{$item.servicioId}" title="Activar"/>
+				<img src="{$WEB_ROOT}/images/icons/activate.png" class="spanActivate" id="{$item.servicioId}" title="Activar" data-message="reactivar"/>
 			{/if}
 		{/if}
-		{if (in_array(87,$permissions)|| $User.isRoot) &&$item.status == 'activo'}
+		{if (in_array(87,$permissions)|| $User.isRoot) && ($item.status == 'activo' || $item.status == 'readonly')}
 		<img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.servicioId}" title="Editar"/>
 		{/if}
 		{if in_array(89,$permissions) || $User.isRoot}

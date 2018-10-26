@@ -37,7 +37,7 @@ else
 	$mask = DOC_ROOT.'/temp/20_B_*.*';
 	$array = glob($mask);
 	array_map('unlink', glob($mask));
-	//la clase es servicio.class.php
+	//solo se crearan instancias para servicios en status activo o bajaParcial
 	$servicio->CreateServiceInstances();
 	//exit;
 	$time = date("d-m-Y").' a las '.date('H:i:s');

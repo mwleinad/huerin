@@ -24,7 +24,7 @@
   </tr>
   {foreach from=$historial item=item}
   <tr>
-	<td>{if $item.status eq 'bajaParcial'}Baja temporal{elseif $item.status eq 'baja'}Baja{elseif $item.status eq 'reactivacion'}Reactivacion{elseif $item.status eq 'activo'}Alta{/if}</td>
+	<td>{$item.movimiento}</td>
 	<td>{$item.fecha}</td>
   	<td>{$item.inicioOperaciones}</td>
   	<td>{$item.inicioFactura}</td>
