@@ -746,6 +746,7 @@ class Workflow extends Servicio
         $new = array_replace_recursive($monthBase,$new);
         $data['serv'] = $new;
         $data['noComplete']=$noComplete;
+        dd($data);
         return $data;
     }
 	function StatusByComprobante($contratoId, $month , $year)
