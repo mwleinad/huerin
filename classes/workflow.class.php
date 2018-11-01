@@ -717,7 +717,7 @@ class Workflow extends Servicio
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-       $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `a.status`,b.payment,
+       $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,b.payment,
                 a.version,a.xml FROM comprobante a 
                 LEFT JOIN (select comprobanteId , sum(amount) as payment from payment  group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
                 WHERE
