@@ -717,7 +717,7 @@ class Workflow extends Servicio
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-        echo $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.amount) as payment,
+        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(DISTINCT  a.total) as total, a.fecha, `status`,sum(b.amount) as payment,
                 MONTH(a.fecha) as mes,a.version,a.xml FROM comprobante a 
                 LEFT JOIN payment b ON a.comprobanteId=b.comprobanteId WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
@@ -746,7 +746,6 @@ class Workflow extends Servicio
         $new = array_replace_recursive($monthBase,$new);
         $data['serv'] = $new;
         $data['noComplete']=$noComplete;
-        dd($data);
         return $data;
     }
 	function StatusByComprobante($contratoId, $month , $year)

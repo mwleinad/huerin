@@ -149,7 +149,6 @@ switch($_POST["type"])
 						}
 				}
 			}
-			dd($cleanedArray);exit;
 			//dd($cleanedArray);exit;
 			/*$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
