@@ -1,10 +1,9 @@
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
     <thead>
     <tr>
-        <th align="center" width="60">Comentario</th>
         <th align="center" width="60">Cliente</th>
-        <th align="center" width="60">C. Asignado</th>
         <th align="center" width="60">Razon Social</th>
+        <th align="center" width="60">C. Asignado</th>
         <th align="center" width="50">Ene</th>
         <th align="center" width="50">Feb</th>
         <th align="center" width="50">Mar</th>
@@ -20,19 +19,11 @@
     </tr>
     </thead>
     <tbody>
-<pre>
-	</pre>
 {foreach from=$cleanedArray item=item key=key}
 <tr>
-    <td align="center" class="" title="{$item.nameContact}">
-        <span id="comentario-{$item.servicioId}">{$item.comentario}</span>
-        {if in_array(117,$permissions)||$User.isRoot}
-        <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.servicioId}" onclick="ModifyComment({$item.servicioId})"  title="Editar"/>
-        {/if}
-    </td>
-    <td align="center" class="" title="{$item.nameContact}">{$item.rfc}{$item.nameContact}</td>
-    <td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
+    <td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     <td align="center" class="" title="{$item.name}">{$item.name}</td>
+    <td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
     {foreach from=$item.instanciasServicio item=instanciaServicio}
     <td align="center"
         class="{if $instanciaServicio.status neq 'inactiva'}

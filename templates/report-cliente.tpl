@@ -10,18 +10,13 @@
   
   <div class="clear">
   </div>
-  
   <div id="portlets">
-
   <div class="clear"></div>
-  
   <div class="portlet">
-
       {include file="forms/search-report-cliente.tpl"}
       <div class="portlet-content nopadding borderGray" id="contenido">
           {include file="lists/report-cliente-new.tpl"}
       </div>
-      
       <div style="clear:both"></div>
         <br />
       {include file="{$DOC_ROOT}/templates/boxes/report-walmart-status.tpl"}

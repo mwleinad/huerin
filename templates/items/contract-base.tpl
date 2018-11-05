@@ -34,7 +34,7 @@
             {if $item.activo == 'Si'}
                 {$item.noServicios}
                 {if $item.noServicios > 0}
-                    {if in_array(86,$permissions)|| $User.isRoot ||($User.roleId eq 4&&$showServices)}
+                    {if in_array(86,$permissions)|| $User.isRoot}
                         <a href="{$WEB_ROOT}/services/id/{$item.contractId}" onclick="return parent.GB_show('Servicios de Razon Social', this.href,500,970) ">
                             <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Servicios"/>
                         </a>

@@ -61,9 +61,17 @@ class ContractRep extends Main
 
         $contratos = array();
         $skip=false;
-        //si el usuario que busca es cliente(roleId =4) debe ingresar por default dentro del arrat de contratos solo los de el.
+        //si el usuario que busca es cliente(roleId =4) debe ingresar por default dentro del array de contratos solo los de el.
+        //rol cliente excluirles servicios en statua readonly.
         if($_SESSION['User']['roleId']==4)
+        {
+            $ftrServicio = " AND servicio.status IN('activo','bajaParcial') ";
             $skip=true;
+        }
+        else{
+            $ftrServicio = " AND servicio.status IN('activo','bajaParcial','readonly') ";
+        }
+
 
         //para el año 2018 en adelaten el servicio DIM no debe aparecer para nadie.
         $noInclude = "";
@@ -82,7 +90,7 @@ class ContractRep extends Main
            $sql = "SELECT *,servicio.status as servicioStatus FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status IN('activo','bajaParcial','readonly')
+					$ftrServicio
                     AND tipoServicio.status='1'
 					".$sqlDepto." $noInclude
 					ORDER BY tipoServicio.nombreServicio ASC";

@@ -1517,7 +1517,7 @@ class Contract extends Main
 				LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
 				LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
 				WHERE 1 ".$sqlFilter."
-				ORDER BY contract.name ASC";
+				ORDER BY customer.nameContact ASC,contract.name ASC";
 
 		$this->Util()->DB()->setQuery($sql);
 		$resContratos = $this->Util()->DB()->GetResult();
@@ -1529,10 +1529,10 @@ class Contract extends Main
                 continue;
             }
 			//Checamos Servicios
-			$sql = "SELECT * FROM servicio
+			$sql = "SELECT *,servicio.status as servicioStatus  FROM servicio
 					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND servicio.status = 'activo' AND tipoServicio.status='1'
+					AND servicio.status IN ('activo','bajaParcial') AND tipoServicio.status='1'
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
 			$this->Util()->DB()->setQuery($sql);
@@ -1561,7 +1561,7 @@ class Contract extends Main
 					LEFT JOIN sociedad ON sociedad.sociedadId = contract.sociedadId
 					LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
 					WHERE 1 ".$sqlFilter."
-					ORDER BY contract.name ASC";
+					ORDER BY customer.nameContact ASC, contract.name ASC";
 			$this->Util()->DB()->setQuery($sql);
 			$resContratos = $this->Util()->DB()->GetResult();
 
@@ -1576,10 +1576,10 @@ class Contract extends Main
                     continue;
                 }
 				//Checamos Servicios
-				$sql = "SELECT * FROM servicio
+				$sql = "SELECT *,servicio.status as servicioStatus  FROM servicio
 						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 						WHERE contractId = '".$res["contractId"]."'
-						AND servicio.status = 'activo' AND tipoServicio.status='1'
+						AND servicio.status IN ('activo','bajaParcial') AND tipoServicio.status='1'
 						".$sqlDepto."
 						ORDER BY tipoServicio.nombreServicio ASC";
 				$this->Util()->DB()->setQuery($sql);
@@ -1644,7 +1644,6 @@ class Contract extends Main
     foreach ($result as $key => $value) {
         $contract = new Contract;
         $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-
         //checar servicios del contrato para saber si lo debemos mostrar o no
         $this->Util()->DB->setQuery(
             "SELECT

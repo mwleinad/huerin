@@ -542,7 +542,7 @@ class Servicio extends Contract
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
 				LEFT JOIN customer ON customer.customerId = contract.customerId
 				LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-				WHERE ".$debug." servicio.status = 'activo' AND tipoServicio.status='1' AND customer.active = '1'
+				WHERE ".$debug." servicio.status IN ('activo','bajaParcial') AND tipoServicio.status='1' AND customer.active = '1'
 				".$sqlCustomer.$sqlContract.$addNomina.$depto.$sqlRespCta." 					
 				ORDER BY clienteName, razonSocialName, nombreServicio ASC";						
 		$this->Util()->DB()->setQuery($sql);
