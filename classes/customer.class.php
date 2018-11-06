@@ -1576,7 +1576,7 @@ class Customer extends Main
 	function GetServicesByContract($id,$tipo="activo"){
       //por default se debe tomarse en cuenta los de baja temporal
         if($tipo=='activo')
-         $ftrStatus =  " AND servicio.status IN ('activo,bajaParcial','readonly') ";
+         $ftrStatus =  " AND servicio.status IN ('activo','bajaParcial','readonly') ";
         else
          $ftrStatus =  " AND servicio.status = '".$tipo."' ";
 
