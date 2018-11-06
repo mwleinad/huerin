@@ -1187,7 +1187,7 @@ class Customer extends Main
               LEFT JOIN 
                 tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
               WHERE 
-                contractId = '".$value["contractId"]."' AND servicio.status = 'activo'          
+                contractId = '".$value["contractId"]."' AND servicio.status IN ('activo','bajaParcial','readonly' )         
               ORDER BY 
                 nombreServicio ASC"
           );
@@ -1329,7 +1329,7 @@ class Customer extends Main
               LEFT JOIN 
                 tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
               WHERE 
-                contractId = '".$value["contractId"]."' AND servicio.status = 'activo'          
+                contractId = '".$value["contractId"]."' AND servicio.status IN('activo','bajaParcial','readonly')          
               ORDER BY 
                 nombreServicio ASC"
           );
@@ -1574,16 +1574,21 @@ class Customer extends Main
     }//GetListRazones()
 	
 	function GetServicesByContract($id,$tipo="activo"){
-							//Checar servicios del contrato para saber si lo debemos mostrar o no
-					$this->Util()->DB->setQuery(
-					  "SELECT servicioId, nombreServicio, departamentoId 
-					  FROM servicio 
-					  LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  WHERE contractId = '".$id."' AND servicio.status = '".$tipo."'  and tipoServicio.status='1'        
-					  ORDER BY nombreServicio ASC"
-					);
-					$serviciosContrato = $this->Util()->DB()->GetResult();
-					return $serviciosContrato;
+      //por default se debe tomarse en cuenta los de baja temporal
+        if($tipo=='activo')
+         $ftrStatus =  " AND servicio.status IN ('activo,bajaParcial','readonly') ";
+        else
+         $ftrStatus =  " AND servicio.status = '".$tipo."' ";
+
+        $this->Util()->DB->setQuery(
+          "SELECT servicioId, nombreServicio, departamentoId 
+          FROM servicio 
+          LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+          WHERE contractId = '".$id."' $ftrStatus and tipoServicio.status='1'        
+          ORDER BY nombreServicio ASC"
+        );
+        $serviciosContrato = $this->Util()->DB()->GetResult();
+        return $serviciosContrato;
 	}
 	
 	function HowManyRazonesSociales($customerId, $activo = 'Si')
