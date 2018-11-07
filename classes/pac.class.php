@@ -103,12 +103,12 @@ class Pac extends Util
                     $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
                     if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
                         $data['cancelado'] = false;
-                        $data['message'] = "Factura no cancelable, verificar documentos relacionados.";
+                        $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
                     }
                 break;
                 default:
                     $data['cancelado'] =  false;
-                    $data['message'] =  "Hubo un problema al cancelar el documento. Por favor permite que pasen al menos 24 horas antes de intentar de nuevo.";
+                    $data['message'] =  "Hubo un problema al cancelar el documento. Si la factura es reciente espere 24 Hrs para su cancelacion, si no es el caso intente nuevamente.";
                 break;
             }
         }
