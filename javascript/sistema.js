@@ -484,14 +484,20 @@ Event.observe(window, 'load', function() {
 	}
 	if($('rfc'))
 	{
-		Event.observe($('noIdentificacion'), "keyup", function(){ SuggestProduct(); FillConceptoData();});  // aki leox
+		var noIdentificacion = document.getElementById('noIdentificacion');
+		if(typeof (noIdentificacion)!='undefined' && noIdentificacion !=null)
+			Event.observe($('noIdentificacion'), "keyup", function(){ SuggestProduct(); FillConceptoData();});  // aki leox
 	}
 	if($('rfc'))
 	{
+        var conceptoDiv = document.getElementById('agregarConceptoDiv');
+        if(typeof (conceptoDiv)!='undefined' && conceptoDiv !=null)
 		Event.observe($('agregarConceptoDiv'), "click", AgregarConcepto);
 	}
 	if($('rfc'))
 	{
+        var generarFactura = document.getElementById('agregarConceptoDiv');
+        if(typeof (generarFactura)!='undefined' && generarFactura !=null)
 		Event.observe($('generarFactura'), "click", GenerarComprobante);
 	}
 	if($('rfc'))
@@ -500,6 +506,8 @@ Event.observe(window, 'load', function() {
 		{
 			Event.observe($('agregarImpuestoDiv'), "click", AgregarImpuesto);
 		}
+        var vistaPrevia = document.getElementById('agregarConceptoDiv');
+        if(typeof (vistaPrevia)!='undefined' && vistaPrevia !=null)
 		Event.observe($('vistaPrevia'), "click", VistaPreviaComprobante);
 
 	}

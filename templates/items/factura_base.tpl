@@ -58,7 +58,7 @@
                     </a>
                     {/if}
 
-                    {if $fact.status == 1&&(in_array(138,$permissions)|| $User.isRoot)}
+                    {if ($fact.status == 1 && !$fact.cfdi_cancel_status )&&(in_array(138,$permissions)|| $User.isRoot)}
                         <a href="javascript:void(0)">
                             <img src="{$WEB_ROOT}/images/icons/cancel.png" class="spanCancel" id="{$fact.comprobanteId}" border="0" title="Cancelar"/></a>
                     {/if}

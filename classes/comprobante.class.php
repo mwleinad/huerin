@@ -764,22 +764,20 @@ class Comprobante extends Producto
 		return true;
 	}//GenerarComprobante
 
-	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $recipient)
+	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $motivo_cancelacion)
 	{
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version FROM comprobante
-			LEFT JOIN cliente ON cliente.userId = comprobante.userId
+		global $cancelation;
+	    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
+			LEFT JOIN contract ON contract.contractId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
 	//	echo $this->Util()->DB()->query;
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		$xml = $row["xml"];
 
 		$info = $this->Info();
-		//print_r($info);
-		//print_r($row);
 		if($info["version"] == "v3" || $info["version"] == "construc")
 		{
 			$rfcActivo = $this->getRfcActive();
-			
 			if($row["empresaId"] == 15)
 			{
 				$rfcActivo = 1;
@@ -837,15 +835,25 @@ class Comprobante extends Producto
 			}
 			$this->setRfcId($rfcActivo);
 			$nodoEmisorRfc = $this->InfoRfc();
-			$response = $pac->CancelaCfdi($user, $pw, $nodoEmisorRfc["rfc"], $uuid, $path, $password);
+			$response = $pac->CancelaCfdi2018($user, $pw, $nodoEmisorRfc["rfc"],$row['rfc'], $uuid,$row['total'], $path, $password);
 		}
-
-		if(!$response["cancelaCFDiReturn"]["text"])
+		if($response['cancelado'])
 		{
-			$this->Util()->setError('', "complete", "Hubo un problema al cancelar tu Factura. Por favor permite que pasen al menos 24 horas antes de intentar de nuevo.");
+		    if($response['conAceptacion']){
+                $cancelation->addPetition($_SESSION['User']['userId'],$id_comprobante,$nodoEmisorRfc["rfc"],$row['rfc'],$uuid,$row['total'],$motivo_cancelacion);
+            }else{
+                $sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.date("Y-m-d").'",usuarioCancelacion="'.$_SESSION['User']['userId'].'" WHERE comprobanteId = '.$id_comprobante;
+                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+            }
+			$this->Util()->setError('', "complete", $response['message']);
 			$this->Util()->PrintErrors();
-			return false;
-		}
+			return true;
+		}else{
+            $this->Util()->setError('', "error", $response['message']);
+            $this->Util()->PrintErrors();
+            return false;
+        }
 
 		if($row['version'] == '3.3') {
 			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
@@ -854,8 +862,7 @@ class Comprobante extends Producto
 		}
 
 
-			//$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE comprobante SET status = '0' WHERE comprobanteId = ".$id_comprobante);
-			//$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+			//en teoria del 2017 en adelante el codigo siguiente nunca deberia ser usado por que ya no existe facturas con versiones anteriores
 			$fileName = $xml.".pdf";
 			$path = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/facturas/pdf/".$fileName;
 			//chmod($path, 0777);
@@ -873,7 +880,7 @@ class Comprobante extends Producto
 			$pdf->SetY(100);
 			$pdf->SetX(10);
  			$pdf->SetTextColor(200, 0, 0);
-	  	$pdf->Cell(20,10,"CANCELADO",0,0,'L');
+	  	    $pdf->Cell(20,10,"CANCELADO",0,0,'L');
 			$pdf->Output($path, 'F');
 			//echo "jere";
 			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
@@ -881,8 +888,6 @@ class Comprobante extends Producto
 			return true;
 
 	}//CancelarComprobante
-
-
 	function GetTotalDesglosado($data)
 	{
 		if(!$_SESSION["conceptos"])
@@ -1283,6 +1288,8 @@ class Comprobante extends Producto
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
+            $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$val['comprobanteId']."' ");
+            $card["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
 
 			$info[$key] = $card;
 
@@ -1467,7 +1474,8 @@ class Comprobante extends Producto
 
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
-
+            $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$val['comprobanteId']."' ");
+            $card["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
 			$info[$key] = $card;
 		}//foreach
 

@@ -659,35 +659,20 @@ class Empresa extends Main
 		{
 			return false;
 		}
-		
 		$id_comprobante = $this->comprobanteId;
 		$motivo_cancelacion = $this->motivoCancelacion;
-
-		$date = date("Y-m-d");
-		
 		$sqlQuery = 'SELECT data, conceptos, userId FROM comprobante WHERE comprobanteId = '.$id_comprobante;
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);		
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		
 		$data = unserialize(urldecode($row['data']));
 		$conceptos = unserialize(urldecode($row['conceptos']));
-		
 		$_SESSION["conceptos"] = array();
 		$_SESSION["conceptos"] = $conceptos;
-		
-		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $row["userId"]))
-		{
+		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $motivo_cancelacion))
 			return false;
-		}
-
-		$sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.$date.'",usuarioCancelacion="'.$_SESSION['User']['userId'].'" WHERE comprobanteId = '.$id_comprobante;
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
-		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-
-		$this->Util()->setError(20027, "complete");
-		$this->Util()->PrintErrors();
-
-		return true;
+		else
+		    return true;
 	}
 
 	function DoLogout()
