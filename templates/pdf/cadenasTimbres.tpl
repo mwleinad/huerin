@@ -28,7 +28,7 @@
         </td>
         <td width="70%" valign="top">
             <strong>Cadena Original del complemento de certificación digital del SAT:</strong> <br>
-            <span class="no-bold word-break">{$xmlData.timbre.original|wordwrap:100:"<br />\n":true}</span>
+            <span class="no-bold word-break">{$xmlData.timbre.original|wordwrap:90:"<br />\n":true}</span>
         </td>
     </tr>
     <tr>
@@ -37,7 +37,7 @@
                 <tbody>
                 <tr>
                     <td width="30%" valign="top">
-                        <strong>Folio fiscal:</strong> <br>
+                        <strong>Folio fiscal:</strong>
                     </td>
                     <td width="70%" valign="top" class="no-bold">
                         {$xmlData.timbreFiscal.UUID}
@@ -45,7 +45,7 @@
                 </tr>
                 <tr>
                     <td width="30%" valign="top">
-                        <strong>No. de serie del certificado SAT:</strong> <br>
+                        <strong>No. de serie del certificado SAT:</strong>
                     </td>
                     <td width="70%" valign="top" class="no-bold">
                         {$xmlData.timbreFiscal.NoCertificadoSAT}
@@ -53,7 +53,7 @@
                 </tr>
                 <tr>
                     <td width="30%" valign="top">
-                        <strong>Fecha y hora de certificación:</strong> <br>
+                        <strong>Fecha y hora de certificación:</strong>
                     </td>
                     <td width="70%" valign="top" class="no-bold">
                         {$xmlData.timbreFiscal.FechaTimbrado|replace:'T':' '}
@@ -61,7 +61,7 @@
                 </tr>
                 <tr>
                     <td width="30%" valign="top">
-                        <strong>RFC del proveedor de certificación:</strong> <br>
+                        <strong>RFC del proveedor de certificación:</strong>
                     </td>
                     <td width="70%" valign="top" class="no-bold">
                         {$xmlData.timbreFiscal.RfcProvCertif}

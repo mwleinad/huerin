@@ -40,19 +40,12 @@
                         <a href="{$WEB_ROOT}/sistema/descargar-xml/item/{$fact.comprobanteId}" title="Descargar XML">
                             <img src="{$WEB_ROOT}/images/icons/descargar.png" border="0" width="16" />
                         </a>
-                        {/if}
 
-                        {if $fact.status == 1}
+                        {if $fact.status == 1 && !$fact.cfdi_cancel_status}
                             <a href="javascript:void(0)">
                                 <img src="{$WEB_ROOT}/images/icons/cancel.png" class="spanCancel" id="{$fact.comprobanteId}" border="0" title="Cancelar"/></a>
                         {/if}
 
-{*
-    	            <img src="{$WEB_ROOT}/images/icons/details.png" class="spanDetails" id="{$fact.comprobanteId}" border="0" alt="Ver Detalles" /></a>
-                    {if $fact.status == 1}
-                        <a href="javascript:void(0)"><img src="{$WEB_ROOT}/images/icons/cancel.png" class="spanCancel" id="{$fact.comprobanteId}" border="0" alt="Cancelar"/></a>
-                    {/if}
-*}
                 </td>
               </tr>
              

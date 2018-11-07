@@ -23,7 +23,7 @@ class Pac extends Util
 			'pfxPassword' => $pfxPassword
 		);
 
-		$response = $client->call('cancelaCFDi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+        $response = $client->call('cancelaCFDi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
 		//errors
 		if($response["faultcode"])
 		{
@@ -32,8 +32,89 @@ class Pac extends Util
 		}
 		return $response;
 	}
+	/*
+	 * funcion CancelaCfdi2018
+	 * recibe:
+	 * $user = usuario pac
+	 * $pw =  contraseña pac
+	 * $rfcE = Rfc emisor
+	 * $rfcR = Rfc receptor
+	 * $uuid = timbre a cancelar
+	 * $total = total monto a cancelar viene de la bd
+	 * $pfx = certificado del emisor
+	 * $pfxpassword =  contraseña de la llave privada
+	 * Devuelve:
+	 * $data =  contiene el mensaje a mostrar al usuario y e informacion que servira para cambiar el status
+	 * de la factura en la bd
+	 */
+    function CancelaCfdi2018($user, $pw,$rfcE,$rfcR, $uuid,$total,$pfx, $pfxPassword)
+    {
+        $fh = fopen($pfx, 'r');
+        $theData = fread($fh, filesize($pfx));
+        $zipFileEncoded = base64_encode($theData);
+        fclose($fh);
+        require_once(DOC_ROOT.'/libs/nusoap.php');
+        $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
+        $client->useHTTPPersistentConnection();
+        if(PROJECT_STATUS == "test")
+            $isTest = true;
+        else
+            $isTest = false;
 
-	
+        $params = array(
+            'user' => $user,
+            'password' => $pw,
+            'rfcE' => $rfcE,
+            'rfcR' => $rfcR,
+            'uuid' => $uuid,
+            'total' => $total,
+            'pfx' => $zipFileEncoded,
+            'pfxPassword'=>$pfxPassword,
+            'test'=>$isTest
+        );
+        $data = [];
+        $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+        if($response['cancelCFDiAsyncReturn']['status']==201){
+            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+            $data['cancelado'] = true;
+            switch ($cancelado['getCFDiStatusReturn']['status']){
+                case 'Vigente':
+                    $data['conAceptacion'] = true;
+                    $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
+                    if($cancelado['getCFDiStatusReturn']['isCancelable']=='No Cancelable'){
+                        $data['cancelado'] = false;
+                        $data['message'] = "Factura no cancelable, verificar documentos relacionados.";
+                    }
+                break;
+                case 'Cancelado':
+                    $data['conAceptacion'] = false;
+                    $data['message'] = "Documento cancelado correctamente";
+                break;
+            }
+        }else{
+            switch($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']){
+                case 'Cancelado':
+                    $data['cancelado'] =  true;
+                    $data['message'] =  "Documento cancelado anteriomente.";
+                break;
+                case 'Vigente':
+                    $data['cancelado'] =  true;
+                    $data['conAceptacion'] = true;
+                    $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
+                    if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
+                        $data['cancelado'] = false;
+                        $data['message'] = "Factura no cancelable, verificar documentos relacionados.";
+                    }
+                break;
+                default:
+                    $data['cancelado'] =  false;
+                    $data['message'] =  "Hubo un problema al cancelar el documento. Por favor permite que pasen al menos 24 horas antes de intentar de nuevo.";
+                break;
+            }
+        }
+        //errors
+        return $data;
+    }
 	function GetCfdi($user, $pw, $zipFile, $path, $newFile, $empresa)
 	{
 		//open zip and encode it

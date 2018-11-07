@@ -5,11 +5,12 @@
         body {
             font-family: helvetica, Sans-Serif;
             font-size: 11px;
-            line-height: 20px;
+            line-height: 1;
         }
         #page-wrap {
             width: 700px;
             margin: 0 auto;
+            page-break-inside: avoid;
         }
         table {
             font-size: 11px;
@@ -55,7 +56,7 @@
         }
         .font-smaller{
             font-size: 9px;
-            line-height: 12px;
+            line-height: 1.5;
             font-weight: bold;;
         }
         .bold {
@@ -270,13 +271,13 @@
         </tr>
         </tbody>
     </table>
-{*
-    <p class="small-height">&nbsp;</p>
-*}
     {/foreach}
-    {if $xmlData.db.status == 0}
-        <span style="font-size: 96px; color: #f00; text-align: center">CANCELADO</span>
+    {if $xmlData.db.status == 0 && $xmlData.db.comprobanteId}
+        <span style="font-size: 96px; color: #f00; text-align: center;position: absolute;top:20%">CANCELADO</span>
+    {elseif $xmlData.db.status == 1 && $xmlData.db.cfdi_cancel_status}
+        <span style="font-size: 70px; color: #f59b25; text-align: center;line-height:1;position: absolute;top:20%">PENDIENTE POR CONFIRMAR CANCELACION DE RECEPTOR</span>
     {/if}
+
     {*Complemento de impuestos*}
     {include file="{$DOC_ROOT}/templates/pdf/complementoImpuestos.tpl"}
 

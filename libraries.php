@@ -120,9 +120,6 @@ include_once(DOC_ROOT."/classes/validar.class.php");
 include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
 include_once(DOC_ROOT."/classes/permiso.class.php");
 include_once(DOC_ROOT."/classes/dropzone.class.php");
-
-
-
 $db = new DB;
 $dbRemote = new DBRemote;
 $error = new Error;
@@ -205,12 +202,14 @@ include_once(DOC_ROOT."/services/Sello.php");
 include_once(DOC_ROOT."/services/Totales.php");
 include_once(DOC_ROOT."/services/ComprobantePago.php");
 include_once(DOC_ROOT."/services/CfdiUtil.php");
+include_once(DOC_ROOT."/services/Cancelation.php");
 
 $catalogo = new Catalogo;
 $sello = new Sello;
 $totales = new Totales;
 $comprobantePago = new ComprobantePago;
 $cfdiUtil = new CfdiUtil;
+$cancelation = new Cancelation;
 
 $smarty = new Smarty;
 $smarty->assign('DOC_ROOT',DOC_ROOT);
@@ -225,21 +224,6 @@ $User = $_SESSION['User'];
 $infoUser = $user->Info();
 $smarty->assign('infoUser', $infoUser);
 
-	/*switch($infoUser["tipoPersonal"])
-	{
-		case "Socio": $User['roleId'] = 1; break;
-		case "Gerente": $User['roleId'] = 2; break;
-		case "Supervisor": $User['roleId'] = 3; break;
-		case "Contador": $User['roleId'] = 6; break;
-		case "Auxiliar": $User['roleId'] = 7; break;
-		case "Asistente": $User['roleId'] = 5; break;
-		case "Recepcion": $User['roleId'] = 9; break;
-		case "Cliente": $User['roleId'] = 4; break;
-		case "Nomina":
-			$User['roleId'] = 8;
-			$User['subRoleId'] = "Nomina";
-		break;
-	}*/
 if($_SESSION['User']['tipoPers']=='Admin')	{
     $rol->setAdmin(1);
     $User['roleId'] = 1;

@@ -105,7 +105,6 @@
 			parameters: {type: "cancelar_div", id_item:id},
 			onSuccess: function(transport){
 				var response = transport.responseText || "no response text";
-				console.log(response);
 				FViewOffSet(response);
 				Event.observe($('closePopUpDiv'), "click", function(){ showDetailsPopup(0); });
 				Event.observe($('btnCancelar'), "click", DoCancelacion);
@@ -122,24 +121,26 @@
 		{
 			method:'post',
 			parameters: $('frmCancelar').serialize(true),
-			onLoading: $('cancelLoading').innerHTML = "Por favor espere. Estamos cancelando su comprobante. <img src='"+WEB_ROOT+"/images/load.gif' />",
+			onLoading: function () {
+				$('loading-img').style.display='block';
+                $('btnCancelar').style.display='none';
+            },
 			onSuccess: function(transport){
 				var response = transport.responseText || "no response text";
-								console.log(response);
-
 				var splitResponse = response.split("[#]");
 				if(splitResponse[0] == "fail"){					
-					ShowStatusPopUp(splitResponse[1])
+					ShowStatusPopUp(splitResponse[1]);
+                    $('loading-img').style.display='none';
+                    $('btnCancelar').style.display='block';
 				}else{
-					ShowStatusPopUp(splitResponse[1])					
-					$('frmCancelar').reset();					
-					//reload event listeners here
+					ShowStatusPopUp(splitResponse[1]);
+                    $('loading-img').style.display='none';
+                    $('btnCancelar').style.display='block';
+					$('frmCancelar').reset();
 				}
-				$('cancelLoading').innetHTML = ""
 			},
 		onFailure: function(){ alert('Something went wrong...') }
 	  });
-		
 	}//DoCancelacion
 	
 	Event.observe(window, 'load', function() {
@@ -173,7 +174,9 @@
 	
 	$('facturasListDiv').observe("click", AddEditItemsListeners);
 	$('btnBuscar').observe("click", Buscar);
-	$('btnExportar').observe("click", Exportar);
+        var element =  document.getElementById('btnExportar');
+	if(typeof(element)!= 'undefined' && element != null)
+		$('btnExportar').observe("click", Exportar);
 	
 	
 	$('rfc').observe("keypress", function(evt) { 
