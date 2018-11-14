@@ -74,6 +74,9 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+        if($rfcR=='XAXX010101000')
+            dd($response);
+
         if($response['cancelCFDiAsyncReturn']['status']==201){
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $data['cancelado'] = true;
@@ -97,18 +100,12 @@ class Pac extends Util
                     $data['cancelado'] =  true;
                     $data['message'] =  "Documento cancelado anteriomente.";
                 break;
-                case 'Vigente':
-                    $data['cancelado'] =  true;
-                    $data['conAceptacion'] = true;
-                    $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
-                    if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
-                        $data['cancelado'] = false;
-                        $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
-                    }
-                break;
-                default:
+                default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
                     $data['cancelado'] =  false;
                     $data['message'] =  "Hubo un problema al cancelar el documento. Si la factura es reciente espere 24 Hrs para su cancelacion, si no es el caso intente nuevamente.";
+                    if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
+                        $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
+                    }
                 break;
             }
         }

@@ -10,6 +10,7 @@ class Cancelation extends Main
 				pending_cfdi_cancel
 			(
 				`user_cancelation`,
+				`date_petition`,
 				`cfdi_id`,
 				`rfc_e`,
 				`rfc_r`,
@@ -22,6 +23,7 @@ class Cancelation extends Main
 		(
 				
 				'".$userId."',
+				'".date("Y-m-d H:i:s")."',
 				'".$cfdiId."',
 				'".$taxPayerId."',
 				'".$rTaxPayerId."',
