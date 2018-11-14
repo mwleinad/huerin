@@ -734,7 +734,7 @@ class Workflow extends Servicio
                 $value['saldo'] =  $value['total']-$value['payment'];
                 if($value["saldo"] > 1)
                 {
-                    $value["class"] = "#ff0000";
+                    $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";
                     $noComplete++;
                 }
                 else{

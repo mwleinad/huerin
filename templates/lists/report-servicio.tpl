@@ -34,9 +34,10 @@
 								{else}
 										background-color:{$instanciaServicio.class};
 								{/if}
-								{if $instanciaServicio.class == '#00ff00'}
+								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0'}
 								color: #000000; {else}
-								color: #ffffff; {/if}
+								color: #ffffff;
+								{/if}
 								font-weight: bold
 								">
 						{if $instanciaServicio.class != '#000000'}
