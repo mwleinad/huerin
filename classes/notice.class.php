@@ -239,7 +239,8 @@ class Notice extends Main
                 $this->Util()->DB()->setQuery($sqlOwn);
                 $this->Util()->DB()->ExecuteQuery();
                 $this->Util()->DB()->CleanQuery();
-                $sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "' AND personalId != '" . IDHUERIN . "'";
+                //$sqlQuery = "SELECT * FROM personal WHERE personalId != '" . IDBRAUN . "' AND personalId != '" . IDHUERIN . "'";
+                $sqlQuery = "SELECT * FROM personal WHERE active='1' ";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
                 $subject = "AVISO  NUEVO DE " . $this->usuario;
