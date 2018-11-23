@@ -136,7 +136,8 @@
 
 <div id="page-wrap">
     <div class="list-platillos">
-        <img src="{$WEB_ROOT}/images/dollar.png">
+        <img src="var/www/html/images/dollar.png">
+        <img src="{$DOC_ROOT}/images/dollar.png">
         <ul>
             {foreach from=$elements key=key item=item}
                 <li>{$item}</li>
