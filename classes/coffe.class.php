@@ -23,8 +23,9 @@ class Coffe extends main
     {
         global $smarty;
         $options = new Options();
-        $options->set('isRemoteEnabled', TRUE);
+        $options->set('isRemoteEnabled', true);
         $dom = new Dompdf($options);
+        $dom->setBasePath(WEB_ROOT);
 
         $smarty->assign('WEB_ROOT',WEB_ROOT);
         $smarty->assign('elements',$this->elements);
