@@ -1443,6 +1443,19 @@ ul.menu_arbol ul {
 .zoneTaskHiden{
 	display: none;
 }
+@font-face {
+	font-family: 'Bellerose Light:1.0';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Bellerose Light:1.0'), url('../assets/plugins/font-awesome/fonts/Bellerose.woff') format('woff');
+}
+@font-face {
+	font-family:"Be Kind To The Earth";
+	src:url("../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.eot?") format("eot"),url("../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.woff") format("woff"),url("../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.ttf") format("truetype"),url("../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.svg#BeKindToTheEarth") format("svg");
+	font-weight:normal;
+	font-style:normal;
+}
+
 
 
 

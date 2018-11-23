@@ -188,6 +188,12 @@
                 <span>Pagos y Activaciones</span></a></li>
                 {/if}
             {/if}
+            {if $mainMnu == "coffe"}
+                {if in_array(214,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/coffe" {if $page == "coffe"}class="current"{/if}>
+                    <span>Menus del dia</span></a></li>
+                {/if}
+            {/if}
        </ul>
       {/if}
     </div>

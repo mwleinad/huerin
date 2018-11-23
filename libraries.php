@@ -120,6 +120,8 @@ include_once(DOC_ROOT."/classes/validar.class.php");
 include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
 include_once(DOC_ROOT."/classes/permiso.class.php");
 include_once(DOC_ROOT."/classes/dropzone.class.php");
+include_once(DOC_ROOT."/classes/coffe.class.php");
+
 $db = new DB;
 $dbRemote = new DBRemote;
 $error = new Error;
