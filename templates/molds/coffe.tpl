@@ -18,7 +18,7 @@
 
         html,body {
             font-family:'Courier',Sans-Serif;
-            background-image: url("/var/www/html/images/menu-carta.jpg");
+            background-image: url("http://187.178.88.213/images/menu-carta.jpg");
             background-repeat: no-repeat;
             font-size: 11px;
             line-height: 1;
