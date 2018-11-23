@@ -22,10 +22,9 @@ class Coffe extends main
     public function GenerateFile($type='download',$namefile="menu")
     {
         global $smarty;
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $dom = new Dompdf($options);
-        $dom->setBasePath(WEB_ROOT);
+
+        $dom = new Dompdf();
+
 
         $smarty->assign('WEB_ROOT',WEB_ROOT);
         $smarty->assign('elements',$this->elements);
