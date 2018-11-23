@@ -114,7 +114,7 @@
             line-height: 2;
             text-decoration: none;
             color: #CCCCCC;
-            border-bottom: 3px dotted #ffffff;
+            border-bottom: 3px dotted #CCCCCC;
             font-weight: bolder;
             text-transform: uppercase;
         }
@@ -133,8 +133,10 @@
     </div>
 </header>
 <div class="main"></div>
+
 <div id="page-wrap">
     <div class="list-platillos">
+        <img src="{$WEB_ROOT}/images/dollar.png">
         <ul>
             {foreach from=$elements key=key item=item}
                 <li>{$item}</li>
