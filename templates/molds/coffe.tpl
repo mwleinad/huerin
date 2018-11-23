@@ -18,14 +18,19 @@
 
         html,body {
             font-family:'Courier',Sans-Serif;
-            background-image: url("{$WEB_ROOT}/images/menu-carta.jpg");
-            background-repeat: no-repeat;
+
             font-size: 11px;
             line-height: 1;
             height: 100%;
         }
         p{
             color: #ffffff;
+        }
+        .main{
+            position: fixed;
+            background-image: url("{$WEB_ROOT}/images/menu-carta.jpg");
+            background-repeat: no-repeat;
+            height: 100%;
         }
         #page-wrap {
             position:relative;
@@ -127,6 +132,7 @@
         <p>MENU DEL DIA</p>
     </div>
 </header>
+<div class="main"></div>
 <div id="page-wrap">
     <div class="list-platillos">
         <ul>
