@@ -60,7 +60,7 @@ class Rol extends main
         if($_SESSION['User']['tipoPers']=='Socio')
             $where =  " AND a.rolId!=1 ";
         elseif($_SESSION['User']['tipoPers']=='Coordinador'){
-            $where =  " AND a.rolId!=1 AND a.rolId!=5";
+            $where =  " AND a.rolId NOT IN (1,5,30)";
         }
 
        $sql ="SELECT a.*,
@@ -103,7 +103,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO roles(name,status,departamentoId) VALUES('".$this->name."','activo','".$this->depIds."') ";
+        $sql = "INSERT INTO roles(name,status,departamentoId) VALUES('".$this->name."','activo','".$this->depId."') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -277,17 +277,16 @@ class Rol extends main
    }
     public function GetListRoles(){
         global $User;
+        $filtro ="";
         if($User['tipoPers']!='Admin'&&$User['tipoPers']!='Socio'&&$User['tipoPers']!='Coordinador'){
-            $filtro = " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
+            $filtro .= " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
         }else{
-            if($User['tipoPers']=='Socio')
-                $filtro = " AND lower(name)!='socio'  ";
-            elseif($User['tipoPers']=='Coordinador'){
-                $filtro = " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
+            if($_SESSION['User']['tipoPers']=='Socio')
+                $filtro .=  " AND rolId!=1 ";
+            elseif($_SESSION['User']['tipoPers']=='Coordinador'){
+                $filtro .=  " AND rolId NOT IN (1,5,30)";
             }
         }
-
-
         $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ".$filtro." ORDER BY name ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
