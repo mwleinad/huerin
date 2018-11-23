@@ -27,7 +27,7 @@
         }
         .main{
             position: fixed;
-            background-image: url("{$WEB_ROOT}/images/menu-carta.jpg");
+            background-image: url("{$DOC_ROOT}/images/dollar.png");
             background-repeat: no-repeat;
             height: 100%;
         }
