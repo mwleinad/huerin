@@ -3,18 +3,7 @@
     <title>Menu del dia</title>
     <style type="text/css">
         @page { margin: 0px; }
-        @font-face {
-            font-family: 'Bellerose Light:1.0';
-            font-style: normal;
-            font-weight: normal;
-            src: local('Bellerose Light:1.0'), url('../../assets/plugins/font-awesome/fonts/Bellerose.woff') format('woff');
-        }
-        @font-face {
-            font-family:"Be Kind To The Earth";
-            src:url('../../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.eot?') format('eot'),url('../../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.woff') format('woff'),url('../../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.ttf') format('truetype'),url('../../assets/plugins/font-awesome/fonts/Be_Kind_To_The_Earth.svg#BeKindToTheEarth') format('svg');
-            font-weight:normal;
-            font-style:normal;
-        }
+       
 
         html,body {
             font-family:'Courier',Sans-Serif;
@@ -27,7 +16,7 @@
         }
         .main{
             position: fixed;
-            background-image: url("{$DOC_ROOT}/images/dollar.png");
+            background-image: url("{$DOC_ROOT}/images/menu-carta.jpg");
             background-repeat: no-repeat;
             height: 100%;
         }
@@ -136,8 +125,6 @@
 
 <div id="page-wrap">
     <div class="list-platillos">
-        <img src="var/www/html/images/dollar.png">
-        <img src="{$DOC_ROOT}/images/dollar.png">
         <ul>
             {foreach from=$elements key=key item=item}
                 <li>{$item}</li>
