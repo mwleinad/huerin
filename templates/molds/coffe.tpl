@@ -28,7 +28,7 @@
         }
         .main{
             position: fixed;
-            background-image: url("/var/www/html/images/menu-carta.jpg");
+            background-image: url("{$WEB_ROOT}/images/menu-carta.jpg");
             background-repeat: no-repeat;
             height: 100%;
         }
