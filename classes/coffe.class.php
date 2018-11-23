@@ -28,7 +28,6 @@ class Coffe extends main
         $smarty->assign('WEB_ROOT',WEB_ROOT);
         $smarty->assign('elements',$this->elements);
         $html = $smarty->fetch(DOC_ROOT.'/templates/molds/coffe.tpl');
-        echo $html;exit;
         $dom->loadHtml($html);
         $dom->setPaper('letter', 'portrait');
         $dom->render();

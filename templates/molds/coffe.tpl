@@ -18,7 +18,6 @@
 
         html,body {
             font-family:'Courier',Sans-Serif;
-
             font-size: 11px;
             line-height: 1;
             height: 100%;
@@ -114,7 +113,7 @@
             list-style: none;
             line-height: 2;
             text-decoration: none;
-            color: #ffffff;
+            color: #CCCCCC;
             border-bottom: 3px dotted #ffffff;
             font-weight: bolder;
             text-transform: uppercase;
