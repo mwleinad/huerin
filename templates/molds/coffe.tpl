@@ -3,7 +3,7 @@
     <title>Menu del dia</title>
     <style type="text/css">
         @page { margin: 0px; }
-       
+
 
         html,body {
             font-family:'Courier',Sans-Serif;
@@ -16,7 +16,7 @@
         }
         .main{
             position: fixed;
-            background-image: url("{$DOC_ROOT}/images/menu-carta.jpg");
+            background-image: url("{$DOC_ROOT}/images/menu-carta.jpg") !important;
             background-repeat: no-repeat;
             height: 100%;
         }

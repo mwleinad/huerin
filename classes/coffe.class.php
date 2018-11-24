@@ -23,9 +23,8 @@ class Coffe extends main
     {
         global $smarty;
         $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $dom = new Dompdf($options);
-        $smarty->assign('WEB_ROOT',WEB_ROOT);
+        //$options->set('isRemoteEnabled', true);
+        $dom = new Dompdf();
         $smarty->assign('elements',$this->elements);
         $html = $smarty->fetch(DOC_ROOT.'/templates/molds/coffe.tpl');
         $dom->loadHtml($html);
