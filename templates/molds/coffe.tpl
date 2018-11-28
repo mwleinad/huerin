@@ -125,7 +125,7 @@
 </head>
 <body>
 <header>
-    <img src="{$WEB_ROOT}/images/img_menu_logo.png" />
+    <img src="{$DOC_ROOT}/images/img_menu_logo.png" />
     <div class="titulo-container">
         <p>MENU DEL DIA</p>
     </div>
