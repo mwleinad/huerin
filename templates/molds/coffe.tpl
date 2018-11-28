@@ -10,15 +10,20 @@
             font-size: 11px;
             line-height: 1;
             height: 100%;
+            background: #0f0f0f;
         }
         p{
             color: #ffffff;
         }
-        .main{
+        .img_menu_left{
             position: fixed;
-            background-image: url("{$DOC_ROOT}/images/menu-carta.jpg") !important;
-            background-repeat: no-repeat;
-            height: 100%;
+            top: 15%;
+            float: left;
+        }
+        .img_menu_right{
+            position: fixed;
+            top: 15%;
+            float: right;
         }
         #page-wrap {
             position:relative;
@@ -70,11 +75,14 @@
             height: 30%;
             z-index: 1;
         }
+        header>img{
+          margin:10% 30% 0 30%;
+        }
         .titulo-container
         {
             font-family: "Courier",Sans-Serif;
             height: 5%;
-            margin:22% 35% 0 36%;
+            margin:5% 35% 0 36%;
             border: 2px solid #E44B3C;
             border-radius: 10px;
             font-weight: bolder;
@@ -117,12 +125,14 @@
 </head>
 <body>
 <header>
+    <img src={$DOC_ROOT}/images/img_menu_logo.png" />
     <div class="titulo-container">
         <p>MENU DEL DIA</p>
     </div>
 </header>
-<div class="main"></div>
 
+<img src={$DOC_ROOT}/images/img_menu_left.png" class="img_menu_left">
+<img src={$DOC_ROOT}/images/img_menu_rigth.png" class="img_menu_right">
 <div id="page-wrap">
     <div class="list-platillos">
         <ul>
