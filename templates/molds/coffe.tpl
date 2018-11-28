@@ -130,7 +130,6 @@
         <p>MENU DEL DIA</p>
     </div>
 </header>
-
 <img src={$WEB_ROOT}/images/img_menu_left.png" class="img_menu_left">
 <img src={$WEB_ROOT}/images/img_menu_rigth.png" class="img_menu_right">
 <div id="page-wrap">
