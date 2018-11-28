@@ -125,14 +125,14 @@
 </head>
 <body>
 <header>
-    <img src={$WEB_ROOT}/images/img_menu_logo.png" />
+    <img src={$DOC_ROOT}/images/img_menu_logo.png" />
     <div class="titulo-container">
         <p>MENU DEL DIA</p>
     </div>
 </header>
 
-<img src={$WEB_ROOT}/images/img_menu_left.png" class="img_menu_left">
-<img src={$WEB_ROOT}/images/img_menu_rigth.png" class="img_menu_right">
+<img src={$DOC_ROOT}/images/img_menu_left.png" class="img_menu_left">
+<img src={$DOC_ROOT}/images/img_menu_rigth.png" class="img_menu_right">
 <div id="page-wrap">
     <div class="list-platillos">
         <ul>
