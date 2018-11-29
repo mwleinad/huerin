@@ -75,7 +75,7 @@ class Coffe extends main
               if(!empty($mails))
               {
                   $mails = [];
-                  $mails['alizasevilla@gmail.com']= 'Aliza Sevilla';
+                  //$mails['alizasevilla@gmail.com']= 'Aliza Sevilla';
                   $mails['isc061990@gmail.com']= 'Hector cruz';
 
                   $mail->PrepareMultipleNotice('MENU DEL DIA PEPPERMINT', $body, $mails, '', $file,'menu'.$id.".pdf" , "", "",'noreply@braunhuerin.com.mx','PEPPERMINT',true);

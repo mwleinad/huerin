@@ -3,9 +3,7 @@
     <title>Menu del dia</title>
     <style type="text/css">
         @page { margin: 0px; }
-
-
-        html,body {
+        body {
             font-family:'Courier',Sans-Serif;
             font-size: 11px;
             line-height: 1;
@@ -19,56 +17,21 @@
             position: fixed;
             top: 15%;
             float: left;
+            z-index: 2;
         }
         .img_menu_right{
             position: fixed;
             top: 15%;
             float: right;
+            z-index: 3;
         }
         #page-wrap {
             position:relative;
             width: 600px;
-            max-height: 55%;
-            margin-right: 0px;
-            margin-left: 110px;
+            margin: 0 auto;
+            max-height:100%;
             top:30%;
-        }
-        table {
-            font-size: 11px;
-            line-height: 20px;
-        }
-        table.outline-table {
-            border: 2px solid #ccc;
-            border-spacing: 0;
-        }
-        tr.border-bottom td, td.border-bottom {
-            border-bottom: 1px solid #ccc;
-        }
-        tr.border-top td, td.border-top {
-            border-top: 1px solid #ccc;
-        }
-        tr.border-right td, td.border-right {
-            border-right: 1px solid #ccc;
-        }
-        tr.border-left td, td.border-left {
-            border-left: 1px solid #ccc;
-        }
-        tr.border-right td:last-child {
-            border-right: 0px;
-        }
-        tr.center td, td.center {
-            text-align: center;
-            vertical-align: text-top;
-        }
-        td.pad-left {
-            padding-left: 5px;
-        }
-        tr.right-center td, td.right-center {
-            text-align: right;
-            padding-right: 50px;
-        }
-        tr.right td, td.right {
-            text-align: right;
+            z-index: 4;
         }
         header{
             position: fixed;
@@ -77,6 +40,7 @@
         }
         header>img{
           margin:10% 30% 0 30%;
+
         }
         .titulo-container
         {
@@ -103,21 +67,17 @@
             color: #fff;
             margin:0 5% 0 5%;
             text-align: center;
-            height: 50%;
+            max-height: 100%;
         }
         .list-platillos>ul>li{
             font-family: "Courier",Sans-Serif;
             list-style: none;
             line-height: 2;
             text-decoration: none;
-            color: #CCCCCC;
-            border-bottom: 3px dotted #CCCCCC;
+            color: #ffffff;
+            border-bottom: 3px dotted #ffffff;
             font-weight: bolder;
             text-transform: uppercase;
-        }
-        list-platillos>ul>li:after{
-            content: '';
-            padding-bottom: 2px;
         }
     </style>
     <meta charset="UTF-8">
@@ -130,18 +90,29 @@
         <p>MENU DEL DIA</p>
     </div>
 </header>
-<img src="{$DOC_ROOT}/images/img_menu_left.png" class="img_menu_left">
-<img src="{$DOC_ROOT}/images/img_menu_rigth.png" class="img_menu_right">
-<div id="page-wrap">
-    <div class="list-platillos">
-        <ul>
-            {foreach from=$elements key=key item=item}
-                <li>{$item}</li>
-            {foreachelse}
-                <li>Sin platillos en el menu</li>
-            {/foreach}
-        </ul>
-    </div>
+<div class="img_menu_left">
+    <img src="{$DOC_ROOT}/images/img_menu_left.png">
 </div>
+<div class="img_menu_right">
+    <img src="{$DOC_ROOT}/images/img_menu_rigth.png">
+</div>
+    <div id="page-wrap">
+        <div class="list-platillos">
+            <ul>
+                {assign var=con value=1}
+                {foreach from=$elements key=key item=item name=foo}
+                    {if $con>=10}
+                        <li  style="page-break-after: always">{$item}{$con}</li>
+                        {assign var=con value=1}
+                    {else}
+                        <li>{$item}{$con}</li>
+                    {/if}
+                    {assign var=con value=$con+1}
+                    {foreachelse}
+                    <li>Sin platillos en el menu</li>
+                {/foreach}
+            </ul>
+        </div>
+    </div
 </body>
 </html>
