@@ -33,17 +33,20 @@ class Coffe extends main
         $dom->render();
          switch ($type){
              case 'download':
+                 unset($html);
                  $dom->stream('menu.pdf');
              break;
              case 'view':
+                 unset($html);
                  $dom->stream('menu.pdf', array("Attachment" => false));
              break;
              case 'save':
+                 unset($html);
                  $output = $dom->output();
-
                  file_put_contents(DOC_ROOT."/sendFiles/$namefile.pdf", $output);
              break;
              default:
+                 unset($html);
                  $dom->stream('menu.pdf', array("Attachment" => false));
               break;
          }
