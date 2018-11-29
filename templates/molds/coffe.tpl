@@ -100,7 +100,12 @@
             <ul>
                 {assign var=con value=1}
                 {foreach from=$elements key=key item=item name=foo}
-                    <li>{$item}</li>
+                    {if $con>=10}
+                        <li  style="page-break-after: always">{$item}</li>
+                        {assign var=con value=1}
+                    {else}
+                        <li>{$item}</li>
+                    {/if}
                 {assign var=con value=$con+1}
                 {foreachelse}
                     <li>Sin platillos en el menu</li>
