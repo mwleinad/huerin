@@ -72,7 +72,7 @@
         .list-platillos>ul>li{
             font-family: "Courier",Sans-Serif;
             list-style: none;
-            line-height: 2;
+            line-height: 2.2;
             text-decoration: none;
             color: #ffffff;
             border-bottom: 3px dotted #ffffff;
@@ -101,14 +101,14 @@
             <ul>
                 {assign var=con value=1}
                 {foreach from=$elements key=key item=item name=foo}
-                    {if $con>=10}
-                        <li  style="page-break-after: always">{$item}{$con}</li>
+                    {if $con>=12}
+                        <li  style="page-break-after: always">{$item}</li>
                         {assign var=con value=1}
                     {else}
-                        <li>{$item}{$con}</li>
+                        <li>{$item}</li>
                     {/if}
-                    {assign var=con value=$con+1}
-                    {foreachelse}
+                {assign var=con value=$con+1}
+                {foreachelse}
                     <li>Sin platillos en el menu</li>
                 {/foreach}
             </ul>
