@@ -67,6 +67,7 @@
             color: #fff;
             max-height: 100%;
             text-align: center !important;
+            page-break-inside: avoid;
         }
         .list-platillos>ul>li{
             display: block;
