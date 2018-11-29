@@ -62,9 +62,8 @@
 
         }
         .list-platillos{
-            position: absolute;
             font-family: "Courier",Sans-Serif;
-            font-size: 14px !important;
+            font-size: 18px !important;
             color: #fff;
             max-height: 100%;
             text-align: center !important;
@@ -101,7 +100,7 @@
             <ul>
                 {assign var=con value=1}
                 {foreach from=$elements key=key item=item name=foo}
-                    <li>{$item}</li>
+                  <li>{$item}</li>
                 {assign var=con value=$con+1}
                 {foreachelse}
                     <li>Sin platillos en el menu</li>
