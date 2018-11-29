@@ -6,7 +6,6 @@
         body {
             font-family:'Courier',Sans-Serif;
             font-size: 11px;
-            line-height: 1;
             height: 100%;
             background: #252525;
         }
@@ -63,16 +62,16 @@
 
         }
         .list-platillos{
-            font-size: 22px;
+            font-family: "Courier",Sans-Serif;
+            font-size: 22px !important;
             color: #fff;
             margin:0 5% 0 5%;
             text-align: center;
             max-height: 100%;
         }
         .list-platillos>ul>li{
-            font-family: "Courier",Sans-Serif;
+            line-height: 2.5em !important;
             list-style: none;
-            line-height: 2.2;
             text-decoration: none;
             color: #ffffff;
             border-bottom: 3px dotted #ffffff;
@@ -101,12 +100,7 @@
             <ul>
                 {assign var=con value=1}
                 {foreach from=$elements key=key item=item name=foo}
-                    {if $con>=12}
-                        <li  style="page-break-after: always">{$item}</li>
-                        {assign var=con value=1}
-                    {else}
-                        <li>{$item}</li>
-                    {/if}
+                    <li>{$item}</li>
                 {assign var=con value=$con+1}
                 {foreachelse}
                     <li>Sin platillos en el menu</li>
