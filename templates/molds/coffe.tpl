@@ -27,8 +27,8 @@
         #page-wrap {
             position:relative;
             width: 600px;
-            margin: 0 auto;
             max-height:100%;
+            margin: 0 auto;
             top:30%;
             z-index: 4;
         }
@@ -62,15 +62,16 @@
 
         }
         .list-platillos{
+            position: absolute;
             font-family: "Courier",Sans-Serif;
-            font-size: 22px !important;
+            font-size: 11px !important;
             color: #fff;
-            margin:0 5% 0 5%;
-            text-align: center;
             max-height: 100%;
+            text-align: center !important;
         }
         .list-platillos>ul>li{
-            line-height: 2.5em !important;
+            display: block;
+            line-height: 2.5em;
             list-style: none;
             text-decoration: none;
             color: #ffffff;
