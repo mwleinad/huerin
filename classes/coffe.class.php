@@ -24,7 +24,7 @@ class Coffe extends main
         global $smarty;
         $options = new Options();
         $options->set('isRemoteEnabled', true);
-        $dom = new Dompdf($options);
+        $dom = new Dompdf();
         $smarty->assign('WEB_ROOT',WEB_ROOT);
         $smarty->assign('elements',$this->elements);
         $html = $smarty->fetch(DOC_ROOT.'/templates/molds/coffe.tpl');
@@ -33,17 +33,20 @@ class Coffe extends main
         $dom->render();
          switch ($type){
              case 'download':
+                 unset($html);
                  $dom->stream('menu.pdf');
              break;
              case 'view':
+                 unset($html);
                  $dom->stream('menu.pdf', array("Attachment" => false));
              break;
              case 'save':
+                 unset($html);
                  $output = $dom->output();
-
                  file_put_contents(DOC_ROOT."/sendFiles/$namefile.pdf", $output);
              break;
              default:
+                 unset($html);
                  $dom->stream('menu.pdf', array("Attachment" => false));
               break;
          }
@@ -75,7 +78,7 @@ class Coffe extends main
               if(!empty($mails))
               {
                   $mails = [];
-                  $mails['alizasevilla@gmail.com']= 'Aliza Sevilla';
+                  //$mails['alizasevilla@gmail.com']= 'Aliza Sevilla';
                   $mails['isc061990@gmail.com']= 'Hector cruz';
 
                   $mail->PrepareMultipleNotice('MENU DEL DIA PEPPERMINT', $body, $mails, '', $file,'menu'.$id.".pdf" , "", "",'noreply@braunhuerin.com.mx','PEPPERMINT',true);
