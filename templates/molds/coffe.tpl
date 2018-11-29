@@ -66,8 +66,8 @@
             font-size: 18px !important;
             color: #fff;
             max-height: 100%;
-            text-align: center !important;
-            page-break-inside: avoid;
+            text-align: center;
+            page-break-inside: auto;
         }
         .list-platillos>ul>li{
             display: block;
