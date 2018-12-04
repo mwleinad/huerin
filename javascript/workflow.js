@@ -79,7 +79,13 @@ var createDropzoneWorkflow = ()=>{
     if(jQ('#frm-workflow').length) {
         jQ('form#frm-workflow').each(
             function() {
-                var objDrop = dropzoneDefault(this, {url: AJAX_PATH});
+                var ext = jQ(this).data('extensiones');
+                if(ext!='')
+                    var opts =  {acceptedFiles:ext, dictInvalidFileType:"Archivo no permitido, compruebe la extension."}
+                else
+                    var opts = {};
+
+                var objDrop = dropzoneDefault(this,opts);
                 objDrop.on('sending', function (file, xhr, formData) {
                     formData.append('type', 'saveFromWorkflow');
                 });
@@ -101,6 +107,9 @@ var createDropzoneWorkflow = ()=>{
                     }else{
                         ShowStatusPopUp(data.notificacion);
                     }
+                });
+                objDrop.on("error", function(file, errorMessage) {
+                    ShowErrorOnPopup(errorMessage,1)
                 });
             }
 
@@ -162,7 +171,6 @@ jQ(document).on('click','.deleteFileWorkflow',function () {
         beforeSend: function(){
         },
         success: function(data){
-            console.log(data);
             if(data.message=='ok'){
                 jQ('.tasks').html(data.templateRefresh);
                 //cambiar de color el paso segun las tareas

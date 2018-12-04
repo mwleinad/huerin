@@ -4,6 +4,13 @@ var createDropzoneDrill= (idForm,contenedor,options,node)=>{
     if(jQ(idForm).length) {
         jQ('form'+idForm).each(
             function() {
+                //drilldown se filtra el tipo de archuvo a subir
+                if(jQ(this).data('extensiones')!=''){
+                    options['acceptedFiles'] = jQ(this).data('extensiones');
+                    options['dictInvalidFileType'] = 'Archivo no permitido, compruebe la extension.';
+                }
+
+
                 var objDrop = dropzoneDefault(this, options);
                 objDrop.on('sending', function (file, xhr, formData) {
                     formData.append('type', 'saveFromWorkflow');
@@ -23,6 +30,9 @@ var createDropzoneDrill= (idForm,contenedor,options,node)=>{
                     }else{
                         ShowStatusPopUp(data.notificacion);
                     }
+                });
+                objDrop.on("error", function(file, errorMessage) {
+                    ShowErrorOnPopup(errorMessage,1);
                 });
             }
 
@@ -97,7 +107,7 @@ var constructTemplate = (customOptions) => {
    }
    if(customOptions!=null){
        Object.keys(customOptions).forEach(
-           (key) => { optionsH.key=customOptions[key];}
+           (key) => {optionsH[key]=customOptions[key];}
        );
    }
 };
@@ -115,7 +125,7 @@ var normalOptions= (customOptions) => {
     }
     if(customOptions!=null){
         Object.keys(customOptions).forEach(
-            (key) => { optionsH.key=customOptions[key];}
+            (key) => {optionsH[key]=customOptions[key];}
     );
     }
 };

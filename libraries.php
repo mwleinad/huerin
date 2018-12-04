@@ -106,6 +106,7 @@ include_once(DOC_ROOT."/classes/contractRep.class.php");
 include_once(DOC_ROOT."/classes/serie.class.php");
 include_once(DOC_ROOT."/classes/expediente.class.php");
 include_once(DOC_ROOT."/classes/rol.class.php");
+include_once(DOC_ROOT."/classes/catalogue.class.php");
 
 if($_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
@@ -197,6 +198,7 @@ $expediente=  new Expediente;
 $rol=  new Rol;
 $valida = new Validar();
 $dropzone = new Dropzone();
+$catalogue = new Catalogue();
 
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");

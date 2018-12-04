@@ -730,7 +730,10 @@ opacity:0.7 !important;
 .spanDown,
 .spanHistory,
 .spanActivate,
-.spanDelete{
+.spanDelete,
+.spanAddTask,
+.spanTaskEdit,
+.spanTaskDelete{
 	cursor:pointer;
 }
 .borderGray{

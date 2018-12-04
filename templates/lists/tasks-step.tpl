@@ -42,7 +42,7 @@
                         {if $data.workflow.status neq "inactiva"}
                             {if in_array(103,$permissions)||$User.isRoot}
                                 {if $isDep}
-                                    <form method="post" enctype="multipart/form-data" class="dropzone" id="frm-workflow" >
+                                    <form method="post" enctype="multipart/form-data" class="dropzone" id="frm-workflow" data-extensiones ={$task.extensiones}>
                                         <input type="hidden" id="stepId" name="stepId" value="{$data.stepId}" />
                                         <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
                                         <input type="hidden" id="servicioId" name="servicioId" value="{$data.workflow.instanciaServicioId}" />
@@ -56,7 +56,7 @@
                         {if $data.workflow.status neq "inactiva"}
                             {if in_array(103,$permissions)||$User.isRoot}
                                 {if $isDep}
-                                    <form method="post" enctype="multipart/form-data" class="dropzone" id="frm-workflow">
+                                    <form method="post" enctype="multipart/form-data" class="dropzone" id="frm-workflow" data-extensiones ={$task.extensiones}>
                                         <input type="hidden" id="stepId" name="stepId" value="{$data.stepId}" />
                                         <input type="hidden" id="taskId" name="taskId" value="{$task.taskId}" />
                                         <input type="hidden" id="servicioId" name="servicioId" value="{$data.workflow.instanciaServicioId}" />
