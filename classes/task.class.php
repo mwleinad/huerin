@@ -61,6 +61,15 @@ class Task extends Step
 		$this->Util()->ValidateString($value, 255, 0, 'Control Tres');
 		$this->control3 = $value;
 	}
+    private $extensiones=[];
+    public function setExtensiones($value)
+    {
+        if(!is_array($value)||empty($value))
+            $this->Util()->setError(0,'error',"Es necesario seleccionar por lo menos un elemento  de la lista",'Extensiones de archivos');
+        else
+            $this->extensiones = $value;
+
+    }
 	public function Enumerate()
 	{
 		global $months;
@@ -95,8 +104,6 @@ class Task extends Step
 	public function Edit()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-
-//print_r($this);
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				task
@@ -106,7 +113,8 @@ class Task extends Step
 				`prorroga` = '".$this->prorroga."',
 				`control` = '".$this->control."',
 				`control2` = '".$this->control2."',
-				`control3` = '".$this->control3."'
+				`control3` = '".$this->control3."',
+				`extensiones` = '".implode(',',$this->extensiones)."'
 			WHERE taskId = '".$this->taskId."'");
 		$this->Util()->DB()->UpdateData();
 
@@ -129,7 +137,8 @@ class Task extends Step
 				`prorroga`,
 				`control`,
 				`control2`,
-				`control3`
+				`control3`,
+				`extensiones`
 		)
 		VALUES
 		(
@@ -139,7 +148,9 @@ class Task extends Step
 				'".$this->prorroga."',
 				'".$this->control."',
 				'".$this->control2."',
-				'".$this->control3."'
+				'".$this->control3."',
+				'".implode(',',$this->extensiones)."'
+				
 		);");
 		$this->Util()->DB()->InsertData();
 		$this->Util()->setError(2, "complete");

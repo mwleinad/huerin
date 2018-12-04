@@ -4,21 +4,20 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 switch($_POST["type"])
 {
-	case "addTask": 
-			
-//			$tiposDeServicio = $tipoServicio->EnumerateAll();
-//			$smarty->assign("tiposDeServicio", $tiposDeServicio);
-			$smarty->assign("stepId", $_POST["stepId"]);
+	case "addTask":
+		    $extensiones =  $catalogue->ListFilesExtension();
+			$smarty->assign("extensiones", $extensiones);
+            $smarty->assign("stepId", $_POST["stepId"]);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-task-popup.tpl');
-		
 		break;	
 		
 	case "saveAddTask":
 			$task->setNombreTask($_POST['nombreTask']);
 			$task->setDiaVencimiento($_POST['diaVencimiento']);			
 			$task->setProrroga($_POST['prorroga']);			
-			$task->setControl($_POST['control']);			
+			$task->setControl($_POST['control']);
+			$task->setExtensiones($_POST['extensiones']);
 			$task->setControl2($_POST['control2']);			
 			$task->setControl3($_POST['control3']);			
 			$task->setStepId($_POST['stepId']);
@@ -67,6 +66,19 @@ switch($_POST["type"])
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$task->setTaskId($_POST['taskId']);
 			$myTask = $task->Info();
+			$extensiones =  $catalogue->ListFilesExtension();
+			$currentExtensions = explode(',',$myTask['extensiones']);
+			$all_checked = true;
+			foreach ($extensiones as $key => $value){
+				if(in_array($value['mime'],$currentExtensions)){
+					$extensiones[$key]['permitido'] =  1;
+				}else{
+                    $all_checked = false;
+                    $extensiones[$key]['permitido'] =  0;
+                }
+			}
+        	$smarty->assign("all_checked", $all_checked);
+			$smarty->assign("extensiones", $extensiones);
 			$smarty->assign("post", $myTask);
 			$smarty->assign("servicioId", $_POST["servicioId"]);
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-task-popup.tpl');
@@ -77,7 +89,8 @@ switch($_POST["type"])
 			$task->setNombreTask($_POST['nombreTask']);
 			$task->setDiaVencimiento($_POST['diaVencimiento']);			
 			$task->setProrroga($_POST['prorroga']);			
-			$task->setControl($_POST['control']);			
+			$task->setControl($_POST['control']);
+			$task->setExtensiones($_POST['extensiones']);
 			$task->setControl2($_POST['control2']);			
 			$task->setControl3($_POST['control3']);			
 			$task->setTaskId($_POST['taskId']);

@@ -146,16 +146,24 @@ function AddTask()
 	{
 		method:'post',
 		parameters: $('addTaskForm').serialize(true),
+		onLoading:function(){
+			$('loading-img').style.display='block';
+            $('btnAddTask').style.display='none';
+		},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
-				ShowStatusPopUp(splitResponse[1])
+				ShowStatusPopUp(splitResponse[1]);
+                $('btnAddTask').style.display='block';
+                $('loading-img').style.display='none';
 			}
 			else
 			{
-				ShowStatusPopUp(splitResponse[1])
+				ShowStatusPopUp(splitResponse[1]);
+                $('btnAddTask').style.display='block';
+                $('loading-img').style.display='none';
 				$('contenido').innerHTML = splitResponse[2];
 				AddTaskPopup(0);
 			}
@@ -163,8 +171,6 @@ function AddTask()
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
-
-
 function EditStepPopup(id)
 {
 	grayOut(true);
@@ -175,7 +181,6 @@ function EditStepPopup(id)
 		grayOut(false);
 		return;
 	}
-
 	new Ajax.Request(WEB_ROOT+'/ajax/steps.php',
 	{
 		method:'post',
@@ -196,18 +201,26 @@ function EditStep()
 	{
 		method:'post',
 		parameters: $('editStepForm').serialize(true),
+        onLoading:function(){
+            $('loading-img').style.display='block';
+            $('btnEditTask').style.display='none';
+        },
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
-				ShowStatusPopUp(splitResponse[1])
+				ShowStatusPopUp(splitResponse[1]);
+                $('btnEditTask').style.display='block';
+                $('loading-img').style.display='none';
 			}
 			else
 			{
 				ShowStatusPopUp(splitResponse[1])
+                $('btnAddTask').style.display='block';
+                $('loading-img').style.display='none';
 				$('contenido').innerHTML = splitResponse[2];
-				 EditStepPopup(0);
+				EditStepPopup(0);
 			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
@@ -297,3 +310,11 @@ function ToogleTasks(id)
 		$('spanStepId-'+id).innerHTML = "[+]";
 	}
 }
+jQ(document).on('click','#check_all',function () {
+	if(!jQ(this).is(':checked')){
+        jQ('form input[type=checkbox]#extensiones').prop('checked',false);
+	}else{
+        jQ('form input[type=checkbox]#extensiones').prop('checked',true);
+	}
+
+});

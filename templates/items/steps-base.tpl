@@ -15,7 +15,7 @@
         	<img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.stepId}" title="Editar"/>
 		{/if}
         {if in_array(33,$permissions)|| $User.isRoot}
-        	<img src="{$WEB_ROOT}/images/icons/task.png" class="spanAddTask" id="{$item.stepId}" title="Agregar Tarea"/>
+        	<img src="{$WEB_ROOT}/images/icons/add_1.png" class="spanAddTask" id="{$item.stepId}" title="Agregar Tarea"/>
 		{/if}
 		</td>
 	</tr>
