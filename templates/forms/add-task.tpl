@@ -34,10 +34,10 @@
 						{assign var='ncol' value=4}
 						{foreach from=$extensiones key=kexp item=exp}
 							{if $ncol eq 4}
-								<tr><td><input type="checkbox" name="extensiones[]" id="extensiones" value="{$exp.mime}"></td><td>{$exp.name}</td>
+								<tr><td><input type="checkbox" name="extensiones[]" id="extensiones" value="{$exp.extension}"></td><td>{$exp.name}</td>
 								{assign var='ncol' value=$ncol-1}
 							{else}
-								<td><input type="checkbox" name="extensiones[]" id="extensiones"  value="{$exp.mime}"></td> <td>{$exp.name}</td>
+								<td><input type="checkbox" name="extensiones[]" id="extensiones"  value="{$exp.extension}"></td> <td>{$exp.name}</td>
 								{assign var='ncol' value=$ncol-1}
 								{if $ncol eq 0}
 									{assign var='ncol' value=4}
