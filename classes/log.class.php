@@ -68,36 +68,39 @@ class Log extends Util
         //componer mensaje de accion
         $wherehuerin="";
         $excluyehuerin=false;
+        $sendBraun = false;
         $defaultId= array(32);
         switch($this->action){
             case 'Insert':
                 $accion = "ha sido dado de alta ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,290);
+                $sendBraun = true;
             break;
             case 'Update':
                 $excluyehuerin = true;
-                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290 ";
                 $accion ="ha sido modificada ";
             break;
             case 'Baja':
                 $accion="ha sido  dado de baja ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,290);
+                $sendBraun = true;
             break;
             case 'bajaParcial':
                 $accion="ha sido  dado de baja temporalmente ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,290);
+                $sendBraun = true;
                 break;
             case 'Reactivacion':
-                $excluyehuerin = true;
-                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
                 $accion="ha sido reactivado ";
+                array_push($defaultId,IDHUERIN);
+                array_push($defaultId,290);
+                $sendBraun = true;
             break;
             case 'readonly':
                 $excluyehuerin = true;
-                $wherehuerin = " AND personalId!='".IDHUERIN."' AND personalId!=290";
                 $accion="ha sido reactivado para solo lectura ";
             break;
             case 'Delete':
@@ -109,7 +112,7 @@ class Log extends Util
         //encontrar tabla que se modifico
         switch($this->tabla){//se comprueba de que tabla se hace la modificacion.
             case 'contract':
-                $sql  ="SELECT a.permisos,a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->tablaId."' ";
+               $sql  ="SELECT a.permisos,a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->tablaId."' ";
                 $this->Util()->DB()->setQuery($sql);
                 $contrato = $this->Util()->DB()->GetRow();
                 $permisos = explode('-',$contrato['permisos']);
@@ -122,7 +125,7 @@ class Log extends Util
 
                     if($per>0)
                     {
-                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ".$wherehuerin);
+                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ");
                         $row = $this->Util()->DB()->GetRow();
                         if($this->Util()->ValidateEmail(trim($row['email']))){
                             $encargados[trim($row['email'])] = $row['name'];
@@ -134,9 +137,15 @@ class Log extends Util
 
                     }
                 }
+                if(!empty($jefes)&&$sendBraun){
+                    array_push($jefes,IDBRAUN);
+                }
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if(empty($encargados))
                 {
+                    if($sendBraun)
+                        array_push($defaultId,IDBRAUN);
+
                     $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).")";
                     $this->Util()->DB()->setQuery($sqlo);
                     $persons= $this->Util()->DB()->GetResult();
@@ -167,7 +176,7 @@ class Log extends Util
 
                     if($per>0)
                     {
-                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ".$wherehuerin);
+                        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId='".$per."' ");
                         $row = $this->Util()->DB()->GetRow();
                         if($this->Util()->ValidateEmail(trim($row['email']))){
                             $encargados[trim($row['email'])] = $row['name'];
@@ -206,6 +215,9 @@ class Log extends Util
                 break;
             case 'customer'://en la edicion de cliente este deberia llegarle en teoria solo a jacobo y rogelio que son los que revisan operaciones.
                 //enviar a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
+                if($sendBraun)
+                    array_push($defaultId,IDBRAUN);
+
                 $sqlp  ="SELECT email,name,departamentoId FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).")";
                 $this->Util()->DB()->setQuery($sqlp);
                 $persons= $this->Util()->DB()->GetResult();
