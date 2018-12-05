@@ -70,7 +70,7 @@ switch($_POST["type"])
 			$currentExtensions = explode(',',$myTask['extensiones']);
 			$all_checked = true;
 			foreach ($extensiones as $key => $value){
-				if(in_array($value['mime'],$currentExtensions)){
+				if(in_array($value['extension'],$currentExtensions)){
 					$extensiones[$key]['permitido'] =  1;
 				}else{
                     $all_checked = false;
