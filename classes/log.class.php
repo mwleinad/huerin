@@ -91,7 +91,6 @@ class Log extends Util
                 $accion="ha sido  dado de baja temporalmente ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,290);
-                $sendBraun = true;
                 break;
             case 'Reactivacion':
                 $accion="ha sido reactivado ";
