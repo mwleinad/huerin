@@ -5,6 +5,7 @@
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Razon Social</th>
 		<th align="center" width="60">C. Asignado</th>
+		<th align="center" width="60">Supervisor</th>
 		<th align="center" width="50">Ene</th>
 		<th align="center" width="50">Feb</th>
 		<th align="center" width="50">Mar</th>
@@ -71,6 +72,7 @@
     		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     		<td align="center" class="" title="{$item.name}">{$item.name}</td>
 			<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
+			<td align="center" class="" title="{$item.supervisadoBy}">{$item.supervisadoBy}</td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio name=instancias}
 					<td align="center"
 					  class="{if $instanciaServicio.status neq 'inactiva'}

@@ -100,6 +100,7 @@ switch($_POST["type"])
 						$deptoId = $tipoServicio->GetField('departamentoId');
 						
 						$serv['responsable'] = $permisos[$deptoId];
+						$serv['supervisadoBy'] = $personal->findSupervisor($permisos2[$deptoId]);
 						if($formValues['atrasados'])
 						{
 							if($noCompletados > 0)
@@ -132,6 +133,7 @@ switch($_POST["type"])
 							$card["nameContact"] = $cliente["nameContact"];
 							$card["tipoPersonal"] = $servicio["responsable"]["tipoPersonal"];
 							$card["responsable"] = $servicio["responsable"]["name"];
+                            $card["supervisadoBy"] = $servicio["supervisadoBy"];
 							$card["name"] = $contract["name"];
 							$card["instanciasServicio"] = $servicio["instancias"];;
 							$card["nombreServicio"] = $servicio["nombreServicio"];
