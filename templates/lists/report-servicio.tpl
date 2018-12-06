@@ -23,7 +23,7 @@
 		{foreach from=$cleanedArray item=item key=key}
 		{if $item.isRowCobranza && (in_array(210,$permissions) ||$User.isRoot)}
 			<tr>
-				<td colspan="3" align="center"><b>Total cobranza mensual</b></td>
+				<td colspan="4" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
                     {if $instanciaServicio.class == '#000000'}
                         <td>
@@ -100,7 +100,7 @@
 		{/if}
 		{foreachelse}
 		<tr>
-			<td colspan="15" align="center">Ning&uacute;n registro encontrado.</td>
+			<td colspan="16" align="center">Ning&uacute;n registro encontrado.</td>
 		</tr>
 		{/foreach}
 </tbody>
