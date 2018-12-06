@@ -1114,6 +1114,35 @@ function SubordinadosDetails()
             return false;
         }
      }
+     public function findSupervisor($id){
+	    global $rol;
+         $this->setPersonalId($id);
+         $infP = $this->Info();
+         $role = $rol->getInfoByData($infP);
+         $rolArray = explode(' ',$role['name']);
+         $needle = trim($rolArray[0]);
+         $jefes = array();
+         $this->findDeepJefes($id, $jefes,true);
+         $supervisor="";
+         switch($needle){
+             case 'Coordinador':
+             case 'Gestoria':
+             case 'Sistemas':
+             case 'Supervisor':
+             case 'Gerente':
+             case 'socio':
+                 $supervisor = $jefes['me'];
+                 break;
+             case 'Recepcion':
+             case 'Cuentas':
+             case 'Contador':
+             case 'Asistente':
+             case 'Auxiliar':
+                 $supervisor = $jefes['Supervisor'];
+                 break;
+         }
+         return $supervisor;
+     }
     
 }
 
