@@ -62,7 +62,7 @@
 	$obligaciones = $obligacion->EnumerateContract();
 	$smarty->assign("obligaciones", $obligaciones);
 
-    $filtros['departamentosExcluidos'] ='mensajeria,auditoria';
+    $filtros['depExcluidos'] ='mensajeria';
     $deptos = $departamentos->Enumerate($filtros);
 	$smarty->assign("departamentos", $deptos);
 	

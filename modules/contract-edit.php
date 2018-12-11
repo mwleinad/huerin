@@ -159,7 +159,7 @@
 	$empleados = $personal->EnumerateAll();
 	$smarty->assign("empleados", $empleados);
 
-	$filtros['departamentosExcluidos'] ='mensajeria';
+	$filtros['depExcluidos'] ='mensajeria';
 	$departamentos = $departamentos->Enumerate($filtros);
 	$smarty->assign("departamentos", $departamentos);
 
