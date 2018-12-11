@@ -1,0 +1,2 @@
+ALTER TABLE `historyChanges`
+	ADD COLUMN `namePerson` VARCHAR(255) NOT NULL AFTER `personalId`;

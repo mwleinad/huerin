@@ -1656,6 +1656,7 @@ class Customer extends Main
       {
           $sql  = "select a.contractId,a.name,a.activo from contract a 
                    inner join  servicio b on a.contractId=b.contractId and b.status='".$tipo."'
+                   inner join  tipoServicio c on b.tipoServicioId=c.tipoServicioId and c.status='1'
                    where a.customerId='".$this->customerId."' and a.activo='Si' 
                    group by a.contractId
                    order by a.name asc 

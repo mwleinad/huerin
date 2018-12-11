@@ -513,6 +513,16 @@ class Contract extends Main
     $this->Util()->ValidateInteger($value);
     $this->contractId = $value;
   }
+  private $idContracts = [];
+  public function setIdContracts($value)
+  {
+        if(empty($value)||!is_array($value))
+            $this->Util()->setError(0,'error','Es necesario seleccionar una razon social de la lista.');
+        $this->idContracts = $value;
+  }
+  public function getIdContracts(){
+      return $this->idContracts;
+  }
 
   public function getContractId()
   {
@@ -3114,6 +3124,79 @@ class Contract extends Main
         $permisos = implode('-',$permisosArray);
 
         return $permisos;
+    }
+    public function findEmailEncargadosJefesByContractId($filtros=[]){
+        global $personal;
+        $jefes = [];
+        $defaultId = [];
+        $encargados = [];
+        $data = [];
+        array_push($defaultId,IDHUERIN);
+        array_push($defaultId,290);
+
+        $sql  ="SELECT a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->contractId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $razonSocial = $this->Util()->DB()->GetRow();
+        $sqlp ="select a.personalId,b.email,b.name from contractPermiso a  left join personal b ON  a.personalId=b.personalId where a.contractId='".$this->contractId."' and a.departamentoId NOT IN(33,32) ";
+        $this->Util()->DB()->setQuery($sqlp);
+        $permisos = $this->Util()->DB()->GetResult();
+        foreach($permisos as $permiso){
+                if($this->Util()->ValidateEmail(trim($permiso['email']))){
+                    $encargados[trim($permiso['email'])] = $permiso['name'];
+                    //encontramos los jefes de forma ascendente de los encargados de cuenta
+                    $personal= new Personal();
+                    if($filtros['incluirJefes']){
+                        $yourJefes= $personal->Jefes($permiso['personalId']);
+                        $jefes = array_merge($jefes,$yourJefes);
+                    }
+                }
+        }
+        if(!empty($jefes)&&$filtros['sendBraun']){
+            array_push($jefes,IDBRAUN);
+        }
+        //Si no tiene ningun encargado se usan los gerentes, coordinador y socio.
+        //Se excluyen los del departamento de mensajeria y RRHH)
+        if(empty($encargados))
+        {
+            if($filtros['sendBraun'])
+                array_push($defaultId,IDBRAUN);
+
+            $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).") AND departamento NOT IN(32,33)";
+            $this->Util()->DB()->setQuery($sqlo);
+            $persons= $this->Util()->DB()->GetResult();
+            foreach($persons as $pers)
+            {
+                if($this->Util()->ValidateEmail(trim($pers['email'])))
+                    $encargados[trim($pers['email'])] = $pers['name'];
+            }
+        }
+        //encontrar correos de los jefes de cada encargado, esto siempre se debe cumplor debido  a que todos tiene jefe inmediato hasta llegar a jacobo
+        $correosJefes=array();
+        if(!empty($jefes))
+        {
+            //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
+            array_push($jefes,32);
+            array_push($jefes,290);
+            $jefes = array_unique($jefes);
+            //comprobar si se excluye a huerin
+            if(!$filtros['sendHuerin']){
+                $index = array_search(IDHUERIN,$jefes);
+                if($index)
+                    unset($jefes[$index]);
+            }
+            $ids = implode(',',$jefes);
+            $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
+            $resultJefes = $this->Util()->DB()->GetResult();
+            foreach($resultJefes as $var){
+                if($this->Util()->ValidateEmail(trim($var['email']))){
+                    $correosJefes[trim($var['email'])] =$var['name'];
+                }
+            }
+        }
+        $encargados = array_merge($encargados,$correosJefes);
+        $data['encargados'] = $encargados;
+        $data['razon'] = $razonSocial;
+        return $data;
     }
 
 }

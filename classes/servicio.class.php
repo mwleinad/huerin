@@ -889,9 +889,9 @@ class Servicio extends Contract
 		$this->Util()->DB()->setQuery("SELECT a.*, 
         CASE a.personalId
         WHEN 999990000 THEN 'Administrador'
-         ELSE
-          b.name
-         END AS name, 
+        ELSE
+         IF(b.name='',a.namePerson,b.name)
+        END AS name, 
         CASE 
          WHEN a.status='activo' THEN 'Alta'
          WHEN a.status='baja' THEN 'Baja'
@@ -1210,37 +1210,79 @@ class Servicio extends Contract
 
        return true;
     }
-    public function doBajaTemporalServicesByContrato($initialState,$endState){
-	    global $log,$User;
+    public function doBajaTemporalMultiple($initialState,$endState){
+        global $log,$User;
+        $contratos = [];
+        switch($endState){
+            case 'bajaParcial':
+                foreach ($this->getIdContracts() as $conId) {
+                    $cad = [];
+                    if($_POST['dateWorkflow'.$conId]==""||!$this->Util()->isValidateDate($_POST['dateWorkflow'.$conId])){
+                        $this->Util()->setError(0, "error", 'Si selecciona una razon social, compruebe que el campo ultimo workflow de la fila sea una fecha valida o  no se encuentre vacia.');
+                        break;
+                    }
+                    else{
+                        $cad['contractId']=$conId;
+                        $cad['dateWorkflow'] = $this->Util()->FormatDateMySql($_POST['dateWorkflow'.$conId]);
+                        $contratos[] = $cad;
+                    }
+                }
+                $message = 'Baja temporal realizado correctamente.';
+            break;
+            case 'activo':
+                foreach ($this->getIdContracts() as $conId){
+                    $cad['contractId']=$conId;
+                    $cad['dateWorkflow'] =null;
+                    $contratos[] = $cad;
+                }
+                $message = 'Se han reactivado correctamente todos los servicios.';
+            break;
+        }
+
         if($this->Util()->PrintErrors())
             return false;
+        foreach ($contratos as $value){
+            $this->doBajaTemporalServicesByContrato($value['contractId'],$value['dateWorkflow'],$initialState,$endState);
+        }
+        $this->Util()->setError(0, "complete", $message);
+        $this->Util()->PrintErrors();
+        return true;
 
-        //hay que iterar servicio por servicio para guardar su historial
-        $sql ="select * from servicio where contractId='".$this->getContractId()."' and status='".$initialState."' ";
+    }
+    public function doBajaTemporalServicesByContrato($conId,$fechaWorkflow,$initialState,$endState){
+	    global $log,$User,$smarty;
+        //Hay que iterar servicio por servicio para guardar su historial.
+        $sql ="select a.servicioId,b.nombreServicio,a.inicioFactura,a.inicioOperaciones,a.costo 
+              from servicio a 
+              inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId and b.status='1' where a.contractId='".$conId."' and a.status='".$initialState."' ";
         $this->Util()->DB()->setQuery($sql);
         $servicios = $this->Util()->DB()->GetResult();
-
-
         switch ($endState){
             case 'bajaParcial':
-                $dateWorflow = " ,lastDateWorkflow='" . $this->lastDateWorkflow . "' ";
+                $dateWorflow = " ,lastDateWorkflow='" .$fechaWorkflow . "' ";
                 $action ="bajaParcial";
-                $message =  "Se ha realizado la baja temporal de los servicios.";
             break;
             case 'activo':
                 $dateWorflow ="";
                 $action ="Reactivacion";
-                $message =  "Se ha realizado la reactivación de los servicios.";
             break;
-
         }
+        $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$User['userId'].'" ');
+        $who = $this->Util()->DB()->GetSingle();
+
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $who="Administrador de sistema(desarrollador)";
+
+        $serviciosAfectados =  [];
         foreach($servicios as $key=>$value) {
+            $servicioAfectado = [];
             $this->setServicioId($value['servicioId']);
             $before = $this->InfoLog();
             $this->Util()->DB()->setQuery("UPDATE servicio SET status = '".$endState."' $dateWorflow  WHERE servicioId = '" . $value['servicioId'] . "'");
             $this->Util()->DB()->UpdateData();
             $after = $this->InfoLog();
-            //Guardamos el Log
+
+            //Guardamos el log sin enviar eso lo haremos pero de manera global por cada razon
             $log->setPersonalId($User['userId']);
             $log->setFecha(date('Y-m-d H:i:s'));
             $log->setTabla('servicio');
@@ -1248,32 +1290,30 @@ class Servicio extends Contract
             $log->setAction($action);
             $log->setOldValue(serialize($before));
             $log->setNewValue(serialize($after));
-            $log->Save();
+            $log->SaveOnly();
             //actualizar historial
-            $this->Util()->DB()->setQuery("
-			INSERT INTO
-			 historyChanges
-			(
-				`servicioId`,
-				`inicioFactura`,
-				`status`,
-				`costo`,
-				`personalId`,
-				`inicioOperaciones`
-            )
-            VALUES
-            (
-                    '" . $after["servicioId"] . "',
-                    '" . $after["inicioFactura"] . "',
-                    '" . lcfirst($action) . "',
-                    '" . $after["costo"] . "',
-                    '" . $User["userId"] . "',
-                    '" . $after["inicioOperaciones"] . "'
-            )");
-            $this->Util()->DB()->InsertData();
+            //actualizar historial del servicio
+            $log->saveHistoryChangesServicios($value['servicioId'],$value['inicioFactura'],lcfirst($action),$value['costo'],$User['userId'],$value['inicioOperaciones'],$who);
+            $servicioAfectado= $value;
+            $servicioAfectado['ultimoWorkflow'] = $fechaWorkflow;
+            $serviciosAfectados[]=$servicioAfectado;
         }
-        $this->Util()->setError(0,"complete",$message);
-        $this->Util()->PrintErrors();
+        if(!empty($serviciosAfectados)) {
+            $filtros['sendBraun'] = false;
+            $filtros['sendHuerin'] = true;
+            $filtros['incluirJefes'] = true;
+            $this->setContractId($conId);
+            $data = $this->findEmailEncargadosJefesByContractId($filtros);
+
+            $smarty->assign('serviciosAfectados', $serviciosAfectados);
+            $smarty->assign('razon', $data['razon']);
+            $smarty->assign('endState', $endState);
+            $smarty->assign('who', $who);
+            $body = $smarty->fetch(DOC_ROOT . '/templates/boxes/body-message-bajatemporal-reactivacion.tpl');
+            $mail = new SendMail();
+            $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+            $mail->PrepareMultipleNotice($subject, $body, $data['encargados'], '', "", "", "", "", 'noreply@braunhuerin.com.mx', 'Administrador de plataforma', true);
+        }
         return true;
     }
 }
