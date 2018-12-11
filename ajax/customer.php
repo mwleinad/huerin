@@ -236,9 +236,8 @@ switch($_POST["type"])
         $smarty->display(DOC_ROOT."/templates/boxes/down-service-from-customer-popup.tpl");
         break;
 	case 'doBajaTemporal':
-		  $servicio->setContractId($_POST['contractId'],true);
-          $servicio->setLastDateWorkflow($_POST['lastDateWorkflow']);
-		  if($servicio->doBajaTemporalServicesByContrato('activo','bajaParcial')){
+		  $servicio->setIdContracts($_POST['idContracts']);
+		  if($servicio->doBajaTemporalMultiple('activo','bajaParcial')){
 
               echo "ok[#]";
               $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
@@ -248,9 +247,8 @@ switch($_POST["type"])
 		  }
 	break;
     case 'doReactiveTemporal':
-        $servicio->setContractId($_POST['contractId'],true);
-        if($servicio->doBajaTemporalServicesByContrato('bajaParcial','activo')){
-
+        $servicio->setIdContracts($_POST['idContracts']);
+        if($servicio->doBajaTemporalMultiple('bajaParcial','activo')){
             echo "ok[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }else{

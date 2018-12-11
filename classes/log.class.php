@@ -44,6 +44,7 @@ class Log extends Util
 				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
+        return true;
     }
 	public function Save(){
 
@@ -111,7 +112,7 @@ class Log extends Util
         //encontrar tabla que se modifico
         switch($this->tabla){//se comprueba de que tabla se hace la modificacion.
             case 'contract':
-               $sql  ="SELECT a.permisos,a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->tablaId."' ";
+                $sql  ="SELECT a.permisos,a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->tablaId."' ";
                 $this->Util()->DB()->setQuery($sql);
                 $contrato = $this->Util()->DB()->GetRow();
                 $permisos = explode('-',$contrato['permisos']);
@@ -582,7 +583,7 @@ class Log extends Util
 
         return $html;
     }
-    public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00'){
+    public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno'){
         $this->Util()->DB()->setQuery("
 			INSERT INTO
 				historyChanges
@@ -592,6 +593,7 @@ class Log extends Util
 				`status`,
 				`costo`,
 				`personalId`,
+				`namePerson`,
 				`inicioOperaciones`
 		    )
 		    VALUES
@@ -601,7 +603,9 @@ class Log extends Util
 				'".$status."',
 				'".$costo."',
 				'".$personalId."',
+				'".$nombrePersonal."',
 				'".$initOperaciones."'
+				
 		    )");
         $this->Util()->DB()->InsertData();
     }
