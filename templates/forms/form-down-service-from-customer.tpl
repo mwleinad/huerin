@@ -7,7 +7,7 @@
 			<p style="margin-bottom: 10px;color: red;">Seleccione una o varias razones sociales para reactivar todos sus servicios con baja temporal.</p>
 		{else}
 			<p style="margin-bottom: 10px;color: red;">Seleccione una o varias razones sociales que desea darle de baja temporal a todos sus servicios.</p>
-			<p style="margin-bottom: 10px;color: red;">El campo ultimo workflow sera aplicado para todos los servicios, favor de verificar.</p>
+			<p style="margin-bottom: 10px;color: red;">El campo ultimo workflow sera aplicado para todos los servicios de la razon social seleccionada, favor de verificar.</p>
 		{/if}
 		<div class="formLine">
 			<table width="100%">

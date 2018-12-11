@@ -167,6 +167,11 @@ class SendMail extends Main
         $logSend ="";
         foreach($to as $correo => $name)
         {
+            if($correo==EMAILCOORDINADOR || $correo==EMAILSOCIO){
+                $totalCont++;
+                continue;
+            }
+
             if($totalCorreo==1){
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
                 $mail->AddAddress($correo, $name);
@@ -194,7 +199,7 @@ class SendMail extends Main
         }
         $mail->clearAllRecipients();
         if($sendDesarrollador){
-            $file = trim('f'.strtotime(date('Y-m-d H:i:s')).".txt");
+            $file = trim('logcorreos_'.strtotime(date('Y-m-d H:i:s')).".txt");
             $filePath = DOC_ROOT."/sendFiles/".$file;
             $open = fopen($filePath,"w");
             if ( $open ) {
@@ -202,8 +207,15 @@ class SendMail extends Main
                 fclose($open);
                 $mail->AddAttachment($filePath, $file);
             }
-
-            $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR'.date('Y-m-d H:i:s',time()));
+            if(PROJECT_STATUS=='test'){
+                $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->AddCC(EMAILSOCIO,'Jacobo Eduardo Huerin Romano');
+                $mail->AddCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+            }else{
+                $mail->AddAddress(EMAILSOCIO,'Jacobo Eduardo Huerin Romano');
+                $mail->AddAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+                $mail->AddBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+            }
             $mail->Send();
             $mail->clearAllRecipients();
             @unlink($filePath);
