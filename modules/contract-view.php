@@ -61,8 +61,9 @@
 	$obligacion->setContractId($_GET["contId"]);
 	$obligaciones = $obligacion->EnumerateContract();
 	$smarty->assign("obligaciones", $obligaciones);
-	
-	$deptos = $departamentos->Enumerate(true);			
+
+    $filtros['departamentosExcluidos'] ='mensajeria,auditoria';
+    $deptos = $departamentos->Enumerate($filtros);
 	$smarty->assign("departamentos", $deptos);
 	
 	$permisos = $contract->UsuariosConPermiso($infoRazonSocial['permisos'],$infoRazonSocial['responsableCuenta']);			

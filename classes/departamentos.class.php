@@ -33,14 +33,19 @@ class Departamentos extends Main
         $result = $this->Util()->DB()->GetResult();
         return $result;
     }
-	public function Enumerate($all=false)
+	public function Enumerate($filtro=[])
 	{
+	    $strFiltro = "";
 		global $infoUser;
-		
-		//if($infoUser["tipoPersonal"]!="Socio" && !$all)
-		//$filtroDepto=' WHERE departamentoId="'.$infoUser['departamentoId'].'" ';
-				
-		$this->Util()->DB()->setQuery('SELECT * FROM departamentos '.$filtroDepto.' ORDER BY departamento ASC '.$sql_add);
+		if(!empty($filtro)){
+		    if($filtro['depExcluidos']!=""){
+		        $depExcluidos = explode(',',$filtro['depExcluidos']);
+		        foreach($depExcluidos as $dep){
+		            $strFiltro .= " and lower(departamento) not like '%".strtolower($dep)."%' ";
+                }
+            }
+        }
+		$this->Util()->DB()->setQuery("SELECT * FROM departamentos where 1 $strFiltro  ORDER BY departamento ASC ");
 		$result = $this->Util()->DB()->GetResult();
 		//encontrar el permisoId de cada departamento
         foreach($result as $key=> $dep){
