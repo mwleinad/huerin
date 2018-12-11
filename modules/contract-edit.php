@@ -159,7 +159,8 @@
 	$empleados = $personal->EnumerateAll();
 	$smarty->assign("empleados", $empleados);
 
-	$departamentos = $departamentos->Enumerate();
+	$filtros['depExcluidos'] ='mensajeria';
+	$departamentos = $departamentos->Enumerate($filtros);
 	$smarty->assign("departamentos", $departamentos);
 
 	//Checamos los permisos para eliminar DOCs y Archivos
