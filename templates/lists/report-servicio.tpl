@@ -26,8 +26,8 @@
 				<td colspan="4" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
                     {if $instanciaServicio.class == '#000000'}
-                        <td>
-                            Sin factura
+                        <td style="text-align: center">
+                            No se emitieron facturas
                         </td>
                     {else}
 					<td align="center"
@@ -35,7 +35,7 @@
 								{else}
 										background-color:{$instanciaServicio.class};
 								{/if}
-								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0'}
+								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0' || $instanciaServicio.class == '#EFEFEF'}
 								color: #000000; {else}
 								color: #ffffff;
 								{/if}
@@ -45,18 +45,18 @@
 							$ {$instanciaServicio.total|number_format:2:".":","}
 							<br>
 
-							{if $instanciaServicio.status == 1}
 								<a href="javascript:;" target="_blank" title="Ver detalles" class="detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
 									<img src="{$WEB_ROOT}/images/icons/details.png" border="0" width="16" />
 								</a>
-							{else}
-								Cancelada
+							{if $instanciaServicio.status ==0}
+								<br>
+								<small>Canceladas</small>
 							{/if}
 						{/if}
 					</td>
                     {/if}
 				{/foreach}
-			</tr>
+			</tr style>
 		{else}
 		<tr>
 			<!--

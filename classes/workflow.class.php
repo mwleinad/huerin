@@ -717,7 +717,7 @@ class Workflow extends Servicio
             9=>array('class'=>'#000000'),10=>array('class'=>'#000000'),11=>array('class'=>'#000000'),12=>array('class'=>'#000000'));
 	    $months = array();
 	    $new =array();
-       $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.payments) as payment,
+        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.payments) as payment,
                 a.version,a.xml FROM comprobante a 
                 LEFT JOIN (select comprobanteId , sum(amount) as payments from payment  group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
                 WHERE
@@ -726,8 +726,9 @@ class Workflow extends Servicio
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         $noComplete=0;
+
         foreach($result as $key=>$value){
-            //encontrar los
+            //rellenar $new con meses que si tienen facturas
             if(!in_array($value['mes'],$months))
             {
                 array_push($months,$value['mes']);
@@ -740,12 +741,31 @@ class Workflow extends Servicio
                 else{
                     $value["class"] = "#00ff00";
                 }
-
                 $new[$value['mes']] =  $value;
             }
         }
-        $new = array_replace_recursive($monthBase,$new);
-        $data['serv'] = $new;
+        //recorrer los meses base y para los que no tiene facturas comprobar que no existen canceladas
+        foreach($monthBase as $km=>$mes){
+            if(key_exists($km,$new)){
+               $monthBase[$km] = $new[$km];
+            }else{
+                $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status` FROM comprobante a 
+                WHERE
+				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha)='".$km."' AND a.userId = '".$contratoId."' AND a.status = '0' $ftrTipo
+				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
+                $this->Util()->DB()->setQuery($sql);
+                $row = $this->Util()->DB()->GetRow();
+                if(!empty($row)){
+                    $row['class'] ="#EFEFEF";
+                    $row['payment'] =0;
+                    $row['saldo'] =0;
+                    $monthBase[$km]=$row;
+                }
+
+            }
+        }
+        //$new = array_replace_recursive($monthBase,$new);
+        $data['serv'] = $monthBase;
         $data['noComplete']=$noComplete;
         return $data;
     }
