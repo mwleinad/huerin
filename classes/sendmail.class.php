@@ -165,13 +165,9 @@ class SendMail extends Main
         $totalCont =1;
         $totalCorreo = count($to);
         $logSend ="";
-        $isSendHuerin =false;
         foreach($to as $correo => $name)
         {
-            if($correo == EMAILSOCIO)
-              $isSendHuerin = true;
-
-            if($correo==EMAILCOORDINADOR || $correo==EMAILSOCIO){
+            if($correo==EMAILCOORDINADOR){
                 $totalCont++;
                 continue;
             }
@@ -213,14 +209,8 @@ class SendMail extends Main
             }
             if(PROJECT_STATUS=='test'){
                 $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
-                if($isSendHuerin)
-                    $mail->AddCC(EMAILSOCIO,'Jacobo Eduardo Huerin Romano');
-
                 $mail->AddCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
             }else{
-                if($isSendHuerin)
-                 $mail->AddAddress(EMAILSOCIO,'Jacobo Eduardo Huerin Romano');
-
                 $mail->AddAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
                 $mail->AddBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
             }
