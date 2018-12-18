@@ -1,7 +1,7 @@
 <div class="grid_16" id="content">
     
   <div class="grid_9">
-  <h1 class="reportes">Reporte de Cobranza</h1>
+  <h1 class="reportes">Cobranza anual</h1>
   </div>
     <div class="grid_6" id="eventbox">
 		  <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>

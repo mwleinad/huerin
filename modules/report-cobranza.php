@@ -1,40 +1,16 @@
 <?php
-	
-	/* Start Session Control - Don't Remove This */
-	$user->allowAccess();	
-	/* End Session Control */
-	
-	
+    /* Star Session Control Modules*/
+    $user->allowAccess(7);  //level 1
+    $user->allowAccess(215);//level 2
+    /* end Session Control Modules*/
 	//Obtenemos los Tipos de Contrato
+    $personals = $personal->Enumerate();
+    $smarty->assign("personals", $personals);
 	$categories = $contCat->Enumerate();
-	
-	$resContracts = $contract->Enumerate();
-				
-	$contracts = array();
-	foreach($resContracts as $key => $val){
-		
-		$card = $val;
-		
-		$customer->setCustomerId($val['customerId']);
-		$card['customer'] = $customer->GetNameById();
-		
-		$contCat->setContCatId($val['contCatId']);
-		$card['tipo'] = $contCat->GetNameById();
-		
-		$card['status'] = ucfirst($card['status']);
-		
-		$contract->setContractId($val['contractId']);
-		$card['stOblig'] = $contract->GetStatusOblig();
-		
-		$contracts[$key] = $card;	
-		
-	}
-	
-	$totalRegs = count($contracts);
-	
 	$smarty->assign("categories", $categories);
 	$smarty->assign("totalRegs", $totalRegs);
 	$smarty->assign("contracts", $contracts);
+    $smarty->assign("year", date('Y'));
 	$smarty->assign('mainMnu','reportes');
 
 ?>
