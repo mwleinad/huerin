@@ -6,10 +6,7 @@ include_once(DOC_ROOT.'/libraries.php');
 
 switch($_POST["type"])
 {
-		
 	case 'doSearch':
-			
-					
 			$sql = '';
 			
 			if($_POST['name'])
@@ -22,9 +19,7 @@ switch($_POST["type"])
 				$sql .= ' AND status = "'.$_POST['status'].'"';
 
 			$stOblig = $_POST['stOblig'];
-											
 			$resContracts = $contract->Search($sql);
-			
 			$contracts = array();
 			foreach($resContracts as $key => $val){
 				
@@ -164,6 +159,71 @@ switch($_POST["type"])
         echo "[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$file_name;
 	break;
+    case 'searchAcumulada':
+        $year = $_POST['year'];
+        $formValues['subordinados'] = $_POST['subordinados'];
+        $formValues['respCuenta'] = $_POST['responsableCuenta'];
+        $formValues['cliente'] = $_POST["rfc"];
+        $formValues['year'] = $year;
+        $formValues['activos'] = true;
+
+        if($_POST['monthInicial']>$_POST['monthFinal'])
+        {
+            $util->setError(0,'error','Mes inicial debe ser inferior al mes final');
+            $util->PrintErrors();
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            exit;
+        }
+        include_once(DOC_ROOT.'/ajax/filterOnlyContract.php');
+
+        $meses = [];
+        $base = [];
+        for($m=$_POST['monthInicial'];$m<=$_POST['monthFinal'];$m++)
+        {
+            $meses[$m]= $monthsInt[$m];
+            $base[$m]= [];
+        }
+        $contratos = [];
+
+        //hacer la busqueda y la estructura del array segun el tipo de detalle
+        switch($_POST['groupBy']){
+            case 'contrato':
+                foreach($contracts as $key => $contrato) {
+                    $cad = [];
+                    $cad['customerId'] = $contrato['contractId'];
+                    $cad['customer'] = $contrato['nameContact'];
+                    $cad['razon'] = $contrato['name'];
+
+                    $sql = "select sum(a.amount) as totalAmount,a.deposito,a.paymentDate,concat(b.serie,b.folio) as folio,c.name,c.nombreComercial ,month(a.paymentDate) as currentMonth
+                from payment a
+                inner join comprobante b on a.comprobanteId=b.comprobanteId and b.status='1' and b.tiposComprobanteId='1' and b.userId='".$contrato['contractId']."'
+                inner join contract c on b.userId=c.contractId and c.activo='si'
+                where month(a.paymentDate)>='".$_POST['monthInicial']."' and month(a.paymentDate)<='".$_POST['monthFinal']."'
+                and year(a.paymentDate)='".$formValues['year']."' group by month(a.paymentDate) order by month(a.paymentDate) ASC ";
+                    $util->DB()->setQuery($sql);
+                    $pagos = $util->DB()->GetResult();
+                    if(!empty($pagos)){
+                        foreach($pagos as $pago){
+                            $base[$pago['currentMonth']] = $pago;
+                        }
+                        $cad['pagos'] = $base;
+                        $contratos[]=$cad;
+                    }
+
+                }
+                echo "ok[#]";
+                $smarty->assign("meses", $meses);
+                $smarty->assign("contratos", $contratos);
+                $smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-acumulada.tpl');
+            break;
+            default:
+                echo "ok[#]";
+                echo "ds";
+            break;
+        }
+
+    break;
 		
 }
 ?>

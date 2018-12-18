@@ -49,11 +49,6 @@
                 <li><a href="{$WEB_ROOT}/tipoArchivo" {if $page == "tipoArchivo"}class="current"{/if}>
                 <span>Tipo de Archivo</span></a></li>
                 {/if}
-               {*<li><a href="{$WEB_ROOT}/impuesto" {if $page == "impuesto"}class="current"{/if}>
-                <span>Impuestos</span></a></li>
-
-                <li><a href="{$WEB_ROOT}/obligacion" {if $page == "obligacion"}class="current"{/if}>
-                <span>Obligaciones</span></a></li>*}
                 {if in_array(52,$permissions)|| $User.isRoot}
 				<li><a href="{$WEB_ROOT}/departamentos" {if $page == "departamentos"}class="current"{/if}>
                 <span>Departamentos</span></a></li>
@@ -62,12 +57,6 @@
                     <li><a href="{$WEB_ROOT}/expediente" {if $page == "expediente"}class="current"{/if}>
                     <span>Expedientes</span></a></li>
                 {/if}
-                {*if in_array(56,$permissions)|| $User.isRoot}
-				<li><a href="{$WEB_ROOT}/mantenimiento" {if $page == "mantenimiento"}class="current"{/if}>
-                <span>Mantenimiento</span></a></li>
-                {/if*}
-
-
             {/if}
 
             {if $mainMnu == "servicios"}
@@ -136,6 +125,10 @@
                 {if in_array(208,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if}>
                     <span>Cobranza mensual</span></a></li>
+                {/if}
+                {if in_array(215,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if}>
+                            <span>Cobranza acumulada</span></a></li>
                 {/if}
                 {if in_array(167,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">

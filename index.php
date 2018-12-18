@@ -6,29 +6,33 @@ include_once(DOC_ROOT.'/libraries.php');
 	{
 	  session_start();
 	}
-	/*switch($infoUser["tipoPersonal"])
-	{
-		case "Socio": $User['roleId'] = 1; break;
-		case "Gerente": $User['roleId'] = 2; break;
-		case "Supervisor": $User['roleId'] = 3; break;
-		case "Contador": $User['roleId'] = 3; break;
-		case "Auxiliar": $User['roleId'] = 3; break;
-		case "Asistente": $User['roleId'] = 1; break;
-		case "Recepcion": $User['roleId'] = 1; break;
-		case "Cliente": $User['roleId'] = 4; break;
-		case "Nomina":
-			$User['roleId'] = 1;
-			$User['subRoleId'] = "Nomina";
-		break;
-	}*/
 	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
 	$_SESSION['empresaId'] = IDEMPRESA;
 	$pages = array(
+		//login,homepage
 		'login',
 		'logout',
 		'homepage',
+
+		//catalogos
+        'personal',
+        'state',
+        'city',
+        'rol',
+        'regimen',
+        'sociedad',
+        'tipoServicio',
+        'tipoDocumento',
+        'tipoRequerimiento',
+        'tipoArchivo',
+        'expediente',
+        'impuesto',
+        'obligacion',
+        'departamentos',
+
+		//clientes y contratos
 		'customer',
-		'rol',
+        'exp-imp-data',
 		'contract-category',
 		'contract-subcategory',
 		'document-basic',
@@ -40,33 +44,52 @@ include_once(DOC_ROOT.'/libraries.php');
 		'contract-edit',
 		'contract-view',
 		'contract-docs',
-		'state',
-		'city',
-		'personal',
+
+        //Servicios
+        'servicios',
+        'servicios-cliente',
+        'report-servicio',
+        'report-servicio-drill',
+        'workflow',
+        'workflow-cliente',
+
+		//CXC
+        'cxc',
+        'add-payment',
+        'balance',
+
+        //facturacion
+        'admin-folios',
+        'datos-generales',
+        'sistema',
+		'cfdi33-generate',//cfdi 3.3
+		'cfdi33-generate-pdf',//cfdi 3.3
+
+		//Departamentos
+        'archivos',
+
+		//Reportes
 		'report-obligaciones',
 		'report-basica',
-			'report-cliente',
-			'report-servicio',
-        	'report-servicio-drill',
-			'report-cobranza-new',
-			'report-servicio-mensual',
-			'report-servicio-auditoria',
-			'report-cxc',
-			'report-documentacion-permanente',
-			'report-archivos-permanente',
-			'report-bonos',
-			'report-cobranza-ejercicio-new',
-        	'report-cobranza-mensual',
-			'report-cobranza-ejercicio',
-			'report-invoice',
-			'log',
-			'report-servicio-bono',
-			'bitacora',
-			'historial',
-			'historialContract',
-			'historialCustomer',
-            'tree-subordinate',
-
+		'report-cliente',
+		'report-cobranza-new',
+		'report-servicio-mensual',
+		'report-servicio-auditoria',
+		'report-cxc',
+		'report-documentacion-permanente',
+		'report-archivos-permanente',
+		'report-bonos',
+		'report-cobranza-ejercicio-new',
+		'report-cobranza-mensual',
+		'report-cobranza-ejercicio',
+		'report-invoice',
+		'log',
+		'report-servicio-bono',
+		'bitacora',
+		'historial',
+		'historialContract',
+		'historialCustomer',
+		'tree-subordinate',
 		'report-walmart',
 		'report-cobranza',
 		'docs-files',
@@ -74,15 +97,11 @@ include_once(DOC_ROOT.'/libraries.php');
 		'walmart',
 		'view-services',
 
-		'regimen',
-		'sociedad',
-		'tipoServicio',
-		'tipoDocumento',
-		'tipoRequerimiento',
-		'tipoArchivo',
-		'exp-imp-data',
-		'expediente',
+		//cafeteria
+        'coffe',
+		'vp_menu',
 
+		//modulos para marcos
 		'services',
 		'add-documento',
 		'add-requerimiento',
@@ -91,38 +110,18 @@ include_once(DOC_ROOT.'/libraries.php');
 		'add-obligacion',
 		'service-steps',
 
-		'servicios',
-			'servicios-cliente',
-		'workflow',
-			'workflow-cliente',
-
-		'impuesto',
-		'obligacion',
-		'departamentos',
-
-		'cxc',
-		'add-payment',
-		'balance',
-
-		//facturacion
-		'admin-folios',
-		'datos-generales',
-		'sistema',
-
+		//modulos sin definir
 		'print',
 		'report-ingresos',
 		'mantenimiento',
-		'archivos',
+
+		//cfdi viejo
 		'cfdi',
 		'cfdiPagos',
-		'customer-only',
 
-		//cfdi 3.3
-		'cfdi33-generate',
-		'cfdi33-generate-pdf',
-        //cafeteria
-        'coffe',
-		'vp_menu'
+		//Modulos para el usuario tipo cliente
+        'customer-only'
+
 
 	);
 
