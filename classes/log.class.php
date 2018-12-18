@@ -398,7 +398,7 @@ class Log extends Util
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
                      case 'permisos':
-                         $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos order by departamento ASC");
+                         $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC ");
                          $arrayDeps = $this->Util()->DB()->GetResult();
                          $valorBefore="";
                          $valorAfter="";
@@ -425,6 +425,8 @@ class Log extends Util
                              $arrayDeps = array();
 
                          foreach($arrayDeps as $kad=>$vad){
+                             if($depsBefore[$vad['departamentoId']]==$depsAfter[$vad['departamentoId']])
+                                 continue;
 
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
                              $persBefore = $this->Util()->DB()->GetSingle() ;
@@ -452,9 +454,12 @@ class Log extends Util
                  $cad2['valor'] = $valorBefore;
                  $cad2['campo'] = $field;
                  $olds[] = $cad2;
-                 $cad['valor'] =$valorAfter;
-                 $cad['campo'] = $field;
-                 $news[] =  $cad;
+                 if($valorAfter!=""){
+                     $cad['valor'] =$valorAfter;
+                     $cad['campo'] = $field;
+                     $news[] =  $cad;
+                 }
+
              }
 	     }
 
@@ -485,11 +490,9 @@ class Log extends Util
                 case 'tipoServicioId':
                     $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
-                    $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
-                    $valorAfter = $this->Util()->DB()->GetSingle();
                     break;
                 case 'permisos':
-                    $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos order by departamento ASC");
+                    $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC");
                     $arrayDeps = $this->Util()->DB()->GetResult();
                     $valorBefore="";
                     //encontrar los encargados
