@@ -18,9 +18,6 @@ class CxC extends Producto
 				$inIds .= ",".$id["contractId"];
 			}
 		}
-		//echo $inIds;
-			//echo $values['facturador'];
-
 			$sqlSearch .= ' AND contract.contractId IN ('.$inIds.')';
 
 			if($values['anio'])
@@ -173,13 +170,8 @@ class CxC extends Producto
 			return $data;
 		}
 	}//SearchComprobantesByRfc
-
-
     function searchCxC($values){
       $id_empresa = $_SESSION['empresaId'];
-      $permiso = new Permiso();
-      //descomponer la tabla de permisos de los contratos en tablas
-      //$permiso->doPermisos();
       $anio =  $values['anio'];
 	  $ffact ="";
 	  $innerPer = "";
@@ -200,7 +192,8 @@ class CxC extends Producto
 
       $innerPer .=" inner join contractPermiso p ON co.contractId=p.contractId AND p.personalId IN (".implode(',',$values['respCuenta']).") ";
 
-      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,co.facturador from comprobante cm
+      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,co.facturador,co.contractId
+                 from comprobante cm
                  inner join contract co ON cm.userId=co.contractId $ffact
                  $innerPer
                  inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
@@ -212,11 +205,11 @@ class CxC extends Producto
         $comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();
         $items =[];
         foreach($comprobantes as $key => $val){
-
             $card['serie']=$val['serie'];
             $card['folio']=$val['folio'];
             $card['nameContact']=$val['nameContact'];
             $card['nombre']=$val['nombreComercial'];
+            $card['contractId']=$val['contractId'];
             $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
             $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
             $card['cxcDiscount']=0;
@@ -248,8 +241,24 @@ class CxC extends Producto
         $data["total"] = count($items);
         return $data;
     }
-	function SearchCuentasPorCobrar($values){
+    /*
+     * funcion getSaldo
+     * $anio es el año que se desea saber cuando tiene de saldo
+     * $contractId identificador del contrato que se desea saber su saldo
+     * retorna $saldo , es la suma total del saldo del periodo $anio.
+     */
+    function getSaldo($anio,$contractId){
+        $id_empresa = $_SESSION['empresaId'];
+        $sql ="select sum(a.total) as total,sum(b.pagos) as pagos from comprobante a 
+                left join (select comprobanteId,sum(amount) as pagos from payment group by comprobanteId) b on a.comprobanteId=b.comprobanteId
+                where year(a.fecha)='".$anio."' and a.userId='".$contractId."' and a.status='1'
+                group by a.userId";
+        $this->Util()->DBSelect($id_empresa)->setQuery($sql);
+        $row = $this->Util()->DBSelect($id_empresa)->GetRow();
 
+        return $row['total']-$row['pagos'];
+    }
+	function SearchCuentasPorCobrar($values){
 		//print_r($values);
 		//Viene del Buscador o viene del Modulo
 		if($values['facturador'] == '0' || $values['facturador'] == '')
@@ -542,16 +551,6 @@ class CxC extends Producto
                 $this->Util()->PrintErrors();
                 return false;
             }
-
-		/*
-		if(!$_FILES["comprobante"]["name"])
-		{
-			$this->Util()->setError(10046, "error", "Debes de subir un comprobante de pago");
-			$this->Util()->PrintErrors();
-			return false;
-		}
-		*/
-
 		$comprobante = new Comprobante;
 
 		if($efectivo)

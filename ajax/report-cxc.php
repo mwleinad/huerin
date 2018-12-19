@@ -51,14 +51,21 @@ switch($_POST["type"])
 
 			$listCxc = $cxc->searchCxC($values);
 			$totales =  array();
+			$contratos= [];
 			foreach($listCxc['items'] as $key => $value)
 			{
+
 				$totales[$value['nombre']]['total']=$totales[$value['nombre']]['total']+$value['total'];
 				$totales[$value['nombre']]['payment']=$totales[$value['nombre']]['payment']+$value['payment'];
 				$totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$value['saldo'];
 				$totales[$value['nombre']]['nameContact']=$value['nameContact'];
 				$totales[$value['nombre']]['facturador']=$value['facturador'];
 				$totales[$value['nombre']]['facturas'][]=$value;
+                if(!in_array($value['contractId'],$contratos)){
+					array_push($contratos,$value['contractId']);
+                    $totales[$value['nombre']]['saldoAnterior']=$cxc->getSaldo((int)$values['anio']-1,$value['contractId']);
+                    $totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$totales[$value['nombre']]['saldoAnterior'];
+            	}
 			}
 			$smarty->assign("totales", $totales);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
