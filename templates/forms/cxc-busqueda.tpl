@@ -1,11 +1,10 @@
  <div align="center"  id="divForm">
- 
 <form name="frmSearch" id="frmSearch" action="" method="post" onsubmit="return false">
 <input type="hidden" name="type" id="type" value="search" />
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
-<table width="800" align="center">
+<table class="tableFull" align="center">
 <tr style="background-color:#CCC">
     <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de Busqueda</b></td>
 </tr>
@@ -18,7 +17,7 @@
 </tr>
 <tr>	
     <td align="center">
-    	<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
+    	<input type="text" size="35" name="rfc" id="rfc" class="largeInput medium2" autocomplete="off" value="{$search.rfc}" />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
          		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
@@ -26,7 +25,7 @@
          	</div>
 		</td>
         <td align="center">
-    	<select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
+    	<select name="responsableCuenta" id="responsableCuenta"  class="largeInput medium2">
 			{if $User.tipoPersonal eq 'Socio' ||$User.tipoPersonal eq 'Coordinador'||$User.tipoPersonal eq 'Admin'}
 			 	<option value="0">Todos...</option>
 			{/if}
@@ -39,7 +38,7 @@
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
 	   <td align="center">
-			<select name="departamentoId" id="departamentoId"  class="smallInput">
+			<select name="departamentoId" id="departamentoId"  class="largeInput medium2">
 			<option value="" selected="selected">Todos...</option>
 			{foreach from=$departamentos item=depto}
 			<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
