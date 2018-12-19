@@ -70,17 +70,12 @@ function ShowStatusPopUp(status)
 
 function FViewOffSet(response)
 {
-//	console.log($('fview').scrollTop());
-	console.log(window.scrollY);
-	
 	var offset = Element.cumulativeScrollOffset($('fview'));
-//	var top = offset.top + 50;
 	var top = window.scrollY + 50;
 	$('fview').style.position = "absolute";
 	$('fview').style.top = top+"px";
 	$('fview').innerHTML = response;
 	jQ('#fview').draggable();
-//	new Draggable('fview',{scroll:window,handle:'draganddrop'});
 }
 function ShowErrorOnPopup(message,error)
 {

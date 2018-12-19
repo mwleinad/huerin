@@ -3198,6 +3198,23 @@ class Contract extends Main
         $data['razon'] = $razonSocial;
         return $data;
     }
+    public function TrasnferContract(){
+
+        //comprobar que no se repita el contrato para el cliente que se le transferira
+        $sql = "select contractId from contract where customerId='".$this->customerId."' and name=(select name from contract where contractId='".$this->contractId."') ";
+        $this->Util()->DB()->setQuery($sql);
+        $find =  $this->Util()->DB()->GetSingle();
+        if($find>0){
+            $this->Util()->setError(0,"error","El cliente seleccionado, cuenta con una razon social con el mismo nombre que desea transferir, verificar informacion o elegir un cliente diferente.");
+        }
+        if($this->Util()->PrintErrors())
+            return false;
+        $up = "update contract set customerId='".$this->customerId."' where contractId='".$this->contractId."' ";
+        $this->Util()->DB()->setQuery($up);
+        $this->Util()->DB()->UpdateData();
+        $this->Util()->setError(0,"complete","Contrato transferido correctamente.");
+        return true;
+    }
 
 }
 

@@ -164,6 +164,25 @@ switch($_POST["type"])
 			$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			
 		break;
+	case 'openModalTransfer':
+		$clientes = $customer->getListCustomer(1);
+        $smarty->assign("clientes", $clientes);
+        $smarty->assign("post", $_POST);
+        $smarty->display(DOC_ROOT.'/templates/boxes/transfer-contract-popup.tpl');
+	break;
+	case 'doTransferContract':
+		$contract->setCustomerId($_POST['customerId']);
+		$contract->setContractId($_POST['contractId']);
+		if($contract->TrasnferContract()){
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}else{
+			echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+		}
+
+	break;
 		
 }
 ?>
