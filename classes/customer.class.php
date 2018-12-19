@@ -592,11 +592,8 @@ class Customer extends Main
 						ORDER BY nombreServicio ASC";
           		$this->Util()->DB->setQuery($sql);
           		$serviciosContrato = $this->Util()->DB()->GetResult();
-          
           		$cUser = new User;
-          	
 				//Agregar o no agregar servicio al arreglo de contratos
-				
 				$servicios = array();
           		foreach ($serviciosContrato as $servicio) {
 					
@@ -613,48 +610,14 @@ class Customer extends Main
 							array_push($subordinadosPermiso, $sub["personalId"]);
 						}
             		}
-					
-            	/*
-					//si es usuario de contabilidad
-            		if ($User["roleId"] == 1 || $User["roleId"] == 4) {
-              			$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-            		} else {              	
-              			foreach ($subordinadosPermiso as $usuarioPermiso) {
-                			if (in_array($usuarioPermiso, $conPermiso)) {
-                 				$result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-                  				break;
-                			}
-              			}
-            		} 
-					�*/
-					
 					$servicios[] = $card3;
 					
           		}//foreach
-				
 				$card2['instanciasServicio'] = $servicios;
-				
-          		/*
-          		if (count($result[$key]["contracts"][$keyContract]['instanciasServicio']) > 0) {
-            		$showCliente = true;
-            		$result[$key]["servicios"]++;
-          		} else {
-            		unset($result[$key]["contracts"][$keyContract]);
-          		}
-			*/
-				
 				$contratos[] = $card2;
 			
         	}//foreach
-			
 			$card['contracts'] = $contratos;
-			
-			/*
-        	if (($showCliente === false && ($User["roleId"] > 2 && $User["roleId"] < 4)) || ($showCliente === false && $type == "propio")) {
-          unset($result[$key]);
-        	}
-			*/
-			
 			$clientes[] = $card;
 			
     	}//foreach
@@ -796,7 +759,6 @@ class Customer extends Main
           nameContact LIKE '%".$name."%'"
     );
     $row = $this->Util()->DB()->GetRow();
-    
       $sql = "SELECT 
                 * 
               FROM 
@@ -806,7 +768,6 @@ class Customer extends Main
       
       $this->Util()->DB()->setQuery($sql);
       $row["encargadoCuentaData"] = $this->Util()->DB()->GetRow();
-
       $sql = "SELECT 
               * 
             FROM 
@@ -816,11 +777,8 @@ class Customer extends Main
       $row["responsableCuentaData"] = $this->Util()->DB()->GetRow();
 
       $row["fechaMysql"] = $this->Util()->FormatDateMysql($row["fechaAlta"]);
-    
     return $row;
   }
-
-
   public function Edit()
   {
     global $User,$log;
@@ -859,7 +817,6 @@ class Customer extends Main
     $log->setOldValue(serialize($oldData));
     $log->setNewValue(serialize($newData));
     $log->Save();
-
     //actualizar historial de customer de forma independiente(analizar si es conveniente dejarlo)
     $this->Util()->DB()->setQuery("
 			INSERT INTO
@@ -885,7 +842,6 @@ class Customer extends Main
     $this->Util()->PrintErrors();
     return true;
   }
-
   public function Save()
   {
     global $User,$log;
@@ -956,7 +912,6 @@ class Customer extends Main
     $this->Util()->PrintErrors();
     return true;
   }
-
   public function Delete()
   {
     global $User,$log;
@@ -1023,7 +978,6 @@ class Customer extends Main
     $this->Util()->PrintErrors();
     return true;
   }
-  
   public function GetNameById(){
       
     $sql = 'SELECT 
@@ -1038,7 +992,6 @@ class Customer extends Main
     return $this->Util()->DB()->GetSingle();
     
   }
-  
   public function Suggest($value,$tipo="")
   {
     global $User,$rol;
@@ -1055,7 +1008,6 @@ class Customer extends Main
     {
     $activevalue = "1";
     }
-    
     
     if(strlen($value) < 3)
     {
@@ -1252,8 +1204,7 @@ class Customer extends Main
 		}
 		$result = $noDuplicados;
     return $result;
-  }	
-	
+  }
   public function SuggestCustomerContract($like = "", $type = "subordinado", $customerId = 0, $tipo = "")
   {
     global $User, $page,$rol;
@@ -1385,7 +1336,6 @@ class Customer extends Main
     }
     return $result;
   }
-	
 	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
 	{
 		global $User, $page,$rol,$personal;
@@ -1666,4 +1616,26 @@ class Customer extends Main
 
           return $results;
       }
+    /*
+    * funcion getListCustomer
+    * encuentra el catalogo de clientes de la base de datos
+    * solo se listaran los clieentes segun el valor del parametro siguiente:
+     * $tipo puede ser 1(activo), 0(inactivo) o all, por default es todos, es decir se lista el catalogo completo incluyendo las inactivas
+    */
+    public function  getListCustomer($tipo='all')
+    {
+        $filtro = "";
+       switch($tipo){
+           case 1:
+               $filtro .=" and active='1' ";
+           break;
+           case 0:
+               $filtro .=" and active='0' ";
+           break;
+       }
+       $sql  = "select customerId,nameContact from customer where 1 $filtro order by nameContact asc ";
+       $this->Util()->DB()->setQuery($sql);
+       $results = $this->Util()->DB()->GetResult();
+       return $results;
+    }
 }

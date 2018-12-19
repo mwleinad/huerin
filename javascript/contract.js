@@ -21,7 +21,6 @@ Event.observe(window, 'load', function() {
 	$('contenido').observe("click", AddEditContractListeners);
 
 });
-
 function AddServicePopup(id)
 {
 	grayOut(true);
@@ -220,4 +219,51 @@ function UpdateCosto()
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
+}
+//block transferir contrato
+jQ(document).on('click','.spanTransfer',function () {
+	var id = this.id;
+    jQ('#fview').show();
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/contract.php',
+        type:'post',
+		data:{type:'openModalTransfer',id:id},
+		success:function (response) {
+			console.log(response);
+            FViewOffSet('');
+            FViewOffSet(response);
+            jQ('#closePopUpDiv').on('click',function(){
+                close_popup();
+            });
+            jQ('#btnTransferContract').on('click',function(){
+                doTransferContract();
+            });
+        },
+		error:function(message){
+			alert(message)
+		}
+
+	});
+});
+function doTransferContract(){
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/contract.php",
+        data:jQ("#frmTransferContract").serialize(true),
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#btnTransferContract').hide();
+            jQ('#loading-img').show();
+        },
+        success: function(response){
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                location.reload();
+            }
+            else{
+                jQ('#btnTransferContract').show();
+                jQ('#loading-img').hide();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        }
+    });
 }

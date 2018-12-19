@@ -68,6 +68,11 @@
                 <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Detalles" />
                </a>
             {/if}
+            {if in_array(216,$permissions) || $User.isRoot}
+                {if in_array(177,$permissions) || $User.isRoot}
+                    <img src="{$WEB_ROOT}/images/icons/transbetweenuser.png" class="spanAll spanTransfer" id="{$item.contractId}" title="Transferir raazon a cliente" />
+                {/if}
+            {/if}
 
         </td>
        {/if}
