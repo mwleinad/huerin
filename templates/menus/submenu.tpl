@@ -116,7 +116,11 @@
                 {/if}
 				{if in_array(163,$permissions)|| $User.isRoot}
                      <li><a href="{$WEB_ROOT}/report-servicio-bono" {if $page == "report-servicio-bono"}class="current"{/if}>
-                     <span>Reporte de Bonos</span></a></li>
+                     <span>Bonos contabilidad</span></a></li>
+                {/if}
+                {if in_array(215,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if}>
+                            <span>Bonos juridico</span></a></li>
                 {/if}
                 {if in_array(165,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
@@ -125,10 +129,6 @@
                 {if in_array(208,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if}>
                     <span>Cobranza mensual</span></a></li>
-                {/if}
-                {if in_array(215,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if}>
-                            <span>Cobranza acumulada</span></a></li>
                 {/if}
                 {if in_array(167,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">

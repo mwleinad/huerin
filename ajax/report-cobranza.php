@@ -189,28 +189,39 @@ switch($_POST["type"])
         //hacer la busqueda y la estructura del array segun el tipo de detalle
         switch($_POST['groupBy']){
             case 'contrato':
+                //la busqueda se realiza por medio de los comprobantes emitidos del mes que se esta pasando
+                //se suman lo abonos sin iva.
                 foreach($contracts as $key => $contrato) {
                     $cad = [];
                     $cad['customerId'] = $contrato['contractId'];
                     $cad['customer'] = $contrato['nameContact'];
                     $cad['razon'] = $contrato['name'];
+                    $sql ="select sum(a.total) as total,sum(b.amount) as amount,month(a.fecha) as mes
+                           from comprobante a 
+                           left join (select comprobanteId,sum(amount) as amount from payment group by comprobanteId) b on a.comprobanteId=b.comprobanteId
+                           inner join contract c on a.userId=c.contractId and c.activo='Si'
+                           where month(a.fecha) >='".$_POST['monthInicial']."' and month(a.fecha)<='".$_POST['monthFinal']."' and year(a.fecha)='".$formValues['year']."' 
+                           and a.userId='".$contrato['contractId']."' and a.tiposComprobanteId in(1)  and a.status ='1' 
+                           group by month(a.fecha) order by month(a.fecha) desc";
 
-                    $sql = "select sum(a.amount) as totalAmount,a.deposito,a.paymentDate,concat(b.serie,b.folio) as folio,c.name,c.nombreComercial ,month(a.paymentDate) as currentMonth
-                from payment a
-                inner join comprobante b on a.comprobanteId=b.comprobanteId and b.status='1' and b.tiposComprobanteId='1' and b.userId='".$contrato['contractId']."'
-                inner join contract c on b.userId=c.contractId and c.activo='si'
-                where month(a.paymentDate)>='".$_POST['monthInicial']."' and month(a.paymentDate)<='".$_POST['monthFinal']."'
-                and year(a.paymentDate)='".$formValues['year']."' group by month(a.paymentDate) order by month(a.paymentDate) ASC ";
                     $util->DB()->setQuery($sql);
                     $pagos = $util->DB()->GetResult();
+                    $totalXcontrato = 0;
                     if(!empty($pagos)){
                         foreach($pagos as $pago){
-                            $base[$pago['currentMonth']] = $pago;
+                                if(!$_POST['whitiva'])
+                                    $pago['amount'] = $pago['amount']/1.16;
+
+                            $totalXcontrato = $totalXcontrato+$pago['amount'];
+                            $base[$pago['mes']] = $pago;
                         }
+                        $totales = [];
+                        $totales['isColTotal'] = true;
+                        $totales['total'] = $totalXcontrato;
+                        $base[13] = $totales;
                         $cad['pagos'] = $base;
                         $contratos[]=$cad;
                     }
-
                 }
                 echo "ok[#]";
                 $smarty->assign("meses", $meses);

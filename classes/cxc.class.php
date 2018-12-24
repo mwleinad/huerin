@@ -245,13 +245,14 @@ class CxC extends Producto
      * funcion getSaldo
      * $anio es el año que se desea saber cuando tiene de saldo
      * $contractId identificador del contrato que se desea saber su saldo
-     * retorna $saldo , es la suma total del saldo del periodo $anio.
+     * retorna $saldo , es la suma total de todas las facturas pendientes por liquidar
+     * emitidas de $anio hacia atras.
      */
     function getSaldo($anio,$contractId){
         $id_empresa = $_SESSION['empresaId'];
         $sql ="select sum(a.total) as total,sum(b.pagos) as pagos from comprobante a 
                 left join (select comprobanteId,sum(amount) as pagos from payment group by comprobanteId) b on a.comprobanteId=b.comprobanteId
-                where year(a.fecha)='".$anio."' and a.userId='".$contractId."' and a.status='1'
+                where year(a.fecha)<='".$anio."' and a.userId='".$contractId."' and a.status='1' and a.tiposComprobanteId not in(10)
                 group by a.userId";
         $this->Util()->DBSelect($id_empresa)->setQuery($sql);
         $row = $this->Util()->DBSelect($id_empresa)->GetRow();

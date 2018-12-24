@@ -4,7 +4,7 @@
 		<input type="hidden" name="cliente" id="cliente" value="0" />
 		<table class="tableFull " align="center">
 			<tr style="background-color:#CCC">
-				<td colspan="7" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
+				<td colspan="8" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
 			</tr>
 			<tr>
 				<td align="center">Cliente</td>
@@ -14,6 +14,7 @@
 				<td align="center">Mes final</td>
 				<td align="center">Año</td>
 				<td align="center">Detallar por</td>
+				<td align="center">Incluir iva</td>
 			</tr>
 			<tr>
 				<td style="width:auto; padding:0px 4px 4px 8px;" align="center">
@@ -43,6 +44,9 @@
 					<select id="groupBy" name="groupBy" class="largeInput medium2">
 						<option value="contrato">Por razon social</option>
 					</select>
+				</td>
+				<td align="center">
+					<input name="whitiva" id="whitiva" type="checkbox"/>
 				</td>
 			</tr>
 			<tr align="center">
