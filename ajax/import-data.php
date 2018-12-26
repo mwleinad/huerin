@@ -677,7 +677,7 @@ switch($_POST['type']){
                                '".$row[4]."',
                                '".$row[5]."',
                                '".$row[2]."',
-                               '".$row[7]."',
+                               '".$util->FormatDateMySqlSlash($row[7])."',
                                '".$row[8]."',
                                '1'                             
                               ) 
@@ -694,7 +694,7 @@ switch($_POST['type']){
                                email='".$row[4]."',
                                password='".$row[5]."',
                                nameContact='".$row[2]."',
-                               fechaAlta='".$row[7]."',
+                               fechaAlta='".$util->FormatDateMySqlSlash($row[7])."',
                                observacion='".$row[8]."'
                                where customerId='".$row[0]."'
                               ";
