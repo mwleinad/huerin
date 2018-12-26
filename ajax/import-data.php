@@ -604,4 +604,111 @@ switch($_POST['type']){
             $db->UpdateData();*/
         }
       break;
+    case 'importar_empleados':
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            $sqlRow = "";
+            //comprobar que el cliente exista
+            $sqlc ="SELECT personalId FROM personal where personalId='".$row[0]."' ";
+            $db->setQuery($sqlc);
+            $personalId = $db->GetSingle();
+
+            //encontrar departamento
+            $sqldep="SELECT departamentoId,departamento FROM departamentos where trim(departamento)='".trim($row[11])."' ";
+            $db->setQuery($sqldep);
+            $row_dep = $db->GetRow();
+
+            //encontrar rol
+            $sqlrol="SELECT rolId,name FROM roles where trim(name)='".trim($row[10])."' ";
+            $db->setQuery($sqlrol);
+            $row_rol = $db->GetRow();
+
+            //comprobar que el cliente exista
+            if(!$personalId){
+
+                $sqlrazon =  "insert into personal(personalId,name,celphone,email,skype,username,passwd,ext,celphone,puesto,computadora,tipoPersonal,roleId) values
+                              (
+                               '".$row[0]."',
+                               '".$row[1]."',
+                               '".$row[3]."',
+                               '".$row[4]."',
+                               '".$row[0]."'                               
+                              ) 
+                              ";
+            }
+            //comprobar por rfc y nombre la razon social si no se encuentra registrada
+            $sqlrazon =  "SELECT contractId FROM contract WHERE name='".$row[1]."' OR rfc='".$row[2]."' ";
+            $db->setQuery($sqlrazon);
+            $contractId = $db->GetSingle();
+        }
+    break;
+    case 'importar_customer_rebuild':
+        $clientes_control = [];
+        $sqlLog ="";
+        $alta = 0;
+        $update =  0;
+        $fila=1;
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if($fila==1)
+            {
+                $fila++;
+                continue;
+            }
+            if(in_array($row[0],$clientes_control))
+            {
+                $fila++;
+                continue;
+            }
+
+            $sqlRow = "";
+            //comprobar que el cliente exista
+            $sqlc ="SELECT customerId FROM customer where customerId='".$row[0]."' ";
+            $db->setQuery($sqlc);
+            $customerId = $db->GetSingle();
+
+            //comprobar que el cliente exista
+            if($customerId<=0){
+                $insertInto =  "insert into customer(customerId,name,phone,email,password,nameContact,fechaAlta,observacion,active) values
+                              (
+                               '".$row[0]."',
+                               '".$row[2]."',
+                               '".$row[3]."',
+                               '".$row[4]."',
+                               '".$row[5]."',
+                               '".$row[2]."',
+                               '".$row[7]."',
+                               '".$row[8]."',
+                               '1'                             
+                              ) 
+                              ";
+                $db->setQuery($insertInto);
+                $custId = $db->InsertData();
+                array_push($clientes_control,$row[0]);
+                $sqlLog .= "alta:: ,".$custId."[".$row[0]."]".chr(10).chr(13);
+                $alta++;
+            }else{
+                $updateSql = "update customer set
+                               name='".$row[2]."',
+                               phone='".$row[3]."',
+                               email='".$row[4]."',
+                               password='".$row[5]."',
+                               nameContact='".$row[2]."',
+                               fechaAlta='".$row[7]."',
+                               observacion='".$row[8]."'
+                               where customerId='".$row[0]."'
+                              ";
+                $db->setQuery($updateSql);
+                $db->UpdateData();
+                array_push($clientes_control,$row[0]);
+                $sqlLog .= "update:: ,".$row[0].chr(10).chr(13);
+                $update++;
+            }
+            $fila++;
+
+        }
+        echo $sqlLog;
+        echo "total alta ".$alta.chr(10).chr(13);
+        echo "total update".$update.chr(10).chr(13);
+    break;
 }

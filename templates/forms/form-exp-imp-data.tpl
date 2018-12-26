@@ -18,6 +18,7 @@
                         <option value="update-only-encargado">Actualizar encargados de area</option>
                         {if $User.isRoot}
                             <option value="doPermiso">Reconstruir permisos</option>
+                            <option value="importar_customer_rebuild">Importar clientes rebuild</option>
                         {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
