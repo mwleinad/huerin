@@ -19,6 +19,8 @@
                         {if $User.isRoot}
                             <option value="doPermiso">Reconstruir permisos</option>
                             <option value="importar_customer_rebuild">Importar clientes rebuild</option>
+                            <option value="importar_contrato_rebuild">Importar contratos rebuild</option>
+                            <option value="importar_empleados_rebuild">Importar empleados rebuild</option>
                         {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>

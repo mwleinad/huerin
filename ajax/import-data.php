@@ -115,7 +115,7 @@ switch($_POST['type']){
             //encontrar regimen
             $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
             $regimenId=$db->GetSingle();
-            echo $strContract ="UPDATE contract SET 
+            $strContract ="UPDATE contract SET 
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
@@ -710,5 +710,189 @@ switch($_POST['type']){
         echo $sqlLog;
         echo "total alta ".$alta.chr(10).chr(13);
         echo "total update".$update.chr(10).chr(13);
+    break;
+    case 'importar_contrato_rebuild':
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $cad = "";
+        $isValid = $valida->ValidateLayoutContractRebuild($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo"[#]";
+            echo $cad;
+            exit;
+        }
+        $fila = 1;
+        $log ="";
+        $alta = 0;
+        $up = 0;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if($fila==1)
+            {
+                $fila++;
+                continue;
+            }
+            //comprobar si el contrato esta registrado sobre el cliente, si esta actualizar si no dar de alta.
+            $sql1 = "SELECT contractId,customerId FROM contract where customerId='".$row[0]."' and contractId='".$row[1]."' ";
+            $util->DB()->setQuery($sql1);
+            $findData = $util->DB()->GetRow();
+            //construir permisos
+            $permisos = $contract->ConcatenarEncargadosRebuild([$row[38],$row[39],$row[40],$row[41],$row[42],$row[44]]);
+            if(empty($findData))
+            {
+                $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
+                $regimenId=$db->GetSingle();
+                echo $sqlInsert = "INSERT INTO contract(
+                          contractId,
+                          customerId,
+                          type,
+                          regimenId,
+                          name,
+                          nombreComercial,
+                          direccionComercial,
+                          nameContactoAdministrativo,
+                          emailContactoAdministrativo,
+                          telefonoContactoAdministrativo,
+                          nameContactoContabilidad,
+                          emailContactoContabilidad,
+                          telefonoContactoContabilidad,
+                          nameContactoDirectivo,
+                          emailContactoDirectivo,
+                          telefonoContactoDirectivo,
+                          telefonoCelularDirectivo,
+                          claveCiec,
+                          claveFiel,
+                          claveIdse,
+                          claveIsn,
+                          rfc,
+                          facturador,
+                          metodoDePago,
+                          noCuenta,
+                          activo,
+                          permisos)
+                          VALUES(
+                          '".$row[1]."',
+                          '".$row[0]."',
+                          '".$row[12]."',
+                          '".$regimenId."',
+                          '".$row[10]."',
+                          '".$row[16]."',
+                          '".str_replace("'","",$row[17])."',
+                          '".str_replace("'","",$row[19])."',
+                          '".str_replace("'","",$row[20])."',
+                          '".str_replace("'","",$row[21])."',
+                          '".str_replace("'","",$row[22])."',
+                          '".str_replace("'","",$row[23])."',
+                          '".str_replace("'","",$row[24])."',
+                          '".str_replace("'","",$row[25])."',
+                          '".str_replace("'","",$row[26])."',
+                          '".$row[27]."',
+                          '".$row[28]."',
+                          '".$row[29]."',
+                          '".($row[30])."',
+                          '".$row[31]."',
+                          '".$row[32]."',
+                          '".($row[13])."',
+                          '".$row[33]."',
+                          '".$row[34]."',
+                          '".$row[35]."',
+                          '".$row[15]."',
+                          '".$permisos."'
+                          )";
+                $db->setQuery($sqlInsert);
+                $registroId =  $db->InsertData();
+                if($registroId>0) {
+                    $log .="in customerId, ".$row[0].", contract: ".$registroId." : [".$row[1]."]".chr(13);
+                    //si se actualizo la razon se debe actualizar los permisos en la tabla
+                   $opermiso->setContractId($registroId);
+                   $opermiso->doPermiso();
+                $alta++;
+               }
+            }else{
+                $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
+                $regimenId=$db->GetSingle();
+              echo  $strContract ="UPDATE contract SET 
+                            permisos='".$permisos."',
+                            type='".$row[12]."',
+                            regimenId='".$regimenId."',
+                            name='".$row[10]."',
+                            nombreComercial='".$row[16]."',
+                            direccionComercial='".$row[17]."',
+                            nameContactoAdministrativo='".str_replace("'","",$row[19])."',
+                            emailContactoAdministrativo='".str_replace("'","",$row[20])."',
+                            telefonoContactoAdministrativo='".str_replace("'","",$row[21])."',
+                            nameContactoContabilidad='".str_replace("'","",$row[22])."',
+                            emailContactoContabilidad='".str_replace("'","",$row[23])."',
+                            telefonoContactoContabilidad='".str_replace("'","",$row[24])."',
+                            nameContactoDirectivo='".str_replace("'","",$row[25])."',
+                            emailContactoDirectivo='".str_replace("'","",$row[26])."',
+                            telefonoContactoDirectivo='".str_replace("'","",$row[27])."',
+                            telefonoCelularDirectivo='".str_replace("'","",$row[28])."',
+                            claveCiec='".$row[29]."',
+                            claveFiel='".$row[30]."',
+                            claveIdse='".$row[31]."',
+                            claveIsn='".$row[32]."',
+                            rfc='".$row[13]."',
+                            facturador='".$row[33]."',
+                            metodoDePago='".$row[34]."',
+                            noCuenta='".$row[35]."',
+                            activo='".$row[15]."'
+                            WHERE contractId='".$row[1]."' ";
+                $db->setQuery($strContract);
+                $upContract =  $db->UpdateData();
+                $log .="up customerId, ".$row[0].", contract,".$row[1].chr(13);
+                //si se actualizo la razon se debe actualizar los permisos en la tabla
+               $opermiso->setContractId($row[1]);
+               $opermiso->doPermiso();
+               // echo "si exist ".$permisos.chr(10).chr(13);
+               $up++;
+            }
+        }
+        $util->setError(0,'complete',"Total altas ".$alta);
+        $util->setError(0,'complete',"Total actualizadas ".$up);
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+       // echo $log;
+    break;
+    case 'importar_empleados_rebuild':
+        exit;
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $find=0;
+        $nofind=0;
+        $fila =1;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            $sql = "select personalId from personal where personalId='".$row[0]."' ";
+            $db->setQuery($sql);
+            $isFind = $db->GetSingle();
+             $sqlDep = "select departamento from departamentos where departamento='".$row[11]."' ";
+             $db->setQuery($sqlDep);
+             $depId = $db->GetSingle();
+            if($isFind){
+                $inserPer = "insert into personal(personalId,name,celphone,email,skype,computadora,aspel,username,passwd,fechaIngreso,departamentoId,puesto)
+                              VALUES(
+                              '".$row[0]."',
+                              '".$row[1]."',
+                              '".$row[2]."',
+                              '".$row[3]."',
+                              '".$row[4]."',
+                              '".$row[5]."',
+                              '".$row[6]."',
+                              '".$row[7]."',
+                              '".$row[8]."',
+                              '".$row[9]."',
+                              '".$depId."',
+                              '".$row[12]."'
+                              )";
+
+                $find++;
+            }else{
+                $nofind++;
+            }
+        }
+        echo "encontrados ".$find.chr(13);
+        echo "no encontrados ".$nofind.chr(13);
     break;
 }
