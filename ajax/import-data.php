@@ -743,7 +743,7 @@ switch($_POST['type']){
             {
                 $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
                 $regimenId=$db->GetSingle();
-                echo $sqlInsert = "INSERT INTO contract(
+                $sqlInsert = "INSERT INTO contract(
                           contractId,
                           customerId,
                           type,
@@ -812,7 +812,7 @@ switch($_POST['type']){
             }else{
                 $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
                 $regimenId=$db->GetSingle();
-              echo  $strContract ="UPDATE contract SET 
+                $strContract ="UPDATE contract SET 
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
@@ -854,7 +854,7 @@ switch($_POST['type']){
         $util->PrintErrors();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-       // echo $log;
+        echo $log;
     break;
     case 'importar_empleados_rebuild':
         exit;
