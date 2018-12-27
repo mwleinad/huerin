@@ -755,7 +755,7 @@ class Validar extends Main
                 $this->Util()->setError(0,'error','Falta metodo de pago  en fila(Usar NO APLICA en caso de no existir) '.$fila);
                // break;
             }
-            /*//comprobar que los encargados esten dados de alta siempre y cuando no este vacio
+            //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
             if($row[38]!="" and $row[38]!="--" ){
                 $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[38])."'");
                 $idCont=$this->Util()->DB()->GetSingle();
@@ -809,7 +809,7 @@ class Validar extends Main
                     $this->Util()->setError(0,'error','Responsable de auditoria de la fila '.$fila.' no se encuentra dado de alta ');
                    //break;
                 }
-            }*/
+            }
             //comprobar que el regimen existe y sea exclusivamente del tipo de persona seleccionado
             $this->Util()->DB()->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".mb_strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".mb_strtolower(str_replace(' ','',$row[12]))."' ");
            // echo  $this->Util()->DB()->getQuery();
