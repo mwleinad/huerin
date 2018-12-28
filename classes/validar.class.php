@@ -841,7 +841,7 @@ class Validar extends Main
 
         return true;
     }
-    public function ValidateLayoutImportServicio($FILES){
+    public function ValidateLayoutImportServicio($FILES,$isNew=false){
         $file_temp = $FILES['file']['tmp_name'];
         $fp = fopen($file_temp,'r');
         $fila=1;
@@ -851,12 +851,15 @@ class Validar extends Main
                 continue;
             }
             //encontrar el contrato
-            $sql= "select contractId from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
+            $sql ="select max(a.contractId) from contract a 
+                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[0])))."' and b.active='1' 
+                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' and a.activo='Si'
+                  ";
             $this->Util()->DB()->setQuery($sql);
             $conId =  $this->Util()->DB()->GetSingle();
             if($conId<=0) {
-                $this->Util()->setError(0, 'error', "Razon social de la fila " . $fila . " no encontrado");
-                $this->Util()->setError(0,'error',$sql );
+                $this->Util()->setError(0, 'error', "Razon social de la fila " . $fila . " no encontrado,existe conflicto con algun otro cliente, esta inactivo o no se cuentra en el sistema");
+                //$this->Util()->setError(0,'error',$sql );
                 break;
             }
             //encontrar el servicio
@@ -864,17 +867,36 @@ class Validar extends Main
             $this->Util()->DB()->setQuery($sql);
             $tipoServicioId = $this->Util()->DB()->GetSingle();
             if($tipoServicioId<=0) {
-                $this->Util()->DB()->setError(0, 'error', "Servicio de la fila " . $fila . " no encontrado");
-                $this->Util()->setError(0,'error',$sql );
+                $this->Util()->setError(0, 'error', "Servicio de la fila " . $fila . " no encontrado");
+                //$this->Util()->setError(0,'error',$sql );
                 break;
             }
             if($row[4]==""){
-                $this->Util()->DB()->setError(0, 'error', "Falta inicio de facturacion en la fila " . $fila . " de no tenerlo usar 0000-00-00");
+                $this->Util()->setError(0, 'error', "Falta inicio de facturacion en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
             }
             if($row[5]==""){
-                $this->Util()->DB()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
+                $this->Util()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
+            }
+            if($isNew){
+                if($row[4]=='0000-00-00')
+                    $fechaFacturacion = $row[4];
+                else
+                    $fechaFacturacion = $this->Util()->FormatDateMySqlSlash($row[4]);
+
+                if($row[5]=='0000-00-00')
+                    $fechaInicioOperacion = $row[5];
+                else
+                    $fechaInicioOperacion = $this->Util()->FormatDateMySqlSlash($row[5]);
+
+                echo $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$fechaInicioOperacion."' and inicioFactura='". $fechaFacturacion."' and status in('activo','bajaParcial') ";
+                $this->Util()->DB()->setQuery($sqlServ);
+                $servicesFind= $this->Util()->DB()->GetResult();
+                if(count($servicesFind)>0){
+                    $this->Util()->setError(0, 'error', "Ya se encuentra un servicio registrado con las mismas caracteristicas de la fila " . $fila . ", revisar informacion");
+                    break;
+                }
             }
             $fila++;
         }

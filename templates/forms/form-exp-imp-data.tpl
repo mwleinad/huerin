@@ -16,6 +16,7 @@
                         <!--<option value="imp-new-customer">Importar clientes nuevos</option>-->
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
+                        <option value="importar_servicios_nuevos">Importar nuevos servicios a clientes</option>
                         {if $User.isRoot}
                             <option value="doPermiso">Reconstruir permisos</option>
                             <option value="importar_customer_rebuild">Importar clientes rebuild</option>

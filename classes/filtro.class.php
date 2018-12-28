@@ -160,7 +160,7 @@ class Filtro extends Util
 			return 1;
 		} 
 
-		unset($result[$key]["contracts"][$keyContract]);
+		//unset($result[$key]["contracts"][$keyContract]);
 		return 0;
 	}
 	
