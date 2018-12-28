@@ -929,14 +929,14 @@ switch($_POST['type']){
             //encontrar el contrato
             //$sql= "select max(contractId) from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
             $sql ="select max(a.contractId) from contract a 
-                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[0])))."' and b.active='1' 
-                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' and a.activo='Si'
+                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','',($row[0])))."' and b.active='1' 
+                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',($row[1])))."' and a.activo='Si'
                   ";
             $db->setQuery($sql);
             $conId = $db->GetSingle();
 
             //encontrar el servicio
-            $sql2= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[2])))."' ";
+            $sql2= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',($row[2])))."' ";
             $db->setQuery($sql2);
             $tipoServicioId = $db->GetSingle();
 
