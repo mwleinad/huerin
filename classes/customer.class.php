@@ -1472,7 +1472,7 @@ class Customer extends Main
 						//Si es usuario de contabilidad
 						$data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
 					}//foreach
-					//contratos sin servicio se eliminan
+					//contratos sin servicio se eliminan no deberia eliminarlos solo poner en falso para que salf en la busqueda
 					$result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
 			
 				}//foreach
