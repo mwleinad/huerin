@@ -75,7 +75,7 @@ class ContractRep extends Main
 
         //para el año 2018 en adelaten el servicio DIM no debe aparecer para nadie.
         $noInclude = "";
-        if($formValues['year']>=2018)
+        if(isset($formValues['year'])&&$formValues['year']>=2018)
             $noInclude = " AND lower(tipoServicio.nombreServicio) NOT LIKE '%dim%' ";
 
         foreach($resContratos as $res){
