@@ -920,6 +920,7 @@ switch($_POST['type']){
             }
             if($row[5]=="0000-00-00"){
                 $sinInicioOp++;
+                $fila++;
                 continue;
             }
             //encontrar el contrato
@@ -982,6 +983,7 @@ switch($_POST['type']){
                 $db->InsertData();*/
                 $daralta++;
             }
+            $fila++;
         }
         $util->setError(0,'complete',"sin inicio de operaciones ".$sinInicioOp);
         $util->setError(0,'complete',"encontrados ".$encontrados." , no encontrados ".$noencontrados);
