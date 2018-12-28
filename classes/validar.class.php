@@ -841,6 +841,45 @@ class Validar extends Main
 
         return true;
     }
+    public function ValidateLayoutImportServicio($FILES){
+        $file_temp = $FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        while(($row=fgetcsv($fp,4096,","))==true){
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            //encontrar el contrato
+            $sql= "select contractId from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $conId =  $this->Util()->DB()->GetSingle();
+            if($conId<=0) {
+                $this->Util()->setError(0, 'error', "Razon social de la fila " . $fila . " no encontrado");
+                break;
+            }
+            //encontrar el servicio
+            $sql= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[2])))."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $tipoServicioId = $this->Util()->DB()->GetSingle();
+            if($tipoServicioId<=0) {
+                $this->Util()->DB()->setError(0, 'error', "Servicio de la fila " . $fila . " no encontrado");
+                break;
+            }
+            if($row[4]==""){
+                $this->Util()->DB()->setError(0, 'error', "Falta inicio de facturacion en la fila " . $fila . " de no tenerlo usar 0000-00-00");
+                break;
+            }
+            if($row[5]==""){
+                $this->Util()->DB()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
+                break;
+            }
+        }
+        if($this->Util()->PrintErrors())
+           return false;
+
+        return true;
+    }
 
 
 }

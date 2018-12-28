@@ -895,4 +895,100 @@ switch($_POST['type']){
         echo "encontrados ".$find.chr(13);
         echo "no encontrados ".$nofind.chr(13);
     break;
+    case 'importar_servicios_rebuild':
+
+        $isValid = $valida->ValidateLayoutImportServicio($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo"[#]";
+            exit;
+        }
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila = 1;
+        $encontrados = 0;
+        $noencontrados = 0;
+        $masdeuno = 0;
+        $losdeuno = 0;
+        $daralta = 0;
+        $sinInicioOp=0;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            if($row[5]=="0000-00-00"){
+                $sinInicioOp++;
+                continue;
+            }
+            //encontrar el contrato
+            $sql= "select contractId from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
+            $db->setQuery($sql);
+            $conId = $db->GetSingle();
+
+            //encontrar el servicio
+            $sql= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[2])))."' ";
+            $db->setQuery($sql);
+            $tipoServicioId = $db->GetSingle();
+
+            if($row[4]=='0000-00-00')
+                $fechaFacturacion = $row[4];
+            else
+                $fechaFacturacion = $util->FormatDateMySqlSlash($row[4]);
+
+            //si el contractId y tipoServicioId estan dados de alta se debe comprobar que no exista un registro en la tabla servicio
+            $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."' ";
+            $db->setQuery($sqlServ);
+            $servicesFind= $db->GetResult();
+            if(count($servicesFind)>1){
+                //si tiene mas de uno el mismo tipo de servicio actualizar el mas reciente.
+                $sqlmax = "SELECT max(servicioId) from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."' ";
+                $db->setQuery($sqlmax);
+                $maxId = $db->GetSingle();
+                if($maxId>0) {
+                    $sqlUpMax = "update servicio set inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."',inicioFactura='".$fechaFacturacion."',costo='".$row[7]."' where servicioId='".$maxId."' ";
+                    /*$db->setQuery($sqlUpMax);
+                    $db->UpdateData();*/
+                }
+               $masdeuno++;
+            }elseif(count($servicesFind)==1){
+                $sqlRow= "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."' ";
+                $db->setQuery($sqlRow);
+                $serviceId= $db->GetSingle();
+                if($maxId>0) {
+                    $sqlUp = "update servicio set inicioOperaciones='" . $util->FormatDateMySqlSlash($row[5]) . "',inicioFactura='" . $fechaFacturacion . "',costo='" . $row[7] . "' where servicioId='" . $serviceId . "' ";
+                    /*$db->setQuery($sqlUp);
+                    $db->UpdateData();*/
+                }
+                $losdeuno++;
+            }else{
+                // no existe hay que dar de alta
+                $sqlInser = "insert into 
+                              servicio(
+                              contractId,
+                              tipoServicioId,
+                              inicioOperaciones,
+                              inicioFactura,
+                              costo
+                              )values(
+                              '".$conId."',
+                              '".$tipoServicioId."',
+                              '".$util->FormatDateMySqlSlash($row[5])."',
+                              '".$fechaFacturacion."',
+                              '".$row[7]."'
+                              )";
+                /*$db->setQuery($sqlInser);
+                $db->InsertData();*/
+                $daralta++;
+            }
+        }
+        $util->setError(0,'complete',"sin inicio de operaciones ".$sinInicioOp);
+        $util->setError(0,'complete',"encontrados ".$encontrados." , no encontrados ".$noencontrados);
+        $util->setError(0,'complete',"Con mas de uno ".$masdeuno." ,de a uno ".$losdeuno.", a dar de alta ".$daralta);
+        $util->PrintErrors();
+        echo "fail[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+    break;
 }

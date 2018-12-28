@@ -3107,7 +3107,6 @@ class Contract extends Main
             if($idAud)
                 $deptos[31]=$idAud;
         }
-
         $permisosArray=array();
         foreach($deptos as $dep=>$per){
             $cad ="";
