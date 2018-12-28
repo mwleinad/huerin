@@ -856,6 +856,7 @@ class Validar extends Main
             $conId =  $this->Util()->DB()->GetSingle();
             if($conId<=0) {
                 $this->Util()->setError(0, 'error', "Razon social de la fila " . $fila . " no encontrado");
+                $this->Util()->setError(0,$sql );
                 break;
             }
             //encontrar el servicio
@@ -864,6 +865,7 @@ class Validar extends Main
             $tipoServicioId = $this->Util()->DB()->GetSingle();
             if($tipoServicioId<=0) {
                 $this->Util()->DB()->setError(0, 'error', "Servicio de la fila " . $fila . " no encontrado");
+                $this->Util()->setError(0,$sql );
                 break;
             }
             if($row[4]==""){
