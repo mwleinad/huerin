@@ -913,6 +913,7 @@ switch($_POST['type']){
         $losdeuno = 0;
         $daralta = 0;
         $sinInicioOp=0;
+        $mas_de_uno = [];
         while(($row=fgetcsv($fp,4096,","))==true) {
             if ($fila == 1) {
                 $fila++;
@@ -948,19 +949,20 @@ switch($_POST['type']){
                 $db->setQuery($sqlmax);
                 $maxId = $db->GetSingle();
                 if($maxId>0) {
-                    $sqlUpMax = "update servicio set inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."',inicioFactura='".$fechaFacturacion."',costo='".$row[7]."' where servicioId='".$maxId."' ";
-                    /*$db->setQuery($sqlUpMax);
-                    $db->UpdateData();*/
+                    $sqlUpMax = "update servicio set inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."',inicioFactura='".$fechaFacturacion."',costo='".$row[7]."',status='activo' where servicioId='".$maxId."' ";
+                    $db->setQuery($sqlUpMax);
+                    $db->UpdateData();
                 }
+                $mas_de_uno[$conId][] = $row[2];
                $masdeuno++;
             }elseif(count($servicesFind)==1){
                 $sqlRow= "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."' ";
                 $db->setQuery($sqlRow);
                 $serviceId= $db->GetSingle();
-                if($maxId>0) {
-                    $sqlUp = "update servicio set inicioOperaciones='" . $util->FormatDateMySqlSlash($row[5]) . "',inicioFactura='" . $fechaFacturacion . "',costo='" . $row[7] . "' where servicioId='" . $serviceId . "' ";
-                    /*$db->setQuery($sqlUp);
-                    $db->UpdateData();*/
+                if($serviceId>0) {
+                    $sqlUp = "update servicio set inicioOperaciones='" . $util->FormatDateMySqlSlash($row[5]) . "',inicioFactura='" . $fechaFacturacion . "',costo='" . $row[7] . "',status='activo' where servicioId='" . $serviceId . "' ";
+                    $db->setQuery($sqlUp);
+                    $db->UpdateData();
                 }
                 $losdeuno++;
             }else{
@@ -979,8 +981,8 @@ switch($_POST['type']){
                               '".$fechaFacturacion."',
                               '".$row[7]."'
                               )";
-                /*$db->setQuery($sqlInser);
-                $db->InsertData();*/
+                $db->setQuery($sqlInser);
+                $db->InsertData();
                 $daralta++;
             }
             $fila++;
@@ -989,7 +991,7 @@ switch($_POST['type']){
         $util->setError(0,'complete',"encontrados ".$encontrados." , no encontrados ".$noencontrados);
         $util->setError(0,'complete',"Con mas de uno ".$masdeuno." ,de a uno ".$losdeuno.", a dar de alta ".$daralta);
         $util->PrintErrors();
-        echo "fail[#]";
+        echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 
     break;
