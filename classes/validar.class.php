@@ -876,6 +876,7 @@ class Validar extends Main
                 $this->Util()->DB()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
             }
+            $fila++;
         }
         if($this->Util()->PrintErrors())
            return false;
