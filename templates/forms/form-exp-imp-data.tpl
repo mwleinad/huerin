@@ -21,6 +21,7 @@
                             <option value="importar_customer_rebuild">Importar clientes rebuild</option>
                             <option value="importar_contrato_rebuild">Importar contratos rebuild</option>
                             <option value="importar_empleados_rebuild">Importar empleados rebuild</option>
+                            <option value="importar_servicios_rebuild">Importar servicios a contratos rebuild</option>
                         {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
