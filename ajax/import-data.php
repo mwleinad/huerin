@@ -249,18 +249,17 @@ switch($_POST['type']){
                 $fila++;
                 continue;
             }
-
             $sql = "SELECT customerId FROM customer WHERE nameContact='".$row[0]."' ";
             $db->setQuery($sql);
             $customerId = $db->GetSingle();
-
             if(strtolower($row[2])=="persona moral"){
                 $db->setQuery("SELECT sociedadId FROM  sociedad WHERE lower(replace(nombreSociedad,' ',''))='".strtolower(str_replace(' ','',$row[40]))."' ");
                 $sociedadId=$db->GetSingle();
             }
             $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[39]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[2]))."' ");
             $regimenId=$db->GetSingle();
-            $permisos = $contract->ConcatenarEncargados($row);
+            //0=contabilidad,1=nomina,2=admin,3=juridico,4=imss,5=auditoria
+            $permisos = $contract->ConcatenarEncargadosRebuild([$row[32],$row[33],$row[34],$row[35],$row[36],$row[38]]);
             $sqlInsert = "INSERT INTO contract(
                           customerId,
                           type,
@@ -302,25 +301,25 @@ switch($_POST['type']){
                           '".$customerId."',
                           '".$row[2]."',
                           '".$regimenId."',
-                          '".utf8_encode($row[1])."',
+                          '".($row[1])."',
                           '',
-                          '".utf8_encode($row[5])."',
-                          '".utf8_encode($row[17])."',
-                          '".utf8_encode($row[6])."',
-                          '".utf8_encode($row[7])."',
-                          '".utf8_encode($row[8])."',
-                          '".utf8_encode($row[9])."',
-                          '".utf8_encode($row[10])."',
-                          '".utf8_encode($row[11])."',
-                          '".utf8_encode($row[12])."',
+                          '".($row[5])."',
+                          '".($row[17])."',
+                          '".($row[6])."',
+                          '".($row[7])."',
+                          '".($row[8])."',
+                          '".($row[9])."',
+                          '".($row[10])."',
+                          '".($row[11])."',
+                          '".($row[12])."',
                           '".$row[13]."',
-                          '".utf8_encode($row[18])."',
+                          '".($row[18])."',
                           '".$row[19]."',
                           '".$row[20]."',
-                          '".utf8_encode($row[21])."',
+                          '".($row[21])."',
                           '".$row[22]."',
                           '".$row[23]."',
-                          '".utf8_encode($row[24])."',
+                          '".($row[24])."',
                           '".$row[25]."',
                           '".$row[26]."',
                           '".$row[27]."',
@@ -340,11 +339,11 @@ switch($_POST['type']){
             $registroId =  $db->InsertData();
             if($registroId>0)
             {
-                //si se actualizo la razon se debe actualizar los permisos en la tabla
+                //se ingresa los permisos en la tabla de permisos de contrato
                 $opermiso->setContractId($registroId);
                 $opermiso->doPermiso();
 
-                $contract->setContractId($registroId);
+               /* $contract->setContractId($registroId);
                 $infoReg = $contract->Info();
                 //guardar en log
                 $log->setPersonalId($_SESSION['User']['userId']);
@@ -360,11 +359,13 @@ switch($_POST['type']){
                     $logContractLocal ="<p>Alta de la razon social ".utf8_decode($infoReg['name'])." del cliente ".$row['0']."</p>";
                     $logContractLocal .=$log->PrintInFormatText($changes,'simple');
                 }
+
+                $generalContractLog .=$logContractLocal;*/
                 $conAgregado++;
-                $generalContractLog .=$logContractLocal;
             }
 
         }
+        /*
         fclose($fp);
         $file="";
         $nameFile="";
@@ -391,7 +392,7 @@ switch($_POST['type']){
             $sendmail->PrepareMultipleNotice($subject,$body,$encargados,"",$file,$nameFile,"","",'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
 
         if(is_file($file))
-            unlink($file);
+            unlink($file);*/
 
         $util->setError(0,'complete',$conAgregado." registros agregados a plataforma.");
         $util->PrintErrors();
