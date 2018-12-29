@@ -897,6 +897,127 @@ switch($_POST['type']){
     break;
     case 'importar_servicios_rebuild':
 
+    $isValid = $valida->ValidateLayoutImportServicio($_FILES);
+    if(!$isValid){
+        echo "fail[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        echo"[#]";
+        exit;
+    }
+    $file_temp = $_FILES['file']['tmp_name'];
+    $fp = fopen($file_temp,'r');
+    $fila = 1;
+    $encontrados = 0;
+    $noencontrados = 0;
+    $masdeuno = 0;
+    $losdeuno = 0;
+    $daralta = 0;
+    $sinInicioOp=0;
+    $mas_de_uno = [];
+    $servicios_ids= [];
+    while(($row=fgetcsv($fp,4096,","))==true) {
+        if ($fila == 1) {
+            $fila++;
+            continue;
+        }
+        if($row[5]=="0000-00-00"){
+            $sinInicioOp++;
+            $fila++;
+            continue;
+        }
+
+        //encontrar el contrato
+        //$sql= "select max(contractId) from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
+        $sql ="select max(a.contractId) from contract a 
+                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[0])))."' and b.active='1' 
+                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' and a.activo='Si'
+                  ";
+        $db->setQuery($sql);
+        $conId = $db->GetSingle();
+
+        //encontrar el servicio
+        $sql2= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[2])))."' ";
+        $db->setQuery($sql2);
+        $tipoServicioId = $db->GetSingle();
+
+        if($row[4]=='0000-00-00')
+            $fechaFacturacion = $row[4];
+        else
+            $fechaFacturacion = $util->FormatDateMySqlSlash($row[4]);
+
+        $fechaInicioOperacion = $util->FormatDateMySqlSlash($row[5]);
+        $inOp = explode("-",$fechaInicioOperacion);
+
+        //si el contractId y tipoServicioId estan dados de alta se debe comprobar que no exista un registro en la tabla servicio
+        $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."' ";
+        $db->setQuery($sqlServ);
+        $servicesFind= $db->GetResult();
+        /*if($conId==2429 || $row[1]=="EDNA CHOMSTEIN SZTAJER" || $fila==613){
+            echo $sqlServ.chr(13);
+            echo $sql.chr(13);
+        }*/
+        if(count($servicesFind)>1){
+            //si tiene mas de uno el mismo tipo de servicio actualizar el mas reciente.
+            $sqlmax = "SELECT max(servicioId) from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."' ";
+            $db->setQuery($sqlmax);
+            $maxId = $db->GetSingle();
+            if($maxId>0) {
+                $sqlUpMax = "update servicio set inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."',inicioFactura='".$fechaFacturacion."',costo='".$row[7]."',status='activo' where servicioId='".$maxId."' ";
+                $db->setQuery($sqlUpMax);
+                $db->UpdateData();
+                array_push($servicios_ids,$maxId);
+            }
+            $mas_de_uno[$conId][] = $row[2];
+            $masdeuno++;
+        }elseif(count($servicesFind)==1){
+            $sqlRow= "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."'";
+            $db->setQuery($sqlRow);
+            $serviceId= $db->GetSingle();
+            if($serviceId>0) {
+                $sqlUp = "update servicio set inicioOperaciones='" . $util->FormatDateMySqlSlash($row[5]) . "',inicioFactura='" . $fechaFacturacion . "',costo='" . $row[7] . "',status='activo' where servicioId='" . $serviceId . "' ";
+                $db->setQuery($sqlUp);
+                $db->UpdateData();
+                array_push($servicios_ids,$serviceId);
+                $losdeuno++;
+            }
+        }else{
+            // no existe hay que dar de alta
+            $sqlInser = "insert into 
+                              servicio(
+                              contractId,
+                              tipoServicioId,
+                              inicioOperaciones,
+                              inicioFactura,
+                              costo
+                              )values(
+                              '".$conId."',
+                              '".$tipoServicioId."',
+                              '".$util->FormatDateMySqlSlash($row[5])."',
+                              '".$fechaFacturacion."',
+                              '".$row[7]."'
+                              )";
+            $db->setQuery($sqlInser);
+            $id = $db->InsertData();
+            array_push($servicios_ids,$id);
+            $daralta++;
+        }
+        $fila++;
+    }
+    echo "servicios ".count($servicios_ids).chr(13);
+    //todos los servicios que no esten dentro de $servicios_ids, se deben de dar de baja, es mejor para que no se creeen workflow esto ya se puede
+    //activar en caso de necesitarlo.
+    $sqlBaja = " update servicio set status='baja'  where servicioId not in(".implode(',',$servicios_ids).")";
+    $db->setQuery($sqlBaja);
+    $db->UpdateData();
+
+    $util->setError(0,'complete',"sin inicio de operaciones ".$sinInicioOp);
+    $util->setError(0,'complete',"encontrados ".$encontrados." , no encontrados ".$noencontrados);
+    $util->setError(0,'complete',"Con mas de uno ".$masdeuno." ,de a uno ".$losdeuno.", a dar de alta ".$daralta);
+    $util->PrintErrors();
+    echo "ok[#]";
+    $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
+    case 'importar_servicios_nominas':
         $isValid = $valida->ValidateLayoutImportServicio($_FILES);
         if(!$isValid){
             echo "fail[#]";
@@ -907,25 +1028,14 @@ switch($_POST['type']){
         $file_temp = $_FILES['file']['tmp_name'];
         $fp = fopen($file_temp,'r');
         $fila = 1;
-        $encontrados = 0;
-        $noencontrados = 0;
-        $masdeuno = 0;
-        $losdeuno = 0;
         $daralta = 0;
-        $sinInicioOp=0;
-        $mas_de_uno = [];
-        $servicios_ids= [];
+        $actualizados = 0;
+        $altas_log = "";
         while(($row=fgetcsv($fp,4096,","))==true) {
             if ($fila == 1) {
                 $fila++;
                 continue;
             }
-            if($row[5]=="0000-00-00"){
-                $sinInicioOp++;
-                $fila++;
-                continue;
-            }
-
             //encontrar el contrato
             //$sql= "select max(contractId) from contract where lower(replace(name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' ";
             $sql ="select max(a.contractId) from contract a 
@@ -945,41 +1055,20 @@ switch($_POST['type']){
             else
                 $fechaFacturacion = $util->FormatDateMySqlSlash($row[4]);
 
-            $fechaInicioOperacion = $util->FormatDateMySqlSlash($row[5]);
-            $inOp = explode("-",$fechaInicioOperacion);
+            if($row[5]=='0000-00-00')
+                $fechaInicioOperacion = $row[5];
+            else
+                $fechaInicioOperacion = $util->FormatDateMySqlSlash($row[5]);
 
-            //si el contractId y tipoServicioId estan dados de alta se debe comprobar que no exista un registro en la tabla servicio
-            $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."' ";
-            $db->setQuery($sqlServ);
-            $servicesFind= $db->GetResult();
-            /*if($conId==2429 || $row[1]=="EDNA CHOMSTEIN SZTAJER" || $fila==613){
-                echo $sqlServ.chr(13);
-                echo $sql.chr(13);
-            }*/
-            if(count($servicesFind)>1){
-                //si tiene mas de uno el mismo tipo de servicio actualizar el mas reciente.
-                $sqlmax = "SELECT max(servicioId) from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."' ";
-                $db->setQuery($sqlmax);
-                $maxId = $db->GetSingle();
-                if($maxId>0) {
-                    $sqlUpMax = "update servicio set inicioOperaciones='".$util->FormatDateMySqlSlash($row[5])."',inicioFactura='".$fechaFacturacion."',costo='".$row[7]."',status='activo' where servicioId='".$maxId."' ";
-                   $db->setQuery($sqlUpMax);
+            //encontrar el servicio mas actual, sobre ello actualizar fecha de facturacion y costo.
+            $sqlmax = "SELECT max(servicioId) from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' ";
+            $db->setQuery($sqlmax);
+            $maxId = $db->GetSingle();
+            if($maxId>0) {
+                    $sqlUpMax = "update servicio set inicioFactura='".$fechaFacturacion."',costo='".$row[7]."',status='activo' where servicioId='".$maxId."' ";
+                    $db->setQuery($sqlUpMax);
                     $db->UpdateData();
-                    array_push($servicios_ids,$maxId);
-                }
-                $mas_de_uno[$conId][] = $row[2];
-               $masdeuno++;
-            }elseif(count($servicesFind)==1){
-                $sqlRow= "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and year(inicioOperaciones)='".$inOp[0]."' and month(inicioOperaciones)='".$inOp[1]."'";
-                $db->setQuery($sqlRow);
-                $serviceId= $db->GetSingle();
-                if($serviceId>0) {
-                    $sqlUp = "update servicio set inicioOperaciones='" . $util->FormatDateMySqlSlash($row[5]) . "',inicioFactura='" . $fechaFacturacion . "',costo='" . $row[7] . "',status='activo' where servicioId='" . $serviceId . "' ";
-                    $db->setQuery($sqlUp);
-                    $db->UpdateData();
-                    array_push($servicios_ids,$serviceId);
-                    $losdeuno++;
-                }
+                    $actualizados++;
             }else{
                 // no existe hay que dar de alta
                 $sqlInser = "insert into 
@@ -992,31 +1081,24 @@ switch($_POST['type']){
                               )values(
                               '".$conId."',
                               '".$tipoServicioId."',
-                              '".$util->FormatDateMySqlSlash($row[5])."',
+                              '".$fechaInicioOperacion."',
                               '".$fechaFacturacion."',
                               '".$row[7]."'
                               )";
-                $db->setQuery($sqlInser);
-                $id = $db->InsertData();
-                array_push($servicios_ids,$id);
+                 $db->setQuery($sqlInser);
+                 $id = $db->InsertData();
                 $daralta++;
+                $altas_log .=$row[0].",".$row[1].",".$row[2].",".$row[4].",".$row[5].chr(13);
             }
             $fila++;
         }
-        echo "servicios ".count($servicios_ids).chr(13);
-        //todos los servicios que no esten dentro de $servicios_ids, se deben de dar de baja, es mejor para que no se creeen workflow esto ya se puede
-       //activar en caso de necesitarlo.
-        $sqlBaja = " update servicio set status='baja'  where servicioId not in(".implode(',',$servicios_ids).")";
-        $db->setQuery($sqlBaja);
-        $db->UpdateData();
-
-        $util->setError(0,'complete',"sin inicio de operaciones ".$sinInicioOp);
-        $util->setError(0,'complete',"encontrados ".$encontrados." , no encontrados ".$noencontrados);
-        $util->setError(0,'complete',"Con mas de uno ".$masdeuno." ,de a uno ".$losdeuno.", a dar de alta ".$daralta);
+        echo $altas_log;
+        $util->setError(0,'complete',"Total actualizados ".$actualizados);
+        $util->setError(0,'complete',"Total altas ".$daralta);
         $util->PrintErrors();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-    break;
+        break;
     case 'importar_servicios_nuevos':
         //primero se valida el layaout
         $isValid = $valida->ValidateLayoutImportServicio($_FILES,true);
