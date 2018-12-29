@@ -378,23 +378,23 @@ class Validar extends Main
                break;
            }
            if($row[27]==""){
-               $this->Util()->setError(0,'error','Falta clave FIEL en la fila '.$fila);
+               $this->Util()->setError(0,'error','Falta cel. directivo en la fila '.$fila);
                break;
            }
            if($row[28]==""){
-               $this->Util()->setError(0,'error','Falta clave CIEC en la fila '.$fila);
+               $this->Util()->setError(0,'error','Falta clave FIEL en la fila '.$fila);
                break;
            }
            if($row[29]==""){
-               $this->Util()->setError(0,'error','Falta clave IDSE en la fila '.$fila);
+               $this->Util()->setError(0,'error','Falta clave CIEC en la fila '.$fila);
                break;
            }
            if($row[30]==""){
-               $this->Util()->setError(0,'error','Falta clave ISN en la fila '.$fila);
+               $this->Util()->setError(0,'error','Falta clave IDSE en la fila '.$fila);
                break;
            }
            if($row[31]==""){
-               $this->Util()->setError(0,'error','Falta cel. directivo en la fila '.$fila);
+               $this->Util()->setError(0,'error','Falta clave ISN en la fila '.$fila);
                break;
            }
            if($row[39]==""){
@@ -407,6 +407,7 @@ class Validar extends Main
                    break;
                }
                $this->Util()->DB()->setQuery("SELECT sociedadId FROM  sociedad WHERE lower(replace(nombreSociedad,' ',''))='".mb_strtolower(str_replace(' ','',$row[40]))."' ");
+               echo $this->Util()->DB()->getQuery();
                $sociedadId=$this->Util()->DB()->GetSingle();
                if(!$sociedadId)
                {
@@ -465,15 +466,6 @@ class Validar extends Main
                if(!$idImss)
                {
                    $this->Util()->setError(0,'error','Responsable de imss de la fila '.$fila.' no se encuentra dado de alta ');
-                   break;
-               }
-           }
-           if($row[37]!="" and $row[37]!="--" ){
-               $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[37]))."'");
-               $idMen=$this->Util()->DB()->GetSingle();
-               if(!$idMen)
-               {
-                   $this->Util()->setError(0,'error','Responsable de mensajeria de la fila '.$fila.' no se encuentra dado de alta ');
                    break;
                }
            }
