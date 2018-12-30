@@ -28,9 +28,8 @@ else
 	{
 	  session_start();
 	}
-	$_SESSION['empresaId'] = 15;
-	
-	
+	$_SESSION['empresaId'] = 21;
+
 	$mask = DOC_ROOT.'/temp/15_A_*.*';
 	$array = glob($mask);
 	array_map('unlink', glob($mask));
@@ -38,10 +37,10 @@ else
 	$array = glob($mask);
 	array_map('unlink', glob($mask));
 	//solo se crearan instancias para servicios en status activo o bajaParcial
-	$servicio->CreateServiceInstances();
+	$cronServicio->CreateWorkflow();
 	//exit;
 	$time = date("d-m-Y").' a las '.date('H:i:s');
-	$entry = "Cron ejecutado desde ".$timeStart." el $time Hrs.";
+	$entry = "Cron ejecutado desde ".$timeStart." el $time Hrs.".chr(13);
 	$file = DOC_ROOT."/cron/facturas.txt";
 	$open = fopen($file,"w");
 

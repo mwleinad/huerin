@@ -123,6 +123,9 @@ include_once(DOC_ROOT."/classes/permiso.class.php");
 include_once(DOC_ROOT."/classes/dropzone.class.php");
 include_once(DOC_ROOT."/classes/coffe.class.php");
 
+//cron
+include_once(DOC_ROOT."/classes/cronServicio.class.php");
+
 $db = new DB;
 $dbRemote = new DBRemote;
 $error = new Error;
@@ -200,6 +203,8 @@ $valida = new Validar();
 $dropzone = new Dropzone();
 $catalogue = new Catalogue();
 
+//cron
+$cronServicio = new CronServicio();
 //echo $page;exit;
 include_once(DOC_ROOT."/services/Catalogo.php");
 include_once(DOC_ROOT."/services/Sello.php");
