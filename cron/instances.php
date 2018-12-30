@@ -48,5 +48,6 @@ else
     	fwrite($open,$entry);
 	    fclose($open);
 	}
+	echo $entry.chr(13);
 
 ?>
