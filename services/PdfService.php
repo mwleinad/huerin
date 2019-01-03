@@ -66,7 +66,7 @@ class PdfService extends Producto{
 
         //Uncomment if you want to see a html version
         //$this->smarty->display(DOC_ROOT.'/templates/pdf/basico.tpl');exit;
-
+        ob_clean();
         $html = $this->smarty->fetch(DOC_ROOT.'/templates/pdf/basico.tpl');
         $dompdf->loadHtml($html);
 
