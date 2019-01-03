@@ -1060,8 +1060,8 @@ function SubordinadosDetails()
         $results =  $this->Util()->DB()->GetResult();
 
         foreach($results as $key =>$item){
-            if($item['personalId']!='259')
-                continue;
+            //if($item['personalId']!='259')
+              //  continue;
             $cadena ="";
             $cadena = $this->Util()->generateRandomString(6,true);
             $this->Util()->DB()->setQuery("UPDATE personal SET passwd='".$cadena."' WHERE personalId='".$item['personalId']."' ");
