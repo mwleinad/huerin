@@ -186,7 +186,7 @@ class DB
 	{
 		$this->ExecuteQuery();
 
-		$return = mysqli_affected_rows($this->conn_id);
+		$return = mysql_affected_rows($this->conn_id);
 
   	$this->CleanQuery();
 

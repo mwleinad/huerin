@@ -1065,7 +1065,8 @@ function SubordinadosDetails()
             $cadena ="";
             $cadena = $this->Util()->generateRandomString(6,true);
             $this->Util()->DB()->setQuery('UPDATE personal SET passwd="'.$cadena.'" WHERE personalId='.$item['personalId'].'');
-            if($this->Util()->DB()->UpdateData()){
+            if($this->Util()->DB()->UpdateData()>0){
+                echo "si entro";
                 $this->Util()->DB()->setQuery('UPDATE personal SET lastChangePassword="'.date('Y-m-d').'" WHERE personalId='.$item['personalId'].'');
                 $body="ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
                 SE HA REALIZADO EL CAMBIO DE CONTRASE&Ntilde;A DE SU CUENTA, CIERRE SU SESSION SI SE ENCUENTRA ACTUALMENTE EN LA PLATAFORMA E INGRESE NUEVAMENTE CON LOS SIGUIENTES DATOS:  <br>
