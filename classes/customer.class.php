@@ -1360,9 +1360,9 @@ class Customer extends Main
 		}
 
 		if (strlen($like) > 1) {
-				$addWhere = " AND (contract.name LIKE '%".$like."%' 
-					OR contract.rfc LIKE '%".$like."%' 
-					OR customer.nameContact LIKE '%".$like."%')  ";
+				$addWhere = " AND (customer.nameContact LIKE '%".$like."%'
+				                   OR contract.name LIKE '%".$like."%' 
+					               OR contract.rfc LIKE '%".$like."%')";
 		}
 		
 		if($limite)
