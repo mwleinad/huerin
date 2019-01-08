@@ -321,6 +321,8 @@ class Log extends Util
             }
         }
         $encargados = array_merge($encargados,$correosJefes);
+        if(!SEND_LOG_MOD)
+            $encargados = [];
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,$body,$encargados,'',"","","","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
