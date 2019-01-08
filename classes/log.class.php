@@ -75,7 +75,7 @@ class Log extends Util
             case 'Insert':
                 $accion = "ha sido dado de alta ";
                 array_push($defaultId,IDHUERIN);
-                array_push($defaultId,290);
+                array_push($defaultId,319);
                 $sendBraun = true;
             break;
             case 'Update':
@@ -85,18 +85,18 @@ class Log extends Util
             case 'Baja':
                 $accion="ha sido  dado de baja ";
                 array_push($defaultId,IDHUERIN);
-                array_push($defaultId,290);
+                array_push($defaultId,319);
                 $sendBraun = true;
             break;
             case 'bajaParcial':
                 $accion="ha sido  dado de baja temporalmente ";
                 array_push($defaultId,IDHUERIN);
-                array_push($defaultId,290);
+                array_push($defaultId,319);
                 break;
             case 'Reactivacion':
                 $accion="ha sido reactivado ";
                 array_push($defaultId,IDHUERIN);
-                array_push($defaultId,290);
+                array_push($defaultId,319);
                 $sendBraun = true;
             break;
             case 'readonly':
@@ -106,7 +106,7 @@ class Log extends Util
             case 'Delete':
                 $accion="ha sido eliminado ";
                 array_push($defaultId,IDHUERIN);
-                array_push($defaultId,290);
+                array_push($defaultId,319);
              break;
         }
         //encontrar tabla que se modifico
