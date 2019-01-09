@@ -70,7 +70,7 @@ if($User['tipoPersonal'] == 'Supervisor' && $_POST["responsableCuenta"] == 0){
 		$User["roleId"] = $roleId;
 		$User["departamentoId"] = $myUser["departamentoId"];
 	}
-	$result = $customer->SuggestCustomerCatalog($_POST["value"],$_POST["type"],0,$_POST["tipo"],true);
+	$result = $customer->SuggestCustomerCatalogFiltrado($_POST["value"],$_POST["type"],0,$_POST["tipo"],true);
 	
 }//else
 	

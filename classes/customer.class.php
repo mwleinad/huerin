@@ -1358,7 +1358,6 @@ class Customer extends Main
 		} else {
 				$addActivo = " AND active = '1' ";
 		}
-
 		if (strlen($like) > 1) {
 				$addWhere = " AND (customer.nameContact LIKE '%".$like."%'
 				                   OR contract.name LIKE '%".$like."%' 
@@ -1394,9 +1393,9 @@ class Customer extends Main
 			$result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
 			
 			$result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
-			
-			$result[$key]["contracts"] = $this->GetRazonesSociales($val["customerId"]);
-
+			$allContracts = [];
+			$allContracts = $this->GetRazonesSociales($val["customerId"]);
+			$result[$key]["contracts"]=  $allContracts;
             $result[$key]["servicios"] = count($result[$key]["contracts"]);
 						
 			$countContracts = count($result[$key]["contracts"]);
@@ -1486,6 +1485,157 @@ class Customer extends Main
    	    }//foreach
         return $result;
 	}//SuggestCustomerCatalog
+    public function SuggestCustomerCatalogFiltrado($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
+    {
+        global $User, $page,$rol,$personal;
+        $creport = new ContractRep();
+        if ($this->active) {
+            $sqlActive = " AND active = '1' ";
+        }
+        if ($customerId) {
+            $add = " AND customer.customerId = '".$customerId."' ";
+            if ($page == "report-servicio") {
+                $User["roleId"] = 1;
+            }
+        }
+
+        if ($tipo == "Activos") {
+            $addActivo = " AND active = '1' and contract.activo = 'Si'  ";
+        } elseif ($tipo == "Inactivos") {
+            $addActivo = " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+        } else {
+            $addActivo = " AND active = '1' ";
+        }
+        if (strlen($like) > 1) {
+            $addWhere = " AND (customer.nameContact LIKE '%".$like."%'
+				                   OR contract.name LIKE '%".$like."%' 
+					               OR contract.rfc LIKE '%".$like."%')";
+        }
+
+        if($limite)
+            $addLimite = " LIMIT 15";
+        else
+            $addLimite = "";
+
+        $sql = "SELECT 
+						customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name,
+			customer.phone, customer.email, customer.password,customer.active 
+						FROM customer
+			LEFT JOIN contract ON contract.customerId = customer.customerId	
+						WHERE 1 ".$sqlActive." ".$add." ".$addActivo." ".$addWhere."
+			GROUP BY customerId 	
+						ORDER BY nameContact ASC 
+			".$addLimite."";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+
+        $count = 0;
+        $filtro = new Filtro;
+        $data["subordinados"] = $filtro->Subordinados($User["userId"]);
+
+        foreach ($result as $key => $val)
+        {
+            $result[$key]["showCliente"] = 1;
+            $result[$key]["doBajaTemporal"] = 0;
+            $result[$key]["haveTemporal"] = 0;
+            $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
+
+            $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
+            $allContracts = [];
+            $allContracts = $this->GetRazonesSociales($val["customerId"],$like);
+            if(empty($allContracts)){
+                $allContracts = $this->GetRazonesSociales($val["customerId"],"",1);
+            }
+            $result[$key]["contracts"]=  $allContracts;
+            $result[$key]["servicios"] = count($result[$key]["contracts"]);
+
+            $countContracts = count($result[$key]["contracts"]);
+            $result[$key]["totalContracts"] = $result[$key]["contractsActivos"]+$result[$key]["contractsInactivos"];
+            $result[$key]["servicios"] = 0;
+            if($countContracts > 0){
+                $result[$key]["showCliente"] = 0;
+                foreach ($result[$key]["contracts"] as $keyContract => $value) {
+                    $nameEncargados = $creport->encargadosArea($value['contractId']);
+                    foreach($nameEncargados as $var ){
+                        $result[$key]["contracts"][$keyContract]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
+                        $result[$key]["contracts"][$keyContract]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
+                    }
+                    //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
+                    $idResponsable = $result[$key]["contracts"][$keyContract]['respContabilidad'];
+                    if(!$idResponsable)
+                        $idResponsable=0;
+
+                    $result[$key]["contracts"][$keyContract]["responsable"] =  $result[$key]["contracts"][$keyContract]['nameContabilidad'];
+                    $contract = new Contract;
+                    $contract->setContractId($value['contractId']);
+                    $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
+
+
+                    $personal->setPersonalId($idResponsable);
+                    $infP = $personal->Info();
+                    $role = $rol->getInfoByData($infP);
+                    $rolArray = explode(' ',$role['name']);
+                    $needle = trim($rolArray[0]);
+                    $jefes = array();
+                    $personal->findDeepJefes($idResponsable, $jefes,true);
+                    switch($needle){
+                        case 'Coordinador':
+                        case 'Gestoria':
+                        case 'Sistemas':
+                        case 'Supervisor':
+                        case 'Gerente':
+                        case 'socio':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
+                            break;
+                        case 'Recepcion':
+                        case 'Cuentas':
+                        case 'Contador':
+                        case 'Asistente':
+                        case 'Auxiliar':
+                            $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
+                            break;
+                    }
+                    $data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $idResponsable);
+                    //obtiene servicios activos
+                    $serviciosContrato = $this->GetServicesByContract($value["contractId"]);
+                    //si no tiene servicios activos un contrato comprobar si tiene baja temporal en sus servicios
+
+                    //evaluamos quienes tienen servicios con status baja temporal, con un contrato que exista se muestra el boton  verde
+                    $parciales = $this->GetServicesByContract($value["contractId"],'bajaParcial');
+                    if(!empty($parciales)&&$value['activo']=='Si')
+                        $result[$key]["haveTemporal"]=1;
+
+                    //si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
+                    if($result[$key]["showCliente"] == 0)
+                    {
+
+                        $result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
+                        if($result[$key]["showCliente"] > 0)
+                        {
+                            continue;
+                        }
+                    }
+                    //Agregar o no agregar servicio a arreglo de contratos?
+                    foreach ($serviciosContrato as $servicio) {
+                        //$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
+                        $data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
+                        //Si es usuario de contabilidad
+                        $data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
+                    }//foreach
+                    //contratos sin servicio se eliminan no deberia eliminarlos solo poner en falso para que salf en la busqueda
+                    $result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
+
+                }//foreach
+            }else{
+                $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
+                $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
+                $result[$key]["contracts"][0]["fake"] = 1;
+            }
+
+            $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
+        }//foreach
+        return $result;
+    }//SuggestCustomerCatalog
     public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
     {
         $creport = new ContractRep();
@@ -1552,12 +1702,20 @@ class Customer extends Main
 			return $this->Util()->DB()->GetSingle();
 	}
 	
-	function GetRazonesSociales($customerId)
+	function GetRazonesSociales($customerId,$like="",$limit=0)
 	{
+	    $strLike ="";
+        $strLimit ="";
+	    if($like!=""){
+	       $strLike = " and name like '%".$like."%' ";
+        }
+        if($limit){
+            $strLimit = " LIMIT 1";
+        }
 		      		$sql = "SELECT contract.*
               		FROM contract
-              		WHERE customerId = '".$customerId."'
-              		ORDER BY name ASC";      
+              		WHERE customerId = '".$customerId."' $strLike
+              		ORDER BY name ASC $strLimit";
 			$this->Util()->DB()->setQuery($sql);
             $result = $this->Util()->DB()->GetResult();
 
