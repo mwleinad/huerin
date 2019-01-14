@@ -1963,6 +1963,15 @@ class Comprobante extends Producto
                 if(strpos(strtolower((string)$data['receptor']['Nombre']),strtolower($filtro['rfc2']))===false)
                     continue;
             }
+            if($filtro['finicial']>0){
+                if((int)$xmlCfdi['Folio']<(int)$filtro['finicial'])
+                    continue;
+            }
+            if($filtro['ffinal']>0){
+                if((int)$xmlCfdi['Folio']>(int)$filtro['ffinal'])
+                    continue;
+            }
+
 
             foreach($xml->xpath('//t:TimbreFiscalDigital') as $con){
                 $data['timbreFiscal'] = $con;

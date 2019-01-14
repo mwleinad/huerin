@@ -1,16 +1,24 @@
 <div align="center">
     <form name="frmSearchFromXml" id="frmSearchFromXml" action="" method="post">
         <input type="hidden" name="type" id="type" value="searchFacturaFromXml">
-        <table width="900" align="center">
+        <table width="100%" align="center">
             <tr style="background-color:#CCC">
-                <td colspan="7" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
+                <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
             </tr>
             <tr>
-                <td align="center">Razon social</td>
-                <td align="center">A&ntilde;o</td>
-                <td align="center">Mes</td>
+                <td style="text-align: center;width: 10%">Folio de.</td>
+                <td style="text-align: center;width: 10%">Folio a.</td>
+                <td style="text-align: center;width: 40%">Razon social</td>
+                <td style="text-align: center;width: 10%">A&ntilde;o</td>
+                <td style="text-align: center;width: 10%">Mes</td>
             </tr>
             <tr>
+                <td style="text-align: center;width: 10%; padding:0px 4px 4px 8px;">
+                    <input type="text"  name="finicial" id="finicial" class="largeInput" autocomplete="off" value="" />
+                </td>
+                <td style="text-align: center;width: 10%; padding:0px 4px 4px 8px;">
+                    <input type="text" name="ffinal" id="ffinal" class="largeInput" autocomplete="off" value="" />
+                </td>
                 <td style="width: 30%; padding:0px 4px 4px 8px;" align="center">
                     <input type="text" size="25" name="rfc2" id="rfc2" class="largeInput" autocomplete="off" value="{$search.rfc}" />
                     <div id="loadingDivDatosFactura2"></div>
