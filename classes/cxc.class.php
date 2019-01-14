@@ -660,6 +660,86 @@ class CxC extends Producto
         $this->Util()->PrintErrors();
 		return true;
 	}
+    public function AddPaymentFromXml($file_xml, $metodoDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago)
+    {
+        $amount = $this->Util()->limpiaNumero($amount);
+        $deposito = $this->Util()->limpiaNumero($deposito);
+        if(!$this->Util()->validateDateFormat($fecha,'Fecha','d-m-Y'))
+            $fecha = date('d-m-Y');
+        else
+            $fecha = $this->Util()->FormatDateMySql($fecha);
+
+        $this->Util()->ValidateFloat($amount);
+        if($amount<0.01)
+        {
+            $this->Util()->setError(10046, "error", "La cantidad a pagar debe de ser mayor a 0");
+        }
+        if($metodoDePago!="Saldo a Favor")
+            if($deposito<$amount)
+            {
+                $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
+            }
+        $comprobante = new Comprobante;
+        $compInfo = $dataXml =  $comprobante->getDataByXml($file_xml);
+        $saldo = $this->Util()->limpiaNumero($compInfo['saldo']);
+        if($amount>$saldo)
+            $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al saldo del documento");
+
+        //termina validaciones
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $comprobanteId = null;
+        if($comprobantePago){
+            $comprobantePago = new ComprobantePago();
+            $infoPago = new stdClass();
+            $infoPago->fecha = $fecha;
+            $infoPago->amount = $amount;
+            $infoPago->metodoPago = $metodoDePago;
+            $infoPago->operacion = uniqid();
+            $comprobanteId = $comprobantePago->generarFromXml($compInfo, $infoPago);
+            if($_SESSION['errorPac']) {
+                $this->Util()->setError(10046, "error", $_SESSION['errorPac']);
+                $this->Util()->PrintErrors();
+                return false;
+            }
+        }
+
+        $ext = strtolower(end(explode('.', $_FILES["comprobante"]['name'])));
+        //guardamos por aparte los pagos realizados para tener control al buscar la facturas.
+        $this->Util()->DB()->setQuery("
+			INSERT INTO  payment_from_xml (
+				`metodoDePago` ,
+				`amount` ,
+				`deposito` ,
+				`ext` ,
+				`folio`,
+				`name_xml`,
+				`uuid`,
+				`comprobantePagoId`,
+				`paymentDate`
+				)
+				VALUES (
+				'".$metodoDePago."',
+				'".$amount."',
+				'".$deposito."',
+				'".$ext."',
+				'".$compInfo['folio']."',
+				'".$compInfo['nameXml']."',
+				'".$compInfo['uuid']."',
+				'".$comprobanteId."',
+				'".$fecha."'
+			)");
+        //echo $this->Util()->DB()->getQuery();
+        $paymentId = $this->Util()->DB()->InsertData();
+
+        $folder = DOC_ROOT."/payments";
+        $target_path = $folder ."/from_xml_".$paymentId.".".$ext;
+        @move_uploaded_file($_FILES["comprobante"]['tmp_name'], $target_path);
+        $this->Util()->setError(10046, "complete", "Has Agregado un Pago correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
 	public function DeletePayment($id)
 	{
@@ -691,6 +771,35 @@ class CxC extends Producto
 		$this->Util()->PrintErrors();
 		return true;
 	}
+    public function DeletePaymentFromXml($id)
+    {
+        $payment = $this->PaymentInfoFromXml($id);
+        $eliminarPago = true;
+        if($payment["comprobantePagoId"]) {
+
+            $empresa = new Empresa();
+            $empresa->setComprobanteId($payment["comprobantePagoId"]);
+            $empresa->setMotivoCancelacion("Pago eliminado");
+
+            if(!$empresa->CancelarComprobante()){
+                $eliminarPago = false;
+            }
+        }
+
+        if($eliminarPago === false){
+            $this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+
+        $this->Util()->DB()->setQuery("
+			UPDATE payment_from_xml set payment_status='cancelado' WHERE payment_id = '".$id."'");
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(10046, "complete", "El pago fue borrado correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
 	public function PaymentInfo($id)
 	{
@@ -700,6 +809,13 @@ class CxC extends Producto
 
 		return $row;
 	}
+    public function PaymentInfoFromXml($id)
+    {
+        $this->Util()->DB()->setQuery("
+			SELECT * FROM payment_from_xml WHERE payment_id = '".$id."'");
+        $row = $this->Util()->DB()->GetRow();
+        return $row;
+    }
 
 }
 ?>

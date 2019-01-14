@@ -142,6 +142,10 @@ class Xml extends Producto{
     }
 
     private function getUUIDRelacionado(){
+        //
+        if($this->data['fromXml'])
+            $this->uuidRelacionado = $this->data['uuid'];
+        else
         $this->uuidRelacionado = $this->cfdiUtil->getUUID($this->data['cfdiRelacionadoSerie'], $this->data['cfdiRelacionadoFolio']);
     }
 
@@ -747,11 +751,19 @@ class Xml extends Producto{
         $doctoRelacionado = $this->xml->createElement("pago10:DoctoRelacionado");
         $doctoRelacionado = $pago->appendChild($doctoRelacionado);
 
-        $comprobante = $this->cfdiUtil->getInfoComprobanteRelacionado($this->data['cfdiRelacionadoSerie'], $this->data['cfdiRelacionadoFolio']);
-        $infoPagos = $this->comprobantePago->getPagos($comprobante, $this->data['infoPago']->amount);
+        //si el pago es desde xml se realiza otro procedimiento
+        if(!$this->data['fromXml']){
+            $comprobante = $this->cfdiUtil->getInfoComprobanteRelacionado($this->data['cfdiRelacionadoSerie'], $this->data['cfdiRelacionadoFolio']);
+            $infoPagos = $this->comprobantePago->getPagos($comprobante, $this->data['infoPago']->amount);
+            $IdDocumento =  $this->uuidRelacionado;
+        }else{
+            $IdDocumento =  $this->data['uuid'];
+            $infoPagos = $this->comprobantePago->getPagosFromXml($this->data, $this->data['infoPago']->amount);
+        }
+
 
         $doctoRelacionadoData = [
-            "IdDocumento" => $this->uuidRelacionado,
+            "IdDocumento" => $IdDocumento,
             "Serie" => $this->data['cfdiRelacionadoSerie'],
             "Folio" => $this->data['cfdiRelacionadoFolio'],
             "MonedaDR" => $tipoDeMoneda,

@@ -64,6 +64,7 @@ include_once(DOC_ROOT.'/libraries.php');
         'sistema',
 		'cfdi33-generate',//cfdi 3.3
 		'cfdi33-generate-pdf',//cfdi 3.3
+        'comp-from-xml',//cfdi 3.3
 
 		//Departamentos
         'archivos',

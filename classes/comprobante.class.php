@@ -770,7 +770,7 @@ class Comprobante extends Producto
 	    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
 			LEFT JOIN contract ON contract.contractId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
-	//	echo $this->Util()->DB()->query;
+	   // echo $this->Util()->DBSelect($_SESSION["empresaId"])->getQuery();
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		$xml = $row["xml"];
 
@@ -1862,7 +1862,131 @@ class Comprobante extends Producto
 		
 		return $enlace;
 	}
+    function getDataByXml($file_xml){
+        $file_xml = $file_xml.".xml";
+        $pathXml =  DIR_FROM_XML."/".$file_xml;
+        $xml = simplexml_load_file($pathXml);
+        $ns = $xml->getNamespaces(true);
+        $xml->registerXPathNamespace('c',$ns['cfdi']);
+        $xml->registerXPathNamespace('t',$ns['tfd']);
+
+        $cfdi= $xml->xpath('//cfdi:Comprobante')[0];
+        $data["emisor"] = $xml->xpath('//cfdi:Emisor')[0];
+        $data["receptor"] = $xml->xpath('//cfdi:Receptor')[0];
+        foreach($xml->xpath('//t:TimbreFiscalDigital') as $con){
+            $data['timbreFiscal'] = $con;
+        }
+        $cad['total'] = (string)$cfdi['Total'];
+        $cad['version'] = (string)$cfdi['Version'];
+        $cad['subtotal'] = (string)$cfdi['SubTotal'];
+        $cad['folioComplete'] =(string)$cfdi['Serie'].(string)$cfdi['Folio'];
+        $cad['folio'] =(string)$cfdi['Folio'];
+        $cad['serie'] =(string)$cfdi['Serie'];
+        //convertur moneda
+        switch((string)$cfdi['Moneda']) {
+            case "MXN": $tipoDeMoneda = "peso"; break;
+            case "USD": $tipoDeMoneda = "dolar"; break;
+            case "EUR": $tipoDeMoneda = "euro"; break;
+        }
+        $cad['tipoDeMoneda'] =$tipoDeMoneda;
+        $cad['tipoDeCambio'] =(string)$cfdi['TipoCambio'];
+        $cad['fecha'] = (string)$cfdi['Fecha'];
+        $cad['receptorRfc'] = (string)$data['receptor']['Rfc'];
+        $cad['receptorName'] = (string)$data['receptor']['Nombre'];
+        $cad['emisorRfc'] = (string)$data['emisor']['Rfc'];
+        $cad['emisorName'] =(string)$data['emisor']['Nombre'];
+        $cad['uuid'] =(string)$data['timbreFiscal']['UUID'];
+        //comprobar pagos realizados
+        $cad['pagos'] = $this->getSaldoFromXml($cad);
+        $cad['saldo'] = $cad['total']-$cad['pagos'];
+        $nameArchivo =  explode(".",$file_xml);
+        $cad['nameXml'] = $nameArchivo[0];
+        //empresaId by rfc
+        $this->Util()->DB()->setQuery("select empresaId from rfc where rfc='".$cad['emisorRfc']."'");
+        $cad['empresaId'] =  $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("select max(contractId) from contract where rfc='".$cad['receptorRfc']."' ");
+        $cad['userId'] =  $this->Util()->DB()->GetSingle();
+        if($cad['userId']<=0){
+            $this->Util()->setError(10046, "error", "El cliente no se encuentra registrado en plataforma favor de verificar");
+        }
+        return $cad;
+    }
+    function getSaldoFromXml($fact){
+        $sql =  "SELECT sum(amount) as pagos FROM  payment_from_xml
+        WHERE uuid = '".$fact["uuid"]."' and payment_status='activo' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
+        $pagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
+        return $pagos;
+    }
+    function getPaymentsFromXml($fact){
+        $sql =  "SELECT  a.*,concat('',b.serie,b.folio) as folio,b.comprobanteId FROM  payment_from_xml a
+                 left join comprobante b on a.comprobantePagoId =b.comprobanteId
+        WHERE uuid = '".$fact["uuid"]."'";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
+        $pagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+        return $pagos;
+    }
+    function searchFacturasFromXml($filtro){
+	    $facturas = [];
+        $directorio = opendir(DIR_FROM_XML);
+        while ($archivo = readdir($directorio)) //obtenemos un archivo y luego otro sucesivamente
+        {
+            if(strpos($archivo,'zip')!==false || strpos($archivo,'COMPAGO')!==false || strpos($archivo,'SIGN')===false)
+                continue;
+
+            $cad = [];
+            $pathXml =  DIR_FROM_XML."/".$archivo;
+            $xml = simplexml_load_file($pathXml);
+            $ns = $xml->getNamespaces(true);
+            $xml->registerXPathNamespace('c',$ns['cfdi']);
+            $xml->registerXPathNamespace('t',$ns['tfd']);
+
+            $xmlCfdi= $xml->xpath('//cfdi:Comprobante')[0];
+            $data["emisor"] = $xml->xpath('//cfdi:Emisor')[0];
+            $data["receptor"] = $xml->xpath('//cfdi:Receptor')[0];
+
+
+            //aplicar $filtor si existe
+            $dateExp = explode('T',(string)$xmlCfdi['Fecha']);
+            $dateExp = explode('-',$dateExp[0]);
+            if($filtro['year']!=""){;
+                if($dateExp[0]!=$filtro['year'])
+                    continue;
+
+            }
+            if($filtro['mes']!=""){;
+                if($dateExp[1]!=$filtro['mes'])
+                    continue;
+
+            }
+            if($filtro['rfc2']!=""){
+                if(strpos(strtolower((string)$data['receptor']['Nombre']),strtolower($filtro['rfc2']))===false)
+                    continue;
+            }
+
+            foreach($xml->xpath('//t:TimbreFiscalDigital') as $con){
+                $data['timbreFiscal'] = $con;
+            }
+            $cad['total'] = (string)$xmlCfdi['Total'];
+            $cad['subtotal'] = (string)$xmlCfdi['SubTotal'];
+            $cad['folio'] =(string)$xmlCfdi['Serie'].(string)$xmlCfdi['Folio'];
+            $cad['fecha'] = (string)$xmlCfdi['Fecha'];
+            $cad['receptorRfc'] = (string)$data['receptor']['Rfc'];
+            $cad['receptorName'] = (string)$data['receptor']['Nombre'];
+            $cad['emisorRfc'] = (string)$data['emisor']['Rfc'];
+            $cad['emisorName'] =(string)$data['emisor']['Nombre'];
+            $cad['uuid'] =(string)$data['timbreFiscal']['UUID'];
+            //comprobar pagos realizados
+            $cad['pagos'] = $this->getSaldoFromXml($cad);
+            $cad['saldo'] = $cad['total']-$cad['pagos'];
+            $nameArchivo =  explode(".",$archivo);
+            $cad['nameXml'] = $nameArchivo[0];
+            $facturas[] =  $cad;
+        }
+   return $facturas;
+    }
 }//Comprobante
+
 
 
 require(DOC_ROOT.'/pdf/fpdf.php');
