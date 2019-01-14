@@ -104,6 +104,38 @@ class ComprobantePago extends Comprobante {
 
         return $comprobanteId;
     }
+    public function generarFromXml($infoComprobante, $infoPago){
+        $cfdi = new Cfdi();
+
+        $_SESSION["empresaId"] = $infoComprobante['empresaId'];
+
+        $serieId = $this->generateSerieIfNotExists();
+
+        $this->addConcept();
+        $data = [
+            'formatoNormal' => 0,
+            'tiposComprobanteId' => '10-'.$serieId,
+            'tiposDeMoneda' => 'XXX',
+            'cfdiRelacionadoSerie' => $infoComprobante["serie"],
+            'cfdiRelacionadoFolio' => $infoComprobante["folio"],
+            'tipoRelacion' => '04',
+            'userId' => $infoComprobante['userId'],
+            'usoCfdi' => 'P01',
+            'formaDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
+            'metodoDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
+            'infoPago' => $infoPago,
+            'tiposDeMonedaPago' => $infoComprobante['tipoDeMoneda'],
+            'tiposDeCambioPago' => $infoComprobante['tipoDeCambio'],
+            'fromXml'=>true,
+            'uuid'=>$infoComprobante['uuid'],
+            'totalFactura'=>$infoComprobante['total'],
+        ];
+        if(!$comprobanteId = $cfdi->Generar($data)) {
+            return null;
+        }
+
+        return $comprobanteId;
+    }
 
     public function getPagos($comprobante, $impPagado) {
         $sql =  "SELECT COUNT(*) as pagos, SUM(payment.amount) as totalPagado FROM  payment
@@ -113,6 +145,26 @@ class ComprobantePago extends Comprobante {
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         $impSaldoAnt = $comprobante['total'] - $infoPagos['totalPagado'];
+        $impSaldoInsoluto = $impSaldoAnt - $impPagado;
+
+        $data["numParcialidad"] = $infoPagos['pagos'] + 1;
+        $data["impSaldoAnt"] = $impSaldoAnt;
+        $data["impPagado"] = $impPagado;
+        $data["impSaldoInsoluto"] = $impSaldoInsoluto;
+
+        if($data["impSaldoInsoluto"] < 0){
+            $data["impSaldoInsoluto"] = 0;
+        }
+
+        return $data;
+    }
+    public function getPagosFromXml($comprobante, $impPagado) {
+        $sql =  "SELECT COUNT(*) as pagos, SUM(amount) as totalPagado FROM  payment_from_xml
+        WHERE uuid = '".$comprobante["uuid"]."' and payment_status='activo' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
+        $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $impSaldoAnt = $comprobante['totalFactura'] - $infoPagos['totalPagado'];
         $impSaldoInsoluto = $impSaldoAnt - $impPagado;
 
         $data["numParcialidad"] = $infoPagos['pagos'] + 1;

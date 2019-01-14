@@ -103,6 +103,8 @@ include_once(DOC_ROOT."/classes/filtro.class.php");
 include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");
 
+include_once(DOC_ROOT."/classes/rol.class.php");
+$rol = new Rol;
 
 
 $db = new DB;
@@ -210,21 +212,48 @@ $User = $_SESSION['User'];
 $infoUser = $user->Info();
 $smarty->assign('infoUser', $infoUser);
 
-switch($infoUser["tipoPersonal"])
-{
-    case "Socio": $User['roleId'] = 1; break;
-    case "Gerente": $User['roleId'] = 2; break;
-    case "Supervisor": $User['roleId'] = 3; break;
-    case "Contador": $User['roleId'] = 3; break;
-    case "Auxiliar": $User['roleId'] = 3; break;
-    case "Asistente": $User['roleId'] = 1; break;
-    case "Recepcion": $User['roleId'] = 1; break;
-    case "Cliente": $User['roleId'] = 4; break;
-    case "Nomina":
-        $User['roleId'] = 1;
-        $User['subRoleId'] = "Nomina";
-        break;
+$User = $_SESSION['User'];
+
+$infoUser = $user->Info();
+$smarty->assign('infoUser', $infoUser);
+
+if($_SESSION['User']['tipoPers']=='Admin')	{
+    $rol->setAdmin(1);
+    $User['roleId'] = 1;
+}else{
+    //primero buscar por nombre el rol
+    $rol->setTitulo($infoUser['tipoPersonal']);
+    $roleId = $rol->GetIdByName();
+    if($roleId<=0){
+        //si por nombre de rol no se encuentra entonces usar el rolId que tiene en la tabla personal
+        //ese nunca debe fallar aun que se cambie de nombre de nombre de el rol. cuando se haya asignado los roles a todos
+        // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
+        $rol->setRolId($infoUser['roleId']);
+        $row = $rol->Info();
+        $infoUser['tipoPersonal'] = $row['name'];
+        $roleId=$row['rolId'];
+        $User['tipoPers'] = $row['name'];
+    }
+    $User['roleId'] = $roleId;
+    //find departamento user active
+    if($infoUser['departamentoId']>0)
+        $User['departamentoId']=$infoUser['departamentoId'];
+    else{
+        $rol->setRolId($User['roleId']);
+        $dep = $rol->Info();
+        $User['departamentoId']=$dep['departamentoId'];
+    }
 }
+
+
+$rol->setRolId($User['roleId']);
+$permissions = $rol->GetPermisosByRol();
+$smarty->assign('permissions', $permissions);
+
+
+$rol->setRolId($User['roleId']);
+$firstPages = $rol->FindFirstPage();
+$smarty->assign('firstPages', $firstPages);
 
 $User['tipoPersonal'] = $infoUser['tipoPersonal'];
 

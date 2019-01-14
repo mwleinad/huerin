@@ -88,6 +88,7 @@ class Invoice extends Comprobante
          $idContracts =0;
        $this->Util()->DB()->setQuery("SELECT * FROM servicio
 		WHERE contractId IN(".$idContracts.") AND status IN('activo','bajaParcial') AND costo>0  AND inicioFactura!='0000-00-00' ");
+       //
        $this->Util()->DB()->getQuery();
        $servicesHuerin= $this->Util()->DB()->GetResult();
        $allServiceHuerin= count($servicesHuerin);

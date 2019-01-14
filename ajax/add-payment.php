@@ -23,6 +23,31 @@ switch($_POST["type"])
              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
          }
      break;
+    case 'saveAddPaymentFromXml':
+        if($cxc->AddPaymentFromXml($_POST["file_xml"], $_POST["metodoDePago"], $_POST["amount"],$_POST['deposito'],$_POST["paymentDate"],$_POST['efectivo'],$_POST['generarComprobantePago']))
+        {
+            //get data current xml
+            $fact =  $comprobante->getDataByXml($_POST['file_xml']);
+            $payments_xml = $comprobante->getPaymentsFromXml($fact);
+            //buscar
+            $filtro =  json_decode($_POST['frmFiltro'],true);
+            $facturas =  $comprobante->searchFacturasFromXml($filtro);
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $smarty->assign('facturas',$facturas);
+            $smarty->display(DOC_ROOT.'/templates/lists/comp-from-xml.tpl');
+            echo "[#]";
+            $smarty->assign('payments',$payments_xml);
+            $smarty->display(DOC_ROOT.'/templates/lists/payments-from-xml.tpl');
+            echo "[#]";
+            echo number_format($fact['saldo'],2,".",",");
+        }
+        else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+    break;
 
 
 

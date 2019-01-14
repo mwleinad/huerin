@@ -125,6 +125,7 @@ include_once(DOC_ROOT."/classes/coffe.class.php");
 
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
+include_once(DOC_ROOT."/classes/backup.class.php");
 
 $db = new DB;
 $dbRemote = new DBRemote;
