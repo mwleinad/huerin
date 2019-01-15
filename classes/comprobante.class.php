@@ -1933,7 +1933,7 @@ class Comprobante extends Producto
         return $a['fecha']<$b['fecha'];
     }
     public function sort_by_orden_nombre ($a, $b) {
-        return strcasecmp($a['nombre'],$b['nombre']);
+        return strcasecmp($a['receptorName'],$b['receptorName']);
     }
     function searchFacturasFromXml($filtro){
 	    $facturas = [];
