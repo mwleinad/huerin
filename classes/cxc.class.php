@@ -724,7 +724,7 @@ class CxC extends Producto
 				'".$amount."',
 				'".$deposito."',
 				'".$ext."',
-				'".$compInfo['folio']."',
+				'".$compInfo['folioComplete']."',
 				'".$compInfo['nameXml']."',
 				'".$compInfo['uuid']."',
 				'".$comprobanteId."',
