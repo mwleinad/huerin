@@ -3,6 +3,8 @@ Event.observe(window, 'load', function()
     if($('rfc2'))
     {
         Event.observe($('rfc2'), "keyup", function(){
+          if(this.value==="")
+              return;
             SuggestUser2();
             //FillDatosFacturacion();
         });
