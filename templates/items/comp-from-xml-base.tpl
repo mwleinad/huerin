@@ -2,7 +2,7 @@
     <td align="center">{$fact.receptorRfc}</td>
     <td align="center">{$fact.receptorName}</td>
     <td align="center">{$fact.fecha}</td>
-    <td align="center">{$fact.folio}</td>
+    <td align="center">{$fact.folioComplete}</td>
     <td align="center">{$fact.uuid}</td>
     <td align="center">${$fact.total|number_format:2:'.':','}</td>
     <td align="center">${$fact.pagos|number_format:2:'.':','}</td>

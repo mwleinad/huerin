@@ -1926,6 +1926,15 @@ class Comprobante extends Producto
         $pagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
         return $pagos;
     }
+    public function sort_by_orden_folio ($a, $b) {
+        return $a['folio']<$b['folio'];
+    }
+    public function sort_by_orden_fecha ($a, $b) {
+        return $a['fecha']<$b['fecha'];
+    }
+    public function sort_by_orden_nombre ($a, $b) {
+        return $a['nombre']<$b['nombre'];
+    }
     function searchFacturasFromXml($filtro){
 	    $facturas = [];
         $directorio = opendir(DIR_FROM_XML);
@@ -1948,6 +1957,7 @@ class Comprobante extends Producto
 
             //aplicar $filtor si existe
             $dateExp = explode('T',(string)$xmlCfdi['Fecha']);
+            $cad['fecha'] = (string)$dateExp[0];
             $dateExp = explode('-',$dateExp[0]);
             if($filtro['year']!=""){;
                 if($dateExp[0]!=$filtro['year'])
@@ -1978,8 +1988,10 @@ class Comprobante extends Producto
             }
             $cad['total'] = (string)$xmlCfdi['Total'];
             $cad['subtotal'] = (string)$xmlCfdi['SubTotal'];
-            $cad['folio'] =(string)$xmlCfdi['Serie'].(string)$xmlCfdi['Folio'];
-            $cad['fecha'] = (string)$xmlCfdi['Fecha'];
+            $cad['folioComplete'] =(string)$xmlCfdi['Serie'].(string)$xmlCfdi['Folio'];
+            $cad['folio'] =(string)$xmlCfdi['Folio'];
+            $cad['serie'] =(string)$xmlCfdi['Serie'];
+
             $cad['receptorRfc'] = (string)$data['receptor']['Rfc'];
             $cad['receptorName'] = (string)$data['receptor']['Nombre'];
             $cad['emisorRfc'] = (string)$data['emisor']['Rfc'];
@@ -1992,8 +2004,21 @@ class Comprobante extends Producto
             $cad['nameXml'] = $nameArchivo[0];
             $facturas[] =  $cad;
         }
-   return $facturas;
+        //ordenar el array
+        switch ($filtro['orderby']){
+            case 'folio';
+                uasort($facturas, 'self::sort_by_orden_folio');
+            break;
+            case 'fecha';
+                uasort($facturas, 'self::sort_by_orden_fecha');
+            break;
+            case 'nombre';
+                uasort($facturas, 'self::sort_by_orden_nombre');
+            break;
+        }
+      return $facturas;
     }
+
 }//Comprobante
 
 
