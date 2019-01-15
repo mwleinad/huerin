@@ -44,7 +44,7 @@ Event.observe(window, 'load', function() {
         Event.observe($('rfc'), "keyup", function(){
             if(this.value==="")
                 return;
-            
+
             SuggestUser();
         });
     }
