@@ -11,6 +11,7 @@
                 <td style="text-align: center;width: 40%">Razon social</td>
                 <td style="text-align: center;width: 10%">A&ntilde;o</td>
                 <td style="text-align: center;width: 10%">Mes</td>
+                <td style="text-align: center;width: 10%">Ordenar por</td>
             </tr>
             <tr>
                 <td style="text-align: center;width: 10%; padding:0px 4px 4px 8px;">
@@ -45,6 +46,13 @@
                         <option value="10">Octubre</option>
                         <option value="11">Noviembre</option>
                         <option value="12">Diciembre</option>
+                    </select>
+                </td>
+                <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
+                    <select name="orderby" id="orderby" class="largeInput medium2">
+                        <option value="fecha">Fecha</option>
+                        <option value="folio">Folio</option>
+                        <option value="receptorName">Nombre</option>
                     </select>
                 </td>
             </tr>
