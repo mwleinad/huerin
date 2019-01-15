@@ -39,7 +39,15 @@ Event.observe(window, 'load', function() {
 		
 	}
 	$('contenido').observe("click", AddEditCustomerListeners);
-	$('rfc').observe("keyup", SuggestUser);																	 
+    if($('rfc'))
+    {
+        Event.observe($('rfc'), "keyup", function(){
+            if(this.value==="")
+                return;
+
+            SuggestUser();
+        });
+    }
 	
 	if($('divForm')!= undefined)
 	{
