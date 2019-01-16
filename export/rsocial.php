@@ -107,8 +107,7 @@ foreach($clientes as $res){
 					<td style=\"text-align:center;\">".$con['activo']."</td>
 					<td style=\"text-align:center;\">".$con['nombreComercial']."</td>
 					<td style=\"text-align:center;\">".$con['direccionComercial']."</td>
-					<td style=\"text-align:center;\">".$con['address']."|".$con['noExtAddress']."|".$con['noIntAddress']."|".$con['coloniaAddress']."
-					".$con['municipioAddress']."|".$con['estadoAddress']."|".$con['paisAddress']."|".$con['cpAddress']."</td>
+					<td style=\"text-align:center;\">".$con['address']."|".$con['noExtAddress']."|".$con['noIntAddress']."|".$con['coloniaAddress']."|".$con['municipioAddress']."|".$con['estadoAddress']."|".$con['paisAddress']."|".$con['cpAddress']."</td>
 					<td style=\"text-align:center;\">".$con['nameContactoAdministrativo']."</td>
 					<td style=\"text-align:center;\">".$con['emailContactoAdministrativo']."</td>
 					<td style=\"text-align:center;\">".$con['telefonoContactoAdministrativo']."</td>
