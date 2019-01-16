@@ -37,6 +37,13 @@ class Catalogo extends Main {
 
         return $result;
     }
+    function getFormaPagoByClave($clave){
+        $this->Util()->DB()->setQuery("
+			SELECT * FROM c_FormaPago WHERE c_FormaPago = '".$clave."' ");
+        $row = $this->Util()->DB()->GetRow();
+
+        return $row;
+    }
 
 }
 

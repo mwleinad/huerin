@@ -213,6 +213,7 @@ include_once(DOC_ROOT."/services/Totales.php");
 include_once(DOC_ROOT."/services/ComprobantePago.php");
 include_once(DOC_ROOT."/services/CfdiUtil.php");
 include_once(DOC_ROOT."/services/Cancelation.php");
+include_once(DOC_ROOT."/services/ControlFromXml.php");
 
 $catalogo = new Catalogo;
 $sello = new Sello;
@@ -220,6 +221,7 @@ $totales = new Totales;
 $comprobantePago = new ComprobantePago;
 $cfdiUtil = new CfdiUtil;
 $cancelation = new Cancelation;
+$controlFromXml = new ControlFromXml;
 
 $smarty = new Smarty;
 $smarty->assign('DOC_ROOT',DOC_ROOT);

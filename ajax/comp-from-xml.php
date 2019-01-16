@@ -45,6 +45,11 @@ switch($_POST["type"])
         echo "[#]";
         echo number_format($fact['saldo'],2,".",",");
      break;
+    case 'updatePaymentsFromXml':
+        $controlFromXml->updatePaymentsFromXml();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
 
 
 
