@@ -1912,16 +1912,28 @@ class Comprobante extends Producto
         return $cad;
     }
     function getSaldoFromXml($fact){
-        $sql =  "SELECT sum(amount) as pagos FROM  payment_from_xml
-        WHERE uuid = '".$fact["uuid"]."' and payment_status='activo' ";
+         $sql =  "SELECT sum(amount) as pagos FROM  payment_from_xml
+                  WHERE uuid = '".$fact["uuid"]."' and payment_status='activo' 
+                 ";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $pagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
-        return $pagos;
+
+        $sql2 ="SELECT sum(amount) as pagos FROM  payment_from_xml_static
+                 WHERE uuid = '".$fact["uuid"]."' and payment_status='activo' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql2);
+        $pagos2 = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
+
+        return $pagos+$pagos2;
     }
     function getPaymentsFromXml($fact){
-        $sql =  "SELECT  a.*,concat('',b.serie,b.folio) as folio,b.comprobanteId FROM  payment_from_xml a
+       $sql =  "SELECT  a.*,concat('',b.serie,b.folio) as folio,b.comprobanteId,'conRegistro' as origen FROM  payment_from_xml a
                  left join comprobante b on a.comprobantePagoId =b.comprobanteId
-        WHERE uuid = '".$fact["uuid"]."'";
+                 WHERE uuid = '".$fact["uuid"]."'
+                 UNION
+                 SELECT a.*,concat('',b.serie,b.folio) as folio,b.comprobanteId,'sinRegistro' as origen FROM  payment_from_xml_static a
+                 left join comprobante b on a.comprobantePagoId =b.comprobanteId
+                 WHERE uuid = '".$fact["uuid"]."'
+        ";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $pagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
         return $pagos;

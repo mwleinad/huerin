@@ -193,3 +193,29 @@ jQ(document).on('click','.spanDeletePayment',function () {
     })
 
 });
+jQ(document).on('click','.spanUpdatePayments',function () {
+    var message = "Esta seguro de actualizar los pagos realizados";
+    if(!confirm(message))
+    {
+        return;
+    }
+    var fd = new FormData();
+    fd.append('type','updatePaymentsFromXml');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/comp-from-xml.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend:function(){
+          jQ('#loadPrint').html('Actualizando pago.....');
+        },
+        success: function(response){
+            var splitResp =  response.split("[#]");
+            jQ('#loadPrint').html('');
+            ShowStatusPopUp(splitResp[1]);
+
+        }
+    })
+
+});

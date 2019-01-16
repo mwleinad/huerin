@@ -164,10 +164,18 @@ class ComprobantePago extends Comprobante {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
-        $impSaldoAnt = $comprobante['totalFactura'] - $infoPagos['totalPagado'];
+        //pagos2
+        $sql2 =  "SELECT COUNT(*) as pagos, SUM(amount) as totalPagado FROM  payment_from_xml_static
+        WHERE uuid = '".$comprobante["uuid"]."' and payment_status='activo' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql2);
+        $infoPagos2 = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $totalPagado = $infoPagos['totalPagado']+$infoPagos2['totalPagado'];
+
+        $impSaldoAnt = $comprobante['totalFactura'] - $totalPagado;
         $impSaldoInsoluto = $impSaldoAnt - $impPagado;
 
-        $data["numParcialidad"] = $infoPagos['pagos'] + 1;
+        $data["numParcialidad"] = $infoPagos['pagos'] + $infoPagos2['pagos'] + 1;
         $data["impSaldoAnt"] = $impSaldoAnt;
         $data["impPagado"] = $impPagado;
         $data["impSaldoInsoluto"] = $impSaldoInsoluto;
