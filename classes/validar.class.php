@@ -897,6 +897,34 @@ class Validar extends Main
 
         return true;
     }
+    public function ValidateLayoutUpdateDireccionFiscal($FILES)
+    {
+        $file_temp = $FILES['file']['tmp_name'];
+        $fp = fopen($file_temp, 'r');
+        $fila = 1;
+        while(($row=fgetcsv($fp,4096,","))==true){
+            if(count($row)!=3){
+                $this->Util()->setError(0, 'error', "Archivo no valido");
+                break;
+            }
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            $dir_explode = explode("|",$row[2]);
+            if(count($dir_explode)!=8)
+            {
+                dd($dir_explode);
+                $this->Util()->setError(0, 'error', "Direccion fiscal no valida en la fila " . $fila);
+                break;
+            }
+            $fila++;
+        }
+        if($this->Util()->PrintErrors())
+            return false;
+
+        return true;
+    }
 
 
 }

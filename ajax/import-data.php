@@ -1175,4 +1175,43 @@ switch($_POST['type']){
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
+    case 'update_direccion_fiscal':
+        $isValid = $valida->ValidateLayoutUpdateDireccionFiscal($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo"[#]";
+            exit;
+        }
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila = 1;
+        $actualizados =0;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            $dir_explode = explode("|",$row[2]);
+            $dir_explode[6] = trim($dir_explode[6])==""?"MEXICO":trim($dir_explode[6]);
+            $updateSql = "update contract set
+                               address='".trim($dir_explode[0])."',
+                               noExtAddress='".trim($dir_explode[1])."',
+                               noIntAddress='".trim($dir_explode[2])."',
+                               coloniaAddress='".trim($dir_explode[3])."',
+                               municipioAddress='".trim($dir_explode[4])."',
+                               estadoAddress='".trim($dir_explode[5])."',
+                               paisAddress='".trim($dir_explode[6])."',
+                               cpAddress='".trim($dir_explode[7])."'
+                               where contractId='".$row[1]."'
+                              ";
+           $db->setQuery($updateSql);
+           $db->UpdateData();
+           $actualizados++;
+        }
+        $util->setError(0,'complete',"Se actualizo ".$actualizados." registros correctamente.");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
 }
