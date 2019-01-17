@@ -33,6 +33,9 @@ class ControlFromXml extends Comprobante
             $document = [];
             $pathXml =  DIR_FROM_XML."/".$archivo;
             $xml = simplexml_load_file($pathXml);
+            if(!$xml)
+                continue;
+
             $ns = $xml->getNamespaces(true);
             $xml->registerXPathNamespace('c',$ns['cfdi']);
             $xml->registerXPathNamespace('t',$ns['tfd']);
