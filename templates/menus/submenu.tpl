@@ -131,7 +131,7 @@
                     <span>Cobranza mensual</span></a></li>
                 {/if}
                 {if in_array(167,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/export/rsocial.php" title="Exportar a Excel">
+                    <li><a href="{$WEB_ROOT}/report-razon-social" title="Exportar razones sociales" {if $page == "report-razon-social"}class="current"{/if}>
                     <span>Razones Sociales</span></a></li>
                 {/if}
                  {if in_array(168,$permissions) || $User.isRoot}

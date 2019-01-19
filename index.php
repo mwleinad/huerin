@@ -97,6 +97,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'sellado-files',
 		'walmart',
 		'view-services',
+		'report-razon-social',
 
 		//cafeteria
         'coffe',

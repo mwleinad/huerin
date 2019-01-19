@@ -1336,8 +1336,105 @@ class Customer extends Main
     }
     return $result;
   }
-	public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
-	{
+  public function SuggestCustomerRazon($filter=[]){
+      global $User,$rol,$personal,$filtro;
+      $fltSearch = "";
+      $fltContract = "";
+      switch($filter['tipos']){
+          case 'activos':
+              $fltSearch .= " and a.active='1'  and b.activo='Si' ";
+              $fltContract .= " and ax.activo='Si' ";
+          break;
+          case 'inactivos':
+              $fltSearch .= " and a.active='0' and b.activo='No' ";
+              $fltContract .= " and ax.activo='No' ";
+          break;
+          default:
+              $fltSearch .= "";
+              $fltContract .= "";
+          break;
+      }
+
+     //comprobar rol si es limitado se usa query diferente
+      $rol->setRolId($User['roleId']);
+      $ilimitado= $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH'));
+
+      if(!$ilimitado){
+          $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+               inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(".implode(',',$filter['encargados']).") group by ax.contractId) as b
+               on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
+              ";
+      }else{
+          //si el rol es ilimitado  comprobar que en el array de encargados no este su id, si esta se usa el query que obtiene todos los contratos, si no esta entonces esta buscando de otra persona
+          if($filter["selectedResp"]){
+              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+               inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(".implode(',',$filter['encargados']).") group by ax.contractId) as b
+               on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
+              ";
+          }else{
+              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+               left join (select ax.* from contract ax left join contractPermiso bx on ax.contractId=bx.contractId and bx.personalId in(".implode(',',$filter['encargados']).")  where 1 $fltContract group by ax.contractId) as b
+               on a.customerId=b.customerId where 1 $fltSearch  order by a.nameContact asc, b.name asc  
+              ";
+          }
+      }
+      $this->Util()->DB()->setQuery($str);
+      $result = $this->Util()->DB()->GetResult();
+      //$result ya viene filtrado por encargados y por los roles que son ilimitados
+      $creport = new ContractRep();
+      foreach ($result as $key => $val){
+          $allContracts = [];
+          $allContracts = $this->GetRazonesSociales($val["customerId"]);
+          $result[$key]["contracts"]=  $allContracts;
+          $nameEncargados = $creport->encargadosArea($val['contractId']);
+          foreach($nameEncargados as $var ){
+              $result[$key]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
+              $result[$key]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
+          }
+          //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
+          $idResponsable = $result[$key]['respContabilidad'];
+          if(!$idResponsable)
+              $idResponsable=0;
+
+          $result[$key]["responsable"] =  $result[$key]['nameContabilidad'];
+          $contract = new Contract;
+          $contract->setContractId($val['contractId']);
+          $result[$key]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
+
+          $personal->setPersonalId($idResponsable);
+          $infP = $personal->Info();
+          $role = $rol->getInfoByData($infP);
+          $rolArray = explode(' ',$role['name']);
+          $needle = trim($rolArray[0]);
+          $jefes = array();
+          $personal->findDeepJefes($idResponsable, $jefes,true);
+          switch($needle){
+              case 'Coordinador':
+              case 'Gestoria':
+              case 'Sistemas':
+              case 'Supervisor':
+              case 'Gerente':
+              case 'socio':
+                  $result[$key]["supervisadoBy"] = $jefes['me'];
+                  break;
+              case 'Recepcion':
+              case 'Cuentas':
+              case 'Contador':
+              case 'Asistente':
+              case 'Auxiliar':
+                  $result[$key]["supervisadoBy"] = $jefes['Supervisor'];
+                  break;
+          }
+          //obtener los servicios del contrato
+          $serviciosContrato = $this->GetServicesByContract($val["contractId"]);
+          $result[$key]["showContract"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
+          if($result[$key]["showContract"]<0)//si un contrato no tiene servicio se comprueba si se visualiza o no segun el tipo de rol.
+              unset($result[$key]);
+      }
+     return $result;
+  }
+  public function SuggestCustomerCatalog($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
+  {
 		global $User, $page,$rol,$personal;
 		$creport = new ContractRep();
 		if ($this->active) {
