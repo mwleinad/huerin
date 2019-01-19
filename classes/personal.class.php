@@ -1118,7 +1118,7 @@ function SubordinadosDetails()
             return false;
         }
      }
-     public function findSupervisor($id){
+    public function findSupervisor($id){
 	    global $rol;
          $this->setPersonalId($id);
          $infP = $this->Info();
@@ -1147,6 +1147,64 @@ function SubordinadosDetails()
          }
          return $supervisor;
      }
+    public function GetIdResponsablesSubordinados($filtro){
+	    global $User;
+        $idPersons= [];
+
+        if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
+            //Si seleccionaron TODOS
+            if($filtro['responsableCuenta'] == 0){
+                $this->setActive(1);
+                $socios = $this->ListSocios();
+                foreach($socios as $res){
+                    array_push($idPersons,$res['personalId']);
+                    $this->setPersonalId($res['personalId']);
+                    $subordinados = $this->Subordinados();
+                    if(empty($subordinados))
+                        continue;
+
+                    $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
+                    $idPersons=array_merge($idPersons,$subsLine);
+                    unset($subsLine);
+                    unset($subordinados);
+                }//foreac
+                $idPersons = array_unique($idPersons);
+            }else{
+                $idPersons = array();
+                $respCuenta = $filtro['responsableCuenta'];
+                array_push($idPersons,$respCuenta);
+                if($filtro['deep']){
+                    $this->setPersonalId($respCuenta);
+                    $subordinados = $this->Subordinados();
+                    if(!empty($subordinados)){
+                        $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
+                        $idPersons=array_merge($idPersons,$subsLine);
+                        unset($subsLine);
+                        unset($subordinados);
+                    }
+                }
+            }
+
+        }else{
+            $idPersons = array();
+            if($filtro['responsableCuenta']==0)
+                $respCuenta = $User['userId'];
+            else
+                $respCuenta = $filtro['responsableCuenta'];
+            array_push($idPersons,$respCuenta);
+            if($filtro['deep']){
+                $this->setPersonalId($respCuenta);
+                $subordinados = $this->Subordinados();
+                if(!empty($subordinados)){
+                    $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
+                    $idPersons=array_merge($idPersons,$subsLine);
+                    unset($subsLine);
+                    unset($subordinados);
+                }
+            }
+        }
+        return $idPersons;
+    }
     
 }
 
