@@ -72,7 +72,7 @@
                 </a>
             </li>
         {/if}
-        {if in_array(218,$permissions)||$User.isRoot}
+        {if in_array(217,$permissions)||$User.isRoot}
             <li class="item last" id="three">
                 <a href="{$WEB_ROOT}/{$firstPages[217]}" class="main{if $mainMnu == "configuracion"} current{/if}">
             	<span class="outer">
