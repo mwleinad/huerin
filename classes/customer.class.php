@@ -1354,6 +1354,8 @@ class Customer extends Main
               $fltContract .= "";
           break;
       }
+      if($filter['cliente']>0)
+          $fltSearch .=" and a.customerId='".$filter['cliente']."' ";
 
      //comprobar rol si es limitado se usa query diferente
       $rol->setRolId($User['roleId']);

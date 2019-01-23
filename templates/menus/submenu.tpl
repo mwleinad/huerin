@@ -154,7 +154,7 @@
                     <span>Estado de cuenta saldos pendientes</span></a></li>
                 {/if}
             {/if}
-            {if $page == "sistema" || $page == "reporte-sat" || $page == "admin-folios" || $page == "cfdi33-generate" || $page == "comp-from-xml"}
+            {if $page == "sistema" || $page == "reporte-sat" || $page == "cfdi33-generate" || $page == "comp-from-xml"}
             <ul>
               {if in_array(131,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if}><span>Nuevo CFDi 3.3</span></a></li>
@@ -162,17 +162,9 @@
               {if in_array(132,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if}><span>Consultar Comprobantes</span></a></li>
               {/if}
-              {if in_array(139,$permissions) || $User.isRoot}
-              <li><a href="{$WEB_ROOT}/admin-folios/nuevos-folios" {if $includedTpl == "admin-folios_nuevos-folios"} class="current"{/if}><span>Lista de Folios</span></a></li>
-              {/if}
               {if in_array(120,$permissions) || $User.isRoot}
               <li><a href="{$WEB_ROOT}/comp-from-xml" {if $page == "comp-from-xml"}class="current"{/if}>
                     <span>Complemento de pago desde xml</span></a></li>
-              {/if}
-              {if $info.version != "auto"}
-                {if in_array(140,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/admin-folios/actualizar-certificado" {if $includedTpl == "admin-folios_actualizar-certificado"} class="current"{/if}><span>Actualizar Certificado</span></a></li>
-                {/if}
               {/if}
             </ul>
             {/if}
@@ -189,6 +181,19 @@
                 {if in_array(214,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/coffe" {if $page == "coffe"}class="current"{/if}>
                     <span>Menus del dia</span></a></li>
+                {/if}
+            {/if}
+            {if $mainMnu == "configuracion"}
+                {if $info.version != "auto"}
+                    {if in_array(140,$permissions) || $User.isRoot}
+                        <li><a href="{$WEB_ROOT}/admin-folios/actualizar-certificado" {if $includedTpl == "admin-folios_actualizar-certificado"} class="current"{/if}><span>Actualizar Certificado</span></a></li>
+                    {/if}
+                {/if}
+                {if in_array(139,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/admin-folios/nuevos-folios" {if $includedTpl == "admin-folios_nuevos-folios"} class="current"{/if}><span>Lista de Folios</span></a></li>
+                {/if}
+                {if in_array(218,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/backup_system" {if $includedTpl == "backup_system"} class="current"{/if}><span>Bases de datos</span></a></li>
                 {/if}
             {/if}
        </ul>
