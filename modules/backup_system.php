@@ -8,11 +8,13 @@ $bd_host = SQL_HOST;
 $bd_pass = SQL_PASSWORD;
 
 $file = DOC_ROOT.'/sendFiles/list_bd.txt';
-echo 'mysql -h'.$bd_host.' -u'.$bd_user.' -p'.$bd_pass.' -e "show databases where `Database` not in(\'mysql\',\'phpmyadmin\',\'information_schema\',\'performance_schema\') " >'.$file;
-echo "mysql -h$bd_host -u$bd_user -p$bd_pass -e 'show databases where `Database` not in(\"mysql\",\"phpmyadmin\",\"information_schema\",\"performance_schema\")'>".$file;
-exit;
+if(strpos(strtolower(php_uname()),'windows')!==false)
+ $command = 'mysql -h'.$bd_host.' -u'.$bd_user.' -p'.$bd_pass.' -e "show databases where `Database` not in(\'mysql\',\'phpmyadmin\',\'information_schema\',\'performance_schema\') " >'.$file;
+else
+ $command =  "mysql -h$bd_host -u$bd_user -p$bd_pass -e 'show databases where `Database` not in(\"mysql\",\"phpmyadmin\",\"information_schema\",\"performance_schema\")'>".$file;
 
-exec('mysql -h'.$bd_host.' -u'.$bd_user.' -p'.$bd_pass.' -e "show databases where `Database` not in(\'mysql\',\'phpmyadmin\',\'information_schema\',\'performance_schema\') " >'.$file,$de);
+
+exec($command,$de);
 $listDatabases = [];
 if(file_exists($file)){
         $listDatabases = file($file,FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
