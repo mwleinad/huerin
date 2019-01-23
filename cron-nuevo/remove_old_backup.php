@@ -17,7 +17,15 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-array_map('unlink',glob("/var/www/html/sendFiles/backup/*.gz"));
+/*///////array_map('unlink',glob("/var/www/html/sendFiles/backup/*.gz")); riesgoso */
+
+$directorio = opendir(DOC_DIR_BACKUP);
+while ($archivo = readdir($directorio)) //obtenemos un archivo y luego otro sucesivamente
+{
+ if(end(explode('.',$archivo))=='gz'){
+     unlink(DOC_DIR_BACKUP.$archivo);
+ }
+}
 
 
 
