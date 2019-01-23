@@ -59,8 +59,6 @@ include_once(DOC_ROOT.'/libraries.php');
         'balance',
 
         //facturacion
-        'admin-folios',
-        'datos-generales',
         'sistema',
 		'cfdi33-generate',//cfdi 3.3
 		'cfdi33-generate-pdf',//cfdi 3.3
@@ -122,7 +120,12 @@ include_once(DOC_ROOT.'/libraries.php');
 		'cfdiPagos',
 
 		//Modulos para el usuario tipo cliente
-        'customer-only'
+        'customer-only',
+
+		//configuracion
+		 'admin-folios',
+         'datos-generales',
+		 'backup_system'
 
 
 	);

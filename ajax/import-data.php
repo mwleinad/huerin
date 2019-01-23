@@ -68,7 +68,7 @@ switch($_POST['type']){
 
             $customer->setCustomerId($row[0]);
             $beforeCustomer = $customer->Info();
-            $strCust ="UPDATE customer SET nameContact ='".$row[2]."', phone='".$row[3]."',email='".$row[4]."', password='".$row[5]."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."' where customerId ='".$row[0]."'";
+            $strCust ="UPDATE customer SET nameContact ='".trim($row[2])."', phone='".trim($row[3])."',email='".trim($row[4])."', password='".trim($row[5])."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."',observacion='".trim($row[8])."'  where customerId ='".$row[0]."'";
             $db->setQuery($strCust);
             $upCustomer =  $db->UpdateData();
             if($upCustomer>0){
@@ -99,7 +99,7 @@ switch($_POST['type']){
             //encontrar cambios en encargados
             $contract->setContractId($row[1]);
             $encargados = array();
-            $encargados = array($row[1],$row[38],$row[39],$row[40],$row[41],$row[42],$row[43],$row[44]);
+            $encargados = array($row[1],$row[45],$row[46],$row[47],$row[48],$row[49],$row[50]);
             $permisos= $contract->ValidateEncargados($encargados);
             if($permisos===false)
             {
@@ -119,27 +119,35 @@ switch($_POST['type']){
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
-                            name='".$row[10]."',
+                            name='".trim($row[10])."',
                             nombreComercial='".$row[16]."',
                             direccionComercial='".$row[17]."',
-                            nameContactoAdministrativo='".$row[19]."',
-                            emailContactoAdministrativo='".$row[20]."',
-                            telefonoContactoAdministrativo='".$row[21]."',
-                            nameContactoContabilidad='".$row[22]."',
-                            emailContactoContabilidad='".$row[23]."',
-                            telefonoContactoContabilidad='".$row[24]."',
-                            nameContactoDirectivo='".$row[25]."',
-                            emailContactoDirectivo='".$row[26]."',
-                            telefonoContactoDirectivo='".$row[27]."',
-                            telefonoCelularDirectivo='".$row[28]."',
-                            claveCiec='".$row[29]."',
-                            claveFiel='".$row[30]."',
-                            claveIdse='".$row[31]."',
-                            claveIsn='".$row[32]."',
+                            address='".trim($row[18])."',
+                            noExtAddress='".trim($row[19])."',
+                            noIntAddress='".trim($row[20])."',
+                            coloniaAddress='".trim($row[21])."',
+                            municipioAddress='".trim($row[22])."',
+                            estadoAddress='".trim($row[23])."',
+                            paisAddress='".trim($row[24])."',
+                            cpAddress='".trim($row[25])."',
+                            nameContactoAdministrativo='".$row[26]."',
+                            emailContactoAdministrativo='".$row[27]."',
+                            telefonoContactoAdministrativo='".$row[28]."',
+                            nameContactoContabilidad='".$row[29]."',
+                            emailContactoContabilidad='".$row[30]."',
+                            telefonoContactoContabilidad='".$row[31]."',
+                            nameContactoDirectivo='".$row[32]."',
+                            emailContactoDirectivo='".$row[33]."',
+                            telefonoContactoDirectivo='".$row[34]."',
+                            telefonoCelularDirectivo='".$row[35]."',
+                            claveCiec='".$row[36]."',
+                            claveFiel='".$row[37]."',
+                            claveIdse='".$row[38]."',
+                            claveIsn='".$row[39]."',
                             rfc='".$row[13]."',
-                            facturador='".$row[33]."',
-                            metodoDePago='".$row[34]."',
-                            noCuenta='".$row[35]."'
+                            facturador='".$row[40]."',
+                            metodoDePago='".$row[41]."',
+                            noCuenta='".$row[42]."'
                             WHERE contractId='".$row[1]."' ";
             $db->setQuery($strContract);
             $upContract =  $db->UpdateData();

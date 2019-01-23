@@ -189,7 +189,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #menu .catalogos { background-image: url(../images/catalogos.png); background-repeat: no-repeat;  }
 #menu .event_manager { background-image: url(../images/sales.png); background-repeat: no-repeat;  } 
 #menu .newsletter { background-image: url(../images/icon_news.png); background-repeat: no-repeat;  }
-#menu .settings { background-image: url(../images/icon_settings.png); background-repeat: no-repeat;  }
+#menu .settings { background-image: url(../images/settings_48.png); background-repeat: no-repeat;  }
 #hidden_submenu {
 	background:#FFF;
 	padding:10px;

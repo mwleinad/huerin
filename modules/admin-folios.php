@@ -121,7 +121,7 @@
 
 	switch($_GET['section']){
 		case 'nuevos-folios':
-		      $user->allowAccess(5);
+		      $user->allowAccess(217);
 		      $user->allowAccess(139);
 
 			  $folios->setIdRfc($id_rfc);
@@ -130,7 +130,7 @@
 			  
 			  break;
         case 'actualizar-certificado':
-            $user->allowAccess(5);
+            $user->allowAccess(217);
             $user->allowAccess(140);
         break;
 
@@ -299,6 +299,6 @@
 		$fecha_exp = date('d-m-Y g:i:s a',strtotime($fecha_expiracion));
 		$smarty->assign('fecha_expiracion', $fecha_exp);
 	}//if
-	$smarty->assign('mainMnu','admin-folios');  
+	$smarty->assign('mainMnu','configuracion');
 	
 ?>

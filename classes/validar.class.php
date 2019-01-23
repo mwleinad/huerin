@@ -13,7 +13,7 @@ class Validar extends Main
         $fp = fopen($file_temp,'r');
         $fila=1;
         while(($row=fgetcsv($fp,4096,","))==true) {
-            if(count($row)!=45)
+            if(count($row)!=51)
             {
                 $this->Util()->setError(0,'error','Archivo no valido');
                 break;
@@ -44,7 +44,11 @@ class Validar extends Main
                 $this->Util()->setError(0,'error','Falta fecha de alta del cliente en la fila '.$fila);
                 break;
             }
-
+            //comprobar fecha de alta del cliente si es valido
+            if(!$this->Util()->isValidateDate($row[7],'d/m/Y')){
+                $this->Util()->setError(0,'error','La fecha de alta del cliente en la fila '.$fila.' no es valido ');
+                break;
+            }
             //nombre de razon social
             if($row[10]==""){
                 $this->Util()->setError(0,'error','Falta razon social en la fila '.$fila);
@@ -71,75 +75,99 @@ class Validar extends Main
                 $this->Util()->setError(0,'error','Falta direccion comercial  en la fila '.$fila);
                 break;
             }
-            /* datos de contacto no es obligatorio
+            if($row[18]==""){
+                $this->Util()->setError(0,'error','Falta nombre de calle en la fila '.$fila);
+                break;
+            }
             if($row[19]==""){
-                $this->Util()->setError(0,'error','Falta nombre contacto administrativo '.$fila);
-                break;
-            }
-            if($row[20]==""){
-                $this->Util()->setError(0,'error','Falta email contacto administrativo '.$fila);
-                break;
-            }
-            if($row[21]==""){
-                $this->Util()->setError(0,'error','Falta telefono contacto administrativo '.$fila);
+                $this->Util()->setError(0,'error','Falta No. exterior en la fila '.$fila);
                 break;
             }
             if($row[22]==""){
-                $this->Util()->setError(0,'error','Falta nombre contacto contabilidad '.$fila);
+                $this->Util()->setError(0,'error','Falta municipio en fila '.$fila);
                 break;
             }
             if($row[23]==""){
-                $this->Util()->setError(0,'error','Falta email contacto contabilidad '.$fila);
+                $this->Util()->setError(0,'error','Falta estado en fila '.$fila);
                 break;
             }
             if($row[24]==""){
-                $this->Util()->setError(0,'error','Falta telefono contacto contabilidad '.$fila);
+                $this->Util()->setError(0,'error','Falta pais en fila '.$fila);
                 break;
             }
             if($row[25]==""){
-                $this->Util()->setError(0,'error','Falta nombre contacto directivo '.$fila);
+                $this->Util()->setError(0,'error','Falta codigo postal en fila '.$fila);
                 break;
             }
+            /* datos de contacto no es obligatorio
             if($row[26]==""){
-                $this->Util()->setError(0,'error','Falta email contacto directivo '.$fila);
+                $this->Util()->setError(0,'error','Falta nombre contacto administrativo '.$fila);
                 break;
             }
             if($row[27]==""){
-                $this->Util()->setError(0,'error','Falta telefono contacto directivo '.$fila);
+                $this->Util()->setError(0,'error','Falta email contacto administrativo '.$fila);
                 break;
             }
             if($row[28]==""){
+                $this->Util()->setError(0,'error','Falta telefono contacto administrativo '.$fila);
+                break;
+            }
+            if($row[29]==""){
+                $this->Util()->setError(0,'error','Falta nombre contacto contabilidad '.$fila);
+                break;
+            }
+            if($row[30]==""){
+                $this->Util()->setError(0,'error','Falta email contacto contabilidad '.$fila);
+                break;
+            }
+            if($row[31]==""){
+                $this->Util()->setError(0,'error','Falta telefono contacto contabilidad '.$fila);
+                break;
+            }
+            if($row[32]==""){
+                $this->Util()->setError(0,'error','Falta nombre contacto directivo '.$fila);
+                break;
+            }
+            if($row[33]==""){
+                $this->Util()->setError(0,'error','Falta email contacto directivo '.$fila);
+                break;
+            }
+            if($row[34]==""){
+                $this->Util()->setError(0,'error','Falta telefono contacto directivo '.$fila);
+                break;
+            }
+            if($row[35]==""){
                 $this->Util()->setError(0,'error','Falta celular contacto directivo '.$fila);
                 break;
             }
             */
-            if($row[29]==""){
+            if($row[36]==""){
                 $this->Util()->setError(0,'error','Falta clave CIEC en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[30]==""){
+            if($row[37]==""){
                 $this->Util()->setError(0,'error','Falta clave FIEL en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[31]==""){
+            if($row[38]==""){
                 $this->Util()->setError(0,'error','Falta clave IDSE en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[32]==""){
+            if($row[39]==""){
                 $this->Util()->setError(0,'error','Falta clave ISN en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[33]==""){
+            if($row[40]==""){
                 $this->Util()->setError(0,'error','Fatla facturador en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[34]==""){
+            if($row[41]==""){
                 $this->Util()->setError(0,'error','Falta metodo de pago  en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
             //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
-            if($row[38]!="" and $row[38]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[38])."'");
+            if($row[45]!="" and $row[45]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[45])."'");
                 $idCont=$this->Util()->DB()->GetSingle();
                 if(!$idCont)
                 {
@@ -147,8 +175,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[39]!="" and $row[39]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[39]))."' ");
+            if($row[46]!="" and $row[46]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[46]))."' ");
                 $idNom=$this->Util()->DB()->GetSingle();
                 if(!$idNom)
                 {
@@ -156,8 +184,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[40]!="" and $row[40]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[40]))."'");
+            if($row[47]!="" and $row[47]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[47]))."'");
                 $idAdmin=$this->Util()->DB()->GetSingle();
                 if(!$idAdmin)
                 {
@@ -165,8 +193,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[41]!="" and $row[41]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[41]))."'");
+            if($row[48]!="" and $row[48]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[48]))."'");
                 $idJur=$this->Util()->DB()->GetSingle();
                 if(!$idJur)
                 {
@@ -174,8 +202,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[42]!="" and $row[42]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[42]))."'");
+            if($row[49]!="" and $row[49]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[49]))."'");
                 $idImss=$this->Util()->DB()->GetSingle();
                 if(!$idImss)
                 {
@@ -183,17 +211,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[43]!="" and $row[43]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[43]))."'");
-                $idMen=$this->Util()->DB()->GetSingle();
-                if(!$idMen)
-                {
-                    $this->Util()->setError(0,'error','Responsable de mensajeria de la fila '.$fila.' no se encuentra dado de alta ');
-                    break;
-                }
-            }
-            if($row[44]!="" and $row[44]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[44]))."'");
+            if($row[50]!="" and $row[50]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[50]))."'");
                 $idAud=$this->Util()->DB()->GetSingle();
                 if(!$idAud)
                 {
@@ -209,11 +228,7 @@ class Validar extends Main
                 $this->Util()->setError(0,'error','Tipo de regimen en la fila '.$fila.' no existe o no pertenece al tipo de persona seleccionado ');
                 break;
             }
-            //comprobar fecha de alta del cliente si es valido
-            if(!$this->Util()->isValidateDate($row[7],'d/m/Y')){
-                $this->Util()->setError(0,'error','La fecha de alta del cliente en la fila '.$fila.' no es valido ');
-                break;
-            }
+
             //comprobar que id del contrato pertenezca al cliente y que el cliente le pertenezca el contrato
             $sql1 = "SELECT a.contractId,b.customerId FROM contract a INNER JOIN customer b ON a.customerId=b.customerId AND b.customerId='".$row[0]."' WHERE a.contractId='".$row[1]."' ";
             $this->Util()->DB()->setQuery($sql1);

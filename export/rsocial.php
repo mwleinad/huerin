@@ -82,7 +82,6 @@ $x .=
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. ADMIN</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. JURIDICO</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. IMSS</b></td>
-            <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. MENSAJERIA</b></td>
             <td style=\"background:#D7EBFF;text-align:center;\"><b>RESP. AUDITORIA</b></td>
             
         </tr>
@@ -175,8 +174,8 @@ foreach($clientes as $con){
 		        	<td style=\"text-align:left;mso-number-format:'@';\">".$con['email']."</td>
     			    <td style=\"text-align:center;mso-number-format:'@';\">".$con['password']."</td>
 	    		    <td style=\"text-align:center;mso-number-format:'@';\">".count($con['contracts'])."</td>
-		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d-m-Y',strtotime($con['fechaAlta']))."</td>
-			        <td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['observaciones'])."</td>
+		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d/m/Y',strtotime($con['fechaAlta']))."</td>
+			        <td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['observacion'])."</td>
 			        <td style=\"text-align:center;mso-number-format:'@';\">".$activo."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['name'])."</td>
 					<td style=\"text-align:left;mso-number-format:'@';\">$ ".$con['totalMensual']."</td>
@@ -218,7 +217,6 @@ foreach($clientes as $con){
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAdministracion']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameJuridico']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameImss']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameMensajeria']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAuditoria']."</td>
 				</tr>";
 

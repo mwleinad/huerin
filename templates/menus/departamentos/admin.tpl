@@ -55,7 +55,7 @@
         </li>        
         {/if}
         {if in_array(7,$permissions)|| $User.isRoot}
-        <li{if in_array(213,$permissions)} class="item middle"{else} class="item last"{/if} id="three">
+        <li {if in_array(213,$permissions) || in_array(217,$permissions) || $User.isRoot} class="item middle"{else} class="item last"{/if} id="three">
         	<a href="{$WEB_ROOT}/{$firstPages[7]}" class="main{if $mainMnu == "reportes"} current{/if}">
             	<span class="outer">
                 	<span class="inner reports png">Reportes</span>
@@ -64,10 +64,19 @@
         </li>
         {/if}
         {if in_array(213,$permissions)|| $User.isRoot}
-            <li class="item last" id="three">
+            <li class="item middle" id="three">
                 <a href="{$WEB_ROOT}/coffe" class="main{if $mainMnu == "coffe"} current{/if}">
             	<span class="outer">
                 	<span class="inner event_manager png">Cafeteria</span>
+                </span>
+                </a>
+            </li>
+        {/if}
+        {if in_array(218,$permissions)||$User.isRoot}
+            <li class="item last" id="three">
+                <a href="{$WEB_ROOT}/{$firstPages[217]}" class="main{if $mainMnu == "configuracion"} current{/if}">
+            	<span class="outer">
+                	<span class="inner settings png">Configuracion</span>
                 </span>
                 </a>
             </li>
