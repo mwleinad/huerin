@@ -93,7 +93,7 @@ class ContractRep extends Main
 					$ftrServicio
                     AND tipoServicio.status='1'
 					".$sqlDepto." $noInclude
-					ORDER BY tipoServicio.nombreServicio ASC";
+					ORDER BY tipoServicio.nombreServicio ASC,servicio.servicioid ASC";
             $this->Util()->DB()->setQuery($sql);
             $res["servicios"] = $this->Util()->DB()->GetResult();
             $res["noServicios"] = count($res["servicios"]);

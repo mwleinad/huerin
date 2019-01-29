@@ -1470,6 +1470,19 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
         else
             return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
     }
+    function delete_files($target,$tipo="*") {
+        if(is_dir($target)){
+            $files = glob( $target .''.$tipo ,GLOB_MARK); //
+            foreach( $files as $file ){
+               $file = str_replace("/","/",$file) ;
+               $this->delete_files( $file,"*" );
+            }
+            rmdir( $target );
+        } elseif(is_file($target)) {
+            unlink( $target );
+        }
+    }
+
 
 }
 

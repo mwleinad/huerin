@@ -63,6 +63,10 @@
                 <a href="{$WEB_ROOT}/contract-edit/contId/{$item.contractId}">
                 <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.contractId}" title="Editar" border="0"/></a>
             {/if}
+            {if (in_array(219,$permissions)|| $User.isRoot) && $item.activo == 'Si'}
+                <a href="javascript:;" title="Actualizar archivos en workflows">
+                    <img src="{$WEB_ROOT}/images/icons/folder-file-16x16.png" class="spanAll spanUpdateWorkflow" data-id="{$item.contractId}"  border="0"/></a>
+            {/if}
             {if in_array(66,$permissions) || $User.isRoot}
                <a href="{$WEB_ROOT}/contract-view/contId/{$item.contractId}">
                 <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Detalles" />

@@ -1800,6 +1800,30 @@ class Contract extends Main
     $row = $this->Util()->DB()->GetRow();
     return $row;
   }
+  public function InfoByName()
+    {
+
+        $sql= "SELECT
+          *,
+          contract.name AS name,
+          contract.encargadoCuenta AS encargadoCuenta,
+          contract.responsableCuenta AS responsableCuenta,
+          contract.auxiliarCuenta AS auxiliarCuenta,
+          customer.email as email
+        FROM
+          contract
+        LEFT JOIN
+          customer ON customer.customerId = contract.customerId
+        LEFT JOIN
+          regimen ON regimen.regimenId = contract.regimenId
+        LEFT JOIN
+          sociedad ON sociedad.sociedadId = contract.sociedadId
+        WHERE
+          replace(contract.name,' ','') = '".trim($this->name)."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        return $row;
+    }
 
   /**
   * InfoArrendamiento

@@ -29,7 +29,11 @@
                             {foreach from=$task.controlFileInfo item=file}
                                 Version: {$file.version} Fecha: {$file.date}
                                 {if in_array(104,$permissions)||$User.isRoot}
-                                    <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                                    {if $file.ruta!=""}
+                                        <a href="{$WEB_ROOT}/download.php?file=tasks{$file.ruta}" target="_blank">&raquo; Ver Archivo</a>
+                                    {else}
+                                        <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
+                                    {/if}
                                 {/if}
                   {if in_array(105,$permissions)||$User.isRoot}
                                 {if $isDep}

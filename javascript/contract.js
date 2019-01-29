@@ -17,7 +17,6 @@ Event.observe(window, 'load', function() {
 		}
 
 	}
-
 	$('contenido').observe("click", AddEditContractListeners);
 
 });

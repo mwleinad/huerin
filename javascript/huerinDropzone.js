@@ -96,12 +96,17 @@ var constructTemplate = (customOptions) => {
               var respSplit = response.split("[#]");
               if(respSplit[0]=='ok'){
                   ShowStatusPopUp(respSplit[1]);
-                  jQ("#"+respSplit[3]).html(respSplit[2]);
+                  if(respSplit[2]!="")
+                    jQ("#"+respSplit[3]).html(respSplit[2]);
+
                   close_popup();
               }else
               {
                   ShowStatusPopUp(respSplit[1]);
               }
+           });
+           this.on("error", function(file, errorMessage) {
+               ShowErrorOnPopup(errorMessage,1);
            });
        }
    }
