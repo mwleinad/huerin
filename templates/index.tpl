@@ -87,7 +87,7 @@
 <script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 
-{if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow' || $page eq 'report-servicio-drill'}
+{if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow' || $page eq 'report-servicio-drill' || $page eq 'contract'}
 	<script src="{$WEB_ROOT}/javascript/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
 	<script src="{$WEB_ROOT}/javascript/add-documento.js?{$timestamp}" type="text/javascript"></script>
 {/if}

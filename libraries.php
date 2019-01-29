@@ -122,6 +122,7 @@ include_once(DOC_ROOT."/classes/CreatePdfNotification.class.php");
 include_once(DOC_ROOT."/classes/permiso.class.php");
 include_once(DOC_ROOT."/classes/dropzone.class.php");
 include_once(DOC_ROOT."/classes/coffe.class.php");
+include_once(DOC_ROOT."/classes/compressed.class.php");
 
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");

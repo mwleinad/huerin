@@ -1222,4 +1222,18 @@ switch($_POST['type']){
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
+    case 'update_extensiones_tasks':
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if(count($row)!=9)
+                continue;
+            $updateSql = "update task set
+                               extensiones ='".trim($row[8])."'
+                               where taskId='".$row[0]."'
+                              ";
+            $db->setQuery($updateSql);
+            $db->UpdateData();
+        }
+    break;
 }

@@ -37,5 +37,30 @@ function close_popup(){
     grayOut(false);
     return;
 }
+//dropzone para actualizar archivos en workflow>pasos>tareas
+jQ(document).on('click','.spanUpdateWorkflow',function () {
+        var id =  jQ(this).data('id');
+        grayOut(true);
+        jQ('#fview').show();
+        jQ.ajax({
+            url: WEB_ROOT+'/ajax/workflow.php',
+            data: {type:'openModalUpdateFilesWorkflow',contractId:id},
+            type: 'POST',
+            success:function (response) {
+                var resSplit =  response.split("[#]");
+                FViewOffSet('');
+                FViewOffSet(resSplit[0]);
+                customOptions = {
+                    url:WEB_ROOT+'/ajax/workflow.php',
+                    acceptedFiles:".zip,.gz",
+                    dictInvalidFileType:'Archivo no permitido, compruebe la extension.',
+                    timeout: 180000,
+                }
+                createDropzone('#idDropzone',customOptions);
+            }
+        })
+
+    }
+);
 
 

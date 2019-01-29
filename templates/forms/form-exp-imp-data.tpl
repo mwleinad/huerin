@@ -25,6 +25,7 @@
                             <option value="importar_servicios_rebuild">Importar servicios a contratos rebuild</option>
                             <option value="importar_servicios_nominas">Importar servicios nominas</option>
                             <option value="update_direccion_fiscal">Actualizar direccion fiscal de clientes</option>
+                            <option value="update_extensiones_tasks">Actualizar extensiones en tareas</option>
                         {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
