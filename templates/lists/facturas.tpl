@@ -9,15 +9,12 @@
 	{/foreach}
  	<tr class="footer">
                 <td colspan="10" align="right">
-				<!--  PAGINATION START  -->             
-                    <div class="pagination">
-
-
+				<!--  PAGINATION START  -->
+	<div class="pagination">
 	{if count($comprobantes.pages)}
-    {include file="{$DOC_ROOT}/templates/lists/pages_new.tpl" pages=$comprobantes.pages}
-  {/if}
-
-                      </div>  
+        {include file="{$DOC_ROOT}/templates/lists/pages_new.tpl" pages=$comprobantes.pages}
+    {/if}
+    </div>
                 <!--  PAGINATION END  -->       
                 </td>
               </tr>

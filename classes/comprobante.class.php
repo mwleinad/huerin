@@ -1360,12 +1360,10 @@ class Comprobante extends Producto
             break;
 
         }
-        if(!isset($values['addComplemento']))
-            $sqlSearch .= ' AND c.tiposComprobanteId!="10" ';
+        if(!isset($values['addComplemento'])&&!isset($values['comprobante']))
+            $sqlSearch .= ' AND c.tiposComprobanteId!=10 ';
 
-		//$sqlQuery = 'SELECT * FROM comprobante ORDER BY serie ASC, fecha DESC, comprobanteId DESC';
-		//echo "jere";
-		 $sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
+		$sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
 			FROM comprobante as c
 			LEFT JOIN contract ON contract.contractId = c.userId
 			LEFT JOIN customer ON customer.customerId = contract.customerId
@@ -1383,9 +1381,7 @@ class Comprobante extends Producto
 
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 		$servicios = $this->Util()->DBSelect($id_empresa)->GetResult();
-
 		$info = array();
-		//echo count($comprobantes);
 		foreach($comprobantes as $key => $val){
 			$user->setUserId($val['userId'],1);
 			$usr = $user->GetUserInfo();
@@ -1394,6 +1390,7 @@ class Comprobante extends Producto
 			$card['rfc'] = $usr['rfc'];
 			$cadenaOAux = strtolower($val["cadenaOriginal"]);
 			$auxC = true;
+			/*
 			foreach ($servicios as $serv) {
 				$servicioAux = "|".strtolower($serv['nombreServicio'])." correspondiente ";
 				$index = strpos($cadenaOAux,$servicioAux);
@@ -1447,7 +1444,7 @@ class Comprobante extends Producto
 			}
 			if($auxC){
 				$card['concepto'] = $val['concepto'];
-			}
+			}*/
 			$card['nombre'] = $usr['nombre'];
 			$card['fecha'] = date('d/m/Y',strtotime($val['fecha']));
             $card['fechaPedimento'] = date('d/m/Y',strtotime($val['fechaPedimento']));
@@ -1466,7 +1463,7 @@ class Comprobante extends Producto
 			$card['porcentajeIEPS'] = $val['porcentajeIEPS'];
 			$card['comprobanteId'] = $val['comprobanteId'];
 			$card['status'] = $val['status'];
-            $card['tipoDeComprobante'] = $val['tipoDeComprobante'];
+            $card['tiposComprobanteId'] = $val['tiposComprobanteId'];
 			$card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
 
@@ -1478,7 +1475,6 @@ class Comprobante extends Producto
             $card["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
 			$info[$key] = $card;
 		}//foreach
-
 		$data["items"] = $info;
 		$data["pages"] = $pages;
 		$data["total"] = count($comprobantes);

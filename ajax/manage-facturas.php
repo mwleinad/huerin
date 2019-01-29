@@ -87,7 +87,7 @@
 				if($comprobantes["items"])
 				{
 					foreach($comprobantes["items"] as $res){
-						if($res["tipoDeComprobante"] == "ingreso")
+						if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
 						{
 							$total += $res['total'];
 							$subtotal += $res['subTotal'];
