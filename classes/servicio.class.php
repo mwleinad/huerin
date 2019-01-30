@@ -924,6 +924,7 @@ class Servicio extends Contract
 				`costo` = '".$this->costo."',
 				`inicioFactura` = '".$this->inicioFactura."',
 				`tipoServicioId` = '".$this->tipoServicioId."',
+				`lastDateCreateWorkflow` = '0000-00-00',
 				`inicioOperaciones` = '".$this->inicioOperaciones."'
 			WHERE servicioId = '".$this->servicioId."'");
 		$this->Util()->DB()->UpdateData();

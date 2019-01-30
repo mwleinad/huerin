@@ -6,17 +6,16 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 }
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+	$docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
+    session_save_path("C:/xampp/tmp");
 }
 else
 {
 	$docRoot = $_SERVER['DOCUMENT_ROOT'];
+    session_save_path("/tmp");
 }
 
 	define('DOC_ROOT', $docRoot);
-
-	session_save_path("/tmp");
-
 	include_once(DOC_ROOT.'/init_cron.php');
     include_once(DOC_ROOT.'/constants.php');
 	include_once(DOC_ROOT.'/config.php');
