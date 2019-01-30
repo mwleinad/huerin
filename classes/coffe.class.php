@@ -27,9 +27,9 @@ class Coffe extends main
         $dom = new Dompdf();
         $smarty->assign('WEB_ROOT',WEB_ROOT);
         $smarty->assign('elements',$this->elements);
-        $html = $smarty->fetch(DOC_ROOT.'/templates/molds/coffe.tpl');
+        $html = $smarty->fetch(DOC_ROOT.'/templates/molds/coffe-a6.tpl');
         $dom->loadHtml($html);
-        $dom->setPaper('letter', 'portrait');
+        $dom->setPaper('a6', 'portrait');
         $dom->render();
          switch ($type){
              case 'download':
