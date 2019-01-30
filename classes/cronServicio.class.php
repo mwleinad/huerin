@@ -103,7 +103,6 @@ class CronServicio extends Contract
         }
         //una ves encontrado los extremos, encontrar las fechas que se van a dar de alta,esto puede variar desde cero a muchos
         //los eventuales son por una sola vez, no tiene caso pasar por una busqueda, solo entraran al arreglo las fechas menores o iguales a $fechaCorriente
-        echo $siguienteWorkflow.chr(13);
         if($serv['periodicidad']!='Eventual') {
             //si servicio tiene baja temporal , fecha de ultimo workflow pasa a ser $fechaCorriente
             if($serv['status']=='bajaParcial')
