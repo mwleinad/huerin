@@ -98,7 +98,13 @@ class Compressed extends  Main
                 $ignored++;
                 continue;
             }
-            $mes = array_search(ucfirst(strtolower($fileExplode[2])),$monthsComplete);
+            $mesExplode =  explode(" ",$fileExplode[2]);
+            if(count($mesExplode)>1)
+                $mesString = $mesExplode[1];
+            else
+                $mesString = $mesExplode[0];
+
+            $mes = array_search(ucfirst(strtolower($mesString)),$monthsComplete);
             if((int)$mes<1||(int)$mes>12){
                 $ignored++;
                 continue;
@@ -283,9 +289,6 @@ class Compressed extends  Main
         foreach($this->filesToUp as $file){
             $idTasks = [];
             $fileExplode =  explode("/",$file);
-            $name = substr($this->nameDestiny,0,-4);
-            $contract->setName($name);
-            $contrato = $contract->InfoByName();
             $year = $fileExplode[0];
             if(!is_numeric($year))
             {
@@ -293,7 +296,12 @@ class Compressed extends  Main
                 $isValid =  false;
                 break;
             }
-            $mes = array_search(ucfirst(strtolower($fileExplode[2])),$monthsComplete);
+            $mesExplode =  explode(" ",$fileExplode[2]);
+            if(count($mesExplode)>1)
+                $mesString = $mesExplode[1];
+            else
+                $mesString = $mesExplode[0];
+            $mes = array_search(ucfirst(strtolower($mesString)),$monthsComplete);
             if((int)$mes<1||(int)$mes>12){
                 $this->Util()->setError(0,"error","Nombre del mes no valido, en la siguiente ruta : ".$file);
                 $isValid =  false;
