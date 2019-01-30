@@ -41,28 +41,47 @@ class CronServicio extends Contract
             $siguienteWorkflow = $this->Util()->getFirstDate( $serv['inicioOperaciones']);
         }
         if(!$isWorkflowInicial) {
-            //utilizando la periodicidad , encontrar fecha del proximo. solo si no es un workflow inicial
-            switch ($serv['periodicidad']) {
-                case "Mensual":
-                    $add = "+1 month";
-                    break;
-                case "Bimestral":
-                    $add = "+2 month";
-                    break;
-                case "Trimestral":
-                    $add = "+3 month";
-                    break;
-                case "Semestral":
-                    $add = "+6 month";
-                    break;
-                case "Anual":
-                    $add = "+12 month";
-                    break;
-            }
-            $siguienteWorkflow = strtotime($add, strtotime($ultimoWorkflowCreado));
-            $siguienteWorkflow = date('Y-m-d', $siguienteWorkflow);
-        }
+            //si ya tiene una instancia y es eventual ya no debe existir meses a crear, se regresa vacio
+            if($serv["periodicidad"]=="Eventual")
+                return $fechas_workflow;
 
+            $isChangeDateIo =  false;
+            $sqlFirst= "select min(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ";
+            $this->Util()->DB()->setQuery($sqlFirst);
+            $primerWorkflowCreado = $this->Util()->DB()->GetSingle();
+            $inicioOperaciones = $this->Util()->getFirstDate($serv['inicioOperaciones']);
+            if($this->Util()->isValidateDate($primerWorkflowCreado,'Y-m-d'))
+            {
+                $primerWorkflowCreado = $this->Util()->getFirstDate( $primerWorkflowCreado);
+                //si primer workflow es mayor que  fecha inicio operaciones, $siguienteWorkflow=Fecha inicio operaciones
+                if($primerWorkflowCreado>$inicioOperaciones)
+                    $isChangeDateIo =  true;
+            }
+            if(!$isChangeDateIo){
+                //utilizando la periodicidad , encontrar fecha del proximo. solo si no es un workflow inicial y ademas la fecha inicial
+                switch ($serv['periodicidad']) {
+                    case "Mensual":
+                        $add = "+1 month";
+                        break;
+                    case "Bimestral":
+                        $add = "+2 month";
+                        break;
+                    case "Trimestral":
+                        $add = "+3 month";
+                        break;
+                    case "Semestral":
+                        $add = "+6 month";
+                        break;
+                    case "Anual":
+                        $add = "+12 month";
+                        break;
+                }
+                $siguienteWorkflow = strtotime($add, strtotime($ultimoWorkflowCreado));
+                $siguienteWorkflow = date('Y-m-d', $siguienteWorkflow);
+            }else{
+                $siguienteWorkflow = $inicioOperaciones;
+            }
+        }
         //precierres y rifs deben evaluarse que se abran en el mes que se debe, precierres abre junio,agosto,octubre,diciembre
         //rif abre en meses pares
         if($serv["tipoServicioId"]==PRECIERRE || $serv["tipoServicioId"]==PRECIERREAUDITADO){
@@ -82,15 +101,31 @@ class CronServicio extends Contract
                 $siguienteWorkflow =$fexplode[0]."-".$fexplode[1]."-01";
             }
         }
-
         //una ves encontrado los extremos, encontrar las fechas que se van a dar de alta,esto puede variar desde cero a muchos
-        /*echo $siguienteWorkflow."<=".$fechaCorriente.chr(10).chr(13);
-        echo $ultimoWorkflowCreado.chr(13);*/
         //los eventuales son por una sola vez, no tiene caso pasar por una busqueda, solo entraran al arreglo las fechas menores o iguales a $fechaCorriente
+        echo $siguienteWorkflow.chr(13);
         if($serv['periodicidad']!='Eventual') {
+            //si servicio tiene baja temporal , fecha de ultimo workflow pasa a ser $fechaCorriente
+            if($serv['status']=='bajaParcial')
+            {
+                //si la fecha de lastDateWorkflow no es valida se debe por seguridad de no crear workflows, retornar array vacio
+                if(!$this->Util()->isValidateDate($serv['lastDateWorkflow'],"Y-m-d"))
+                    return $fechas_workflow;
+                else{
+                    $fechaLastWorkflow = $this->Util()->getFirstDate($serv['lastDateWorkflow']);
+                    if($fechaLastWorkflow<=$fechaCorriente)
+                        $fechaCorriente = $fechaLastWorkflow;
+                }
+            }
+            //este ciclo es exclusivo para los servicios que estan al corriente , en otro ciclo tratar los que se cambiaron de inicio de operaciones
             while ($siguienteWorkflow <= $fechaCorriente){
+                //comprobar que no exista workflow si existe no tomarlo en cuenta en el array
+                $strNext="select instanciaServicioId from instanciaServicio where servicioId='".$serv['servicioId']."' and date='".$siguienteWorkflow."' ";
+                $this->Util()->DB()->setQuery($strNext);
+                $existWorkwlow =  $this->Util()->DB()->GetSingle();
+                if(!$existWorkwlow)
+                    array_push($fechas_workflow, $siguienteWorkflow);
 
-                array_push($fechas_workflow, $siguienteWorkflow);
                 switch ($serv['periodicidad']) {
                     case "Mensual":
                         $add = "+1 month";
