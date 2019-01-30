@@ -188,7 +188,7 @@ class Compressed extends  Main
             if(!is_dir($dir_files_workflow_cliente_lev3))
                 mkdir($dir_files_workflow_cliente_lev3,0777);
 
-            $dir_files_workflow_cliente_lev4 = $dir_files_workflow_cliente_lev3."/".strtolower(str_replace(' ','',$fileExplode[2]));
+            $dir_files_workflow_cliente_lev4 = $dir_files_workflow_cliente_lev3."/".strtolower(str_replace(' ','',$mesString));
             if(!is_dir($dir_files_workflow_cliente_lev4))
                 mkdir($dir_files_workflow_cliente_lev4,0777);
 
