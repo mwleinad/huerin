@@ -18,14 +18,15 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 {
-    $docRoot = $_SERVER['DOCUMENT_ROOT'];
+    $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
+    session_save_path("C:/xampp/tmp");
 }
 else
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
+    session_save_path("/tmp");
 }
 define('DOC_ROOT', $docRoot);
-session_save_path("/tmp");
 include_once(DOC_ROOT.'/init_cron.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/constants.php');
@@ -33,12 +34,21 @@ include_once(DOC_ROOT.'/libraries33.php');
 include_once(DOC_ROOT.'/services/invoice.class.php');
 $invoice = new Invoice();
 $timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
-
+//
 if (!isset($_SESSION))
 {
     session_start();
 }
+$current =  date("Y-m-d");
+$firstDay =  $util->getFirstDate($current);
+if($current==$firstDay)
+{
+    if(strtotime(date('H:i:s'))<strtotime('06:00:00')){
+        echo "ejecutado antes de las 06:00:00 del dia ".$firstDay.chr(13);
+        exit;
+    }
 
+}
 $_SESSION['empresaId'] = IDEMPRESA;
 $mask = DOC_ROOT.'/temp/15_A_*.*';
 $array = glob($mask);
