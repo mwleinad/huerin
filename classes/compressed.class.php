@@ -17,7 +17,11 @@ class Compressed extends  Main
     }
     private $nameDestiny;
     public function setNameDestiny($value){
-        $this->nameDestiny=$value;
+        //limpiar nombre de archivo destino, si viene alguna diagonal / convertirlo en _
+       if($value!=""){
+            $value = str_replace("/","",$value);
+       }
+       $this->nameDestiny=$value;
     }
     function __construct()
     {
@@ -37,7 +41,7 @@ class Compressed extends  Main
         }
         else
         {
-            $this->Util()->setError(0,"complete","Error al subir archivo, intente nevamente");
+            $this->Util()->setError(0,"error","Error al subir archivo, intente nevamente");
             $this->Util()->PrintErrors();
             return false;
         }
@@ -81,17 +85,18 @@ class Compressed extends  Main
         $this->ConstructArrayFiles();
         if(!$this->ComprobarZip()){
             $this->Util()->delete_files($this->customDir.$this->nameFolderUnzip."/");
+            $this->Util()->PrintErrors();
             return false;
         }
         //recorrer cada archivo y comprobar su estructura si no es la correcta se ignora el archivo, de lo contrario se sube al servidor
         $uploaded = 0;
         $ignored = 0;
+        $name = explode('_',$this->nameDestiny);
+        $contract->setName($name[0]);
+        $contrato = $contract->InfoByName();
         foreach($this->filesToUp as $file){
             $idTasks = [];
             $fileExplode =  explode("/",$file);
-            $name = explode('_',$this->nameDestiny);
-            $contract->setName($name[0]);
-            $contrato = $contract->InfoByName();
             $year = $fileExplode[0];
             if(!is_numeric($year))
             {
@@ -155,15 +160,21 @@ class Compressed extends  Main
             $sql = "select servicioId from servicio where tipoServicioId='".$tipoServicioId."' and status in('activo','bajaParcial')  and contractId='".$contrato['contractId']."' ";
             $this->Util()->DB()->setQuery($sql);
             $servicioId= $this->Util()->DB()->GetSingle();
-            if(!$servicioId)
+            if(!$servicioId){
+                $ignored++;
                 continue;
+            }
+
             //encontrar id de workflow
             $sql = "select instanciaServicioId from instanciaServicio where  servicioId='".$servicioId."' and month(date)='".$mes."' and year(date)='".$year."' and status!='baja'  order by instanciaServicioId asc ";
             $this->Util()->DB()->setQuery($sql);
             $instanciaServicioId= $this->Util()->DB()->GetSingle();
             //si no hay instancia creada se ignora archivo, no es error de estructura
-            if(!$instanciaServicioId)
+            if(!$instanciaServicioId){
+                $ignored++;
                 continue;
+            }
+
 
             $sql = "select max(version) from taskFile where
 					servicioId = '".$instanciaServicioId."' and
@@ -175,7 +186,10 @@ class Compressed extends  Main
             //validar y crear directorios base solo si no estan creados
            if(!is_dir(DIR_FILES_WORKFLOW))
                mkdir(DIR_FILES_WORKFLOW,0777);
-
+           if($contrato['name']!="")
+           {
+               $contrato['name'] = str_replace("/","",$contrato['name']);
+           }
            $dir_files_workflow_cliente_lev1 = DIR_FILES_WORKFLOW."/".strtolower(str_replace(' ','',$contrato['name']));
            if(!is_dir($dir_files_workflow_cliente_lev1))
                 mkdir($dir_files_workflow_cliente_lev1,0777);
@@ -219,13 +233,18 @@ class Compressed extends  Main
         }
         $this->Util()->delete_files($this->customDir.$this->nameFolderUnzip."/");
         unset($this->filesToUp);//limpiar buffer de array creado
-        if($ignored>0)
-            $this->Util()->setError(0,'error',"$ignored archivos ignorados por no cumplir condiciones establecidas" );
-        if($uploaded>0)
+        $res =  true;
+        if($ignored>0){
+            $this->Util()->setError(0,'error',"$ignored archivos no cargados, por no cumplir las reglas establecidas." );
+            $res = false;
+        }
+        if($uploaded>0){
             $this->Util()->setError(0,'complete',"$uploaded archivos cargados correctamente" );
+            $res =  true;
+        }
 
         $this->Util()->PrintErrors();
-        return true;
+        return $res;
 
     }
     public function  SaveFileInFolderWorkflow($data=[]){
@@ -282,9 +301,17 @@ class Compressed extends  Main
         global $contract,$monthsComplete;
         if(empty($this->filesToUp))
         {
-            $this->Util()->setError(0,"complete","Error en el archivo");
+            $this->Util()->setError(0,"error","Error en el archivo");
             return false;
         }
+        $name = explode('_',$this->nameDestiny);
+        $contract->setName($name[0]);
+        $contrato = $contract->InfoByName();
+        if(empty($contrato)){
+            $this->Util()->setError(0,"error","Cliente no encontrado, comprobar con el administrador de sistema.");
+            return false;
+        }
+
         $isValid =  true;
         foreach($this->filesToUp as $file){
             $idTasks = [];
