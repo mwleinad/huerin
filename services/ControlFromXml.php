@@ -134,7 +134,7 @@ class ControlFromXml extends Comprobante
         $canceladas = 0;
         $direc = new RecursiveDirectoryIterator(DIR_FROM_XML);
         $iterator =  new RecursiveIteratorIterator($direc);
-        $regex =  new RegexIterator($iterator,'/SIGN_[0-9]+_[A-Z]{1}_[0-9]+\.xml$/',RecursiveRegexIterator::GET_MATCH);
+        $regex =  new RegexIterator($iterator,'/SIGN_[0-9]+_[A-Z]{1}_[0-9]{5}\.xml$/',RecursiveRegexIterator::GET_MATCH);
         echo count(iterator_to_array($regex));
         exit;
         foreach($regex as $name => $object){
