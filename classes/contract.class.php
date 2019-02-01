@@ -1819,7 +1819,7 @@ class Contract extends Main
         LEFT JOIN
           sociedad ON sociedad.sociedadId = contract.sociedadId
         WHERE
-          replace(contract.name,' ','') = '".trim($this->name)."' ";
+          replace(replace(contract.name,'/',''),' ','') = '".trim($this->name)."' ";
         $this->Util()->DB()->setQuery($sql);
         $row = $this->Util()->DB()->GetRow();
         return $row;
