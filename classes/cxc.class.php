@@ -131,9 +131,7 @@ class CxC extends Producto
 			}
 			else
 			{
-
 				foreach($comprobantes as $key => $val){
-
 					$card['serie']="E";
 					$card['folio']=$val['instanciaServicioId'];
 					$card['nameContact']=$val['nameContact'];
@@ -148,25 +146,19 @@ class CxC extends Producto
 					$card['comprobanteId'] = $val['instanciaServicioId'];
 					$card['efectivo'] = true;
 					$card['facturador'] = 'Efectivo';
-
 					$sqlQuery = "SELECT SUM(amount) FROM payment
 						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."'";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
 					$card['saldo'] = $card["total_formato"] - $card["payment"];
-
 					if($val['costo'] > 0)
 						$info[$key] = $card;
-
 				}
-
 			}//if
-
 			$data["items"] = $info;
 			$data["pages"] = $pages;
 			$data["total"] = count($comprobantes);
-
 			return $data;
 		}
 	}//SearchComprobantesByRfc

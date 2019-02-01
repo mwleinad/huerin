@@ -1858,7 +1858,8 @@ class Comprobante extends Producto
 		
 		return $enlace;
 	}
-    function getDataByXml($file_xml){
+    function getDataByXml($file_xml,$upToTable=false){
+	    global $catalogo;
         $file_xml = $file_xml.".xml";
         $pathXml =  DIR_FROM_XML."/".$file_xml;
         $xml = simplexml_load_file($pathXml);
@@ -1902,6 +1903,31 @@ class Comprobante extends Producto
         $cad['empresaId'] =  $this->Util()->DB()->GetSingle();
         $this->Util()->DB()->setQuery("select max(contractId) from contract where rfc='".$cad['receptorRfc']."' ");
         $cad['userId'] =  $this->Util()->DB()->GetSingle();
+        if($upToTable){
+            //campos agregados para registrar en tabla los comprobantes
+            $cad["metodoPagoXml"] = $catalogo->getMetodoPagoByClave((string)$cfdi['MetodoPago']);
+            $cad["formaPagoXml"] =(string)$cfdi['FormaPago'];
+            $impuestos = $cfdi->xpath('/cfdi:Comprobante/cfdi:Impuestos')[0];
+            $traslados = $impuestos->xpath('./cfdi:Traslados/cfdi:Traslado');
+            if((string)$traslados[0]["Impuesto"]=="002"){
+                $cad['tasaIva']=(double)$traslados[0]['TasaOCuota'] * 100;
+                $cad['iva']=(double)$traslados[0]['Importe'];
+            }
+
+
+            switch((string)$cfdi['TipoDeComprobante']){
+                case 'I':
+                    $tipoCompId = 1;
+                    $nameTipoComprobante = "ingreso";
+                break;
+            }
+            $cad["tiposComprobanteId"] =  $tipoCompId;
+            $cad["nameTipoComprobante"] =  $tipoCompId;
+            $cad['fechaCompleta'] =  str_replace('T'," ",(string)$cfdi['Fecha']);
+            $cad['sello'] = (string)$cfdi['Sello'];
+            $cad['noCertificado'] = (string)$cfdi['NoCertificado'];
+            $cad['uuid']=(string)$data['timbreFiscal']['UUID'];
+        }
         if($cad['userId']<=0){
             $this->Util()->setError(10046, "error", "El cliente no se encuentra registrado en plataforma favor de verificar");
         }

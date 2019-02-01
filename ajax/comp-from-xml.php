@@ -2,7 +2,6 @@
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
 session_start();
 switch($_POST["type"])
 {
@@ -47,6 +46,11 @@ switch($_POST["type"])
      break;
     case 'updatePaymentsFromXml':
         $controlFromXml->updatePaymentsFromXml();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
+    case 'uploadInvoiceFromXmlToTable':
+        $controlFromXml->uploadInvoiceFromXml();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
