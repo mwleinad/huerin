@@ -44,6 +44,13 @@ class Catalogo extends Main {
 
         return $row;
     }
+    function getMetodoPagoByClave($clave){
+        $this->Util()->DB()->setQuery("
+			SELECT * FROM c_MetodoPago WHERE c_MetodoPago = '".$clave."' ");
+        $row = $this->Util()->DB()->GetRow();
+
+        return $row;
+    }
 
 }
 

@@ -219,3 +219,29 @@ jQ(document).on('click','.spanUpdatePayments',function () {
     })
 
 });
+jQ(document).on('click','.spanUploadFacturas',function () {
+    var message = "Esta seguro de cargar las facturas";
+    if(!confirm(message))
+    {
+        return;
+    }
+    var fd = new FormData();
+    fd.append('type','uploadInvoiceFromXmlToTable');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/comp-from-xml.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend:function(){
+            jQ('#loadPrint').html('Actualizando pago.....');
+        },
+        success: function(response){
+            var splitResp =  response.split("[#]");
+            jQ('#loadPrint').html('');
+            ShowStatusPopUp(splitResp[1]);
+
+        }
+    })
+
+});
