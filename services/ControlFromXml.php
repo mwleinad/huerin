@@ -138,8 +138,9 @@ class ControlFromXml extends Comprobante
         echo count(iterator_to_array($regex));
         foreach($regex as $name => $object){
             echo  $name.chr(13);
-            $archivoExplode = explode("\\",$name);
-            $archivo = $archivoExplode[1];
+            //$archivoExplode = explode("\\",$name);
+            //$archivo = $archivoExplode[1];
+             $archivo = end(explode("/",$name));
            if (strpos($archivo, 'zip') !== false || strpos($archivo, 'COMPAGO') !== false || strpos($archivo, 'SIGN') === false)
                continue;
            $data = [];
