@@ -135,8 +135,7 @@ class ControlFromXml extends Comprobante
         $direc = new RecursiveDirectoryIterator(DIR_FROM_XML);
         $iterator =  new RecursiveIteratorIterator($direc);
         $regex =  new RegexIterator($iterator,'/SIGN_[0-9]+_[A-Z]{1}_[0-9]{5}\.xml$/',RecursiveRegexIterator::GET_MATCH);
-        echo count(iterator_to_array($regex));
-        exit;
+        //echo count(iterator_to_array($regex));
         foreach($regex as $name => $object){
             $archivoExplode = explode("\\",$name);
             $archivo = $archivoExplode[1];
@@ -144,6 +143,12 @@ class ControlFromXml extends Comprobante
                continue;
            $data = [];
            $data =  $this->getDataByXml(substr($archivo,0,-4),true);
+
+           if(date("Y",strtotime($data["fecha"]))>=2019){
+               $ignoradas++;
+               continue;
+           }
+
            $rfcEmisor = $this->InfoRfcByRfc($data['emisorRfc']);
            //comprobar si la serie y folio o nombre de xml se encuentra en cualquiera de las dos tablas de ser asi se ignora
            $nameXml = substr($data['nameXml'],5);
@@ -227,8 +232,8 @@ class ControlFromXml extends Comprobante
 				'".$status."',
 				'si'
 			)";
-           //$this->Util()->DB()->setQuery($sqlInsert);
-           //$this->Util()->DB()->InsertData();
+           $this->Util()->DB()->setQuery($sqlInsert);
+           $this->Util()->DB()->InsertData();
 
            $insertados++;
        }
