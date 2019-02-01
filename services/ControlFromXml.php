@@ -135,8 +135,9 @@ class ControlFromXml extends Comprobante
         $direc = new RecursiveDirectoryIterator(DIR_FROM_XML);
         $iterator =  new RecursiveIteratorIterator($direc);
         $regex =  new RegexIterator($iterator,'/SIGN_[0-9]+_[A-Z]{1}_[0-9]{5}\.xml$/',RecursiveRegexIterator::GET_MATCH);
-        //echo count(iterator_to_array($regex));
+        echo count(iterator_to_array($regex));
         foreach($regex as $name => $object){
+            echo  $name.chr(13);
             $archivoExplode = explode("\\",$name);
             $archivo = $archivoExplode[1];
            if (strpos($archivo, 'zip') !== false || strpos($archivo, 'COMPAGO') !== false || strpos($archivo, 'SIGN') === false)
