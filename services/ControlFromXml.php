@@ -137,7 +137,7 @@ class ControlFromXml extends Comprobante
         $regex =  new RegexIterator($iterator,'/SIGN_[0-9]+_[A-Z]{1}_[0-9]{5}\.xml$/',RecursiveRegexIterator::GET_MATCH);
         echo count(iterator_to_array($regex));
         foreach($regex as $name => $object){
-            echo  $name.chr(13);
+            //echo  $name.chr(13);
             //$archivoExplode = explode("\\",$name);
             //$archivo = $archivoExplode[1];
              $archivo = end(explode("/",$name));
@@ -340,6 +340,137 @@ class ControlFromXml extends Comprobante
 
         if($ignoradas>0)
             $this->Util()->setError(0,"complete","$ignoradas facturas  no cargadas por tener registro correcto ");
+
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function moveFacturasTempToRealTable(){
+
+        $this->Util()->DB()->setQuery("SELECT * FROM comprobante_from_xml order by folio ASC");
+        $result = $this->Util()->DB()->GetResult();
+        $insertados = 0;
+        $ignoradas=0;
+        $str=  "SHOW FIELDS FROM comprobante_from_xml WHERE FIELD NOT IN ('comprobanteId')";
+        $this->Util()->DB()->setQuery($str);
+        $campos = $this->Util()->DB()->GetResult();
+        $campos = $this->Util()->ConvertToLineal($campos,'Field');
+        $campos = implode(",",$campos);
+        foreach($result as $key=>$value){
+            //comprobar pos seguridad que no este dado de alta si esta ignorarlo
+            $nameXml =  $value['xml'];
+            $folio = $value['folio'];
+            $serie = $value['serie'];
+            $sql1 = "SELECT comprobanteId FROM comprobante WHERE xml='$nameXml' or (serie='$serie' and folio=$folio) ";
+            $this->Util()->DB()->setQuery($sql1);
+            $findNormal =  $this->Util()->DB()->GetSingle();
+            if($findNormal) {
+                $ignoradas++;
+                continue;
+            }
+            $this->Util()->DB()->setQuery("INSERT INTO comprobante($campos) SELECT $campos FROM comprobante_from_xml WHERE xml='$nameXml' ");
+            //echo $this->Util()->DB()->getQuery();
+            $this->Util()->DB()->InsertData();
+            $insertados++;
+        }
+        if($insertados>0)
+            $this->Util()->setError(0,"complete","$insertados facturas  cargadas ");
+
+        if($ignoradas>0)
+            $this->Util()->setError(0,"complete","$ignoradas facturas  no cargadas por tener registro correcto ");
+
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function movePaymentsTempToRealTable(){
+        //$this->Util()->DB()->setQuery("SELECT * FROM payment_from_xml order by paymentDate ASC");
+        //$result = $this->Util()->DB()->GetResult();
+        $ignoradosXml = 0;
+        $ignoradosStatic = 0;
+        $insertadosXml = 0;
+        $insertadosStatic = 0;
+        /*foreach ($result as $key=>$value){
+            //encontrar
+            $nameXml =  substr($value['name_xml'],5);
+            $this->Util()->DB()->setQuery("SELECT comprobanteId from comprobante where xml='$nameXml' ");
+             //echo $this->Util()->DB()->getQuery();
+            $facturaId = $this->Util()->DB()->GetSingle();
+            if(!$facturaId)
+            {
+                $ignoradosXml++;
+                continue;
+            }
+            $sql =  "INSERT INTO payment(
+                     comprobanteId,
+                     metodoDePago,
+                     amount,
+                     deposito,
+                     paymentDate,
+                     ext,
+                     file,
+                     comprobantePagoId,
+                     paymentStatus,
+                     origen 
+                   )VALUES(
+                   '".$facturaId."',
+                   '".$value['metodoDePago']."',
+                   '".$value['amount']."',
+                   '".$value['deposito']."',
+                   '".$value['paymentDate']."',
+                   '".$value['ext']."',
+                   'from_xml_".$value['payment_id']."',
+                   '".$value['comprobantePagoId']."',
+                   '".$value['payment_status']."',
+                   'pagoXml'
+                   )";
+
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->InsertData();
+            $insertadosXml++;
+        }
+        $this->Util()->setError(0,'complete',"$ignoradosXml pagos ingorados de primer tabla");
+        $this->Util()->setError(0,'complete',"$insertadosXml pagos agregados de primer tabla");
+        */
+        $this->Util()->DB()->setQuery("SELECT * FROM payment_from_xml_static order by paymentDate ASC");
+        $result2 = $this->Util()->DB()->GetResult();
+        foreach ($result2 as $key2=>$value2){
+            //encontrar
+            $nameXml2 =  substr($value2['name_xml'],5);
+            $this->Util()->DB()->setQuery("SELECT comprobanteId from comprobante where xml='$nameXml2' ");
+            $factura2Id = $this->Util()->DB()->GetSingle();
+            if(!$factura2Id)
+            {
+                $ignoradosStatic++;
+                continue;
+            }
+            $sql2 =  "INSERT INTO payment(
+                     comprobanteId,
+                     metodoDePago,
+                     amount,
+                     deposito,
+                     paymentDate,
+                     ext,
+                     comprobantePagoId,
+                     nameXmlComplemento,
+                     paymentStatus,
+                     origen 
+                   )VALUES(
+                   '".$factura2Id."',
+                   '".ucfirst(strtolower($value2['metodoDePago']))."',
+                   '".$value2['amount']."',
+                   '".$value2['deposito']."',
+                   '".$value2['paymentDate']."',
+                   '".$value2['ext']."',
+                   '0',
+                   '".$value2['name_xml_complemento']."',
+                   '".$value2['payment_status']."',
+                   'recuperado'
+                   )";
+            $this->Util()->DB()->setQuery($sql2);
+            $this->Util()->DB()->InsertData();
+            $insertadosStatic++;
+        }
+        $this->Util()->setError(0,'complete',"$ignoradosStatic pagos ingorados de segunda tabla");
+        $this->Util()->setError(0,'complete',"$insertadosStatic pagos agregados de segunda tabla");
 
         $this->Util()->PrintErrors();
         return true;
