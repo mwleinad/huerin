@@ -245,3 +245,55 @@ jQ(document).on('click','.spanUploadFacturas',function () {
     })
 
 });
+jQ(document).on('click','.spanMoveFacturasToRealTable',function () {
+    var message = "Esta seguro de cargar las facturas";
+    if(!confirm(message))
+    {
+        return;
+    }
+    var fd = new FormData();
+    fd.append('type','moveFacturasToRealTable');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/comp-from-xml.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend:function(){
+            jQ('#loadPrint').html('Actualizando pago.....');
+        },
+        success: function(response){
+            var splitResp =  response.split("[#]");
+            jQ('#loadPrint').html('');
+            ShowStatusPopUp(splitResp[1]);
+
+        }
+    })
+
+});
+jQ(document).on('click','.spanMovePaymentsToRealTable',function () {
+    var message = "Esta seguro de cargar los pagos a la tabla real";
+    if(!confirm(message))
+    {
+        return;
+    }
+    var fd = new FormData();
+    fd.append('type','movePaymentsToRealTable');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/comp-from-xml.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend:function(){
+            jQ('#loadPrint').html('Actualizando pago.....');
+        },
+        success: function(response){
+            var splitResp =  response.split("[#]");
+            jQ('#loadPrint').html('');
+            ShowStatusPopUp(splitResp[1]);
+
+        }
+    })
+
+});

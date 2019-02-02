@@ -26,7 +26,7 @@ switch($_POST["type"])
     case "deletePaymentFromXml":
         $payment_from_xml = $cxc->PaymentInfoFromXml($_POST["payment_id"]);
         $cxc->DeletePaymentFromXml($_POST["payment_id"]);
-        //get data current xml
+        //get data current xmlopenAddPaymentFromXml
         $fact =  $comprobante->getDataByXml($payment_from_xml['name_xml']);
         $payments_xml = $comprobante->getPaymentsFromXml($fact);
         //buscar
@@ -51,6 +51,16 @@ switch($_POST["type"])
     break;
     case 'uploadInvoiceFromXmlToTable':
         $controlFromXml->uploadInvoiceFromXml();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
+    case 'moveFacturasToRealTable':
+        $controlFromXml->moveFacturasTempToRealTable();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
+    case 'movePaymentsToRealTable':
+        $controlFromXml->movePaymentsTempToRealTable();
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
