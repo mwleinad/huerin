@@ -345,6 +345,8 @@ class ControlFromXml extends Comprobante
         return true;
     }
     function moveFacturasTempToRealTable(){
+        //con return true desactivados en caso de accidente
+        return true;
 
         $this->Util()->DB()->setQuery("SELECT * FROM comprobante_from_xml order by folio ASC");
         $result = $this->Util()->DB()->GetResult();
@@ -382,13 +384,13 @@ class ControlFromXml extends Comprobante
         return true;
     }
     function movePaymentsTempToRealTable(){
-        $this->Util()->DB()->setQuery("SELECT * FROM payment_from_xml order by paymentDate ASC");
-        $result = $this->Util()->DB()->GetResult();
+        //$this->Util()->DB()->setQuery("SELECT * FROM payment_from_xml order by paymentDate ASC");
+        //$result = $this->Util()->DB()->GetResult();
         $ignoradosXml = 0;
         $ignoradosStatic = 0;
         $insertadosXml = 0;
         $insertadosStatic = 0;
-        foreach ($result as $key=>$value){
+        /*foreach ($result as $key=>$value){
             //encontrar
             $nameXml =  substr($value['name_xml'],5);
             $this->Util()->DB()->setQuery("SELECT comprobanteId from comprobante where xml='$nameXml' ");
@@ -429,6 +431,7 @@ class ControlFromXml extends Comprobante
         }
         $this->Util()->setError(0,'complete',"$ignoradosXml pagos ingorados de primer tabla");
         $this->Util()->setError(0,'complete',"$insertadosXml pagos agregados de primer tabla");
+        */
 
         /*$this->Util()->DB()->setQuery("SELECT * FROM payment_from_xml_static order by paymentDate ASC");
         $result2 = $this->Util()->DB()->GetResult();
