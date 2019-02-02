@@ -95,12 +95,12 @@ class CxC extends Producto
 
 					//get payments
 					$sqlQuery = "SELECT * FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
 
 					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
@@ -147,7 +147,7 @@ class CxC extends Producto
 					$card['efectivo'] = true;
 					$card['facturador'] = 'Efectivo';
 					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."'";
+						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."' and paymentStatus='activo' ";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
@@ -214,13 +214,13 @@ class CxC extends Producto
             //get payments for comprobanteId
             $sqlQuery = "SELECT amount,paymentDate,deposito,payment.metodoDePago as mpago,concat(comprobante.serie,comprobante.folio) as folioPago FROM payment
                           inner join comprobante ON payment.comprobantePagoId=comprobante.comprobanteId
-						WHERE payment.comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE payment.comprobanteId = '".$val["comprobanteId"]."' and payment.paymentStatus='activo' ";
 
             $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
             $card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
 
             $sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo'";
             $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
             $card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
@@ -243,7 +243,7 @@ class CxC extends Producto
     function getSaldo($anio,$contractId){
         $id_empresa = $_SESSION['empresaId'];
         $sql ="select sum(a.total) as total,sum(b.pagos) as pagos from comprobante a 
-                left join (select comprobanteId,sum(amount) as pagos from payment group by comprobanteId) b on a.comprobanteId=b.comprobanteId
+                left join (select comprobanteId,sum(amount) as pagos from payment where paymentStatus='activo' group by comprobanteId) b on a.comprobanteId=b.comprobanteId
                 where year(a.fecha)<='".$anio."' and a.userId='".$contractId."' and a.status='1' and a.tiposComprobanteId not in(10)
                 group by a.userId";
         $this->Util()->DBSelect($id_empresa)->setQuery($sql);
@@ -423,12 +423,12 @@ class CxC extends Producto
 
 					//get payments
 					$sqlQuery = "SELECT * FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo'";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
 
 					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."'";
+						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo'";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
@@ -478,7 +478,7 @@ class CxC extends Producto
 					$card['facturador'] = 'Efectivo';
 
 					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."'";
+						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."' and paymentStatus='activo'";
 					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 

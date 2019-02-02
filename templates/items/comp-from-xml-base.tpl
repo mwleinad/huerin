@@ -11,9 +11,9 @@
         <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename={$fact.nameXml}&type=view" title="Ver PDF">
             <img src="{$WEB_ROOT}/images/icons/ver_factura.png" height="16" width="16" border="0"/>
         </a>
-        <a href="javascript:;" target="_blank">
+        <!--<a href="javascript:;" target="_blank">
             <img src="{$WEB_ROOT}/images/dollar.png" class="spanAll spanAddPayment" data-namexml="{$fact.nameXml}" border="0" alt="agregar pago" title="Agregar pago" />
-        </a>
+        </a>-->
 
     </td>
 </tr>
