@@ -9,9 +9,15 @@
                 <td width="90">
                         {*descargar xml*}
                         {if in_array(128,$permissions) || $User.isRoot}
-                        <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobanteId}&type=view">
-                            <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Ver factura"/>
-                        </a>
+                            {if $fact.version == '3.3'}
+                                <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobanteId}&type=view">
+                                    <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Ver factura"/>
+                                </a>
+                            {else}
+                                <a href="{$WEB_ROOT}/sistema/descargar-pdf/item/{$fact.comprobanteId}">
+                                    <img src="{$WEB_ROOT}/images/pdf_icon.png" class="" id="{$fact.comprobanteId}" border="0" title="Descargar PDF" width="16"/>
+                                </a>
+                            {/if}
                         {/if}
                         {*descargar xml*}
                         {if in_array(129,$permissions) || $User.isRoot}

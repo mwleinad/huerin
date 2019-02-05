@@ -935,7 +935,7 @@ class Workflow extends Servicio
                    then 'Pagado'
                    else
                    'Pendiente por liquidar' 
-                 end as pagado,a.folio,a.serie,a.total,a.status,a.comprobanteId,sum(b.amount) as totalPagos,a.procedencia,a.fecha 
+                 end as pagado,a.folio,a.serie,a.total,a.status,a.comprobanteId,sum(b.amount) as totalPagos,a.procedencia,a.fecha,a.version 
                 from comprobante a
                 left join payment b on a.comprobanteId=b.comprobanteId  where a.userId='$contractId' and month(a.fecha)=$month and year(a.fecha)=$year $filtro and a.tiposComprobanteId IN(1,3,4) 
                 group by a.comprobanteId order by a.fecha desc";
