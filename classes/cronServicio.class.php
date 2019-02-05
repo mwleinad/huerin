@@ -41,15 +41,22 @@ class CronServicio extends Contract
             $siguienteWorkflow = $this->Util()->getFirstDate( $serv['inicioOperaciones']);
         }
         if(!$isWorkflowInicial) {
+            $inicioOperaciones = $this->Util()->getFirstDate($serv['inicioOperaciones']);
             //si ya tiene una instancia y es eventual ya no debe existir meses a crear, se regresa vacio
-            if($serv["periodicidad"]=="Eventual")
+            if($serv["periodicidad"]=="Eventual"){
+                //si es eventual asegurar siempre que el unico workflow la fecha sea = que la fecha de IO
+                $this->Util()->DB()->setQuery("select instanciaServicioId from instanciaServicio where servicioId='".$serv['servicioId']."' ");
+                $eventualId = $this->Util()->DB()->GetSingle();
+                $this->Util()->DB()->setQuery("update instanciaServicio set date='".$inicioOperaciones."' where instanciaServicioId='".$eventualId."' ");
+                $this->Util()->DB()->UpdateData();
                 return $fechas_workflow;
+            }
+
 
             $isChangeDateIo =  false;
             $sqlFirst= "select min(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ";
             $this->Util()->DB()->setQuery($sqlFirst);
             $primerWorkflowCreado = $this->Util()->DB()->GetSingle();
-            $inicioOperaciones = $this->Util()->getFirstDate($serv['inicioOperaciones']);
             if($this->Util()->isValidateDate($primerWorkflowCreado,'Y-m-d'))
             {
                 $primerWorkflowCreado = $this->Util()->getFirstDate( $primerWorkflowCreado);

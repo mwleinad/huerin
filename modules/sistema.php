@@ -140,7 +140,6 @@
 			$enlace = $comprobante->GeneratePdfOnTheFly($infoComp["empresaId"], $infoComp["rfcId"], $infoComp['serie'], $infoComp['folio']);
 			header('Location: '.$enlace);
 			exit;
-		
 			break;
 		
 		case 'descargar-xml':
