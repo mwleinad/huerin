@@ -1200,11 +1200,11 @@ class Comprobante extends Producto
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
-		$sqlQuery = 'SELECT * FROM payment WHERE comprobanteId = '.$id_comprobante;
+		$sqlQuery = "SELECT * FROM payment WHERE comprobanteId = '".$id_comprobante."' AND paymentStatus ='activo' ";
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row["payments"] = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
 
-		$sqlQuery = 'SELECT SUM(amount) FROM payment WHERE comprobanteId = '.$id_comprobante;
+		$sqlQuery = "SELECT SUM(amount) FROM payment WHERE comprobanteId = '".$id_comprobante."' AND paymentStatus ='activo' ";
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row["payment"] = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
 

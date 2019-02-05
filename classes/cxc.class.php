@@ -213,7 +213,7 @@ class CxC extends Producto
 
             //get payments for comprobanteId
             $sqlQuery = "SELECT amount,paymentDate,deposito,payment.metodoDePago as mpago,concat(comprobante.serie,comprobante.folio) as folioPago FROM payment
-                          inner join comprobante ON payment.comprobantePagoId=comprobante.comprobanteId
+                          left join comprobante ON payment.comprobantePagoId=comprobante.comprobanteId
 						WHERE payment.comprobanteId = '".$val["comprobanteId"]."' and payment.paymentStatus='activo' ";
 
             $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);

@@ -138,9 +138,9 @@ class ComprobantePago extends Comprobante {
     }
 
     public function getPagos($comprobante, $impPagado) {
-        $sql =  "SELECT COUNT(*) as pagos, SUM(payment.amount) as totalPagado FROM  payment
+        $sql =  "SELECT COUNT(*) as pagos, SUM(payment.amount) as totalPagado FROM  payment 
         LEFT JOIN comprobante ON payment.comprobanteId = comprobante.comprobanteId
-        WHERE comprobante.comprobanteId = '".$comprobante["comprobanteId"]."'";
+        WHERE comprobante.comprobanteId = '".$comprobante["comprobanteId"]."' and payment.paymentStatus='activo' ";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
