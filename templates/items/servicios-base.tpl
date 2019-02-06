@@ -14,6 +14,7 @@
     </td>  
 	<td align="center">{$item.formattedInicioOperaciones}</td>
     <td align="center">{$item.formattedInicioFactura}</td>
+	<td align="center">{if $item.status == 'bajaParcial'}{$item.formattedDateLastWorkflow}{else}N/A{/if}</td>
 	<td align="center">{$item.estado}</td>
     {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions) || $User.isRoot}
 		<td align="center">
