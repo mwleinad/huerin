@@ -14,17 +14,21 @@
                         <a title="Ver Comprobante de Pago" href="{$WEB_ROOT}/download.php?file=payments/{$fact.file}.{$fact.ext}"><img src="{$WEB_ROOT}/images/icons/ver_factura.png" id="{$fact.comprobanteId}" border="0" alt="Ver Factura" width="16" /></a>
                     {/if}
                    {/if}
-                    {if $fact.comprobantePagoId}
-                        {*descargar xml*}
+                   {if $fact.comprobantePagoId}
                         {if in_array(128,$permissions) || $User.isRoot}
-                        <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobantePagoId}&type=download">
-                            <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
-                        </a>
+                            <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobantePagoId}&type=download">
+                                <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
+                            </a>
                         {/if}
-                        {*descargar xml*}
-                        {if in_array(129,$permissions) || $User.isRoot}
-                            <a href="{$WEB_ROOT}/sistema/descargar-xml/item/{$fact.comprobantePagoId}">
-                                <img src="{$WEB_ROOT}/images/icons/descargar.png" border="0" width="16" />
+                    {if in_array(129,$permissions) || $User.isRoot}
+                        <a href="{$WEB_ROOT}/sistema/descargar-xml/item/{$fact.comprobantePagoId}">
+                            <img src="{$WEB_ROOT}/images/icons/descargar.png" border="0" width="16" />
+                        </a>
+                    {/if}
+                    {elseif $fact.origen eq "recuperado"}
+                        {if in_array(128,$permissions) || $User.isRoot}
+                            <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename={$fact.nameXmlComplemento}&type=download">
+                                <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
                             </a>
                         {/if}
                     {/if}
