@@ -12,6 +12,13 @@ class CfdiUtil extends Comprobante
         if(!$cfdiRelacionado) {
             return null;
         }
+        //retornar uuid para facturas que se recuperaron.
+        if($cfdiRelacionado["timbreFiscal"]===""||$cfdiRelacionado["timbreFiscal"]===null)
+        {
+            $nameXml ="SIGN_".$cfdiRelacionado['xml'];
+            $timbre = $this->getDataByXml($nameXml);
+            return $timbre["uuid"];
+        }
 
         $timbre = unserialize($cfdiRelacionado["timbreFiscal"]);
         return $timbre["UUID"];
