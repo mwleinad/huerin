@@ -504,6 +504,8 @@ class Servicio extends Contract
 
 			$fecha = explode("-", $value["inicioFactura"]);
 			$result[$key]["formattedInicioFactura"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
+            $fecha = explode("-", $value["lastDateWorkflow"]);
+            $result[$key]["formattedDateLastWorkflow"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
 		}
 		
 		return $result;
