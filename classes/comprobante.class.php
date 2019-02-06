@@ -1928,9 +1928,9 @@ class Comprobante extends Producto
             $cad['noCertificado'] = (string)$cfdi['NoCertificado'];
             $cad['uuid']=(string)$data['timbreFiscal']['UUID'];
         }
-        if($cad['userId']<=0){
+        /*if($cad['userId']<=0){
             $this->Util()->setError(10046, "error", "El cliente no se encuentra registrado en plataforma favor de verificar");
-        }
+        }*/
         return $cad;
     }
     function getSaldoFromXml($fact){
