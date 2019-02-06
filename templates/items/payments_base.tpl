@@ -4,7 +4,7 @@
                 <td align="right">{$fact.paymentDate}</td>
                 <td align="right">${$fact.amount}</td>
                 <td width="90">
-                   {if in_array(126,$permissions) || $User.isRoot && $fact.origen!='recuperado'}
+                   {if (in_array(126,$permissions) || $User.isRoot) && $fact.origen!='recuperado'}
                         <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDeletePayment" id="{$fact.paymentId}" border="0" alt="Borrar Pago" />
                    {/if}
                    {if $fact.ext != '' && (in_array(127,$permissions) || $User.isRoot)}
