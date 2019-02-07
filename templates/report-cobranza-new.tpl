@@ -21,9 +21,6 @@
   <div class="portlet">
      
        {include file="forms/search-cobranza-new.tpl"}
-       
-       <br />
-       
        <div align="center" id="loading" style="display:none">
        		<img src="{$WEB_ROOT}/images/loading.gif" />
             <br />
@@ -37,7 +34,6 @@
       </div>
       
       <div style="clear:both"></div>
-        <br />
       
       {include file="{$DOC_ROOT}/templates/boxes/report-walmart-status.tpl"}
                    

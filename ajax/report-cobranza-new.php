@@ -124,9 +124,6 @@ switch($_POST["type"])
 			}//foreach
 						
 			$clientes = array();
-		//	print_r($idClientes);
-		//	print_r($idContracts);
-		//	print_r($contratosClte);
 			foreach($idClientes as $customerId){
 				
 				$customer->setCustomerId($customerId);
@@ -136,8 +133,7 @@ switch($_POST["type"])
 				
 				$clientes[] = $infC;
 				
-			}//foreach
-			
+			}
 			$resClientes = array();
 			foreach($clientes as $clte){
 				$contratos = array();

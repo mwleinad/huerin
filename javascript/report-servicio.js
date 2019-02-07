@@ -5,12 +5,10 @@ Event.observe(window, 'load', function()
 		Event.observe($('rfc'), "keyup", function(){
 			if(this.value==="")
 				return;
-
 			SuggestUser(); 
 			//FillDatosFacturacion();
 		});
 	}
-
 	AddSuggestListener = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
@@ -323,9 +321,9 @@ jQ(document).on('click','.detailCobranza',function (e) {
             grayOut(true);
             $('fview').show();
             FViewOffSet(response);
-
         },
         error:function () {
+			alert("Error al mostrar informacion!!");
 
         }
 	});
