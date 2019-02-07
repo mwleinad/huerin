@@ -44,9 +44,8 @@
 						{if $instanciaServicio.class != '#000000'}
 							$ {$instanciaServicio.total|number_format:2:".":","}
 							<br>
-
-								<a href="javascript:;" target="_blank" title="Ver detalles" class="detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
-									<img src="{$WEB_ROOT}/images/icons/details.png" border="0" width="16" />
+								<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
+								<img src="{$WEB_ROOT}/images/icons/search-plus-green-18.png" border="0" />
 								</a>
 							{if $instanciaServicio.status ==0}
 								<br>
@@ -59,16 +58,6 @@
 			</tr style>
 		{else}
 		<tr>
-			<!--
-			<td align="center" class="" title="{$item.nameContact}">
-				<span id="comentario-{$item.servicioId}">{$item.comentario}</span>
-                    {if in_array(117,$permissions)||$User.isRoot}
-						<img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.servicioId}" onclick="ModifyComment({$item.servicioId})"  title="Editar"/>
-					{/if}
-					{if in_array(99,$permissions)||$User.isRoot}
-						<a href="{$WEB_ROOT}/download_all_tasks.php?id={$item.servicioId}" style="color:#FFF;font-weight:bold"><img src="{$WEB_ROOT}/images/b_disc.png" class="spanEdit" id="{$item.servicioId}" title="Descargar todos los archivos"/></a>
-					{/if}
-			</td>-->
     		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
     		<td align="center" class="" title="{$item.name}">{$item.name}</td>
 			<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>

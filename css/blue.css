@@ -736,6 +736,10 @@ opacity:0.7 !important;
 .spanTaskEdit,
 .spanTaskDelete{
 	cursor:pointer;
+	text-decoration: none;
+}
+.spanAll:hover{
+	text-decoration: none;
 }
 .borderGray{
 	border:1px solid #999;

@@ -719,14 +719,13 @@ class Workflow extends Servicio
 	    $new =array();
         $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.payments) as payment,
                 a.version,a.xml FROM comprobante a 
-                LEFT JOIN (select comprobanteId , sum(amount) as payments from payment  group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
+                LEFT JOIN (select comprobanteId , sum(amount) as payments from payment where paymentStatus='activo' group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
                 WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(1,2,3,4,5,6,7,8,9,10,11,12) AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
 				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         $noComplete=0;
-
         foreach($result as $key=>$value){
             //rellenar $new con meses que si tienen facturas
             if(!in_array($value['mes'],$months))
@@ -931,7 +930,7 @@ class Workflow extends Servicio
             $filtro =  " and a.status='1' ";
 
        $sql =  "select case
-                   when a.total=sum(b.amount)
+                   when a.total<=sum(b.amount)
                    then 'Pagado'
                    else
                    'Pendiente por liquidar' 

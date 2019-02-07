@@ -97,11 +97,11 @@ function GoToWorkflow(path, id)
 	{
   	parameters: {value: id, type: "goToWorkflow", path: path, rfc: $('rfc').value, responsableCuenta: responsableCuenta, year: $('year').value, from: "report-servicios"},
 		method:'post',
-    onSuccess: function(transport){
-      var response = transport.responseText || "no response text";
-			window.open(WEB_ROOT+"/workflow/id/"+id, '_blank');
-			//window.location = 
-		},
+    onSuccess: function(transport) {
+        var response = transport.responseText || "no response text";
+        window.open(WEB_ROOT + "/workflow/id/" + id, '_blank');
+        //window.location =
+    },
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
@@ -178,9 +178,7 @@ function ShowContractTable(id)
 }
 
 function doSearch(){
-	
 	$('type').value = "search";
-	
 	new Ajax.Request(WEB_ROOT+'/ajax/report-cobranza-new.php',
 	{
 		method:'post',
@@ -192,14 +190,11 @@ function doSearch(){
 		onSuccess: function(transport){					
 			var response = transport.responseText || "Ocurrio un error durante la conexion al servidor. Por Favor Trate de Nuevo";
 			var splitResponse = response.split("[#]");
-			
 			$("loading").style.display = "none";
-			
 			$('contenido').innerHTML = response;
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
 }
 
 function showGraph(){
@@ -473,3 +468,21 @@ function SaveEditComentario(id)
 				onFailure: function(){ alert('Something went wrong...') }
 			});
 }
+jQ(document).on('click','.detailCobranza',function (e) {
+    e.preventDefault();
+    var datos =  jQ(this).data('datos');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/workflow.php',
+        type:'post',
+        data:{type:'viewFacturas',datos:JSON.stringify(datos)},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error:function () {
+            alert("Error al mostrar informacion!!");
+
+        }
+    });
+});
