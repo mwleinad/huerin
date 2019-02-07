@@ -27,7 +27,6 @@ switch($_POST["type"])
 	case "graph":
 	        $months = array();
 			$year = $_POST['year'];
-			
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
@@ -138,9 +137,14 @@ switch($_POST["type"])
 			foreach($clientes as $clte){
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
-					$personal->setPersonalId($con['responsableCuenta']);
-					$con['responsable'] = $personal->Info();
-
+					$encargados = $contractRep->encargadosArea($con['contractId']);
+                    foreach($encargados as $encargado ){
+                        if($encargado['departamento']=="Contabilidad")
+						{
+                            $con['responsable'] = $encargado["name"];
+                            break;
+						}
+                    }
 					$serv = array();
                     $statusColor =  $workflow->GetStatusByComprobante($con['contractId'], $year,'I');
 					$con['instanciasServicio'] =$statusColor['serv'];
@@ -169,8 +173,7 @@ switch($_POST["type"])
 					$card["comentario"] = $contract["comentario"];
 					$card["contractId"] = $contract["contractId"];
 					$card["nameContact"] = $cliente["nameContact"];
-					$card["tipoPersonal"] = $contract["responsable"]["tipoPersonal"];
-					$card["responsable"] = $contract["responsable"]["name"];
+					$card["responsable"] = $contract["responsable"];
 					$card["name"] = $contract["name"];
 					$card["instanciasServicio"] = $contract["instanciasServicio"];;
 					//$card["nombreServicio"] = $servicio["nombreServicio"];;
@@ -181,6 +184,7 @@ switch($_POST["type"])
 						}*/
 				}
 			}
+
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
@@ -195,7 +199,7 @@ switch($_POST["type"])
 				}
 			}
 			$clientesMeses = array();
-			$smarty->assign("cleanedArray", $sortedArray);
+			$smarty->assign("cleanedArray", $cleanedArray);
 			$smarty->assign("clientes", $resClientes);
 			$smarty->assign("clientesMeses", $clientesMeses);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
