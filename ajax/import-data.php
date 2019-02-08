@@ -436,7 +436,7 @@ switch($_POST['type']){
             }
             $contract->setContractId($row[1]);
             $encargados=array();
-            $encargados = array($row[1],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10]);
+            $encargados = array($row[1],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9]);
             $permisos= $contract->ValidateEncargados($encargados);
             if($permisos===false)
             {

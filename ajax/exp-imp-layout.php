@@ -116,8 +116,7 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow(6,1,'RES. ADMIN');
         $sheet->setCellValueByColumnAndRow(7,1,'RES. JURIDICO');
         $sheet->setCellValueByColumnAndRow(8,1,'RES. IMSS');
-        $sheet->setCellValueByColumnAndRow(9,1,'RES. MENSAJERIA');
-        $sheet->setCellValueByColumnAndRow(10,1,'RES. AUDITORIA');
+        $sheet->setCellValueByColumnAndRow(9,1,'RES. AUDITORIA');
 
         $result = $customer->GetListRazones('','',0,'Activos',false);
         $row=2;
@@ -131,8 +130,7 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow(6,$row,$value['nameAdministracion']);
             $sheet->setCellValueByColumnAndRow(7,$row,$value['nameJuridico']);
             $sheet->setCellValueByColumnAndRow(8,$row,$value['nameImss']);
-            $sheet->setCellValueByColumnAndRow(9,$row,$value['nameMensajeria']);
-            $sheet->setCellValueByColumnAndRow(10,$row,$value['nameAuditoria']);
+            $sheet->setCellValueByColumnAndRow(9,$row,$value['nameAuditoria']);
 
             $row++;
         }

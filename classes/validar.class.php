@@ -587,15 +587,6 @@ class Validar extends Main
             }
             if($row[9]!="" and $row[9]!="--" ){
                 $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[9]))."'");
-                $idMen=$this->Util()->DB()->GetSingle();
-                if(!$idMen)
-                {
-                    $this->Util()->setError(0,'error','Responsable de mensajeria de la fila '.$fila.' no se encuentra dado de alta ');
-                    break;
-                }
-            }
-            if($row[10]!="" and $row[10]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(trim(char(9) from trim(name)))='".mb_strtolower(trim($row[10]))."'");
                 $idAud=$this->Util()->DB()->GetSingle();
                 if(!$idAud)
                 {
