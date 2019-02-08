@@ -1482,6 +1482,17 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
             unlink( $target );
         }
     }
+    public function Smarty()
+    {
+        if($this->smarty== null )
+        {
+            $this->smarty= new Smarty();
+        }
+        return $this->smarty;
+    }
+    function erase_val(&$myarr) {
+        $myarr = array_map(function(){}, $myarr);
+    }
 
 
 }
