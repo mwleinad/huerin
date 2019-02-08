@@ -1742,7 +1742,7 @@ class Customer extends Main
             $add = " AND a.customerId = '".$customerId."' ";
 
         if ($tipo == "Activos")
-            $addActivo = " AND a.active = '1' ";
+            $addActivo = " AND a.active = '1' and b.activo='Si' ";
         elseif ($tipo == "Inactivos")
             $addActivo = " AND (a.active = '0' OR (a.active = '1' AND b.activo = 'No' ))";
         else
