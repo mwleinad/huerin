@@ -18,9 +18,7 @@ switch($_POST["type"])
 			$_SESSION["search"]["from"] = $_POST["from"];
 
 			echo "ok";
-
 		break;
-
 	case "search":
 	case "sendEmail":
 	case "graph":
@@ -84,39 +82,45 @@ switch($_POST["type"])
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
 						$sumaTotal = 0;
+						$isParcial =  false;
+						if($serv['servicioStatus']=="bajaParcial")
+							$isParcial=true;
 						switch($period)
 						{
 							case 'efm':
                                 $meses = array(1,2,3);
-                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
                                 $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
 							break;
 							case 'amj':
                                 $meses = array(4,5,6);
-                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
                                 $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
 							break;
 							case 'jas':
                                 $meses = array(7,8,9);
-                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
                                 $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
 							break;
 							case 'ond':
                                 $meses = array(10,11,12);
-                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
                                 $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
 							break;
 							default:
                                 $meses = array(1,2,3,4,5,6,7,8,9,10,11,12);
-                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
                                 $serv['instancias'] = array_replace_recursive($mesesBase,$temp);
-                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses);
+                                $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'],$year,$meses,$serv['inicioOperaciones'],$isParcial);
 							break;
 						}
+						//si al obtener las instancias esta vacio, se debe omirit de la filA el servicio.
+						if(empty($temp))
+							continue;
 						$serv['sumatotal'] = $sumaTotal;
 						$serv['costo'] = $infServ['costo'];
 						$tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
