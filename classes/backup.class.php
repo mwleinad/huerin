@@ -44,6 +44,10 @@ class Backup extends main
         }
 
     }
+    public function SendBackupToEmail(){
+        $send =  new SendMail();
+        $send->Prepare("RESPLADO BD","",EMAILCOORDINADOR,"Coordinador",DOC_DIR_BACKUP.$this->customNameBackup,$this->customNameBackup,"","","admin@braunhuerin.com.mx","RESPALDO B.D");
+    }
 
 
 }

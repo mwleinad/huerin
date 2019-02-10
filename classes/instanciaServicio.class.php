@@ -59,8 +59,7 @@ class InstanciaServicio extends  Servicio
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12)  $sinceMonth $ftrTemporal)
 				AND YEAR(instanciaServicio.date) = '".$year."'
-				AND (servicio.status != 'baja'
-      			OR servicio.status != 'inactiva')
+				AND servicio.status NOT IN('baja','inactiva')
 				AND instanciaServicio.status != 'baja'		
 				AND servicio.servicioId = '".$servicioId."'  ORDER BY instanciaServicio.instanciaServicioId DESC" ;
         $this->Util()->DB()->setQuery($sql);
@@ -134,8 +133,7 @@ class InstanciaServicio extends  Servicio
 				WHERE MONTH(instanciaServicio.date) < MONTH(NOW()) $ftrTemporal $sinceMonth
 				AND YEAR(instanciaServicio.date) = '".$year."'
 				AND instanciaServicio.class IN ('PorIniciar','PorCompletar','Iniciado')
-				AND (servicio.status != 'baja'
-      			OR servicio.status != 'inactiva')
+				AND servicio.status NOT IN('baja','inactiva')
 				AND instanciaServicio.status != 'baja'		
 				AND servicio.servicioId = '".$servicioId."' GROUP BY MONTH(instanciaServicio.date) ORDER BY instanciaServicio.date";
         $this->Util()->DB()->setQuery($sql);
@@ -161,38 +159,84 @@ class InstanciaServicio extends  Servicio
 
         return $data;
     }
-    function getSumaBonoTrimestre($servicioId,$year,$meses=array()){
+    function getSumaBonoTrimestre($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false){
+        $ftrTemporal = "";
+        $new = array();
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
+            if($year>$ylast)
+                return $new;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+        }
+        $sinceMonth ="";
+        if($foperaciones=="0000-00-00")
+            return $new;
+
+        $fecha =  explode('-',$foperaciones);
+        //si año de IO es superior al año solicitado se ignora aunque tengan workflows creados.
+        if(!($year>=$fecha[0]))
+            return $new;
+        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones. esto es solo para el año de IO lo demas no debe evaluar esto
+        if($year==$fecha[0])
+            $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
+
         $sql = "SELECT 
                 sum(servicio.costo) as costoTotal
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE MONTH(instanciaServicio.date) IN (".implode(',',$meses).") AND YEAR(instanciaServicio.date)='".$year."'
+				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal
 				AND instanciaServicio.class IN ('CompletoTardio','Completo')
-				AND (servicio.status != 'baja'
-      			OR servicio.status != 'inactiva')
-				AND instanciaServicio.status != 'baja'		
-				AND servicio.servicioId = '".$servicioId."' GROUP BY servicio.servicioId";
+				AND servicio.status NOT IN('baja','inactiva')
+				AND instanciaServicio.status != 'baja'	AND servicio.servicioId = '".$servicioId."' GROUP BY servicio.servicioId";
         $this->Util()->DB()->setQuery($sql);
         $total =  $this->Util()->DB()->GetSingle();
         return $total;
     }
-    function getBonoTrimestre($servicioId,$year,$meses=array()){
-         $sql = "SELECT 
+    function getBonoTrimestre($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false){
+        $ftrTemporal = "";
+        $new = array();
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
+            if($year>$ylast)
+                return $new;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+        }
+        $sinceMonth ="";
+        if($foperaciones=="0000-00-00")
+            return $new;
+
+        $fecha =  explode('-',$foperaciones);
+        //si año de IO es superior al año solicitado se ignora aunque tengan workflows creados.
+        if(!($year>=$fecha[0]))
+            return $new;
+        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones. esto es solo para el año de IO lo demas no debe evaluar esto
+        if($year==$fecha[0])
+            $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
+
+        $sql = "SELECT 
                 class,
                 servicio.costo,
                 YEAR(instanciaServicio.date) as anio,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-				WHERE MONTH(instanciaServicio.date) IN (".implode(',',$meses).") AND YEAR(instanciaServicio.date)='".$year."'
-				AND (servicio.status != 'baja'
-      			OR servicio.status != 'inactiva')
-				AND instanciaServicio.status != 'baja'		
+				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
+				AND servicio.status NOT IN('baja','inactiva')
+				AND instanciaServicio.status != 'baja'
 				AND servicio.servicioId = '".$servicioId."'  ORDER BY  instanciaServicio.instanciaServicioId DESC";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
 
-        $new = array();
         foreach($data as $key => $value)
         {
             switch($value['mes']){
