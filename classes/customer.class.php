@@ -1110,7 +1110,6 @@ class Customer extends Main
                ";
       $this->Util()->DB()->setQuery($sql);
       $result = $this->Util()->DB()->GetResult();
-      echo count($result);
     /*
       exit;
       $sql = "SELECT 
