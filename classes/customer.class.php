@@ -1588,27 +1588,29 @@ class Customer extends Main
     {
         global $User, $page,$rol,$personal;
         $creport = new ContractRep();
+        $ftrCustomer = "";
+        $ftrContract = "";
         if ($this->active) {
-            $sqlActive = " AND active = '1' ";
+            $ftrCustomer .= " AND active = '1' ";
         }
         if ($customerId) {
-            $add = " AND customer.customerId = '".$customerId."' ";
+            $ftrCustomer .= " AND customer.customerId = '".$customerId."' ";
             if ($page == "report-servicio") {
                 $User["roleId"] = 1;
             }
         }
-
         if ($tipo == "Activos") {
-            $addActivo = " AND active = '1' and contract.activo = 'Si'  ";
+            $ftrCustomer .= " AND active = '1'  ";
+            $ftrContract .= " AND contract.activo='Si' ";
         } elseif ($tipo == "Inactivos") {
-            $addActivo = " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+            $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
         } else {
-            $addActivo = " AND active = '1' ";
+            $ftrCustomer .= " AND active = '1' ";
+            $ftrContract .= " AND contract.activo='Si' ";
         }
         if (strlen($like) > 1) {
-            $addWhere = " AND (customer.nameContact LIKE '%".$like."%'
-				                   OR contract.name LIKE '%".$like."%' 
-					               OR contract.rfc LIKE '%".$like."%')";
+            $ftrContract .="  AND(contract.name LIKE '%$like%' OR contract.rfc LIKE '%$like%') ";
+            $ftrCustomer .= " AND (customer.nameContact LIKE '%$like%')";
         }
 
         if($limite)
@@ -1616,15 +1618,13 @@ class Customer extends Main
         else
             $addLimite = "";
 
-        $sql = "SELECT 
-						customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name,
-			customer.phone, customer.email, customer.password,customer.active 
-						FROM customer
-			LEFT JOIN contract ON contract.customerId = customer.customerId	
-						WHERE 1 ".$sqlActive." ".$add." ".$addActivo." ".$addWhere."
-			GROUP BY customerId 	
-						ORDER BY nameContact ASC 
-			".$addLimite."";
+        $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name, customer.phone, customer.email, customer.password,customer.active 
+				FROM customer
+			    LEFT JOIN contract ON contract.customerId = customer.customerId	 $ftrContract
+				WHERE 1 $ftrCustomer
+			    GROUP BY customerId 	
+				ORDER BY nameContact ASC 
+			$addLimite ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
 

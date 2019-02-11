@@ -931,6 +931,60 @@ class Validar extends Main
 
         return true;
     }
+    public function ValidateLayoutNewCustomer($FILES){
+        $file_temp = $FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        while(($row=fgetcsv($fp,4096,","))==true){
+            if (count($row)!=6) {
+                $this->Util()->setError(0, 'error', "Archivo no valido" );
+                break;
+            }
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            if(trim($row[0])==""){
+                $this->Util()->setError(0, 'error', "Falta NOMBRE en la fila " .$fila );
+                break;
+            }
+            //comprobar que no este registrado por el nombre
+            $sql= "select customerId from customer where lower(replace(nameContact,' ',''))='".strtolower(str_replace(' ','',$row[0]))."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $customerId = $this->Util()->DB()->GetSingle();
+            if($customerId) {
+                $this->Util()->setError(0, 'error', "Ya existe un cliente registrado con el nombre de la fila " . $fila);
+                break;
+            }
+
+            if(trim($row[1])==""){
+                $this->Util()->setError(0, 'error', "Falta TELEFONO en la fila " . $fila );
+                break;
+            }
+            if(trim($row[2])==""){
+                $this->Util()->setError(0, 'error', "Falta EMAIL en la fila " . $fila );
+                break;
+            }
+            if(trim($row[3])==""){
+                $this->Util()->setError(0, 'error', "Falta PASSWORD en la fila " . $fila );
+                break;
+            }
+            if(trim($row[5])==""){
+                $this->Util()->setError(0, 'error', "Falta FECHA ALTA en la fila " . $fila );
+                break;
+            }else{
+                if(!$this->Util()->isValidateDate(trim($row[5]),"d/m/Y")){
+                    $this->Util()->setError(0, 'error', "FECHA ALTA no valida en la fila " . $fila );
+                    break;
+                }
+            }
+            $fila++;
+        }
+        if($this->Util()->PrintErrors())
+            return false;
+
+        return true;
+    }
 
 
 }

@@ -10,6 +10,7 @@
                 <option value="">Seleccionar</option>
                 <option value="layout-razon">Layout de nueva razon social</option>
                 <option value="layout-update-encargado">Layout actualizar encargados de area</option>
+                <option value="layout-customer">Layout importar clientes nuevos</option>
             </select>
     </div>
     <div class="clear">

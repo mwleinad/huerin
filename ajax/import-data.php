@@ -520,28 +520,42 @@ switch($_POST['type']){
 
     break;
     case 'imp-new-customer':
-        $logFileGlobal="";
-        $contCustomer=0;
-        $contContract =0;
-        $ejecutar = false;
-        $allSql = "";
-        while(($row=fgetcsv($fp,4096,","))==true) {
-            $sqlRow = "";
-          //comprobar que el cliente exista
-            $sqlc ="SELECT customerId FROM customer where nameContact='".$row[0]."' ";
-            $db->setQuery($sqlc);
-            $customerId = $db->GetSingle();
-            if(!$customerId){
-                echo "ok[#]";
-                echo "Proceso interrumpido";
-                echo 'El cliente '.$row[0]." no se encuntra registrado";
-                exit;
-            }
-            //comprobar por rfc y nombre la razon social si no se encuentra registrada
-            $sqlrazon =  "SELECT contractId FROM contract WHERE name='".$row[1]."' OR rfc='".$row[2]."' ";
-            $db->setQuery($sqlrazon);
-            $contractId = $db->GetSingle();
+        $isValid = $valida->ValidateLayoutNewCustomer($_FILES);
+        if(!$isValid){
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            exit;
         }
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila = 1;
+        $alta = 0;
+        while(($row=fgetcsv($fp,4096,","))==true) {
+            if ($fila == 1){
+                $fila++;
+                continue;
+            }
+          echo  $sql = "INSERT INTO customer(name,phone,email,active,nameContact,fechaAlta,password,observacion)
+                  VALUES
+                  (
+                    '".trim($row[0])."',
+                    '".trim($row[1])."',
+                    '".trim($row[2])."',
+                    '1',
+                    '".trim($row[0])."',
+                    '".$util->FormatDateMySqlSlash($row[5])."',
+                    '".trim($row[3])."',
+                    '".trim($row[4])."'
+                  )";
+            $util->DB()->setQuery($sql);
+            $util->DB()->InsertData();
+            $fila++;
+            $alta++;
+        }
+        $util->setError(0,'complete',"Se han registrado $alta clientes nuevos.");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
     case 'cancelar-uuid':
         $logCancel = "";
