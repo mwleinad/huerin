@@ -1065,7 +1065,7 @@ class Customer extends Main
     }
     return $result;
   }  
-  public function SuggestCustomer($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limit = 25)
+  public function SuggestCustomer($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limit = 20)
   {
     global $User, $page,$rol,$personal;
     $ftrCustomer ="";
@@ -1106,7 +1106,7 @@ class Customer extends Main
       $sql = "SELECT a.customerId,a.nameContact,b.contractId,b.name FROM customer a 
               $join contract b ON  a.customerId= b.customerId  $ftrContract
               $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($subs)
-              WHERE 1 $ftrCustomer GROUP BY b.contractId
+              WHERE 1 $ftrCustomer GROUP BY b.contractId LIMIT $limit
                ";
       $this->Util()->DB()->setQuery($sql);
       $result = $this->Util()->DB()->GetResult();
