@@ -84,7 +84,8 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow(1,1,'TELEFONO');
         $sheet->setCellValueByColumnAndRow(2,1,'EMAIL');
         $sheet->setCellValueByColumnAndRow(3,1,'PASSWORD');
-        $sheet->setCellValueByColumnAndRow(4,1,'FECHA ALTA(DIA/MES/AÑO)');
+        $sheet->setCellValueByColumnAndRow(4,1,'OBSERVACIONES');
+        $sheet->setCellValueByColumnAndRow(5,1,'FECHA ALTA(DIA/MES/AÑO)');
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer= PHPExcel_IOFactory::createWriter($book, 'CSV');
@@ -100,7 +101,6 @@ switch($_POST['type']){
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
     break;
-
     case 'layout-update-encargado':
         $book =  new PHPExcel();
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
