@@ -1091,7 +1091,7 @@ class Customer extends Main
          break;
     }
     if (strlen($like) > 1) {
-        $ftrCustomer .=" AND (a.nameContact LIKE '%$like%') OR (b.name LIKE '%$like%' OR b.rfc LIKE '%$like%')";
+        $ftrCustomer .=" AND (a.nameContact LIKE '%$like%' OR (b.name LIKE '%$like%' OR b.rfc LIKE '%$like%'))";
     }
       $fil['deep'] = 'On';
       $subordinados = $personal->GetIdResponsablesSubordinados($fil);
