@@ -1067,33 +1067,53 @@ class Customer extends Main
   }  
   public function SuggestCustomer($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limit = 25)
   {
-    global $User, $page,$rol;
+    global $User, $page,$rol,$personal;
+    $ftrCustomer ="";
+    $ftrContract = "";
+
     if ($this->active) {
-      $sqlActive = " AND active = '1' ";
+      $ftrCustomer .= " AND a.active = '1' ";
     }
     
     if ($customerId) {
-      $add = " AND customerId = '".$customerId."' ";
+      $ftrCustomer .= " AND a.customerId = '".$customerId."' ";
       if ($page == "report-servicio") {
-        $User["roleId"] = 1;
+            $User["roleId"] = 1;
       }
     }
-    
-    if ($tipo == "Activos") {
-      $addActivo = " AND active = '1' ";
-    } elseif ($tipo == "Inactivos") {
-      $addActivo = " AND active = '0' ";
-    } else {
-      $addActivo = " AND active = '1' ";
+     switch($tipo) {
+         case 'Inactivos':
+             $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+         break;
+         default:
+             $ftrCustomer .= " AND a.active = '1' ";
+             $ftrContract .= " AND b.activo = 'Si' ";
+         break;
     }
-
     if (strlen($like) > 1) {
-      $addWhere = " AND (contract.name LIKE '%".$like."%' 
-                OR contract.rfc LIKE '%".$like."%' 
-                OR customer.nameContact LIKE '%".$like."%')  ";
+        $ftrCustomer .=" AND (a.nameContact LIKE '%$like%') OR (b.name LIKE '%$like%' OR b.rfc LIKE '%$like%')";
     }
-    
-    $sql = "SELECT 
+      $fil['deep'] = 'On';
+      $subordinados = $personal->GetIdResponsablesSubordinados($fil);
+      $subs =  implode(",",$subordinados);
+      $rol->setRolId($User['roleId']);
+      $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'));
+      if($unlimited)
+          $join =  " LEFT JOIN ";
+      else
+         $join =  "  INNER JOIN ";
+
+      $sql = "SELECT a.customerId,a.nameContact,b.contractId,b.name FROM customer a 
+              $join contract b ON  a.customerId= b.customerId  $ftrContract
+              $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($subs)
+              WHERE 1 $ftrCustomer GROUP BY b.contractId
+               ";
+      $this->Util()->DB()->setQuery($sql);
+      $result = $this->Util()->DB()->GetResult();
+      echo count($result);
+    /*
+      exit;
+      $sql = "SELECT 
             customer.*
           FROM 
             customer
@@ -1105,10 +1125,6 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
     $count = 0;
-    $personal = new Personal;
-    $personal->setPersonalId($User["userId"]);
-    $subordinados = $personal->Subordinados();
-
     foreach ($result as $key => $val) {
       $sql = "SELECT
                 contract.*
@@ -1196,7 +1212,7 @@ class Customer extends Main
           unset($result[$key]);
         }
 
-    }
+    }*/
 		$noDuplicados = array();
 		foreach($result as $key => $value)
 		{
@@ -1584,7 +1600,7 @@ class Customer extends Main
    	    }//foreach
         return $result;
 	}//SuggestCustomerCatalog
-    public function SuggestCustomerCatalogFiltrado($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
+  public function SuggestCustomerCatalogFiltrado($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
     {
         global $User, $page,$rol,$personal;
         $creport = new ContractRep();
@@ -1599,18 +1615,17 @@ class Customer extends Main
                 $User["roleId"] = 1;
             }
         }
-        if ($tipo == "Activos") {
-            $ftrCustomer .= " AND active = '1'  ";
-            $ftrContract .= " AND contract.activo='Si' ";
-        } elseif ($tipo == "Inactivos") {
-            $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
-        } else {
-            $ftrCustomer .= " AND active = '1' ";
-            $ftrContract .= " AND contract.activo='Si' ";
+        switch($tipo) {
+            case 'Inactivos':
+                $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+            break;
+            default:
+                $ftrCustomer .= " AND active = '1' ";
+                $ftrContract .= " AND contract.activo='Si' ";
+            break;
         }
         if (strlen($like) > 1) {
-            $ftrContract .="  AND(contract.name LIKE '%$like%' OR contract.rfc LIKE '%$like%') ";
-            $ftrCustomer .= " AND (customer.nameContact LIKE '%$like%')";
+            $ftrCustomer .= " AND (customer.nameContact LIKE '%$like%' OR (contract.name LIKE '%$like%' OR contract.rfc LIKE '%$like%'))";
         }
 
         if($limite)
@@ -1735,7 +1750,7 @@ class Customer extends Main
         }//foreach
         return $result;
     }//SuggestCustomerCatalog
-    public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
+  public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "",$limite=false)
     {
         $creport = new ContractRep();
         if ($customerId)

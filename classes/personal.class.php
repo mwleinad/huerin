@@ -1147,7 +1147,7 @@ function SubordinadosDetails()
          }
          return $supervisor;
      }
-    public function GetIdResponsablesSubordinados($filtro){
+    public function GetIdResponsablesSubordinados($filtro=[]){
 	    global $User;
         $idPersons= [];
 
