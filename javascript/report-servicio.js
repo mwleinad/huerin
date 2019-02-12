@@ -2,7 +2,7 @@ Event.observe(window, 'load', function()
 {
 	if($('rfc'))
 	{
-		Event.observe($('rfc'), "keyup", function(e){
+		Event.observe($('rfc'), "keypress", function(e){
 			if(this.value==="")
 				return;
 			SuggestUser(); 
