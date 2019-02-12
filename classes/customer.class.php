@@ -1097,7 +1097,7 @@ class Customer extends Main
       $subordinados = $personal->GetIdResponsablesSubordinados($fil);
       $subs =  implode(",",$subordinados);
       $rol->setRolId($User['roleId']);
-      $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'));
+      $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'),array('Juridico RRHH','Supervisor de Juridico'));
       if($unlimited)
           $join =  " LEFT JOIN ";
       else
