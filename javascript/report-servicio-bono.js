@@ -2,9 +2,16 @@ Event.observe(window, 'load', function()
 {
 	if($('rfc'))
 	{
+        var time_id =  -1;
+        var field_value = '';
 		Event.observe($('rfc'), "keyup", function(){
-			SuggestUser();
-			//FillDatosFacturacion();
+            field_value =  this.value;
+            clearTimeout(time_id);
+            if(field_value.length>=2){
+                time_id =  setTimeout(function () {
+                    SuggestUser();
+                },400)
+            };
 		});
 	}
 
