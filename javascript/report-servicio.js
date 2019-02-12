@@ -5,6 +5,8 @@ Event.observe(window, 'load', function()
 		Event.observe($('rfc'), "keyup", function(e){
 			if(this.value==="")
 				return;
+			if(this.value.length<3)
+				return;
 			SuggestUser(); 
 			//FillDatosFacturacion();
 		});
