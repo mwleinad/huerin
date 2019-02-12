@@ -1104,7 +1104,7 @@ class Customer extends Main
          $join =  "  INNER JOIN ";
 
       $sql = "SELECT a.customerId,a.nameContact,b.contractId,b.name FROM customer a 
-              $join contract b ON  a.customerId= b.customerId  $ftrContract
+              $join contract b ON  a.customerId= b.customerId  
               $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($subs)
               WHERE 1 $ftrCustomer GROUP BY b.contractId LIMIT $limit
                ";
