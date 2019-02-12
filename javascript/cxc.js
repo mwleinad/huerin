@@ -75,10 +75,10 @@ function SuggestUser()
         Event.observe($('rfc'), "keyup", function(){
             field_value =  this.value;
             clearTimeout(time_id);
-            if(field_value.length>=2){
+            if(field_value.length>=3){
                 time_id =  setTimeout(function () {
                     SuggestUser();
-                },400)
+                },350)
             };
         });
 	}
