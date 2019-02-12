@@ -15,6 +15,9 @@
 	//$clientes = $workflow->EnumerateWorkflows($clientes, date("m"), date("Y"));
 	$smarty->assign("clientes", $clientes);
 	$smarty->assign('mainMnu','reportes');
+    $rol->setRolId($User['roleId']);
+    $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','cliente'));
+    $smarty->assign('unlimited',$unlimited);
 
 	if($_SESSION["search"]["month"])
 	{
