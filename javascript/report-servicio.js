@@ -10,7 +10,7 @@ Event.observe(window, 'load', function()
 			if(field_value.length>=2){
 				time_id =  setTimeout(function () {
                     SuggestUser();
-                },300)
+                },400)
 			}
 		});
 	}
