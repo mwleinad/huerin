@@ -10,7 +10,6 @@ Event.observe(window, 'load', function()
 		});
 	}
 	AddSuggestListener = function(e) {
-		e.preventDefault();
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
 		var id = el.identify();
