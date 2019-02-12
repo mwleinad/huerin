@@ -3,7 +3,6 @@ Event.observe(window, 'load', function()
 	if($('rfc'))
 	{
 		Event.observe($('rfc'), "keyup", function(e){
-			e.preventDefault();
 			if(this.value==="")
 				return;
 			SuggestUser(); 
@@ -11,6 +10,7 @@ Event.observe(window, 'load', function()
 		});
 	}
 	AddSuggestListener = function(e) {
+		e.preventDefault();
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
 		var id = el.identify();
