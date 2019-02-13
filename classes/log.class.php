@@ -1,5 +1,5 @@
 <?php
-
+use Dompdf\Dompdf;
 class Log extends Util
 {
 	private $personalId;
@@ -589,6 +589,12 @@ class Log extends Util
         return $html;
     }
     public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno'){
+
+        $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
+        $nombrePersonal = $this->Util()->DB()->GetSingle();
+        if($_SESSION['User']['tipoPers']=='Admin')
+            $nombrePersonal="Administrador de sistema(desarrollador)";
+
         $this->Util()->DB()->setQuery("
 			INSERT INTO
 				historyChanges
@@ -613,5 +619,64 @@ class Log extends Util
 				
 		    )");
         $this->Util()->DB()->InsertData();
+    }
+    function sendLogUpdateServicios($cambios = []){
+
+	    if(empty($cambios))
+	        return false;
+
+	    $changes = $this->findHistoryLogServicio($cambios);
+	    $dompdf =  new Dompdf();
+        $this->Util()->Smarty()->assign("servicios",$changes);
+        $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-update-servicio.tpl");
+        $dompdf->loadHtml($html);
+
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $fileName  = $_SESSION['User']['userId']."_log_servicio.pdf";
+        $output =  $dompdf->output();
+        file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
+
+        $send =  new SendMail();
+        $file = DOC_ROOT."/sendFiles/$fileName";
+        $send->Prepare('NOTIFACION DE CAMBIOS EN PLATAFORMA',"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
+        @unlink($file);
+	}
+    /*
+     * encontrar el historial del elemento dado
+     */
+    function findHistoryLogServicio($servicios = []){
+       $services = [];
+      foreach($servicios as $servicio){
+          $serv =  $this->findCompleteHistorial('servicio',$servicio,1);
+          if($serv)
+              $services[] = $serv;
+      }
+      return $services;
+    }
+    function findCompleteHistorial($table,$id,$n=1){
+        switch($table){
+            case 'servicio':
+                $sql = "SELECT a.servicioId,c.contractId,c.name,a.inicioFactura,a.inicioOperaciones,a.status,a.costo,b.nombreServicio
+                        FROM servicio a 
+                        INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId and b.status='1'
+                        INNER JOIN contract c ON a.contractId=c.contractId 
+                        WHERE servicioId='$id' 
+                       ";
+                $this->Util()->DB()->setQuery($sql);
+                $row = $this->Util()->DB()->GetRow();
+                if(!empty($row))
+                {
+                    $servId = $row["servicioId"];
+                    $sql = "SELECT  inicioOperaciones,costo,status,inicioFactura,namePerson,fecha FROM historyChanges WHERE servicioId = '$servId' ORDER BY fecha DESC LIMIT 1,$n";
+                    $this->Util()->DB()->setQuery($sql);
+                    $row['history'] = $this->Util()->DB()->GetResult();
+                }
+            break;
+        }
+        if(empty($row))
+            return false;
+
+        return $row;
     }
 }//Log

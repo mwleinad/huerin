@@ -1493,6 +1493,15 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
     function erase_val(&$myarr) {
         $myarr = array_map(function(){}, $myarr);
     }
+    function getEnumValues($table,$field){
+        $this->Util()->DB()->setQuery("SHOW COLUMNS FROM $table WHERE Field ='$field'");
+        $columns = $this->Util()->DB()->GetRow();
+        preg_match("/^enum\(\'(.*)\'\)$/", $columns['Type'], $fields);
+        $fields =  str_replace("'","",$fields[1]);
+        $fields  = explode(",",$fields);
+        return $fields;
+
+    }
 
 
 }
