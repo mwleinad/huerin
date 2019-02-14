@@ -11,6 +11,7 @@
                 <option value="layout-razon">Layout de nueva razon social</option>
                 <option value="layout-update-encargado">Layout actualizar encargados de area</option>
                 <option value="layout-customer">Layout importar clientes nuevos</option>
+                <option value="layout-update-servicios">Layout actualizar servicios de clientes</option>
             </select>
     </div>
     <div class="clear">

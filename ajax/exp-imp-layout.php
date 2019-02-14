@@ -63,7 +63,7 @@ switch($_POST['type']){
         foreach ($book->getAllSheets() as $sheet1) {
             // Iterating through all the columns //
             // The after Z column problem is solved by using numeric columns; thanks to the columnIndexFromString method
-            for ($col = 0; $col <= PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
             {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
@@ -92,7 +92,7 @@ switch($_POST['type']){
         foreach ($book->getAllSheets() as $sheet1) {
             // Iterating through all the columns //
             // The after Z column problem is solved by using numeric columns; thanks to the columnIndexFromString method
-            for ($col = 0; $col <= PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
             {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
@@ -138,12 +138,60 @@ switch($_POST['type']){
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer= PHPExcel_IOFactory::createWriter($book, 'CSV');
         foreach ($book->getAllSheets() as $sheet1) {
-            for ($col = 0; $col <= PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
             {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
         }
         $nameFile= "layaout_update_encargados.csv";
+        $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
+
+    break;
+    case 'layout-update-servicios':
+        $book =  new PHPExcel();
+        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('LayoutServicios');
+        $sheet->setCellValueByColumnAndRow(0,1,'ID CONTRATO');
+        $sheet->setCellValueByColumnAndRow(1,1,'RAZON SOCIAL');
+        $sheet->setCellValueByColumnAndRow(2,1,'ID SERVICIO');
+        $sheet->setCellValueByColumnAndRow(3,1,'NOMBRE SERVICIO');
+        $sheet->setCellValueByColumnAndRow(4,1,'COSTO');
+        $sheet->setCellValueByColumnAndRow(5,1,'INICIO OPERACION');
+        $sheet->setCellValueByColumnAndRow(6,1,'INICIO FACTURACION');
+        $sheet->setCellValueByColumnAndRow(7,1,'FECHA ULTIMO WORKFLOW');
+        $sheet->setCellValueByColumnAndRow(8,1,'DEPARTAMENTO');
+        $sheet->setCellValueByColumnAndRow(9,1,'PERIODICIDAD');
+        $sheet->setCellValueByColumnAndRow(10,1,'STATUS(activo,baja,bajaParcial,readonly)');
+
+        $servicios =  $servicio->EnumerateServiceForInstances();
+        $row=2;
+        foreach($servicios as $key=>$value){
+            $sheet->setCellValueByColumnAndRow(0,$row,$value['contractId']);
+            $sheet->setCellValueByColumnAndRow(1,$row,$value['razonSocialName']);
+            $sheet->setCellValueByColumnAndRow(2,$row,$value['servicioId']);
+            $sheet->setCellValueByColumnAndRow(3,$row,$value['nombreServicio']);
+            $sheet->setCellValueByColumnAndRow(4,$row,$value['costo']);
+            $sheet->setCellValueByColumnAndRow(5,$row,$value['inicioOperaciones']!='0000-00-00'?date('d/m/Y',strtotime($value['inicioOperaciones'])):$value['inicioOperaciones']);
+            $sheet->setCellValueByColumnAndRow(6,$row,$value['inicioFactura']!='0000-00-00'?date('d/m/Y',strtotime($value['inicioFactura'])):'0000-00-00');
+            $sheet->setCellValueByColumnAndRow(7,$row,$value['status']=='bajaParcial'&&$value['status']!='0000-00-00'?date('d/m/Y',strtotime($value['lastDateWorkflow'])):'');
+            $sheet->setCellValueByColumnAndRow(8,$row,$value['departamento']);
+            $sheet->setCellValueByColumnAndRow(9,$row,$value['periodicidad']);
+            $sheet->setCellValueByColumnAndRow(10,$row,$value['status']);
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer= PHPExcel_IOFactory::createWriter($book, 'CSV');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile= "layout_update_servicios.csv";
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
 

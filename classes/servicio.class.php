@@ -621,45 +621,20 @@ class Servicio extends Contract
             $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 
         $sql = "SELECT servicioId,  customer.nameContact AS clienteName,servicio.status,servicio.lastDateWorkflow,
-				contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad,
-				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, 
+				contract.name AS razonSocialName, nombreServicio, servicio.costo, servicio.inicioOperaciones, periodicidad,
+				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta,servicio.inicioFactura ,
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
-				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,
+				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,tipoServicio.departamento,
 				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo
 				FROM servicio 
-				INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId  AND tipoServicio.status='1'
+				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  where a.status='1') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
 				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si' AND contract.permisos!=''
 				INNER JOIN customer ON contract.customerId = customer.customerId AND customer.active = '1'
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
 				WHERE (servicio.status = 'activo' OR servicio.status ='bajaParcial')
-				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ";
+				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ORDER BY contract.name ASC,tipoServicio.nombreServicio ASC ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-        //se realizara esto para evitar que se creen instancias para contratos  no tienen ningun responsable.
-        $User["userId"] = 0;
-        $User["roleId"] = 1;
-      /*
-        foreach($result as $key => $value){
-            $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio
-			WHERE servicioId = '".$value["servicioId"]."' AND status IN('activa','completa')  LIMIT 5");
-            $instancias = $this->Util()->DB()->GetResult();
-            $currentMonth = date('Y')."-".date("m")."-01";
-           //si tiene instancias creadas comprobar que ya exista uno del mes en que se este ejecutando para excluirlo
-           //ya no tiene por que iterarse si tiene una instancia en el mes actual
-           if(!empty($instancias)){
-                $this->Util()->DB()->setQuery("SELECT instanciaServicioId FROM instanciaServicio
-			                                   WHERE servicioId = '".$value["servicioId"]."'
-			                                   AND  status IN('activa','completa') AND date='".$currentMonth."' LIMIT 1");
-              $exist = $this->Util()->DB()->GetRow();
-              //excluir servicio si ya existe instancia en el mes actual
-                if(!empty($exist))
-                {
-                   unset($result[$key]);
-                   continue;
-                }
-            }
-            $result[$key]["instancias"] =$instancias;
-        }//foreach*/
         return $result;
     }
 	public function EnumerateActiveSub($type ="subordinado",$customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
@@ -900,6 +875,7 @@ class Servicio extends Contract
          WHEN a.status='bajaParcial' THEN 'Baja temporal'
          WHEN a.status='reactivacion' THEN 'Reactivacion'
          WHEN a.status='readonly' THEN 'Reactivacion/Solo lectura'
+         WHEN a.status='modificacion' THEN 'Modificacion'
         END AS  movimiento 
         FROM historyChanges a
 		LEFT JOIN personal b ON b.personalId = a.personalId

@@ -985,6 +985,71 @@ class Validar extends Main
 
         return true;
     }
+    public function ValidateLayoutUpdateServicios($FILES){
+        $file_temp = $FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        while(($row=fgetcsv($fp,4096,","))==true){
+            if (count($row)!=11) {
+                $this->Util()->setError(0, 'error', "Archivo no valido" );
+                break;
+            }
+            if ($fila == 1) {
+                $fila++;
+                continue;
+            }
+            if(trim($row[0])=="" || !is_numeric(trim($row[0]))){
+                $this->Util()->setError(0, 'error', "Error ID CONTRATO en la fila " .$fila );
+                break;
+            }
+            if(trim($row[2])=="" || !is_numeric(trim($row[2]))){
+                $this->Util()->setError(0, 'error', "Error ID SERVICIO en la fila " . $fila );
+                break;
+            }
+            if(!is_numeric(trim($row[4]))){
+                $this->Util()->setError(0, 'error', "Eror  COSTO en la fila " . $fila );
+                break;
+            }
+            if(trim($row[5])=='0000-00-00' || !$this->Util()->isValidateDate(trim($row[5]),"d/m/Y")){
+                $this->Util()->setError(0, 'error', "Error INICIO OPERACION en la fila " . $fila );
+                break;
+            }
+            if(trim($row[6])!="0000-00-00")
+            {
+                if(!$this->Util()->isValidateDate(trim($row[6]),"d/m/Y")){
+                    $this->Util()->setError(0, 'error', "Error INICIO FACTURA en la fila " . $fila );
+                    break;
+                }
+                if((double)(trim($row[2]))<=0){
+                    $this->Util()->setError(0, 'error', "COSTO debe ser mayor a cero si cuenta con fecha valida en INICIO FACTURA, comprobar fila  " . $fila );
+                    break;
+                }
+            }
+            if(trim($row[10])=="")
+            {
+                $this->Util()->setError(0, 'error', "Error en STATUS en fila " .$fila);
+                break;
+            }else{
+                $fields = $this->Util()->getEnumValues('servicio','status');
+                if(!in_array(trim($row[10]),$fields)){
+                    $this->Util()->setError(0, 'error', "Error en STATUS en la fila " .$fila.", solo se aceptan las descritas en el encabezado");
+                    break;
+                }
+                if(trim($row[10])=="bajaParcial"){
+                    if(trim($row[7])=='' || trim($row[7])=='0000-00-00' || !$this->Util()->isValidateDate(trim($row[7]),"d/m/Y")){
+                        $this->Util()->setError(0, 'error', "Si el servicio se encuentra como baja temporal o parcial es necesario una fecha valida en FECHA ULTIMO WORKFLOW en la fila " . $fila );
+                        break;
+                    }
+                }
+            }
+
+            $fila++;
+        }
+        if($this->Util()->PrintErrors())
+            return false;
+
+        return true;
+    }
 
 
 }
