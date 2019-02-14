@@ -588,7 +588,7 @@ class Log extends Util
 
         return $html;
     }
-    public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno'){
+    public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno',$lastDateWorkflow='0000-00-00'){
 
         $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
         $nombrePersonal = $this->Util()->DB()->GetSingle();
@@ -605,7 +605,8 @@ class Log extends Util
 				`costo`,
 				`personalId`,
 				`namePerson`,
-				`inicioOperaciones`
+				`inicioOperaciones`,
+				lastDateWorkflow
 		    )
 		    VALUES
 		    (
@@ -615,10 +616,48 @@ class Log extends Util
 				'".$costo."',
 				'".$personalId."',
 				'".$nombrePersonal."',
-				'".$initOperaciones."'
+				'".$initOperaciones."',
+				'".$lastDateWorkflow."'
 				
 		    )");
         $this->Util()->DB()->InsertData();
+    }
+    function sendLogMultipleOperation($cambios = [],$contractId){
+        global $contract,$contractRep;
+        if(empty($cambios))
+            return false;
+
+        $contract->setContractId($contractId);
+        $contrato = $contract->Info();
+        $encargados = $contractRep->encargadosArea($contractId);
+
+        $ftr['incluirJefes'] = true;
+        $ftr['sendBraun']=false;
+        $ftr['sendHuerin']=true;
+
+
+        $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
+        //dd($detalles);
+
+        $changes = $this->findHistoryLogServicio($cambios);
+
+        $dompdf =  new Dompdf();
+        $this->Util()->Smarty()->assign("contrato",$contrato);
+        $this->Util()->Smarty()->assign("encargados",$encargados);
+        $this->Util()->Smarty()->assign("servicios",$changes);
+        $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-multiple-operation.tpl");
+        $dompdf->loadHtml($html);
+
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $fileName  = $_SESSION['User']['userId']."_log_multiple_operation.pdf";
+        $output =  $dompdf->output();
+        file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
+
+        $send =  new SendMail();
+        $file = DOC_ROOT."/sendFiles/$fileName";
+        $send->Prepare('NOTIFACION DE CAMBIOS EN PLATAFORMA',"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
+        @unlink($file);
     }
     function sendLogUpdateServicios($cambios = []){
 
@@ -657,7 +696,7 @@ class Log extends Util
     function findCompleteHistorial($table,$id,$n=1){
         switch($table){
             case 'servicio':
-                $sql = "SELECT a.servicioId,c.contractId,c.name,a.inicioFactura,a.inicioOperaciones,a.status,a.costo,b.nombreServicio
+                $sql = "SELECT a.servicioId,c.contractId,c.name,a.inicioFactura,a.inicioOperaciones,a.status,a.costo,b.nombreServicio,a.lastDateWorkflow
                         FROM servicio a 
                         INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId and b.status='1'
                         INNER JOIN contract c ON a.contractId=c.contractId 
@@ -668,7 +707,16 @@ class Log extends Util
                 if(!empty($row))
                 {
                     $servId = $row["servicioId"];
-                    $sql = "SELECT  inicioOperaciones,costo,status,inicioFactura,namePerson,fecha FROM historyChanges WHERE servicioId = '$servId' ORDER BY fecha DESC LIMIT 1,$n";
+
+                    $sql2 = "SELECT  status FROM historyChanges WHERE servicioId = '$servId' ORDER BY fecha DESC";
+                    $this->Util()->DB()->setQuery($sql2);
+                    $lastMov= $this->Util()->DB()->GetSingle();
+                    if($lastMov=='modificacion')
+                        $limit =  " LIMIT 0,2";
+                    else
+                        $limit =  " LIMIT 1,1";
+
+                    $sql = "SELECT  inicioOperaciones,costo,status,inicioFactura,namePerson,fecha,lastDateWorkflow FROM historyChanges WHERE servicioId = '$servId' ORDER BY fecha DESC $limit ";
                     $this->Util()->DB()->setQuery($sql);
                     $row['history'] = $this->Util()->DB()->GetResult();
                 }

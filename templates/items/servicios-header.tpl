@@ -1,5 +1,6 @@
 <thead>
 	<tr>
+        <th width="20"></th>
 		<th width="200">Razon Social</th>
 		<th width="200">Servicio</th>
         <th width="100">Costo Informativo</th>     

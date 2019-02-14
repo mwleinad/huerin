@@ -266,6 +266,31 @@ switch($_POST["type"])
         }
 
     break;
-		
+    case 'multipleOperationPopUp':
+        $datos = json_decode($_POST['datos']);
+        $datos = json_decode($datos,true);
+        $smarty->assign("servicios", $datos);
+        $smarty->assign("contractId", $_POST['contractId']);
+        $smarty->assign("title", "Multiples operaciones");
+        $smarty->display(DOC_ROOT.'/templates/boxes/multiple-edit-services-popup.tpl');
+    break;
+    case 'saveMultipleService':
+          if($servicio->executeMultipleOperation()){
+              $servicio->setContractId($_POST['contractId']);
+              $servicios = $servicio->Enumerate();
+              echo "ok[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+              echo "[#]";
+              $smarty->assign('servicios',$servicios);
+              $smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
+
+          }else{
+              echo "fail[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+
+          }
+
+
+    break;
 }
 ?>

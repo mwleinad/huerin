@@ -506,6 +506,8 @@ class Servicio extends Contract
 			$result[$key]["formattedInicioFactura"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
             $fecha = explode("-", $value["lastDateWorkflow"]);
             $result[$key]["formattedDateLastWorkflow"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
+
+            $result[$key]['dataJson'] =  json_encode($result[$key]);
 		}
 		
 		return $result;
@@ -1293,6 +1295,86 @@ class Servicio extends Contract
             $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
             $mail->PrepareMultipleNotice($subject, $body, $data['encargados'], '', "", "", "", "", 'noreply@braunhuerin.com.mx', 'Administrador de plataforma', true);
         }
+        return true;
+    }
+    public function validateArrayServices()
+    {
+        if (!isset($_POST['servsMod']))
+            $this->Util()->setError(0, 'error', 'Es necesario seleccionar al menos un servicio. ');
+        elseif (empty($_POST['servsMod']))
+            $this->Util()->setError(0, 'error', 'Es necesario seleccionar al menos un servicio. ');
+        foreach ($_POST['servsMod'] as $servId) {
+            $sql = "";
+            $status = $_POST["status_$servId"];
+            $flw = $status=='bajaParcial'?$this->Util()->isValidateDate($_POST["lastDateWorkflow_$servId"],'d-m-Y')?$_POST["lastDateWorkflow_$servId"]:false:true;
+            $costo = $_POST["costo_$servId"];
+            $io = $this->Util()->isValidateDate($_POST["io_$servId"],'d-m-Y')?$_POST["io_$servId"]:false;
+            $if = $_POST["if_$servId"]!=''?$this->Util()->isValidateDate($_POST["if_$servId"],'d-m-Y')?$_POST["if_$servId"]:false:true;
+            if (!$flw) {
+                $this->Util()->setError(0, 'error', 'Fecha invalida en ultimo workflow. ');
+                break;
+            }
+            if(!$io){
+                $this->Util()->setError(0, 'error', 'Fecha invalida en inicio de operaciones. ');
+                break;
+            }
+            if(!$if)
+            {
+                $this->Util()->setError(0, 'error', 'Fecha invalida en inicio de factura. ');
+                break;
+            }
+        }
+        if($this->Util()->PrintErrors())
+            return false;
+
+        return true;
+    }
+    public function executeMultipleOperation()
+    {
+        global $log;
+        if(!$this->validateArrayServices())
+            return false;
+        $actualizados = 0;
+        $servs = [];
+        $contratoId = $_POST['contractId'];
+        foreach ($_POST['servsMod'] as $servId) {
+            $status = $_POST["status_$servId"];
+            $flw = $this->Util()->isValidateDate($_POST["lastDateWorkflow_$servId"],'d-m-Y')&&$status=='bajaParcial'?$this->Util()->FormatDateMySql($_POST["lastDateWorkflow_$servId"]):'0000-00-00';
+            $costo = $_POST["costo_$servId"];
+            $io = $this->Util()->isValidateDate($_POST["io_$servId"],'d-m-Y')?$this->Util()->FormatDateMySql($_POST["io_$servId"]):false;
+            $if = $_POST["if_$servId"]!=''?$this->Util()->FormatDateMySql($_POST["if_$servId"]):'0000-00-00';
+
+            $sql = "UPDATE servicio SET
+                    costo ='$costo',
+                    inicioOperaciones = '$io',
+                    inicioFactura = '$if',
+                    lastDateWorkflow = '$flw',
+                    status = '$status'
+                    WHERE servicioId ='$servId' and contractId='$contratoId'
+                   ";
+            $this->Util()->DB()->setQuery($sql);
+            $affect = $this->Util()->DB()->UpdateData();
+            if($affect>0){
+                $servs[] = $servId;
+                $actualizados++;
+                if($_POST["beforeStatus_$servId"]!=$_POST["status_$servId"]){
+                    switch($_POST["status_$servId"]){
+                        case 'activo':
+                            $evento = "reactivacion";
+                        break;
+                        default:
+                            $evento = $_POST["status_$servId"];
+                        break;
+                    }
+                }else
+                    $evento =  "modificacion";
+
+                $log->saveHistoryChangesServicios($servId,$if,$evento,$costo,$_SESSION['User']['userId'],$io,'',$flw);
+            }
+        }
+        $log->sendLogMultipleOperation($servs,$contratoId);
+        $this->Util()->setError(0, 'complete', 'Se han modificado los servicios correctamente. ');
+        $this->Util()->PrintErrors();
         return true;
     }
 }
