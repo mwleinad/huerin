@@ -40,3 +40,11 @@ form .medium { width:75% !important; }
 form .wide { width:98% !important; }
 .smallInput { width:60% !important; }
 .largeInput { width:97% !important; }
+
+.xsmallIn { width:65px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.smallIn { width:150px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.smallIn2 { width:90px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.mediumIn { width:350px; !important;}
+.mediumIn2 { width:300px; !important; }
+.wideIn { width:890px; !important; }
+.wideIn2 { width:670px; !important; }

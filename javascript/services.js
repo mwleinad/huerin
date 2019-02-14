@@ -1,4 +1,5 @@
 var AJAX_PATH = WEB_ROOT+'/ajax/services.php';
+var selectedData = [];
 Event.observe(window, 'load', function() {
 	//Event.observe($('addCustomer'), "click", AddCustomerDiv);
 
@@ -246,7 +247,6 @@ jQ(document).on('click','.spanActivate',function (e) {
     {
         return;
     }
-
     jQ.ajax({
 		url:WEB_ROOT+"/ajax/services.php",
 		type:"post",
@@ -260,3 +260,73 @@ jQ(document).on('click','.spanActivate',function (e) {
 	})
 
 })
+/*
+  funciones para componer arrays de sercvicios
+*/
+function removeElementByIndex(value,arr){
+    return arr.filter(function(val){
+        return val.servicioId!=value;
+    })
+}
+jQ(document).on('click','.checkServs',function(){
+    if(jQ(this).is(':checked'))
+	{
+		var row = jQ(this).data('row');
+		selectedData.push(row);
+	}else{
+        selectedData = removeElementByIndex(this.id,selectedData);
+	}
+
+});
+jQ(document).on('click','.spanMultipleOperation',function (e) {
+	 if(selectedData.length<=0){
+         ShowErrorOnPopup('Es necesario seleccionar un servicio. ',true);
+         return;
+	 }
+     jQ.ajax({
+        url:WEB_ROOT+"/ajax/services.php",
+        type:"post",
+        data:{type:'multipleOperationPopUp','datos':JSON.stringify(selectedData),contractId:jQ(this).data('contrato')},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error: function(){ alert('Something went wrong...') }
+    });
+});
+jQ(document).on('change','.servModStatus',function(){
+    if(this.value=='bajaParcial')
+        jQ("#divLast_"+jQ(this).data('serv')).show();
+    else
+        jQ("#divLast_"+jQ(this).data('serv')).hide();
+
+});
+jQ(document).on('click','#btnSaveMultServ',function(){
+    var form = jQ(this).parents('form:first');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/services.php',
+        method:'post',
+        data:form.serialize(true),
+        beforeSend:function(){
+            jQ('#btnSaveMultServ').hide();
+            jQ('#loading-img-mul').show();
+        },
+        success:function(response){
+            var splitResp =  response.split("[#]");
+            if(splitResp[0]=='ok'){
+                jQ('#loading-img').hide();
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#contenido').html(splitResp[2]);
+                close_popup();
+                selectedData = [];
+            }
+            else{
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#btnSaveMultServ').show();
+                jQ('#loading-img-mul').hide();
+            }
+        }
+    });
+});
+

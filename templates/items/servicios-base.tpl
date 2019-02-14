@@ -1,5 +1,8 @@
 {foreach from=$servicios item=item key=key}
 	<tr id="1">
+		<td align="center" class="id">
+			<input type="checkbox" name="servs" class="checkServs" data-row='{$item.dataJson}' id="{$item.servicioId}">
+		</td>
 		<td align="center" class="id">{$item.name}</td>
 		<td align="center" class="id">{$item.nombreServicio}</td>
 		<td align="center">

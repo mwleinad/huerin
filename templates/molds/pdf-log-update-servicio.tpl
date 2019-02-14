@@ -109,14 +109,15 @@
 <table cellpadding="0" cellspacing="0" class="tableFullWidth">
     <thead>
     <tr>
-        <th colspan="6" class="titleCenter">Servicios modificados</th>
+        <th colspan="7" class="titleCenter">Servicios modificados</th>
     </tr>
     <tr>
         <th>Razon social</th>
         <th>Servicio</th>
         <th>Inicio operacion</th>
         <th>Inicio facturacion</th>
-        <th>Costo</th
+        <th>Costo</th>
+        <th>ultimo workflow</th>
         <th>Status</th>
     </tr>
     </thead>
@@ -128,44 +129,47 @@
             <td>{$item.inicioOperaciones}</td>
             <td>{$item.inicioFactura}</td>
             <td>{$item.costo|number_format:2:',':'.'}</td>
-            <td>{$item.status}</td>
+            <td>{if $item.status eq "bajaParcial"}{$item.lastDateWorkflow}{else}N/A{/if}</td>
+            <td>{if $item.status eq "readonly"}Activo/Solo lectura{elseif $item.status eq "bajaParcial"}Baja temporal{else}{$item.status}{/if}</td>
         </tr>
         <tr class="history">
             <td class="cell20"></td>
-             <td colspan="5">
+             <td colspan="6">
                  <table class="tableHistory titleCenterHistory">
                      <thead>
                          <tr>
-                             <th colspan="6" class="titleCenter titleHistory">Datos anteriores</th>
+                             <th colspan="7" class="titleCenter titleHistory">Movimientos anteriores</th>
                          </tr>
                          <tr>
-                             <th>Modificado por</th>
+                             <th>Realizado por</th>
+                             <th>Fecha movimiento</th>
                              <th>Inicio operaciones</th>
                              <th>Inicio factura</th>
                              <th>Costo</th>
-                             <th>Fecha modificacion</th>
-                             <th>Operacion</th>
+                             <th>ultimo workflow</th>
+                             <th>operacion</th>
                          </tr>
                      </thead>
                   <tbody>
                      {foreach from=$item.history  key=key2 item=hist}
                          <tr>
                              <td>{$hist.namePerson}</td>
+                             <td>{$hist.fecha}</td>
                              <td>{$hist.inicioOperaciones}</td>
                              <td>{$hist.inicioFactura}</td>
                              <td>{$hist.costo|number_format:2:',':'.'}</td>
-                             <td>{$hist.fecha}</td>
-                             <td>{$hist.status}</td>
+                             <td>{if $hist.status eq "bajaParcial"}{$hist.lastDateWorkflow}{else}N/A{/if}</td>
+                             <td>{if $hist.status eq "activo"}Reactivado{elseif $hist.status eq "readonly"}Reactivado/Solo lectura{elseif $hist.status eq "bajaParcial"}Baja temporal{else}{$hist.status}{/if}</td>
                          </tr>
                      {foreachelse}
-                         <tr><td colspan="6">Datos anteriores no encontrados</td></tr>
+                         <tr><td colspan="7">Datos anteriores no encontrados</td></tr>
                      {/foreach}
                   </tbody>
                  </table>
              </td>
         </tr>
         {foreachelse}
-        <tr><td colspan="6" class="textCenter">No se realizo ninguna modificacion</td></tr>
+        <tr><td colspan="7" class="textCenter">No se realizo ninguna modificacion</td></tr>
     {/foreach}
     </tbody>
 </table>
