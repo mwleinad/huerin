@@ -1205,6 +1205,14 @@ function SubordinadosDetails()
         }
         return $idPersons;
     }
+    public function getCurrentUser(){
+        $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
+        $row= $this->Util()->DB()->GetRow();
+        if($_SESSION['User']['tipoPers']=='Admin'){
+            $row['name'] = "Administrador de sistema";
+        }
+        return $row;
+    }
     
 }
 
