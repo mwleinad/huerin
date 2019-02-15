@@ -104,7 +104,8 @@
         <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
     </head>
 <body>
-<p><b>Se han realizado multiples cambios en los servicios de la siguiente razon social :</b></p>
+    {*Complemento de pagos*}
+    {include file="{$DOC_ROOT}/templates/molds/body-email-multiple.tpl"}
     <table cellpadding="0" cellspacing="0" class="tableFullWidth">
         <tr>
             <td class="fieldBoldBackground alignJustify">Cliente</td>

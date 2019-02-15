@@ -623,31 +623,33 @@ class Log extends Util
         $this->Util()->DB()->InsertData();
     }
     function sendLogMultipleOperation($cambios = [],$contractId){
-        global $contract,$contractRep;
+        global $contract,$contractRep,$personal;
         if(empty($cambios))
             return false;
 
         $contract->setContractId($contractId);
         $contrato = $contract->Info();
         $encargados = $contractRep->encargadosArea($contractId);
-
         $ftr['incluirJefes'] = true;
         $ftr['sendBraun']=false;
-        $ftr['sendHuerin']=true;
-
-
+        $ftr['sendHuerin']=false;
+        //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
+        $ftr['level'] = 3;
         $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
-        //dd($detalles);
-
+        $emails= $detalles['encargados'];
         $changes = $this->findHistoryLogServicio($cambios);
+        $currentUser =  $personal->getCurrentUser();
 
         $dompdf =  new Dompdf();
+        $this->Util()->Smarty()->assign("currentUser",$currentUser);
         $this->Util()->Smarty()->assign("contrato",$contrato);
         $this->Util()->Smarty()->assign("encargados",$encargados);
         $this->Util()->Smarty()->assign("servicios",$changes);
+        $this->Util()->Smarty()->assign("DOC_ROOT",DOC_ROOT);
         $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-multiple-operation.tpl");
-        $dompdf->loadHtml($html);
+        $body =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/body-email-multiple.tpl");
 
+        $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         $fileName  = $_SESSION['User']['userId']."_log_multiple_operation.pdf";
@@ -656,7 +658,8 @@ class Log extends Util
 
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
-        $send->Prepare('NOTIFACION DE CAMBIOS EN PLATAFORMA',"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
+
+        $send->PrepareMultipleNotice('NOTIFACION DE CAMBIOS EN PLATAFORMA',$body,$emails,"",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma",true);
         @unlink($file);
     }
     function sendLogUpdateServicios($cambios = []){
@@ -681,7 +684,7 @@ class Log extends Util
         $send->Prepare('NOTIFACION DE CAMBIOS EN PLATAFORMA',"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
         @unlink($file);
 	}
-    /*
+     /*
      * encontrar el historial del elemento dado
      */
     function findHistoryLogServicio($servicios = []){

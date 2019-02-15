@@ -1425,6 +1425,9 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 	}
     function ConvertToLineal($array=array(),$field){
         $newArray = array();
+        if(!is_array($array))
+            $array = [];
+
         foreach($array as $k=>$val)
             if($field=='email'){
                if($this->Util()->ValidateEmail($val[$field]))
