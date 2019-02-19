@@ -51,8 +51,6 @@ class CronServicio extends Contract
                 $this->Util()->DB()->UpdateData();
                 return $fechas_workflow;
             }
-
-
             $isChangeDateIo =  false;
             $sqlFirst= "select min(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ";
             $this->Util()->DB()->setQuery($sqlFirst);
@@ -63,6 +61,11 @@ class CronServicio extends Contract
                 //si primer workflow es mayor que  fecha inicio operaciones, $siguienteWorkflow=Fecha inicio operaciones
                 if($primerWorkflowCreado>$inicioOperaciones)
                     $isChangeDateIo =  true;
+                //limitar que la siguiente condicion aplique a solo anual
+                if($serv['periodicidad']=='Anual'){
+                    if($primerWorkflowCreado!=$inicioOperaciones)
+                    $isChangeDateIo =  true;
+                }
             }
             if(!$isChangeDateIo){
                 //utilizando la periodicidad , encontrar fecha del proximo. solo si no es un workflow inicial y ademas la fecha inicial
@@ -107,6 +110,12 @@ class CronServicio extends Contract
                     $fexplode[1] = "0".$fexplode[1];
                 $siguienteWorkflow =$fexplode[0]."-".$fexplode[1]."-01";
             }
+        }
+        //PRECIERRE MENSUAL
+        if($serv['tipoServicioId']==PRECIERREREVMENSUAL){
+            $mesPre = (int)date('m',strtotime($siguienteWorkflow));
+            if($mesPre<6)
+                return $fechas_workflow;
         }
         //una ves encontrado los extremos, encontrar las fechas que se van a dar de alta,esto puede variar desde cero a muchos
         //los eventuales son por una sola vez, no tiene caso pasar por una busqueda, solo entraran al arreglo las fechas menores o iguales a $fechaCorriente

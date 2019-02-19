@@ -61,6 +61,7 @@ define("IDBRAUN", 56);
 define("IDHUERIN", 13);
 define("PRECIERRE", 36);
 define("PRECIERREAUDITADO", 52);
+define("PRECIERREREVMENSUAL", 57);
 define("INICIO_ADEUDO", '2018-01-01');
 define("IDSUP", 201);
 define("ITER_LIMIT", 5);
