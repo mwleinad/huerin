@@ -20,14 +20,12 @@ include_once(DOC_ROOT.'/libraries.php');
 $timeStart = date("d-m-Y").' a las '.date('H:i:s');
 $inicioFin = $util->inicio_fin_semana(date('Y-m-d'));
 $cadLog="";
-$sql = "SELECT * FROM personal WHERE tipoPersonal NOT IN('Socio','Coordinador') 
+$sql = "SELECT name,email,personalId FROM personal WHERE tipoPersonal NOT IN('Socio','Coordinador') 
         AND (lastSendEmail < DATE(NOW()) OR lastSendEmail IS NULL) ORDER BY personalId ASC LIMIT 3";
 $db->setQuery($sql);
 $employees = $db->GetResult($sql);
 
-$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
-					WHERE class = ''";
-$db->setQuery($sql);
+$db->setQuery("UPDATE instanciaServicio SET class = 'PorIniciar' WHERE class = ''");
 $db->UpdateData();
 $arrayBase =  array();
 $con = 0;
@@ -48,7 +46,9 @@ foreach($employees as $key=>$itemEmploye) {
     $deptos  = $util->ConvertToLineal($subordinados, 'dptoId');
 
     array_unshift($persons, $itemEmploye['personalId']);
-    array_unshift($deptos, $itemEmploye['departamentoId']);
+    if($itemEmploye['departamentoId']>0)
+        array_unshift($deptos, $itemEmploye['departamentoId']);
+
     $contracts = $contractRep->BuscarContractV2($persons,true,$deptos);
     if(empty($contracts))
     {
@@ -70,7 +70,6 @@ foreach($employees as $key=>$itemEmploye) {
             $idContracts[] = $contractId;
             $contratosClte[$customerId][] = $res;
         }
-
     }//foreach
     $clientes = array();
     foreach ($idClientes as $customerId) {
@@ -103,9 +102,6 @@ foreach($employees as $key=>$itemEmploye) {
                 $permisos[$idDepto] = $nomPers;
                 $permisos2[$idDepto] = $idPersonal;
             }
-
-            //$personal->setPersonalId($con['responsableCuenta']);
-            //$con['responsable'] = $personal->Info();
             $servicios = array();
             $serviciosAtrasados = array();
             $keyServAtrasado = 0;
@@ -121,10 +117,6 @@ foreach($employees as $key=>$itemEmploye) {
                     $servicios[] = $serv;
                 else
                     continue;
-                /*if(!empty($noCompletados))
-                    $servicios[] = $serv;
-                else
-                    continue ;*/
             }//foreach
             $con['instanciasServicio'] = $servicios;
             $contratos[] = $con;
@@ -133,8 +125,6 @@ foreach($employees as $key=>$itemEmploye) {
         $clte['contracts'] = $contratos;
         $resClientes[] = $clte;
     }//foreach
-
-
     $cleanedArray = array();
     foreach ($resClientes as $key => $custItem) {
         foreach ($custItem["contracts"] as $keyContract => $conta) {
@@ -151,7 +141,6 @@ foreach($employees as $key=>$itemEmploye) {
             }
         }
     }
-
     $last = $util->getLastDayMonth(date('Y'), date('m'));
     $smarty->assign("cleanedArray", $cleanedArray);
     $contents2 = $smarty->fetch(DOC_ROOT . '/templates/lists/report-clientes-atrasados.tpl');
@@ -173,7 +162,7 @@ foreach($employees as $key=>$itemEmploye) {
     $toName = $itemEmploye["name"];
     $attachment = DOC_ROOT . "/sendFiles/".$fileNameDay.".xlsx";
 
-    //$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
+    $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileNameDay.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ENVIOS AUTOMATICOS") ;
     $up = 'UPDATE personal SET lastSendEmail=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
     $cadLog .="ACTUALIZACION REALIZADA : ".$up.chr(13).chr(10);
     $cadLog .=$itemEmploye['personalId']." correo enviado a : ".$itemEmploye['email'].chr(13).chr(10);
@@ -191,6 +180,6 @@ if ( $open ) {
     fclose($open);
     if ($con > 0) {
         $sendmail = new SendMail;
-        $sendmail->Prepare('LOG ATRASADOS', 'logs atrasados', 'isc061990@outlook.com', 'HBKRUZPE', $file, 'atrasadosLog.txt', '', '', FROM_MAIL);
+        $sendmail->Prepare('LOG ATRASADOS', 'logs atrasados', EMAIL_DEV, 'HBKRUZPE', $file, 'atrasadosLog.txt', '', '', FROM_MAIL);
     }
 }
