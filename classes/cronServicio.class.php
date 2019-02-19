@@ -94,7 +94,7 @@ class CronServicio extends Contract
         }
         //precierres y rifs deben evaluarse que se abran en el mes que se debe, precierres abre junio,agosto,octubre,diciembre
         //rif abre en meses pares
-        if($serv["tipoServicioId"]==PRECIERRE || $serv["tipoServicioId"]==PRECIERREAUDITADO){
+        if($serv["tipoServicioId"]==PRECIERRE || $serv["tipoServicioId"]==PRECIERREAUDITADO || $serv['tipoServicioId']==PRECIERREREVMENSUAL){
             $mesPre = (int)date('m',strtotime($siguienteWorkflow));
             $monthMod = $servicio->OverwriteMonth($mesPre);
             $fexplode = explode('-',$siguienteWorkflow);
@@ -111,12 +111,6 @@ class CronServicio extends Contract
                 $siguienteWorkflow =$fexplode[0]."-".$fexplode[1]."-01";
             }
         }
-        //PRECIERRE MENSUAL
-        if($serv['tipoServicioId']==PRECIERREREVMENSUAL){
-            $mesPre = (int)date('m',strtotime($siguienteWorkflow));
-            if($mesPre<6)
-                return $fechas_workflow;
-        }
         //una ves encontrado los extremos, encontrar las fechas que se van a dar de alta,esto puede variar desde cero a muchos
         //los eventuales son por una sola vez, no tiene caso pasar por una busqueda, solo entraran al arreglo las fechas menores o iguales a $fechaCorriente
         if($serv['periodicidad']!='Eventual') {
@@ -132,7 +126,7 @@ class CronServicio extends Contract
                         $fechaCorriente = $fechaLastWorkflow;
                 }
             }
-            //este ciclo es exclusivo para los servicios que estan al corriente , en otro ciclo tratar los que se cambiaron de inicio de operaciones
+            //fomar array de fechas
             while ($siguienteWorkflow <= $fechaCorriente){
                 //comprobar que no exista workflow si existe no tomarlo en cuenta en el array
                 $strNext="select instanciaServicioId from instanciaServicio where servicioId='".$serv['servicioId']."' and date='".$siguienteWorkflow."' ";
