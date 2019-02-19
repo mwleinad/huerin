@@ -142,7 +142,7 @@ class InstanciaServicio extends  Servicio
         return $data;
     }
     function getOnlyAtrasados($servicioId){
-        $sql = "SELECT 
+       $sql = "SELECT 
                 class,
                 YEAR(instanciaServicio.date) as anio,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
@@ -150,13 +150,11 @@ class InstanciaServicio extends  Servicio
 				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (instanciaServicio.date >='2017-01-01' AND instanciaServicio.date<DATE(NOW()))
 				AND instanciaServicio.class IN ('PorIniciar','PorCompletar','Iniciado')
-				AND (servicio.status != 'baja'
-      			OR servicio.status != 'inactiva')
+				AND servicio.status NOT IN('baja','inactiva')
 				AND instanciaServicio.status != 'baja'		
 				AND servicio.servicioId = '".$servicioId."' group by instanciaServicio.date ORDER BY YEAR(instanciaServicio.date) DESC, MONTH(instanciaServicio.date) ASC";
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
-
         return $data;
     }
     function getSumaBonoTrimestre($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false){

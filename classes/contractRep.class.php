@@ -146,9 +146,9 @@ class ContractRep extends Main
             }
             //Checamos Servicios
            $sql = "SELECT * FROM servicio
-					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+					LEFT JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
 					WHERE contractId = '".$res["contractId"]."'
-					AND (servicio.status = 'activo' OR servicio.status='bajaParcial')
+					AND servicio.status IN ('activo','bajaParcial')
 					".$sqlDepto."
 					ORDER BY tipoServicio.nombreServicio ASC";
             $this->Util()->DB()->setQuery($sql);
