@@ -1,25 +1,23 @@
-Event.observe(window, 'load', function() {
-	//Event.observe($('addContract'), "click", AddContractDiv);
-	AddEditContractListeners = function(e) {
-		var el = e.element();
-		var del = el.hasClassName('spanDelete');
-		var id = el.identify();
-		if(del == true)
+var services = [];
+jQ(document).ready(function () {
+	var AddEditContractListeners = function () {
+		var del = jQ(this).hasClass('spanAddService');
+        var id = this.id;
+		if(del==true){
+            AddServicePopup(id);
+ 			return;
+		}
+        var del = jQ(this).hasClass('spanDelete');
+        var id = this.id;
+        if(del == true)
 		{
 			DeleteContractPopup(id);
 			return;
 		}
-		del = el.hasClassName('spanAddService');
-		if(del == true)
-		{
-			AddServicePopup(id);
-			return;
-		}
-
-	}
-	$('contenido').observe("click", AddEditContractListeners);
-
+    }
+    jQ("#contenido").on('click','*',AddEditContractListeners);
 });
+
 function AddServicePopup(id)
 {
 	grayOut(true);
@@ -30,6 +28,7 @@ function AddServicePopup(id)
 		grayOut(false);
 		return;
 	}
+
 	new Ajax.Request(WEB_ROOT+'/ajax/services.php',
 	{
 		method:'post',
@@ -266,3 +265,45 @@ function doTransferContract(){
         }
     });
 }
+//agregar multiple servicio
+jQ(document).on('click','#addItemService',function () {
+	var frm = jQ(this).parents('form:first');
+	 var form = new FormData(frm[0]);
+	 form.set('type','addItemService');
+	jQ.ajax({
+        url:WEB_ROOT+"/ajax/services.php",
+        data:form,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#addItemService').hide();
+        },
+        success: function(response){
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                jQ('#contenidoItems').html(splitResp[2]);
+                jQ('#addItemService').show();
+                frm[0].reset();
+            }
+            else{
+                jQ('#addItemService').show();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        }
+
+	});
+
+});
+//delete multiple servicio
+jQ(document).on('click','.spanDeleteItemService',function () {
+    jQ.ajax({
+        url:WEB_ROOT+"/ajax/services.php",
+        data:{type:'delItemService',id:this.id},
+        type: 'POST',
+        success: function(response){
+            var splitResp = response.split("[#]");
+            jQ('#contenidoItems').html(splitResp[2]);
+        }
+    });
+});

@@ -12,5 +12,5 @@
 	</div>
 </div>
 <div class="wrapper">
-	{include file="{$DOC_ROOT}/templates/forms/add-servicio.tpl"}
+	{include file="{$DOC_ROOT}/templates/forms/add-multiple-servicio.tpl"}
 </div>

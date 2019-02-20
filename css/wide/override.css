@@ -41,10 +41,42 @@ form .wide { width:98% !important; }
 .smallInput { width:60% !important; }
 .largeInput { width:97% !important; }
 
-.xsmallIn { width:65px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.xsmallIn {width:65px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
 .smallIn { width:150px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
-.smallIn2 { width:90px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
-.mediumIn { width:350px; !important;}
-.mediumIn2 { width:300px; !important; }
+.smallIn2 {width:90px; !important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.mediumIn {width:350px;!important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
+.mediumIn2 {width:300px;!important;  padding:3px 3px; border:1px solid #999; background:#FFFFE6; font-size:12px !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif !important; color: #333 !important; font-style:italic; }
 .wideIn { width:890px; !important; }
 .wideIn2 { width:670px; !important; }
+
+.tableCustom100{
+	width: 100%
+}
+.cell10{
+	width: 10%;
+}
+.cell20{
+	text-align: center;
+	width: 20%;
+ }
+.cell30{
+	width:30%;
+}
+.cell40{
+	width:40%;
+}
+.cell50{
+	width:50%;
+}
+.cell60{
+	width:60%;
+}
+.cell70{
+	width:70%;
+}
+.cell80{
+	width:80%;
+}
+.cell90{
+	width:80%;
+}

@@ -593,7 +593,7 @@ class Log extends Util
         $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
         $nombrePersonal = $this->Util()->DB()->GetSingle();
         if($_SESSION['User']['tipoPers']=='Admin')
-            $nombrePersonal="Administrador de sistema(desarrollador)";
+            $nombrePersonal="Administrador de sistema";
 
         $this->Util()->DB()->setQuery("
 			INSERT INTO
@@ -622,7 +622,7 @@ class Log extends Util
 		    )");
         $this->Util()->DB()->InsertData();
     }
-    function sendLogMultipleOperation($cambios = [],$contractId){
+    function sendLogMultipleOperation($cambios = [],$contractId,$tipo='up',$actuales=[]){
         global $contract,$contractRep,$personal;
         if(empty($cambios))
             return false;
@@ -639,27 +639,36 @@ class Log extends Util
         $emails= $detalles['encargados'];
         $changes = $this->findHistoryLogServicio($cambios);
         $currentUser =  $personal->getCurrentUser();
-
-        $dompdf =  new Dompdf();
         $this->Util()->Smarty()->assign("currentUser",$currentUser);
         $this->Util()->Smarty()->assign("contrato",$contrato);
         $this->Util()->Smarty()->assign("encargados",$encargados);
         $this->Util()->Smarty()->assign("servicios",$changes);
         $this->Util()->Smarty()->assign("DOC_ROOT",DOC_ROOT);
-        $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-multiple-operation.tpl");
-        $body =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/body-email-multiple.tpl");
+        switch($tipo){
+            case 'up':
+                $this->Util()->Smarty()->assign("tipo","up");
+                $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-multiple-operation.tpl");
+                $body =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/body-email-multiple.tpl");
+            break;
+            case 'new':
 
+                $this->Util()->Smarty()->assign("tipo","new");
+                $this->Util()->Smarty()->assign("actuales",$actuales);
+                $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-add-multiple.tpl");
+                $body =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/body-email-multiple.tpl");
+            break;
+        }
+        $dompdf =  new Dompdf();
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         $fileName  = $_SESSION['User']['userId']."_log_multiple_operation.pdf";
         $output =  $dompdf->output();
         file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
-
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
-
-        $send->PrepareMultipleNotice('NOTIFACION DE CAMBIOS EN PLATAFORMA',$body,$emails,"",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma",true);
+        $subject = "NOTIFICACION DE CAMBIOS EN PLATAFORMA";
+        $send->PrepareMultipleNotice($subject,$body,$emails,"",$file,$fileName,"","","noreply@braunhuerin.com.mx","Administrador plataforma",true);
         @unlink($file);
     }
     function sendLogUpdateServicios($cambios = []){
