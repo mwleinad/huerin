@@ -154,7 +154,7 @@ class CronServicio extends Contract
                 }
                 $siguienteWorkflow = strtotime($add, strtotime($siguienteWorkflow));
                 $siguienteWorkflow = date('Y-m-d', $siguienteWorkflow);
-                if ($serv["tipoServicioId"] == PRECIERRE || $serv["tipoServicioId"] == PRECIERREAUDITADO) {
+                if ($serv["tipoServicioId"] == PRECIERRE || $serv["tipoServicioId"] == PRECIERREAUDITADO || $serv['tipoServicioId']==PRECIERREREVMENSUAL) {
                     $mesPre = (int)date('m', strtotime($siguienteWorkflow));
                     $monthMod = $servicio->OverwriteMonth($mesPre);
                     $fexplode = explode('-', $siguienteWorkflow);
