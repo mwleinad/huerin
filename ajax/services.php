@@ -53,24 +53,47 @@ switch($_POST["type"])
 			}
 		
 		break;	
-	case "addServicio": 
-			
+	case "addServicio":
+	         if(isset($_SESSION["itemsServices"]))
+	             unset($_SESSION['itemsServices']);
+
 			$tiposDeServicio = $tipoServicio->EnumerateAll();
 			$smarty->assign("tiposDeServicio", $tiposDeServicio);
 			$smarty->assign("contractId", $_POST["id"]);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-servicio-popup.tpl');
-		
-		break;	
-		
+	break;
+    case "addItemService":
+        $servicio->setTipoServicioId($_POST['tipoServicioId']);
+        $servicio->setInicioFactura($_POST['inicioFactura']);
+        $servicio->setInicioOperaciones($_POST['inicioOperaciones']);
+        $servicio->setCosto($_POST['costo']);
+        if($servicio->SaveItemInSession()){
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $smarty->assign("itemsServices",$_SESSION['itemsServices']);
+            $smarty->display(DOC_ROOT.'/templates/lists/multiple-services-items.tpl');
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+    break;
+    case "delItemService":
+        $key = $_POST['id'];
+        $servicio->deleteItemInSession($key);
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        echo "[#]";
+        $smarty->assign("itemsServices",$_SESSION['itemsServices']);
+        $smarty->display(DOC_ROOT.'/templates/lists/multiple-services-items.tpl');
+    break;
 	case "saveAddServicio":
-	
 			$servicio->setContractId($_POST['contractId']);
-			$servicio->setTipoServicioId($_POST['tipoServicioId']);			
+			$servicio->setTipoServicioId($_POST['tipoServicioId']);
 			$servicio->setCosto($_POST['costo']);
 			$servicio->setInicioFactura($_POST['inicioFactura']);
 			$servicio->setInicioOperaciones($_POST['inicioOperaciones']);
-			
 			$servicioId = $servicio->Save();
 			if(!$servicioId)
 			{
@@ -112,8 +135,33 @@ switch($_POST["type"])
 				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			}
 			
-		break;
-		
+	break;
+    case "saveMultipleServicio":
+          $servicio->setContractId($_POST['contractId']);
+          if($servicio->saveMultipleServicio()){
+              echo "ok[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+              echo "[#]";
+
+              //echo $_POST['contractId'];
+              $contract->setContractId($_POST['contractId']);
+              $info = $contract->Info();
+
+              $contract->setCustomerId($info["customerId"]);
+              $resContracts = $contract->Enumerate($info["customerId"]);
+
+              $empleados = $personal->Enumerate();
+              $empleados = $util->EncodeResult($empleados);
+              $smarty->assign("empleados", $empleados);
+
+              $smarty->assign("contracts", $resContracts);
+              $smarty->assign("DOC_ROOT", DOC_ROOT);
+              $smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
+          }else{
+              echo "fail[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+          }
+    break;
 	case "activateService":
 			$servicioId = $_POST['servicioId'];
 			$servicio->setServicioId($servicioId);

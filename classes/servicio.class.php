@@ -10,7 +10,7 @@ class Servicio extends Contract
 		$this->Util()->ValidateInteger($value);
 		if($value == 0)
 		{
-			$this->Util()->setError(10055, 'error', '', 'Por favor, escoge un servicio');
+			$this->Util()->setError(10055, 'error', 'Por favor, seleccionar un servicio' );
 		}
 		$this->tipoServicioId = $value;
 	}
@@ -30,14 +30,16 @@ class Servicio extends Contract
 	private $inicioFactura;
 	public function setInicioFactura($value)
 	{
-		$value = $this->Util()->FormatDateMySql($value);
-		$this->inicioFactura = $value;
+	    if($value!=''){
+            $this->Util()->validateDateFormat($value,"Inicio factura");
+            $value = $this->Util()->FormatDateMySql($value);
+            $this->inicioFactura = $value;
+        }
 	}
-
 	private $inicioOperaciones;
 	public function setInicioOperaciones($value)
 	{
-		//$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Inicio Operaciones");
+        $this->Util()->validateDateFormat($value,"Inicio operaciones");
 		$value = $this->Util()->FormatDateMySql($value);
 		$this->inicioOperaciones = $value;
 	}
@@ -46,12 +48,14 @@ class Servicio extends Contract
 		$this->Util()->ValidateInteger($value);
 		$this->servicioId = $value;
 	}
-
 	public function getServicioId()
 	{
 		return $this->servicioId;
 	}
-	
+	public function getInfoTipoServicio($field){
+	    $this->Util()->DB()->setQuery("select $field from tipoServicio where tipoServicioId='$this->tipoServicioId'");
+	    return $this->Util()->DB()->GetSingle();
+    }
 	private $_instanciaServicioId;
 	public function setInstanciaServicioId($value) {
 		$this->instanciaServicioId = $value; 
@@ -1376,5 +1380,92 @@ class Servicio extends Contract
         $this->Util()->setError(0, 'complete', 'Se han modificado los servicios correctamente. ');
         $this->Util()->PrintErrors();
         return true;
+    }
+    public function cleanItemsServices(){
+	    if(isset($_SESSION['itemsServices']));
+	       unset($_SESSION['itemsServices']);
+    }
+    public function validateItemsServices(){
+        if(isset($_SESSION['itemsServices']))
+        {
+            if(empty($_SESSION['itemsServices']))
+                $this->Util()->setError(0,'error','Es necesario agregar al menos un servicio.');
+        }else
+          $this->Util()->setError(0,'error','Es necesario agregar al menos un servicio.');
+    }
+    public function saveItemInSession(){
+	    if($this->Util()->PrintErrors())
+	        return false;
+
+	    if(!isset($_SESSION['itemsServices']))
+	        $_SESSION['itemsServices'] = [];
+
+	    end($_SESSION['itemsServices']);
+	    $llave = key($_SESSION['itemsServices'])+1;
+	    $_SESSION['itemsServices'][$llave]['tipoServicioId']=$this->tipoServicioId;
+        $_SESSION['itemsServices'][$llave]['nombreServicio']=$this->getInfoTipoServicio('nombreServicio');
+        $_SESSION['itemsServices'][$llave]['inicioOperaciones']=$this->inicioOperaciones;
+        $_SESSION['itemsServices'][$llave]['inicioFactura']=$this->inicioFactura;
+        $_SESSION['itemsServices'][$llave]['costo']=$this->costo;
+        $this->Util()->setError(0,'complete',"Servicio agregado correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    public function deleteItemInSession($key){
+	    unset($_SESSION["itemsServices"][$key]);
+	    $this->Util()->setError(0,'complete',"Servicio eliminado correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+	}
+	public function saveMultipleServicio(){
+	    global $customer;
+	    $this->validateItemsServices();
+	   if($this->Util()->PrintErrors())
+	       return false;
+	   global $log;
+       $id_services = [];
+        $conId =  $this->getContractId();
+       $actuales = $customer->GetServicesByContract($conId);
+	   foreach($_SESSION['itemsServices'] as $key=>$value){
+	       $tpServId = $value['tipoServicioId'];
+           $io = $value['inicioOperaciones'];
+           $if = $value['inicioFactura'];
+           $cst= $value['costo'];
+           $sql = "INSERT INTO servicio(
+                 contractId,
+                 tipoServicioId,
+                 inicioOperaciones,
+                 inicioFactura,
+                 costo,
+                 status                        
+                )VALUES(
+                '$conId',
+                '$tpServId',
+                '$io',
+                '$if',
+                '$cst',
+                'activo'
+                )
+               ";
+	     $this->Util()->DB()->setQuery($sql);
+	     $lastId = $this->Util()->DB()->InsertData();
+	     $id_services[] = $lastId;
+	     $log->saveHistoryChangesServicios($lastId,$if,'activo',$cst,0,$io);
+	     $this->setServicioId($lastId);
+         $newServicio = $this->InfoLog();
+         $log->setPersonalId($_SESSION['User']['userId']);
+         $log->setFecha(date('Y-m-d H:i:s'));
+         $log->setTabla('servicio');
+         $log->setTablaId($lastId);
+         $log->setAction('Insert');
+         $log->setOldValue('');
+         $log->setNewValue(serialize($newServicio));
+         $log->SaveOnly();
+       }
+       $log->sendLogMultipleOperation($id_services,$conId,'new',$actuales);
+	   $this->cleanItemsServices();
+       $this->Util()->setError(0,'complete',"Se han guardado correctamente los servicios.");
+       $this->Util()->PrintErrors();
+	   return true;
     }
 }

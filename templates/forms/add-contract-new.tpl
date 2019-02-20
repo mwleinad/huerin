@@ -1,8 +1,6 @@
 <form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post" autocomplete="off">
 <input type="hidden" name="action" value="save" />
-
-	{include file="{$DOC_ROOT}/templates/forms/add-contract-basic.tpl"}
-
+{include file="{$DOC_ROOT}/templates/forms/add-contract-basic.tpl"}
 <div id="infoCompraVenta2" style="display:block">
 	{include file="{$DOC_ROOT}/templates/forms/datos-contacto.tpl"}
 </div>
@@ -20,5 +18,9 @@
 	{*include file="{$DOC_ROOT}/templates/forms/archivos.tpl"*}
 </div>
 
+<div style="text-align: center">
+    <div>¿ Enviar notificacion por correo ? </div>
+    <input type="checkbox" name="sendNotificacion" id="sendNotificacion">
+</div>
 
 </form>

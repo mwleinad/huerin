@@ -1793,8 +1793,8 @@ class Customer extends Main
         else
          $ftrStatus =  " AND servicio.status = '".$tipo."' ";
 
-        $this->Util()->DB->setQuery(
-          "SELECT servicioId, nombreServicio, departamentoId 
+        $this->Util()->DB()->setQuery(
+          "SELECT servicioId, nombreServicio, departamentoId,servicio.status,servicio.costo,servicio.inicioFactura,servicio.inicioOperaciones,servicio.lastDateWorkflow
           FROM servicio 
           LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
           WHERE contractId = '".$id."' $ftrStatus and tipoServicio.status='1'        
