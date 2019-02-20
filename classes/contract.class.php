@@ -1989,7 +1989,10 @@ class Contract extends Main
       $log->setAction('Insert');
       $log->setOldValue('');
       $log->setNewValue(serialize($newData));
-      $log->Save();
+      if(isset($_POST['sendNotificacion']))
+        $log->Save();
+      else
+        $log->SaveOnly();
       //actualizar historial
       $this->Util()->DB()->setQuery("
 			INSERT INTO
