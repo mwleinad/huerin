@@ -17,6 +17,7 @@
 				<div style="text-align:center"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
 			</div>
 			<div style="clear:both"></div>
+			{include file="{$DOC_ROOT}/templates/boxes/report-walmart-status.tpl"}
 		</div>
 	</div>
 	<div class="clear"></div>
