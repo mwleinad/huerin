@@ -91,6 +91,9 @@
 	<script src="{$WEB_ROOT}/javascript/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
 	<script src="{$WEB_ROOT}/javascript/add-documento.js?{$timestamp}" type="text/javascript"></script>
 {/if}
+{if $page eq 'report-bonos'}
+	<script src="{$WEB_ROOT}/javascript/autocomplete.js?{$timestamp}" type="text/javascript"></script>
+{/if}
 	<script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/ui-tree.js?{$timestamp}"></script>
 	<script src="{$WEB_ROOT}/javascript/{$page}.js?{$timestamp}" type="text/javascript"></script>
 

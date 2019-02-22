@@ -281,9 +281,115 @@ class ReporteBonos extends Main
 
 		return $StyleClassMES;
 	}
+	function generateReportBonos($ftr=[]){
+	    global $contractRep,$instanciaServicio,$customer,$personal;
+	    $year = $_POST['year'];
+	    $totalContratos =  $customer->getTotalContratosInPlatform();
+        $mesesBase = array(0=>array(),1=>array(),2=>array());
+	    $contratos = $contractRep->getContracts($ftr,true);
+        if(isset($ftr['deep']) || isset($ftr['subordinados']))
+            $data['subordinados'] = 1;//sirve para controlar texto en el reporte resultado.
+       if($ftr['responsableCuenta'])
+       {
+           $personal->setPersonalId($ftr['responsableCuenta']);
+           $responsable = $personal->Info();
+           $data['responsable'] = $responsable['name'];
+       }
 
 
+	    $totalContratosAsignados = count($contratos);
+        $granTotalContabilidad = 0;
+        $granTotalCobranza = 0;
+        $idDeps = [];
+	    foreach($contratos as $key => $value){
+	        if(!isset($value['servicios']))
+            {
+                unset($contratos[$key]);
+                continue;
+            }
+	        if(count($value['servicios'])<=0){
+                unset($contratos[$key]);
+                continue;
+            }
+	        $serviciosFiltrados = [];
+	        $countServ =  count($value['servicios']);
+	        $meses=[];
+           //encontrar los encargados de area;
+            $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
+           foreach($value['servicios'] as $ks=>$serv) {
+               $sumaTotal = 0;
+               $isParcial = false;
+               if ($serv['status']=="bajaParcial")
+                   $isParcial = true;
+               $serv['responsable'] = $encargados[$serv['departamentoId']];
 
+                switch ($ftr['period']) {
+                   case 'efm':
+                       $meses = array(1, 2, 3);
+                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
+                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                   break;
+                   case 'amj':
+                       $meses = array(4, 5, 6);
+                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
+                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                   break;
+                   case 'jas':
+                       $meses = array(7, 8, 9);
+                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
+                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                   break;
+                   case 'ond':
+                       $meses = array(10, 11, 12);
+                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
+                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                   break;
+                   default:
+                       $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
+                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                   break;
+               }
+              if(!$ftr["whitoutWorkflow"]){
+                   if(empty($temp))
+                       continue;
+               }
+
+
+               $serv['sumatotal'] =(double) $sumaTotal;
+               $serviciosFiltrados[]= $serv;
+               if($sumaTotal>0)
+                $granTotalContabilidad +=(double)$sumaTotal;
+
+           }//end foreach servicios.
+           if(count($serviciosFiltrados)<=0)
+           {
+                unset($contratos[$key]);
+                continue;
+           }
+           $card2 = [];
+           $rowCobranza=Workflow::getRowCobranzaBono($value['contractId'],$year,'I',$meses);
+           $card2["instancias"]=$rowCobranza['serv'];
+           $card2["sumatotal"]=$rowCobranza['totalCobrado'];
+           $granTotalCobranza +=$rowCobranza['totalCobrado'];
+
+           $card2["isRowCobranza"] =  true;
+           array_push( $serviciosFiltrados,$card2);
+           $contratos[$key]['servicios'] = $serviciosFiltrados;
+        }//end foreach contratos
+        $data['totalContratos'] = $totalContratos;
+	    $data['contratosAsignados'] = $totalContratosAsignados;
+	    $data['porcentajeAsignado'] = ($totalContratosAsignados*100)/$totalContratos;
+        $data['contratos'] = $contratos;
+
+        $data['granTotalContabilidad'] =$granTotalContabilidad;
+        $data['granTotalCobranza'] =$granTotalCobranza;
+        return $data;
+    }
 }
-
 ?>

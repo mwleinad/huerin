@@ -1,36 +1,3 @@
-Event.observe(window, 'load', function()
-{
-	if($('rfc'))
-	{
-		Event.observe($('rfc'), "keyup", function(){
-			SuggestUser();
-			//FillDatosFacturacion();
-		});
-	}
-
-	AddSuggestListener = function(e) {
-		var el = e.element();
-		var del = el.hasClassName('suggestUserDiv');
-		var id = el.identify();
-		if(del == true){
-			FillRFC(1, id);
-			return;
-		}
-
-		del = el.hasClassName('closeSuggestUserDiv');
-		if(del == true){
-			$('suggestionDiv').hide();
-			return;
-		}
-	}
-
-	if($('divForm')!= undefined)
-	{
-		$('divForm').observe("click", AddSuggestListener);
-	}
-
-});
-
 function printExcelBonos(type) {
 
 	var str = $('frmSearch').serialize();
@@ -83,50 +50,6 @@ function GoToWorkflow(path, id)
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
-
-function FillDatos(id)
-{
-	$('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-//	$('suggestionDiv').hide();
-new Ajax.Request(WEB_ROOT+'/ajax/fill_form_report.php',
-{
-	parameters: {value: id, type: "datosSupervisor"},
-	method:'post',
-	onSuccess: function(transport){
-		var response = transport.responseText || "no response text";
-		var splitResponse = response.split("{#}");
-		$('rfc').value = splitResponse[0];
-		$('personalId').value = id;
-		$('loadingDivDatosFactura').innerHTML = '';
-			//BuscarServiciosActivos();
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
-}
-
-function FillRFC(elem, id)
-{
-	$('suggestionDiv').hide();
-	FillDatos(id);
-}
-
-
-function SuggestUser()
-{
-	new Ajax.Request(WEB_ROOT+'/ajax/suggest_supervisor.php',
-	{
-		parameters: {value: $('rfc').value},
-		method:'post',
-		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";
-			$('suggestionDiv').show();
-			$('suggestionDiv').innerHTML = response;
-			AddSuggestListener();
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
-}
-
 function ShowClienteTable(id)
 {
 	if(!$('cliente-'+id).visible())
@@ -156,37 +79,31 @@ function ShowContractTable(id)
 }
 
 function doSearch(){
-
-	$('type').value = "search";
-
 	new Ajax.Request(WEB_ROOT+'/ajax/report-bonos.php',
 	{
 		method:'post',
 		parameters: $('frmSearch').serialize(true),
 		onLoading: function(){
-			$("loading").style.display = "block";
+			$("loading-img").style.display = "block";
+            $("btnBuscar").style.display = "none";
 			$('contenido').innerHTML = "";
 		},
 		onSuccess: function(transport){
 			var response = transport.responseText || "Ocurrio un error durante la conexion al servidor. Por Favor Trate de Nuevo";
 			var splitResp = response.split("[#]");
-
-
-			$("loading").style.display = "none";
-
+            $("btnBuscar").style.display = "block";
+            $("loading-img").style.display = "none";
 			if(splitResp[0] == "ok"){
 				$('contenido').innerHTML = splitResp[1];
 			}else{
-				$('contenido').innerHTML = splitResp[0];
+
+
 			}
-
-
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 
 }
-
 function showGraph(){
 
 	$('type').value = "graph";
@@ -303,4 +220,11 @@ function doSendEmail(message, correo, mensaje){
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 
+}
+function ExportRepServBono()
+{
+    var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+    if(!resp)
+        return;
+    $('frmSearch').submit(); return true;
 }

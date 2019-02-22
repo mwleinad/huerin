@@ -55,7 +55,7 @@
 					</td>
                     {/if}
 				{/foreach}
-			</tr style>
+			</tr>
 		{else}
 		<tr>
     		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>

@@ -40,6 +40,26 @@ switch($_POST["type"])
 			}
 
 		break;
+    	case 'searchBonos':
+			$data = $reportebonos->generateReportBonos($_POST);
+            $period = $_POST['period'];
+            if($period== "efm"){
+                $monthNames = array("Ene", "Feb", "Mar");
+            }elseif($period == "amj"){
+                $monthNames = array("Abr", "May", "Jun");
+            }elseif($period == "jas"){
+                $monthNames = array("Jul", "Ago", "Sep");
+            }elseif($period == "ond"){
+                $monthNames = array("Oct", "Nov", "Dic");
+            }else{
+                $monthNames = array("Ene", "Feb", "Mar","Abr", "May", "Jun","Jul", "Ago", "Sep","Oct", "Nov", "Dic");
+            }
+			echo "ok[#]";
+            $smarty->assign("nombreMeses", $monthNames);
+            $smarty->assign("data", $data);
+            $smarty->assign("DOC_ROOT", DOC_ROOT);
+            $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-bono-cobranza.tpl');
+        break;
 
 }
 

@@ -373,11 +373,84 @@ class ContractRep extends Main
         return $contracts;
     }
     public function encargadosArea($contractId){
-        $this->Util()->DB()->setQuery("select b.name,c.departamento,a.personalId  from contractPermiso a 
+        $this->Util()->DB()->setQuery("select b.name,c.departamento,a.personalId,c.departamentoId from contractPermiso a 
                                              inner join personal b on a.personalId=b.personalId
                                              inner join departamentos c on a.departamentoId=c.departamentoId
                                              where a.contractId='".$contractId."'
                                       ");
         return $this->Util()->DB()->GetResult();
+    }
+    public function encargadosCustomKey($key1,$key2,$contractId){
+        $encargados = $this->encargadosArea($contractId);
+        if(!is_array($encargados))
+            $encargados = [];
+        $new = [];
+        foreach($encargados as $val)
+            $new[$val[$key1]] = $val[$key2];
+
+        return $new;
+    }
+    public function getContracts($ftr=[],$whitServive = false){
+        global $personal,$rol;
+        $ftrCustomer = "";
+        $ftrContract = "";
+        $limit = "";
+        if($ftr['cliente'])
+            $ftrCustomer =" AND a.customerId='".$ftr['cliente']."' ";
+        if($ftr['contrato'])
+            $ftrCustomer =" AND b.contractId='".$ftr['contrato']."' ";
+
+        switch($ftr['tipo']) {
+            case 'Inactivos':
+                $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+                break;
+            default:
+                $ftrCustomer .= " AND a.active = '1' ";
+                $ftrContract .= " AND b.activo = 'Si' ";
+            break;
+        }
+        if(isset($ftr["limit"]))
+            $limit = " LIMIT ".$ftr['limit'];
+        if(isset($ftr['deep']) || isset($ftr['subordinados']))
+            $fil['deep'] = 1;
+
+        $fil['responsableCuenta'] = $ftr['responsableCuenta'];
+        $encargados = $personal->GetIdResponsablesSubordinados($fil);
+        $encargadosString =  implode(",",$encargados);
+
+        $rol->setRolId($_SESSION['User']['roleId']);
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'),array('Juridico RRHH','Supervisor de Juridico'));
+        if($unlimited){
+            if($ftr['responsableCuenta']>0)
+                $join =  " INNER JOIN ";
+            else
+                $join =  " LEFT JOIN ";
+        }
+        else
+            $join =  "  INNER JOIN ";
+
+        $sql = "SELECT a.customerId,a.nameContact,b.contractId,b.name FROM customer a 
+              $join contract b ON  a.customerId= b.customerId   $ftrContract
+              $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($encargadosString)
+              WHERE 1 $ftrCustomer GROUP BY b.contractId $limit ORDER BY a.nameContact asc,b.name asc
+               ";
+        $this->Util()->DB()->setQuery($sql);
+       $result = $this->Util()->DB()->GetResult();
+       if($whitServive){
+           if($ftr['departamentoId']>0)
+               $ftrService = " and b.departamentoId ='".$ftr['departamentoId']."' ";
+
+           foreach($result as $key=>$value){
+               $idCon =  $value['contractId'];
+               $sql="SELECT a.servicioId,a.inicioOperaciones,a.inicioFactura,a.status,a.costo,a.lastDateWorkflow,b.nombreServicio,b.departamentoId
+                     FROM servicio a 
+                     INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId and b.status='1' 
+                     WHERE  a.contractId= '$idCon' and a.status NOT IN('baja','readonly') $ftrService
+                     ";
+               $this->Util()->DB()->setQuery($sql);
+               $result[$key]['servicios'] =  $this->Util()->DB()->GetResult();
+           }
+       }
+       return $result;
     }
 }

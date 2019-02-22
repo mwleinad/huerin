@@ -1,21 +1,24 @@
 <?php
+$user->allowAccess(3);  //level 1
 
-	$user->allowAccess();
+$departamentos = $departamentos->Enumerate();
+$smarty->assign("departamentos", $departamentos);
 
-	$DEPARTAMENTOS = $departamentos->Enumerate();
+$personals = $personal->Enumerate();
+$smarty->assign("personals", $personals);
 
-	$TRIMESTRE = $arrayName = array(
-		'0' => array('fecha' => '01 02 03' , 'fechaNombre' => 'Enero'.' - Marzo'),
-		'1' => array('fecha' => '04 05 06' , 'fechaNombre' => 'Abril'.' - Junio'),
-		'2' => array('fecha' => '07 08 09' , 'fechaNombre' => 'Julio'.' - Septiembre'),
-		'3' => array('fecha' => '10 11 12' , 'fechaNombre' => 'Octubre'.' - Diciembre'),
-	);
+if($_SESSION["search"]["year"])
+{
+    $year = $_SESSION["search"]["year"];
+}
+else
+{
+    $year = date("Y");
+}
+$smarty->assign("year", $year);
+$smarty->assign('mainMnu','reportes');
+$rol->setRolId($User['roleId']);
+$unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','cliente'));
+$smarty->assign('unlimited',$unlimited);
 
-	if ($_POST['personalId'] != '') {
-		$INFO = $reportebonos->DATOS_REPORTE_BONO();
-	}
-
-	$smarty->assign("TRIMESTRE", $TRIMESTRE);
-	$smarty->assign("DATOS", $INFO['DATOS']);
-	$smarty->assign("DEPARTAMENTOS", $DEPARTAMENTOS);
 ?>
