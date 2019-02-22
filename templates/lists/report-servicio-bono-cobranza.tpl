@@ -125,23 +125,58 @@
 					<td colspan="8" align="center">Ning&uacute;n registro encontrado.</td>
 				</tr>
 		{/foreach}
-		<tr>
-			<td></td>
-			<td colspan="7"></td>
-		</tr>
-		<tr>
-			<td colspan="2" style="text-align: left"><b>TOTAL GENERAL</b></td>
-			<td colspan="6"></td>
-		</tr>
-	    <tr>
-			<td><b>TOTAL CONTABILIDAD</b></td>
-			<td>{$data.granTotalContabilidad|number_format:2:'.':','}</td>
-			<td colspan="6"></td>
-		</tr>
-		<tr>
-			<td><b>TOTAL COBRANZA</b></td>
-			<td>{$data.granTotalCobranza|number_format:2:'.':','}</td>
-			<td colspan="6"></td>
-		</tr>
 	</tbody>
 </table>
+<div style="display: table;width: 100%; border-spacing: 10px">
+	<div style="display: table-cell;width: 20%">
+		<table width="100%" cellpadding="0" cellspacing="0" style="font-size:10px">
+			<thead>
+				<th colspan="2">Total general</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td><b>TOTAL CONTABILIDAD</b></td>
+					<td>{$data.granTotalContabilidad|number_format:2:'.':','}</td>
+				</tr>
+				<tr>
+					<td><b>TOTAL COBRANZA</b></td>
+					<td>{$data.granTotalCobranza|number_format:2:'.':','}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div style="display: table-cell;width: 35%">
+		<table width="100%" cellpadding="0" cellspacing="0"  style="font-size:10px">
+			<thead>
+				<th colspan="2">Total contable por departamento</th>
+			</thead>
+			<tbody>
+			{foreach from=$data.totalesXdepartamentos item=txd key=ktxd}
+				<tr>
+					<td><b>{$txd.departamento}</b></td>
+					<td>{$txd.total|number_format:2:'.':','}</b></td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
+	<div style="display: table-cell;width: 35%">
+		<table width="100%" cellpadding="0" cellspacing="0" style="font-size:10px">
+			<thead>
+			<th colspan="2">Total cobranza por departamento</th>
+			</thead>
+			<tbody>
+			{foreach from=$data.totalesXdepartamentos item=txd key=ktxd}
+				<tr>
+					<td><b>{$txd.departamento}</b></td>
+					<td>{$txd.total|number_format:2:'.':','}</b></td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
+
+
+</div>
+
+
