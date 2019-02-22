@@ -295,13 +295,13 @@ class ReporteBonos extends Main
            $responsable = $personal->Info();
            $data['responsable'] = $responsable['name'];
        }
-
-
 	    $totalContratosAsignados = count($contratos);
         $granTotalContabilidad = 0;
         $granTotalCobranza = 0;
-        $idDeps = [];
+        $idDepsGeneral = [];
+        $totalXdepartamento= [];
 	    foreach($contratos as $key => $value){
+	        $idDepsContract = [];
 	        if(!isset($value['servicios']))
             {
                 unset($contratos[$key]);
@@ -315,7 +315,7 @@ class ReporteBonos extends Main
 	        $countServ =  count($value['servicios']);
 	        $meses=[];
            //encontrar los encargados de area;
-            $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
+           $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
            foreach($value['servicios'] as $ks=>$serv) {
                $sumaTotal = 0;
                $isParcial = false;
@@ -360,11 +360,20 @@ class ReporteBonos extends Main
                        continue;
                }
 
+               if(!in_array($serv['departamentoId'],$idDepsGeneral)){
+                   array_push($idDepsGeneral,$serv['departamentoId']);
+                   Departamentos::setDepartamentoId($serv['departamentoId']);
+                   $tXd['departamento'] =Departamentos::Info()['departamento'];
+                   $tXd['total'] = 0;
+                   $tXd['total'] = (double)$sumaTotal;
+                   $totalXdepartamento[$serv['departamentoId']] = $tXd;
+               }else{
+                   $totalXdepartamento[$serv['departamentoId']]['total'] += (double)$sumaTotal;
+               }
 
                $serv['sumatotal'] =(double) $sumaTotal;
                $serviciosFiltrados[]= $serv;
-               if($sumaTotal>0)
-                $granTotalContabilidad +=(double)$sumaTotal;
+               $granTotalContabilidad +=(double)$sumaTotal;
 
            }//end foreach servicios.
            if(count($serviciosFiltrados)<=0)
@@ -389,6 +398,7 @@ class ReporteBonos extends Main
 
         $data['granTotalContabilidad'] =$granTotalContabilidad;
         $data['granTotalCobranza'] =$granTotalCobranza;
+        $data['totalesXdepartamentos'] = $totalXdepartamento;
         return $data;
     }
 }

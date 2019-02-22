@@ -245,7 +245,5 @@ class Departamentos extends Main
 		$row = $this->Util()->DB()->DeleteData();
 		return true;
 	}
-
 }
-
 ?>
