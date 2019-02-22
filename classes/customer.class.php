@@ -1909,4 +1909,19 @@ class Customer extends Main
        $results = $this->Util()->DB()->GetResult();
        return $results;
     }
+    public function  getTotalContratosInPlatform($tipo='Activos')
+    {
+        $ftr ="";
+        switch($tipo) {
+            case 'Activos':
+                $ftr .= " and a.activo='Si'  and b.active='1'";
+            break;
+        }
+        $sql  = "select count(*) from contract a 
+                 inner join customer b on a.customerId=b.customerId
+                 where 1  $ftr ";
+        $this->Util()->DB()->setQuery($sql);
+        $total = $this->Util()->DB()->GetSingle();
+        return $total;
+    }
 }

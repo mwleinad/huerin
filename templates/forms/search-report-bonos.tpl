@@ -1,52 +1,67 @@
 <div align="center"  id="divForm">
-
-	<form name="frmSearch" id="frmSearch" action="" method="post">
-		<input type="hidden" name="type" id="type" value="search" />
-		<input type="hidden" name="correo" id="correo" value="" />
-		<input type="hidden" name="texto" id="texto" value="" />
-		<input type="hidden" name="personalId" id="personalId" value="0" />
-		<table width="500" align="center">
+	<form name="frmSearch" id="frmSearch"  method="post" action="export/report-bonos.php">
+		<input type="hidden" name="type" id="type" value="searchBonos" />
+		<input type="hidden" name="contrato" id="contrato" value="" />
+		<input type="hidden" name="cliente" id="cliente" value="" />
+		<table width="100%" align="center">
 			<tr style="background-color:#CCC">
-				<td colspan="6" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
+				<td colspan="8" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 			</tr>
 			<tr>
-				<td align="center">SUPERVISOR:</td>
-				<td align="center">TRIMESTRE:</td>
-				<td align="center">DEPARTAMENTO:</td>
+				<td align="center">Cliente:</td>
+				<td align="center">Raz&oacute;n Social:</td>
+				<td align="center">Responsable:</td>
+				<td align="center">Incluir Subordinados:</td>
+				<td align="center">Departamento:</td>
+				<td align="center">Periodo:</td>
+				<td align="center">Año:</td>
+				<td align="center">Servicios sin workflow:</td>
 			</tr>
 			<tr>
-				<td align="center">
-					<input type="text" size="35" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					<input type="text" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%"  />
 					<div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
 						<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
 						</div>
 					</div>
 				</td>
+				<td align="center"style="padding-left: 5px;padding-right: 5px">
+					<input type="text" name="rfc2" id="rfc2" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%" />
+					<div id="loadingDivDatosFactura2"></div>
+					<div style="position:relative">
+						<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv2">
+						</div>
+					</div>
+				</td>
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					{include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
+				</td>
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: auto"/>
+				</td>
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					{include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
+				</td>
 				<td align="center">
-					<select name="trimestre" id="trimestre"  class="smallInput">
-						{foreach from=$TRIMESTRE item=item key=key}
-						<option value="{$item.fecha}" >{$item.fechaNombre}</option>
-						{/foreach}
+					<select name="period" id="period"  class="largeInput"  style="width: 90%;">
+						<option value="efm">Ene Feb Mar</option>
+						<option value="amj">Abr May Jun</option>
+						<option value="jas">Jul Ago Sep</option>
+						<option value="ond">Oct Nov Dic</option>
 					</select>
 				</td>
 				<td align="center">
-                    {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+					{include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
 				</td>
-				<td align="center">
-					<select name="departamentoId" id="departamentoId"  class="smallInput">
-						<option value="" selected="selected">Todos...</option>
-						{foreach from=$DEPARTAMENTOS item=depto}
-						<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
-						{/foreach}
-					</select>
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					<input name="whitoutWorkflow" id="whitoutWorkflow" type="checkbox" value="1" style="width: auto"/>
 				</td>
-
-
 			</tr>
 			<tr>
-				<td colspan="6" align="center">
-					<div style="margin-left:380px">
+				<td align="center" colspan="5">
+					<div style="display:inline-block;text-align: center;">
+						<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
 						<a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
 					</div>
 				</td>

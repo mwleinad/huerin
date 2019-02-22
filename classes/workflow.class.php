@@ -947,6 +947,69 @@ class Workflow extends Servicio
         $result['mes'] = $monthsComplete["0".$month];
         return $result;
     }
+    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[]){
+        $ftrTipo = "";
+        if($tipo=='I')
+            $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
+         //create monthBase
+        foreach($meses as $mes)
+            $monthBase[$mes]['class'] = '#000000';
+        $months = array();
+        $new =array();
+        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.payments) as payment,
+                a.version,a.xml FROM comprobante a 
+                LEFT JOIN (select comprobanteId , sum(amount) as payments from payment where paymentStatus='activo' group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
+                WHERE
+				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(".implode(',',$meses).") AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
+				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $noComplete=0;
+        $totalCobrado = 0;
+        foreach($result as $key=>$value){
+            //rellenar $new con meses que si tienen facturas
+            if(!in_array($value['mes'],$months))
+            {
+                array_push($months,$value['mes']);
+                $value['saldo'] =  $value['total']-$value['payment'];
+                $totalCobrado +=$value['payment'];
+                if($value["saldo"] > 1)
+                {
+                    $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";
+                    $noComplete++;
+                }
+                else{
+                    $value["class"] = "#00ff00";
+                }
+                $new[$value['mes']] =  $value;
+            }
+        }
+        //recorrer los meses base y para los que no tiene facturas comprobar que no existen canceladas
+        foreach($monthBase as $km=>$mes){
+            if(key_exists($km,$new)){
+                $monthBase[$km] = $new[$km];
+            }else{
+                $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status` FROM comprobante a 
+                WHERE
+				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha)='".$km."' AND a.userId = '".$contratoId."' AND a.status = '0' $ftrTipo
+				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
+                $this->Util()->DB()->setQuery($sql);
+                $row = $this->Util()->DB()->GetRow();
+                if(!empty($row)){
+                    $row['class'] ="#EFEFEF";
+                    $row['payment'] =0;
+                    $row['saldo'] =0;
+                    $monthBase[$km]=$row;
+                }
+
+            }
+        }
+        //$new = array_replace_recursive($monthBase,$new);
+        $data['serv'] = $monthBase;
+        $data['noComplete']=$noComplete;
+        $data['totalCobrado']=$totalCobrado;
+        return $data;
+    }
 
 }
 
