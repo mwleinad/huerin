@@ -300,65 +300,88 @@ class ReporteBonos extends Main
         $granTotalCobranza = 0;
         $idDepsGeneral = [];
         $totalXdepartamento= [];
+        $totalXencargados = [];
+        $idEncargados = [];
 	    foreach($contratos as $key => $value){
-	        $idDepsContract = [];
-	        if(!isset($value['servicios']))
+            if(!isset($value['servicios']))
             {
                 unset($contratos[$key]);
                 continue;
             }
-	        if(count($value['servicios'])<=0){
+            if(count($value['servicios'])<=0){
                 unset($contratos[$key]);
                 continue;
             }
-	        $serviciosFiltrados = [];
-	        $countServ =  count($value['servicios']);
-	        $meses=[];
-           //encontrar los encargados de area;
-           $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
-           foreach($value['servicios'] as $ks=>$serv) {
+            $serviciosFiltrados = [];
+            $countServ =  count($value['servicios']);
+            $meses=[];
+            //encontrar los encargados de area;
+
+            $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
+            $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
+            foreach($value['servicios'] as $ks=>$serv) {
                $sumaTotal = 0;
                $isParcial = false;
                if ($serv['status']=="bajaParcial")
                    $isParcial = true;
-               $serv['responsable'] = $encargados[$serv['departamentoId']];
 
+               $serv['responsable'] = $encargados[$serv['departamentoId']];
                 switch ($ftr['period']) {
                    case 'efm':
                        $meses = array(1, 2, 3);
-                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
-                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
-                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
                    case 'amj':
                        $meses = array(4, 5, 6);
-                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
-                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
-                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
                    case 'jas':
                        $meses = array(7, 8, 9);
-                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
-                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
-                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
                    case 'ond':
                        $meses = array(10, 11, 12);
-                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
-                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
-                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
                    default:
                        $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                       $temp = $instanciaServicio->getBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
-                       $serv['instancias'] = array_replace_recursive($mesesBase, $temp);
-                       $sumaTotal = $instanciaServicio->getSumaBonoTrimestre($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
+               }
+               if(!empty($temp)){
+                    if(count($temp['instancias'])>0)
+                        $serv['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
+                    $sumaTotal=$temp['totalComplete'];
                }
               if(!$ftr["whitoutWorkflow"]){
                    if(empty($temp))
                        continue;
                }
+                //totalizar por encargados de area solo si se eligio un responsable, sino se eligio totalizar todos.
+                if(!in_array($encargados2[$serv['departamentoId']],$idEncargados)){
+                    if(!$encargados2[$serv['departamentoId']])
+                    {
+                        $keyEncargado = 000000;
+                        array_push($idEncargados,000000);
+                        $nameEncargado = 'SIN ENCARGADO ASIGNADO';
+                    }
+                    else
+                    {
+                        array_push($idEncargados,$encargados2[$serv['departamentoId']]);
+                        $nameEncargado = $encargados[$serv['departamentoId']];
+                        $keyEncargado = $encargados2[$serv['departamentoId']];
+                    }
+                    $tXe['name'] =  $nameEncargado;
+                    $tXe['total'] = 0;
+                    $tXe['total'] = (double)$sumaTotal;
+                    $totalXencargados[$keyEncargado] = $tXe;
+                 }else{
+                    if(!$encargados2[$serv['departamentoId']])
+                        $keyEncargado = 000000;
+                    else
+                        $keyEncargado = $encargados2[$serv['departamentoId']];
+                    $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotal;
+                }
 
                if(!in_array($serv['departamentoId'],$idDepsGeneral)){
                    array_push($idDepsGeneral,$serv['departamentoId']);
@@ -370,8 +393,7 @@ class ReporteBonos extends Main
                }else{
                    $totalXdepartamento[$serv['departamentoId']]['total'] += (double)$sumaTotal;
                }
-
-               $serv['sumatotal'] =(double) $sumaTotal;
+               $serv['sumatotal'] = $sumaTotal;
                $serviciosFiltrados[]= $serv;
                $granTotalContabilidad +=(double)$sumaTotal;
 
@@ -387,9 +409,11 @@ class ReporteBonos extends Main
            $card2["sumatotal"]=$rowCobranza['totalCobrado'];
            $granTotalCobranza +=$rowCobranza['totalCobrado'];
 
+
            $card2["isRowCobranza"] =  true;
            array_push( $serviciosFiltrados,$card2);
            $contratos[$key]['servicios'] = $serviciosFiltrados;
+
         }//end foreach contratos
         $data['totalContratos'] = $totalContratos;
 	    $data['contratosAsignados'] = $totalContratosAsignados;
@@ -399,6 +423,7 @@ class ReporteBonos extends Main
         $data['granTotalContabilidad'] =$granTotalContabilidad;
         $data['granTotalCobranza'] =$granTotalCobranza;
         $data['totalesXdepartamentos'] = $totalXdepartamento;
+        $data['totalesXencargados'] = $totalXencargados;
         return $data;
     }
 }

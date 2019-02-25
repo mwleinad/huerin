@@ -258,4 +258,117 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false){
+        $ftrTemporal = "";
+        $new = [];
+        $newArray = [];
+        if($isParcial){
+            //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+            $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
+            $ylast =  $this->Util()->DB()->GetSingle();
+            //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
+            if($year>$ylast)
+                return $new;
+
+            if($year==$ylast)
+                $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
+        }
+        $sinceMonth ="";
+        if($foperaciones=="0000-00-00")
+            return $new;
+
+        $fecha =  explode('-',$foperaciones);
+        //si año de IO es superior al año solicitado se ignora aunque tengan workflows creados.
+        if(!($year>=$fecha[0]))
+            return $new;
+        //los meses que debe obtener debe ser apartir del mes de inicio de operaciones. esto es solo para el año de IO lo demas no debe evaluarlo
+        if($year==$fecha[0])
+            $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
+
+        $sql = "SELECT class,servicio.costo,YEAR(instanciaServicio.date) as anio,MONTH(instanciaServicio.date) as mes,instanciaServicioId, 
+                instanciaServicio.status, servicio.tipoServicioId,instanciaservicio.comprobanteId
+				FROM instanciaServicio 
+				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
+				AND servicio.status NOT IN('baja','inactiva')
+				AND instanciaServicio.status != 'baja'
+				AND servicio.servicioId = '".$servicioId."'  ORDER BY  instanciaServicio.instanciaServicioId DESC";
+        $this->Util()->DB()->setQuery($sql);
+        $data = $this->Util()->DB()->GetResult();
+        $totalAcompletado = 0;
+        //obtener costo desde concepto de factura, cadena,
+        foreach($data as $key => $value)
+        {
+            $costo = 0;
+            //comprobar costo en factura emitida, se podria decir que es la mas precisa.
+            $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
+
+            //condicion, si la instancia tiene costo se usa el costo de la instancia siempre y cuando arriba no se haya encontrado
+            /*
+             * if($costo<=0)
+             * $costo = $value['costoWorkflow']
+             * */
+            switch($value['mes']){
+                case 1:
+                case 4:
+                case 7:
+                case 10:
+                    $llave = 0; break;
+                case 2:
+                case 5:
+                case 8:
+                case 11:
+                    $llave = 1; break;
+                case 3:
+                case 6:
+                case 9:
+                case 12:
+                    $llave = 2; break;
+            }
+            //si costo es mayor que cero, se usa el costo encontrado de lo contrario se mantiene el costo del servicio asignado al cliente.
+            if($costo>0){
+                $value['costo'] = $costo;
+            }
+            if($value['class']=='CompletoTardio'|| $value['class']=='Completo')
+                $totalAcompletado += $value['costo'];
+            $new[$llave] =  $value;
+        }
+        $newArray['instancias']= $new;
+        $newArray['totalComplete'] = $totalAcompletado;
+        return $newArray;
+    }
+    function findCostoService($mes,$year,$servicioId,$compId=0){
+        global $servicio,$comprobante;
+        $servicio->setServicioId($servicioId);
+        $infoServicio = $servicio->Info();
+        $nombreServicio = $infoServicio['nombreServicio'];
+        $contratoId = $infoServicio['contractId'];
+        if($compId > 0){
+           $sql = "SELECT xml,cadenaOriginal FROM comprobante WHERE comprobanteId='$compId'  and status='1' ";
+            $this->Util()->DB()->setQuery($sql);
+            $factura = $this->Util()->DB()->GetRow();
+        }
+        if(!$factura){
+            $sql = "SELECT xml,cadenaOriginal FROM comprobante 
+                WHERE MONTH(fecha)='$mes' AND YEAR(fecha)='$year' AND userId='$contratoId'  and status='1' AND tipoDeComprobante='ingreso'
+               ";
+            $this->Util()->DB()->setQuery($sql);
+            $factura = $this->Util()->DB()->GetRow();
+        }
+        $costo =  0;
+        if($factura){
+            if(file_exists(DIR_FROM_XML."/SIGN_".$factura['xml'].".xml")){
+                $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
+                foreach($data['conceptos'] as $con){
+                    $description = (string)$con['Descripcion'];
+                    if(stripos($description,$nombreServicio)!==FALSE){
+                        $costo = (double)$con['ValorUnitario'];
+                        break;
+                    }
+                }
+            }
+        }
+        return $costo;
+
+    }
 }

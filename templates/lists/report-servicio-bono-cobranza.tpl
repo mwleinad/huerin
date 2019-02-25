@@ -106,7 +106,7 @@
 					>
 					<div style="cursor:pointer" >
 						{if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
-							${$servicio.costo|number_format:2:".":","}
+							${$instanciaServicio.costo|number_format:2:".":","}
 						{else}
 							-
 						{/if}
@@ -135,7 +135,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><b>TOTAL CONTABILIDAD</b></td>
+					<td><b>TOTAL DEVENGADO</b></td>
 					<td>{$data.granTotalContabilidad|number_format:2:'.':','}</td>
 				</tr>
 				<tr>
@@ -145,10 +145,10 @@
 			</tbody>
 		</table>
 	</div>
-	<div style="display: table-cell;width: 35%">
+	<div style="display: table-cell;width: 25%">
 		<table width="100%" cellpadding="0" cellspacing="0"  style="font-size:10px">
 			<thead>
-				<th colspan="2">Total contable por departamento</th>
+				<th colspan="2">Total trabajado por departamento</th>
 			</thead>
 			<tbody>
 			{foreach from=$data.totalesXdepartamentos item=txd key=ktxd}
@@ -160,16 +160,16 @@
 			</tbody>
 		</table>
 	</div>
-	<div style="display: table-cell;width: 35%">
+	<div style="display: table-cell;width: 25%">
 		<table width="100%" cellpadding="0" cellspacing="0" style="font-size:10px">
 			<thead>
-			<th colspan="2">Total cobranza por departamento</th>
+				<th colspan="2">Totales por encargado</th>
 			</thead>
 			<tbody>
-			{foreach from=$data.totalesXdepartamentos item=txd key=ktxd}
+			{foreach from=$data.totalesXencargados item=txe key=ktxe}
 				<tr>
-					<td><b>{$txd.departamento}</b></td>
-					<td>{$txd.total|number_format:2:'.':','}</b></td>
+					<td><b>{$txe.name}</b></td>
+					<td>{$txe.total|number_format:2:'.':','}</b></td>
 				</tr>
 			{/foreach}
 			</tbody>
