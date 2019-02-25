@@ -1928,6 +1928,11 @@ class Comprobante extends Producto
             $cad['noCertificado'] = (string)$cfdi['NoCertificado'];
             $cad['uuid']=(string)$data['timbreFiscal']['UUID'];
         }
+        //Conceptos
+        //El punto hace que sea relativo al elemento, y solo una / es para buscar exactamente eso
+        foreach($xml->xpath('//cfdi:Comprobante//cfdi:Conceptos//cfdi:Concepto') as $con){
+            $cad["conceptos"][] = $con;
+        }
         /*if($cad['userId']<=0){
             $this->Util()->setError(10046, "error", "El cliente no se encuentra registrado en plataforma favor de verificar");
         }*/
@@ -1978,6 +1983,15 @@ class Comprobante extends Producto
                 continue;
 
             $cad = [];
+            $prueba =  $this->getDataByXml(substr($archivo,0,-4));
+            if($archivo=='SIGN_21_C_11570.xml'){
+                foreach($prueba['conceptos'] as $concepto) {
+                    dd($concepto);
+                }
+                   // echo $concepto['ClaveProdServ']." ".$concepto['Descripcion'].chr(13);
+
+            }
+
             $pathXml =  DIR_FROM_XML."/".$archivo;
             $xml = simplexml_load_file($pathXml);
             $ns = $xml->getNamespaces(true);
