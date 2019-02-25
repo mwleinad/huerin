@@ -163,7 +163,7 @@
 	<div style="display: table-cell;width: 25%">
 		<table width="100%" cellpadding="0" cellspacing="0" style="font-size:10px">
 			<thead>
-				<th colspan="2">Totales por encargado</th>
+				<th colspan="2">Total por encargado</th>
 			</thead>
 			<tbody>
 			{foreach from=$data.totalesXencargados item=txe key=ktxe}
