@@ -228,3 +228,22 @@ function ExportRepServBono()
         return;
     $('frmSearch').submit(); return true;
 }
+//nuevos eventos con jquery
+jQ(document).on('click','.detailCobranza',function (e) {
+    e.preventDefault();
+    var datos =  jQ(this).data('datos');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/workflow.php',
+        type:'post',
+        data:{type:'viewFacturas',datos:JSON.stringify(datos)},
+        success:function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error:function () {
+            alert("Error al mostrar informacion!!");
+
+        }
+    });
+});
