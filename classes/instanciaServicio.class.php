@@ -286,7 +286,7 @@ class InstanciaServicio extends  Servicio
             $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
 
         $sql = "SELECT class,servicio.costo,YEAR(instanciaServicio.date) as anio,MONTH(instanciaServicio.date) as mes,instanciaServicioId, 
-                instanciaServicio.status, servicio.tipoServicioId,instanciaservicio.comprobanteId
+                instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
