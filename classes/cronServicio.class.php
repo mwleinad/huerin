@@ -181,6 +181,7 @@ class CronServicio extends Contract
 
        $servicios = $this->getListServices();
        foreach($servicios as $key=>$servicio){
+           $costoWorkflow = $servicio['costo'];
           $fechas_workflow =  $this->CreateStockDates($servicio);
           if(count($fechas_workflow)>0){
               foreach($fechas_workflow as $fecha){
@@ -191,11 +192,13 @@ class CronServicio extends Contract
                      $sqlinser = "INSERT INTO  `instanciaServicio` (
 									servicioId,
 									date,
-									status
+									status,
+									costoWorkflow
 								) VALUES (
 									'".$servicio["servicioId"]."',
 									'".$fecha."',
-								'activa')";
+								'activa',
+								'$costoWorkflow')";
                       $this->Util()->DB()->setQuery($sqlinser);
                       $id = $this->Util()->DB()->InsertData();
                       //guardar log de creacion de workflow

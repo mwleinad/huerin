@@ -286,7 +286,7 @@ class InstanciaServicio extends  Servicio
             $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
 
         $sql = "SELECT class,servicio.costo,YEAR(instanciaServicio.date) as anio,MONTH(instanciaServicio.date) as mes,instanciaServicioId, 
-                instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId
+                instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId,instanciaServicio.costoWorkflow
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
@@ -304,10 +304,9 @@ class InstanciaServicio extends  Servicio
             $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
 
             //condicion, si la instancia tiene costo se usa el costo de la instancia siempre y cuando arriba no se haya encontrado
-            /*
-             * if($costo<=0)
-             * $costo = $value['costoWorkflow']
-             * */
+             if($costo<=0)
+              $costo = $value['costoWorkflow'];
+
             switch($value['mes']){
                 case 1:
                 case 4:
