@@ -286,9 +286,9 @@ class InstanciaServicio extends  Servicio
             $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
 
         $sql = "SELECT class,servicio.costo,YEAR(instanciaServicio.date) as anio,MONTH(instanciaServicio.date) as mes,instanciaServicioId, 
-                instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId
+                instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId,instanciaServicio.costoWorkflow,servicio.inicioFactura
 				FROM instanciaServicio 
-				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
 				AND servicio.status NOT IN('baja','inactiva')
 				AND instanciaServicio.status != 'baja'
@@ -297,17 +297,20 @@ class InstanciaServicio extends  Servicio
         $data = $this->Util()->DB()->GetResult();
         $totalAcompletado = 0;
         //obtener costo desde concepto de factura, cadena,
+        if(empty($data))
+          return $newArray;
+
         foreach($data as $key => $value)
         {
             $costo = 0;
-            //comprobar costo en factura emitida, se podria decir que es la mas precisa.
-            $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
-
-            //condicion, si la instancia tiene costo se usa el costo de la instancia siempre y cuando arriba no se haya encontrado
-            /*
-             * if($costo<=0)
-             * $costo = $value['costoWorkflow']
-             * */
+            //solo buscar los precios para los servicios que facturan.
+            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
+                //comprobar costo en factura emitida, se podria decir que es la mas precisa.
+                $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
+                //en caso de no encontrar costo en factura se usa el costo del workflow
+                if($costo<=0)
+                    $costo = $value['costoWorkflow'];
+            }
             switch($value['mes']){
                 case 1:
                 case 4:
@@ -325,12 +328,10 @@ class InstanciaServicio extends  Servicio
                 case 12:
                     $llave = 2; break;
             }
-            //si costo es mayor que cero, se usa el costo encontrado de lo contrario se mantiene el costo del servicio asignado al cliente.
-            if($costo>0){
-                $value['costo'] = $costo;
-            }
+            $value['costo'] = $costo;
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo')
                 $totalAcompletado += $value['costo'];
+
             $new[$llave] =  $value;
         }
         $newArray['instancias']= $new;

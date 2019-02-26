@@ -283,6 +283,7 @@ class ReporteBonos extends Main
 	}
 	function generateReportBonos($ftr=[]){
 	    global $contractRep,$instanciaServicio,$customer,$personal;
+
 	    $year = $_POST['year'];
 	    $totalContratos =  $customer->getTotalContratosInPlatform();
         $mesesBase = array(0=>array(),1=>array(),2=>array());
@@ -321,6 +322,7 @@ class ReporteBonos extends Main
             $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
             foreach($value['servicios'] as $ks=>$serv) {
                $sumaTotal = 0;
+               $serv['instancias'] = [];
                $isParcial = false;
                if ($serv['status']=="bajaParcial")
                    $isParcial = true;
@@ -348,15 +350,17 @@ class ReporteBonos extends Main
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
                    break;
                }
-               if(!empty($temp)){
-                    if(count($temp['instancias'])>0)
+                if(isset($temp['instancias'])){
+                    if(!empty($temp['instancias']))
                         $serv['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
+
                     $sumaTotal=$temp['totalComplete'];
-               }
-              if(!$ftr["whitoutWorkflow"]){
-                   if(empty($temp))
-                       continue;
-               }
+                }else{
+                    if(!$ftr["whitoutWorkflow"])
+                        continue;
+                    else
+                        $serv['instancias'] = $mesesBase;
+                }
                 //totalizar por encargados de area solo si se eligio un responsable, sino se eligio totalizar todos.
                 if(!in_array($encargados2[$serv['departamentoId']],$idEncargados)){
                     if(!$encargados2[$serv['departamentoId']])
