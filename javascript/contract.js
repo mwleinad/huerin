@@ -315,7 +315,7 @@ jQ(document).on('click','.spanUpdatePermisos',function () {
 
     jQ.ajax({
         url: WEB_ROOT + "/ajax/contract.php",
-        data: {type: 'doPermiso', contractId: this.id},
+        data: {type: 'doPermiso', contractId:jQ(this).data('id')},
         type: 'POST',
         success: function (response) {
             var splitResp = response.split("[#]");

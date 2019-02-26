@@ -19,6 +19,8 @@ class Permiso extends Main
         $permisos = explode('-',$contrato['permisos']);
         if(!is_array($permisos) || empty($permisos))
            return false;
+        if(!$contrato)
+            return false;
 
         $this->Util()->DB()->setQuery("delete  from contractPermiso where contractId='".$this->contractId."' ");
         $this->Util()->DB()->DeleteData();
