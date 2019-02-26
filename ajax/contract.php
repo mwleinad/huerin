@@ -184,7 +184,6 @@ switch($_POST["type"])
 	break;
 	case 'doPermiso':
 		$permiso = new Permiso;
-
 		$permiso->setContractId($_POST['contractId']);
 		if($permiso->doPermiso()){
             echo "ok[#]";
