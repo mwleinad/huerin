@@ -142,7 +142,7 @@ switch($_POST["type"])
 				$sql .= ' AND status = "'.$_POST['status'].'"';
 								
 			$resContracts = $contract->Search($sql);
-	
+
 			$contracts = array();
 			foreach($resContracts as $key => $val){
 				
@@ -181,7 +181,22 @@ switch($_POST["type"])
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 
 		}
+	break;
+	case 'doPermiso':
+		$permiso = new Permiso;
 
+		$permiso->setContractId($_POST['contractId']);
+		if($permiso->doPermiso()){
+            echo "ok[#]";
+            $util->setError(0,'complete','Permisos actualizados.');
+            $util->PrintErrors();
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}else{
+            echo "fail[#]";
+            $util->setError(0,'error','Error al actualizar permisos.');
+            $util->PrintErrors();
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
 	break;
 		
 }

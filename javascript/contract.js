@@ -299,7 +299,7 @@ jQ(document).on('click','#addItemService',function () {
 jQ(document).on('click','.spanDeleteItemService',function () {
     jQ.ajax({
         url:WEB_ROOT+"/ajax/services.php",
-        data:{type:'delItemService',id:this.id},
+
         type: 'POST',
         success: function(response){
             var splitResp = response.split("[#]");
@@ -307,3 +307,20 @@ jQ(document).on('click','.spanDeleteItemService',function () {
         }
     });
 });
+
+jQ(document).on('click','.spanUpdatePermisos',function () {
+	var con= confirm('Esta seguro de actualizar los permisos.');
+	if(!con)
+		return;
+
+    jQ.ajax({
+        url: WEB_ROOT + "/ajax/contract.php",
+        data: {type: 'doPermiso', contractId: this.id},
+        type: 'POST',
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            ShowStatusPopUp(splitResp[1]);
+        }
+       });
+});
+
