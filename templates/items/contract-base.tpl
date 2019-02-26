@@ -67,6 +67,10 @@
                 <a href="javascript:;" title="Actualizar archivos en workflows">
                     <img src="{$WEB_ROOT}/images/icons/folder-file-16x16.png" class="spanAll spanUpdateWorkflow" data-id="{$item.contractId}"  border="0"/></a>
             {/if}
+            {if $User.isRoot && $item.activo == 'Si'}
+                <a href="javascript:;" title="Actualizar permisos">
+                    <img src="{$WEB_ROOT}/images/icons/backup_16x16.png" class="spanAll spanUpdatePermisos" data-id="{$item.contractId}"  border="0"/></a>
+            {/if}
             {if in_array(66,$permissions) || $User.isRoot}
                <a href="{$WEB_ROOT}/contract-view/contId/{$item.contractId}">
                 <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Detalles" />
