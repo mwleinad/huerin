@@ -321,7 +321,8 @@ class ReporteBonos extends Main
             $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
             $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
             foreach($value['servicios'] as $ks=>$serv) {
-               $sumaTotal = 0;
+               $sumaTotalDevengado=0;
+               $sumaTotalTrabajado=0;
                $serv['instancias'] = [];
                $isParcial = false;
                if ($serv['status']=="bajaParcial")
@@ -354,7 +355,8 @@ class ReporteBonos extends Main
                     if(!empty($temp['instancias']))
                         $serv['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
 
-                    $sumaTotal=$temp['totalComplete'];
+                 $sumaTotalDevengado=$temp['totalDevengado'];
+                 $sumaTotalTrabajado= $temp['totalComplete'];
                 }else{
                     if(!$ftr["whitoutWorkflow"])
                         continue;
@@ -377,14 +379,14 @@ class ReporteBonos extends Main
                     }
                     $tXe['name'] =  $nameEncargado;
                     $tXe['total'] = 0;
-                    $tXe['total'] = (double)$sumaTotal;
+                    $tXe['total'] = (double)$sumaTotalTrabajado;
                     $totalXencargados[$keyEncargado] = $tXe;
                  }else{
                     if(!$encargados2[$serv['departamentoId']])
                         $keyEncargado = 000000;
                     else
                         $keyEncargado = $encargados2[$serv['departamentoId']];
-                    $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotal;
+                    $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotalTrabajado;
                 }
 
                if(!in_array($serv['departamentoId'],$idDepsGeneral)){
@@ -392,33 +394,30 @@ class ReporteBonos extends Main
                    Departamentos::setDepartamentoId($serv['departamentoId']);
                    $tXd['departamento'] =Departamentos::Info()['departamento'];
                    $tXd['total'] = 0;
-                   $tXd['total'] = (double)$sumaTotal;
+                   $tXd['total'] = (double)$sumaTotalTrabajado;
                    $totalXdepartamento[$serv['departamentoId']] = $tXd;
                }else{
-                   $totalXdepartamento[$serv['departamentoId']]['total'] += (double)$sumaTotal;
+                   $totalXdepartamento[$serv['departamentoId']]['total'] += (double)$sumaTotalTrabajado;
                }
-               $serv['sumatotal'] = $sumaTotal;
+               $serv['sumatotal'] = $sumaTotalTrabajado;
                $serviciosFiltrados[]= $serv;
-               $granTotalContabilidad +=(double)$sumaTotal;
+               $granTotalContabilidad +=(double)$sumaTotalDevengado;
 
            }//end foreach servicios.
-           if(count($serviciosFiltrados)<=0)
-           {
+           if(count($serviciosFiltrados)<=0){
                 unset($contratos[$key]);
                 continue;
            }
            $card2 = [];
-           $rowCobranza=Workflow::getRowCobranzaBono($value['contractId'],$year,'I',$meses);
+           $rowCobranza=Workflow::getRowCobranzaBono($value['contractId'],$year,'I',$meses,false);
            $card2["instancias"]=$rowCobranza['serv'];
            $card2["sumatotal"]=$rowCobranza['totalCobrado'];
            $granTotalCobranza +=$rowCobranza['totalCobrado'];
-
-
            $card2["isRowCobranza"] =  true;
            array_push( $serviciosFiltrados,$card2);
            $contratos[$key]['servicios'] = $serviciosFiltrados;
-
         }//end foreach contratos
+
         $data['totalContratos'] = $totalContratos;
 	    $data['contratosAsignados'] = $totalContratosAsignados;
 	    $data['porcentajeAsignado'] = ($totalContratosAsignados*100)/$totalContratos;

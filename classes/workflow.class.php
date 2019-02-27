@@ -947,17 +947,24 @@ class Workflow extends Servicio
         $result['mes'] = $monthsComplete["0".$month];
         return $result;
     }
-    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[]){
+    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[],$whitIva=true){
         $ftrTipo = "";
         if($tipo=='I')
             $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
+
+        if($whitIva)
+            $strIva = " sum(a.total) as total";
+        else
+            $strIva ="  sum(a.subTotal) as total";
+
          //create monthBase
         foreach($meses as $mes)
             $monthBase[$mes]['class'] = '#000000';
+
         $months = array();
         $new =array();
-        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status`,sum(b.payments) as payment,
-                a.version,a.xml FROM comprobante a 
+        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, $strIva, a.fecha, `status`,sum(b.payments) as payment,
+                a.version,a.xml,a.tasaIva FROM comprobante a 
                 LEFT JOIN (select comprobanteId , sum(amount) as payments from payment where paymentStatus='activo' group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
                 WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha) IN(".implode(',',$meses).") AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
@@ -968,11 +975,12 @@ class Workflow extends Servicio
         $totalCobrado = 0;
         foreach($result as $key=>$value){
             //rellenar $new con meses que si tienen facturas
+            $pago = $value['payment']/(1+($value['tasaIva']/100));
             if(!in_array($value['mes'],$months))
             {
                 array_push($months,$value['mes']);
                 $value['saldo'] =  $value['total']-$value['payment'];
-                $totalCobrado +=$value['payment'];
+                $totalCobrado +=$pago;
                 if($value["saldo"] > 1)
                 {
                     $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";

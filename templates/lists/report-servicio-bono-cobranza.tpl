@@ -105,12 +105,13 @@
 					{*end if EXCEL*}
 					>
 					<div style="cursor:pointer" >
-						{if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
-							${$instanciaServicio.costo|number_format:2:".":","}
+						{*if $instanciaServicio.class eq 'Completo' || $instanciaServicio.class eq 'CompletoTardio'}
+
 						{else}
 							-
-						{/if}
-						{if $instanciaServicio.status eq 'inactiva'}
+						{/if*}
+						${$instanciaServicio.costo|number_format:2:".":","}
+						{if $instanciaServicio.status eq 'baja'}
 							<span style="color:#DA9696">(Inactivo)</span>
 						{/if}
 					</div>
