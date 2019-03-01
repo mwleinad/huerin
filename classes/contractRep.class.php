@@ -445,7 +445,7 @@ class ContractRep extends Main
                $sql="SELECT a.servicioId,a.inicioOperaciones,a.inicioFactura,a.status,a.costo,a.lastDateWorkflow,b.nombreServicio,b.departamentoId
                      FROM servicio a 
                      INNER JOIN tipoServicio b ON a.tipoServicioId=b.tipoServicioId and b.status='1' 
-                     WHERE  a.contractId= '$idCon' and a.status NOT IN('baja','readonly') $ftrService
+                     WHERE  a.contractId= '$idCon' and a.status NOT IN('baja','readonly') $ftrService ORDER BY b.nombreServicio ASC
                      ";
                $this->Util()->DB()->setQuery($sql);
                $result[$key]['servicios'] =  $this->Util()->DB()->GetResult();

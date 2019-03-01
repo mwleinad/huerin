@@ -307,7 +307,6 @@ class InstanciaServicio extends  Servicio
         foreach($data as $key => $value)
         {
             //encontrar monto total de cobranza por servicio
-
             $costo = 0;
             //solo buscar los precios para servicios que tengan una fecha valida de facturacion de momento, habria que evaluar para los que dejaron de facturar pero tienen facturas anteriores
             if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
