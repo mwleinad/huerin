@@ -313,13 +313,17 @@ class ContractRep extends Main
         $sqlFilter ="";
         $dpto = "";
         $fcustomer = "";
-        if($filter['activos'])
+        if(!$filter['isCxc'])
         {
-            $fcustomer .= " AND c.active = '1'";
-            $sqlFilter .= ' AND a.activo = "Si"';
-        }else{
-            $sqlFilter .= " AND (c.active = '0' OR (c.active = '1' AND a.activo = 'No' ))";
+            if($filter['activos'])
+            {
+                $fcustomer .= " AND c.active = '1'";
+                $sqlFilter .= ' AND a.activo = "Si"';
+            }else{
+                $sqlFilter .= " AND (c.active = '0' OR (c.active = '1' AND a.activo = 'No' ))";
+            }
         }
+
 
         if($filter['cliente'])
             $fcustomer .=" AND c.nameContact LIKE '%".$filter['cliente']."%'";

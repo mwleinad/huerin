@@ -99,7 +99,10 @@
 				$meses[$k] = $card;
 				
 			}//for
-			
+            $personal->isShowAll();
+            $personals = $personal->Enumerate();
+            $smarty->assign("personals", $personals);
+
 			$smarty->assign('meses',$meses);
 			
 			$tipos_comprobantes = $main->ListTiposDeComprobantes();
