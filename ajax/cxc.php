@@ -188,152 +188,72 @@
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
 			$formValues['cliente'] = $_POST["rfc"];
+            $formValues['sinServicios'] = true;
+            $formValues['activos'] = true;
 			
-			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)	
-								
-			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
-					WHERE class = ''";
+			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
+			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' WHERE class = ''";
 			$db->setQuery($sql);
 			$db->UpdateData();
 						
 			$contracts = array();
-			if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-                    $personal->setActive(1);
-                    $socios = $personal->ListSocios();
-                    $idPersons= array();
-                    foreach($socios as $res){
-                        array_push($idPersons,$res['personalId']);
-                        $personal->setPersonalId($res['personalId']);
-                        $subordinados = $personal->Subordinados();
-                        if(empty($subordinados))
-                            continue;
-
-                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
-                        $idPersons=array_merge($idPersons,$subsLine);
-                        unset($subsLine);
-                        unset($subordinados);
-                    }//foreac
-                    $idPersons = array_unique($idPersons);
-                    $formValues['respCuenta'] =  $idPersons;
-                    $contracts = $contractRep->BuscarContract($formValues, true);
-				
-				}else{
-                    $idPersons = array();
-                    $respCuenta = $formValues['respCuenta'];
-                    array_push($idPersons,$respCuenta);
-                    if($formValues['subordinados']){
-                        $personal->setPersonalId($respCuenta);
-                        $subordinados = $personal->Subordinados();
-                        if(!empty($subordinados)){
-                            $subsLine = $util->ConvertToLineal($subordinados,'personalId');
-                            $idPersons=array_merge($idPersons,$subsLine);
-                            unset($subsLine);
-                            unset($subordinados);
-                        }
-                    }
-
-                    $formValues['respCuenta'] = $idPersons;
-                    $contracts = $contractRep->BuscarContract($formValues, true);
-				}
-			
-			}else{
-                $idPersons = array();
-                if($formValues['respCuenta']==0)
-                    $respCuenta = $User['userId'];
-                else
-                    $respCuenta = $formValues['respCuenta'];
-                array_push($idPersons,$respCuenta);
-                if($formValues['subordinados']){
-                    $personal->setPersonalId($respCuenta);
-                    $subordinados = $personal->Subordinados();
-                    if(!empty($subordinados)){
-                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
-                        $idPersons=array_merge($idPersons,$subsLine);
-                        unset($subsLine);
-                        unset($subordinados);
-                    }
-                }
-                $formValues['respCuenta'] = $idPersons;
-                $contracts = $contractRep->BuscarContract($formValues, true);
-			}//else
-			//echo count($contracts);
+			include(DOC_ROOT."/ajax/filterOnlyContract.php");
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
 			foreach($contracts as $res){
-				
 				$contractId = $res['contractId'];
 				$customerId = $res['customerId'];
-				
 				if(!in_array($customerId,$idClientes))
 					$idClientes[] = $customerId;
-				
 				if(!in_array($contractId,$idContracts)){
 					$idContracts[] = $contractId;				
 					$contratosClte[$customerId][] = $res;
 				}
-								
 			}//foreach					
 			
-				$values['departamentoId'] = $_POST["departamentoId"];
-				$values['anio'] = $_POST["year"];
-				$values['nombre'] = $_POST['rfc'];
-				$values['facturador'] = $_POST['facturador'];
-				$values['respCuenta'] = $_POST['responsableCuenta'];
-				$values['subordinados'] = $_POST['deep'];
-				$values['cliente'] = $_POST['cliente'];
-
-/*				foreach($_POST as $key => $val)
-					$values[$key] = $val;
-*/
-        		$_SESSION['cxc'] = $values;
-
-				$comprobantes = array();
-				$comprobantes = $cxc->SearchCuentasPorCobrarNoReporte($contratosClte, $values);
-
-				$total = 0;
-
-				$items = array();
-				if($comprobantes["items"])
-				{
-					foreach($comprobantes["items"] as $res){
-
-						if($res['facturador'] != 'Efectivo'){
-
-							if($res["tipoDeComprobante"] == "ingreso" && $res["status"] == 1)
-							{
-								$total += $res['total'];
-								$payments += $res['payment'];
-								$saldo += $res['saldo'];
-							}
-
-						}else{
-
+			$values['departamentoId'] = $_POST["departamentoId"];
+			$values['anio'] = $_POST["year"];
+			$values['nombre'] = $_POST['rfc'];
+			$values['facturador'] = $_POST['facturador'];
+			$values['respCuenta'] = $_POST['responsableCuenta'];
+			$values['subordinados'] = $_POST['deep'];
+			$values['cliente'] = $_POST['cliente'];
+            $values['month'] = $_POST['month'];
+			$_SESSION['cxc'] = $values;
+			$comprobantes = array();
+			$comprobantes = $cxc->SearchCuentasPorCobrarNoReporte($contratosClte, $values);
+			$total = 0;
+			$items = array();
+			if($comprobantes["items"])
+			{
+				foreach($comprobantes["items"] as $res){
+					if($res['facturador'] != 'Efectivo'){
+						if($res["tipoDeComprobante"] == "ingreso" && $res["status"] == 1)
+						{
 							$total += $res['total'];
 							$payments += $res['payment'];
 							$saldo += $res['saldo'];
-
 						}
-
-						$items[] = $res;
+					}else{
+						$total += $res['total'];
+						$payments += $res['payment'];
+						$saldo += $res['saldo'];
 					}
+					$items[] = $res;
 				}
+			}
 
-				$comprobantes['items'] = $items;
-
-				$smarty->assign('comprobantes',$comprobantes);
-				$smarty->assign('totalFacturas',$totalFacturas);
-				$smarty->assign('total',$total);
-				$smarty->assign('payments',$payments);
-				$smarty->assign('saldo',$saldo);
-
-				echo '[#]';
-				$smarty->assign('DOC_ROOT', DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/cxc.tpl');
-
-			break;
+			$comprobantes['items'] = $items;
+			$smarty->assign('comprobantes',$comprobantes);
+			$smarty->assign('totalFacturas',$totalFacturas);
+			$smarty->assign('total',$total);
+			$smarty->assign('payments',$payments);
+			$smarty->assign('saldo',$saldo);
+			echo '[#]';
+			$smarty->assign('DOC_ROOT', DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/cxc.tpl');
+		break;
 
 		case 'editCxC':
 

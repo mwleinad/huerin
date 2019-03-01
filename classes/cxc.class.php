@@ -3,11 +3,9 @@
 class CxC extends Producto
 {
 	function SearchCuentasPorCobrarNoReporte($contracts, $values){
-		//Viene del Buscador o viene del Modulo
-		{
-			global $user;
-
-			$sqlSearch = '';
+	{
+	    global $user;
+		$sqlSearch = '';
 		$ids = array();
 			$inIds = "0";
 		foreach($contracts as $key => $contract)
@@ -18,12 +16,13 @@ class CxC extends Producto
 				$inIds .= ",".$id["contractId"];
 			}
 		}
-			$sqlSearch .= ' AND contract.contractId IN ('.$inIds.')';
-
-			if($values['anio'])
-			{
+		$sqlSearch .= ' AND contract.contractId IN ('.$inIds.')';
+        if($values['anio'])
 				$sqlSearch .= ' AND EXTRACT(YEAR FROM c.fecha) = '.intval($values['anio']);
-			}
+        if($values['month'])
+                $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.intval($values['month']);
+
+
 			
 
 			$id_rfc = $this->getRfcActive();

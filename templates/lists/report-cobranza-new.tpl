@@ -4,18 +4,9 @@
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Razon Social</th>
 		<th align="center" width="60">Responsable</th>
-		<th align="center" width="50">Ene</th>
-		<th align="center" width="50">Feb</th>
-		<th align="center" width="50">Mar</th>
-		<th align="center" width="50">Abr</th>
-		<th align="center" width="50">May</th>
-		<th align="center" width="50">Jun</th>
-		<th align="center" width="50">Jul</th>
-		<th align="center" width="50">Ago</th>
-		<th align="center" width="50">Sep</th>
-		<th align="center" width="50">Oct</th>
-		<th align="center" width="50">Nov</th>
-		<th align="center" width="50">Dic</th>
+		{foreach from=$mesesComplete item=mes}
+			<th align="center" width="60">{$mes}</th>
+		{/foreach}
 	</tr>
 </thead>
 <tbody>
@@ -39,7 +30,6 @@
 						{if $instanciaServicio.status == 0}<br>Canceladas{/if}
 					</td>
 				{/if}
-
         {/foreach}
 	 	</tr>
 {foreachelse}
@@ -47,7 +37,5 @@
 	<td colspan="15" align="center">Ning&uacute;n registro encontrado.</td>
 </tr>
 {/foreach}
-
-
 </tbody>
 </table>

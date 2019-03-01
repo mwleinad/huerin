@@ -9,7 +9,6 @@ session_start();
 switch($_POST["type"])
 {
 	case "goToWorkflow":
-		
 			$_SESSION["search"]["rfc"] = $_POST["rfc"];
 			$_SESSION["search"]["responsableCuenta"] = $_POST["responsableCuenta"];
 			$_SESSION["search"]["status"] = $_POST["status"];
@@ -17,15 +16,12 @@ switch($_POST["type"])
 			$_SESSION["search"]["year"] = $_POST["year"];
 			$_SESSION["search"]["from"] = $_POST["from"];
 			$_SESSION["search"]["atrasados"] = $_POST["atrasados"];
-			
 			echo "ok";
-		
 		break;
 		
 	case "search":
 	case "sendEmail":
 	case "graph":
-	        $months = array();
 			$year = $_POST['year'];
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
@@ -108,7 +104,6 @@ switch($_POST["type"])
 			$idContracts = array();
 			$contratosClte = array();
 			foreach($contracts as $res){
-				
 				$contractId = $res['contractId'];
 				$customerId = $res['customerId'];
 				
@@ -119,20 +114,25 @@ switch($_POST["type"])
 					$idContracts[] = $contractId;				
 					$contratosClte[$customerId][] = $res;
 				}
-								
 			}//foreach
-						
 			$clientes = array();
 			foreach($idClientes as $customerId){
-				
 				$customer->setCustomerId($customerId);
 				$infC = $customer->Info();
-				
 				$infC['contracts'] = $contratosClte[$customerId];
-				
 				$clientes[] = $infC;
-				
 			}
+
+			$withIva =  false;
+			if(isset($_POST['withIva']))
+				$withIva = true;
+
+			if($_POST['month'])
+				$meses = [(int)$_POST['month']];
+			else
+				$meses = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+
 			$resClientes = array();
 			foreach($clientes as $clte){
 				$contratos = array();
@@ -146,7 +146,7 @@ switch($_POST["type"])
 						}
                     }
 					$serv = array();
-                    $statusColor =  $workflow->GetStatusByComprobante($con['contractId'], $year,'I');
+                    $statusColor =  $workflow->getRowCobranzaBono($con['contractId'], $year,'I',$meses,$withIva);
 					$con['instanciasServicio'] =$statusColor['serv'];
 
 					if($formValues['atrasados'] && $statusColor['noComplete'] > 0)
@@ -157,12 +157,9 @@ switch($_POST["type"])
 					{
 						$contratos[] = $con;
 					}
-					
 				}//foreach
 				$clte['contracts'] = $contratos;
-				
 				$resClientes[] = $clte;
-				
 			}//foreach
 
 			$cleanedArray = array();
@@ -178,13 +175,8 @@ switch($_POST["type"])
 					$card["instanciasServicio"] = $contract["instanciasServicio"];;
 					//$card["nombreServicio"] = $servicio["nombreServicio"];;
 					$cleanedArray[] = $card;
-
-/*						foreach($contract["instanciasServicio"] as $keyServicio => $servicio)
-						{
-						}*/
 				}
 			}
-
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 			$sortedArray = array();
 			foreach($personalOrdenado as $personalKey => $personalValue)
@@ -198,14 +190,19 @@ switch($_POST["type"])
 					}
 				}
 			}
+			//array de meses
+            foreach($meses as $mes)
+            	$mesesComplete[] = $monthsInt[$mes];
+
 			$clientesMeses = array();
 			$smarty->assign("cleanedArray", $cleanedArray);
 			$smarty->assign("clientes", $resClientes);
 			$smarty->assign("clientesMeses", $clientesMeses);
+            $smarty->assign("mesesComplete", $mesesComplete);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-new.tpl');
 			
-		break;
+	break;
 	case "deletePayment":
 		$payment = $cxc->PaymentInfo($_POST["id"]);
 

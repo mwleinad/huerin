@@ -1,4 +1,7 @@
 <select id="{$nameField}" name="{$nameField}" class="{$clase}">
+    {if $all}
+        <option value="" selected="selected">Todos</option>
+    {/if}
     <option value="1" {if $month == "01"} selected="selected" {/if}>Enero</option>
     <option value="2" {if $month == "02"} selected="selected" {/if}>Febrero</option>
     <option value="3" {if $month == "03"} selected="selected" {/if}>Marzo</option>

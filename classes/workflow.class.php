@@ -775,15 +775,11 @@ class Workflow extends Servicio
 
 		$this->Util()->DB()->setQuery($sql);
 		$data = $this->Util()->DB()->GetRow();
-
-
 		if(!$data)
 		{
 			$data["class"] = "#000000";
 			return $data;
 		}
-
-		//saldo
 		$sqlQuery = "SELECT SUM(amount) FROM payment
 						WHERE comprobanteId = '".$data["comprobanteId"]."'";
 		$this->Util()->DB()->setQuery($sqlQuery);
@@ -799,7 +795,6 @@ class Workflow extends Servicio
 		}
 		return $data;
 	}
-	
 	function StatusByMonth($servicioId, $month , $year)
 	{
 		$sql = "SELECT class, instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
@@ -816,7 +811,6 @@ class Workflow extends Servicio
 
 		return $data;
 	}
-	
 	function StatusById($id)
 	{
 		$this->Util()->DB()->setQuery("SELECT instanciaServicioId  FROM instanciaServicio 
