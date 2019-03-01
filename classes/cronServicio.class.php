@@ -189,42 +189,50 @@ class CronServicio extends Contract
                   $this->Util()->DB()->setQuery($sql);
                   $find =  $this->Util()->DB()->GetSingle();
                   if(!$find){
-                     $sqlinser = "INSERT INTO  `instanciaServicio` (
-									servicioId,
-									date,
-									status,
-									costoWorkflow
-								) VALUES (
-									'".$servicio["servicioId"]."',
-									'".$fecha."',
-								'activa',
-								'$costoWorkflow')";
-                      $this->Util()->DB()->setQuery($sqlinser);
-                      $id = $this->Util()->DB()->InsertData();
-                      //guardar log de creacion de workflow
                       if($servicio['inicioFactura']!="0000-00-00"&&$this->Util()->isValidateDate($servicio['inicioFactura'],'Y-m-d'))
                           $seFactura = 'Si';
                       else
                           $seFactura = 'No';
 
-                      $sqlLog= "insert into bitacora_create_workflow(
+                     $sqlinser = "INSERT INTO  `instanciaServicio` (
+									servicioId,
+									date,
+									status,
+									costoWorkflow,
+									factura
+								) VALUES (
+									'".$servicio["servicioId"]."',
+									'".$fecha."',
+                                    'activa',
+                                    '$costoWorkflow',
+                                    '$seFactura'
+                                )";
+                      $this->Util()->DB()->setQuery($sqlinser);
+                      $id = $this->Util()->DB()->InsertData();
+                      //guardar log de creacion de workflow
+                      if($id>0){
+                          $sqlLog= "insert into bitacora_create_workflow(
                                           contractId,
                                           servicioId,
                                           workflow_id,
                                           nombre_servicio,
                                           fecha_workflow,
-                                          se_factura
+                                          se_factura,
+                                          datetime_creation
                                       )values(
                                         '".$servicio['contractId']."',
                                         '".$servicio['servicioId']."',
                                         '".$id."',
                                         '".$servicio['nombreServicio']."',
                                         '".$fecha."',
-                                        '".$seFactura."'
+                                        '".$seFactura."',
+                                        NOW()
                                       )";
 
-                    $this->Util()->DB()->setQuery($sqlLog);
-                    $this->Util()->DB()->InsertData();
+                          $this->Util()->DB()->setQuery($sqlLog);
+                          $this->Util()->DB()->InsertData();
+                      }
+
                   }
 
               }

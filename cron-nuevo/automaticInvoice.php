@@ -43,7 +43,7 @@ $current =  date("Y-m-d");
 $firstDay =  $util->getFirstDate($current);
 if($current==$firstDay)
 {
-    if(strtotime(date('H:i:s'))<strtotime('01:30:00')){
+    if(strtotime(date('H:i:s'))<strtotime('03:00:00')){
         echo "ejecutado antes de las 01:30:00 del dia ".$firstDay.chr(13);
         exit;
     }
