@@ -1304,7 +1304,7 @@ class Comprobante extends Producto
 	}//GetComprobantesByRfc
 
 	function SearchComprobantesByRfc($values){
-		global $user;
+		global $user,$personal;
 
 		$sqlSearch = '';
 
@@ -1324,7 +1324,7 @@ class Comprobante extends Producto
 		}//if
 
 		if($values['nombre']){
-			$sqlSearch .= ' AND (customer.nameContact LIKE "%'.$values['nombre'].'%" OR contract.name LIKE "%'.$values['nombre'].'%")';
+			$sqlSearch .= ' AND (customer.nameContact LIKE "%'.$values['nombre'].'%" OR contract.name LIKE "%'.$values['nombre'].'%") ';
 		}//if
 
 		if($values['mes'] && $values['status_activo'] != '0'){
@@ -1349,6 +1349,21 @@ class Comprobante extends Producto
 
 		if($values['facturador'])
 			$sqlSearch .= ' AND c.rfcId = '.$values['facturador'];
+		if(!$values['responsableCuenta'])
+        {
+            $innerpermisos= "";
+            $wherepermisos = "";
+        }
+		else {
+		   $personal->isShowAll();
+		   $ftr['deep']=$values['deep'];
+		   $ftr['responsableCuenta'] = $values['responsableCuenta'];
+		   $persons = $personal->GetIdResponsablesSubordinados($ftr);
+		   $implodePersons = implode(',',$persons);
+           $innerpermisos =  "INNER JOIN contractPermiso p ON contract.contractId=p.contractId";
+           $wherepermisos = " AND p.personalId IN($implodePersons) ";
+        }
+
 
 		$id_rfc = $this->getRfcActive();
 		switch($values['generateby']){
@@ -1363,14 +1378,17 @@ class Comprobante extends Producto
         if(!isset($values['addComplemento'])&&!isset($values['comprobante']))
             $sqlSearch .= ' AND c.tiposComprobanteId!=10 ';
 
+		//$sqlSearch .= ' AND customer.active="1" and contract.activo="Si" ';
+
 		$sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
 			FROM comprobante as c
-			LEFT JOIN contract ON contract.contractId = c.userId
+		    LEFT JOIN contract ON contract.contractId = c.userId 
+		    '.$innerpermisos.'
 			LEFT JOIN customer ON customer.customerId = contract.customerId
 			LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = c.comprobanteId
 			LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			WHERE 1 '.$sqlSearch.'  GROUP BY c.comprobanteId ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
+			WHERE 1 '.$wherepermisos.' '.$sqlSearch.'  GROUP BY c.comprobanteId ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
 
 		$id_empresa = $_SESSION['empresaId'];
 

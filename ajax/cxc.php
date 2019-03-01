@@ -190,6 +190,7 @@
 			$formValues['cliente'] = $_POST["rfc"];
             $formValues['sinServicios'] = true;
             $formValues['activos'] = true;
+            $formValues['isCxc'] = true;
 			
 			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' WHERE class = ''";

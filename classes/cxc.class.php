@@ -31,7 +31,7 @@ class CxC extends Producto
 						LEFT JOIN contract ON contract.contractId = c.userId
 						LEFT JOIN customer ON customer.customerId = contract.customerId
 						LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
-						WHERE c.status='1' AND c.tiposComprobanteId != 10 AND customer.active = '1'
+						WHERE c.status='1' AND c.tiposComprobanteId != 10 
 						".$sqlSearch."
 						ORDER BY fecha DESC ".$sqlAdd;
 						

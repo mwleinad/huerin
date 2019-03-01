@@ -11,13 +11,17 @@ class Personal extends Main
 	private $active;
 	private $ext;
 	private $fechaIngreso;
+	private $showAll =  false;
 
 	public function setExt($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Extension");
 		$this->ext = $value;
 	}
-
+    public function isShowAll()
+    {
+        $this->showAll =  true;
+    }
 	private $celphone;
 	public function setCelphone($value)
 	{
@@ -179,7 +183,7 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false ) {
+		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false || $this->showAll) {
 			$sql = "SELECT
 						a.*,
 						b.name as nombreJefe,
@@ -1151,7 +1155,7 @@ function SubordinadosDetails()
 	    global $User;
         $idPersons= [];
 
-        if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
+        if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'||$this->showAll){
             //Si seleccionaron TODOS
             if($filtro['responsableCuenta'] == 0){
                 $this->setActive(1);
