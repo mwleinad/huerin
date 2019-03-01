@@ -258,10 +258,13 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
-    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false){
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false,$monthBase=[]){
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
+        $this->Util()->DB()->setQuery("select tipoServicioId from servicio where servicioId='".$servicioId."' ");
+        $tipoServicio =  $this->Util()->DB()->GetSingle();
+
         if($isParcial){
             //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
             $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
@@ -303,6 +306,8 @@ class InstanciaServicio extends  Servicio
 
         foreach($data as $key => $value)
         {
+            //encontrar monto total de cobranza por servicio
+
             $costo = 0;
             //solo buscar los precios para servicios que tengan una fecha valida de facturacion de momento, habria que evaluar para los que dejaron de facturar pero tienen facturas anteriores
             if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
@@ -311,26 +316,9 @@ class InstanciaServicio extends  Servicio
                 //en caso de no encontrar costo en factura se usa el costo del workflow
                 if($costo<=0)
                     $costo = $value['costoWorkflow'];
-
-                //if($costo<=0)
-                    //$costo = $value['costo'];
-            }
-            switch($value['mes']){
-                case 1:
-                case 4:
-                case 7:
-                case 10:
-                    $llave = 0; break;
-                case 2:
-                case 5:
-                case 8:
-                case 11:
-                    $llave = 1; break;
-                case 3:
-                case 6:
-                case 9:
-                case 12:
-                    $llave = 2; break;
+               //solo se toma si no se encontra factura ademas que costo de workflow no tenga cantidad
+                if($costo<=0)
+                    $costo = $value['costo'];
             }
             $value['costo'] = $costo;
             //sumar total de lo que se ha acompletado
@@ -338,10 +326,12 @@ class InstanciaServicio extends  Servicio
                 $totalAcompletado += $value['costo'];
 
             $totalDevengado += $value['costo'];
-
-            $new[$llave] =  $value;
+            $monthBase[$value['mes']] =  $value;
         }
-        $newArray['instancias']= $new;
+        if($tipoServicio==RIF||$tipoServicio==RIFAUDITADO){
+                 $this->comprobarRif($monthBase,$year,$servicioId);
+        }
+        $newArray['instancias']= $monthBase;
         $newArray['totalComplete'] = $totalAcompletado;
         $newArray['totalDevengado'] = $totalDevengado;
         return $newArray;
@@ -379,5 +369,127 @@ class InstanciaServicio extends  Servicio
         }
         return $costo;
 
+    }
+    function comprobarRif(&$instances = [],$year,$servicioId){
+
+        if(empty($instances))
+            return $instances;
+
+        foreach($instances as $ky=>$val){
+            switch($ky){
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 9:
+                case 11:
+                    $costo = $this->findCostoService($ky,$year,$servicioId);
+                    if($costo<=0)
+                    {
+                        $this->Util()->DB()->setQuery("select costo from servicio where servicioId='".$servicioId."' ");
+                        $costo =  $this->Util()->DB()->GetSingle();
+                    }
+                $instances[$ky]['costo'] = $costo;
+                break;
+            }
+        }
+    }
+    public function getRowCobranzaByInstancia($contratoId,$year,$meses=[],$whitIva=true){
+        global $comprobante;
+        $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
+        if($whitIva)
+            $strIva = " a.total as total ";
+        else
+            $strIva ="  a.subTotal as total ";
+
+        //create monthBase
+        foreach($meses as $mes)
+            $monthBase[$mes]['class'] = '#000000';
+
+        $totalCobrado = 0;
+        $totalXdepartamento = [];
+        $totalRealCobranza = 0;
+        foreach($monthBase as $mk=>$month){
+            $sql = "SELECT MONTH(a.fecha) as mes,a.xml,year(fecha) as anio,a.comprobanteId, a.userId, $strIva, a.fecha, `status`,b.payments as payment,a.version,a.xml,a.tasaIva 
+                    FROM comprobante a 
+                    LEFT JOIN (select comprobanteId , sum(amount) as payments from payment where paymentStatus='activo' group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
+                    WHERE YEAR(a.fecha) = ".$year." AND MONTH(a.fecha)='$mk' AND a.userId = '".$contratoId."' AND a.status = '1' $ftrTipo
+                    ORDER BY a.fecha ASC";
+            $this->Util()->DB()->setQuery($sql);
+            $facturas = $this->Util()->DB()->GetResult();
+
+            if(!$facturas)//si no hay facturas normales, encontrar facturas canceladas, solo interesa los totales de los mismos incluyendo iva
+            {
+                $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status` FROM comprobante a 
+                        WHERE YEAR(a.fecha) = ".$year." AND MONTH(a.fecha)='".$mk."' AND a.userId = '".$contratoId."' AND a.status = '0' $ftrTipo
+				        GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
+                $this->Util()->DB()->setQuery($sql);
+                $row = $this->Util()->DB()->GetRow();
+                if(!empty($row)){
+                    $row['class'] ="#EFEFEF";
+                    $row['payment'] =0;
+                    $row['saldo'] =0;
+                    $monthBase[$mk]=$row;
+                }
+                continue;
+            }
+            //encontrar los conceptos mediante los xmls
+            $pago = 0;
+            //inicio foreach facturas por mes
+            $totalPagoXmes = 0;
+            $totalSaldoXmes = 0;
+            $totalXmes=0;
+            foreach($facturas as $factura){
+                $pago = $factura['payment']/(1+($factura['tasaIva']/100));
+                $saldo= $factura['total']-$factura['payment'];
+                $totalXmes +=$factura['total'];
+                $totalPagoXmes +=$pago;
+                $totalSaldoXmes +=$saldo;
+                if(file_exists(DIR_FROM_XML."/SIGN_".$factura['xml'].".xml")){
+                    $xmlData = $comprobante->getDataByXml("SIGN_".$factura['xml']);
+                    foreach($xmlData['conceptos'] as $con){
+                        $description = strtoupper((string)$con['Descripcion']);
+                        $pu = (double)$con['ValorUnitario'];
+                        $index =  strpos($description,' CORRESPONDIENTE');
+                        $nameService =  substr($description,0,$index);
+                        $nameService =  strtoupper($nameService);
+                        $this->Util()->DB()->setQuery("select departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
+                        $departamentoId = $this->Util()->DB()->GetSingle();
+                        if($departamentoId)
+                        {
+                            $totalXdepartamento[$departamentoId] +=$pu;
+                        }
+
+                    }
+                }
+            }/*fin de foreach de facturas por mes*/
+            $month['saldo'] =  $totalSaldoXmes;
+            $month['mes'] =  $mk;
+            $month['anio'] =  $year;
+            $month['status'] = 1;
+            $month['total'] =  $totalXmes;
+            $month['pago'] = $totalPagoXmes;
+            if($totalSaldoXmes>0.1)
+                $month['class']= $month['pago']>0 ? "#FC0":"#ff0000";
+            else
+                $month["class"] = "#00ff00";
+
+            $totalCobrado +=$month['pago'];
+            $monthBase[$mk] =  $month;
+            $totalRealCobranza +=$totalXmes;
+        }
+        $data['instanciasCobranza'] = $monthBase;
+        $data['totalCobrado'] =  $totalCobrado;
+        //encontrar el % proporcional que le equivale a cada departamento, tomando como base el total real a cobrar
+
+        $totalServiciosFactura = array_sum($totalXdepartamento);
+
+        $totXdepProporcional = [];
+        foreach($totalXdepartamento as  $ck=>$cobranza){
+           $porcentajeProporcional =  ($cobranza * 100)/$totalServiciosFactura;
+            $totXdepProporcional[$ck] = $totalCobrado * (100/$porcentajeProporcional);
+        }
+        $data['totalCobradoXdepProporcional'] =  $totXdepProporcional;
+        return $data;
     }
 }

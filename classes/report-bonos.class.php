@@ -281,12 +281,39 @@ class ReporteBonos extends Main
 
 		return $StyleClassMES;
 	}
+	function createMonthBase($flag){
+	    $base = [];
+	    switch($flag){
+            case 'efm':
+                for($i=1;$i<=3;$i++)
+                    $base[$i] =  [];
+                break;
+            case 'amj':
+                for($i=4;$i<=6;$i++)
+                    $base[$i] =  [];
+                break;
+            case 'jas':
+                for($i=7;$i<=9;$i++)
+                    $base[$i] =  [];
+            break;
+            case 'ond':
+                for($i=10;$i<=12;$i++)
+                    $base[$i] =  [];
+            break;
+            default:
+                for($i=1;$i<=12;$i++)
+                    $base[$i] =  [];
+            break;
+        }
+        return $base;
+    }
 	function generateReportBonos($ftr=[]){
 	    global $contractRep,$instanciaServicio,$customer,$personal;
 
 	    $year = $_POST['year'];
 	    $totalContratos =  $customer->getTotalContratosInPlatform();
-        $mesesBase = array(0=>array(),1=>array(),2=>array());
+
+        $mesesBase =  $this->createMonthBase($ftr['period']);
 	    $contratos = $contractRep->getContracts($ftr,true);
         if(isset($ftr['deep']) || isset($ftr['subordinados']))
             $data['subordinados'] = 1;//sirve para controlar texto en el reporte resultado.
@@ -303,6 +330,8 @@ class ReporteBonos extends Main
         $totalXdepartamento= [];
         $totalXencargados = [];
         $idEncargados = [];
+        $idDepsCobranza = [];
+        $totalesCobranzaXdep = [];
 	    foreach($contratos as $key => $value){
             if(!isset($value['servicios']))
             {
@@ -332,23 +361,23 @@ class ReporteBonos extends Main
                 switch ($ftr['period']) {
                    case 'efm':
                        $meses = array(1, 2, 3);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
                    break;
                    case 'amj':
                        $meses = array(4, 5, 6);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
                    break;
                    case 'jas':
                        $meses = array(7, 8, 9);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
                    break;
                    case 'ond':
                        $meses = array(10, 11, 12);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
                    break;
                    default:
                        $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial);
+                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
                    break;
                }
                 if(isset($temp['instancias'])){
@@ -409,10 +438,24 @@ class ReporteBonos extends Main
                 continue;
            }
            $card2 = [];
-           $rowCobranza=Workflow::getRowCobranzaBono($value['contractId'],$year,'I',$meses,false);
-           $card2["instancias"]=$rowCobranza['serv'];
+           $rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
+           $card2["instancias"]=$rowCobranza['instanciasCobranza'];
            $card2["sumatotal"]=$rowCobranza['totalCobrado'];
            $granTotalCobranza +=$rowCobranza['totalCobrado'];
+           //summar total cobranza por departamento
+           if(count($rowCobranza['totalCobradoXdepProporcional'])>0){
+               foreach ($rowCobranza['totalCobradoXdepProporcional'] as $ck=>$totaldep){
+                   if(!in_array($ck,$idDepsCobranza)){
+                       array_push($idDepsCobranza,$ck);
+                       Departamentos::setDepartamentoId($ck);
+                       $tXdc['name'] =Departamentos::Info()['departamento'];
+                       $tXdc['total'] =  $totaldep;
+                       $totalesCobranzaXdep[$ck] = $tXdc;
+                   }else{
+                       $totalesCobranzaXdep[$ck]['total'] += $totaldep;
+                   }
+               }
+           }
            $card2["isRowCobranza"] =  true;
            array_push( $serviciosFiltrados,$card2);
            $contratos[$key]['servicios'] = $serviciosFiltrados;
@@ -427,6 +470,7 @@ class ReporteBonos extends Main
         $data['granTotalCobranza'] =$granTotalCobranza;
         $data['totalesXdepartamentos'] = $totalXdepartamento;
         $data['totalesXencargados'] = $totalXencargados;
+        $data['totalesCobranzaXdepartamento'] = $totalesCobranzaXdep;
         return $data;
     }
 }
