@@ -6,14 +6,15 @@
 <input type="hidden" name="cliente" id="cliente" value="0" />
 <table class="tableFull" align="center">
 <tr style="background-color:#CCC">
-    <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de Busqueda</b></td>
+    <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Filtro de Busqueda</b></td>
 </tr>
 <tr>
     <td align="center">Cliente o Razon social</td>
     <td align="center">Responsable</td>
     <td align="center">Incluir subordinados</td>
-   <td align="center">Departamento:</td>
-    <td align="center">A&ntilde;o:</td>               
+    <td align="center">Departamento:</td>
+	<td align="center">Mes:</td>
+	<td align="center">A&ntilde;o:</td>
 </tr>
 <tr>	
     <td align="center">
@@ -44,6 +45,9 @@
 			<option value="{$depto.departamentoId}" >{$depto.departamento}</option>
 			{/foreach}
 			</select>
+		</td>
+		<td align="center">
+			{include file="{$DOC_ROOT}/templates/forms/comp-filter-month.tpl" nameField='month' clase='largeInput medium2' all=true}
 		</td>
 		<td align="center">
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}

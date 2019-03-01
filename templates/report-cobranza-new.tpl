@@ -1,5 +1,4 @@
 <div class="grid_16" id="content">
-    
   <div class="grid_9">
   <h1 class="reportes">Cobranza anual</h1>
   </div>
@@ -9,17 +8,11 @@
   <div id="loadPrint">
   </div>
   </div>
-
-  
   <div class="clear">
   </div>
-  
   <div id="portlets">
-
   <div class="clear"></div>
-  
   <div class="portlet">
-     
        {include file="forms/search-cobranza-new.tpl"}
        <div align="center" id="loading" style="display:none">
        		<img src="{$WEB_ROOT}/images/loading.gif" />
@@ -27,19 +20,13 @@
             Cargando...
             <br />&nbsp;
        </div>
-     
-      <div class="portlet-content nopadding borderGray" id="contenido">
+       <div class="portlet-content nopadding borderGray" id="contenido">
       		<div style="text-align:center"><b>Este reporte puede tardar varios minutos si no eliges un cliente. Por favor sea paciente.</b></div>
-          {include file="lists/report-cobranza-new.tpl"}
-      </div>
-      
+          {*include file="lists/report-cobranza-new.tpl"*}
+       </div>
       <div style="clear:both"></div>
-      
       {include file="{$DOC_ROOT}/templates/boxes/report-walmart-status.tpl"}
-                   
     </div>
-	    
  </div>
   <div class="clear"> </div>
- 
 </div>
