@@ -198,12 +198,14 @@ class CronServicio extends Contract
 									servicioId,
 									date,
 									status,
+									class,
 									costoWorkflow,
 									factura
 								) VALUES (
 									'".$servicio["servicioId"]."',
 									'".$fecha."',
                                     'activa',
+                                    'PorIniciar',
                                     '$costoWorkflow',
                                     '$seFactura'
                                 )";
