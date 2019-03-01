@@ -440,7 +440,7 @@ class InstanciaServicio extends  Servicio
             $totalXmes=0;
             foreach($facturas as $factura){
                 $pago = $factura['payment']/(1+($factura['tasaIva']/100));
-                $saldo= $factura['total']-$factura['payment'];
+                $saldo= $factura['total']-$pago;
                 $totalXmes +=$factura['total'];
                 $totalPagoXmes +=$pago;
                 $totalSaldoXmes +=$saldo;
