@@ -176,7 +176,21 @@
 			</tbody>
 		</table>
 	</div>
-
+	<div style="display: table-cell;width: 25%">
+		<table width="100%" cellpadding="0" cellspacing="0" style="font-size:10px">
+			<thead>
+			<th colspan="2">Total cobranza por departamento</th>
+			</thead>
+			<tbody>
+			{foreach from=$data.totalesCobranzaXdepartamento item=txdc key=kxdc}
+				<tr>
+					<td><b>{$txdc.name}</b></td>
+					<td>{$txdc.total|number_format:2:'.':','}</b></td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
 
 </div>
 

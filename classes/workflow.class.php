@@ -981,7 +981,7 @@ class Workflow extends Servicio
                 array_push($months,$value['mes']);
                 $value['saldo'] =  $value['total']-$value['payment'];
                 $totalCobrado +=$pago;
-                if($value["saldo"] > 1)
+                if($value["saldo"] >0.1)//margen de .1 de rror en saldo
                 {
                     $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";
                     $noComplete++;
@@ -1009,7 +1009,6 @@ class Workflow extends Servicio
                     $row['saldo'] =0;
                     $monthBase[$km]=$row;
                 }
-
             }
         }
         //$new = array_replace_recursive($monthBase,$new);
