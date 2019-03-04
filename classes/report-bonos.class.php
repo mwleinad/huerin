@@ -447,8 +447,14 @@ class ReporteBonos extends Main
                foreach ($rowCobranza['totalCobradoXdepProporcional'] as $ck=>$totaldep){
                    if(!in_array($ck,$idDepsCobranza)){
                        array_push($idDepsCobranza,$ck);
-                       Departamentos::setDepartamentoId($ck);
-                       $tXdc['name'] =Departamentos::Info()['departamento'];
+                       if($ck!=000000)
+                       {
+                           Departamentos::setDepartamentoId($ck);
+                           $tXdc['name'] =Departamentos::Info()['departamento'];
+                       }else{
+                           $tXdc['name']="SIN DEPARTAMENTO";
+                       }
+
                        $tXdc['total'] =  $totaldep;
                        $totalesCobranzaXdep[$ck] = $tXdc;
                    }else{

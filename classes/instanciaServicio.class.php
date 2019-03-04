@@ -408,6 +408,7 @@ class InstanciaServicio extends  Servicio
         $totalCobrado = 0;
         $totalXdepartamento = [];
         $totalRealCobranza = 0;
+        $totalSinDepartamento = 0;
         foreach($monthBase as $mk=>$month){
             $sql = "SELECT MONTH(a.fecha) as mes,a.xml,year(fecha) as anio,a.comprobanteId, a.userId, $strIva, a.fecha, `status`,b.payments as payment,a.version,a.xml,a.tasaIva 
                     FROM comprobante a 
@@ -455,9 +456,9 @@ class InstanciaServicio extends  Servicio
                         $this->Util()->DB()->setQuery("select departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
                         $departamentoId = $this->Util()->DB()->GetSingle();
                         if($departamentoId)
-                        {
                             $totalXdepartamento[$departamentoId] +=$pu;
-                        }
+                        else
+                            $totalXdepartamento[000000] +=$pu;
 
                     }
                 }
@@ -480,13 +481,11 @@ class InstanciaServicio extends  Servicio
         $data['instanciasCobranza'] = $monthBase;
         $data['totalCobrado'] =  $totalCobrado;
         //encontrar el % proporcional que le equivale a cada departamento, tomando como base el total real a cobrar
-
         $totalServiciosFactura = array_sum($totalXdepartamento);
-
         $totXdepProporcional = [];
         foreach($totalXdepartamento as  $ck=>$cobranza){
            $porcentajeProporcional =  ($cobranza * 100)/$totalServiciosFactura;
-            $totXdepProporcional[$ck] = $totalCobrado * (100/$porcentajeProporcional);
+           $totXdepProporcional[$ck] = $totalCobrado * ($porcentajeProporcional/100);
         }
         $data['totalCobradoXdepProporcional'] =  $totXdepProporcional;
         return $data;
