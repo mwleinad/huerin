@@ -275,7 +275,7 @@
     {if $xmlData.db.status == 0 && $xmlData.db.comprobanteId}
         <span style="font-size: 96px; color: #f00; text-align: center;position: absolute;top:20%">CANCELADO</span>
     {elseif $xmlData.db.status == 1 && $xmlData.db.cfdi_cancel_status}
-        <span style="font-size: 70px; color: #f59b25; text-align: center;line-height:1;position: absolute;top:20%">PENDIENTE POR CONFIRMAR CANCELACION DE RECEPTOR</span>
+        <span style="font-size: 70px; color: #f59b25; text-align: center;line-height:1;position: absolute;top:20%">CANCELADO</span>
     {/if}
 
     {*Complemento de impuestos*}
