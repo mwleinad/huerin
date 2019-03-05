@@ -392,7 +392,7 @@ class ReporteBonos extends Main
                     else
                         $serv['instancias'] = $mesesBase;
                 }
-                //totalizar por encargados de area solo si se eligio un responsable, sino se eligio totalizar todos.
+                //totalizar por encargados de area
                 if(!in_array($encargados2[$serv['departamentoId']],$idEncargados)){
                     if(!$encargados2[$serv['departamentoId']])
                     {
@@ -415,6 +415,7 @@ class ReporteBonos extends Main
                         $keyEncargado = 000000;
                     else
                         $keyEncargado = $encargados2[$serv['departamentoId']];
+
                     $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotalTrabajado;
                 }
 
@@ -437,6 +438,7 @@ class ReporteBonos extends Main
                 unset($contratos[$key]);
                 continue;
            }
+           /*Inicio fila de cobranza*/
            $card2 = [];
            $rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
            $card2["instancias"]=$rowCobranza['instanciasCobranza'];
@@ -464,6 +466,7 @@ class ReporteBonos extends Main
            }
            $card2["isRowCobranza"] =  true;
            array_push( $serviciosFiltrados,$card2);
+           /*Fin de fila cobranza*/
            $contratos[$key]['servicios'] = $serviciosFiltrados;
         }//end foreach contratos
 
