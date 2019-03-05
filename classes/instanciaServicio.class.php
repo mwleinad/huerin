@@ -306,21 +306,19 @@ class InstanciaServicio extends  Servicio
 
         foreach($data as $key => $value)
         {
-            //encontrar monto total de cobranza por servicio
             $costo = 0;
-            //solo buscar los precios para servicios que tengan una fecha valida de facturacion de momento, habria que evaluar para los que dejaron de facturar pero tienen facturas anteriores
-            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
-                //comprobar costo en factura emitida, se podria decir que es la mas precisa.
+            //se busca precio en factura cuando inicioFactura es valida o la instancia  tiene el flag factura en 'Si'
+            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')||$value['factura']=='Si'){
                 $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
-                //en caso de no encontrar costo en factura se usa el costo del workflow
+                //en caso de no encontrar costo en factura se usa el costo del workflow si lo tiene
                 if($costo<=0)
                     $costo = $value['costoWorkflow'];
-               //solo se toma si no se encontra factura ademas que costo de workflow no tenga cantidad
+               //como ultima opcion se usa el costo asignado al servicio, esto pasa si en las dos anteriores no hay exito.
                 if($costo<=0)
                     $costo = $value['costo'];
             }
             $value['costo'] = $costo;
-            //sumar total de lo que se ha acompletado
+            //sumar total de lo trabajado
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo')
                 $totalAcompletado += $value['costo'];
 
@@ -367,7 +365,6 @@ class InstanciaServicio extends  Servicio
             }
         }
         return $costo;
-
     }
     function comprobarRif(&$instances = [],$year,$servicioId){
 
@@ -435,10 +432,10 @@ class InstanciaServicio extends  Servicio
             }
             //encontrar los conceptos mediante los xmls
             $pago = 0;
-            //inicio foreach facturas por mes
             $totalPagoXmes = 0;
             $totalSaldoXmes = 0;
             $totalXmes=0;
+            //inicio foreach facturas por mes
             foreach($facturas as $factura){
                 $pago = $factura['payment']/(1+($factura['tasaIva']/100));
                 $saldo= $factura['total']-$pago;
@@ -459,7 +456,6 @@ class InstanciaServicio extends  Servicio
                             $totalXdepartamento[$departamentoId] +=$pu;
                         else
                             $totalXdepartamento[000000] +=$pu;
-
                     }
                 }
             }/*fin de foreach de facturas por mes*/
