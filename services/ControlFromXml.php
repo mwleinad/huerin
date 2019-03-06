@@ -415,6 +415,7 @@ class ControlFromXml extends Comprobante
             }
 
             $estado = $cancelation->getStatus($data['emisorRfc'],$data['receptorRfc'],$data['uuid'],$data['total']);
+            dd($estado);
             switch($estado['status']){
                 case 'Cancelado':
                     $status = "0";
