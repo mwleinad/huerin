@@ -52,10 +52,12 @@
 
 									{if $instanciaServicio.class != '#000000'}
 										$ {$instanciaServicio.total|number_format:2:".":","}
+										{if $EXCEL !='SI'}
 										<br>
 										<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
 											<img src="{$WEB_ROOT}/images/icons/search-plus-green-18.png" border="0" />
 										</a>
+										{/if}
 										{if $instanciaServicio.status ==0}
 											<br>
 											<small>Canceladas</small>

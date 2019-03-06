@@ -56,7 +56,6 @@ header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
 header("Content-type:   application/x-msexcel; charset=utf-8");
 header("Content-Disposition: attachment; filename=".$name.".xls");
 header("Pragma: no-cache");
-echo "\xEF\xBB\xBF";
 header("Expires: 0");
 echo $html;
 exit;
