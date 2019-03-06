@@ -62,6 +62,12 @@ class Rfc extends Empresa
 	
 		return $rfc;
 	}
+    function InfoRfcByRfc2($rfc)
+    {
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM rfc WHERE rfc ='".$rfc."'");
+        $rfc = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+        return $rfc;
+    }
 
 	//let's override the function :P
 	public function setRfc($value)
