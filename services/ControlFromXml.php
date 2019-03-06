@@ -401,7 +401,7 @@ class ControlFromXml extends Comprobante
                 continue;
 
             $data = $this->getDataByXml($nameXml,true );
-            $rfcEmisor = $this->InfoRfcByRfc($data['emisorRfc']);
+            $rfcEmisor = $this->InfoRfcByRfc2($data['emisorRfc']);
             //comprobar si la serie y folio o nombre de xml se encuentra en cualquiera de las dos tablas de ser asi se ignora
             $nameXml = substr($data['nameXml'],5);
             $serie = $data['serie'];
@@ -415,6 +415,7 @@ class ControlFromXml extends Comprobante
             }
 
             $estado = $cancelation->getStatus($data['emisorRfc'],$data['receptorRfc'],$data['uuid'],$data['total']);
+            dd($estado);
             switch($estado['status']){
                 case 'Cancelado':
                     $status = "0";
