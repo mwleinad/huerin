@@ -64,6 +64,11 @@ switch($_POST["type"])
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
+    case 'registerComplementoToRealTable':
+        $controlFromXml->registerComplementoPagoInComprobante();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
 
 
 

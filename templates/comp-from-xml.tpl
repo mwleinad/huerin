@@ -8,6 +8,7 @@
         <!--<a style="cursor:pointer" title="Cargar facturas a tabla" class="spanAll spanUploadFacturas"><img src="{$WEB_ROOT}/images/icons/iconUp.png" width="16" /></a>
         <a style="cursor:pointer" title="Cargar facturas a tabla" class="spanAll spanMoveFacturasToRealTable"><img src="{$WEB_ROOT}/images/icons/backup_16x16.png" width="16" /></a>
         <a style="cursor:pointer" title="Cargar pagos a tabla" class="spanAll spanMovePaymentsToRealTable"><img src="{$WEB_ROOT}/images/icons/action_check.gif" width="16" /></a>-->
+        <a style="cursor:pointer" title="Registrar complementos" class="spanAll spanRegisterCompToTable"><img src="{$WEB_ROOT}/images/icons/iconUp.png"/></a>
         <div id="loadPrint">
         </div>
     </div>
