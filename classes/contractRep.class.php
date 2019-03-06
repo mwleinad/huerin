@@ -438,9 +438,8 @@ class ContractRep extends Main
               $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($encargadosString)
               WHERE 1 $ftrContract $ftrCustomer GROUP BY b.contractId $limit ORDER BY a.nameContact asc,b.name asc
                ";
-        exit;
         $this->Util()->DB()->setQuery($sql);
-       $result = $this->Util()->DB()->GetResult();
+        $result = $this->Util()->DB()->GetResult();
        if($whitServive){
            if($ftr['departamentoId']>0)
                $ftrService = " and b.departamentoId ='".$ftr['departamentoId']."' ";
