@@ -420,6 +420,11 @@ class ControlFromXml extends Comprobante
                 case 'Cancelado':
                     $status = "0";
                     $statusPayment = 'cancelado';
+                break;
+                case 'Vigente':
+                    $status = "1";
+                    $statusPayment = 'activo';
+                break;
                 default:
                     $status = "1";
                     $statusPayment = 'activo';
