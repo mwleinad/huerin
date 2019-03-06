@@ -388,7 +388,7 @@ class ControlFromXml extends Comprobante
     }
     function registerComplementoPagoInComprobante(){
         global $cancelation;
-        $sql = "SELECT * FROM payment WHERE  origen='recuperado' and comprobantePagoId=0 ORDER BY paymentId ASC limit 1";
+        $sql = "SELECT * FROM payment WHERE  origen='recuperado' and comprobantePagoId=0 ORDER BY paymentId ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         $insertadas = 0;
