@@ -415,7 +415,6 @@ class ControlFromXml extends Comprobante
             }
 
             $estado = $cancelation->getStatus($data['emisorRfc'],$data['receptorRfc'],$data['uuid'],$data['total']);
-            dd($estado);
             switch($estado['status']){
                 case 'Cancelado':
                     $status = "0";
@@ -487,7 +486,7 @@ class ControlFromXml extends Comprobante
 			)";
             $this->Util()->DB()->setQuery($sqlInsert);
             $compId = $this->Util()->DB()->InsertData();
-            $sqlUP = "UPDATE payment set comprobantePagoId=$compId WHERE paymentId=$paymentId ";
+            $sqlUP = "UPDATE payment set comprobantePagoId=$compId,paymentStatus='$statusPayment' WHERE paymentId=$paymentId ";
             $this->Util()->DB()->setQuery($sqlUP);
             $this->Util()->DB()->UpdateData();
             $insertadas++;
