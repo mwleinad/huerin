@@ -297,3 +297,29 @@ jQ(document).on('click','.spanMovePaymentsToRealTable',function () {
     })
 
 });
+jQ(document).on('click','.spanRegisterCompToTable',function () {
+    var message = "¿ Esta seguro de registrar los complementos en la tabla de facturas ?";
+    if(!confirm(message))
+    {
+        return;
+    }
+    var fd = new FormData();
+    fd.append('type','registerComplementoToRealTable');
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/comp-from-xml.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend:function(){
+            jQ('#loadPrint').html('Registrando complementos....');
+        },
+        success: function(response){
+            var splitResp =  response.split("[#]");
+            jQ('#loadPrint').html('');
+            ShowStatusPopUp(splitResp[1]);
+
+        }
+    })
+
+});

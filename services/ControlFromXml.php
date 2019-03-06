@@ -239,99 +239,6 @@ class ControlFromXml extends Comprobante
 
            $insertados++;
        }
-
-        /*while ($archivo = readdir($directorio)) //obtenemos un archivo y luego otro sucesivamente
-        {
-
-            if (strpos($archivo, 'zip') !== false || strpos($archivo, 'COMPAGO') !== false || strpos($archivo, 'SIGN') === false)
-                continue;
-            $data = [];
-            $data =  $this->getDataByXml(substr($archivo,0,-4),true);
-            $rfcEmisor = $this->InfoRfcByRfc($data['emisorRfc']);
-            //comprobar si la serie y folio o nombre de xml se encuentra en cualquiera de las dos tablas de ser asi se ignora
-            $nameXml = substr($data['nameXml'],5);
-            $serie = $data['serie'];
-            $folio = $data['folio'];
-            echo $sql = "SELECT comprobanteId FROM comprobante WHERE xml='$nameXml' or (serie='$serie' and folio=$folio) ";
-            $this->Util()->DB()->setQuery($sql);
-            $find =  $this->Util()->DB()->GetSingle();
-
-           $sql = "SELECT comprobanteId FROM comprobante_from_xml WHERE xml='$nameXml' or (serie='$serie' and folio=$folio) ";
-            $this->Util()->DB()->setQuery($sql);
-            $find =  $this->Util()->DB()->GetSingle();
-            if($find)
-            {
-                $ignoradas++;
-                continue;
-            }
-            $estado = $cancelation->getStatus($data['emisorRfc'],$data['receptorRfc'],$data['uuid'],$data['total']);
-            dd($estado);
-            switch($estado['status']){
-                case 'Cancelado':
-                    $status = "0";
-                    $canceladas++;
-                    break;
-                default:
-                    $status = "1";
-                    break;
-            }
-
-          echo  $sqlInsert = "INSERT INTO `comprobante_from_xml` (
-				`userId`,
-				`formaDePago`,
-				`metodoDePago`,
-				`tasaIva`,
-				`tipoDeMoneda`,
-				`tipoDeCambio`,
-				`tiposComprobanteId`,
-				`empresaId`,
-				`serie`,
-				`folio`,
-				`fecha`,
-				`sello`,
-				`noCertificado`,
-				`certificado`,
-				`subtotal`,
-				`total`,
-				`tipoDeComprobante`,
-				`xml`,
-				`rfcId`,
-				`ivaTotal`,				
-				`version`,
-				`status`,
-				`sent`
-			) VALUES
-			(
-				'".$data["userId"]."',
-				'".$data["formaPagoXml"]."',
-				'".$data["metodoPagoXml"]['c_MetodoPago']."',
-				'".$data["tasaIva"]."',
-				'".$data["tipoDeMoneda"]."',
-				'".$data["tipoDeCambio"]."',
-				'".$data["tiposComprobanteId"]."',
-				'".$data["empresaId"]."',
-				'".$data["serie"]."',
-				'".$data['folio']."',
-				'".$data["fechaCompleta"]."',
-				'".$data["sello"]."',
-				'".$data["noCertificado"]."',
-				'".$data["certificado"]."',
-				'".$data["subtotal"]."',
-				'".$data["total"]."',
-				'".$data["nameTipoComprobante"]."',
-				'".substr($data['nameXml'],5)."',
-				'".$rfcEmisor["rfcId"]."',
-				'".$data["iva"]."',
-				'".$data['version']."',
-				'".$status."',
-				'si'
-			)";
-            //$this->Util()->DB()->setQuery($sqlInsert);
-            //$this->Util()->DB()->InsertData();
-
-            $insertados++;
-            break;
-        }*/
         if($insertados>0)
         $this->Util()->setError(0,"complete","$insertados facturas  cargadas ");
 
@@ -476,6 +383,111 @@ class ControlFromXml extends Comprobante
         $this->Util()->setError(0,'complete',"$insertadosStatic pagos agregados de segunda tabla");
         */
 
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function registerComplementoPagoInComprobante(){
+        global $cancelation;
+        $sql = "SELECT * FROM payment WHERE  origen='recuperado' and comprobantePagoId=0 ORDER BY paymentId ASC limit 1";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $insertadas = 0;
+        $noInsertadas= 0;
+        foreach($result as $key => $value){
+            $nameXml =  $value['nameXmlComplemento'];
+            $paymentId =  $value['paymentId'];
+            $file = DIR_FROM_XML."/$nameXml.xml";
+            if(!file_exists($file))
+                continue;
+
+            $data = $this->getDataByXml($nameXml,true );
+            $rfcEmisor = $this->InfoRfcByRfc($data['emisorRfc']);
+            //comprobar si la serie y folio o nombre de xml se encuentra en cualquiera de las dos tablas de ser asi se ignora
+            $nameXml = substr($data['nameXml'],5);
+            $serie = $data['serie'];
+            $folio = $data['folio'];
+            $sql1 = "SELECT comprobanteId FROM comprobante WHERE xml='$nameXml' or (serie='$serie' and folio=$folio) ";
+            $this->Util()->DB()->setQuery($sql1);
+            $findNormal =  $this->Util()->DB()->GetSingle();
+            if($findNormal){
+                $noInsertadas++;
+                continue;
+            }
+
+            $estado = $cancelation->getStatus($data['emisorRfc'],$data['receptorRfc'],$data['uuid'],$data['total']);
+            switch($estado['status']){
+                case 'Cancelado':
+                    $status = "0";
+                    $statusPayment = 'cancelado';
+                default:
+                    $status = "1";
+                    $statusPayment = 'activo';
+                break;
+            }
+           $conceptos = urlencode(serialize($data["conceptos"]));
+            $sqlInsert = "INSERT INTO `comprobante` (
+				`userId`,
+				`formaDePago`,
+				`metodoDePago`,
+				`tipoDeCambio`,
+				`tiposComprobanteId`,
+				`empresaId`,
+				`serie`,
+				`folio`,
+				`fecha`,
+				`sello`,
+				`noCertificado`,
+				`certificado`,
+				`subtotal`,
+				`total`,
+				`tipoDeComprobante`,
+				`xml`,
+				`rfcId`,
+				`ivaTotal`,				
+				`version`,
+				`status`,
+				`efectoComprobante`,
+				`procedencia`,
+				`conceptos`,
+				`data`,
+				`sent`
+			) VALUES
+			(
+				'".$data["userId"]."',
+				'NO DEBE EXISTIR',
+				'NO DEBE EXISTIR',
+				'1',
+				'".$data["tiposComprobanteId"]."',
+				'".$data["empresaId"]."',
+				'".$data["serie"]."',
+				'".$data['folio']."',
+				'".$data["fechaCompleta"]."',
+				'".$data["sello"]."',
+				'".$data["noCertificado"]."',
+				'".$data["certificado"]."',
+				'".$data["subtotal"]."',
+				'".$data["total"]."',
+				'".$data["nameTipoComprobante"]."',
+				'".substr($data['nameXml'],5)."',
+				'".$rfcEmisor["rfcId"]."',
+				'".$data["iva"]."',
+				'".$data['version']."',
+				'".$status."',
+				'I',
+				'manual',
+				'".$conceptos."',
+				'".$conceptos."',
+				'si'
+			)";
+            $this->Util()->DB()->setQuery($sqlInsert);
+            $compId = $this->Util()->DB()->InsertData();
+            $sqlUP = "UPDATE payment set comprobantePagoId=$compId WHERE paymentId=$paymentId ";
+            $this->Util()->DB()->setQuery($sqlUP);
+            $this->Util()->DB()->UpdateData();
+            $insertadas++;
+        }
+        $this->Util()->setError(0,"complete","$insertadas complementos cargados correctamente ");
+        $this->Util()->setError(0,"complete","$noInsertadas complementos no cargados por tener registro correcto");
         $this->Util()->PrintErrors();
         return true;
     }
