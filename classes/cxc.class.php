@@ -755,10 +755,10 @@ class CxC extends Producto
 		}
 
 		$this->Util()->DB()->setQuery("
-			DELETE FROM payment WHERE paymentId = '".$id."'");
+			UPDATE payment set paymentStatus='cancelado' WHERE paymentId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
 
-		$this->Util()->setError(10046, "complete", "El pago fue borrado correctamente");
+		$this->Util()->setError(10046, "complete", "El pago fue cancelado correctamente");
 		$this->Util()->PrintErrors();
 		return true;
 	}
