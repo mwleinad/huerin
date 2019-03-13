@@ -456,7 +456,7 @@ class ReporteBonos extends Main
                 continue;
            }
             $card3=[];
-            $cobranzaReal = Workflow::getRowCobranzaBono($value["contractId"],$year,'I',$meses,false);
+            $cobranzaReal = Workflow::getRowCobranzaBono($value["contractId"],$year,'I',$meses,false,true);
             $card3["instancias"] = $cobranzaReal["serv"];
             $card3["sumatotal"] = $cobranzaReal["totalCobrado"];
             $card3["description"] = "Total cobranza";
