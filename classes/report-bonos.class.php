@@ -350,6 +350,7 @@ class ReporteBonos extends Main
             $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
             $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
             $rowCobranza = [];
+            $sumTotalCobranza = 0;
             foreach($value['servicios'] as $ks=>$serv) {
                $sumaTotalDevengado=0;
                $sumaTotalTrabajado=0;
@@ -440,7 +441,6 @@ class ReporteBonos extends Main
                $serviciosFiltrados[]= $serv;
                $granTotalContabilidad +=(double)$sumaTotalDevengado;
                //recorrer total de cobranza por servicio
-                $sumTotalCobranza = 0;
                 foreach($cobranza as $ck=>$cob){
                     $rowCobranza[$ck]["total"]+=$cob["total"];
                     $rowCobranza[$ck]["class"]=$cob["class"];
