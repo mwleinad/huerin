@@ -455,11 +455,22 @@ class ReporteBonos extends Main
                 unset($contratos[$key]);
                 continue;
            }
+            $card3=[];
+            $cobranzaReal = Workflow::getRowCobranzaBono($value["contractId"],$year,'I',$meses,false);
+            $card3["instancias"] = $cobranzaReal["serv"];
+            $card3["sumatotal"] = $cobranzaReal["totalCobrado"];
+            $card3["description"] = "Total cobranza";
+            $card3["isDevengado"] = true;
+            $card3["isRowCobranza"] = true;
+            array_push( $serviciosFiltrados,$card3);
+
             $card2 = [];
             //crear el total de cobranza por mes
             $card2["instancias"] = $rowCobranza;
             $card2["sumatotal"]=$sumTotalCobranza;
             $card2["isRowCobranza"] =  true;
+            $card2["description"] = "Total cobranza proporcional";
+            $card2["isDevengado"] = false;
             $granTotalCobranza +=$sumTotalCobranza;
             array_push( $serviciosFiltrados,$card2);
 
