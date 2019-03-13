@@ -546,7 +546,7 @@ class InstanciaServicio extends  Servicio
                         $nameService =  strtoupper($nameService);
                         $this->Util()->DB()->setQuery("select tipoServicioId,departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
                         $serv= $this->Util()->DB()->GetRow();
-                        if($serv["tipoServicioId"]>0){
+                        if($serv["tipoServicioId"]==$infoServicio["tipoServicioId"]){
                             $importe = (double)$con['ValorUnitario'] * (double)$con['Cantidad'];
                             break;
                         }
