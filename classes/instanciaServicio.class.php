@@ -537,6 +537,7 @@ class InstanciaServicio extends  Servicio
                 $compId = $factura['comprobanteId'];
                 $total= $factura['total'];
                 $totalFactura +=$total;
+                $porcentaje=0;
                 if(file_exists(DIR_FROM_XML."/SIGN_".$factura['xml'].".xml")){
                     $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
                     foreach($data['conceptos'] as $con){
@@ -548,11 +549,12 @@ class InstanciaServicio extends  Servicio
                         $serv= $this->Util()->DB()->GetRow();
                         if($serv["tipoServicioId"]==$infoServicio["tipoServicioId"]){
                             $importe = (double)$con['ValorUnitario'] * (double)$con['Cantidad'];
+                            //calcular el % para obtener el proporcional en el pago
+                            $porcentaje = ($importe*100)/$total;
                             break;
                         }
                     }
-                    //calcular el % para obtener el proporcional en el pago
-                    $porcentaje = ($importe*100)/$total;
+
                 }
                 //comprobar los pagos de la factura y obtener el proporcional
                 $sql = "select sum(amount) from payment where comprobanteId=$compId";
@@ -563,9 +565,8 @@ class InstanciaServicio extends  Servicio
                 $proporcional = $pagos*($porcentaje/100);
                 $totalProporcional +=$proporcional;
             }
-            if($totalProporcional>0){
-                $monthBase[$mes]['total'] = $totalProporcional;
-            }
+
+            $monthBase[$mes]['total'] = $totalProporcional;
             $saldo = $totalFactura-$totalPagos;
             if($saldo>0.1)
                 $monthBase[$mes]["class"]= $totalPagos>0 ? "#FC0":"#ff0000";
