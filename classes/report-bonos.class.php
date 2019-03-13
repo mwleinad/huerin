@@ -464,7 +464,7 @@ class ReporteBonos extends Main
             array_push( $serviciosFiltrados,$card2);
 
            /*Inicio fila de cobranza*/
-           /*$rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
+          /* $rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
            $card2["instancias"]=$rowCobranza['instanciasCobranza'];
            $card2["sumatotal"]=$rowCobranza['totalCobrado'];
            $granTotalCobranza +=$rowCobranza['totalCobrado'];

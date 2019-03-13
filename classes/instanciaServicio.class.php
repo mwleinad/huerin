@@ -456,7 +456,6 @@ class InstanciaServicio extends  Servicio
                         $nameService =  strtoupper($nameService);
                         $this->Util()->DB()->setQuery("select departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
                         $departamentoId = $this->Util()->DB()->GetSingle();
-
                         if($departamentoId)
                         {
                             $totDepXmes[$departamentoId] +=$importe;
@@ -542,7 +541,12 @@ class InstanciaServicio extends  Servicio
                     $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
                     foreach($data['conceptos'] as $con){
                         $description = (string)$con['Descripcion'];
-                        if(stripos($description,$nombreServicio)!==FALSE){
+                        $index =  strpos($description,' CORRESPONDIENTE');
+                        $nameService =  substr($description,0,$index);
+                        $nameService =  strtoupper($nameService);
+                        $this->Util()->DB()->setQuery("select tipoServicioId,departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
+                        $serv= $this->Util()->DB()->GetRow();
+                        if($serv["tipoServicioId"]>0){
                             $importe = (double)$con['ValorUnitario'] * (double)$con['Cantidad'];
                             break;
                         }
