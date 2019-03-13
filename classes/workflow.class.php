@@ -972,18 +972,18 @@ class Workflow extends Servicio
             $pago = $value['payment']/(1+($value['tasaIva']/100));
             if(!in_array($value['mes'],$months))
             {
-                $value['total']=$pago;
                 array_push($months,$value['mes']);
                 $value['saldo'] =  $value['total']-$pago;
                 $totalCobrado +=$pago;
                 if($value["saldo"] >0.1)//margen de .1 de rror en saldo
                 {
-                    $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";
+                    $value["class"] = $pago>0 ? "#FC0":"#ff0000";
                     $noComplete++;
                 }
                 else{
                     $value["class"] = "#00ff00";
                 }
+                $value['total']=$pago;
                 $new[$value['mes']] =  $value;
             }
         }
