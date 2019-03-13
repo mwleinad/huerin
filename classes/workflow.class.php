@@ -941,7 +941,7 @@ class Workflow extends Servicio
         $result['mes'] = $monthsComplete["0".$month];
         return $result;
     }
-    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[],$whitIva=true){
+    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[],$whitIva=tru,$bonos=false){
         $ftrTipo = "";
         if($tipo=='I')
             $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
@@ -983,7 +983,9 @@ class Workflow extends Servicio
                 else{
                     $value["class"] = "#00ff00";
                 }
-                $value['total']=$pago;
+                if($bonos)
+                    $value["total"]=$pago;
+
                 $new[$value['mes']] =  $value;
             }
         }
