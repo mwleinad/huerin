@@ -31,7 +31,7 @@
 			{foreach from=$item.servicios item=servicio key=ks}
 				{if $servicio.isRowCobranza}
 					<tr>
-						<td align="center" colspan="4">Total cobranza</td>
+						<td align="center" colspan="4">{$servicio.description}</td>
 						{foreach from=$servicio.instancias item=instanciaServicio}
 							{if $instanciaServicio.class == '#000000'}
 								<td style="text-align: center">
@@ -49,14 +49,15 @@
 										color: #ffffff;
 									{/if}
 									font-weight: bold">
-
 									{if $instanciaServicio.class != '#000000'}
 										$ {$instanciaServicio.total|number_format:2:".":","}
 										{if $EXCEL !='SI'}
-										<br>
-										<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
-											<img src="{$WEB_ROOT}/images/icons/search-plus-green-18.png" border="0" />
-										</a>
+											{if !$servicio.isDevengado}
+											<br>
+											<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
+												<img src="{$WEB_ROOT}/images/icons/search-plus-green-18.png" border="0" />
+											</a>
+											{/if}
 										{/if}
 										{if $instanciaServicio.status ==0}
 											<br>
