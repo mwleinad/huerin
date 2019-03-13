@@ -957,7 +957,7 @@ class Workflow extends Servicio
 
         $months = array();
         $new =array();
-        $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, $strIva, a.fecha, `status`,sum(b.payments) as payment,
+       echo  $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, $strIva, a.fecha, `status`,sum(b.payments) as payment,
                 a.version,a.xml,a.tasaIva FROM comprobante a 
                 LEFT JOIN (select comprobanteId , sum(amount) as payments from payment where paymentStatus='activo' group by comprobanteId)  b ON a.comprobanteId=b.comprobanteId
                 WHERE
@@ -972,8 +972,9 @@ class Workflow extends Servicio
             $pago = $value['payment']/(1+($value['tasaIva']/100));
             if(!in_array($value['mes'],$months))
             {
+                $value['total']=$pago;
                 array_push($months,$value['mes']);
-                $value['saldo'] =  $value['total']-$value['payment'];
+                $value['saldo'] =  $value['total']-$pago;
                 $totalCobrado +=$pago;
                 if($value["saldo"] >0.1)//margen de .1 de rror en saldo
                 {
