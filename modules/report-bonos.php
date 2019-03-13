@@ -18,7 +18,7 @@ else
 $smarty->assign("year", $year);
 $smarty->assign('mainMnu','reportes');
 $rol->setRolId($User['roleId']);
-$unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','cliente'));
+$unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'));
 $smarty->assign('unlimited',$unlimited);
 
 ?>

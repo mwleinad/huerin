@@ -349,6 +349,7 @@ class ReporteBonos extends Main
 
             $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
             $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
+            $rowCobranza = [];
             foreach($value['servicios'] as $ks=>$serv) {
                $sumaTotalDevengado=0;
                $sumaTotalTrabajado=0;
@@ -362,22 +363,28 @@ class ReporteBonos extends Main
                    case 'efm':
                        $meses = array(1, 2, 3);
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                       //obtengamos por cada servicio  su total cobranza por trimestre
+                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
                    break;
                    case 'amj':
                        $meses = array(4, 5, 6);
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
                    break;
                    case 'jas':
                        $meses = array(7, 8, 9);
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
                    break;
                    case 'ond':
                        $meses = array(10, 11, 12);
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
                    break;
                    default:
                        $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
                    break;
                }
                 if(isset($temp['instancias'])){
@@ -432,15 +439,32 @@ class ReporteBonos extends Main
                $serv['sumatotal'] = $sumaTotalTrabajado;
                $serviciosFiltrados[]= $serv;
                $granTotalContabilidad +=(double)$sumaTotalDevengado;
+               //recorrer total de cobranza por servicio
+                $sumTotalCobranza = 0;
+                foreach($cobranza as $ck=>$cob){
+                    $rowCobranza[$ck]["total"]+=$cob["total"];
+                    $rowCobranza[$ck]["class"]=$cob["class"];
+                    $rowCobranza[$ck]["status"]=1;
+                    $rowCobranza[$ck]["mes"]=$ck;
+                    $rowCobranza[$ck]["anio"]=$year;
+                    $sumTotalCobranza +=$cob["total"];
+                }
 
            }//end foreach servicios.
            if(count($serviciosFiltrados)<=0){
                 unset($contratos[$key]);
                 continue;
            }
+            $card2 = [];
+            //crear el total de cobranza por mes
+            $card2["instancias"] = $rowCobranza;
+            $card2["sumatotal"]=$sumTotalCobranza;
+            $card2["isRowCobranza"] =  true;
+            $granTotalCobranza +=$sumTotalCobranza;
+            array_push( $serviciosFiltrados,$card2);
+
            /*Inicio fila de cobranza*/
-           $card2 = [];
-           $rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
+           /*$rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
            $card2["instancias"]=$rowCobranza['instanciasCobranza'];
            $card2["sumatotal"]=$rowCobranza['totalCobrado'];
            $granTotalCobranza +=$rowCobranza['totalCobrado'];

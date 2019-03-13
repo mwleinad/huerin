@@ -390,7 +390,7 @@ class InstanciaServicio extends  Servicio
             }
         }
     }
-    public function getRowCobranzaByInstancia($contratoId,$year,$meses=[],$whitIva=true){
+    public function getRowCobranzaByInstancia($contratoId,$year,$meses=[],$whitIva=true,$depId=0){
         global $comprobante;
         $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
         if($whitIva)
@@ -435,6 +435,7 @@ class InstanciaServicio extends  Servicio
             $totalPagoXmes = 0;
             $totalSaldoXmes = 0;
             $totalXmes=0;
+            $totDepXmes= [];
             //inicio foreach facturas por mes
             foreach($facturas as $factura){
                 $pago = $factura['payment']/(1+($factura['tasaIva']/100));
@@ -447,18 +448,40 @@ class InstanciaServicio extends  Servicio
                     foreach($xmlData['conceptos'] as $con){
                         $description = strtoupper((string)$con['Descripcion']);
                         $pu = (double)$con['ValorUnitario'];
+                        $cantidad = (double)$con['Cantidad'];
+                        $importe = $cantidad*$pu;
+
                         $index =  strpos($description,' CORRESPONDIENTE');
                         $nameService =  substr($description,0,$index);
                         $nameService =  strtoupper($nameService);
                         $this->Util()->DB()->setQuery("select departamentoId from tipoServicio where UPPER(nombreServicio)='$nameService' ");
                         $departamentoId = $this->Util()->DB()->GetSingle();
+
                         if($departamentoId)
-                            $totalXdepartamento[$departamentoId] +=$pu;
-                        else
-                            $totalXdepartamento[000000] +=$pu;
+                        {
+                            $totDepXmes[$departamentoId] +=$importe;
+                            $totalXdepartamento[$departamentoId] +=$importe;
+                        }
+                        else{
+                            $totalXdepartamento[000000] +=$importe;
+                            $totDepXmes[000000] +=$importe;
+                        }
                     }
                 }
             }/*fin de foreach de facturas por mes*/
+
+            //si hay un deparamento seleccionado
+            //encontrar % proporcional mensual
+            if($depId>0){
+                $totPropMonth= [];
+                $totalServiciosMonth = array_sum($totDepXmes);
+                foreach($totDepXmes as $xmes=>$cxmes){
+                    $porProporcionalMonth =  ($cxmes * 100)/$totalServiciosMonth;
+                    $totPropMonth[$xmes] = $totalPagoXmes * ($porProporcionalMonth/100);
+                }
+                $totalPagoXmes = $totPropMonth[$depId];
+            }
+
             $month['saldo'] =  $totalSaldoXmes;
             $month['mes'] =  $mk;
             $month['anio'] =  $year;
@@ -481,9 +504,64 @@ class InstanciaServicio extends  Servicio
         $totXdepProporcional = [];
         foreach($totalXdepartamento as  $ck=>$cobranza){
            $porcentajeProporcional =  ($cobranza * 100)/$totalServiciosFactura;
-           $totXdepProporcional[$ck] = $totalCobrado * ($porcentajeProporcional/100);
+           if($depId){
+               $totXdepProporcional[$ck] = $totalCobrado * ($porcentajeProporcional/100);
+           }
+
         }
         $data['totalCobradoXdepProporcional'] =  $totXdepProporcional;
         return $data;
+    }
+    function getCobranzaByServicio($servicioId,$year,$meses=array(),$monthBase=[]){
+        global $servicio,$comprobante;
+        $servicio->setServicioId($servicioId);
+        $infoServicio = $servicio->Info();
+        $nombreServicio = $infoServicio['nombreServicio'];
+        $contratoId = $infoServicio['contractId'];
+        foreach($meses as $mes){
+            $sql = "SELECT xml,cadenaOriginal,month(fecha),subTotal as total,comprobanteId,tasaIva FROM comprobante 
+                    WHERE MONTH(fecha)=$mes AND YEAR(fecha)='$year' AND userId='$contratoId'  and status='1' AND tipoDeComprobante='ingreso' ";
+            $this->Util()->DB()->setQuery($sql);
+            $facturas = $this->Util()->DB()->GetResult();
+
+            $totalFactura = 0;
+            $totalPagos = 0;
+            $totalProporcional = 0;
+            foreach($facturas as $factura){
+                $compId = $factura['comprobanteId'];
+                $total= $factura['total'];
+                $totalFactura +=$total;
+                if(file_exists(DIR_FROM_XML."/SIGN_".$factura['xml'].".xml")){
+                    $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
+                    foreach($data['conceptos'] as $con){
+                        $description = (string)$con['Descripcion'];
+                        if(stripos($description,$nombreServicio)!==FALSE){
+                            $importe = (double)$con['ValorUnitario'] * (double)$con['Cantidad'];
+                            break;
+                        }
+                    }
+                    //calcular el % para obtener el proporcional en el pago
+                    $porcentaje = ($importe*100)/$total;
+                }
+                //comprobar los pagos de la factura y obtener el proporcional
+                $sql = "select sum(amount) from payment where comprobanteId=$compId";
+                $this->Util()->DB()->setQuery($sql);
+                $pagos = $this->Util()->DB()->GetSingle();
+                $pagos = $pagos/(1+($factura['tasaIva']/100));
+                $totalPagos +=$pagos;
+                $proporcional = $pagos*($porcentaje/100);
+                $totalProporcional +=$proporcional;
+            }
+            if($totalProporcional>0){
+                $monthBase[$mes]['total'] = $totalProporcional;
+            }
+            $saldo = $totalFactura-$totalPagos;
+            if($saldo>0.1)
+                $monthBase[$mes]["class"]= $totalPagos>0 ? "#FC0":"#ff0000";
+            else
+                $monthBase[$mes]["class"] = "#00ff00";
+
+        }
+        return $monthBase;
     }
 }
