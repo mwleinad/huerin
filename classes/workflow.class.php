@@ -941,7 +941,7 @@ class Workflow extends Servicio
         $result['mes'] = $monthsComplete["0".$month];
         return $result;
     }
-    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[],$whitIva=true){
+    public function getRowCobranzaBono($contratoId,$year,$tipo='A',$meses=[],$whitIva=tru,$bonos=false){
         $ftrTipo = "";
         if($tipo=='I')
             $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
@@ -983,7 +983,9 @@ class Workflow extends Servicio
                 else{
                     $value["class"] = "#00ff00";
                 }
-                $value['total']=$pago;
+                if($bonos)
+                    $value["total"]=$pago;
+
                 $new[$value['mes']] =  $value;
             }
         }
@@ -992,17 +994,19 @@ class Workflow extends Servicio
             if(key_exists($km,$new)){
                 $monthBase[$km] = $new[$km];
             }else{
-                $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status` FROM comprobante a 
+                if(!$bonos){
+                    $sql = "SELECT MONTH(a.fecha) as mes,year(fecha) as anio,a.comprobanteId, a.userId, sum(a.total) as total, a.fecha, `status` FROM comprobante a 
                 WHERE
 				YEAR(a.fecha) = ".$year." AND MONTH(a.fecha)='".$km."' AND a.userId = '".$contratoId."' AND a.status = '0' $ftrTipo
 				GROUP BY MONTH(a.fecha) ORDER BY a.fecha ASC";
-                $this->Util()->DB()->setQuery($sql);
-                $row = $this->Util()->DB()->GetRow();
-                if(!empty($row)){
-                    $row['class'] ="#EFEFEF";
-                    $row['payment'] =0;
-                    $row['saldo'] =0;
-                    $monthBase[$km]=$row;
+                    $this->Util()->DB()->setQuery($sql);
+                    $row = $this->Util()->DB()->GetRow();
+                    if(!empty($row)){
+                        $row['class'] ="#EFEFEF";
+                        $row['payment'] =0;
+                        $row['saldo'] =0;
+                        $monthBase[$km]=$row;
+                    }
                 }
             }
         }
