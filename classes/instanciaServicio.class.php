@@ -528,7 +528,7 @@ class InstanciaServicio extends  Servicio
             {
                 $monthBase[$mes]['total'] = 0;
                 $monthBase[$mes]["class"] = "#000000";;
-
+                continue;
             }
 
             $totalFactura = 0;
