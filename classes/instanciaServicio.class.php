@@ -524,6 +524,13 @@ class InstanciaServicio extends  Servicio
             $this->Util()->DB()->setQuery($sql);
             $facturas = $this->Util()->DB()->GetResult();
 
+            if(!$facturas)
+            {
+                $monthBase[$mes]['total'] = 0;
+                $monthBase[$mes]["class"] = "#000000";;
+
+            }
+
             $totalFactura = 0;
             $totalPagos = 0;
             $totalProporcional = 0;
