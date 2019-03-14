@@ -554,7 +554,6 @@ class InstanciaServicio extends  Servicio
                             break;
                         }
                     }
-
                 }
                 //comprobar los pagos de la factura y obtener el proporcional
                 $sql = "select sum(amount) from payment where comprobanteId=$compId";
@@ -565,6 +564,7 @@ class InstanciaServicio extends  Servicio
                 $proporcional = $pagos*($porcentaje/100);
                 $totalProporcional +=$proporcional;
             }
+
 
             $monthBase[$mes]['total'] = $totalProporcional;
             $saldo = $totalFactura-$totalPagos;
