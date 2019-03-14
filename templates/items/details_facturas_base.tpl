@@ -8,7 +8,7 @@
                 <td align="right">{if $fact.status eq '1'}{$fact.pagado}{else}Cancelado{/if}</td>
                 <td width="90">
                         {*descargar xml*}
-                        {if in_array(128,$permissions) || $User.isRoot}
+                        {*if in_array(128,$permissions) || $User.isRoot*}
                             {if $fact.version == '3.3'}
                                 <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobanteId}&type=view" class="spanAll">
                                     <img src="{$WEB_ROOT}/images/icons/pdf-18.png"  title="Ver factura"/>
@@ -18,13 +18,13 @@
                                     <img src="{$WEB_ROOT}/images/pdf_icon.png"  id="{$fact.comprobanteId}" border="0" title="Descargar PDF"/>
                                 </a>
                             {/if}
-                        {/if}
+                        {*/if*}
                         {*descargar xml*}
-                        {if in_array(129,$permissions) || $User.isRoot}
+                        {*if in_array(129,$permissions) || $User.isRoot*}
                             <a href="{$WEB_ROOT}/sistema/descargar-xml/item/{$fact.comprobanteId}" class="spanAll" title="Descargar xml">
                                 <img src="{$WEB_ROOT}/images/icons/xml-18.png" border="0" />
                             </a>
-                        {/if}
+                        {*/if*}
                         {if $fact.pagado neq "Pagado" && $fact.status neq '0'}
                             <a href="{$WEB_ROOT}/add-payment/id/{$fact.comprobanteId}" class="spanAll" title="Agregar pago" target="_blank">
                                 <img src="{$WEB_ROOT}/images/icons/dolar-box-18.png"/>
