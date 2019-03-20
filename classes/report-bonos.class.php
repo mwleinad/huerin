@@ -449,20 +449,19 @@ class ReporteBonos extends Main
                     $rowCobranza[$ck]["anio"]=$year;
                     $sumTotalCobranza +=$cob["total"];
                 }
-
            }//end foreach servicios.
            if(count($serviciosFiltrados)<=0){
                 unset($contratos[$key]);
                 continue;
            }
-            $card3=[];
+            /*$card3=[];
             $cobranzaReal = Workflow::getRowCobranzaBono($value["contractId"],$year,'I',$meses,false,true);
             $card3["instancias"] = $cobranzaReal["serv"];
             $card3["sumatotal"] = $cobranzaReal["totalCobrado"];
             $card3["description"] = "Total cobranza";
             $card3["isDevengado"] = true;
             $card3["isRowCobranza"] = true;
-            array_push( $serviciosFiltrados,$card3);
+            array_push( $serviciosFiltrados,$card3);*/
 
             $card2 = [];
             //crear el total de cobranza por mes
