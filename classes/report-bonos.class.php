@@ -430,7 +430,7 @@ class ReporteBonos extends Main
                 }
                 //sumar el total al jefe del encargado actual, si lo tiene.
                 $personal->setPersonalId($keyEncargado);
-                $jefe = $personal->Info();
+                $jefe = $personal->jefeInmediato();
                 if($jefe['jefeInmediato']>0 && in_array($jefe["jefeInmediato"],$fullSubordinados)){
                     if(!in_array($jefe['jefeInmediato'],$idEncargados)){
                         array_push($idEncargados,$jefe['jefeInmediato']);
