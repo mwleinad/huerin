@@ -307,16 +307,24 @@ class InstanciaServicio extends  Servicio
         foreach($data as $key => $value)
         {
             $costo = 0;
-            //se busca precio en factura cuando inicioFactura es valida o la instancia  tiene el flag factura en 'Si'
-            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')||$value['factura']=='Si'){
-                $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
-                //en caso de no encontrar costo en factura se usa el costo del workflow si lo tiene
-                if($costo<=0)
-                    $costo = $value['costoWorkflow'];
-               //como ultima opcion se usa el costo asignado al servicio, esto pasa si en las dos anteriores no hay exito.
-                if($costo<=0)
-                    $costo = $value['costo'];
+            $fecha = $year."-0".$value['mes']."-01";
+            //para febrero de 2019 hacia atras hacer busqueda en facturas emitidas no importa que fecha de facturacion sea invalido
+            if($fecha<="2019-02-01"){
+                $costo =  $this->findCostoInstanciaMonth($value['mes'],$year,$servicioId);
             }
+            else{
+                //si la instancia es
+                if($value['factura']=='Si'){
+                    $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
+                    //en caso de no encontrar costo en factura se usa el costo del workflow si lo tiene
+                    if($costo<=0)
+                        $costo = $value['costoWorkflow'];
+                    //como ultima opcion se usa el costo asignado al servicio, esto pasa si en las dos anteriores no hay exito.
+                    if($costo<=0)
+                        $costo = $value['costo'];
+                }
+            }
+
             $value['costo'] = $costo;
             //sumar total de lo trabajado
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo')
@@ -325,12 +333,14 @@ class InstanciaServicio extends  Servicio
             $totalDevengado += $value['costo'];
             $monthBase[$value['mes']] =  $value;
         }
+
         if($tipoServicio==RIF||$tipoServicio==RIFAUDITADO){
                  $this->comprobarRif($monthBase,$year,$servicioId);
         }
         $newArray['instancias']= $monthBase;
         $newArray['totalComplete'] = $totalAcompletado;
         $newArray['totalDevengado'] = $totalDevengado;
+
         return $newArray;
     }
     function findCostoService($mes,$year,$servicioId,$compId=0){
@@ -360,6 +370,35 @@ class InstanciaServicio extends  Servicio
                     if(stripos($description,$nombreServicio)!==FALSE){
                         $costo = (double)$con['ValorUnitario'];
                         break;
+                    }
+                }
+            }
+        }
+        return $costo;
+    }
+    function findCostoInstanciaMonth($mes,$year,$servicioId){
+        global $servicio,$comprobante;
+        $servicio->setServicioId($servicioId);
+        $infoServicio = $servicio->Info();
+        $nombreServicio = $infoServicio['nombreServicio'];
+        $contratoId = $infoServicio['contractId'];
+
+        $sql = "SELECT xml,cadenaOriginal FROM comprobante 
+                WHERE MONTH(fecha)='$mes' AND YEAR(fecha)='$year' AND userId='$contratoId'  and status='1' AND tipoDeComprobante='ingreso'
+               ";
+        $this->Util()->DB()->setQuery($sql);
+        $facturas = $this->Util()->DB()->GetResult();
+        $costo =  0;
+        if(count($facturas)){
+            foreach($facturas as $fact=>$factura){
+                if(file_exists(DIR_FROM_XML."/SIGN_".$factura['xml'].".xml")){
+                    $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
+                    foreach($data['conceptos'] as $con){
+                        $description = (string)$con['Descripcion'];
+                        if(stripos($description,$nombreServicio)!==FALSE){
+                            $costo = (double)$con['ValorUnitario'];
+                            break 2;
+                        }
                     }
                 }
             }
