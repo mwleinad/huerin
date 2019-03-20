@@ -309,13 +309,15 @@ class ReporteBonos extends Main
     }
 	function generateReportBonos($ftr=[]){
 	    global $contractRep,$instanciaServicio,$customer,$personal;
-
+        //encargados del filtro
+        $fullSubordinados = $personal->GetIdResponsablesSubordinados($ftr);
 	    $year = $_POST['year'];
 	    $totalContratos =  $customer->getTotalContratosInPlatform();
 
         $mesesBase =  $this->createMonthBase($ftr['period']);
 	    $contratos = $contractRep->getContracts($ftr,true);
-        if(isset($ftr['deep']) || isset($ftr['subordinados']))
+
+       if(isset($ftr['deep']) || isset($ftr['subordinados']))
             $data['subordinados'] = 1;//sirve para controlar texto en el reporte resultado.
        if($ftr['responsableCuenta'])
        {
@@ -426,6 +428,25 @@ class ReporteBonos extends Main
 
                     $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotalTrabajado;
                 }
+                //sumar el total al jefe del encargado actual, si lo tiene.
+                $personal->setPersonalId($keyEncargado);
+                $jefe = $personal->Info();
+                if($jefe['jefeInmediato']>0 && in_array($jefe["jefeInmediato"],$fullSubordinados)){
+                    if(!in_array($jefe['jefeInmediato'],$idEncargados)){
+                        array_push($idEncargados,$jefe['jefeInmediato']);
+                        $nameJefe = $jefe["name"];
+                        $keyJefe =$jefe["personalId"];
+                        $totJefe['name'] =  $nameJefe;
+                        $totJefe['total'] = 0;
+                        $totJefe['total'] = (double)$sumaTotalTrabajado;
+                        $totalXencargados[$keyJefe] = $totJefe;
+                    }else{
+                        $keyJefe =$jefe["personalId"];
+                        $totalXencargados[$keyJefe]['total'] += (double)$sumaTotalTrabajado;
+                    }
+
+                }
+
 
                if(!in_array($serv['departamentoId'],$idDepsGeneral)){
                    array_push($idDepsGeneral,$serv['departamentoId']);
