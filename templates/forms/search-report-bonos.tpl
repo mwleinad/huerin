@@ -38,7 +38,7 @@
 					{include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
 				</td>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
-					<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: auto"/>
+					<input name="deep" id="deep" type="checkbox" value="1" style="width: auto"/>
 				</td>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
 					{include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
