@@ -35,11 +35,9 @@ if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User
                 unset($subordinados);
             }
         }
-
         $formValues['respCuenta'] = $idPersons;
         $contracts = $contractRep->BuscarContract($formValues, true);
     }
-
 }else{
     $idPersons = array();
     if($formValues['respCuenta']==0)
