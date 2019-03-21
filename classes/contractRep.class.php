@@ -192,7 +192,7 @@ class ContractRep extends Main
                     WHEN DATE(NOW())<=a.date THEN "PorVencer"
                     END
                     AS typeExpirate,
-                    a.date,b.descripcion,b.dptosId FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                        a.date,b.descripcion,b.dptosId FROM archivo a   INNER JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
                     WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.archivoId IN('.implode(",",$idArchivos).')';
         $this->Util()->DB()->setQuery($sqlf);
         $result2 = $this->Util()->DB()->GetResult();
@@ -202,7 +202,6 @@ class ContractRep extends Main
            if(!in_array($dep,$dptos))
                unset($result2[$key]);
         }
-
         return $result2;
     }
     public function SearchOnlyContract($formValues=array(),$activos=false,$isRepRazon=false,$personalId=0){
