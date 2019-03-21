@@ -446,12 +446,12 @@ class ReporteBonos extends Main
                     }
 
                 }
-
+                Departamentos::setDepartamentoId($serv['departamentoId']);
+                $nameDepartamento =Departamentos::Info()['departamento'];
 
                if(!in_array($serv['departamentoId'],$idDepsGeneral)){
                    array_push($idDepsGeneral,$serv['departamentoId']);
-                   Departamentos::setDepartamentoId($serv['departamentoId']);
-                   $tXd['departamento'] =Departamentos::Info()['departamento'];
+                   $tXd['departamento'] =$nameDepartamento;
                    $tXd['total'] = 0;
                    $tXd['total'] = (double)$sumaTotalTrabajado;
                    $totalXdepartamento[$serv['departamentoId']] = $tXd;
@@ -461,7 +461,8 @@ class ReporteBonos extends Main
                $serv['sumatotal'] = $sumaTotalTrabajado;
                $serviciosFiltrados[]= $serv;
                $granTotalContabilidad +=(double)$sumaTotalDevengado;
-               //recorrer total de cobranza por servicio
+               //recorrer los tres meses de cobranza por servicio si existen.
+                $totalLocalDep = 0;
                 foreach($cobranza as $ck=>$cob){
                     $rowCobranza[$ck]["total"]+=$cob["total"];
                     $rowCobranza[$ck]["class"]=$cob["class"];
@@ -469,23 +470,23 @@ class ReporteBonos extends Main
                     $rowCobranza[$ck]["mes"]=$ck;
                     $rowCobranza[$ck]["anio"]=$year;
                     $sumTotalCobranza +=$cob["total"];
+                    $totalLocalDep +=$cob["total"];
+                }
+                //obtener totales cobranza por departamento
+                if(!in_array($serv['departamentoId'],$idDepsCobranza)){
+                    array_push($idDepsCobranza,$serv['departamentoId']);
+                    $tXdc['name'] =$nameDepartamento;
+                    $tXdc['total'] =  $totalLocalDep;
+                    $totalesCobranzaXdep[$serv['departamentoId']] = $tXdc;
+                }else{
+                    $totalesCobranzaXdep[$serv['departamentoId']]['total'] += $totalLocalDep;
                 }
            }//end foreach servicios.
            if(count($serviciosFiltrados)<=0){
                 unset($contratos[$key]);
                 continue;
            }
-            /*$card3=[];
-            $cobranzaReal = Workflow::getRowCobranzaBono($value["contractId"],$year,'I',$meses,false,true);
-            $card3["instancias"] = $cobranzaReal["serv"];
-            $card3["sumatotal"] = $cobranzaReal["totalCobrado"];
-            $card3["description"] = "Total cobranza";
-            $card3["isDevengado"] = true;
-            $card3["isRowCobranza"] = true;
-            array_push( $serviciosFiltrados,$card3);*/
-
             $card2 = [];
-            //crear el total de cobranza por mes
             $card2["instancias"] = $rowCobranza;
             $card2["sumatotal"]=$sumTotalCobranza;
             $card2["isRowCobranza"] =  true;
@@ -494,35 +495,7 @@ class ReporteBonos extends Main
             $granTotalCobranza +=$sumTotalCobranza;
             array_push( $serviciosFiltrados,$card2);
 
-           /*Inicio fila de cobranza*/
-          /* $rowCobranza=InstanciaServicio::getRowCobranzaByInstancia($value['contractId'],$year,$meses,false);
-           $card2["instancias"]=$rowCobranza['instanciasCobranza'];
-           $card2["sumatotal"]=$rowCobranza['totalCobrado'];
-           $granTotalCobranza +=$rowCobranza['totalCobrado'];
-           //summar total cobranza por departamento
-           if(count($rowCobranza['totalCobradoXdepProporcional'])>0){
-               foreach ($rowCobranza['totalCobradoXdepProporcional'] as $ck=>$totaldep){
-                   if(!in_array($ck,$idDepsCobranza)){
-                       array_push($idDepsCobranza,$ck);
-                       if($ck!=000000)
-                       {
-                           Departamentos::setDepartamentoId($ck);
-                           $tXdc['name'] =Departamentos::Info()['departamento'];
-                       }else{
-                           $tXdc['name']="SIN DEPARTAMENTO";
-                       }
-
-                       $tXdc['total'] =  $totaldep;
-                       $totalesCobranzaXdep[$ck] = $tXdc;
-                   }else{
-                       $totalesCobranzaXdep[$ck]['total'] += $totaldep;
-                   }
-               }
-           }
-           $card2["isRowCobranza"] =  true;
-           array_push( $serviciosFiltrados,$card2);
-           /*Fin de fila cobranza*/
-           $contratos[$key]['servicios'] = $serviciosFiltrados;
+            $contratos[$key]['servicios'] = $serviciosFiltrados;
         }//end foreach contratos
 
         $data['totalContratos'] = $totalContratos;
