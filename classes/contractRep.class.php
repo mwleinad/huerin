@@ -34,7 +34,7 @@ class ContractRep extends Main
 
 
         if($formValues['departamentoId'])
-            $sqlDepto = " AND tipoServicio.departamentoId='".$formValues['departamentoId']."'";
+            $sqlDepto = " AND b.departamentoId='".$formValues['departamentoId']."'";
 
         if($activos)
             $sqlFilter .= " AND customer.active = '1'";
@@ -65,18 +65,33 @@ class ContractRep extends Main
         //rol cliente excluirles servicios en statua readonly.
         if($_SESSION['User']['roleId']==4)
         {
-            $ftrServicio = " AND servicio.status IN('activo','bajaParcial') ";
+            $ftrServicio = " AND a.status IN('activo','bajaParcial') ";
             $skip=true;
         }
         else{
-            $ftrServicio = " AND servicio.status IN('activo','bajaParcial','readonly') ";
+            if(isset($formValues["statusServicio"]))
+            {
+                switch($formValues["statusServicio"]){
+                    case 'activo':
+                        $ftrServicio = " AND a.status IN('activo','readonly') ";
+                    break;
+                    case 'baja':
+                        $ftrServicio = " AND a.status IN('baja','bajaParcial') ";
+                    break;
+                    default:
+                        $ftrServicio = " AND a.status IN('activo','bajaParcial','readonly','baja') ";
+                    break;
+                }
+
+            }else
+                $ftrServicio = " AND a.status IN('activo','bajaParcial','readonly') ";
         }
 
 
         //para el año 2018 en adelaten el servicio DIM no debe aparecer para nadie.
         $noInclude = "";
         if(isset($formValues['year'])&&$formValues['year']>=2018)
-            $noInclude = " AND lower(tipoServicio.nombreServicio) NOT LIKE '%dim%' ";
+            $noInclude = " AND lower(b.nombreServicio) NOT LIKE '%dim%' ";
 
         foreach($resContratos as $res){
             if($res['permisos']=="")
@@ -87,13 +102,14 @@ class ContractRep extends Main
                 continue;
             }
             //Checamos Servicios
-           $sql = "SELECT *,servicio.status as servicioStatus FROM servicio
-					LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-					WHERE contractId = '".$res["contractId"]."'
-					$ftrServicio
-                    AND tipoServicio.status='1'
+            $sql = "SELECT a.status as servicioStatus,a.servicioId,a.contractId,a.tipoServicioId,a.costo,a.status,a.inicioOperaciones,a.inicioFactura,a.fechaBaja,a.lastDateWorkflow, 
+                    b.nombreServicio,b.periodicidad,b.costoVisual,b.departamentoId
+                    FROM servicio a
+					LEFT JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId
+					WHERE a.contractId = '".$res["contractId"]."' $ftrServicio
+                    AND b.status='1'
 					".$sqlDepto." $noInclude
-					ORDER BY tipoServicio.nombreServicio ASC,servicio.servicioid ASC";
+					ORDER BY b.nombreServicio ASC,a.servicioid ASC";
             $this->Util()->DB()->setQuery($sql);
             $res["servicios"] = $this->Util()->DB()->GetResult();
             $res["noServicios"] = count($res["servicios"]);
@@ -105,7 +121,6 @@ class ContractRep extends Main
             $contratos[] = $res;
 
         }
-
         return $contratos;
     }
     public function BuscarContractV2($formValues=array(),$activos=false , $deptos = array())
@@ -192,7 +207,7 @@ class ContractRep extends Main
                     WHEN DATE(NOW())<=a.date THEN "PorVencer"
                     END
                     AS typeExpirate,
-                    a.date,b.descripcion,b.dptosId FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
+                        a.date,b.descripcion,b.dptosId FROM archivo a   INNER JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
                     WHERE b.status="1" AND (date(now())>=a.date OR "'.$addMonth.'">=a.date) AND a.archivoId IN('.implode(",",$idArchivos).')';
         $this->Util()->DB()->setQuery($sqlf);
         $result2 = $this->Util()->DB()->GetResult();
@@ -202,7 +217,6 @@ class ContractRep extends Main
            if(!in_array($dep,$dptos))
                unset($result2[$key]);
         }
-
         return $result2;
     }
     public function SearchOnlyContract($formValues=array(),$activos=false,$isRepRazon=false,$personalId=0){
@@ -354,11 +368,10 @@ class ContractRep extends Main
         if($filter['year']>=2018)
             $noInclude = " AND lower(b.nombreServicio) NOT LIKE '%dim%' ";
         foreach ($contracts as $key =>$value){
-
-                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId $noInclude
+            $this->Util()->DB()->setQuery("select a.*,b.nombreServicio,b.departamentoId from servicio a inner join tipoServicio b ON a.tipoServicioId = b.tipoServicioId $noInclude
 					                             where a.contractId = '".$value["contractId"]."' and a.status IN ('activo','bajaParcial','readonly') and b.status='1' $dpto 
 					                             order by b.nombreServicio asc");
-                $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
+            $contracts[$key]['servicios'] =  $this->Util()->DB()->GetResult();
             //si $filter['sinServicios'] es verdadero no se evalua esto
             if(!$filter['sinServicios']){
                 //los que no tengan servicios se ignoran.

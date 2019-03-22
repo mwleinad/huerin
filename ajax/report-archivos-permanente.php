@@ -72,7 +72,7 @@
 			$personalOrdenado = $personal->ArrayOrdenadoPersonal();
 
 			$sortedArray = array();
-			foreach($personalOrdenado as $personalKey => $personalValue)
+			/*foreach($personalOrdenado as $personalKey => $personalValue)
 			{
 				foreach($contracts as $keyCleaned => $cleanedArrayValue)
 				{
@@ -83,9 +83,9 @@
 						unset($cleanedArrayValue[$keyCleaned]);
 					}
 				}
-			}
+			}*/
 
-	  		$smarty->assign('contracts', $sortedArray);
+	  		$smarty->assign('contracts', $contracts);
 	  
 		  	$values['nombre'] = $_POST['rfc'];
 		  	$values['facturador'] = $_POST['facturador'];

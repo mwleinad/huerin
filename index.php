@@ -96,6 +96,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'walmart',
 		'view-services',
 		'report-razon-social',
+		'report-up-down',
 
 		//cafeteria
         'coffe',

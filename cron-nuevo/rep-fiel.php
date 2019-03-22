@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: RAGNAR
- * Date: 31/01/2018
- * Time: 10:40 AM
- */
 ini_set('memory_limit','3G');
 if(!$_SERVER["DOCUMENT_ROOT"])
 {

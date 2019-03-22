@@ -138,9 +138,13 @@
                     <li><a href="{$WEB_ROOT}/report-razon-social" title="Exportar razones sociales" {if $page == "report-razon-social"}class="current"{/if}>
                     <span>Razones Sociales</span></a></li>
                 {/if}
-                 {if in_array(168,$permissions) || $User.isRoot}
+                {if in_array(168,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
                     <span>Bitacoras</span></a></li>
+                {/if}
+                {if in_array(168,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-up-down" {if $page == "report-up-down"}class="current"{/if}>
+                            <span>Reporte altas y bajas</span></a></li>
                 {/if}
                 {if in_array(178,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if}>
