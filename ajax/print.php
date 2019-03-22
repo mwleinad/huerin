@@ -5,9 +5,7 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 session_start();
-
-ini_set("memory_limit","500M");
-
+ini_set('memory_limit','3G');
 $html = $_POST["contenido"];
 $html = str_replace('$','', $html);
 $html = str_replace(',','', $html);
