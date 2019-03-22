@@ -1,7 +1,7 @@
 Event.observe(window, 'load', function() 
 {
-    if($('rfc2'))
-    {
+	if($('rfc2'))
+	{
         var time_id2 =  -1;
         var field_value2 = '';
         Event.observe($('rfc2'), "keyup", function(e){
@@ -13,9 +13,9 @@ Event.observe(window, 'load', function()
                 },350)
             }
         });
-    }
-    if($('rfc'))
-    {
+	}
+	if($('rfc'))
+	{
         var time_id =  -1;
         var field_value = '';
         Event.observe($('rfc'), "keyup", function(e){
@@ -27,7 +27,8 @@ Event.observe(window, 'load', function()
                 },350)
             }
         });
-    }
+	}
+
 	AddSuggestListener = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
@@ -44,6 +45,8 @@ Event.observe(window, 'load', function()
 		}
 		
 	}
+
+		
 	AddSuggestListener2 = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
@@ -82,6 +85,7 @@ function FillRFC2(elem, id)
 	$('suggestionDiv2').hide();
 	FillDatos2(id);
 }
+
 function FillDatos(id)
 {
 	$('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
@@ -131,7 +135,6 @@ function SuggestUser()
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
-
 function SuggestUser2()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/suggest_customer.php', 
@@ -147,11 +150,8 @@ function SuggestUser2()
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
-
 function doSearch(){
-	
-	$('type').value = "search";
-
+	$('type').value = "searchAltasBajas";
 	new Ajax.Request(WEB_ROOT+'/ajax/report-ingresos.php',
 	{
 		method:'post',
@@ -161,10 +161,8 @@ function doSearch(){
 			$('contenido').innerHTML = "";
 		},
 		onSuccess: function(transport){
-						
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-
 			$("loading").style.display = "none";						
 			$('contenido').innerHTML = splitResponse[1];
 		},

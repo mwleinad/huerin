@@ -1004,10 +1004,12 @@ class Servicio extends Contract
 		if($this->Util()->PrintErrors()){ return false; }
 		
 		$info = $this->InfoLog();
+        $setFechabaja ="";
         switch($info['status']){
             case 'readonly':
             case 'activo':
                 $active = 'baja';
+                $setFechabaja = ", fechaBaja=DATE(NOW())";
                 $action =  "Baja";
                 $complete = "El servicio fue dado de baja correctamente.";
             break;
@@ -1024,6 +1026,7 @@ class Servicio extends Contract
         }
         $this->Util()->DB()->setQuery("UPDATE servicio
 			                                 SET status = '".$active."'
+			                                 $setFechabaja
 			                                 WHERE servicioId = '".$this->servicioId."' ");
         $this->Util()->DB()->UpdateData();
         $servicio = $this->InfoLog();
@@ -1347,12 +1350,16 @@ class Servicio extends Contract
             $costo = $_POST["costo_$servId"];
             $io = $this->Util()->isValidateDate($_POST["io_$servId"],'d-m-Y')?$this->Util()->FormatDateMySql($_POST["io_$servId"]):false;
             $if = $_POST["if_$servId"]!=''?$this->Util()->FormatDateMySql($_POST["if_$servId"]):'0000-00-00';
+            $setFechabaja ="";
+            if($status=='baja')
+                $setFechabaja = "fechaBaja=DATE(NOW()), ";
 
             $sql = "UPDATE servicio SET
                     costo ='$costo',
                     inicioOperaciones = '$io',
                     inicioFactura = '$if',
                     lastDateWorkflow = '$flw',
+                    $setFechabaja
                     status = '$status'
                     WHERE servicioId ='$servId' and contractId='$contratoId'
                    ";
