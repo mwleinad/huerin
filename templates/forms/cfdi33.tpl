@@ -363,6 +363,8 @@
           </div>
       		<div style="clear:both"></div>
       		<span style="color: #f00; font-weight: bold">La descripcion solo puede tener un maximo de 1000 caracteres. Nueva regla del SAT! </span>
+          <div style="clear:both"></div>
+            <span style="color: #f00; font-weight: bold">Importante: Utilizar en la descripcion solo nombres de servicio presentes en catalogo.</span>
       </div>
 	  </form>
     <div class="formLine">
