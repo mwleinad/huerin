@@ -23,7 +23,7 @@
             <td align="center">{$servicio.nombreServicio}</td>
             <td align="center">{$servicio.status}</td>
             <td align="center">{$servicio.periodicidad}</td>
-            <td align="center">{$servicio.inicioOperaciones}</td>
+            <td align="center">{$servicio.fechaAlta}</td>
             <td align="center">{if $servicio.status eq 'Baja'}{$servicio.fechaBaja}{elseif $servicio.status eq 'Baja temporal'}{$servicio.lastDateWorkflow}{else}N/A{/if} </td>
             <td align="center">${$servicio.costo|number_format:2}</td>
             <td align="center">{if $servicio.responsable eq ''}--{else}{$servicio.responsable}{/if}</td>

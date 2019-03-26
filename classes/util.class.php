@@ -723,10 +723,16 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
                     if(checkdate($parts[2],$parts[1],$parts[3]))
                         return true;
                     else
-                        return $this->setError(10011, "error", "", $field);
+                    {
+                        $this->setError(10011, "error", "", $field);
+                        return false;
+                    }
                 }
-                else
-                    return $this->setError(10011, "error", "", $field);
+                else{
+                    $this->setError(10011, "error", "", $field);
+                    return false;
+                }
+
             break;
             case 'Y-m-d':
                 if (preg_match ("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $date, $parts))
@@ -734,11 +740,17 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
                     //check weather the date is valid of not
                     if(checkdate($parts[2],$parts[3],$parts[1]))
                         return true;
-                    else
-                        return $this->setError(10011, "error", "", $field);
+                    else{
+                        $this->setError(10011, "error", "", $field);
+                        return false;
+                    }
+
                 }
-                else
-                    return $this->setError(10011, "error", "", $field);
+                else{
+                     $this->setError(10011, "error", "", $field);
+                     return false;
+                }
+
                 break;
         }
 
