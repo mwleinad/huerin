@@ -61,7 +61,6 @@ switch($_POST["type"])
 
         $producto->setClaveProdServ($_POST["c_ClaveProdServ"]);
         $producto->setClaveUnidad($_POST["c_ClaveUnidad"]);
-
         switch($_POST["fromAddenda"])
         {
             case "Pepsico":
@@ -80,7 +79,6 @@ switch($_POST["type"])
             $producto->setTipoGanado($_POST["tipoGanado"]);
             $producto->setPeso($_POST["peso"]);
         }
-
         $producto->setCategoriaConcepto($_POST["categoriaConcepto"]);
         $producto->setImporte();
         if(!$producto->AgregarConcepto())
