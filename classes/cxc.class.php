@@ -163,7 +163,7 @@ class CxC extends Producto
 	}//SearchComprobantesByRfc
     function searchCxC($values){
       $id_empresa = $_SESSION['empresaId'];
-      $anio =  $values['anio'];
+      $year =  $values['year'];
 	  $ffact ="";
 	  $innerPer = "";
 	  $mainFilter ="";
@@ -180,6 +180,8 @@ class CxC extends Producto
             $mainFilter .= " AND cm.folio<='".$values['folioA']."' ";
       if($values['nombre'])
          $mainFilter .= ' AND (cu.nameContact LIKE "%'.$values['nombre'].'%" OR co.name LIKE "%'.$values['nombre'].'%")';
+      if($values["year"])
+          $mainFilter .=" and year(cm.fecha)= $year ";
 
       $innerPer .=" inner join contractPermiso p ON co.contractId=p.contractId AND p.personalId IN (".implode(',',$values['respCuenta']).") ";
 
@@ -188,7 +190,7 @@ class CxC extends Producto
                  inner join contract co ON cm.userId=co.contractId $ffact
                  $innerPer
                  inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
-                 where cm.status='1' and year(cm.fecha)= $anio AND cm.tiposComprobanteId not in(10)
+                 where cm.status='1' AND cm.tiposComprobanteId not in(10)
                  $mainFilter
                  group by cm.comprobanteId order by trim(char(09) from trim(cu.nameContact)) ASC,trim(char(09) from trim(co.name)) ASC,cm.fecha DESC
                 ";
@@ -199,7 +201,7 @@ class CxC extends Producto
             $card['serie']=$val['serie'];
             $card['folio']=$val['folio'];
             $card['nameContact']=$val['nameContact'];
-            $card['nombre']=$val['nombreComercial'];
+            $card['nombre']=$val['nameContact'];
             $card['contractId']=$val['contractId'];
             $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
             $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);

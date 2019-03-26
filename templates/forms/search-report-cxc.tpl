@@ -14,6 +14,7 @@
     <td align="center">Responsable</td>
     <td align="center">Incluir subordinados</td>
     <td align="center">Facturador</td>
+    <td align="center">Año</td>
 </tr>
 <tr>	
     <td  style="width: 35%; padding:0px 4px 4px 8px;" align="center">
@@ -32,7 +33,7 @@
 		</td>  
     	<td  style="width:15%; padding:0px 4px 4px 8px;" align="center">
 			<select id="facturador" class="largeInput" name="facturador">
-                    <option value="0">Todos</option>
+                    <option value="">Todos</option>
                     <option value="BHSC">BHSC Contadores SC</option>
                     <option value="Huerin">Braun Huerin SC</option>
                     <option value="Braun">Jacobo Braun</option>
@@ -40,7 +41,7 @@
 			</select>
 		</td>
     <td style="width: 10%; padding:0px 4px 4px 8px;">
-        {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+        {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl" all=true}
     </td>
 </tr>
 <tr>

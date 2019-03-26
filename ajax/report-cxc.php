@@ -28,7 +28,7 @@ switch($_POST["type"])
 			$values['respCuenta'] = $_POST['responsableCuenta'];
 			$values['subordinados'] = $_POST['deep'];
 			$values['cliente'] = $_POST['cliente'];
-			$values['anio'] = $_POST['year'];
+			$values['year'] = $_POST['year'];
 			//si subordinados esta activo se busca todos los subordinados
 			$encargados = array();
 			$empleados = array();
@@ -63,7 +63,7 @@ switch($_POST["type"])
 				$totales[$value['nombre']]['facturas'][]=$value;
                 if(!in_array($value['contractId'],$contratos)){
 					array_push($contratos,$value['contractId']);
-                    $totales[$value['nombre']]['saldoAnterior']=$cxc->getSaldo((int)$values['anio']-1,$value['contractId']);
+                    $totales[$value['nombre']]['saldoAnterior']=$cxc->getSaldo((int)$values['year']-1,$value['contractId']);
                     $totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$totales[$value['nombre']]['saldoAnterior'];
             	}
 			}
