@@ -97,6 +97,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'view-services',
 		'report-razon-social',
 		'report-up-down',
+        'report-pending',
 
 		//cafeteria
         'coffe',

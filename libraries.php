@@ -123,6 +123,7 @@ include_once(DOC_ROOT."/classes/permiso.class.php");
 include_once(DOC_ROOT."/classes/dropzone.class.php");
 include_once(DOC_ROOT."/classes/coffe.class.php");
 include_once(DOC_ROOT."/classes/compressed.class.php");
+include_once(DOC_ROOT."/classes/changePlatform.class.php");
 
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
@@ -204,6 +205,7 @@ $rol=  new Rol;
 $valida = new Validar();
 $dropzone = new Dropzone();
 $catalogue = new Catalogue();
+$change = new ChangePlatform();
 
 //cron
 $cronServicio = new CronServicio();

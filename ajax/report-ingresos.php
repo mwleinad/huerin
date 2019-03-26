@@ -224,10 +224,64 @@ switch($_POST["type"])
         foreach($clientes as $clte){
             $contratos = array();
             foreach($clte['contracts'] as $con){
+
                 $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$con['contractId']);
                 $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$con['contractId']);
                 $servicios = array();
-                foreach($con['servicios'] as $serv) {
+                foreach($con['servicios'] as $serv){
+                    $servId = $serv["servicioId"];
+                    //encontrar fech alta
+                    $db->setQuery("select DATE(fecha) from historyChanges where servicioId='$servId' order by historyChangesId ASC limit 1");
+                    $serv["fechaAlta"] =  $db->GetSingle();
+                    if(!$util->isValidateDate($serv["fechaAlta"]))
+                        $serv["fechaAlta"]=$serv["inicioOperaciones"];
+
+                    //encontrar fecha de baja
+                    switch($serv["status"]){
+                        case 'readonly':
+                            $serv["status"] =  "Activo solo lectura";
+                            break;
+                        case 'baja':
+                            $serv["status"] =  "Baja";
+                            if(!$util->isValidateDate($serv['fechaBaja'],"Y-m-d")){
+                                $db->setQuery("select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ");
+                                $serv["fechaBaja"] = $db->GetSingle();
+                            }
+                            break;
+                        case 'bajaParcial':
+                            $serv["status"] =  "Baja temporal";
+                            if(!$util->isValidateDate($serv['lastDateWorkflow'],"Y-m-d")){
+                                $db->setQuery("select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ");
+                                $serv["fechaBaja"] = $db->GetSingle();
+                            }else
+                                $serv["fechaBaja"] = $serv['lastDateWorkflow'];
+
+                        break;
+
+                    }
+
+                    switch($_POST["statusServicio"]){
+                        case 'activo':
+                            $mes= (int)$_POST["month"];
+                            if($mes>0){
+                                $firstExplode = explode("-",$serv["fechaAlta"]);
+                                if($mes!=(int)$firstExplode[1])
+                                    continue 2;
+                                if((int)$_POST["year"]!=(int)$firstExplode[0])
+                                    continue 2;
+                            }
+                        break;
+                        case 'baja':
+                            $mes= (int)$_POST["month"];
+                            if($mes>0){
+                                $lastExplode = explode("-",$serv["fechaBaja"]);
+                                if($mes!=(int)$lastExplode[1])
+                                    continue 2;
+                                if((int)$_POST["year"]!=(int)$lastExplode[0])
+                                    continue 2;
+                            }
+                         break;
+                    }
                     $departamentoId = $serv["departamentoId"];
                     $costoVisual = $serv["costoVisual"];
                     $personalId = $encargados2[$departamentoId];
@@ -275,27 +329,6 @@ switch($_POST["type"])
                     }
                     $serv['responsable'] =  $encargados[$departamentoId];
                     $serv['costo'] = number_format($serv['costo'],2,'.','');
-                    switch($serv["status"]){
-                        case 'readonly':
-                            $serv["status"] =  "Activo solo lectura";
-                        break;
-                        case 'baja':
-                            $serv["status"] =  "Baja";
-                            if(!$util->isValidateDate($serv['fechaBaja'],"Y-m-d")){
-                                $db->setQuery("select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ");
-                                $serv["fechaBaja"] = $db->GetSingle();
-                                if(!$util->isValidateDate($serv['fechaBaja'],"Y-m-d"))
-                                    $serv["fechaBaja"] ="--";
-                            }
-                        break;
-                        case 'bajaParcial':
-                            $serv["status"] =  "Baja temporal";
-                        break;
-                        case 'bajaParcial':
-                            $serv["status"] =  "Activo";
-                        break;
-
-                    }
 
                     if($serv['periodicidad'] == 'Mensual')
                         $costoMens = $serv['costo'];
