@@ -3134,7 +3134,7 @@ class Contract extends Main
         $encargados = [];
         $data = [];
         array_push($defaultId,IDHUERIN);
-        array_push($defaultId,290);
+        array_push($defaultId,319);
 
         $sql  ="SELECT a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='".$this->contractId."' ";
         $this->Util()->DB()->setQuery($sql);
@@ -3178,7 +3178,7 @@ class Contract extends Main
         {
             //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
             array_push($jefes,32);
-            array_push($jefes,290);
+            array_push($jefes,319);
             $jefes = array_unique($jefes);
             //comprobar si se excluye a huerin
             if(!$filtros['sendHuerin']){

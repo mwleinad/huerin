@@ -236,14 +236,13 @@ class Log extends Util
                 $body .="El cliente : ".$cliente."<br>";
                 $body .=$accion." por el colaborador ".$who."<br>";
             break;
-
         }
 		switch($this->action){
             case 'Update'://si es update se necesitaria comparar que cambio se realizo
                   $changes = $this->FindOnlyChanges($this->oldValue,$this->newValue);
                   if(empty($changes['after']))
                       return false;
-                  $body .="<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
+                  /*$body .="<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
                   $body .="<table>
                         <thead>
                           <tr>
@@ -265,7 +264,17 @@ class Log extends Util
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
                                 </tr>";
                   }
-                    $body .="</tbody>";
+                    $body .="</tbody>";*/
+                $this->Util()->Smarty()->assign("body",$body);
+                $this->Util()->Smarty()->assign("changes",$changes);
+                $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-update-general.tpl");
+                $dompdf =  new Dompdf();
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+                $fileName  = $_SESSION['User']['userId']."_log.pdf";
+                $output =  $dompdf->output();
+                file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
             break;
             case 'Reactivacion';
             case 'Baja':
@@ -301,7 +310,7 @@ class Log extends Util
         {
             //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
             array_push($jefes,32);
-            array_push($jefes,290);
+            array_push($jefes,319);
             $jefes = array_unique($jefes);
             //comprobar si se excluye a huerin
             if($excluyehuerin){
@@ -323,9 +332,18 @@ class Log extends Util
         $encargados = array_merge($encargados,$correosJefes);
         if(!SEND_LOG_MOD)
             $encargados = [];
+        if(file_exists( DOC_ROOT."/sendFiles/$fileName")){
+            $file = DOC_ROOT."/sendFiles/$fileName";
+        }
+        else{
+            $file="";
+            $fileName="";
+        }
+
+
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $mail->PrepareMultipleNotice($subject,$body,$encargados,'',"","","","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+        $mail->PrepareMultipleNotice($subject,$body,$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
 		return true;				
 	}
 	
@@ -473,7 +491,7 @@ class Log extends Util
         $allElements = unserialize($elements);
         $news=array();
         $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow');
+            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
@@ -632,7 +650,7 @@ class Log extends Util
         $encargados = $contractRep->encargadosArea($contractId);
         $ftr['incluirJefes'] = true;
         $ftr['sendBraun']=false;
-        $ftr['sendHuerin']=false;
+        $ftr['sendHuerin']=true;
         //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
         $ftr['level'] = 3;
         $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
@@ -651,7 +669,6 @@ class Log extends Util
                 $body =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/body-email-multiple.tpl");
             break;
             case 'new':
-
                 $this->Util()->Smarty()->assign("tipo","new");
                 $this->Util()->Smarty()->assign("actuales",$actuales);
                 $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-add-multiple.tpl");
