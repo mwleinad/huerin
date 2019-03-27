@@ -62,7 +62,7 @@ class Log extends Util
         $who = $this->Util()->DB()->GetSingle();
 
         if($_SESSION['User']['tipoPers']=='Admin')
-            $who="Administrador de sistema(desarrollador)";
+            $who="Administrador de sistema";
 
         $encargados=  array();
         $jefes = array();
