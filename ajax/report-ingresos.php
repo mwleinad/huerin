@@ -189,6 +189,7 @@ switch($_POST["type"])
         $formValues['departamentoId'] = $_POST["departamentoId"];
         $formValues['statusServicio'] = $_POST["statusServicio"];
         $formValues['cliente'] = $_POST["rfc"];
+        $year = $_POST["year"];
         $idContrato = $_POST['contractId'];
         $contracts = array();
         //este archivo contiene los filtros segun sea el rol, se usa en varios apartado cambiarlos por este archivo
@@ -232,6 +233,7 @@ switch($_POST["type"])
                     $servId = $serv["servicioId"];
                     //encontrar fech alta
                     $db->setQuery("select DATE(fecha) from historyChanges where servicioId='$servId' order by historyChangesId ASC limit 1");
+
                     $serv["fechaAlta"] =  $db->GetSingle();
                     if(!$util->isValidateDate($serv["fechaAlta"],"Y-m-d"))
                         continue;
@@ -262,21 +264,27 @@ switch($_POST["type"])
 
                     switch($_POST["statusServicio"]){
                         case 'activo':
+                            $firstExplode = explode("-",$serv["fechaAlta"]);
                             $mes= (int)$_POST["month"];
                             if($mes>0){
-                                $firstExplode = explode("-",$serv["fechaAlta"]);
                                 if($mes!=(int)$firstExplode[1])
                                     continue 2;
+                            }
+                            if((int)$year>0)
+                            {
                                 if((int)$_POST["year"]!=(int)$firstExplode[0])
                                     continue 2;
                             }
                         break;
                         case 'baja':
+                            $lastExplode = explode("-",$serv["fechaBaja"]);
                             $mes= (int)$_POST["month"];
                             if($mes>0){
-                                $lastExplode = explode("-",$serv["fechaBaja"]);
                                 if($mes!=(int)$lastExplode[1])
                                     continue 2;
+                            }
+                            if((int)$year>0)
+                            {
                                 if((int)$_POST["year"]!=(int)$lastExplode[0])
                                     continue 2;
                             }

@@ -48,7 +48,7 @@
 			{include file="{$DOC_ROOT}/templates/forms/comp-filter-month.tpl" clase="largeInput" nameField="month" all=true}
 		</td>
 		<td align="center" style="padding-left: 5px; padding-right: 5px">
-			{include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+			{include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl" all=true}
 		</td>
 		<td align="center">
 			<select name="statusServicio" id="statusServicio"  class="largeInput"  style="width: 90%;">
