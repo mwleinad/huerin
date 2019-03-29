@@ -234,7 +234,7 @@ switch($_POST["type"])
                     $db->setQuery("select DATE(fecha) from historyChanges where servicioId='$servId' order by historyChangesId ASC limit 1");
                     $serv["fechaAlta"] =  $db->GetSingle();
                     if(!$util->isValidateDate($serv["fechaAlta"]))
-                        $serv["fechaAlta"]=$serv["inicioOperaciones"];
+                        continue;
 
                     //encontrar fecha de baja
                     switch($serv["status"]){
