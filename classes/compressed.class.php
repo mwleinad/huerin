@@ -17,7 +17,7 @@ class Compressed extends  Main
     }
     private $nameDestiny;
     public function setNameDestiny($value){
-        //limpiar nombre de archivo destino, si viene alguna diagonal / convertirlo en _
+        //limpiar nombre de archivo destino, si viene alguna diagonal / convertirlo en ""
        if($value!=""){
             $value = str_replace("/","",$value);
        }
@@ -216,7 +216,7 @@ class Compressed extends  Main
             //hasta este punto todas las validaciones ya se han realizado es hora de mover el archivo
             //echo $dir_files_workflow_cliente_lev5."/".$file_name_in_workflow.chr(13);
            // echo strpos($dir_files_workflow_cliente_lev5."/".$file_name_in_workflow,'/tasks').chr(13);
-            $ruta_file = substr($dir_files_workflow_cliente_lev5."/".$file_name_in_workflow,strlen(DIR_FILES_WORKFLOW)).chr(13);
+            $ruta_file = substr($dir_files_workflow_cliente_lev5."/".$file_name_in_workflow,strlen(DIR_FILES_WORKFLOW));
             $data_file = [];
             $data_file['origen'] = $this->customDir.$this->nameFolderUnzip."/".$file;
             $data_file['destino'] = $dir_files_workflow_cliente_lev5."/".$file_name_in_workflow;
