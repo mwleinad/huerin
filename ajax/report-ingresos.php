@@ -345,7 +345,8 @@ switch($_POST["type"])
                     $servicios[] = $serv;
                 }//foreach
                 $con['instanciasServicio'] = $servicios;
-                $contratos[] = $con;
+                if(count($servicios)>0)
+                    $contratos[] = $con;
             }//foreach
             $clte['contracts'] = $contratos;
             $resClientes[] = $clte;
