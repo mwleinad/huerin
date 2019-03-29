@@ -185,9 +185,7 @@ class Log extends Util
                             $yourJefes= $personal->Jefes($row['personalId']);
                             $jefes = array_merge($jefes,$yourJefes);
                         }
-
                     }
-
                 }
                 //si no tiene ningun encargado se envia a los gerentes(excluido mensajeria y RRHH) , coordinador y socio.
                 if(empty($encargados))
@@ -242,29 +240,7 @@ class Log extends Util
                   $changes = $this->FindOnlyChanges($this->oldValue,$this->newValue);
                   if(empty($changes['after']))
                       return false;
-                  /*$body .="<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
-                  $body .="<table>
-                        <thead>
-                          <tr>
-                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion anterior</th>
-                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion nueva</th>
-                          </tr>
-                          <tr>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-right:1px solid;border-bottom:1px solid;font-size:14px;font-weight: bold'>Valor</th>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Valor</th>
-                          </tr>
-                        </thead><tbody>";
-                  foreach($changes['after'] as $ck=>$vc){
-                       $body .="<tr>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".$changes['before'][$ck]['valor']."</td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['valor']."</td>
-                                </tr>";
-                  }
-                    $body .="</tbody>";*/
+
                 $this->Util()->Smarty()->assign("body",$body);
                 $this->Util()->Smarty()->assign("changes",$changes);
                 $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-update-general.tpl");
@@ -283,24 +259,16 @@ class Log extends Util
             case 'Insert'://si es update se necesitaria comparar que cambio se realizo
                 $changes = $this->FindFieldDetail($this->newValue);
                 if(!empty($changes)) {
-                    $body .= "<br><br>En la parte de abajo se muestra mas informacion del movimiento: <br><br>";
-                    $body .= "<table>
-                        <thead>
-                          <tr>
-                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion detallada</th>
-                          </tr>
-                          <tr>
-                            <th style='text-align: left;border-right:1px solid;border-bottom: 1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-bottom: 1px solid;font-size:14px;font-weight: bold'>Valor</th>            
-                          </tr>
-                        </thead><tbody>";
-                    foreach ($changes as $ck => $vc) {
-                        $body .= "<tr>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom: 1px solid'>" . $changes[$ck]['campo'] . ": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . $changes[$ck]['valor'] . "</td>                                 
-                                </tr>";
-                    }
-                    $body .= "</tbody></table>";
+                    $this->Util()->Smarty()->assign("body",$body);
+                    $this->Util()->Smarty()->assign("changes",$changes);
+                    $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-general.tpl");
+                    $dompdf =  new Dompdf();
+                    $dompdf->loadHtml($html);
+                    $dompdf->setPaper('A4', 'portrait');
+                    $dompdf->render();
+                    $fileName  = $_SESSION['User']['userId']."_log.pdf";
+                    $output =  $dompdf->output();
+                    file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
                 }
             break;
         }
