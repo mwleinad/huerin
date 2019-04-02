@@ -432,6 +432,10 @@ class Cfdi extends Comprobante
         $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT comprobanteId FROM comprobante ORDER BY comprobanteId DESC LIMIT 1");
         $comprobanteId = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
+        
+        //finally we update the 'consecutivo
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE serie SET consecutivo = consecutivo + 1 WHERE serieId = ".$serie["serieId"]);
+        $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
 
         if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()))
         {
@@ -467,13 +471,10 @@ class Cfdi extends Comprobante
 
         }
         //End notaVenta
+
         //Enviar por correo despues de crear factura.
         $razon =  new Razon;
         $razon->sendComprobante33($comprobanteId,false,true);
-        //finally we update the 'consecutivo
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE serie SET consecutivo = consecutivo + 1 WHERE serieId = ".$serie["serieId"]);
-        $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-
         return $comprobanteId;
     }//Generar
 
