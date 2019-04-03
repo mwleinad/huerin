@@ -234,7 +234,7 @@ switch($_POST["type"])
                         if (!$util->isValidateDate($con["fechaAlta"], "Y-m-d"))
                             continue 2;
 
-                        $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' and status='No' order by contractChangesId ASC limit 1");
+                        $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' and status='No' order by contractChangesId DESC limit 1");
                         $con["fechaBaja"] = $db->GetSingle();
 
                         switch ($_POST["statusSearch"]) {
