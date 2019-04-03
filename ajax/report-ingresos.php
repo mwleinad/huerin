@@ -187,7 +187,8 @@ switch($_POST["type"])
         $formValues['subordinados'] = $_POST['subordinados'];
         $formValues['respCuenta'] = $_POST['responsableCuenta'];
         $formValues['departamentoId'] = $_POST["departamentoId"];
-        $formValues['statusServicio'] = $_POST["statusServicio"];
+        $formValues['statusSearch'] = $_POST["statusSearch"];
+        $formValues['tipoSearch'] = $_POST["tipoSearch"];
         $formValues['cliente'] = $_POST["rfc"];
         $year = $_POST["year"];
         $idContrato = $_POST['contractId'];
@@ -225,138 +226,173 @@ switch($_POST["type"])
         foreach($clientes as $clte){
             $contratos = array();
             foreach($clte['contracts'] as $con){
-
-                $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$con['contractId']);
-                $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$con['contractId']);
-                $servicios = array();
-                foreach($con['servicios'] as $serv){
-                    $servId = $serv["servicioId"];
-                    //encontrar fech alta
-                    $db->setQuery("select DATE(fecha) from historyChanges where servicioId='$servId' order by historyChangesId ASC limit 1");
-
-                    $serv["fechaAlta"] =  $db->GetSingle();
-                    if(!$util->isValidateDate($serv["fechaAlta"],"Y-m-d"))
-                        continue;
-
-                    //encontrar fecha de baja
-                    switch($serv["status"]){
-                        case 'readonly':
-                            $serv["status"] =  "Activo solo lectura";
+                switch($_POST["tipoSearch"]) {
+                    case 'contract':
+                        $conId = $con["contractId"];
+                        $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' order by contractChangesId ASC limit 1");
+                        $con["fechaAlta"] = $db->GetSingle();
+                        $con["fechaBaja"] = date('Y-m-d',strtotime($con["lastUpdate"]));
+                        switch ($_POST["statusSearch"]) {
+                            case 'activo':
+                                $firstExplode = explode("-", $con["fechaAlta"]);
+                                $mes = (int)$_POST["month"];
+                                if ($mes > 0) {
+                                    if ($mes != (int)$firstExplode[1])
+                                        continue 2;
+                                }
+                                if ((int)$year > 0) {
+                                    if ((int)$_POST["year"] != (int)$firstExplode[0])
+                                        continue 2;
+                                }
+                                break;
+                            case 'baja':
+                                $lastExplode = explode("-", $con["fechaBaja"]);
+                                $mes = (int)$_POST["month"];
+                                if ($mes > 0) {
+                                    if ($mes != (int)$lastExplode[1])
+                                        continue 2;
+                                }
+                                if ((int)$year > 0) {
+                                    if ((int)$_POST["year"] != (int)$lastExplode[0])
+                                        continue 2;
+                                }
                             break;
-                        case 'baja':
-                            $serv["status"] =  "Baja";
-                            if(!$util->isValidateDate($serv['fechaBaja'],"Y-m-d")){
-                                $db->setQuery("select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ");
-                                $serv["fechaBaja"] = $db->GetSingle();
+                        }
+                        $contratos[] = $con;
+
+                    break;
+                    case 'service':
+                        $encargados = $contractRep->encargadosCustomKey('departamentoId', 'name', $con['contractId']);
+                        $encargados2 = $contractRep->encargadosCustomKey('departamentoId', 'personalId', $con['contractId']);
+                        $servicios = array();
+                        foreach ($con['servicios'] as $serv) {
+                            $servId = $serv["servicioId"];
+                            //encontrar fech alta
+                            $db->setQuery("select DATE(fecha) from historyChanges where servicioId='$servId' order by historyChangesId ASC limit 1");
+                            $serv["fechaAlta"] = $db->GetSingle();
+                            if (!$util->isValidateDate($serv["fechaAlta"], "Y-m-d"))
+                                continue;
+
+                            //encontrar fecha de baja
+                            switch ($serv["status"]) {
+                                case 'readonly':
+                                    $serv["status"] = "Activo solo lectura";
+                                    break;
+                                case 'baja':
+                                    $serv["status"] = "Baja";
+                                    if (!$util->isValidateDate($serv['fechaBaja'], "Y-m-d")) {
+                                        $db->setQuery("select max(date) from instanciaServicio where servicioId='" . $serv['servicioId'] . "' ");
+                                        $serv["fechaBaja"] = $db->GetSingle();
+                                    }
+                                    break;
+                                case 'bajaParcial':
+                                    $serv["status"] = "Baja temporal";
+                                    if (!$util->isValidateDate($serv['lastDateWorkflow'], "Y-m-d")) {
+                                        $db->setQuery("select max(date) from instanciaServicio where servicioId='" . $serv['servicioId'] . "' ");
+                                        $serv["fechaBaja"] = $db->GetSingle();
+                                    } else
+                                        $serv["fechaBaja"] = $serv['lastDateWorkflow'];
+
+                                    break;
+
                             }
-                            break;
-                        case 'bajaParcial':
-                            $serv["status"] =  "Baja temporal";
-                            if(!$util->isValidateDate($serv['lastDateWorkflow'],"Y-m-d")){
-                                $db->setQuery("select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ");
-                                $serv["fechaBaja"] = $db->GetSingle();
-                            }else
-                                $serv["fechaBaja"] = $serv['lastDateWorkflow'];
-
-                        break;
-
-                    }
-
-                    switch($_POST["statusServicio"]){
-                        case 'activo':
-                            $firstExplode = explode("-",$serv["fechaAlta"]);
-                            $mes= (int)$_POST["month"];
-                            if($mes>0){
-                                if($mes!=(int)$firstExplode[1])
-                                    continue 2;
+                            switch ($_POST["statusSearch"]) {
+                                case 'activo':
+                                    $firstExplode = explode("-", $serv["fechaAlta"]);
+                                    $mes = (int)$_POST["month"];
+                                    if ($mes > 0) {
+                                        if ($mes != (int)$firstExplode[1])
+                                            continue 2;
+                                    }
+                                    if ((int)$year > 0) {
+                                        if ((int)$_POST["year"] != (int)$firstExplode[0])
+                                            continue 2;
+                                    }
+                                    break;
+                                case 'baja':
+                                    $lastExplode = explode("-", $serv["fechaBaja"]);
+                                    $mes = (int)$_POST["month"];
+                                    if ($mes > 0) {
+                                        if ($mes != (int)$lastExplode[1])
+                                            continue 2;
+                                    }
+                                    if ((int)$year > 0) {
+                                        if ((int)$_POST["year"] != (int)$lastExplode[0])
+                                            continue 2;
+                                    }
+                                    break;
                             }
-                            if((int)$year>0)
-                            {
-                                if((int)$_POST["year"]!=(int)$firstExplode[0])
-                                    continue 2;
+                            $departamentoId = $serv["departamentoId"];
+                            $costoVisual = $serv["costoVisual"];
+                            $personalId = $encargados2[$departamentoId];
+                            $personal->setPersonalId($personalId);
+                            $infP = $personal->Info();
+                            $role = $rol->getInfoByData($infP);
+                            $rolArray = explode(' ', $role['name']);
+                            $needle = trim($rolArray[0]);
+                            switch ($needle) {
+                                case 'Sistemas':
+                                case 'Gestoria':
+                                case 'Supervisor':
+                                    $needle = 'supervisor';
+                                    break;
+                                case 'Asistente':
+                                case 'Cuentas':
+                                case 'Contador':
+                                    $needle = 'contador';
+                                    break;
+                                case 'Recepcion':
+                                case 'Auxiliar':
+                                    $needle = 'auxiliar';
+                                    break;
+                                case 'Coordinador':
+                                case 'Socio':
+                                    $needle = 'socio';
+                                    break;
+                                case 'Gerente':
+                                    $needle = 'gerente';
+                                    break;
                             }
-                        break;
-                        case 'baja':
-                            $lastExplode = explode("-",$serv["fechaBaja"]);
-                            $mes= (int)$_POST["month"];
-                            if($mes>0){
-                                if($mes!=(int)$lastExplode[1])
-                                    continue 2;
+                            if (!empty($infP)) {
+                                $jefes = array();
+                                $personal->findDeepJefes($personalId, $jefes, true);
+                                $serv['contador'] = $jefes['Contador'];
+                                $serv['supervisor'] = $jefes['Supervisor'];
+                                $serv['gerente'] = $jefes['Gerente'];
+                                $serv['jefeMax'] = $jefes['Socio'];
+                                $serv[$needle] = $jefes['me'];
+                            } else {
+                                $serv['auxiliar'] = 'N/E';
+                                $serv['contador'] = 'N/E';
+                                $serv['supervisor'] = 'N/E';
+                                $serv['gerente'] = 'N/E';
                             }
-                            if((int)$year>0)
-                            {
-                                if((int)$_POST["year"]!=(int)$lastExplode[0])
-                                    continue 2;
-                            }
-                         break;
-                    }
-                    $departamentoId = $serv["departamentoId"];
-                    $costoVisual = $serv["costoVisual"];
-                    $personalId = $encargados2[$departamentoId];
-                    $personal->setPersonalId($personalId);
-                    $infP = $personal->Info();
-                    $role = $rol->getInfoByData($infP);
-                    $rolArray = explode(' ',$role['name']);
-                    $needle = trim($rolArray[0]);
-                    switch($needle){
-                        case 'Sistemas':
-                        case 'Gestoria':
-                        case 'Supervisor':
-                            $needle='supervisor';
-                            break;
-                        case 'Asistente':
-                        case 'Cuentas':
-                        case 'Contador':
-                            $needle='contador';
-                            break;
-                        case 'Recepcion':
-                        case 'Auxiliar':
-                            $needle='auxiliar';
-                            break;
-                        case 'Coordinador':
-                        case 'Socio':
-                            $needle='socio';
-                            break;
-                        case 'Gerente':
-                            $needle='gerente';
-                            break;
-                    }
-                    if(!empty($infP)){
-                        $jefes = array();
-                        $personal->findDeepJefes($personalId, $jefes,true);
-                        $serv['contador'] = $jefes['Contador'];
-                        $serv['supervisor'] = $jefes['Supervisor'];
-                        $serv['gerente'] = $jefes['Gerente'];
-                        $serv['jefeMax'] = $jefes['Socio'];
-                        $serv[$needle] = $jefes['me'];
-                    }else {
-                        $serv['auxiliar'] = 'N/E';
-                        $serv['contador'] = 'N/E';
-                        $serv['supervisor'] = 'N/E';
-                        $serv['gerente'] = 'N/E';
-                    }
-                    $serv['responsable'] =  $encargados[$departamentoId];
-                    $serv['costo'] = number_format($serv['costo'],2,'.','');
+                            $serv['responsable'] = $encargados[$departamentoId];
+                            $serv['costo'] = number_format($serv['costo'], 2, '.', '');
 
-                    if($serv['periodicidad'] == 'Mensual')
-                        $costoMens = $serv['costo'];
-                    elseif($serv['periodicidad'] == 'Anual')
-                        $costoMens = $serv['costo'] / 12;
-                    elseif($serv['periodicidad'] == 'Bimestral')
-                        $costoMens = $serv['costo'] / 2;
+                            if ($serv['periodicidad'] == 'Mensual')
+                                $costoMens = $serv['costo'];
+                            elseif ($serv['periodicidad'] == 'Anual')
+                                $costoMens = $serv['costo'] / 12;
+                            elseif ($serv['periodicidad'] == 'Bimestral')
+                                $costoMens = $serv['costo'] / 2;
 
-                    $costoMens = number_format($costoMens,2,'.','');
-                    $serv['costoMens'] = number_format($costoMens,2);
-                    $serv['costoVisual'] = number_format($costoVisual,2);
-                    $totalPeriodo += $serv['costo'];
-                    $totalMens += $costoMens;
-                    $servicios[] = $serv;
-                }//foreach
-                $con['instanciasServicio'] = $servicios;
-                if(count($servicios)>0)
-                    $contratos[] = $con;
+                            $costoMens = number_format($costoMens, 2, '.', '');
+                            $serv['costoMens'] = number_format($costoMens, 2);
+                            $serv['costoVisual'] = number_format($costoVisual, 2);
+                            $totalPeriodo += $serv['costo'];
+                            $totalMens += $costoMens;
+                            $servicios[] = $serv;
+                        }//foreach
+                        $con['instanciasServicio'] = $servicios;
+                        if (count($servicios) > 0)
+                            $contratos[] = $con;
+                    break;
+                }
             }//foreach
             $clte['contracts'] = $contratos;
+            if (count($contratos) > 0)
+                $contratos[] = $con;
             $resClientes[] = $clte;
 
         }//foreach
@@ -364,7 +400,15 @@ switch($_POST["type"])
         $smarty->assign('totalPeriodo', $totalPeriodo);
         $smarty->assign("clientes", $resClientes);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/report-up-down.tpl');
+        switch($_POST["tipoSearch"]){
+            case 'contract':
+                $smarty->display(DOC_ROOT.'/templates/lists/report-up-down-contract.tpl');
+            break;
+            case 'service':
+                $smarty->display(DOC_ROOT.'/templates/lists/report-up-down.tpl');
+            break;
+        }
+
         break;
 }
 
