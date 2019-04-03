@@ -25,7 +25,6 @@ class ContractRep extends Main
     public function BuscarContract($formValues=array(),$activos=false , $deptos = array())
     {
         $sqlFilter = "";
-
         if($formValues['cliente'])
             $sqlFilter = " AND customer.nameContact LIKE '%".$formValues['cliente']."%'";
 
@@ -41,10 +40,21 @@ class ContractRep extends Main
 
         if($formValues['facturador'])
             $sqlFilter .= ' AND contract.facturador = "'.$formValues['facturador'].'"';
-
-        //Contratos Activos
-        $sqlFilter .= ' AND contract.activo = "Si"';
-
+        if(isset($formValues["tipoSearch"])){
+            if($formValues["tipoSearch"]=="contract")
+            {
+                switch($formValues["statusSearch"]){
+                    case 'activo':
+                        $sqlFilter .= ' AND contract.activo = "Si"';
+                    break;
+                    case 'baja':
+                        $sqlFilter .= ' AND contract.activo = "No"';
+                    break;
+                }
+            }
+        }else{
+            $sqlFilter .= ' AND contract.activo = "Si"';
+        }
         $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 				personal.jefeGerente, personal.jefeContador, customer.nameContact
@@ -69,9 +79,9 @@ class ContractRep extends Main
             $skip=true;
         }
         else{
-            if(isset($formValues["statusServicio"]))
+            if(isset($formValues["statusSearch"]))
             {
-                switch($formValues["statusServicio"]){
+                switch($formValues["statusSearch"]){
                     case 'activo':
                         $ftrServicio = " AND a.status IN('activo','readonly') ";
                     break;

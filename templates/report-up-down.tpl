@@ -22,7 +22,6 @@
             <br />&nbsp;
         </div>
         <div class="portlet-content nopadding borderGray" id="contenido" style="overflow:auto; max-height:550px; margin-left:10px;">
-          {include file="lists/report-up-down.tpl"}
         </div>
         <div style="clear:both"></div>
         <br />
