@@ -233,7 +233,10 @@ switch($_POST["type"])
                         $con["fechaAlta"] = $db->GetSingle();
                         if (!$util->isValidateDate($con["fechaAlta"], "Y-m-d"))
                             continue 2;
-                        $con["fechaBaja"] = date('Y-m-d',strtotime($con["lastUpdated"]));
+
+                        $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' and activo='No' order by contractChangesId ASC limit 1");
+                        $con["fechaBaja"] = $db->GetSingle();
+
                         switch ($_POST["statusSearch"]) {
                             case 'activo':
                                 $firstExplode = explode("-", $con["fechaAlta"]);
@@ -248,6 +251,9 @@ switch($_POST["type"])
                                 }
                             break;
                             case 'baja':
+                                if (!$util->isValidateDate($con["fechaBaja"], "Y-m-d"))
+                                    continue 2;
+
                                 $lastExplode = explode("-", $con["fechaBaja"]);
                                 $mes = (int)$_POST["month"];
                                 if ($mes > 0) {
