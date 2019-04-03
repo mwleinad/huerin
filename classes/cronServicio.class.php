@@ -52,7 +52,7 @@ class CronServicio extends Contract
                 return $fechas_workflow;
             }
             $isChangeDateIo =  false;
-            $sqlFirst= "select min(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ";
+            $sqlFirst= "select min(date) from instanciaServicio where servicioId='".$serv['servicioId']."'  ";
             $this->Util()->DB()->setQuery($sqlFirst);
             $primerWorkflowCreado = $this->Util()->DB()->GetSingle();
             if($this->Util()->isValidateDate($primerWorkflowCreado,'Y-m-d'))
@@ -64,7 +64,27 @@ class CronServicio extends Contract
                 //limitar que la siguiente condicion aplique a solo anual
                 if($serv['periodicidad']=='Anual'){
                     if($primerWorkflowCreado!=$inicioOperaciones)
-                    $isChangeDateIo =  true;
+                         $isChangeDateIo =  true;
+
+                    /*if(!$isChangeDateIo){
+                        $strCleanInit="DELETE from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$inicioOperaciones."') and month(date)!=month('".$inicioOperaciones."') and class='PorIniciar' ";
+                        $this->Util()->DB()->setQuery($strCleanInit);
+                        $this->Util()->DB()->DeleteData();
+
+                        $strSelect="SELECT min(instanciaServicioId) from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$inicioOperaciones."') and class!='PorIniciar' ";
+                        $this->Util()->DB()->setQuery($strSelect);
+                        $instanciaIniciada = $this->Util()->DB()->GetSingle();
+                        if($instanciaIniciada){
+                            $strUpdateInicial="update instanciaServicio set date='".$inicioOperaciones."' where servicioId='".$serv['servicioId']."' and instanciaServicioId='$instanciaIniciada' ";
+                            $this->Util()->DB()->setQuery($strUpdateInicial);
+                            $this->Util()->DB()->UpdateData();
+
+                            $strCleanGarbage="DELETE from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$inicioOperaciones."') and instanciaServicioId!='$instanciaIniciada' ";
+                            $this->Util()->DB()->setQuery($strCleanGarbage);
+                            $this->Util()->DB()->DeleteData();
+                        }
+                    }*/
+
                 }
             }
             if(!$isChangeDateIo){
@@ -132,6 +152,25 @@ class CronServicio extends Contract
                 $strNext="select instanciaServicioId from instanciaServicio where servicioId='".$serv['servicioId']."' and date='".$siguienteWorkflow."' ";
                 $this->Util()->DB()->setQuery($strNext);
                 $existWorkwlow =  $this->Util()->DB()->GetSingle();
+                if($serv["periodicidad"]=="Anual"){
+                        $strClean="DELETE from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$siguienteWorkflow."') and month(date)!=month('".$siguienteWorkflow."') and class='PorIniciar' ";
+                        $this->Util()->DB()->setQuery($strClean);
+                        $this->Util()->DB()->DeleteData();
+
+                        $strSelectExist="SELECT min(instanciaServicioId) from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$siguienteWorkflow."') and class!='PorIniciar' ";
+                        $this->Util()->DB()->setQuery($strSelectExist);
+                        $findId = $this->Util()->DB()->GetSingle();
+                        if($findId){
+                            $strUpdateExist="update instanciaServicio set date='".$siguienteWorkflow."' where servicioId='".$serv['servicioId']."' and instanciaServicioId='$findId' ";
+                            $this->Util()->DB()->setQuery($strUpdateExist);
+                            $this->Util()->DB()->UpdateData();
+
+                            $strClean2="DELETE from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$siguienteWorkflow."') and instanciaServicioId!='$findId' ";
+                            $this->Util()->DB()->setQuery($strClean2);
+                            $this->Util()->DB()->DeleteData();
+                            $existWorkwlow= true;
+                        }
+                }
                 if(!$existWorkwlow)
                     array_push($fechas_workflow, $siguienteWorkflow);
 
@@ -179,7 +218,7 @@ class CronServicio extends Contract
         //encontrar los servicios sin necesidad de filtros
        $fechaCorriente=  $this->Util()->getFirstDate(date('Y-m-d'));
 
-       $servicios = $this->getListServices();
+       $servicios = $this->getListServices(1320);
        foreach($servicios as $key=>$servicio){
            $costoWorkflow = $servicio['costo'];
           $fechas_workflow =  $this->CreateStockDates($servicio);
