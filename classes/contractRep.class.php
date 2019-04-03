@@ -55,10 +55,7 @@ class ContractRep extends Main
         }else{
             $sqlFilter .= ' AND contract.activo = "Si"';
         }
-
-
-
-       $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
+        $sql = "SELECT contract.*, contract.name AS name, contract.encargadoCuenta AS encargadoCuenta,
 				contract.responsableCuenta AS responsableCuenta, personal.jefeSocio, personal.jefeSupervisor,
 				personal.jefeGerente, personal.jefeContador, customer.nameContact
 				FROM contract

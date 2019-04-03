@@ -231,7 +231,9 @@ switch($_POST["type"])
                         $conId = $con["contractId"];
                         $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' order by contractChangesId ASC limit 1");
                         $con["fechaAlta"] = $db->GetSingle();
-                        $con["fechaBaja"] = date('Y-m-d',strtotime($con["lastUpdate"]));
+                        if (!$util->isValidateDate($con["fechaAlta"], "Y-m-d"))
+                            continue 2;
+                        $con["fechaBaja"] = date('Y-m-d',strtotime($con["lastUpdated"]));
                         switch ($_POST["statusSearch"]) {
                             case 'activo':
                                 $firstExplode = explode("-", $con["fechaAlta"]);
@@ -244,7 +246,7 @@ switch($_POST["type"])
                                     if ((int)$_POST["year"] != (int)$firstExplode[0])
                                         continue 2;
                                 }
-                                break;
+                            break;
                             case 'baja':
                                 $lastExplode = explode("-", $con["fechaBaja"]);
                                 $mes = (int)$_POST["month"];
@@ -275,24 +277,24 @@ switch($_POST["type"])
 
                             //encontrar fecha de baja
                             switch ($serv["status"]) {
+                                case 'activo':
                                 case 'readonly':
-                                    $serv["status"] = "Activo solo lectura";
+                                    $serv["movimiento"] = "Alta";
                                     break;
                                 case 'baja':
-                                    $serv["status"] = "Baja";
+                                    $serv["movimiento"] = "Baja";
                                     if (!$util->isValidateDate($serv['fechaBaja'], "Y-m-d")) {
                                         $db->setQuery("select max(date) from instanciaServicio where servicioId='" . $serv['servicioId'] . "' ");
                                         $serv["fechaBaja"] = $db->GetSingle();
                                     }
                                     break;
                                 case 'bajaParcial':
-                                    $serv["status"] = "Baja temporal";
+                                    $serv["movimiento"] = "Baja";
                                     if (!$util->isValidateDate($serv['lastDateWorkflow'], "Y-m-d")) {
                                         $db->setQuery("select max(date) from instanciaServicio where servicioId='" . $serv['servicioId'] . "' ");
                                         $serv["fechaBaja"] = $db->GetSingle();
                                     } else
                                         $serv["fechaBaja"] = $serv['lastDateWorkflow'];
-
                                     break;
 
                             }

@@ -4,7 +4,7 @@
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Raz&oacute;n Social</th>
 		<th align="center" width="60">Servicio</th>
-        <th align="center" width="60">Status</th>
+        <th align="center" width="60">Movimiento</th>
 		<th align="center" width="60">Periodicidad</th>
         <th align="center" width="60">Fecha de alta</th>
         <th align="center" width="60">Fecha de baja</th>
@@ -21,10 +21,10 @@
             <td align="center">{$cliente.nameContact}</td>
             <td align="center">{$contract.name}</td>
             <td align="center">{$servicio.nombreServicio}</td>
-            <td align="center">{$servicio.status}</td>
+            <td align="center">{$servicio.movimiento}</td>
             <td align="center">{$servicio.periodicidad}</td>
             <td align="center">{$servicio.fechaAlta}</td>
-            <td align="center">{if $servicio.status eq 'Baja'}{$servicio.fechaBaja}{elseif $servicio.status eq 'Baja temporal'}{$servicio.lastDateWorkflow}{else}N/A{/if} </td>
+            <td align="center">{if $servicio.status eq 'baja'}{$servicio.fechaBaja}{elseif $servicio.status eq 'bajaParcial'}{$servicio.lastDateWorkflow}{else}{/if} </td>
             <td align="center">${$servicio.costo|number_format:2}</td>
             <td align="center">{if $servicio.responsable eq ''}--{else}{$servicio.responsable}{/if}</td>
             <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
