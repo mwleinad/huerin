@@ -252,7 +252,7 @@ switch($_POST["type"])
                             break;
                             case 'baja':
                                 if (!$util->isValidateDate($con["fechaBaja"], "Y-m-d"))
-                                    continue 2;
+                                    $con["fechaBaja"] = date("Y-m-d",strtotime($con["lastUpdated"]));
 
                                 $lastExplode = explode("-", $con["fechaBaja"]);
                                 $mes = (int)$_POST["month"];
