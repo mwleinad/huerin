@@ -17,7 +17,7 @@ switch($_POST["type"])
     case "savePending";
         $change->setDescripcion($_POST["descripcion"]);
         $change->setModulo($_POST["modulo"]);
-        $change->setFechaSolicitud($_POST["fsolicitud"]);
+        //$change->setFechaSolicitud($_POST["fsolicitud"]);
         $change->setFechaRevision($_POST["frevision"]);
         $change->setFechaEntrega($_POST["fentrega"]);
         if($change->savePending()){

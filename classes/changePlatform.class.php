@@ -31,14 +31,14 @@ class ChangePlatform extends main
     }
     private  $fentrega;
     function setFechaEntrega($value){
-        if($this->Util()->ValidateRequireField($value,"Fecha de entrega"))
-            $this->Util()->validateDateFormat($value,"Fecha de entrega","m-d-Y");
+        //if($this->Util()->ValidateRequireField($value,"Fecha de entrega"))
+        $this->Util()->validateDateFormat($value,"Fecha de entrega","m-d-Y");
         $this->fentrega = $value;
     }
     private  $frevision;
     function setFechaRevision($value){
-        if($this->Util()->ValidateRequireField($value,"Fecha de revision"))
-            $this->Util()->validateDateFormat($value,"Fecha de revision","m-d-Y");
+        //if($this->Util()->ValidateRequireField($value,"Fecha de revision"))
+        $this->Util()->validateDateFormat($value,"Fecha de revision","m-d-Y");
         $this->frevision = $value;
     }
     function Enumerate(){
@@ -53,6 +53,10 @@ class ChangePlatform extends main
                     $value["fileExist"] = true;
             }
             $result[$key]=$value;
+            if(!$this->Util()->isValidateDate($value["fechaEntrega"],"Y-m-d"))
+                $result[$key]["fechaEntrega"] ="Pendiente por agregar";
+            if(!$this->Util()->isValidateDate($value["fechaRevision"],"Y-m-d"))
+                $result[$key]["fechaRevision"] ="Pendiente por agregar";
         }
         return $result;
     }
@@ -81,7 +85,7 @@ class ChangePlatform extends main
                )VALUES(
                '".$this->descripcion."',
                '".$this->modulo."',
-               '".$this->Util()->FormatDateMySql($this->fsolicitud)."',
+               '".date("Y-m-d")."',
                '".$this->Util()->FormatDateMySql($this->fentrega)."',
                '".$this->Util()->FormatDateMySql($this->frevision)."'
                )
