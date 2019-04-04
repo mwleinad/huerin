@@ -15,6 +15,10 @@ class Compressed extends  Main
     public function setNameFolderUnzip($value){
         $this->nameFolderUnzip=$value;
     }
+    private $contractId;
+    public function setContractId($value){
+        $this->contractId=$value;
+    }
     private $nameDestiny;
     public function setNameDestiny($value){
         //limpiar nombre de archivo destino, si viene alguna diagonal / convertirlo en ""
@@ -91,9 +95,8 @@ class Compressed extends  Main
         //recorrer cada archivo y comprobar su estructura si no es la correcta se ignora el archivo, de lo contrario se sube al servidor
         $uploaded = 0;
         $ignored = 0;
-        $name = explode('_',$this->nameDestiny);
-        $contract->setName($name[0]);
-        $contrato = $contract->InfoByName();
+        $contract->setContractId($this->contractId);
+        $contrato = $contract->Info();
         foreach($this->filesToUp as $file){
             $idTasks = [];
             $fileExplode =  explode("/",$file);
@@ -305,8 +308,8 @@ class Compressed extends  Main
             return false;
         }
         $name = explode('_',$this->nameDestiny);
-        $contract->setName($name[0]);
-        $contrato = $contract->InfoByName();
+        $contract->setContractId($this->contractId);
+        $contrato = $contract->Info();
         if(empty($contrato)){
             $this->Util()->setError(0,"error","Cliente no encontrado, comprobar con el administrador de sistema.");
             return false;

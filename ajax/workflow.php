@@ -58,6 +58,7 @@ switch($_POST["type"])
         $fileName = strtoupper($fileName)."_".strtotime(date("Y-m-d H:i:s"));//agregar el sufijo del datetime de php para que no exista colision con los usuarios
         $ext = end(explode('.',$_FILES["file"]['name']));
         $fileName = $fileName.".".$ext;
+        $compressed->setContractId($_POST['contractId']);
         $compressed->setNameDestiny($fileName);
         //si el zip se movio
         if($compressed->MoveFile($_FILES,true))
