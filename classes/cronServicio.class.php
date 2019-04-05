@@ -66,7 +66,7 @@ class CronServicio extends Contract
                     if($primerWorkflowCreado!=$inicioOperaciones)
                          $isChangeDateIo =  true;
 
-                    /*if(!$isChangeDateIo){
+                    if(!$isChangeDateIo){
                         $strCleanInit="DELETE from instanciaServicio where servicioId='".$serv['servicioId']."' and year(date)=year('".$inicioOperaciones."') and month(date)!=month('".$inicioOperaciones."') and class='PorIniciar' ";
                         $this->Util()->DB()->setQuery($strCleanInit);
                         $this->Util()->DB()->DeleteData();
@@ -83,7 +83,7 @@ class CronServicio extends Contract
                             $this->Util()->DB()->setQuery($strCleanGarbage);
                             $this->Util()->DB()->DeleteData();
                         }
-                    }*/
+                    }
 
                 }
             }
@@ -108,6 +108,15 @@ class CronServicio extends Contract
                 }
                 $siguienteWorkflow = strtotime($add, strtotime($ultimoWorkflowCreado));
                 $siguienteWorkflow = date('Y-m-d', $siguienteWorkflow);
+                if($serv['periodicidad']=='Anual'){
+                    $mesSiguienteAnual = date("m",strtotime($siguienteWorkflow));
+                    $mesIoAnual = date("m",strtotime($inicioOperaciones));
+                    if($mesSiguienteAnual!=$mesIoAnual)
+                    {
+                        $siguienteExplode =  explode("-",$siguienteWorkflow);
+                        $siguienteWorkflow = $siguienteExplode[0]."-".$mesIoAnual."-".$siguienteExplode[2];
+                    }
+                }
             }else{
                 $siguienteWorkflow = $inicioOperaciones;
             }
