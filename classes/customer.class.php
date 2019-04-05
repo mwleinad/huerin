@@ -1338,7 +1338,7 @@ class Customer extends Main
             $showCliente = true;
             $result[$key]["servicios"]++;
           } else {
-            unset($result[$key]["contracts"][$keyContract]);
+           //unset($result[$key]["contracts"][$keyContract]);
           }
 
         }
