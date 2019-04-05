@@ -312,7 +312,10 @@ class Log extends Util
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,$body,$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
-		return true;				
+        if(file_exists( $file)){
+           unlink($file);
+        }
+        return true;
 	}
 	
   	function GetLog(){

@@ -1,4 +1,5 @@
 <?php
+use Dompdf\Dompdf;
 class Servicio extends Contract
 {
 	private $servicioId;
@@ -1201,9 +1202,13 @@ class Servicio extends Contract
     public function doBajaTemporalMultiple($initialState,$endState){
         global $log,$User;
         $contratos = [];
+        $listContracts = $this->getIdContracts();
+        if(!is_array($listContracts))
+            $listContracts = [];
+
         switch($endState){
             case 'bajaParcial':
-                foreach ($this->getIdContracts() as $conId) {
+                foreach ($listContracts as $conId) {
                     $cad = [];
                     if($_POST['dateWorkflow'.$conId]==""||!$this->Util()->isValidateDate($_POST['dateWorkflow'.$conId])){
                         $this->Util()->setError(0, "error", 'Si selecciona una razon social, compruebe que el campo ultimo workflow de la fila sea una fecha valida o  no se encuentre vacia.');
@@ -1218,7 +1223,7 @@ class Servicio extends Contract
                 $message = 'Baja temporal realizado correctamente.';
             break;
             case 'activo':
-                foreach ($this->getIdContracts() as $conId){
+                foreach ($listContracts as $conId){
                     $cad['contractId']=$conId;
                     $cad['dateWorkflow'] =null;
                     $contratos[] = $cad;
@@ -1238,7 +1243,7 @@ class Servicio extends Contract
 
     }
     public function doBajaTemporalServicesByContrato($conId,$fechaWorkflow,$initialState,$endState){
-	    global $log,$User,$smarty;
+	    global $log,$User,$smarty,$contractRep;
         //Hay que iterar servicio por servicio para guardar su historial.
         $sql ="select a.servicioId,b.nombreServicio,a.inicioFactura,a.inicioOperaciones,a.costo 
               from servicio a 
@@ -1259,7 +1264,7 @@ class Servicio extends Contract
         $who = $this->Util()->DB()->GetSingle();
 
         if($_SESSION['User']['tipoPers']=='Admin')
-            $who="Administrador de sistema(desarrollador)";
+            $who="Administrador de sistema";
 
         $serviciosAfectados =  [];
         foreach($servicios as $key=>$value) {
@@ -1290,17 +1295,42 @@ class Servicio extends Contract
             $filtros['sendBraun'] = false;
             $filtros['sendHuerin'] = true;
             $filtros['incluirJefes'] = true;
+            $filtros['level'] = 3;
             $this->setContractId($conId);
             $data = $this->findEmailEncargadosJefesByContractId($filtros);
+            $encargados = $contractRep->encargadosArea($conId);
 
+            $smarty->assign('encargados', $encargados);
             $smarty->assign('serviciosAfectados', $serviciosAfectados);
             $smarty->assign('razon', $data['razon']);
             $smarty->assign('endState', $endState);
             $smarty->assign('who', $who);
-            $body = $smarty->fetch(DOC_ROOT . '/templates/boxes/body-message-bajatemporal-reactivacion.tpl');
+            $body = $smarty->fetch(DOC_ROOT . '/templates/molds/body-email-baja-parcial-reactivacion.tpl');
+            $html = $smarty->fetch(DOC_ROOT . '/templates/molds/pdf-log-baja-parcial-reactivacion.tpl');
+            $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+            $dompdf =  new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('letter', 'portrait');
+            $dompdf->render();
+            $fileName  = "down_".$_SESSION['User']['userId']."_log.pdf";
+            $output =  $dompdf->output();
+            file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
+            if(file_exists( DOC_ROOT."/sendFiles/$fileName")){
+                $file = DOC_ROOT."/sendFiles/$fileName";
+            }
+            else{
+                $file="";
+                $fileName="";
+            }
+            if(!SEND_LOG_MOD)
+                $data['encargados'] = [];
+
             $mail = new SendMail();
             $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-            $mail->PrepareMultipleNotice($subject, $body, $data['encargados'], '', "", "", "", "", 'noreply@braunhuerin.com.mx', 'Administrador de plataforma', true);
+            $mail->PrepareMultipleNotice($subject, $body, $data['encargados'], '', $file, $fileName, "", "", 'noreply@braunhuerin.com.mx', 'Administrador de plataforma', true);
+            if(file_exists( $file)){
+                unlink($file);
+            }
         }
         return true;
     }
