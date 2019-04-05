@@ -244,6 +244,7 @@ class Log extends Util
                 $this->Util()->Smarty()->assign("body",$body);
                 $this->Util()->Smarty()->assign("changes",$changes);
                 $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-update-general.tpl");
+                $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
                 $dompdf =  new Dompdf();
                 $dompdf->loadHtml($html);
                 $dompdf->setPaper('A4', 'portrait');
@@ -262,6 +263,7 @@ class Log extends Util
                     $this->Util()->Smarty()->assign("body",$body);
                     $this->Util()->Smarty()->assign("changes",$changes);
                     $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-general.tpl");
+                    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
                     $dompdf =  new Dompdf();
                     $dompdf->loadHtml($html);
                     $dompdf->setPaper('A4', 'portrait');
@@ -308,7 +310,7 @@ class Log extends Util
             $fileName="";
         }
 
-
+        $encargados=[];
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,$body,$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
@@ -616,6 +618,7 @@ class Log extends Util
         $contract->setContractId($contractId);
         $contrato = $contract->Info();
         $encargados = $contractRep->encargadosArea($contractId);
+
         $ftr['incluirJefes'] = true;
         $ftr['sendBraun']=false;
         $ftr['sendHuerin']=true;

@@ -2466,6 +2466,7 @@ class Contract extends Main
   public function Delete()
   {
     global $User,$log;
+    $permiso =  new Permiso();
     if ($this->Util()->PrintErrors()) {
       return false;
     }
@@ -2489,44 +2490,48 @@ class Contract extends Main
           contractId = '".$this->contractId."'"
     );
     $this->Util()->DB()->UpdateData();
+    //insertar nuevos permisos en la tabla contractPermiso
+    $permiso->setContractId($this->contractId);
+    $permiso->doPermiso();
 
-      $sql = "SELECT * FROM contract WHERE contractId = '".$this->contractId."'";
-      $this->Util()->DB()->setQuery($sql);
-      $newData = $this->Util()->DB()->GetRow();
+    $sql = "SELECT * FROM contract WHERE contractId = '".$this->contractId."'";
+    $this->Util()->DB()->setQuery($sql);
+    $newData = $this->Util()->DB()->GetRow();
 
-      //Guardamos el Log
-      $log->setPersonalId($User['userId']);
-      $log->setFecha(date('Y-m-d H:i:s'));
-      $log->setTabla('contract');
-      $log->setTablaId($this->contractId);
-      if($active=="Si")
-        $log->setAction('Reactivacion');
-      elseif($active=='No')
-        $log->setAction('Baja');
+    //Guardamos el Log
+    $log->setPersonalId($User['userId']);
+    $log->setFecha(date('Y-m-d H:i:s'));
+    $log->setTabla('contract');
+    $log->setTablaId($this->contractId);
+    if($active=="Si")
+    $log->setAction('Reactivacion');
+    elseif($active=='No')
+    $log->setAction('Baja');
 
-      $log->setOldValue(serialize($info));
-      $log->setNewValue(serialize($newData));
-      $log->Save();
-      $this->Util()->DB()->setQuery("
-			INSERT INTO
-				contractChanges
-			(
-				`contractId`,
-				`status`,
-				`oldData`,
-				`newData`,
-				`personalId`
-		)
-		VALUES
-		(
-				'".$this->contractId."',
-				'".$newData["activo"]."',
+    $log->setOldValue(serialize($info));
+    $log->setNewValue(serialize($newData));
+    $log->Save();
+    $this->Util()->DB()->setQuery("
+        INSERT INTO
+            contractChanges
+        (
+            `contractId`,
+            `status`,
+            `oldData`,
+            `newData`,
+            `personalId`
+    )
+    VALUES
+    (
+            '".$this->contractId."',
+            '".$newData["activo"]."',
+    
+            '".urlencode(serialize($info))."',
+            '".urlencode(serialize($newData))."',
+            '".$User["userId"]."'
+    );");
+    $this->Util()->DB()->InsertData();
 
-				'".urlencode(serialize($info))."',
-				'".urlencode(serialize($newData))."',
-				'".$User["userId"]."'
-		);");
-      $this->Util()->DB()->InsertData();
 
     $this->Util()->setError(10031, "complete");
     $this->Util()->PrintErrors();
@@ -3163,7 +3168,7 @@ class Contract extends Main
             if($filtros['sendBraun'])
                 array_push($defaultId,IDBRAUN);
 
-            $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).") AND departamento NOT IN(32,33)";
+            $sqlo  ="SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (".implode(',',$defaultId).") AND departamentoId NOT IN(32,33)";
             $this->Util()->DB()->setQuery($sqlo);
             $persons= $this->Util()->DB()->GetResult();
             foreach($persons as $pers)

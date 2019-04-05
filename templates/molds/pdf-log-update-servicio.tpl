@@ -1,5 +1,7 @@
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
     <title>LOGS</title>
     <style>
         *{
@@ -101,8 +103,6 @@
         }
 
     </style>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
 </head>
 <body>
 
