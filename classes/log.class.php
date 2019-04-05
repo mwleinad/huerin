@@ -309,8 +309,6 @@ class Log extends Util
             $file="";
             $fileName="";
         }
-
-        $encargados=[];
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,$body,$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
