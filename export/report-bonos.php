@@ -5,7 +5,7 @@ if(!isset($_SESSION)){
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$data = $reportebonos->generateReportBonos($_POST);
+$data = $reportebonos->generateReportBonosWhitLevel($_POST);
 $period = $_POST['period'];
 if($period== "efm"){
     $monthNames = array("Ene", "Feb", "Mar");
@@ -30,6 +30,7 @@ $html = '<html>
 						font-size:12px;
 						border: 1px solid #C0C0C0;
 						border-collapse: collapse;
+						text-align: left;
 					}
 					.cabeceraTabla {
 						font-family:verdana;
@@ -49,7 +50,7 @@ $smarty->assign("nombreMeses", $monthNames);
 $smarty->assign("data", $data);
 $smarty->assign("EXCEL", "SI");
 $smarty->assign("DOC_ROOT", DOC_ROOT);
-$html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono-cobranza.tpl');
+$html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono-order-rol.tpl');
 
 $name = 'reporte_de_bonos_cobranza';
 header("Content-Type:   application/vnd.ms-excel; charset=utf-8");

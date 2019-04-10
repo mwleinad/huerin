@@ -1134,7 +1134,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 	}
 
-	function orderMultiDimensionalArray ($toOrderArray, $field, $inverse = false) {
+	function orderMultiDimensionalArray ($toOrderArray, $field, $inverse = false,$sameKey=false) {
 
 		$position = array();
 		$newRow = array();
@@ -1150,7 +1150,10 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		}
 		$returnArray = array();
 		foreach ($position as $key => $pos) {
-			$returnArray[] = $newRow[$key];
+		    if($sameKey)
+                $returnArray[$key] = $newRow[$key];
+		    else
+			    $returnArray[] = $newRow[$key];
 		}
 		return $returnArray;
 

@@ -396,6 +396,12 @@ class Personal extends Main
 		$row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
 		return $row;
 	}
+    public function InfoWhitRol()
+    {
+        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
+        $row = $this->Util()->DB()->GetRow();
+        return $row;
+    }
 	public function jefeInmediato(){
         $this->Util()->DB()->setQuery("SELECT j.* FROM personal a INNER JOIN personal j ON a.jefeInmediato=j.personalId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
