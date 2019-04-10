@@ -39,9 +39,9 @@ switch($_POST["type"])
 				$smarty->display(DOC_ROOT.'/templates/lists/report-bonos.tpl');
 			}
 
-		break;
-    	case 'searchBonos':
-			$data = $reportebonos->generateReportBonos($_POST);
+	break;
+    case 'searchBonos':
+            $data = $reportebonos->generateReportBonosWhitLevel($_POST);
             $period = $_POST['period'];
             if($period== "efm"){
                 $monthNames = array("Ene", "Feb", "Mar");
@@ -58,8 +58,8 @@ switch($_POST["type"])
             $smarty->assign("nombreMeses", $monthNames);
             $smarty->assign("data", $data);
             $smarty->assign("DOC_ROOT", DOC_ROOT);
-            $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-bono-cobranza.tpl');
-        break;
+            $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-bono-order-rol.tpl');
+    break;
 
 }
 
