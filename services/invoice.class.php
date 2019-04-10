@@ -349,6 +349,7 @@ class Invoice extends Comprobante
        unset($_SESSION["conceptos"]);
        $countInvoice=0;
        foreach($contratos as $contractId => $servicios){
+           $cadLog .="facturar a $contractId ".chr(13).chr(10);
            $this->Util()->DB()->setQuery("SELECT facturador FROM contract WHERE contractId = '".$contractId."'");
            $value['facturador'] = $this->Util()->DB()->GetSingle();
            if($value["facturador"] == "BHSC")
