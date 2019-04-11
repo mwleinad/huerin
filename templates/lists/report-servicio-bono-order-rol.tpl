@@ -391,31 +391,35 @@
 	</tr>
 	</tbody>
 </table>
-<table width="50%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
-	<thead>
-	<tr>
-		<th class="cabeceraTabla" align="center" style="text-align: left;width: 15%">Nombre</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">I</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">G</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left">U</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left">%Bono</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left">BONO</th>
-		<th class="cabeceraTabla" align="center" style="text-align: left">Bono Entregado</th>
-	</tr>
-	</thead>
-	<tbody>
-		{foreach from=$data.totalesEncargadosAcumulado item=enc key=ken}
-			<tr>
-				<td>{$enc.name}</td>
-				<td>{$enc.totalDevengado|number_format:2:'.':','}</td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		{/foreach}
-	</tbody>
-</table>
+<div style="display: table;width: 100%; border-spacing: 10px">
+    <div style="display: table-cell;width: 35%">
+        <table width="50%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
+            <thead>
+            <tr>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%">Nombre</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">I</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">G</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">U</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">%Bono</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">BONO</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">Bono Entregado</th>
+            </tr>
+            </thead>
+            <tbody>
+                {foreach from=$data.totalesEncargadosAcumulado item=enc key=ken}
+                    <tr>
+                        <td>{$enc.name}</td>
+                        <td>{$enc.totalCompletado|number_format:2:'.':','}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 

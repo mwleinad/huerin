@@ -120,11 +120,11 @@
                 {/if}
                 {if in_array(163,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if}>
-                            <span>Bonos V2</span></a></li>
+                      <span>Bonos trimestral</span></a></li>
                 {/if}
                 {if in_array(215,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if}>
-                            <span>Bonos juridico</span></a></li>
+                      <span>Bonos juridico</span></a></li>
                 {/if}
                 {if in_array(165,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
