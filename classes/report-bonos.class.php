@@ -541,7 +541,6 @@ class ReporteBonos extends Main
             $strFilter .=" and contractId in(select a.contractId from contract a inner join customer b on a.customerId = b.customerId where b.active='1' and a.activo='Si' $subStr )";
 
         }
-
         $mesesBase =  $this->createMonthBase($ftr['period']);
 
         $fullSubordinados = $personal->GetIdResponsablesSubordinados($ftr);
@@ -551,7 +550,6 @@ class ReporteBonos extends Main
                     where b.status='1' and a.status IN ('activo','bajaParcial') $strFilter";
         $this->Util()->DB()->setQuery($sqlServ);
         $services = $this->Util()->DB()->GetResult();
-
 
         $year = $_POST["year"];
         $serviciosEncontrados = [];
@@ -610,7 +608,6 @@ class ReporteBonos extends Main
                 continue;
 
             $encargadoDep = $encargados[$service['departamentoId']];
-
             $personal->setPersonalId($encargadoDep);
             $encargado =$personal->InfoWhitRol();
             $service["encargado"]=$encargado['name'];
@@ -800,14 +797,14 @@ class ReporteBonos extends Main
         $data["totales"] = $totales;
         $data["totalesEncargados"] = $totalesEncargados;
         $ordenado = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
-
+        $ordenado2 =$this->Util()->orderMultiDimensionalArray($ordenado,'level',false,true);
         foreach($ordenado as $ke=>$enc){
-                if(array_key_exists($enc['jefeInmediato'],$ordenado)){
-                    $ordenado[$enc['jefeInmediato']]['totalDevengado'] = $ordenado[$enc['jefeInmediato']]['totalDevengado']+$enc['totalDevengado'];
-                    $ordenado[$enc['jefeInmediato']]['totalCompletado'] = $ordenado[$enc['jefeInmediato']]['totalCompletado']+$enc['totalCompletado'];
+                if(array_key_exists($enc['jefeInmediato'],$ordenado2)){
+                    $ordenado2[$enc['jefeInmediato']]['totalDevengado'] += $ordenado2[$ke]['totalDevengado'];
+                    $ordenado2[$enc['jefeInmediato']]['totalCompletado'] += $ordenado2[$ke]['totalCompletado'];
                 }
         }
-        $data["totalesEncargadosAcumulado"] = $ordenado;
+        $data["totalesEncargadosAcumulado"] = $ordenado2;
         return $data;
     }
 }
