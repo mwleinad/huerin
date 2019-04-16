@@ -37,15 +37,15 @@
 			</div>
 			{/if}
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">Fecha de revision:</div>
-				<div style="width:70%;display:inline-block">
-					<input  name="frevision" id="frevision" class="largeInput medium" onclick="CalendarioSimple(this)" value="{if $post.fechaRevision!="0000-00-00"}{$post.fechaRevision|date_format:"%d-%m-%Y"}{/if}" />
-				</div>
-			</div>
-			<div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Fecha de entrega:</div>
 				<div style="width:70%;display:inline-block">
 					<input  name="fentrega" id="fentrega" class="largeInput medium" onclick="CalendarioSimple(this)" value="{if $post.fechaEntrega!="0000-00-00"}{$post.fechaEntrega|date_format:"%d-%m-%Y"}{/if}" />
+				</div>
+			</div>
+			<div class="formLine" style="width:100%; text-align:left">
+				<div style="width:30%;float:left">Fecha de revision:</div>
+				<div style="width:70%;display:inline-block">
+					<input  name="frevision" id="frevision" class="largeInput medium" onclick="CalendarioSimple(this)" value="{if $post.fechaRevision!="0000-00-00"}{$post.fechaRevision|date_format:"%d-%m-%Y"}{/if}" />
 				</div>
 			</div>
 			<div class="formLine" style="width:100%; text-align:left">

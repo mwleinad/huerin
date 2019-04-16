@@ -23,6 +23,17 @@ class ChangePlatform extends main
         $this->Util()->ValidateRequireField($value,"Modulo");
         $this->modulo = $value;
     }
+    private $commentId;
+    function setCommentId($value){
+        $this->Util()->ValidateRequireField($value,"Id comentario");
+        $this->commentId = $value;
+    }
+    private $comment;
+    function setComment($value){
+        $this->Util()->ValidateRequireField($value,"Comentario");
+        $this->comment = $value;
+    }
+
     private  $fsolicitud;
     function setFechaSolicitud($value){
         if($this->Util()->ValidateRequireField($value,"Fecha de solicitud"))
@@ -42,7 +53,7 @@ class ChangePlatform extends main
         $this->frevision = $value;
     }
     function Enumerate(){
-        $sql ="SELECT * FROM changesPlatform  ORDER BY fechaSolicitud DESC";
+        $sql ="SELECT * FROM changesPlatform  ORDER BY status ASC, fechaSolicitud DESC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         foreach($result as $key=>$value)
@@ -70,6 +81,12 @@ class ChangePlatform extends main
             if(file_exists(DOC_ROOT.$row["url"]))
                 $row["fileExist"] = true;
         }
+        return $row;
+    }
+    function InfoComment(){
+        $sql ="SELECT * FROM commentsChangesPlatform  WHERE commentId='".$this->commentId."' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $row = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         return $row;
     }
     function savePending(){
@@ -155,6 +172,59 @@ class ChangePlatform extends main
         $this->Util()->setError(0,"complete","Pendiente eliminado correctamente");
         $this->Util()->PrintErrors();
         return true;
+    }
+    function deleteCommentPending(){
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "DELETE FROM commentsChangesPlatform 
+                WHERE commentId='".$this->commentId."'
+               ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->DeleteData();
+
+        $this->Util()->setError(0,"complete","Comentario eliminado correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function completePending(){
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "UPDATE changesPlatform  SET status='finalizado'
+                WHERE changeId='".$this->changeId."'
+               ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(0,"complete","Pendiente finalizado");
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function saveCommentPending(){
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql ="INSERT INTO commentsChangesPlatform(
+                changeId,
+                comment
+               )VALUES(
+               '".$this->changeId."',
+               '".$this->comment."'
+               )
+              ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->InsertData();
+
+        $this->Util()->setError(0,"complete","Comentario guardado correctamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function getCommentsByChanges(){
+        $sql ="SELECT * FROM commentsChangesPlatform WHERE changeId ='".$this->changeId."'  ORDER BY date DESC";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+        return $result;
     }
 
 }

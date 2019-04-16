@@ -1005,17 +1005,18 @@ class Servicio extends Contract
 		if($this->Util()->PrintErrors()){ return false; }
 		
 		$info = $this->InfoLog();
-        $setFechabaja ="";
+        $addSql ="";
         switch($info['status']){
             case 'readonly':
             case 'activo':
                 $active = 'baja';
-                $setFechabaja = ", fechaBaja=DATE(NOW())";
+                $addSql .= ", fechaBaja=DATE(NOW())";
                 $action =  "Baja";
                 $complete = "El servicio fue dado de baja correctamente.";
             break;
             case 'bajaParcial':
                 $active = 'activo';
+                $addSql .= ", lastDateCreateWorkflow='0000-00-00'";
                 $action =  "Reactivacion";
                 $complete = "El servicio ha sido reactivado correctamente.";
             break;
@@ -1027,7 +1028,7 @@ class Servicio extends Contract
         }
         $this->Util()->DB()->setQuery("UPDATE servicio
 			                                 SET status = '".$active."'
-			                                 $setFechabaja
+			                                 $addSql
 			                                 WHERE servicioId = '".$this->servicioId."' ");
         $this->Util()->DB()->UpdateData();
         $servicio = $this->InfoLog();
@@ -1256,7 +1257,7 @@ class Servicio extends Contract
                 $action ="bajaParcial";
             break;
             case 'activo':
-                $dateWorflow ="";
+                $dateWorflow =", lastDateCreateWorkflow='0000-00-00'";
                 $action ="Reactivacion";
             break;
         }
@@ -1390,7 +1391,8 @@ class Servicio extends Contract
                     inicioFactura = '$if',
                     lastDateWorkflow = '$flw',
                     $setFechabaja
-                    status = '$status'
+                    status = '$status',
+                    lastDateCreateWorkflow='0000-00-00'
                     WHERE servicioId ='$servId' and contractId='$contratoId'
                    ";
             $this->Util()->DB()->setQuery($sql);
