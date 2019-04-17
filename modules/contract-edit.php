@@ -44,6 +44,13 @@
             $contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
         if(isset($_POST['telefonoCelularDirectivo']))
             $contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
+        if(isset($_POST['nameRepresentanteLegal']))
+            $contract->setNameRepresentanteLegal($_POST['nameRepresentanteLegal']);
+        if(isset($_POST['emailRepresentanteLegal']))
+            $contract->setEmailRepresentanteLegal($_POST['emailRepresentanteLegal']);
+        if(isset($_POST['telefonoRepresentanteLegal']))
+            $contract->setTelefonoRepresentanteLegal($_POST['telefonoRepresentanteLegal']);
+
 		$contract->setClaveFiel($_POST['claveFiel']);
 		$contract->setClaveCiec($_POST['claveCiec']);
 		$contract->setClaveIdse($_POST['claveIdse']);

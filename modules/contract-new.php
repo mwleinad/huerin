@@ -29,6 +29,10 @@
 		$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
 		$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
 		$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
+        $contract->setNameRepresentanteLegal($_POST['nameRepresentanteLegal']);
+		$contract->setEmailRepresentanteLegal($_POST['emailRepresentanteLegal']);
+		$contract->setTelefonoRepresentanteLegal($_POST['telefonoRepresentanteLegal']);
+		$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
 		$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
 		$contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
 		$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);

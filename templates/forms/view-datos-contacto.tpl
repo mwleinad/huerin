@@ -40,6 +40,22 @@
 			<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
 	</tr>
 	{/if}
+	{if in_array(187,$permissions) || $User.isRoot}
+		<tr>
+			<td align="left" width="40%">Nombre representante legal</td>
+			<td align="left"><input name="nameRepresentanteLegal" id="nameRepresentanteLegal" type="text" value="{$infoRazonSocial.nameRepresentanteLegal}" class="smallInput medium" size="50"/></td>
+		</tr>
+
+		<tr>
+			<td align="left" width="40%">Email representante legal</td>
+			<td align="left"><input name="emailRepresentanteLegal" id="emailRepresentanteLegal" type="text" value="{$infoRazonSocial.emailRepresentanteLegal}" class="smallInput medium" size="50"/></td>
+		</tr>
+
+		<tr>
+			<td align="left" width="40%">Telefono representante legal</td>
+			<td align="left"><input name="telefonoRepresentanteLegal" id="telefonoRepresentanteLegal" type="text" value="{$infoRazonSocial.telefonoRepresentanteLegal}" class="smallInput medium" size="50"/></td>
+		</tr>
+	{/if}
 	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">Nombre Contacto Directivo</td>
