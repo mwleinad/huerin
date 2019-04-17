@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Plataforma Operativa Huerin Braun, S.C.</title>
+<title>Braun Huerin{if $titlePage neq ''} ::. {$titlePage}{/if}
+</title>
 
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/960.css?{$timestamp}" />
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/reset.css?{$timestamp}" />

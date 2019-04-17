@@ -228,7 +228,21 @@ class Contract extends Main
     );
     $this->telefonoContactoAdministrativo = $value;
   }
-
+  private $nameRepresentanteLegal;
+  public function setNameRepresentanteLegal($value)
+  {
+      $this->nameRepresentanteLegal = $value;
+  }
+  private $emailRepresentanteLegal;
+  public function setEmailRepresentanteLegal($value)
+  {
+    $this->emailRepresentanteLegal = $value;
+  }
+  private $telefonoRepresentanteLegal;
+  public function setTelefonoRepresentanteLegal($value)
+  {
+      $this->telefonoRepresentanteLegal = $value;
+  }
   private $nameContactoContabilidad;
   public function setNameContactoContabilidad($value)
   {
@@ -1893,6 +1907,9 @@ class Contract extends Main
           nameContactoContabilidad,
           emailContactoContabilidad,
           telefonoContactoContabilidad,
+          nameRepresentanteLegal,
+          emailRepresentanteLegal,
+          telefonoRepresentanteLegal,
           nameContactoDirectivo,
           emailContactoDirectivo,
           telefonoContactoDirectivo,
@@ -1941,6 +1958,9 @@ class Contract extends Main
           '".$this->nameContactoContabilidad."',
           '".$this->emailContactoContabilidad."',
           '".$this->telefonoContactoContabilidad."',
+          '".$this->nameRepresentanteLegal."',
+          '".$this->emailRepresentanteLegal."',
+          '".$this->telefonoRepresentanteLegal."',
           '".$this->nameContactoDirectivo."',
           '".$this->emailContactoDirectivo."',
           '".$this->telefonoContactoDirectivo."',
@@ -2077,14 +2097,21 @@ class Contract extends Main
              $contactos .= "emailContactoContabilidad = '".$this->emailContactoContabilidad."',";
          if(strlen($this->telefonoContactoContabilidad)>0)
              $contactos .= "telefonoContactoContabilidad = '".$this->telefonoContactoContabilidad."',";
-          if(strlen($this->nameContactoDirectivo)>0)
+         if(strlen($this->nameContactoDirectivo)>0)
               $contactos .= "nameContactoDirectivo = '".$this->nameContactoDirectivo."',";
-          if(strlen($this->emailContactoDirectivo)>0)
+         if(strlen($this->emailContactoDirectivo)>0)
               $contactos .= "emailContactoDirectivo = '".$this->emailContactoDirectivo."',";
-          if(strlen($this->telefonoContactoDirectivo)>0)
+         if(strlen($this->telefonoContactoDirectivo)>0)
               $contactos .= "telefonoContactoDirectivo = '".$this->telefonoContactoDirectivo."',";
-          if(strlen($this->telefonoCelularDirectivo)>0)
+         if(strlen($this->telefonoCelularDirectivo)>0)
               $contactos .= "telefonoCelularDirectivo = '".$this->telefonoCelularDirectivo."',";
+
+         if(strlen($this->nameRepresentanteLegal)>0)
+              $contactos .= "nameRepresentanteLegal = '".$this->nameRepresentanteLegal."',";
+         if(strlen($this->emailRepresentanteLegal)>0)
+              $contactos .= "emailRepresentanteLegal = '".$this->emailRepresentanteLegal."',";
+         if(strlen($this->telefonoRepresentanteLegal)>0)
+              $contactos .= "telefonoRepresentanteLegal = '".$this->telefonoRepresentanteLegal."',";
 
 		//Actualizamos
 		$sql = "UPDATE
@@ -2177,42 +2204,17 @@ class Contract extends Main
 				'".$User["userId"]."'
 		);");
       $this->Util()->DB()->InsertData();
-      /*$subject = "La rason social ".$this->name." fue modificada por ".$_SESSION["User"]["username"];
-      $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = 66 OR personalId = '".IDHUERIN."' OR (tipoPersonal = 'Gerente' && departamentoId = '1')");
-      $personal = $this->Util()->DB()->GetResult();
-      $sendmail = new SendMail();
+      $fp = fopen(DOC_ROOT.'/contracts.log','a');
+      chmod(DOC_ROOT.'/contracts.log',0756);
+      fwrite($fp,"OLD DATA\n");
+      fwrite($fp,json_encode($oldData));
+      fwrite($fp,"\n\nNEW DATA\n");
+      fwrite($fp,json_encode($newData));
+      fwrite($fp,"\n\n::::::::::::::::::::::::::::::::\n\n");
+      fclose($fp);
 
-      $personal = new Personal();
-      $personal->setPersonalId($this->responsableCuenta);
-      $responsables = $personal->jefes($this->responsableCuenta, $idList=array());
-
-      foreach($responsables as $key => $value)
-      {
-          $personal->setPersonalId($this->responsableCuenta);
-          $info = $personal->Info();
-          //print_r($info);
-          $to = $info["email"];
-          //$to = "comprobantefiscal@braunhuerin.com.mx";
-          $toName = $info["name"];
-          $body = "Este correo es para notificarle que hubo una modificacion para la razon social ".$this->name." fue hecha por ".$_SESSION["User"]["username"];
-          //$body = "<pre>Datos Nuevos:".print_r($oldData, true)."<br>Datos Anteriores:".print_r($newData, true);
-          $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
-          //	break;
-      }
-      //exit;*/
-
-        $fp = fopen(DOC_ROOT.'/contracts.log','a');
-        chmod(DOC_ROOT.'/contracts.log',0756);
-		fwrite($fp,"OLD DATA\n");
-		fwrite($fp,json_encode($oldData));
-		fwrite($fp,"\n\nNEW DATA\n");
-		fwrite($fp,json_encode($newData));
-		fwrite($fp,"\n\n::::::::::::::::::::::::::::::::\n\n");
-		fclose($fp);
-
-		return true;
+	  return true;
   }
-
   /**
   * SaveProrrogaTemp
   *

@@ -339,6 +339,114 @@ $mime_types = array("323" => "text/h323",
 "xpm" => "image/x-xpixmap",
 "xwd" => "image/x-xwindowdump",
 "z" => "application/x-compress",
-"zip" => "application/zip");					
+"zip" => "application/zip");
+
+$titlesPages = [
+    'login'=>'Login',
+    'logout',
+    'homepage'=>'Inicio',
+
+    //catalogos
+    'personal'=>'Empleados',
+    'state'=>'Estado',
+    'city'=>'Ciudades',
+    'rol'=>'Roles',
+    'regimen'=>'Regimen',
+    'sociedad'=>'Socidades',
+    'tipoServicio'=>'Tipos de servicio',
+    'tipoDocumento'=>'Tipos de documento',
+    'tipoRequerimiento'=>'Tipos de requerimiento',
+    'tipoArchivo'=>'Tipos de archivo',
+    'expediente'=>'Expedientes',
+    'impuesto'=>'Impuestos',
+    'obligacion'=>'Obligaciones',
+    'departamentos'=>'Departamentos',
+
+    //clientes y contratos
+    'customer'=>'Clientes',
+    'exp-imp-data'=>'Importar de archivo',
+    'contract-category'=>'Categorias de contrato',
+    'contract-subcategory'=>'Subcategoria de contrato',
+    'document-basic'=>'Documentos basicos',
+    'document-general'=>'Documentos generales',
+    'document-sellado'=>'Documentos sellados',
+    'contract'=>'Contratos',
+    'contract-customer'=>'Contratos por clientes',
+    'contract-new'=>'Nuevo contrato',
+    'contract-edit'=>'Editar contrato',
+    'contract-view'=>'Ver contrato',
+    'contract-docs'=>'Documentos contrato',
+
+    //Servicios
+    'servicios'=>'Servicios',
+    'servicios-cliente'=>'Servicios por cliente',
+    'report-servicio'=>'Servicio anual',
+    'report-servicio-drill'=>'Administrador de archivos',
+    'workflow'=>'Workflow',
+    'workflow-cliente'=>'Workflow cliente',
+
+    //CXC
+    'cxc'=>'Cuentas por cobrar',
+    'add-payment'=>'Agregar pago',
+    'balance'=>'Estados de cuenta',
+
+    //facturacion
+    'sistema'=>'Configuracion',
+    'cfdi33-generate'=>'Nuenva factura',//cfdi 3.3
+    'cfdi33-generate-pdf'=>'Pdf de factura',//cfdi 3.3
+    'comp-from-xml'=>'Comprobantes desde xml',//cfdi 3.3
+
+    //Departamentos
+    'archivos'=>'Archivos',
+
+    //Reportes
+    'report-obligaciones'=>'Reporte de obligaciones',
+    'report-basica'=>'Reporte basico',
+    'report-cliente'=>'Reporte de clientes',
+    'report-cobranza-new'=>'Cobranza anual',
+    'report-servicio-mensual'=>'Servicio mensual',
+    'report-servicio-auditoria'=>'Servicio auditoria',
+    'report-cxc'=>'Reporte de cuentas por cobrar',
+    'report-documentacion-permanente'=>'Documentos permanentes',
+    'report-archivos-permanente'=>'Archivos permanentes',
+    'report-bonos'=>'Bonos trimestral',
+    'report-cobranza-ejercicio-new'=>'Reporte de cobranza',
+    'report-cobranza-mensual'=>'Reporte de cobranza mensual',
+    'report-cobranza-ejercicio'=>'Reporte de cobranza ejercicio',
+    'report-invoice'=>'Reporte de facturas',
+    'log'=>'Bitacora',
+    'report-servicio-bono'=>'Reporte de servicio bono',
+    'bitacora'=>'Bitacora',
+    'historial'=>'Historial',
+    'historialContract'=>'Historial de contrato',
+    'historialCustomer'=>'Historial de cliente',
+    'tree-subordinate'=>'Reporte de subordinados',
+    'report-cobranza'=>'Reporte de cobrana',
+    'docs-files'=>'Archivos',
+    'report-razon-social'=>'Reporte de razon social',
+    'report-up-down'=>'Reporte de altas y bajas',
+    'report-pending'=>'Cambios en plataforma',
+
+    //cafeteria
+    'coffe'=>'Cafeteria',
+    'vp_menu'=>'Ver menu',
+
+    //modulos para marcos
+    'services'=>'Servicios',
+    'add-documento'=>'Agregar documento',
+    'add-requerimiento'=>'Agregar requerimiento',
+    'add-archivo'=>'Agregar archivo',
+    'add-impuesto'=>'Agregar impuesto',
+    'add-obligacion'=>'Agregar obligacion',
+    'service-steps'=>'Pasos',
+    //Modulos para el usuario tipo cliente
+    'customer-only'=>'Cliente',
+
+    //configuracion
+    'admin-folios'=>'Folios',
+    'datos-generales'=>'Datos generales',
+    'backup_system'=>'Respaldos'
+
+]
 
 ?>

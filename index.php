@@ -143,7 +143,8 @@ include_once(DOC_ROOT.'/libraries.php');
 	$smarty->assign('page', $page);
 	$smarty->assign('section', $_GET['section']);
 	$smarty->assign('User',$User);
-
+    $titlePage = $titlesPages[$page];
+    $smarty->assign('titlePage',$titlePage);
 	$includedTpl =  $page;
 	if($_GET['section'])
 	{
