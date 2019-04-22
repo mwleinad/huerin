@@ -1371,25 +1371,35 @@ class Customer extends Main
       }
       if($filter['cliente']>0)
           $fltSearch .=" and a.customerId='".$filter['cliente']."' ";
+      switch($filter['factura13']){
+          case 'si':
+              $fltSearch .= " and a.noFactura13='No' ";
+              break;
+          case 'no':
+              $fltSearch .= " and a.noFactura13='Si' ";
+              break;
+          default:
+              break;
+      }
 
      //comprobar rol si es limitado se usa query diferente
       $rol->setRolId($User['roleId']);
       $ilimitado= $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Juridico RRHH'));
 
       if(!$ilimitado){
-          $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+          $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
                inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(".implode(',',$filter['encargados']).") group by ax.contractId) as b
                on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
               ";
       }else{
           //si el rol es ilimitado  comprobar que en el array de encargados no este su id, si esta se usa el query que obtiene todos los contratos, si no esta entonces esta buscando de otra persona
           if($filter["selectedResp"]){
-              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
                inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(".implode(',',$filter['encargados']).") group by ax.contractId) as b
                on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
               ";
           }else{
-              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,b.* from customer a 
+              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
                left join (select ax.* from contract ax left join contractPermiso bx on ax.contractId=bx.contractId and bx.personalId in(".implode(',',$filter['encargados']).")  where 1 $fltContract group by ax.contractId) as b
                on a.customerId=b.customerId where 1 $fltSearch  order by a.nameContact asc, b.name asc  
               ";
@@ -1417,7 +1427,7 @@ class Customer extends Main
           $contract = new Contract;
           $contract->setContractId($val['contractId']);
           $result[$key]["totalMensual"] =  number_format($contract->getTotalIguala(),2,'.',',');
-
+          $result[$key]["generaFactura13"] =  $val['noFactura13']=='Si'?'No':'Si';
           $personal->setPersonalId($idResponsable);
           $infP = $personal->Info();
           $role = $rol->getInfoByData($infP);

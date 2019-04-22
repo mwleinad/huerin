@@ -11,6 +11,7 @@
                 <td style="text-align: center;width: 30%">Encargado</td>
                 <td style="text-align: center;width: 10 %">Incluir subordinados</td>
                 <td style="text-align: center;width: 10%">Status</td>
+                <td style="text-align: center;width: 10%">Generan factura del mes 13</td>
             </tr>
             <tr>
                 <td style="text-align: center;width: 30%; padding:0px 4px 4px 8px;">
@@ -33,6 +34,13 @@
                       <option value="activos">Activos</option>
                       <option value="inactivos">Inactivos</option>
                   </select>
+                </td>
+                <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
+                    <select class="largeInput" name="factura13" id="factura13">
+                        <option value="">Todos</option>
+                        <option value="si">Si</option>
+                        <option value="no">No</option>
+                    </select>
                 </td>
 
             </tr>
