@@ -1,6 +1,6 @@
  <div align="center"  id="divForm">
  
-<form name="frmSearch" id="frmSearch" action="" method="post">
+<form name="frmSearch" id="frmSearch" action="export/report-cxc.php" method="post">
 <input type="hidden" name="type" id="type" value="search" />
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />

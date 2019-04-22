@@ -168,121 +168,16 @@ function doSearch(){
 	});
 	
 }
+function ExportReporteCxc()
+{
+    var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
 
-function showGraph(){
+    if(!resp)
+        return;
 
-	$('type').value = "graph";
-	new Ajax.Request(WEB_ROOT+'/ajax/report-obligaciones.php',
-	{
-		method:'post',
-		parameters: $('frmSearch').serialize(true),
-		onLoading: function(){
-			$("loading").style.display = "block";
-			$('contenido').innerHTML = "";
-		},
-		onSuccess: function(transport){
-			
-			$("loading").style.display = "none";
-			
-			var response = transport.responseText || "no response text";
 
-			var splitResponse = response.split("[#]");
-//			if(splitResponse[0] == "ok")			
-//			{				
-				$('contenido').innerHTML = response;
-//			}
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
-	
+    $('frmSearch').submit(); return true;
 }
 
-function sendEmail(id){
-	
-	grayOut(true);
-	$('fview').show();
-	if(id == 0)
-	{
-		$('fview').hide();
-		grayOut(false);
-		return;
-	}
 
-	new Ajax.Request(WEB_ROOT+'/ajax/report-obligaciones.php',
-	{
-		method:'post',
-		parameters: {type: "getEmail"},
-		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";
-			FViewOffSet(response);
-			Event.observe($('btnSendEmail'), "click", sendMessage);
-			Event.observe($('fviewclose'), "click", function(){ sendEmail(0); });
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
 
-}
-
-function sendMessage(){
-
-	$("type").value = "sendEmail";
-	correo = $("e_mail").value;
-	$("correo").value = correo;
-	mensaje = $("mensaje").value;
-	$("texto").value = mensaje;
-	
-	new Ajax.Request(WEB_ROOT+'/ajax/report-obligaciones.php',
-	{
-		method:'post',
-		parameters: $('frmSearch').serialize(true),
-		onLoading: function(){
-			$("loading").style.display = "block";
-		},
-		onSuccess: function(transport){
-			
-			$("loading").style.display = "none";
-			
-			var response = transport.responseText || "no response text";
-
-			var splitResponse = response.split("[#]");
-			if(splitResponse[0] == "ok")			
-			{				
-				doSendEmail(splitResponse[1], correo, mensaje);
-				sendEmail(0);
-			}else{
-				ShowStatusPopUp(splitResponse[1]);
-			}
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
-
-}
-
-function doSendEmail(message, correo, mensaje){
-			
-	new Ajax.Request(WEB_ROOT+'/ajax/report-obligaciones.php',
-	{
-		method:'post',
-		parameters: {type: "doSendEmail", msg:message, email:correo, msj:mensaje},
-		onLoading: function(){
-			$("loading").style.display = "block";
-		},
-		onSuccess: function(transport){
-			
-			$("loading").style.display = "none";
-			
-			var response = transport.responseText || "no response text";
-
-			var splitResponse = response.split("[#]");
-			if(splitResponse[0] == "ok")			
-			{				
-				ShowStatusPopUp(splitResponse[1]);
-				grayOut(false);
-			}else{
-				alert("Ocurrio un error al enviar el correo");
-			}
-		},
-		onFailure: function(){ alert('Something went wrong...') }
-	});
-	
-}
