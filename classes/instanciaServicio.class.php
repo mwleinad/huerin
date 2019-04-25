@@ -307,7 +307,11 @@ class InstanciaServicio extends  Servicio
         foreach($data as $key => $value)
         {
             $costo = 0;
-            $fecha = $year."-0".$value['mes']."-01";
+            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
+                $costo = $value['costo'];
+            }
+
+           /* $fecha = $year."-0".$value['mes']."-01";
             //para febrero de 2019 hacia atras hacer busqueda en facturas emitidas no importa que fecha de facturacion sea invalido
             if($fecha<="2019-02-01"){
                 $costo =  $this->findCostoInstanciaMonth($value['mes'],$year,$servicioId);
@@ -323,7 +327,7 @@ class InstanciaServicio extends  Servicio
                     if($costo<=0)
                         $costo = $value['costo'];
               }
-            }
+            }*/
             $value['costo'] = $costo;
             //sumar total de lo trabajado
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
