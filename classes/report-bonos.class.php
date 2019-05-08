@@ -513,10 +513,6 @@ class ReporteBonos extends Main
     function generateReportBonosWhitLevel($ftr=[]){
         global $personal,$contractRep,$instanciaServicio;
 
-        if($ftr["responsableCuenta"]){
-            $personal->setPersonalId($ftr["responsableCuenta"]);
-            $currentResponsable =$personal->InfoWhitRol();
-        }
         $strFilter = "";
         if(strlen($_POST["rfc2"])>0||strlen($_POST["rfc"])>0)
         {
@@ -795,8 +791,27 @@ class ReporteBonos extends Main
         }
         $data["serviciosEncontrados"] = $serviciosEncontrados;
         $data["totales"] = $totales;
+
+        //asegurar que el responsable que viene del filtro sea agregado a la tabla de total por encargado.
+        if($ftr["responsableCuenta"] && $serviciosEncontrados){
+            if(!array_key_exists($ftr["responsableCuenta"],$totalesEncargados)){
+                $personal->setPersonalId($ftr["responsableCuenta"]);
+                $respFiltro = $personal->InfoWhitRol();
+                $personal->setPersonalId($respFiltro['personalId']);
+                $jefeInmediatoRespFiltro = $personal->jefeInmediato();
+
+                $cad['name']=$respFiltro['name'];
+                $cad['totalDevengado']=0;
+                $cad['totalCompletado']=0;
+                $cad['jefeInmediato']=$jefeInmediatoRespFiltro['personalId'];
+                $cad['level']=$respFiltro["nivel"];
+                $totalesEncargados[$ftr["responsableCuenta"]]=$cad;
+            }
+        }
+
         $data["totalesEncargados"] = $totalesEncargados;
         $ordenado = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
+
         $ordenado2 =$this->Util()->orderMultiDimensionalArray($ordenado,'level',false,true);
         foreach($ordenado as $ke=>$enc){
                 if(array_key_exists($enc['jefeInmediato'],$ordenado2)){
