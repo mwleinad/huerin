@@ -68,7 +68,7 @@
 				{/foreach}
 				<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 				<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item2.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
-				<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+				<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item2.encargadoId]['totalDevengado']-$data.totalesEncargados[$item2.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 			</tr>
 		{/if}
 		{/foreach}
@@ -126,7 +126,7 @@
 						{/foreach}
 						<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 						<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item3.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
-						<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+						<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item3.encargadoId]['totalDevengado']-$data.totalesEncargados[$item3.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 					</tr>
 				{/if}
 			{/foreach}
@@ -184,7 +184,7 @@
 							{/foreach}
 							<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 							<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item4.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
-							<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+							<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item4.encargadoId]['totalDevengado']-$data.totalesEncargados[$item4.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 
 						</tr>
 					{/if}
@@ -243,7 +243,7 @@
 								{/foreach}
 								<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 								<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item5.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
-								<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+								<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item5.encargadoId]['totalDevengado']-$data.totalesEncargados[$item5.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 							</tr>
 						{/if}
 					{/foreach}
@@ -301,7 +301,7 @@
 									{/foreach}
 									<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 									<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item6.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
-									<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+									<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item6.encargadoId]['totalDevengado']-$data.totalesEncargados[$item6.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 								</tr>
 							{/if}
 						{/foreach}
