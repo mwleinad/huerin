@@ -635,6 +635,7 @@ class ReporteBonos extends Main
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['level']=1;
+                            $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
 
                         }else{
@@ -669,6 +670,7 @@ class ReporteBonos extends Main
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['jefeInmediato']=$jefe['personalId'];
                             $cad['level']=2;
+                            $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
                         }else{
                             $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
@@ -705,6 +707,7 @@ class ReporteBonos extends Main
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['jefeInmediato']=$jefeGerente['personalId'];
                             $cad['level']=3;
+                            $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
                         }else{
                             $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
@@ -742,6 +745,7 @@ class ReporteBonos extends Main
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['jefeInmediato']=$jefeSupervisor['personalId'];
                             $cad['level']=4;
+                            $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
                         }else{
                             $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
@@ -780,6 +784,7 @@ class ReporteBonos extends Main
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['jefeInmediato']=$jefeContador['personalId'];
                             $cad['level']=5;
+                            $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
                         }else{
                             $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
@@ -805,13 +810,13 @@ class ReporteBonos extends Main
                 $cad['totalCompletado']=0;
                 $cad['jefeInmediato']=$jefeInmediatoRespFiltro['personalId'];
                 $cad['level']=$respFiltro["nivel"];
+                $cad['personalId']=$ftr["responsableCuenta"];
                 $totalesEncargados[$ftr["responsableCuenta"]]=$cad;
             }
         }
 
         $data["totalesEncargados"] = $totalesEncargados;
         $ordenado = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
-
         $ordenado2 =$this->Util()->orderMultiDimensionalArray($ordenado,'level',false,true);
         foreach($ordenado as $ke=>$enc){
                 if(array_key_exists($enc['jefeInmediato'],$ordenado2)){
@@ -819,7 +824,19 @@ class ReporteBonos extends Main
                     $ordenado2[$enc['jefeInmediato']]['totalCompletado'] += $ordenado2[$ke]['totalCompletado'];
                 }
         }
-        $data["totalesEncargadosAcumulado"] = $ordenado2;
+        //reordenar en forma de cascada,respetando los subordinados intermedios. no de manera lineal.
+        $newTotalesEncargados = [];
+        foreach($ordenado2 as $key =>$val){
+            reset($ordenado2);
+            if($key===key($ordenado2)){
+              array_push($newTotalesEncargados,$val);
+            }else{
+               $parentId = $val["jefeInmediato"];
+               $position = array_search($parentId,array_column($newTotalesEncargados,'personalId'));
+               array_splice($newTotalesEncargados,$position+1,0,array($val));
+            }
+        }
+        $data["totalesEncargadosAcumulado"] = $newTotalesEncargados;
         return $data;
     }
 }
