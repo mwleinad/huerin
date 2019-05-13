@@ -271,34 +271,6 @@ class Notice extends Main
 
                 $sendmail->PrepareMultipleNotice($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
             }
-            //si se selecciona enviar a cliente hacer lo siguiente
-            /*if($this->sendCustomer){
-                //administrador,socio y coordinador pueden seleccionar enviar a cliente
-                //modificar varibale global temporalmente para que administrador,socio,coordinador pueda sacar todos los clientes.
-                //$User se vuelve a igualar ala $_SESSION['User'] en algun momento no importa.
-                $User['userId']=0;
-                $customers = $customer->EnumerateOptimizado();
-                //enviar a los correos de administrativo,directivo,contabilidad de cada una de las razones sociales del cliente
-                //si se repiten los correos se usara el contactName de la ultima razon encontrada.
-                $clientesCorreos = array();
-                foreach($customers as $cm=>$vm){
-                    if(empty($vm['contracts'])){
-                        continue;
-                    }
-                    if(!empty($vm['allEmails']))
-                        $clientesCorreos = array_merge($clientesCorreos,$vm['allEmails']);
-                }
-                //enviar correo al cliente
-                $subject ="BRAUN HUERIN INFORMA";
-                $body ='<pre>Despcripcion del aviso :<br><br>'.nl2br(utf8_decode($this->description));
-                if(file_exists($destino))
-                {
-                    $body .= "<br><br> Revisar archivo adjunto.";
-                }
-                //desactivar asta que confime rogelio
-                $sendmail = new SendMail();
-                $sendmail->PrepareMultipleNotice($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "","noreply@braunhuerin.com.mx","BRAUN HUERIN",true);
-            }*/
         }
         $this->Util()->setError(0,'complete','El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();
