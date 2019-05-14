@@ -19,4 +19,7 @@
         </div>
   </div>
   <div class="clear"> </div>
+  <div style="clear:both">
+  {assign var=status value=['green'=>'Pagadas','yellow'=>'Parcialmente pagado','red'=>'Sin pagos']}
+  {include file="{$DOC_ROOT}/templates/boxes/report-walmart-status.tpl" data=$status}
 </div>
