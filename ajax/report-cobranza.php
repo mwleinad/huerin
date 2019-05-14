@@ -167,74 +167,137 @@ switch($_POST["type"])
         $formValues['year'] = $year;
         $formValues['activos'] = true;
 
-        if($_POST['monthInicial']>$_POST['monthFinal'])
-        {
-            $util->setError(0,'error','Mes inicial debe ser inferior al mes final');
-            $util->PrintErrors();
-            echo "fail[#]";
-            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-            exit;
-        }
         include_once(DOC_ROOT.'/ajax/filterOnlyContract.php');
-
-        $meses = [];
-        $base = [];
-        for($m=$_POST['monthInicial'];$m<=$_POST['monthFinal'];$m++)
-        {
-            $meses[$m]= $monthsInt[$m];
-            $base[$m]= [];
-        }
-        $contratos = [];
-
-        //hacer la busqueda y la estructura del array segun el tipo de detalle
-        switch($_POST['groupBy']){
-            case 'contrato':
-                //la busqueda se realiza por medio de los comprobantes emitidos del mes que se esta pasando
-                //se suman lo abonos sin iva.
-                foreach($contracts as $key => $contrato) {
-                    $util->erase_val($base);
-                    $cad = [];
-                    $cad['customerId'] = $contrato['contractId'];
-                    $cad['customer'] = $contrato['nameContact'];
-                    $cad['razon'] = $contrato['name'];
-                    $sql ="select sum(a.total) as total,sum(b.amount) as amount,month(a.fecha) as mes
-                           from comprobante a 
-                           left join (select comprobanteId,sum(amount) as amount from payment where paymentStatus='activo' group by comprobanteId ) b on a.comprobanteId=b.comprobanteId
-                           inner join contract c on a.userId=c.contractId and c.activo='Si'
-                           where month(a.fecha) >='".$_POST['monthInicial']."' and month(a.fecha)<='".$_POST['monthFinal']."' and year(a.fecha)='".$formValues['year']."' 
-                           and a.userId='".$contrato['contractId']."' and a.tiposComprobanteId in(1)  and a.status ='1' 
-                           group by month(a.fecha) order by month(a.fecha) desc";
-
-                    $util->DB()->setQuery($sql);
-                    $pagos = $util->DB()->GetResult();
-                    $totalXcontrato = 0;
-                    if(!empty($pagos)){
-                        foreach($pagos as $pago){
-                                if(!$_POST['whitiva'])
-                                    $pago['amount'] = $pago['amount']/1.16;
-
-                            $totalXcontrato = $totalXcontrato+$pago['amount'];
-                            $base[$pago['mes']] = $pago;
-                        }
-
-                        $totales = [];
-                        $totales['isColTotal'] = true;
-                        $totales['total'] = $totalXcontrato;
-                        $base[13] = $totales;
-                        $cad['pagos'] = $base;
-                        $contratos[]=$cad;
-                    }
-                }
-                echo "ok[#]";
-                $smarty->assign("meses", $meses);
-                $smarty->assign("contratos", $contratos);
-                $smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-acumulada.tpl');
+        $period = $_POST['periodo'];
+        switch($period){
+            case 'efm':
+                $monthNames = array("Ene", "Feb", "Mar");
+                $inicio = 1;
+                $fin = 3;
+                $base = [1=>[],2=>[],3=>[]];
+            break;
+            case 'amj':
+                $monthNames = array("Abr", "May", "Jun");
+                $inicio = 4;
+                $fin = 6;
+                $base = [4=>[],5=>[],6=>[]];
+            break;
+            case 'jas':
+                $monthNames = array("Jul", "Ago", "Sep");
+                $inicio = 7;
+                $fin = 9;
+                $base = [7=>[],8=>[],9=>[]];
+            break;
+            case 'ond':
+                $monthNames = array("Oct", "Nov", "Dic");
+                $inicio = 10;
+                $fin = 12;
+                $base = [10=>[],11=>[],12=>[]];
             break;
             default:
-                echo "ok[#]";
-                echo "ds";
+                $monthNames = array("Ene", "Feb", "Mar","Abr", "May", "Jun","Jul", "Ago", "Sep","Oct", "Nov", "Dic");
+                $inicio = 1;
+                $fin = 12;
             break;
         }
+        $contratos = [];
+        $rowTotalXencargados = [];
+        $idsEncargados = [];
+        foreach($contracts as $key => $contrato) {
+            $util->erase_val($base);
+            $base2 = $base;
+            $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$contrato['contractId']);
+            $cad = [];
+            if(!$encargados[21])
+                $cad["eadministracion"] = 0;
+            else
+                $cad["eadministracion"] = $encargados[21];
+
+            $cad['customerId'] = $contrato['contractId'];
+            $cad['customer'] = $contrato['nameContact'];
+            $cad['razon'] = $contrato['name'];
+            if(!in_array($cad["eadministracion"],$idsEncargados)){
+                array_push($idsEncargados,$cad["eadministracion"]);
+                $rowDevTotalXencargados[$cad["eadministracion"]] = $base;
+                $rowCobTotalXencargados[$cad["eadministracion"]] = $base;
+            }
+
+
+            $sql ="select sum(a.total) as total,sum(b.amount) as amount,month(a.fecha) as mes
+                   from comprobante a 
+                   left join (select comprobanteId,sum(amount) as amount from payment where paymentStatus='activo' group by comprobanteId ) b on a.comprobanteId=b.comprobanteId
+                   inner join contract c on a.userId=c.contractId and c.activo='Si'
+                   where month(a.fecha) >='$inicio' and month(a.fecha)<='$fin' and year(a.fecha)='$year' 
+                   and a.userId='".$contrato['contractId']."' and a.tiposComprobanteId in(1)  and a.status ='1' 
+                   group by month(a.fecha) order by month(a.fecha) desc";
+
+            $util->DB()->setQuery($sql);
+            $facturas = $util->DB()->GetResult();
+
+            $totalAcobrarXcontrato = 0;
+            $totalCobradoXcontrato = 0;
+            if(!empty($facturas)){
+                foreach($facturas as $fact){
+                    $totalAcobrarXcontrato =$totalAcobrarXcontrato + $fact["total"];
+                    $totalCobradoXcontrato =$totalCobradoXcontrato + $fact["amount"];
+                    $saldo = $fact["total"]-$fact["amount"];
+                    if($saldo>0.1 && $fact["amount"]>0)
+                        $class = "pendiente";
+                    elseif($saldo>0.1&&$fact["amount"]<=0)
+                        $class= "sinabonos";
+                    elseif($saldo<=0.1)
+                        $class = "pagado";
+
+                    $rowDevTotalXencargados[$cad["eadministracion"]][$fact["mes"]] = $rowDevTotalXencargados[$cad["eadministracion"]][$fact["mes"]]+ $fact["total"];
+                    $rowCobTotalXencargados[$cad["eadministracion"]][$fact["mes"]] = $rowCobTotalXencargados[$cad["eadministracion"]][$fact["mes"]]+ $fact["amount"];
+                    $fact["class"] = $class;
+                    $base2[$fact["mes"]] = $fact;
+
+                }
+                $totales = [];
+                $totales['isColTotal'] = true;
+                $totales['total'] = $totalAcobrarXcontrato;
+                $base2[13] = $totales;
+                $totales = [];
+                $totales['isColTotal'] = true;
+                $totales['total'] = $totalCobradoXcontrato;
+                $base2[14] = $totales;
+                $totales = [];
+                $totales['isColTotal'] = true;
+                $totales['total'] = $totalAcobrarXcontrato-$totalCobradoXcontrato;
+                $base2[15] = $totales;
+                $cad['facturas'] = $base2;
+                $contratos[]=$cad;
+            }
+
+        }
+
+        $stackEncargados = [];
+        $groupByEncargados = [];
+         foreach($contratos as $kc=>$con){
+             $card = [];
+             if(!in_array($con["eadministracion"],$stackEncargados)){
+                 array_push($stackEncargados,$con["eadministracion"]);
+                 if($con["eadministracion"]){
+                     $personal->setPersonalId($con["eadministracion"]);
+                     $responsable = $personal->Info();
+                     $card["responsable"] = $responsable["name"];
+                 }else{
+                     $card["responsable"] = "Sin encargado";
+                 }
+                 $card["contratos"][] = $con;
+                 $groupByEncargados[$con["eadministracion"]] = $card;
+             }else {
+                 $groupByEncargados[$con["eadministracion"]]["contratos"][] = $con;
+             }
+
+        }
+        echo "ok[#]";
+        $smarty->assign("meses", $monthNames);
+        $smarty->assign("rowDevTotal", $rowDevTotalXencargados);
+        $smarty->assign("rowCobTotal", $rowCobTotalXencargados);
+        $smarty->assign("items", $groupByEncargados);
+        $smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-acumulada.tpl');
 
     break;
 		
