@@ -7,7 +7,7 @@
 		{foreach from=$meses item=mes}
 			<th style="font-size:12px;font-weight: bold;">{$mes}</th>
 		{/foreach}
-		<th style="font-size:12px;font-weight: bold;">Total devengando</th>
+		<th style="font-size:12px;font-weight: bold;">Total facturado</th>
 		<th style="font-size:12px;font-weight: bold;">Total cobrado</th>
 		<th style="font-size:12px;font-weight: bold;">Diferencia</th>
 	</tr>
@@ -52,7 +52,7 @@
 		</tr>
 		<tr>
 			<td colspan="2"></td>
-			<td><b>Total devengado</b></td>
+			<td><b>Total facturado</b></td>
 			{foreach from=$rowDevTotal[$key] item=tot}
 				<td>$ {$tot|number_format:2:'.':','}</td>
 			{/foreach}
