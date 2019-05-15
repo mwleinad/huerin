@@ -73,6 +73,16 @@ class ChangePlatform extends main
                 $result[$key]["fechaEntrega"] ="Pendiente por agregar";
             if(!$this->Util()->isValidateDate($value["fechaRevision"],"Y-m-d"))
                 $result[$key]["fechaRevision"] ="Pendiente por agregar";
+
+            $sqlCom = "select count(*) from commentsChangesPlatform where changeId='".$value["changeId"]."' ";
+            $this->Util()->DB()->setQuery($sqlCom);
+            $comments = $this->Util()->DB()->GetSingle();
+
+            if($comments)
+                $result[$key]["whitComment"] = 1;
+            else
+                $result[$key]["whitComment"] = 0;
+
         }
         return $result;
     }

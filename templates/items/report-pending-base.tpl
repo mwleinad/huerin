@@ -19,7 +19,11 @@
                 <img src="{$WEB_ROOT}/images/icons/change.png"  border="0" title="Cambiar estatus" />
             </a>
             <a href="javascript:;" id="{$item.changeId}" class="spanAll spanComment">
-                <img src="{$WEB_ROOT}/images/icons/comments.gif"  border="0" title="Agregar comentario" />
+                {if $item.whitComment}
+                    <img src="{$WEB_ROOT}/images/icons/comment-blue.png"  border="0" title="Ver comentarios" />
+                {else}
+                    <img src="{$WEB_ROOT}/images/icons/comment-empty.png"  border="0" title="Agregar comentario" />
+                {/if}
             </a>
             <a href="javascript:;" id="{$item.changeId}" class="spanAll spanEdit">
                 <img src="{$WEB_ROOT}/images/icons/edit.gif"  border="0" title="Editar" />
