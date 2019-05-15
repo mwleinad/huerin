@@ -142,10 +142,6 @@
                     <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
                     <span>Bitacoras</span></a></li>
                 {/if}
-                {if in_array(220,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-up-down" {if $page == "report-up-down"}class="current"{/if}>
-                            <span>Reporte altas y bajas</span></a></li>
-                {/if}
                 {if in_array(178,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if}>
                     <span>Reporte Organigrama</span></a></li>
@@ -202,6 +198,10 @@
                 {/if}
                 {if in_array(218,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/backup_system" {if $includedTpl == "backup_system"} class="current"{/if}><span>Bases de datos</span></a></li>
+                {/if}
+                {if in_array(220,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-up-down" {if $page == "report-up-down"}class="current"{/if}>
+                            <span>Reporte altas y bajas</span></a></li>
                 {/if}
                 {if in_array(221,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-pending" {if $includedTpl == "report-pending"} class="current"{/if}><span>Cambios en plataforma</span></a></li>

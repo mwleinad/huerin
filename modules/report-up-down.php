@@ -11,6 +11,6 @@ $departamentos = $departamentos->Enumerate();
 
 $smarty->assign("personals", $personals);
 $smarty->assign("departamentos", $departamentos);
-$smarty->assign('mainMnu', 'reportes');
+$smarty->assign('mainMnu', 'configuracion');
 
 ?>
