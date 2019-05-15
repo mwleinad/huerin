@@ -15,65 +15,76 @@
 		{
 			$_POST['regimenId'] = $_POST['regimenIdMoral'];
 		}
+		//informacion basica
 		$contract->setCustomerId($_GET['id']);
 		$contract->setType($_POST['type']);
+        $contract->setFacturador($_POST['facturador']);
+        $contract->setName($_POST['name']);
 		$contract->setRfc($_POST['rfc']);
-		$contract->setTelefono($_POST['telefono']);
 		$contract->setSociedadId($_POST['sociedadId']);
 		$contract->setRegimenId($_POST['regimenId']);
-		$contract->setNombreComercial($_POST['nombreComercial']);
-		$contract->setDireccionComercial($_POST['direccionComercial']);
-		$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
-		$contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
-		$contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
-		$contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
-		$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
-		$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
-        $contract->setNameRepresentanteLegal($_POST['nameRepresentanteLegal']);
-		$contract->setEmailRepresentanteLegal($_POST['emailRepresentanteLegal']);
-		$contract->setTelefonoRepresentanteLegal($_POST['telefonoRepresentanteLegal']);
-		$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
-		$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
-		$contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
-		$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
-		$contract->setClaveFiel($_POST['claveFiel']);
+        if(isset($_POST['nombreComercial']))
+            $contract->setNombreComercial($_POST['nombreComercial']);
+
+        //direccion fiscal
+        $contract->setAddress($_POST['address']);
+        $contract->setNoExtAddress($_POST['noExtAddress']);
+        $contract->setNoIntAddress($_POST['noIntAddress']);
+        $contract->setColoniaAddress($_POST['coloniaAddress']);
+        $contract->setMunicipioAddress($_POST['municipioAddress']);
+        $contract->setEstadoAddress($_POST['estadoAddress']);
+        $contract->setPaisAddress($_POST['paisAddress']);
+        $contract->setCpAddress($_POST['cpAddress']);
+        $contract->setMetodoDePago($_POST['metodoDePago']);
+        $contract->setNoCuenta($_POST['noCuenta']);
+
+        //direccion comercial
+        $contract->setDireccionComercial($_POST['direccionComercial']);
+        /*$contract->setNoExtComercial($_POST['noExtComercial']);
+        $contract->setNoIntComercial($_POST['noIntComercial']);
+        $contract->setColoniaComercial($_POST['coloniaComercial']);
+        $contract->setMunicipioComercial($_POST['municipioComercial']);
+        $contract->setEstadoComercial($_POST['estadoComercial']);
+        $contract->setCpComercial($_POST['cpComercial']);*/
+
+        //responsables de area (no se validan si son obligatorios aunque si deberia)
+        $contract->setResponsableCuenta($_POST['responsableCuenta']);
+        $contract->setPermisos($_POST['permisos'],$_POST['responsableCuenta']);
+        $contract->setEncargadoCuenta($_POST['encargadoCuenta']);
+        $contract->setAuxiliarCuenta($_POST['auxiliarCuenta']);
+
+        //datos de contacto
+        if(isset($_POST['nameContactoAdministrativo']))
+            $contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
+        if(isset($_POST['emailContactoAdministrativo']))
+            $contract->setEmailContactoAdministrativo($_POST['emailContactoAdministrativo']);
+        if(isset($_POST['telefonoContactoAdministrativo']))
+            $contract->setTelefonoContactoAdministrativo($_POST['telefonoContactoAdministrativo']);
+        if(isset($_POST['nameContactoContabilidad']))
+            $contract->setNameContactoContabilidad($_POST['nameContactoContabilidad']);
+        if(isset($_POST['emailContactoContabilidad']))
+            $contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
+        if(isset($_POST['telefonoContactoContabilidad']))
+            $contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
+        if(isset($_POST['nameRepresentanteLegal']))
+            $contract->setNameRepresentanteLegal($_POST['nameRepresentanteLegal']);
+        if(isset($_POST['nameContactoDirectivo']))
+            $contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
+        if(isset($_POST['emailContactoDirectivo']))
+            $contract->setEmailContactoDirectivo($_POST['emailContactoDirectivo']);
+        if(isset($_POST['telefonoContactoDirectivo']))
+            $contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
+        if(isset($_POST['telefonoCelularDirectivo']))
+            $contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
+        //contraseñas
+        $contract->setClaveFiel($_POST['claveFiel']);
 		$contract->setClaveCiec($_POST['claveCiec']);
 		$contract->setClaveIdse($_POST['claveIdse']);
 		$contract->setClaveIsn($_POST['claveIsn']);
         $contract->setClaveSip($_POST['claveSip']);
-		$contract->setName($_POST['name']);
-		$contract->setAddress($_POST['address']);
-		$contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
-
-		$contract->setNoExtComercial($_POST['noExtComercial']);
-		$contract->setNoIntComercial($_POST['noIntComercial']);
-		$contract->setColoniaComercial($_POST['coloniaComercial']);
-		$contract->setMunicipioComercial($_POST['municipioComercial']);
-		$contract->setEstadoComercial($_POST['estadoComercial']);
-
-		$contract->setNoExtAddress($_POST['noExtAddress']);
-		$contract->setNoIntAddress($_POST['noIntAddress']);
-		$contract->setColoniaAddress($_POST['coloniaAddress']);
-		$contract->setMunicipioAddress($_POST['municipioAddress']);
-		$contract->setEstadoAddress($_POST['estadoAddress']);
-		$contract->setPaisAddress($_POST['paisAddress']);
-
-		$contract->setEncargadoCuenta($_POST['encargadoCuenta']);
-		$contract->setResponsableCuenta($_POST['responsableCuenta']);
-		$contract->setPermisos($_POST['permisos'],$_POST['responsableCuenta']);
-		$contract->setAuxiliarCuenta($_POST['auxiliarCuenta']);
-
-		$contract->setCpComercial($_POST['cpComercial']);
-		$contract->setCpAddress($_POST['cpAddress']);
-		$contract->setFacturador($_POST['facturador']);
-
-
-		$contract->setMetodoDePago($_POST['metodoDePago']);
-		$contract->setNoCuenta($_POST['noCuenta']);
 
 		$contract->Save();
 		header("Location:".WEB_ROOT."/contract/id/".$_GET['id']);
-		
 	}
     //copiar datos basicos de una razon social existente(casi siempre se repite)
     $contract->setCustomerId($_GET['id']);

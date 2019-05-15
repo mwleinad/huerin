@@ -13,7 +13,7 @@
 		<td align="left" width="40%">* Tipo</td>
 		<td align="left">
     	<select name="type" id="type" class="smallInput medium" onchange="ChangeTipo()">
-      <option id="PF" value="Persona Fisica">Seleccione...</option>
+      <option value="">Seleccione...</option>
       <option id="PF" value="Persona Fisica">Persona Fisica</option>
       <option id="PM" value="Persona Moral">Persona Moral</option>
       </select></td>
@@ -75,57 +75,51 @@
             </select>
 </td>
 	</tr>
-
-   <tr>
-		<td align="left" width="40%">* Nombre Comercial</td>
-		<td align="left"><input name="nombreComercial" id="nombreComercial" type="text" value="" class="smallInput medium" size="50"/></td>
-	</tr>
-
-{*}    <tr>
-		<td align="left" width="40%">* Telefono</td>
-		<td align="left"><input name="telefono" id="telefono" type="text" value="" class="smallInput medium" size="50"/></td>
-	</tr>{*}
+	{if in_array(222,$permissions) || $User.isRoot}
+		<tr>
+			<td align="left" width="40%">* Nombre Comercial</td>
+			<td align="left"><input name="nombreComercial" id="nombreComercial" type="text" value="" class="smallInput medium" size="50"/></td>
+		</tr>
+	{/if}
 
     <tr>
 		<td align="left" width="100%" class="tdPad" colspan="2" style="text-align:center">Direccion Fiscal</td>
 	</tr>
-
-  <tr>
+    <tr>
 		<td align="left" width="40%" class="tdPad">* Calle</td>
 		<td align="left" class="tdPad">
         <input type="text" name="address" id="address" class="smallInput" style="width:350px"/>
     </td>
 	</tr>
-
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">No. Exterior:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="noExtAddress" id="noExtAddress" class="smallInput" style="width:350px" />
     </td>
 	</tr>
 
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">No. Interior:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="noIntAddress" id="noIntAddress" class="smallInput" style="width:350px"/>
     </td>
 	</tr>
 
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">* Colonia:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="coloniaAddress" id="coloniaAddress" class="smallInput" style="width:350px"/>
     </td>
 	</tr>
 
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">* Municipio:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="municipioAddress" id="municipioAddress" class="smallInput" style="width:350px"/>
     </td>
 	</tr>
 
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">* Estado:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="estadoAddress" id="estadoAddress" class="smallInput" style="width:350px"/>
@@ -139,7 +133,7 @@
 		</td>
 	</tr>
 
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">* Codigo Postal:</td>
 		<td align="left" class="tdPad">
         <input type="text" name="cpAddress" id="cpAddress" class="smallInput" style="width:350px" value="{$contractInfo.cpAddress}"/>

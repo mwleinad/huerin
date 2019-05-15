@@ -10,18 +10,38 @@ switch($_POST["action"])
 {		
 	case "edit":
 	case "save":
-
-		if($_POST["type"] == "Persona Moral")
-		{
-			$_POST['regimenId'] = $_POST['regimenIdMoral'];
-		}
-			//new
+			if($_POST["type"] == "Persona Moral")
+			{
+				$_POST['regimenId'] = $_POST['regimenIdMoral'];
+			}
+			//informacion basica
 			$contract->setType($_POST['type']);
+			$contract->setFacturador($_POST['facturador']);
+			$contract->setName($_POST['name']);
 			$contract->setRfc($_POST['rfc']);
 			$contract->setSociedadId($_POST['sociedadId']);
 			$contract->setRegimenId($_POST['regimenId']);
-			$contract->setNombreComercial($_POST['nombreComercial']);
+			if(isset($_POST['nombreComercial']))
+				$contract->setNombreComercial($_POST['nombreComercial']);
+			//direccion fiscal
+			$contract->setAddress($_POST['address']);
+			$contract->setNoExtAddress($_POST['noExtAddress']);
+			$contract->setNoIntAddress($_POST['noIntAddress']);
+			$contract->setColoniaAddress($_POST['coloniaAddress']);
+			$contract->setMunicipioAddress($_POST['municipioAddress']);
+			$contract->setEstadoAddress($_POST['estadoAddress']);
+			$contract->setPaisAddress($_POST['paisAddress']);
+			$contract->setCpAddress($_POST['cpAddress']);
+			//direccion comercial
 			$contract->setDireccionComercial($_POST['direccionComercial']);
+			/*$contract->setNoExtComercial($_POST['noExtComercial']);
+			$contract->setNoIntComercial($_POST['noIntComercial']);
+			$contract->setColoniaComercial($_POST['coloniaComercial']);
+			$contract->setMunicipioComercial($_POST['municipioComercial']);
+			$contract->setEstadoComercial($_POST['estadoComercial']);
+			$contract->setCpComercial($_POST['cpComercial']);*/
+
+			//datos de contacto
     		if(isset($_POST['nameContactoAdministrativo']))
 				$contract->setNameContactoAdministrativo($_POST['nameContactoAdministrativo']);
     		if(isset($_POST['emailContactoAdministrativo']))
@@ -34,6 +54,8 @@ switch($_POST["action"])
 				$contract->setEmailContactoContabilidad($_POST['emailContactoContabilidad']);
     		if(isset($_POST['telefonoContactoContabilidad']))
 				$contract->setTelefonoContactoContabilidad($_POST['telefonoContactoContabilidad']);
+			if(isset($_POST['nameRepresentanteLegal']))
+				$contract->setNameRepresentanteLegal($_POST['nameRepresentanteLegal']);
     		if(isset($_POST['nameContactoDirectivo']))
 				$contract->setNameContactoDirectivo($_POST['nameContactoDirectivo']);
     		if(isset($_POST['emailContactoDirectivo']))
@@ -42,23 +64,14 @@ switch($_POST["action"])
     			$contract->setTelefonoContactoDirectivo($_POST['telefonoContactoDirectivo']);
     		if(isset($_POST['telefonoCelularDirectivo']))
     			$contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
-
+			//contraseñas
     		$contract->setClaveFiel($_POST['claveFiel']);
 			$contract->setClaveCiec($_POST['claveCiec']);
 			$contract->setClaveIdse($_POST['claveIdse']);
 			$contract->setClaveIsn($_POST['claveIsn']);
-						
-			$contract->setDireccionComercial($_POST['direccionComercial']);
-			//$contract->setColoniaComercial($_POST['coloniaComercial']);
-			//$contract->setMunicipioComercial($_POST['municipioComercial']);
-			//$contract->setEstadoComercial($_POST['estadoComercial']);
+    		$contract->setClaveSip($_POST['claveSip']);
 
-			$contract->setName($_POST['name']);
-			$contract->setAddress($_POST['address']);
-			//$contract->setCpComercial($_POST['cpComercial']);
-			$contract->setCpAddress($_POST['cpAddress']);
-			$validation = $contract->Validate();
-												
+    		$validation = $contract->Validate();
 			if($validation)
 			{				
 				echo "ok[#]";
@@ -68,7 +81,6 @@ switch($_POST["action"])
 				echo "fail[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
 			}
-						
 		break;
 				
 	case 'loadDocGral':

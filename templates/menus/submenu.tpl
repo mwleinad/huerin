@@ -114,10 +114,10 @@
                     <li><a href="{$WEB_ROOT}/report-ingresos" {if $page == "report-ingresos"}class="current"{/if}>
                     <span>Ingresos</span></a></li>
                 {/if}
-				{if in_array(163,$permissions)|| $User.isRoot}
+				{*if in_array(163,$permissions)|| $User.isRoot}
                      <li><a href="{$WEB_ROOT}/report-servicio-bono" {if $page == "report-servicio-bono"}class="current"{/if}>
                      <span>Bonos contabilidad</span></a></li>
-                {/if}
+                {/if*}
                 {if in_array(163,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if}>
                       <span>Bonos trimestral</span></a></li>
@@ -142,7 +142,7 @@
                     <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if}>
                     <span>Bitacoras</span></a></li>
                 {/if}
-                {if in_array(168,$permissions) || $User.isRoot}
+                {if in_array(220,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-up-down" {if $page == "report-up-down"}class="current"{/if}>
                             <span>Reporte altas y bajas</span></a></li>
                 {/if}
@@ -203,7 +203,7 @@
                 {if in_array(218,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/backup_system" {if $includedTpl == "backup_system"} class="current"{/if}><span>Bases de datos</span></a></li>
                 {/if}
-                {if in_array(168,$permissions) || $User.isRoot}
+                {if in_array(221,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-pending" {if $includedTpl == "report-pending"} class="current"{/if}><span>Cambios en plataforma</span></a></li>
                 {/if}
             {/if}

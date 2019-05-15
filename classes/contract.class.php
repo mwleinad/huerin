@@ -104,42 +104,42 @@ class Contract extends Main
   private $noExtAddress;
   public function setNoExtAddress($value)
   {
-    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 0, 'No Ext Address');
+    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 0, 'No Ext');
     $this->noExtAddress = $value;
   }
 
   private $noIntAddress;
   public function setNoIntAddress($value)
   {
-    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 0, 'No Int Address');
+    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 0, 'No Int');
     $this->noIntAddress = $value;
   }
 
   private $coloniaAddress;
   public function setColoniaAddress($value)
   {
-    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Colonia Address');
+    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Colonia');
     $this->coloniaAddress = $value;
   }
 
   private $municipioAddress;
   public function setMunicipioAddress($value)
   {
-    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Municipio Address');
+    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Municipio');
     $this->municipioAddress = $value;
   }
 
   private $estadoAddress;
   public function setEstadoAddress($value)
   {
-    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Estado Address');
+    $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Estado');
     $this->estadoAddress = $value;
   }
 
     private $paisAddress;
     public function setPaisAddress($value)
     {
-        $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Pais Address');
+        $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Pais');
         $this->paisAddress = $value;
     }
 
@@ -498,8 +498,8 @@ class Contract extends Main
   private $cpAddress;
   public function setCpAddress($value)
   {
-    if ($this->Util()->ValidateRequireField($value, 'CP Fiscal')) {
-      $this->Util()->ValidateString($value, $max_chars = 5, $minChars = 5, 'CP Fiscal');
+    if ($this->Util()->ValidateRequireField($value, 'Codigo postal')) {
+      $this->Util()->ValidateString($value, $max_chars = 5, $minChars = 5, 'Codigo postal');
     }
     $this->cpAddress = $value;
   }
@@ -1887,8 +1887,7 @@ class Contract extends Main
       global $User,$log;
       $permiso = new Permiso();
     /** if ($this->Util()->PrintErrors()){ return 0; } */
-
-    $this->Util()->DB()->setQuery(
+      $this->Util()->DB()->setQuery(
         "INSERT INTO
           contract
         (
@@ -1991,8 +1990,7 @@ class Contract extends Main
           '".$this->auxiliarCuenta."',
           '".$this->facturador."',
           '".$this->claveIsn."')"
-    );
-
+       );
       $contractId = $this->Util()->DB()->InsertData();
       //insertar nuevos permisos en la tabla contractPermiso
       $permiso->setContractId($contractId);
@@ -2085,6 +2083,8 @@ class Contract extends Main
 
     	//Cuando se edita solo se actualiza los contactos modificados.
          $contactos ="";
+        if(strlen($this->nombreComercial)>0)
+            $contactos .="nombreComercial = '".$this->nombreComercial."',";
          if(strlen($this->nameContactoAdministrativo)>0)
             $contactos .="nameContactoAdministrativo = '".$this->nameContactoAdministrativo."',";
          if(strlen($this->emailContactoAdministrativo)>0)
@@ -2124,9 +2124,8 @@ class Contract extends Main
 			  telefono = '".$this->telefono."',
 			  address = '".$this->address."',
 			  `name` = '".$this->name."',
-			  nombreComercial = '".$this->nombreComercial."',
 			  direccionComercial = '".$this->direccionComercial."',
-              ".$contactos." 
+              $contactos
 			  claveCiec = '".$this->claveCiec."',
 			  claveFiel = '".$this->claveFiel."',
 			  claveIdse = '".$this->claveIdse."',
@@ -2147,7 +2146,7 @@ class Contract extends Main
 			  noCuenta = '".$this->noCuenta."',
 			  cpComercial = '".$this->cpComercial."',
 			  encargadoCuenta = '".$this->encargadoCuenta."',
-                  cobrador = '".$this->cobrador."',
+              cobrador = '".$this->cobrador."',
 			  responsableCuenta = '".$this->responsableCuenta."',
 			  permisos = '".$this->permisos."',
 			  auxiliarCuenta = '".$this->auxiliarCuenta."',
