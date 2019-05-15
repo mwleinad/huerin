@@ -74,6 +74,7 @@ jQ(document).on("click","#btnComment",function(){
 
     });
 })
+
 jQ(document).on('click','.spanDeleteComment',function () {
 
     var com = confirm("¿ Esta seguro de eliminar este comentario ?");
@@ -97,23 +98,48 @@ jQ(document).on('click','.spanDeleteComment',function () {
 
     });
 });
-jQ(document).on('click','.spanRealizado',function () {
-
-    var com = confirm("¿ Esta seguro de finalizar este pendiente ?");
-    if(!com)
-        return;
+jQ(document).on('click','.spanChangeStatus',function () {
 
     jQ.ajax({
+        url:WEB_ROOT+"/ajax/report-pending.php",
+        type:'post',
+        data:{type:'changeStatusPopUp',id:this.id},
+        beforeSend:function(){
+        },
+        success:function (response) {
+            grayOut(true);
+            jQ('#fview').show();
+            FViewOffSet('');
+            FViewOffSet(response);
+        }
+    })
+});
+jQ(document).on("click","#btnChange",function(){
+    var form = jQ(this).parents('form:first');
+    var fd =  new FormData(form[0]);
+    jQ.ajax({
         url: WEB_ROOT+"/ajax/report-pending.php",
-        data: {type:"endPending",id:this.id},
+        data: fd,
+        processData: false,
+        contentType: false,
         type: 'POST',
+        beforeSend: function(){
+            jQ('#loading-img').show();
+            jQ('#btnPending').hide();
+        },
         success: function(response){
             var splitResp = response.split("[#]");
             if(splitResp[0]=='ok')
             {
                 ShowStatusPopUp(splitResp[1]);
+                form[0].reset();
+                jQ('#loading-img').hide();
+                jQ("#btnPending").show();
                 jQ("#contenido").html(splitResp[2]);
+                close_popup();
             }else{
+                jQ('#loading-img').hide();
+                jQ("#btnPending").show();
                 ShowStatusPopUp(splitResp[1]);
             }
         },
