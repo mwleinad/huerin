@@ -125,7 +125,7 @@ jQ(document).on("click","#btnChange",function(){
         type: 'POST',
         beforeSend: function(){
             jQ('#loading-img').show();
-            jQ('#btnPending').hide();
+            jQ('#btnChange').hide();
         },
         success: function(response){
             var splitResp = response.split("[#]");
@@ -134,12 +134,12 @@ jQ(document).on("click","#btnChange",function(){
                 ShowStatusPopUp(splitResp[1]);
                 form[0].reset();
                 jQ('#loading-img').hide();
-                jQ("#btnPending").show();
+                jQ("#btnChange").show();
                 jQ("#contenido").html(splitResp[2]);
                 close_popup();
             }else{
                 jQ('#loading-img').hide();
-                jQ("#btnPending").show();
+                jQ("#btnChange").show();
                 ShowStatusPopUp(splitResp[1]);
             }
         },
