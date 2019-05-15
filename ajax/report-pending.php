@@ -13,7 +13,6 @@ switch($_POST["type"])
         $smarty->assign("data",$data);
         $smarty->display(DOC_ROOT.'/templates/boxes/report-pending-popup.tpl');
     break;
-
     case "savePending";
         $change->setDescripcion($_POST["descripcion"]);
         $change->setModulo($_POST["modulo"]);
@@ -139,6 +138,35 @@ switch($_POST["type"])
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
+    break;
+    case "changeStatusPopUp":
+        $data["tittle"]="Cambiar status";
+        $data["nameForm"]="frmChangeStatus";
+        $data["nameType"]="doChangeStatus";
+        $data["nameBtn"]="Guardar";
+        $change->setId($_POST["id"]);
+        $info = $change->Info();
+
+        $smarty->assign("data",$data);
+        $smarty->assign("post",$info);
+        $smarty->display(DOC_ROOT.'/templates/boxes/change-status-pending-popup.tpl');
+    break;
+    case 'doChangeStatus':
+        $change->setId($_POST["changeId"]);
+        $change->setStatus($_POST["status"]);
+        if($change->ChangeStatusPending()){
+            echo "ok";
+            echo "[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $result = $change->Enumerate();
+            $smarty->assign("result",$result);
+            $smarty->display(DOC_ROOT.'/templates/lists/report-pending.tpl');;
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+
     break;
 
 }

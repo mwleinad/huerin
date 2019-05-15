@@ -33,6 +33,11 @@ class ChangePlatform extends main
         $this->Util()->ValidateRequireField($value,"Comentario");
         $this->comment = $value;
     }
+    private $status;
+    function setStatus($value){
+        $this->Util()->ValidateRequireField($value,"Status");
+        $this->status = $value;
+    }
 
     private  $fsolicitud;
     function setFechaSolicitud($value){
@@ -198,6 +203,20 @@ class ChangePlatform extends main
         $this->Util()->DB()->UpdateData();
 
         $this->Util()->setError(0,"complete","Pendiente finalizado");
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function ChangeStatusPending(){
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "UPDATE changesPlatform  SET status='$this->status'
+                WHERE changeId='".$this->changeId."'
+               ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(0,"complete","Se realizo el cambio de status correctamente");
         $this->Util()->PrintErrors();
         return true;
     }
