@@ -40,20 +40,10 @@
 			<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
 	</tr>
 	{/if}
-	{if in_array(187,$permissions) || $User.isRoot}
+	{if in_array(223,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">Nombre representante legal</td>
 			<td align="left">{$infoRazonSocial.nameRepresentanteLegal}</td>
-		</tr>
-
-		<tr>
-			<td align="left" width="40%">Email representante legal</td>
-			<td align="left">{$infoRazonSocial.emailRepresentanteLegal}</td>
-		</tr>
-
-		<tr>
-			<td align="left" width="40%">Telefono representante legal</td>
-			<td align="left">{$infoRazonSocial.telefonoRepresentanteLegal}</td>
 		</tr>
 	{/if}
 	{if in_array(188,$permissions) || $User.isRoot}

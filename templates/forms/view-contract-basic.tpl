@@ -39,17 +39,12 @@
             	{$infoRazonSocial.nombreRegimen}
 </td>
 	</tr>
-
+	{if in_array(222,$permissions) || $User.isRoot}
     <tr>
 		<td align="left" width="40%">Nombre Comercial</td>
 		<td align="left">{$infoRazonSocial.nombreComercial}</td>
 	</tr>
-
-{*}  <tr>
-		<td align="left" width="40%">Telefono</td>
-		<td align="left">{$infoRazonSocial.telefono}</td>
-	</tr>{*}
-
+	{/if}
   <tr>
 		<td align="left" width="100%" class="tdPad" colspan="2" style="text-align:center">Direccion Fiscal</td>
 	</tr>
