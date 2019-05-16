@@ -210,13 +210,12 @@ class Producto extends Sucursal
 	public function setDescripcion($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=10000, $minChars = 1, "Descripcion");
-		$this->Util()->DB()->setQuery("select nombreServicio from tipoServicio where tipoServicioId='".$this->noIdentificacion."' ");
+		/*$this->Util()->DB()->setQuery("select nombreServicio from tipoServicio where tipoServicioId='".$this->noIdentificacion."' ");
 		$service = $this->Util()->DB()->GetSingle();
 		$serviceConcat = $service." CORRESPONDIENTE";
 		$serviceConcat = strtoupper($serviceConcat);
 		if(stripos($value,$serviceConcat,0)===false)
-		    $this->Util()->setError(0,"error","Descripcion  no valida");
-
+		    $this->Util()->setError(0,"error","Descripcion  no valida");*/
 		$this->descripcion = $value;
 	}
 	
