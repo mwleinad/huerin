@@ -537,6 +537,10 @@ class ReporteBonos extends Main
             $strFilter .=" and contractId in(select a.contractId from contract a inner join customer b on a.customerId = b.customerId where b.active='1' and a.activo='Si' $subStr )";
 
         }
+        //filtro departamento
+        if($ftr["departamentoId"])
+            $strFilter .=" and b.departamentoId='".$ftr["departamentoId"]."' ";
+
         $mesesBase =  $this->createMonthBase($ftr['period']);
 
         $fullSubordinados = $personal->GetIdResponsablesSubordinados($ftr);
