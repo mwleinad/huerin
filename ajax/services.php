@@ -11,7 +11,7 @@ switch($_POST["type"])
       <?php foreach($cuentas as $cuenta){ ?>
           <option value="<?php echo $cuenta["contractId"]?>"><?php echo $cuenta["name"]?></option>
       <?php } ?>    
-          </select>    
+          </select>
     <?php
 
 	break;
@@ -228,7 +228,6 @@ switch($_POST["type"])
 			{
 				//Guardamos el Log de Eventos
 				$newServicio = $servicio->Info();
-				
 				$log->setPersonalId($User['userId']);
 				$log->setFecha(date('Y-m-d H:i:s'));
 				$log->setTabla('servicio');
