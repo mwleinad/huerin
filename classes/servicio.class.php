@@ -896,12 +896,9 @@ class Servicio extends Contract
   
 	public function Edit()
 	{
-		global $User;
-		
+		global $User,$log;
 		if($this->Util()->PrintErrors()){ return false; }
-
 		$infoServicio = $this->Info();
-		
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				servicio
@@ -915,27 +912,7 @@ class Servicio extends Contract
 		$this->Util()->DB()->UpdateData();
 	
 		//actualizar historial
-		$this->Util()->DB()->setQuery("
-			INSERT INTO
-				historyChanges
-			(
-				`servicioId`,
-				`inicioFactura`,
-				`costo`,
-				`personalId`,
-				`inicioOperaciones`
-		)
-		VALUES
-		(
-				'".$this->servicioId."',
-				'".$this->inicioFactura."',
-				'".$this->costo."',
-				'".$User["userId"]."',
-				'".$this->inicioOperaciones."'
-		);");
-		
-		$this->Util()->DB()->InsertData();
-
+        $log->saveHistoryChangesServicios($this->servicioId,$this->inicioFactura,"modificacion",$this->costo,$_SESSION['User']['userId'],$this->inicioOperaciones,'');
 		$this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
 		return true;
