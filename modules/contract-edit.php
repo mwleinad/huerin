@@ -77,11 +77,16 @@
             $contract->setTelefonoCelularDirectivo($_POST['telefonoCelularDirectivo']);
 
         //contraseñas
-		$contract->setClaveFiel($_POST['claveFiel']);
-		$contract->setClaveCiec($_POST['claveCiec']);
-		$contract->setClaveIdse($_POST['claveIdse']);
-		$contract->setClaveIsn($_POST['claveIsn']);
-        $contract->setClaveSip($_POST['claveSip']);
+        if(isset($_POST['claveFiel']))
+		    $contract->setClaveFiel($_POST['claveFiel']);
+        if(isset($_POST['claveCiec']))
+		    $contract->setClaveCiec($_POST['claveCiec']);
+        if(isset($_POST['claveIdse']))
+		    $contract->setClaveIdse($_POST['claveIdse']);
+        if(isset($_POST['claveIsn']))
+		    $contract->setClaveIsn($_POST['claveIsn']);
+        if(isset($_POST['claveSip']))
+            $contract->setClaveSip($_POST['claveSip']);
 
 		$contract->UpdateMyContract();
 		$contract->setContractId($_GET["contId"]);
