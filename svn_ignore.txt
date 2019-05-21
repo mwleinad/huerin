@@ -1,4 +1,0 @@
-empresas
-templates_c
-ajax/templates_c
-archivos

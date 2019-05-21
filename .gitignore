@@ -51,3 +51,8 @@ util/wkhtmltox
 composer.lock
 phpunit.xml
 *.swp
+excel.xls
+excel.xlsx
+exportar.xlsx
+exportar3.pdf
+exportar3.xlsx
