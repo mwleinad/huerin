@@ -299,7 +299,7 @@ jQ(document).on('click','#addItemService',function () {
 jQ(document).on('click','.spanDeleteItemService',function () {
     jQ.ajax({
         url:WEB_ROOT+"/ajax/services.php",
-
+        data:{type:'delItemService',id:this.id},
         type: 'POST',
         success: function(response){
             var splitResp = response.split("[#]");
