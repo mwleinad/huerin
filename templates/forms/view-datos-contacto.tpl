@@ -11,60 +11,53 @@
 <tbody id="tbDatosContacto">
 	{if in_array(186,$permissions) || $User.isRoot}
     <tr>
-			<td align="left" width="40%">Nombre Contacto Administrativo (Pagos)</td>
-			<td align="left">{$infoRazonSocial.nameContactoAdministrativo}</td>
+		<td align="left" width="40%">Nombre Contacto Administrativo (Pagos)</td>
+		<td align="left">{$infoRazonSocial.nameContactoAdministrativo}</td>
 	</tr>
     <tr>
-			<td align="left" width="40%">Email Contacto Administrativo (Pagos)</td>
-			<td align="left">{$infoRazonSocial.emailContactoAdministrativo}</td>
-		</tr>    
+		<td align="left" width="40%">Email Contacto Administrativo (Pagos)</td>
+		<td align="left">{$infoRazonSocial.emailContactoAdministrativo}</td>
+	</tr>
 
     <tr>
-			<td align="left" width="40%">Telefono Contacto Administrativo (Pagos)</td>
-			<td align="left">{$infoRazonSocial.telefonoContactoAdministrativo}</td>
+		<td align="left" width="40%">Telefono Contacto Administrativo (Pagos)</td>
+		<td align="left">{$infoRazonSocial.telefonoContactoAdministrativo}</td>
 	</tr>
 	{/if}
 	{if in_array(187,$permissions) || $User.isRoot}
     <tr>
-			<td align="left" width="40%">Nombre Contacto Contabilidad (Documentacion)</td>
-			<td align="left">{$infoRazonSocial.nameContactoContabilidad}</td>
+		<td align="left" width="40%">Nombre Contacto Contabilidad (Documentacion)</td>
+		<td align="left">{$infoRazonSocial.nameContactoContabilidad}</td>
 	</tr>
 
     <tr>
-			<td align="left" width="40%">Email Contacto Contabilidad (Documentacion)</td>
-			<td align="left">{$infoRazonSocial.emailContactoContabilidad}</td>
+		<td align="left" width="40%">Email Contacto Contabilidad (Documentacion)</td>
+		<td align="left">{$infoRazonSocial.emailContactoContabilidad}</td>
 	</tr>
 
     <tr>
-			<td align="left" width="40%">Telefono Contacto Contabilidad (Documentacion)</td>
-			<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
+		<td align="left" width="40%">Telefono Contacto Contabilidad (Documentacion)</td>
+		<td align="left">{$infoRazonSocial.telefonoContactoContabilidad}</td>
 	</tr>
-	{/if}
-	{if in_array(223,$permissions) || $User.isRoot}
-		<tr>
-			<td align="left" width="40%">Nombre representante legal</td>
-			<td align="left">{$infoRazonSocial.nameRepresentanteLegal}</td>
-		</tr>
 	{/if}
 	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
-			<td align="left" width="40%">Nombre Contacto Directivo</td>
-			<td align="left">{$infoRazonSocial.nameContactoDirectivo}</td>
+		<td align="left" width="40%">Nombre Contacto Directivo</td>
+		<td align="left">{$infoRazonSocial.nameContactoDirectivo}</td>
+	</tr>
+    <tr>
+		<td align="left" width="40%">Email Contacto Directivo</td>
+		<td align="left">{$infoRazonSocial.emailContactoDirectivo}</td>
 	</tr>
 
     <tr>
-			<td align="left" width="40%">Email Contacto Directivo</td>
-			<td align="left">{$infoRazonSocial.emailContactoDirectivo}</td>
-		</tr>    
-
-    <tr>
-			<td align="left" width="40%">Telefono Oficina Contacto Directivo</td>
-			<td align="left">{$infoRazonSocial.telefonoContactoDirectivo}</td>
+		<td align="left" width="40%">Telefono Oficina Contacto Directivo</td>
+		<td align="left">{$infoRazonSocial.telefonoContactoDirectivo}</td>
 	</tr>
 
     <tr>
-			<td align="left" width="40%">Telefono Celular Contacto Directivo</td>
-			<td align="left">{$infoRazonSocial.telefonoCelularDirectivo}</td>
+		<td align="left" width="40%">Telefono Celular Contacto Directivo</td>
+		<td align="left">{$infoRazonSocial.telefonoCelularDirectivo}</td>
 	</tr>
 	{/if}
 

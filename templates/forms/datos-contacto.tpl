@@ -41,12 +41,6 @@
 			<td align="left"><input name="telefonoContactoContabilidad" id="telefonoContactoContabilidad" type="text" value="{$bse.telefonoContactoContabilidad}" class="smallInput medium" size="50"/></td>
 	</tr>
 	{/if}
-	{if in_array(223,$permissions) || $User.isRoot}
-		<tr>
-			<td align="left" width="40%">Nombre representante legal</td>
-			<td align="left"><input name="nameRepresentanteLegal" id="nameRepresentanteLegal" type="text" value="{$bse.nameRepresentanteLegal}" class="smallInput medium" size="50"/></td>
-		</tr>
-	{/if}
 	{if in_array(188,$permissions) || $User.isRoot}
     <tr>
 			<td align="left" width="40%">* Nombre Contacto Directivo</td>

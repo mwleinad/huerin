@@ -61,9 +61,8 @@
             <option value="{$item.regimenId}">{$item.tipoDePersona} | {$item.nombreRegimen}</option>
             {/foreach}
             </select>
-</td>
+		</td>
 	</tr>
-
     <tr  id="regimenesMorales" style="display:none">
 		<td align="left" width="40%">* Regimen Fiscal</td>
 		<td align="left">
@@ -73,8 +72,14 @@
             <option value="{$item.regimenId}">{$item.tipoDePersona} | {$item.nombreRegimen}</option>
             {/foreach}
             </select>
-</td>
+		</td>
 	</tr>
+	{if in_array(223,$permissions) || $User.isRoot}
+		<tr>
+			<td align="left" width="40%">Nombre representante legal</td>
+			<td align="left"><input name="nameRepresentanteLegal" id="nameRepresentanteLegal" type="text" value="{$bse.nameRepresentanteLegal}" class="smallInput medium" size="50"/></td>
+		</tr>
+	{/if}
 	{if in_array(222,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">* Nombre Comercial</td>
@@ -165,8 +170,6 @@
 			<input type="text" name="noCuenta" id="noCuenta" class="smallInput" style="width:350px" value="{$contractInfo.noCuenta}"/>
 		</td>
 	</tr>
-
-
 	<tr>
 		<td align="left" width="40%" class="tdPad">* Direccion de Recoleccion de Papeleria</td>
 		<td align="left" class="tdPad">

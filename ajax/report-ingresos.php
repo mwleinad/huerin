@@ -236,7 +236,6 @@ switch($_POST["type"])
 
                         $db->setQuery("select DATE(fecha) from contractChanges where contractId='$conId' and status='No' order by contractChangesId DESC limit 1");
                         $con["fechaBaja"] = $db->GetSingle();
-
                         switch ($_POST["statusSearch"]) {
                             case 'activo':
                                 $firstExplode = explode("-", $con["fechaAlta"]);
@@ -265,6 +264,10 @@ switch($_POST["type"])
                                         continue 2;
                                 }
                             break;
+                            case 'modificacion':
+                                
+                            break;
+
                         }
                         $contratos[] = $con;
 
@@ -329,6 +332,11 @@ switch($_POST["type"])
                                             continue 2;
                                     }
                                     break;
+                                case 'modificacion':
+
+
+
+                                break;
                             }
                             $departamentoId = $serv["departamentoId"];
                             $costoVisual = $serv["costoVisual"];

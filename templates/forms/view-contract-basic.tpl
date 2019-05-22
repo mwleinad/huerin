@@ -35,100 +35,72 @@
     {/if}
     <tr>
 		<td align="left" width="40%">* Regimen Fiscal</td>
-		<td align="left">
-            	{$infoRazonSocial.nombreRegimen}
-</td>
+		<td align="left">{$infoRazonSocial.nombreRegimen}</td>
 	</tr>
+	{if in_array(223,$permissions) || $User.isRoot}
+		<tr>
+			<td align="left" width="40%">Nombre representante legal</td>
+			<td align="left">{$infoRazonSocial.nameRepresentanteLegal}</td>
+		</tr>
+	{/if}
 	{if in_array(222,$permissions) || $User.isRoot}
     <tr>
 		<td align="left" width="40%">Nombre Comercial</td>
 		<td align="left">{$infoRazonSocial.nombreComercial}</td>
 	</tr>
 	{/if}
-  <tr>
+  	<tr>
 		<td align="left" width="100%" class="tdPad" colspan="2" style="text-align:center">Direccion Fiscal</td>
 	</tr>
-
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">Calle</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.address}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.address}</td>
 	</tr>
-
-  <tr>
+ 	 <tr>
 		<td align="left" width="40%" class="tdPad">No Exterior</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.noExtAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.noExtAddress}</td>
 	</tr>
-
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">No Interior</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.noIntAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.noIntAddress}</td>
 	</tr>
-
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">Colonia</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.coloniaAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.coloniaAddress}</td>
 	</tr>
-
-  <tr>
+  	<tr>
 		<td align="left" width="40%" class="tdPad">Municipio</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.municipioAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.municipioAddress}</td>
 	</tr>
 
   <tr>
 		<td align="left" width="40%" class="tdPad">Estado</td>
-		<td align="left" class="tdPad">
-        {$infoRazonSocial.estadoAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.estadoAddress}</td>
 	</tr>
 
 	<tr>
 		<td align="left" width="40%" class="tdPad">Pais</td>
-		<td align="left" class="tdPad">
-			{$infoRazonSocial.paisAddress}
-		</td>
+		<td align="left" class="tdPad">{$infoRazonSocial.paisAddress}</td>
 	</tr>
 
   <tr>
 		<td align="left" width="40%" class="tdPad">* Codigo Postal:</td>
-		<td align="left" class="tdPad">
-       {$infoRazonSocial.cpAddress}
-    </td>
+		<td align="left" class="tdPad">{$infoRazonSocial.cpAddress}</td>
 	</tr>
 
 	<tr>
 		<td align="left" width="40%" class="tdPad">* Metodo de Pago:</td>
-		<td align="left" class="tdPad">
-			{$infoRazonSocial.metodoDePago}
-		</td>
+		<td align="left" class="tdPad">{$infoRazonSocial.metodoDePago}</td>
 	</tr>
 
 	<tr>
 		<td align="left" width="40%" class="tdPad"># Cuenta:</td>
-		<td align="left" class="tdPad">
-			{$infoRazonSocial.noCuenta}
-		</td>
+		<td align="left" class="tdPad">{$infoRazonSocial.noCuenta}</td>
 	</tr>
-
-
-
 	<tr>
 		<td align="left" width="40%" class="tdPad">* Direccion de Recoleccion de Papeleria:</td>
-		<td align="left" class="tdPad">
-       {$infoRazonSocial.direccionComercial}
-    </td>
-	</tr>   
-
-
+		<td align="left" class="tdPad">{$infoRazonSocial.direccionComercial}</td>
+	</tr>
 	{foreach from=$departamentos item=depto}
 	<tr>
 		<td align="left" width="40%" class="tdPad">
