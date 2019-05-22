@@ -64,6 +64,7 @@ switch($_POST["type"])
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-servicio-popup.tpl');
 	break;
     case "addItemService":
+        $servicio->setContractId($_POST["contractId"]);
         $servicio->setTipoServicioId($_POST['tipoServicioId']);
         $servicio->setInicioFactura($_POST['inicioFactura']);
         $servicio->setInicioOperaciones($_POST['inicioOperaciones']);
@@ -180,7 +181,6 @@ switch($_POST["type"])
 		break;
 		
 	case "editServicio":
-	 
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$servicio->setServicioId($_POST['servicioId']);
 			$myServicio = $servicio->Info();
@@ -193,11 +193,8 @@ switch($_POST["type"])
 			$smarty->assign("post", $info);
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-servicio-popup.tpl');
 		
-		break;
-		
-		
+	break;
 	case "historial":
-	 
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$servicio->setServicioId($_POST['servicioId']);
 			$historial = $servicio->Historial();
@@ -205,13 +202,11 @@ switch($_POST["type"])
 			$smarty->assign("historial", $historial);
 			$smarty->display(DOC_ROOT.'/templates/boxes/historial-servicio-popup.tpl');
 		
-		break;		
-		
+	break;
 	case "saveEditServicio":
-			
 			$servicioId = $_POST['servicioId'];
-			
-			$servicio->setServicioId($_POST['customerId']);
+            $servicio->setContractId($_POST['contractId']);
+			$servicio->setServicioId($_POST['servicioId']);
 			$servicio->setTipoServicioId($_POST['tipoServicioId']);			
 			$servicio->setCosto($_POST['costo']);
 			$servicio->setInicioFactura($_POST['inicioFactura']);
@@ -247,9 +242,7 @@ switch($_POST["type"])
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/servicios.tpl');
 			}
-			
-		break;
-    
+	break;
     case "cancelWorkFlow":
       $servicio->setInstanciaServicioId($_POST['instanciaServicioId']);	
       	$servicio->setStatus("baja");
@@ -322,6 +315,7 @@ switch($_POST["type"])
         $smarty->display(DOC_ROOT.'/templates/boxes/multiple-edit-services-popup.tpl');
     break;
     case 'saveMultipleService':
+        $servicio->setContractId($_POST['contractId']);
           if($servicio->executeMultipleOperation()){
               $servicio->setContractId($_POST['contractId']);
               $servicios = $servicio->Enumerate();

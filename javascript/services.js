@@ -1,8 +1,6 @@
 var AJAX_PATH = WEB_ROOT+'/ajax/services.php';
 var selectedData = [];
 Event.observe(window, 'load', function() {
-	//Event.observe($('addCustomer'), "click", AddCustomerDiv);
-
 	AddEditCustomerListeners = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('spanEdit');

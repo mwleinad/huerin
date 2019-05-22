@@ -42,6 +42,22 @@ class Servicio extends Contract
 	{
         $this->Util()->validateDateFormat($value,"Inicio operaciones");
 		$value = $this->Util()->FormatDateMySql($value);
+		//si el servicio es anual o anual auditada, para persona fisica abrir en abril y en marzo para personas morales.
+        if($this->tipoServicioId==ANUAL){
+          $sql = "select type from contract where contractId='".$this->getContractId()."' ";
+          $this->Util()->DB()->setQuery($sql);
+          $tipoPersona = $this->Util()->DB()->GetSingle();
+          switch(strtoupper($tipoPersona)){
+              case 'PERSONA FISICA':
+                  if(date('m',strtotime($value))!='04')
+                      $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona fisica");
+              break;
+              case 'PERSONA MORAL':
+                  if(date('m',strtotime($value))!='03')
+                      $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona moral");
+              break;
+          }
+        }
 		$this->inicioOperaciones = $value;
 	}
 	public function setServicioId($value)
@@ -890,10 +906,7 @@ class Servicio extends Contract
 		$result = $this->Util()->DB()->GetResult();
 		
 		return $result;
-	}	
-	
-
-  
+	}
 	public function Edit()
 	{
 		global $User,$log;
@@ -1324,6 +1337,7 @@ class Servicio extends Contract
             $flw = $status=='bajaParcial'?$this->Util()->isValidateDate($_POST["lastDateWorkflow_$servId"],'d-m-Y')?$_POST["lastDateWorkflow_$servId"]:false:true;
             $costo = $_POST["costo_$servId"];
             $io = $this->Util()->isValidateDate($_POST["io_$servId"],'d-m-Y')?$_POST["io_$servId"]:false;
+
             $if = $_POST["if_$servId"]!=''?$this->Util()->isValidateDate($_POST["if_$servId"],'d-m-Y')?$_POST["if_$servId"]:false:true;
             if (!$flw) {
                 $this->Util()->setError(0, 'error', 'Fecha invalida en ultimo workflow. ');
@@ -1332,6 +1346,31 @@ class Servicio extends Contract
             if(!$io){
                 $this->Util()->setError(0, 'error', 'Fecha invalida en inicio de operaciones. ');
                 break;
+            }else{
+                //si el servicio es anual o anual auditada, para persona fisica abrir en abril y en marzo para personas morales.
+                $this->Util()->DB()->setQuery("select tipoServicioId from servicio where servicioId ='$servId' ");
+                $tipServId = $this->Util()->DB()->GetSingle();
+                if($tipServId==ANUAL){
+                    $sql = "select type from contract where contractId='".$this->getContractId()."' ";
+                    $this->Util()->DB()->setQuery($sql);
+                    $tipoPersona = $this->Util()->DB()->GetSingle();
+                    switch(strtoupper($tipoPersona)){
+                        case 'PERSONA FISICA':
+                            if(date('m',strtotime($this->Util()->FormatDateMySql($io)))!='04'){
+                                $this->Util()->setError(0,"error","La fecha de inicio de operacion en servicio ANUAL no es valida para persona fisica");
+                                $io = false;
+                            }
+                        break;
+                        case 'PERSONA MORAL':
+                            if(date('m',strtotime($this->Util()->FormatDateMySql($io)))!='03'){
+                                $this->Util()->setError(0,"error","La fecha de inicio de operacion en servicio ANUAL no es valida para persona moral");
+                                $io=false;
+                            }
+                        break;
+                    }
+                }
+                if(!$io)
+                    break;
             }
             if(!$if)
             {
@@ -1349,6 +1388,7 @@ class Servicio extends Contract
         global $log;
         if(!$this->validateArrayServices())
             return false;
+
         $actualizados = 0;
         $servs = [];
         $contratoId = $_POST['contractId'];

@@ -1,8 +1,9 @@
 <div id="divForm">
 	<form id="editCustomerForm" name="editCustomerForm" method="post" autocomplete="off">
 	<input type="hidden" id="type" name="type" value="saveEditServicio"/>
-	<input type="hidden" id="customerId" name="servicioId" value="{$post.servicioId}"/>
-		<fieldset>
+	<input type="hidden" id="servicioId" name="servicioId" value="{$post.servicioId}"/>
+	<input type="hidden" id="contractId" name="contractId" value="{$post.contractId}"/>
+	<fieldset>
 		<div class="formLine" style="width:100%; text-align:left">
 		   <div style="width:30%;float:left">* Servicio:</div>
 		   <select name="tipoServicioId" id="tipoServicioId" class="smallInput medium" onchange="UpdateCosto()">
@@ -11,12 +12,12 @@
 			   {/foreach}
 		   </select>
 			<hr />
-        </div>
+		</div>
 		<div class="formLine" style="width:100%; text-align:left">
 			<div style="width:30%;float:left">* Fecha Inicio Operaciones:</div>
 			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)" name="inicioOperaciones" id="inicioOperaciones" type="text" value="{$post.inicioOperacionesMysql}" maxlength="10" />
 			<hr />
-        </div>
+		</div>
 		<div class="formLine" style="width:100%; text-align:left">
 			<div style="width:30%;float:left">Inicio Factura:</div>
 			<input style="width:20%!important;float:left" class="smallInput medium" onclick="CalendarioSimple(this)"  name="inicioFactura" id="inicioFactura" type="text" value="{$post.inicioFacturaMysql}" />
@@ -38,6 +39,6 @@
 				<a class="button_grey" id="editCustomer"><span>Actualizar</span></a>
 			</div>
 		</div>
-		</fieldset>
+	</fieldset>
 	</form>
 </div>
