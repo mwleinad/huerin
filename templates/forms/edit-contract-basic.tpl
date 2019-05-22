@@ -60,9 +60,8 @@
              <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
             {/foreach}
             </select>
-</td>
+        </td>
 	</tr>
-
     <tr  id="regimenesMorales" {if $contractInfo.type == "Persona Fisica"}style="display:none"{/if}>
 		<td align="left" width="40%">* Regimen Fiscal</td>
 		<td align="left">
@@ -72,8 +71,15 @@
             <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
             {/foreach}
             </select>
-</td>
+        </td>
 	</tr>
+    {if in_array(223,$permissions) || $User.isRoot}
+        <tr>
+            <td align="left" width="40%">Nombre representante legal</td>
+            <td align="left"><input name="nameRepresentanteLegal" id="nameRepresentanteLegal" type="text" value="{$contractInfo.nameRepresentanteLegal}" class="smallInput medium" size="50"/></td>
+        </tr>
+
+    {/if}
     {if in_array(222,$permissions) || $User.isRoot}
         <tr>
             <td align="left" width="40%">* Nombre Comercial</td>

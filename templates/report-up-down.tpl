@@ -1,6 +1,6 @@
 <div class="grid_16" id="content">
     <div class="grid_9">
-    	<h1 class="reportes">Reporte de Ingresos</h1>
+    	<h1 class="reportes">Bitacora de altas,bajas y modificaciones</h1>
     </div>
     <div class="grid_6" id="eventbox">
 		<a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')">
