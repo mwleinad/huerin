@@ -1162,7 +1162,54 @@ function SubordinadosDetails()
                  break;
          }
          return $supervisor;
-     }
+    }
+    public function getOrdenJefes(){
+	    global $rol;
+	    $ordenJefes = [];
+	    $this->setPersonalId($this->personalId);
+        $infP = $this->Info();
+        $role = $rol->getInfoByData($infP);
+        $rolArray = explode(' ', $role['name']);
+        $needle = trim($rolArray[0]);
+        switch ($needle) {
+            case 'Sistemas':
+            case 'Gestoria':
+            case 'Supervisor':
+                $needle = 'supervisor';
+                break;
+            case 'Asistente':
+            case 'Cuentas':
+            case 'Contador':
+                $needle = 'contador';
+                break;
+            case 'Recepcion':
+            case 'Auxiliar':
+                $needle = 'auxiliar';
+                break;
+            case 'Coordinador':
+            case 'Socio':
+                $needle = 'socio';
+                break;
+            case 'Gerente':
+                $needle = 'gerente';
+                break;
+        }
+        if (!empty($infP)) {
+            $jefes = array();
+            $this->findDeepJefes($this->personalId, $jefes, true);
+            $ordenJefes['contador'] = $jefes['Contador'];
+            $ordenJefes['supervisor'] = $jefes['Supervisor'];
+            $ordenJefes['gerente'] = $jefes['Gerente'];
+            $ordenJefes['jefeMax'] = $jefes['Socio'];
+            $ordenJefes[$needle] = $jefes['me'];
+        } else {
+            $ordenJefes['auxiliar'] = 'N/E';
+            $ordenJefes['contador'] = 'N/E';
+            $ordenJefes['supervisor'] = 'N/E';
+            $ordenJefes['gerente'] = 'N/E';
+        }
+        return $ordenJefes;
+    }
     public function GetIdResponsablesSubordinados($filtro=[]){
 	    global $User;
         $idPersons= [];

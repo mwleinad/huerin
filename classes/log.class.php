@@ -54,10 +54,8 @@ class Log extends Util
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
-
 		$body ="<pre>";
 		//quien realizo el cambio
-
         $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$this->personalId.'" ');
         $who = $this->Util()->DB()->GetSingle();
 
@@ -319,7 +317,6 @@ class Log extends Util
 	}
 	
   	function GetLog(){
-	
     	$this->Util()->DB()->setQuery(
         "SELECT
           comprobante.comprobanteId,comprobante.userId,comprobante.fecha, personal.name
@@ -393,7 +390,7 @@ class Log extends Util
                          $arrayDeps = $this->Util()->DB()->GetResult();
                          $valorBefore="";
                          $valorAfter="";
-                         //desglozar los permisos antetiores
+                         //desglozar los permisos anteriores
                          $permisosBefore = explode("-",$beforeUnserialize[$key]);
                          $depsBefore = array();
                          foreach($permisosBefore as $pb){
@@ -422,7 +419,6 @@ class Log extends Util
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
                              $persBefore = $this->Util()->DB()->GetSingle() ;
 
-
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$vad['departamentoId']]."' ");
                              $persAfter = $this->Util()->DB()->GetSingle();
 
@@ -434,13 +430,11 @@ class Log extends Util
                              $valorBefore .="Encargado de ".$vad['departamento']." : ".utf8_decode($persBefore)."<br>";
                              $valorAfter  .="Encargado de ".$vad['departamento']." : ".utf8_decode($persAfter)."<br>";
                          }
-
                      break;
                      default:
                          $valorBefore =$beforeUnserialize[$key];
                          $valorAfter = $afterUnserialize[$key];
                      break;
-
                  }
                  $cad2['valor'] = $valorBefore;
                  $cad2['campo'] = $field;
@@ -453,7 +447,6 @@ class Log extends Util
 
              }
 	     }
-
       $data['before']=$olds;
 	  $data['after'] = $news;
 	  return $data;

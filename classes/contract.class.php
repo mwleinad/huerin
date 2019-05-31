@@ -2073,10 +2073,7 @@ class Contract extends Main
   {
       global $User,$log;
       $permiso =  new Permiso();
-    	//if ($this->Util()->PrintErrors()){ return false; }
-
 		//Obtenemos los datos de la BD antes de actualizar para el Log
-
 		$sql = "SELECT * FROM contract WHERE contractId = '".$this->contractId."'";
 		$this->Util()->DB()->setQuery($sql);
     	$oldData = $this->Util()->DB()->GetRow();
@@ -2154,7 +2151,7 @@ class Contract extends Main
 			  lastModified = '".date("Y-m-d H:i:s")."',
 			  modifiedBy = '".$_SESSION["User"]["username"]."',
 			  claveIsn = '".$this->claveIsn."'
-			WHERE
+			  WHERE
 			  contractId = '".$this->contractId."'";
 		$this->Util()->DB()->setQuery($sql);
     	$this->Util()->DB()->UpdateData();
@@ -2165,13 +2162,10 @@ class Contract extends Main
 
     	$this->Util()->setError(10030, "complete");
     	$this->Util()->PrintErrors();
-
 		//Obtenemos los nuevos datos ya actualizados para el Log
-
 		$sql = "SELECT * FROM contract WHERE contractId = '".$this->contractId."'";
 		$this->Util()->DB()->setQuery($sql);
     	$newData = $this->Util()->DB()->GetRow();
-
          //Guardamos y enviamos log
          $log->setPersonalId($User['userId']);
          $log->setFecha(date('Y-m-d H:i:s'));
@@ -2181,37 +2175,27 @@ class Contract extends Main
          $log->setOldValue(serialize($oldData));
          $log->setNewValue(serialize($newData));
          $log->Save();
-
-      //actualizar historial
-      $this->Util()->DB()->setQuery("
-			INSERT INTO
-				contractChanges
-			(
-				`contractId`,
-				`status`,
-				`oldData`,
-				`newData`,
-				`personalId`
-		)
-		VALUES
-		(
-				'".$this->contractId."',
-				'".$newData["activo"]."',
-
-				'".urlencode(serialize($oldData))."',
-				'".urlencode(serialize($newData))."',
-				'".$User["userId"]."'
-		);");
-      $this->Util()->DB()->InsertData();
-      $fp = fopen(DOC_ROOT.'/contracts.log','a');
-      chmod(DOC_ROOT.'/contracts.log',0756);
-      fwrite($fp,"OLD DATA\n");
-      fwrite($fp,json_encode($oldData));
-      fwrite($fp,"\n\nNEW DATA\n");
-      fwrite($fp,json_encode($newData));
-      fwrite($fp,"\n\n::::::::::::::::::::::::::::::::\n\n");
-      fclose($fp);
-
+          //actualizar historial
+         $this->Util()->DB()->setQuery("
+                INSERT INTO
+                    contractChanges
+                (
+                    `contractId`,
+                    `status`,
+                    `oldData`,
+                    `newData`,
+                    `personalId`
+            )
+            VALUES
+            (
+                    '".$this->contractId."',
+                    '".$newData["activo"]."',
+    
+                    '".urlencode(serialize($oldData))."',
+                    '".urlencode(serialize($newData))."',
+                    '".$User["userId"]."'
+            );");
+          $this->Util()->DB()->InsertData();
 	  return true;
   }
   /**
