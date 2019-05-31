@@ -59,8 +59,9 @@
 	</td>
 	<td align="center">
 		<select name="statusSearch" id="statusSearch"  class="largeInput"  style="width: 90%;">
-			<option value="activo">Altas</option>
+			<option value="alta">Altas</option>
 			<option value="baja">Bajas</option>
+			<option value="modificacion">Modificaciones</option>
 		</select>
 	</td>
 </tr>        

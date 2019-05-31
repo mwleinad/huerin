@@ -1402,6 +1402,8 @@ class Servicio extends Contract
             if($status=='baja')
                 $setFechabaja = "fechaBaja=DATE(NOW()), ";
 
+
+
             $sql = "UPDATE servicio SET
                     costo ='$costo',
                     inicioOperaciones = '$io',
@@ -1426,9 +1428,9 @@ class Servicio extends Contract
                             $evento = $_POST["status_$servId"];
                         break;
                     }
-                }else
-                    $evento =  "modificacion";
-
+                }else{
+                    $evento = "modificacion";
+                }
                 $log->saveHistoryChangesServicios($servId,$if,$evento,$costo,$_SESSION['User']['userId'],$io,'',$flw);
             }
         }

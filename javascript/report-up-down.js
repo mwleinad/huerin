@@ -124,10 +124,14 @@ function SuggestUser()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/suggest_report.php', 
 	{
-  	parameters: {value: $('rfc').value},
+		parameters: {value: $('rfc').value},
 		method:'post',
-    onSuccess: function(transport){
-      var response = transport.responseText || "no response text";
+        onLoading: function(){
+            $("customerId").value ="";
+
+        },
+    	onSuccess: function(transport){
+      		var response = transport.responseText || "no response text";
 			$('suggestionDiv').show();
 			$('suggestionDiv').innerHTML = response;
 			AddSuggestListener();
@@ -139,10 +143,13 @@ function SuggestUser2()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/suggest_customer.php', 
 	{
-  	parameters: {value: $('rfc2').value},
+  		parameters: {value: $('rfc2').value},
 		method:'post',
-    onSuccess: function(transport){
-      var response = transport.responseText || "no response text";
+        onLoading: function(){
+            $("contractId").value ="";
+        },
+    	onSuccess: function(transport){
+      		var response = transport.responseText || "no response text";
 			$('suggestionDiv2').show();
 			$('suggestionDiv2').innerHTML = response;
 			AddSuggestListener2();
