@@ -41,10 +41,13 @@
             
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Mostrar Costo Informativo:</i></div>
-                <input name="mostrarCostoVisual" id="mostrarCostoVisual" type="checkbox" value="1" class="smallInput" />
-
+                <input name="mostrarCostoVisual" id="mostrarCostoVisual" type="checkbox" value="1" class="smallIn2" />
+                <hr>
 			</div>
-      
+            <div class="formLine" style="width:100%; text-align:left" >
+                <div style="width:30%;float:left">* Clave SAT:</div>
+                <input name="claveSat" id="claveSat" type="text" value="" class="smallIn2" />
+            </div>
 			<div style="clear:both"></div>
 			<hr />
 			<div class="formLine" style="text-align:center; margin-left:300px">            

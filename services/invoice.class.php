@@ -192,7 +192,7 @@ class Invoice extends Comprobante
                                            servicio.servicioId,servicio.costo AS costoServicio,contract.contractId,contract.rfc,contract.address,contract.noExtAddress,
                                            contract.noIntAddress, contract.coloniaAddress,contract.municipioAddress, contract.cpAddress, contract.estadoAddress,
                                            contract.paisAddress, contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.noCuenta,
-                                           contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio  
+                                           contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio,tipoServicio.claveSat  
                                            FROM instanciaServicio
                                            INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
                                            INNER JOIN contract ON contract.contractId = servicio.contractId
@@ -224,7 +224,7 @@ class Invoice extends Comprobante
                 $this->Util()->DB()->setQuery("SELECT servicio.servicioId,servicio.costo AS costoServicio,contract.contractId,contract.rfc,contract.address,contract.noExtAddress,
                                                contract.noIntAddress, contract.coloniaAddress,contract.municipioAddress, contract.cpAddress, contract.estadoAddress,
                                                contract.paisAddress, contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.noCuenta,
-                                               contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio
+                                               contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio,tipoServicio.claveSat
                                                FROM servicio
                                                INNER JOIN contract ON contract.contractId = servicio.contractId
                                                INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId AND  tipoServicio.status='1'
@@ -261,7 +261,8 @@ class Invoice extends Comprobante
                                           servicio.servicioId,servicio.costo AS costoServicio,contract.contractId,contract.rfc,contract.address,contract.noExtAddress,
                                           contract.noIntAddress, contract.coloniaAddress,contract.municipioAddress, contract.cpAddress, contract.estadoAddress,
                                           contract.paisAddress, contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.noCuenta,
-                                          contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio  FROM instanciaServicio
+                                          contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio,tipoServicio.claveSat
+                                          FROM instanciaServicio
                                           INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
                                           INNER JOIN contract ON contract.contractId = servicio.contractId
                                           INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId AND  tipoServicio.status='1'
@@ -289,7 +290,7 @@ class Invoice extends Comprobante
                 $this->Util()->DB()->setQuery("SELECT servicio.servicioId,servicio.costo AS costoServicio,contract.contractId,contract.rfc,contract.address,contract.noExtAddress,
                                                contract.noIntAddress, contract.coloniaAddress,contract.municipioAddress, contract.cpAddress, contract.estadoAddress,
                                                contract.paisAddress, contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.noCuenta,
-                                               contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio
+                                               contract.name AS name,tipoServicio.tipoServicioId,tipoServicio.nombreServicio,tipoServicio.claveSat
                                                FROM servicio
                                                INNER JOIN contract ON contract.contractId = servicio.contractId
                                                INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId AND  tipoServicio.status='1'
@@ -392,6 +393,10 @@ class Invoice extends Comprobante
                $fecha = explode("-", $res["date"]);
                $fechaText = $months[$fecha[1]]." del ".$fecha["0"];
                $concepto = $res["nombreServicio"]." CORRESPONDIENTE AL MES DE ".$fechaText;
+               if($this->Util()->ValidateOnlyNumeric($res["claveSat"]))
+                   $claveProdServ = $res["claveSat"];
+               else
+                   $claveProdServ = '84111500';
                $_SESSION["conceptos"][] = array(
                    "noIdentificacion" => "",
                    "cantidad" => 1,
@@ -401,10 +406,10 @@ class Invoice extends Comprobante
                    "excentoIva" => "no",
                    "descripcion" => $concepto,
                    "tasaIva" => $tasaIva,
-                   "claveProdServ" => '84111500',
+                   "claveProdServ" => $claveProdServ,
                    "claveUnidad" => 'E48',
-                   'importeTotal' => $res["costoServicio"],
-                   'totalIva' => $iva,
+                   "importeTotal" => $res["costoServicio"],
+                   "totalIva" => $iva,
                );
                if($res['instanciaServicioId']>0)
                 $idInstServ[] = $res['instanciaServicioId'];
