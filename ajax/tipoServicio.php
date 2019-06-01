@@ -25,6 +25,7 @@ switch($_POST["type"])
 			$tipoServicio->setDepartamentoId($_POST['departamentoId']);
 			$tipoServicio->setCostoVisual($_POST['costoVisual']);
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
+        	$tipoServicio->setClaveSat($_POST['claveSat']);
 						
 			if(!$tipoServicio->Save())
 			{
@@ -67,9 +68,7 @@ switch($_POST["type"])
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-tipoServicio-popup.tpl');
 		break;
 	case "saveEditTipoServicio":
-			
 			$mostrarCostoVisual = ($_POST['mostrarCostoVisual']) ? '1' : '0';
-			
 			$tipoServicio->setTipoServicioId($_POST['tipoServicioId']);
 			$tipoServicio->setNombreServicio($_POST['nombreServicio']);
 			$tipoServicio->setCosto($_POST['costo']);
@@ -78,7 +77,7 @@ switch($_POST["type"])
 			$tipoServicio->setDepartamentoId($_POST['departamentoId']);
 			$tipoServicio->setCostoVisual($_POST['costoVisual']);
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
-			
+        	$tipoServicio->setClaveSat($_POST['claveSat']);
 			if(!$tipoServicio->Edit())
 			{
 				echo "fail[#]";

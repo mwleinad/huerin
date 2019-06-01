@@ -40,8 +40,12 @@
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Mostrar Costo Informativo:</i></div>
                 <input name="mostrarCostoVisual" id="mostrarCostoVisual" type="checkbox" value="1" class="smallInput" {if $post.mostrarCostoVisual == "1"}checked{/if} />
-
+                <hr>
 			</div>
+            <div class="formLine" style="width:100%; text-align:left" >
+                <div style="width:30%;float:left">* Clave SAT:</div>
+                <input name="claveSat" id="claveSat" type="text" value="{$post.claveSat}" class="smallIn2" />
+            </div>
               
 			<div style="clear:both"></div>
 			<hr />

@@ -9,6 +9,7 @@ class TipoServicio extends Main
 	private $departamentoId;
 	private $costoVisual;
 	private $mostrarCostoVisual;
+	private $claveSat;
 
 	public function setperiodicidad($value)
 	{
@@ -38,6 +39,13 @@ class TipoServicio extends Main
 		$this->Util()->ValidateString($value, 10000, 1, '<br> Nombre de servicio');
 		$this->nombreServicio = $value;
 	}
+    public function setClaveSat($value)
+    {
+        $this->Util()->ValidateRequireField($value, 'Clave SAT');
+        $this->Util()->ValidateString($value, 8, 8, 'Clave SAT');
+        $this->Util()->ValidateOnlyNumeric($value,"Clave SAT");
+        $this->claveSat = $value;
+    }
 
 	public function getNombreServicio()
 	{
@@ -173,6 +181,7 @@ class TipoServicio extends Main
 			SET
 				`tipoServicioId` = '".$this->tipoServicioId."',
 				`nombreServicio` = '".$this->nombreServicio."',
+				`claveSat` = '".$this->claveSat."',
 				`periodicidad` = '".$this->periodicidad."',
 				`departamentoId` = '".$this->departamentoId."',
 				`costoUnico` = '".$this->costoUnico."',
@@ -198,6 +207,7 @@ class TipoServicio extends Main
 			(
 				`tipoServicioId`,
 				`nombreServicio`,
+				`claveSat`,
 				`periodicidad`,
 				`departamentoId`,
 				`costoUnico`,
@@ -209,6 +219,7 @@ class TipoServicio extends Main
 		(
 				'".$this->tipoServicioId."',
 				'".$this->nombreServicio."',
+				'".$this->claveSat."',
 				'".$this->periodicidad."',
 				'".$this->departamentoId."',
 				'".$this->costoUnico."',

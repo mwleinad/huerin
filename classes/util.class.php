@@ -163,6 +163,16 @@ class Util extends Error
 
 		return true;
 	}
+    function ValidateOnlyNumeric($value,$field)
+    {
+        if (!ctype_digit($value))
+        {
+            $this->setError(10055, 'error', 'El valor debe ser una cadena numerica:',$field);
+            return false;
+        }
+
+        return true;
+    }
 
 	function ValidateOption($value, $field){
 
