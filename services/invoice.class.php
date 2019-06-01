@@ -394,7 +394,7 @@ class Invoice extends Comprobante
                $fechaText = $months[$fecha[1]]." del ".$fecha["0"];
                $concepto = $res["nombreServicio"]." CORRESPONDIENTE AL MES DE ".$fechaText;
                if($this->Util()->ValidateOnlyNumeric($res["claveSat"]))
-                   $claveProdServ = $res["claveSat"];
+                   $claveProdServ = trim($res["claveSat"]);
                else
                    $claveProdServ = '84111500';
                $_SESSION["conceptos"][] = array(
