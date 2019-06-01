@@ -124,10 +124,43 @@
             <td class="cell20">{$changes[$key]['valor']}</td>
         </tr>
         {foreachelse}
-        <tr><td colspan="2" class="textCenter">Sin cambios</td></tr>
+        <tr><td colspan="2" class="textCenter">Informacion no encontrada</td></tr>
     {/foreach}
     </tbody>
 </table>
 <hr />
+{if $serviciosAfectados|count>0}
+ <table cellpadding="0" cellspacing="0" class="tableFullWidth">
+        <thead>
+        <tr>
+            <th colspan="6" class="titleCenter">Servicios puestos en status de baja</th>
+        </tr>
+        <tr>
+            <th>Servicio</th>
+            <th>Inicio operacion</th>
+            <th>Inicio facturacion</th>
+            <th>Costo</th>
+            <th>ultimo workflow</th>
+            <th>Status actual</th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach from=$serviciosAfectados key=key item=item}
+            <tr>
+                <td>{$item.nombreServicio}</td>
+                <td>{$item.inicioOperaciones}</td>
+                <td>{$item.inicioFactura}</td>
+                <td>{$item.costo|number_format:2:'.':','}</td>
+                <td>{if $item.status eq "bajaParcial"}{$item.lastDateWorkflow}{else}N/A{/if}</td>
+                <td>{if $item.status eq "readonly"}Activo/Solo lectura{elseif $item.status eq "bajaParcial"}Baja temporal{else}{$item.status}{/if}</td>
+            </tr>
+            {foreachelse}
+            <tr>
+                <td colspan="6" class="textCenter">Ningun servicio afectado</td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+{/if}
 </body>
 </html>

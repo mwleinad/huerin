@@ -9,6 +9,7 @@ class Log extends Util
 	private $action;
 	private $oldValue;
 	private $newValue;
+	private $serviciosAfectados = [];
 	
 	public function setPersonalId($value){
 		$this->Util()->ValidateInteger($value);
@@ -38,29 +39,32 @@ class Log extends Util
 	public function setNewValue($value){
 		$this->newValue = $value;		
 	}
+    public function setServiciosAfectados($value){
+        $this->serviciosAfectados = $value;
+    }
 	public function SaveOnly(){
-        $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
-				 VALUES ('".$this->personalId."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";
+	    global $personal;
+
+	    $currentUser = $personal->getCurrentUser();
+        $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
+				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
+				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
         return true;
     }
 	public function Save(){
-
-		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue)
-				 VALUES ('".$this->personalId."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."')";
+	    global $personal;
+        $currentUser = $personal->getCurrentUser();
+		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
+				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
+				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
 		$body ="<pre>";
 		//quien realizo el cambio
-        $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$this->personalId.'" ');
-        $who = $this->Util()->DB()->GetSingle();
-
-        if($_SESSION['User']['tipoPers']=='Admin')
-            $who="Administrador de sistema";
+        $who = $currentUser["name"];
 
         $encargados=  array();
         $jefes = array();
@@ -255,11 +259,14 @@ class Log extends Util
             case 'Baja':
             case 'bajaParcial':
             case 'readonly':
-            case 'Insert'://si es update se necesitaria comparar que cambio se realizo
+            case 'Insert':
                 $changes = $this->FindFieldDetail($this->newValue);
                 if(!empty($changes)) {
                     $this->Util()->Smarty()->assign("body",$body);
                     $this->Util()->Smarty()->assign("changes",$changes);
+                    if(count($this->serviciosAfectados)>0)
+                        $this->Util()->Smarty()->assign("serviciosAfectados",$this->serviciosAfectados);
+
                     $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-general.tpl");
                     $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
                     $dompdf =  new Dompdf();
@@ -571,12 +578,8 @@ class Log extends Util
         return $html;
     }
     public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno',$lastDateWorkflow='0000-00-00'){
-
-        $this->Util()->DB()->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
-        $nombrePersonal = $this->Util()->DB()->GetSingle();
-        if($_SESSION['User']['tipoPers']=='Admin')
-            $nombrePersonal="Administrador de sistema";
-
+        global $personal;
+	    $currentUser = $personal->getCurrentUser();
         $this->Util()->DB()->setQuery("
 			INSERT INTO
 				historyChanges
@@ -596,8 +599,8 @@ class Log extends Util
 				'".$initFactura."',
 				'".$status."',
 				'".$costo."',
-				'".$personalId."',
-				'".$nombrePersonal."',
+				'".$currentUser["personalId"]."',
+				'".$currentUser["name"]."',
 				'".$initOperaciones."',
 				'".$lastDateWorkflow."'
 				
@@ -647,6 +650,10 @@ class Log extends Util
         $fileName  = $_SESSION['User']['userId']."_log_multiple_operation.pdf";
         $output =  $dompdf->output();
         file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
+
+        if(!SEND_LOG_MOD)
+            $emails = [];
+
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
         $subject = "NOTIFICACION DE CAMBIOS EN PLATAFORMA";
@@ -720,5 +727,27 @@ class Log extends Util
             return false;
 
         return $row;
+    }
+    function saveHistoryContract($conId,$status,$oldData,$newData){
+        global $personal;
+        $currentUser= $personal->getCurrentUser();
+        $this->Util()->DB()->setQuery("
+        INSERT INTO
+        contractChanges(
+            `contractId`,
+            `status`,
+            `oldData`,
+            `newData`,
+            `personalId`,
+            `namePerson`
+        )VALUES(
+            '$conId',
+            '$status',
+            '".urlencode(serialize($oldData))."',
+            '".urlencode(serialize($newData))."',
+            '".$currentUser['personalId']."',
+            '".$currentUser['name']."'
+        );");
+        $this->Util()->DB()->InsertData();
     }
 }//Log

@@ -2175,27 +2175,9 @@ class Contract extends Main
          $log->setOldValue(serialize($oldData));
          $log->setNewValue(serialize($newData));
          $log->Save();
-          //actualizar historial
-         $this->Util()->DB()->setQuery("
-                INSERT INTO
-                    contractChanges
-                (
-                    `contractId`,
-                    `status`,
-                    `oldData`,
-                    `newData`,
-                    `personalId`
-            )
-            VALUES
-            (
-                    '".$this->contractId."',
-                    '".$newData["activo"]."',
-    
-                    '".urlencode(serialize($oldData))."',
-                    '".urlencode(serialize($newData))."',
-                    '".$User["userId"]."'
-            );");
-          $this->Util()->DB()->InsertData();
+
+          //guardar historial
+         $log->saveHistoryContract($this->contractId,$newData["activo"],$oldData,$newData);
 	  return true;
   }
   /**
@@ -2450,12 +2432,11 @@ class Contract extends Main
   */
   public function Delete()
   {
-    global $User,$log;
+    global $User,$log,$servicio;
     $permiso =  new Permiso();
     if ($this->Util()->PrintErrors()) {
       return false;
     }
-
     $info = $this->Info();
     if ($info["activo"] == 'Si') {
       $active = 'No';
@@ -2464,16 +2445,10 @@ class Contract extends Main
       $active = 'Si';
       $complete = "La razon social fue dada de alta correctamente";
     }
-
-
     $this->Util()->DB()->setQuery(
-        "UPDATE
-          contract
-        SET
-          activo = '".$active."'
-        WHERE
-          contractId = '".$this->contractId."'"
-    );
+        "UPDATE contract
+               SET activo = '".$active."'
+               WHERE contractId = '".$this->contractId."'" );
     $this->Util()->DB()->UpdateData();
     //insertar nuevos permisos en la tabla contractPermiso
     $permiso->setContractId($this->contractId);
@@ -2483,47 +2458,32 @@ class Contract extends Main
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
 
-    //Guardamos el Log
+    //guardar historial de baja de razon social y dar de baja los servicios con status = activo,readonly o bajaParcial
+    $log->saveHistoryContract($this->contractId,$newData["activo"],$info,$newData);
+    if($active=='No'){
+        $serviciosAfectados = $servicio->downServicesByContract($this->contractId);
+        $log->setServiciosAfectados($serviciosAfectados);
+    }
+     //Guardar log y enviar por correo
     $log->setPersonalId($User['userId']);
     $log->setFecha(date('Y-m-d H:i:s'));
     $log->setTabla('contract');
     $log->setTablaId($this->contractId);
     if($active=="Si")
-    $log->setAction('Reactivacion');
+        $log->setAction('Reactivacion');
     elseif($active=='No')
-    $log->setAction('Baja');
+        $log->setAction('Baja');
 
     $log->setOldValue(serialize($info));
     $log->setNewValue(serialize($newData));
     $log->Save();
-    $this->Util()->DB()->setQuery("
-        INSERT INTO
-            contractChanges
-        (
-            `contractId`,
-            `status`,
-            `oldData`,
-            `newData`,
-            `personalId`
-    )
-    VALUES
-    (
-            '".$this->contractId."',
-            '".$newData["activo"]."',
-    
-            '".urlencode(serialize($info))."',
-            '".urlencode(serialize($newData))."',
-            '".$User["userId"]."'
-    );");
-    $this->Util()->DB()->InsertData();
-
 
     $this->Util()->setError(10031, "complete");
     $this->Util()->PrintErrors();
     return true;
   }
 
-    function c($contract)
+  function c($contract)
     {
         $resPermisos = explode('-',$contract['permisos']);
         $personal = new Personal();
@@ -3191,7 +3151,6 @@ class Contract extends Main
         return $data;
     }
     public function TrasnferContract(){
-
         //comprobar que no se repita el contrato para el cliente que se le transferira
         $sql = "select contractId from contract where customerId='".$this->customerId."' and name=(select name from contract where contractId='".$this->contractId."') ";
         $this->Util()->DB()->setQuery($sql);
