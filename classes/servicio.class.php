@@ -1509,8 +1509,10 @@ class Servicio extends Contract
 	     $lastId = $this->Util()->DB()->InsertData();
 	     $id_services[] = $lastId;
 	     $log->saveHistoryChangesServicios($lastId,$if,'activo',$cst,0,$io);
+
 	     $this->setServicioId($lastId);
          $newServicio = $this->InfoLog();
+
          $log->setPersonalId($_SESSION['User']['userId']);
          $log->setFecha(date('Y-m-d H:i:s'));
          $log->setTabla('servicio');
@@ -1525,5 +1527,40 @@ class Servicio extends Contract
        $this->Util()->setError(0,'complete',"Se han guardado correctamente los servicios.");
        $this->Util()->PrintErrors();
 	   return true;
+    }
+    /*
+     * Funcion
+     * Dar de baja definitiva los servicios en estado activo o baja temporal de un contrato
+     * @conId es el identificador del contrato
+     */
+    public function downServicesByContract($conId){
+        global $log;
+        $serviciosAfectados = [];
+        $sql ="select * from servicio where contractId='$conId' and status IN('activo','bajaParcial','readonly')";
+        $this->Util()->DB()->setQuery($sql);
+        $servicios = $this->Util()->DB()->GetResult();
+        foreach ($servicios as $key=>$servicio) {
+            $this->Util()->DB()->setQuery("update servicio set status='baja' where servicioId ='" . $servicio["servicioId"] . "' ");
+            $up = $this->Util()->DB()->UpdateData();
+            if ($up > 0) {
+                $log->saveHistoryChangesServicios($servicio["servicioId"], $servicio['inicioFactura'], "baja", $servicio["costo"], $_SESSION["User"]["personalId"], $servicio["inicioOperaciones"], "", $this->inicioOperaciones["lastDateWorkflow"]);
+
+                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio,b.periodicidad from servicio a 
+                                                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId where servicioId ='" . $servicio["servicioId"] . "' ");
+                $afterDetail = $this->Util()->DB()->GetRow();
+                $this->Util()->DB()->setQuery("select * from servicio where servicioId ='" . $servicio["servicioId"] . "' ");
+                $after = $this->Util()->DB()->GetRow();
+
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla('servicio');
+                $log->setTablaId($servicio["servicioId"]);
+                $log->setAction('Baja');
+                $log->setOldValue(serialize($servicio));
+                $log->setNewValue(serialize($after));
+                $log->SaveOnly();
+                array_push($serviciosAfectados,$afterDetail);
+            }
+        }
+        return $serviciosAfectados;
     }
 }

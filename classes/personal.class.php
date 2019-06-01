@@ -1273,6 +1273,7 @@ function SubordinadosDetails()
         $row= $this->Util()->DB()->GetRow();
         if($_SESSION['User']['tipoPers']=='Admin'){
             $row['name'] = "Administrador de sistema";
+            $row['personalId'] = 999990000;
         }
         return $row;
     }
