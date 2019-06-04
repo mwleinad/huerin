@@ -756,8 +756,7 @@ class CxC extends Producto
 			return false;
 		}
 
-		$this->Util()->DB()->setQuery("
-			UPDATE payment set paymentStatus='cancelado' WHERE paymentId = '".$id."'");
+		$this->Util()->DB()->setQuery("UPDATE payment set paymentStatus='cancelado' WHERE paymentId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
 
 		$this->Util()->setError(10046, "complete", "El pago fue cancelado correctamente");
