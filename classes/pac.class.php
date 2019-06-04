@@ -74,11 +74,18 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        if($rfcR=='GYM000821MB2')
+        if($rfcR=='GYM000821MB2'){
             dd($response);
+            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+            if($rfcR=='GYM000821MB2')
+                dd($cancelado);
+        }
+            
 
         if($response['cancelCFDiAsyncReturn']['status']==201){
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+            if($rfcR=='GYM000821MB2')
+                dd($cancelado);
             $data['cancelado'] = true;
             switch ($cancelado['getCFDiStatusReturn']['status']){
                 case 'Vigente':
