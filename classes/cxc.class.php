@@ -750,7 +750,7 @@ class CxC extends Producto
 			}
 		}
 
-		if($eliminarPago === false){
+		if(!$eliminarPago){
 			$this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
 			$this->Util()->PrintErrors();
 			return false;
