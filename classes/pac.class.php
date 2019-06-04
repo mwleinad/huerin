@@ -74,7 +74,7 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        if($rfcR=='XAXX010101000')
+        if($rfcR=='GYM000821MB2')
             dd($response);
 
         if($response['cancelCFDiAsyncReturn']['status']==201){

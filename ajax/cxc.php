@@ -105,35 +105,6 @@
 			echo "[#]";
 			echo number_format($compInfo["saldo"],2);
 			echo "[#]";
-/*				foreach($_POST as $key => $val){
-					$values[$key] = $val;
-				}
-
-
-				$comprobantes = array();
-				$comprobantes = $cxc->SearchCuentasPorCobrar($values);
-				$smarty->assign('comprobantes',$comprobantes);
-
-				$total = 0;
-				if($comprobantes["items"])
-				{
-					foreach($comprobantes["items"] as $res){
-						if($res["tipoDeComprobante"] == "ingreso")
-						{
-							$total += $res['total'];
-							$payments += $res['payment'];
-							$saldo += $res['saldo'];
-						}
-					}
-				}
-
-				$smarty->assign('totalFacturas',$totalFacturas);
-				$smarty->assign('total',$total);
-				$smarty->assign('payments',$payments);
-				$smarty->assign('saldo',$saldo);
-
-				$smarty->assign('DOC_ROOT', DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/cxc.tpl');*/
 		break;
 
 	case "saveEditCxC":
