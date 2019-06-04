@@ -693,15 +693,6 @@ class Empresa extends Main
 	
 	function Info($userId = 0)
 	{
-/*		$generalDb = new DB;
-		$generalDb->setQuery("SELECT * FROM usuario
-			LEFT JOIN empresa ON usuario.empresaId = empresa.empresaId WHERE userId = '".$userId."'");
-		if($userId == 0)
-		{
-			$generalDb->setQuery("SELECT * FROM usuario 
-			LEFT JOIN empresa ON usuario.empresaId = empresa.empresaId WHERE email = '".$_SESSION["loginKey"]."'");
-		}
-		$user = $generalDb->GetRow();*/
 		$user["empresaId"] = $_SESSION['empresaId'];
 		$user["version"] = "v3";
 

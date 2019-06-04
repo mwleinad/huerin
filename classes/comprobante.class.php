@@ -774,27 +774,26 @@ class Comprobante extends Producto
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		$xml = $row["xml"];
 
-		$info = $this->Info();
-		if($info["version"] == "v3" || $info["version"] == "construc")
+        $rfcActivo = $this->getRfcActive();
+        if($row["empresaId"] == 15)
+        {
+            $rfcActivo = 1;
+        }
+        elseif($row["empresaId"] == 20)
+        {
+            $rfcActivo = 29;
+        }
+        elseif($row["empresaId"] == 21)
+        {
+            $rfcActivo = 30;
+        }
+        else
+        {
+            $rfcActivo = 1;
+        }
+
+		if($row["version"] == "3.3" || $row["version"] == "construc")
 		{
-			$rfcActivo = $this->getRfcActive();
-			if($row["empresaId"] == 15)
-			{
-				$rfcActivo = 1;
-			}
-			elseif($row["empresaId"] == 20)
-			{
-				$rfcActivo = 29;
-			}
-			elseif($row["empresaId"] == 21)
-			{
-				$rfcActivo = 30;
-			}
-			else
-			{
-				$rfcActivo = 1;
-			}
-						
 			//$rfcActivo = $row["rfcId"];
 			$root = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/SIGN_".$xml.".xml";
 
@@ -836,57 +835,50 @@ class Comprobante extends Producto
 			$this->setRfcId($rfcActivo);
 			$nodoEmisorRfc = $this->InfoRfc();
 			$response = $pac->CancelaCfdi2018($user, $pw, $nodoEmisorRfc["rfc"],$row['rfc'], $uuid,$row['total'], $path, $password);
-		}
-		if($response['cancelado'])
-		{
-		    if($response['conAceptacion']){
-                $cancelation->addPetition($_SESSION['User']['userId'],$id_comprobante,$nodoEmisorRfc["rfc"],$row['rfc'],$uuid,$row['total'],$motivo_cancelacion);
+
+            if($response['cancelado'])
+            {
+                if($response['conAceptacion']){
+                    $cancelation->addPetition($_SESSION['User']['userId'],$id_comprobante,$nodoEmisorRfc["rfc"],$row['rfc'],$uuid,$row['total'],$motivo_cancelacion);
+                }else{
+                    $sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.date("Y-m-d").'",usuarioCancelacion="'.$_SESSION['User']['userId'].'" WHERE comprobanteId = '.$id_comprobante;
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                }
+                $this->Util()->setError('', "complete", $response['message']);
+                $this->Util()->PrintErrors();
+                return true;
             }else{
-                $sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "'.$motivo_cancelacion.'", status = "0", fechaPedimento = "'.date("Y-m-d").'",usuarioCancelacion="'.$_SESSION['User']['userId'].'" WHERE comprobanteId = '.$id_comprobante;
-                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
-                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                $this->Util()->setError('', "error", $response['message']);
+                $this->Util()->PrintErrors();
+                return false;
             }
-			$this->Util()->setError('', "complete", $response['message']);
-			$this->Util()->PrintErrors();
-			return true;
-		}else{
-            $this->Util()->setError('', "error", $response['message']);
+		}else {
+            //en teoria del 2017 en adelante el codigo siguiente nunca deberia ser usado por que ya no existe facturas con versiones anteriores
+            $fileName = $xml . ".pdf";
+            $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/facturas/pdf/" . $fileName;
+            //chmod($path, 0777);
+            $pdf = new FPDI();
+
+            $pagecount = $pdf->setSourceFile($path);
+            $tplidx = $pdf->importPage(1, '/MediaBox');
+
+            $pdf->addPage();
+            $pdf->useTemplate($tplidx, 0, 0, 210);
+
+            $pdf->AddFont('verdana', '', 'verdana.php');
+            $pdf->SetFont('verdana', '', 72);
+
+            $pdf->SetY(100);
+            $pdf->SetX(10);
+            $pdf->SetTextColor(200, 0, 0);
+            $pdf->Cell(20, 10, "CANCELADO", 0, 0, 'L');
+            $pdf->Output($path, 'F');
+            //echo "jere";
+            $this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
             $this->Util()->PrintErrors();
-            return false;
+            return true;
         }
-
-		if($row['version'] == '3.3') {
-			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
-			$this->Util()->PrintErrors();
-			return true;
-		}
-
-
-			//en teoria del 2017 en adelante el codigo siguiente nunca deberia ser usado por que ya no existe facturas con versiones anteriores
-			$fileName = $xml.".pdf";
-			$path = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/facturas/pdf/".$fileName;
-			//chmod($path, 0777);
-			$pdf = new FPDI();
-
-			$pagecount = $pdf->setSourceFile($path);
-			$tplidx = $pdf->importPage(1, '/MediaBox');
-
-			$pdf->addPage();
-			$pdf->useTemplate($tplidx, 0, 0, 210);
-
-			$pdf->AddFont('verdana','','verdana.php');
-			$pdf->SetFont('verdana','',72);
-
-			$pdf->SetY(100);
-			$pdf->SetX(10);
- 			$pdf->SetTextColor(200, 0, 0);
-	  	    $pdf->Cell(20,10,"CANCELADO",0,0,'L');
-			$pdf->Output($path, 'F');
-			//echo "jere";
-			$this->Util()->setError('20027', "complete", "El folio ha sido cancelado exitosamente");
-			$this->Util()->PrintErrors();
-			return true;
-
 	}//CancelarComprobante
 	function GetTotalDesglosado($data)
 	{
