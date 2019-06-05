@@ -1275,7 +1275,6 @@ class Servicio extends Contract
             $log->setOldValue(serialize($before));
             $log->setNewValue(serialize($after));
             $log->SaveOnly();
-            //actualizar historial
             //actualizar historial del servicio
             $log->saveHistoryChangesServicios($value['servicioId'],$value['inicioFactura'],lcfirst($action),$value['costo'],$User['userId'],$value['inicioOperaciones'],$who);
             $servicioAfectado= $value;

@@ -25,9 +25,9 @@
             </td>
         {/if}
         {if in_array(205,$permissions) || $User.isRoot}
-            <td align="left">
-                {$item.activo}
-            </td>
+        <td align="left">
+            {$item.activo}{if $item.haveTemporal}- Con Bajas Temporales{/if}
+        </td>
         {/if}
         {if in_array(206,$permissions) || $User.isRoot}
             <td align="center">
