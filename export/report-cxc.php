@@ -75,23 +75,23 @@ foreach($totales as $key=>$cxc){
                     <span style=\"color:blue\">[+]</span>
                 </div>
             </td>
-            <td>".$cxc['nameContact']."</td>
-             <td>".$key."</td>
-             <td>".$cxc['facturador']."</td>
-             <td>".number_format($cxc['saldoAnterior'],2,'.',',')."</td>
-             <td>".number_format($cxc['total'],2,'.',',')."</td>
-             <td>".number_format($cxc['payment'],2,'.',',')."</td>
-             <td>".number_format($cxc['saldo'],2,'.',',')."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".$cxc['nameContact']."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".$key."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".$cxc['facturador']."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".number_format($cxc['saldoAnterior'],2,'.',',')."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".number_format($cxc['total'],2,'.',',')."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".number_format($cxc['payment'],2,'.',',')."</td>
+             <td style='background-color: #9fd39c;color: #0f0f0f'>".number_format($cxc['saldo'],2,'.',',')."</td>
         </tr>
     ";
     $x .="<tr>
-            <td colspan=\"2\" style='background-color: #E0E5E7;color: #0f0f0f'></td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Folio</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Fecha</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>saldo</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'></td>
+            <td colspan=\"2\"></td>
+            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Folio</td>
+            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Fecha</td>
+            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Pagos</td>
+            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>saldo</td>
+            <td></td>
         </tr>";
     foreach($cxc['facturas'] as $kf=>$factura){
         $x .="<tr>
@@ -100,22 +100,22 @@ foreach($totales as $key=>$cxc){
                         <span style=\"color:blue;\">[+]</span>
                     </div>
                 </td>
-                <td>".$factura['serie'].$factura['folio']."</td>
-                <td>".$factura['fecha']."</td>
-                <td>".number_format($factura['total'],2,'.',',')."</td>
-                <td>".number_format($factura['payment'],2,'.',',')."</td>
-                <td>".number_format($factura['saldo'],2,'.',',')."</td>
+                <td  style='background-color:#3df5ff'>".$factura['serie'].$factura['folio']."</td>
+                <td  style='background-color:#3df5ff'>".$factura['fecha']."</td>
+                <td  style='background-color:#3df5ff'>".number_format($factura['total'],2,'.',',')."</td>
+                <td  style='background-color:#eae527'>".number_format($factura['payment'],2,'.',',')."</td>
+                <td  style='background-color:#3df5ff'>".number_format($factura['saldo'],2,'.',',')."</td>
                 <td></td>
               </tr> 
         ";
         $x .="<tr>
-            <td colspan=\"2\" style='background-color: #E0E5E7;color: #0f0f0f'></td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Folio</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Fecha</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Metodo de pago</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'>Deposito</td>
-            <td style='background-color: #E0E5E7;color: #0f0f0f;text-align: left;font-weight: bold'></td>
+            <td colspan=\"2\"></td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Folio</td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Fecha</td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Metodo de pago</td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
+            <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Deposito</td>
+            <td></td>
         </tr>";
        if(!empty($factura['payments'])){
            foreach($factura['payments']  as $payment){
@@ -132,7 +132,7 @@ foreach($totales as $key=>$cxc){
        } else{
            $x .="<tr>
                     <td colspan=\"2\"></td>
-                    <td colspan=\"5\">No existe movimientos de pagos para esta factura.</td>
+                    <td colspan=\"5\" align='center'>No existe movimientos de pagos para esta factura.</td>
                 </tr>";
        }
 

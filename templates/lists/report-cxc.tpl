@@ -15,27 +15,26 @@
 <tbody>
 {foreach from=$totales item=cxc key=key name=totales}
 <tr >
-    <td  align="center" class="" title="{$cxc.nameContact}" >
+    <td style="text-align: center;" class="" title="{$cxc.nameContact}" >
 		<div onclick="ToggleSpecifiedDiv('{$smarty.foreach.totales.index}')" style="cursor:pointer" >
 			<span style="color: blue;" id="color_{$smarty.foreach.totales.iteration}">[+]</span>
 		</div>
     </td>
-    <td  align="center" class="" title="{$cxc.nameContact}">{$cxc.nameContact}</td>
-    <td  align="center" class="" title="{$cxc.nombre}">{$key}</td>
-    <td  align="center" class="" title="{$cxc.responsable.name}">{$cxc.facturador}</td>
-	<td  align="center" class="" title="{$cxc.responsable.name}">${$cxc.saldoAnterior|number_format:2}</td>
-    <td  align="center" class="" title="{$cxc.responsable.name}">${$cxc.total|number_format:2}</td>
-    <td  align="center" class="" title="{$cxc.responsable.name}">${$cxc.payment|number_format:2}</td>
-    <td  align="center" class="" title="{$cxc.responsable.name}">${$cxc.saldo|number_format:2}</td>
+    <td style="background: #9fd39c; text-align: center;" class="" title="{$cxc.nameContact}">{$cxc.nameContact}</td>
+    <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.nombre}">{$key}</td>
+    <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">{$cxc.facturador}</td>
+	<td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">${$cxc.saldoAnterior|number_format:2}</td>
+    <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">${$cxc.total|number_format:2}</td>
+    <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">${$cxc.payment|number_format:2}</td>
+    <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">${$cxc.saldo|number_format:2}</td>
 </tr>
-
 <tr class="class-{$smarty.foreach.totales.index}" id="folio-{$smarty.foreach.totales.index}" style="display:none">
 	<td  colspan="2" align="center" style="width: 2%" >&nbsp</td>
-	<td style="background: #D3D3D3;text-align:center;width: 3%">Folio</td>
-	<td style="background: #D3D3D3;text-align:center">Fecha</td>
-	<td style="background: #D3D3D3;text-align:right">Importe</td>
-	<td style="background: #D3D3D3;text-align:right">Pagos</td>
-	<td style="background: #D3D3D3;text-align:right">Saldo</td>
+	<td style="background: #06b8f6;text-align:center;width: 3%;font-weight: bold">Folio</td>
+	<td style="background: #06b8f6;text-align:center;font-weight: bold">Fecha</td>
+	<td style="background: #06b8f6;text-align:right;font-weight: bold">Importe</td>
+	<td style="background: #eae527;text-align:right;font-weight: bold">Pagos</td>
+	<td style="background: #06b8f6;text-align:right;font-weight: bold">Saldo</td>
 	<td>&nbsp;</td>
 </tr>
 
@@ -46,20 +45,24 @@
 				<span style="color: blue;" id="color_py_{$smarty.foreach.facturas.iteration}">[+]</span>
 			</div>
 		</td>
-		<td align="center" style="padding-left:15px;">{$factura.serie}{$factura.folio}</td>
-		<td align="center" style="padding-right:15px">{$factura.fecha}</td>
-		<td align="right" >${$factura.total_formato|number_format:2}</td>
-		<td align="right" >${$factura.payment|number_format:2}</td>
-		<td align="right" >${$factura.saldo|number_format:2}</td>
+		<td align="center" style="background: #3df5ff;padding-left:15px;">{$factura.serie}{$factura.folio}</td>
+		<td align="center" style="background: #3df5ff;padding-right:15px">{$factura.fecha}</td>
+		<td align="right" style="background: #3df5ff" >${$factura.total_formato|number_format:2}</td>
+		<td align="right" style="background: #eae527" >${$factura.payment|number_format:2}</td>
+		<td align="right" style="background: #3df5ff" >${$factura.saldo|number_format:2}</td>
 		<td colspan="1"></td>
 	</tr>
 		<tr class="showPayment-{$smarty.foreach.facturas.index}-{$smarty.foreach.totales.index}" id="pagos-{$smarty.foreach.facturas.index}" style="display:none">
-			<td align="right" colspan="2">&nbsp;</td>
-			<td style="background: #D3D3D3;text-align: left;">Folio</td>
-			<td style="background: #D3D3D3;text-align: left;">Fecha</td>
-			<td style="background: #D3D3D3;text-align: left;">Metodo de pago</td>
-			<td style="background: #D3D3D3;text-align: left;">Importe</td>
-			<td style="background: #D3D3D3;text-align: left;">Deposito</td>
+			<td colspan="2"></td>
+			<td colspan="5"  style="background: #eae527;text-align:center;font-weight: bold">Pagos de {$factura.serie}{$factura.folio}</td>
+		</tr>
+		<tr class="showPayment-{$smarty.foreach.facturas.index}-{$smarty.foreach.totales.index}" id="pagos-{$smarty.foreach.facturas.index}" style="display:none">
+			<td align="right" colspan="2">&nbsp</td>
+			<td style="background: #eae527;text-align: left;font-weight: bold;">Folio</td>
+			<td style="background: #eae527;text-align: left;font-weight: bold;">Fecha</td>
+			<td style="background: #eae527;text-align: left;font-weight: bold;">Metodo de pago</td>
+			<td style="background: #eae527;text-align: left;font-weight: bold;">Importe</td>
+			<td style="background: #eae527;text-align: left;font-weight: bold;">Deposito</td>
 			<td>&nbsp;</td>
 		</tr>
 		{foreach from=$factura.payments item=payment  name=payments}
