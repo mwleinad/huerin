@@ -7,7 +7,7 @@
 			<img src="{$WEB_ROOT}/images/b_dele.png" onclick="DeleteArchivoPopup({$item.departamentosArchivosId}, {$id})" id="{$item.departamentosArchivosId}"/>
 			{/if}
             {if (in_array(149,$permissions)&&in_array(151,$permissions)) || $User.isRoot}
-			<img src="{$WEB_ROOT}/images/b_edit.png" onclick="EditArchivoPopup({$item.departamentosArchivosId})" title="Editar" id="{$item.departamentosArchivosId}"/>
+			<img src="{$WEB_ROOT}/images/b_edit.png" onclick="EditArchivoPopup({$item.departamentosArchivosId},{$id})" title="Editar" id="{$item.departamentosArchivosId}"/>
             {/if}
 		</td>    
 	</tr>

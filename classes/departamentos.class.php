@@ -4,6 +4,8 @@ class Departamentos extends Main
 {
 	private $departamentoId;
 	private $departamento;
+	private $depArchivoId;
+	private $nameArchivo;
 
 	public function setDepartamentoId($value)
 	{
@@ -26,7 +28,25 @@ class Departamentos extends Main
 	{
 		return $this->departamento;
 	}
-
+	public function setDepArchivoId($value){
+	    $this->Util()->ValidateInteger($value);
+	    $this->depArchivoId = $value;
+    }
+    public function setNameArchivo($value){
+        $this->Util()->ValidateRequireField($value,"Nombre");
+        $this->nameArchivo = $value;
+    }
+    public function isUploadFile($FILES=[]){
+	    if(empty($FILES))
+	        $this->Util()->setError(0,'error','Es necesario adjuntar un archivo');
+	    else{
+            $nameFile = "archivos/depa_".$this->departamentoId."_".$FILES['name'];
+            $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM departamentosArchivos WHERE departamentoId = '".$this->departamentoId."' AND path = '".$nameFile."'");
+            $count = $this->Util()->DB()->GetSingle();
+            if($count>0)
+                $this->Util()->setError(0,'error','Ya existe un archivo con el mismo nombre en este departamento, favor de verificar');
+        }
+    }
     public function GetListDepartamentos()
     {
         $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY departamento ASC ');
@@ -91,7 +111,7 @@ class Departamentos extends Main
 
 	public function Archivos()
 	{
-		$this->Util()->DB()->setQuery("SELECT * FROM departamentosArchivos WHERE departamentoId = '".$this->departamentoId."'");
+		$this->Util()->DB()->setQuery("SELECT * FROM departamentosArchivos WHERE departamentoId = '".$this->departamentoId."' ORDER BY name asc");
 		$row = $this->Util()->DB()->GetResult();
 		return $row;
 	}
@@ -153,31 +173,15 @@ class Departamentos extends Main
 	
 	function SubirArchivo()
 	{
-		global $User;
+        if($this->Util()->PrintErrors())
+            return false;
+
 		$folder = DOC_ROOT."/archivos";
-		$ext = strtolower(end(explode('.', $_FILES["path"]['name'])));
 
-		$target_path = $folder ."/depa_".$_POST["id"]."_".$_FILES["path"]['name']; 
-
-		$short_path = "archivos/depa_".$_POST["id"]."_".$_FILES["path"]['name'];
-		
-		$target_path_path = basename( $_FILES["path"]['name']); 
-			
+		$target_path = $folder ."/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
+		$short_path = "archivos/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
 		if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)) {
-			
-			$this->Util()->DB()->setQuery("
-				SELECT COUNT(*) FROM
-					departamentosArchivos
-				WHERE
-					departamentoId = '".$_POST["id"]."' AND path = '".$short_path."'");
-			$count = $this->Util()->DB()->GetSingle();
-			
-			if($count > 0)
-			{
-				return;
-			}
-			
-				$this->Util()->DB()->setQuery("
+            $this->Util()->DB()->setQuery("
 					REPLACE INTO `departamentosArchivos` 
 					(
 					`departamentoId`, 
@@ -188,61 +192,83 @@ class Departamentos extends Main
 					) 
 					VALUES 
 					(
-					'".$_POST["id"]."', 
-					'".$short_path."', 
-					'".$_POST["name"]."', 
-					'".date("Y-m-d")."', 
-					'".$_FILES["path"]["type"]."'
+					'" . $this->departamentoId . "', 
+					'" . $short_path . "', 
+					'" . $this->nameArchivo . "', 
+					'" . date("Y-m-d") . "', 
+					'" . $_FILES["path"]["type"] . "'
 				);");
-				$this->Util()->DB()->InsertData();
-			}
-		else
-		{
-			echo "No se pudo subir el archivo";
+            $this->Util()->DB()->InsertData();
+            $this->Util()->setError(0,'complete',"Se ha agregado un nuevo archivo");
+            $this->Util()->PrintErrors();
+            return true;
+        }else{
+			$this->Util()->setError(0,'error','Error al mover archivo al servidor');
+			$this->Util()->PrintErrors();
+			return false;
 		}
-		
 	}	
 	
 	function ActualizarArchivo()
 	{
-		global $User;
+		if($this->Util()->PrintErrors())
+		    return false;
+        $strUpdateArchivo = "";
+        $msj = "";
 		$folder = DOC_ROOT."/archivos";
-		$ext = strtolower(end(explode('.', $_FILES["path"]['name'])));
-
-		$target_path = $folder ."/depa_".$_POST["id"]."_".$_FILES["path"]['name']; 
-
-		$short_path = "archivos/depa_".$_POST["id"]."_".$_FILES["path"]['name'];
-		
-		$target_path_path = basename( $_FILES["path"]['name']); 
-			
-		if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)) {
-			
-				$this->Util()->DB()->setQuery("
+		if(!empty($_FILES["path"])){
+            $ext = strtolower(end(explode('.', $_FILES["path"]['name'])));
+            $type = strtolower(end(explode('.', $_FILES["path"]['type'])));
+            $target_path = $folder ."/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
+            $short_path = "archivos/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
+            if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)){
+                $strUpdateArchivo .=", mime = '$type', path='$short_path' ";
+                $msj= " y el archivo ";
+            }else {
+              $this->Util()->setError(0,"error","Error al mover archivo al servidor");
+              $this->Util()->PrintErrors();
+              return false;
+            }
+        }
+		$this->Util()->DB()->setQuery("
 					UPDATE `departamentosArchivos`  SET
-					`path` = '".$short_path."', 
-					`name` = '".$_POST["name"]."', 
-					`fecha` = '".date("Y-m-d")."', 
-					`mime` = '".$_FILES["path"]["type"]."' WHERE  departamentosArchivosId = '".$_POST["departamentosArchivosId"]."'");
-				$this->Util()->DB()->InsertData();
-			}
-		else
-		{
-			echo "No se pudo subir el archivo";
-		}
-		
-	}		
-	
+					name = '".$this->nameArchivo."', 
+					fecha = '".date("Y-m-d")."'
+					$strUpdateArchivo 
+					WHERE  departamentosArchivosId = '".$this->depArchivoId."' ");
+				$this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(0,"complete","Se ha actualizado el nombre $msj correctamente");
+        $this->Util()->PrintErrors();
+		return true;
+	}
 	public function InfoArchivo($id)
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM departamentosArchivos WHERE departamentosArchivosId = '".$id."'");
 		$row = $this->Util()->DB()->GetRow();
+
+        $file = "";
+		if(strlen($row['path'])>0)
+		    $file = DOC_ROOT."/".$row['path'];
+
+		if(file_exists($file))
+		    $row["fileExist"] =  true;
 		return $row;
 	}
 
 	public function DeleteArchivo($id)
 	{
+	    $this->Util()->DB()->setQuery("select path from departamentosArchivos where departamentosArchivosId = '$id' ");
+	    $path = $this->Util()->DB()->GetSingle();
 		$this->Util()->DB()->setQuery("DELETE FROM departamentosArchivos WHERE departamentosArchivosId = '".$id."'");
-		$row = $this->Util()->DB()->DeleteData();
+		$this->Util()->DB()->DeleteData();
+
+        if(strlen($path)>1){
+            if(file_exists(DOC_ROOT."/".$path))
+                unlink(DOC_ROOT."/".$path);
+        }
+        $this->Util()->setError(0,"complete","Arachivo eliminado correctamente");
+        $this->Util()->PrintErrors();
 		return true;
 	}
 }
