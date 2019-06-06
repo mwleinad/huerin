@@ -45,7 +45,7 @@
 	{/if}
 	{if in_array(222,$permissions) || $User.isRoot}
     <tr>
-		<td align="left" width="40%">Nombre Comercial</td>
+		<td align="left" width="40%">Actividad Económica</td>
 		<td align="left">{$infoRazonSocial.nombreComercial}</td>
 	</tr>
 	{/if}
