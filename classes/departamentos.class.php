@@ -170,15 +170,17 @@ class Departamentos extends Main
 			$this->Util()->PrintErrors();
 		return true;
 	}
-	
 	function SubirArchivo()
 	{
+	    global $personal;
         if($this->Util()->PrintErrors())
             return false;
 
 		$folder = DOC_ROOT."/archivos";
+        $currentUser = $personal->getCurrentUser();
 
 		$target_path = $folder ."/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
+        $nameNewFile = $_FILES["path"]['name'];
 		$short_path = "archivos/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
 		if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)) {
             $this->Util()->DB()->setQuery("
@@ -201,44 +203,94 @@ class Departamentos extends Main
             $this->Util()->DB()->InsertData();
             $this->Util()->setError(0,'complete',"Se ha agregado un nuevo archivo");
             $this->Util()->PrintErrors();
+
+            $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId='".$this->departamentoId."' ");
+            $nameDep = $this->Util()->DB()->GetSingle();
+            $body ="<div style='width: 500px;text-align: justify'>";
+            $body .="<p>El colaborador ".$currentUser["name"]." ha agregado un nuevo archivo al departamento de ".$nameDep." con el siguiente nombre:</p> ";
+            $body .="<p>- ".$this->nameArchivo."</p> ";
+            $body .="<p>Adjunto a este correo puede encontrar el archivo.</p> ";
+
+            $personal->setDepartamentoId($this->departamentoId);
+            $emails = $personal->getListPersonalByDepartamento("email");
+            if(!SEND_LOG_MOD)
+                $emails = [];
+
+            $send = new SendMail();
+            $send->PrepareMultipleNotice("NOTIFICACION DE CAMBIOS EN PLATAFORMA",$body,$emails,"","","",$target_path,$nameNewFile,"noreply@braunhuerin.com.mx","PLATAFORMA OPERATIVA",true);
+
             return true;
         }else{
 			$this->Util()->setError(0,'error','Error al mover archivo al servidor');
 			$this->Util()->PrintErrors();
 			return false;
 		}
-	}	
-	
+	}
 	function ActualizarArchivo()
 	{
-		if($this->Util()->PrintErrors())
+		global $personal;
+	    if($this->Util()->PrintErrors())
 		    return false;
         $strUpdateArchivo = "";
         $msj = "";
 		$folder = DOC_ROOT."/archivos";
+		$updated = 0;
+		$currentUser = $personal->getCurrentUser();
+        $current = $this->InfoArchivo($this->depArchivoId);
+        $target_path = "";
+        $nameNewFile = "";
+        $current_path ="";
+        $nameCurrentFile ="";
+
+        $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId='".$this->departamentoId."' ");
+        $nameDep = $this->Util()->DB()->GetSingle();
+
+		$body ="<div style='width: 500px;text-align: justify'>";
+		$body .="<p>El colaborador ".$currentUser["name"]." ha realizado cambios en los archivos del departamento de ".$nameDep." y son las siguientes:</p> ";
 		if(!empty($_FILES["path"])){
-            $ext = strtolower(end(explode('.', $_FILES["path"]['name'])));
+		    $nameNewFile ="depa_".$this->departamentoId."_".$_FILES["path"]['name'];
             $type = strtolower(end(explode('.', $_FILES["path"]['type'])));
-            $target_path = $folder ."/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
-            $short_path = "archivos/depa_".$this->departamentoId."_".$_FILES["path"]['name'];
+            $target_path = $folder ."/".$nameNewFile;
+            $short_path = "archivos/".$nameNewFile;
             if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)){
                 $strUpdateArchivo .=", mime = '$type', path='$short_path' ";
                 $msj= " y el archivo ";
+                $updated = 1;
+                $nameNewFile = "(nuevo)".$nameNewFile;
+                $body .="<p>- Se actualizo el archivo ".$this->nameArchivo.", adjunto al correo puede encontrar la anterior y nueva version del archivo.</p>";
+                $current_path = DOC_ROOT."/".$current["path"];
+                if(file_exists($current_path)){
+                    $nameCurrentFile = substr($current["path"],9);
+                    $nameCurrentFile = "(anterior)".$nameCurrentFile;
+                }
+                else
+                    $current_path ="";
             }else {
               $this->Util()->setError(0,"error","Error al mover archivo al servidor");
               $this->Util()->PrintErrors();
               return false;
             }
         }
-		$this->Util()->DB()->setQuery("
+		if($current["name"]!=$this->nameArchivo){
+		    $updated=1;
+		    $body .="<p>- Actualizacion de nombre de archivo, de llamarse ".$current["name"]." a ".$this->nameArchivo."</p>";
+        }
+		if($updated) {
+            $this->Util()->DB()->setQuery("
 					UPDATE `departamentosArchivos`  SET
-					name = '".$this->nameArchivo."', 
-					fecha = '".date("Y-m-d")."'
+					name = '" . $this->nameArchivo . "', 
+					fecha = '" . date("Y-m-d") . "'
 					$strUpdateArchivo 
-					WHERE  departamentosArchivosId = '".$this->depArchivoId."' ");
-				$this->Util()->DB()->UpdateData();
-
-        $this->Util()->setError(0,"complete","Se ha actualizado el nombre $msj correctamente");
+					WHERE  departamentosArchivosId = '" . $this->depArchivoId . "' ");
+            $this->Util()->DB()->UpdateData();
+            $personal->setDepartamentoId($this->departamentoId);
+            $emails = $personal->getListPersonalByDepartamento("email");
+            if(!SEND_LOG_MOD)
+                $emails = [];
+            $send = new SendMail();
+            $send->PrepareMultipleNotice("NOTIFICACION DE CAMBIOS EN PLATAFORMA",$body,$emails,"",$current_path,$nameCurrentFile,$target_path,$nameNewFile,"noreply@braunhuerin.com.mx","PLATAFORMA OPERATIVA",true);
+        }
+        $this->Util()->setError(0, "complete", "Se ha actualizado el nombre $msj correctamente");
         $this->Util()->PrintErrors();
 		return true;
 	}
@@ -255,17 +307,36 @@ class Departamentos extends Main
 		    $row["fileExist"] =  true;
 		return $row;
 	}
-
 	public function DeleteArchivo($id)
 	{
-	    $this->Util()->DB()->setQuery("select path from departamentosArchivos where departamentosArchivosId = '$id' ");
-	    $path = $this->Util()->DB()->GetSingle();
+	    global $personal;
+	    $this->Util()->DB()->setQuery("select * from departamentosArchivos where departamentosArchivosId = '$id' ");
+	    $file= $this->Util()->DB()->GetRow();
 		$this->Util()->DB()->setQuery("DELETE FROM departamentosArchivos WHERE departamentosArchivosId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
 
-        if(strlen($path)>1){
-            if(file_exists(DOC_ROOT."/".$path))
-                unlink(DOC_ROOT."/".$path);
+        if(strlen($file["path"])>1) {
+            if (file_exists(DOC_ROOT . "/" . $file["path"]))
+            {
+                $currentFile= DOC_ROOT . "/" . $file["path"];
+                $nameFile = substr($file["path"],9);
+                $currentUser = $personal->getCurrentUser();
+                $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId='" .$file["departamentoId"]. "' ");
+                $nameDep = $this->Util()->DB()->GetSingle();
+                $body = "<div style='width: 500px;text-align: justify'>";
+                $body .= "<p>El colaborador " . $currentUser["name"] . " ha eliminado un archivo del departamento de " . $nameDep . " con el siguiente nombre:</p> ";
+                $body .= "<p>- " .$file["name"]. "</p> ";
+                $body .= "<p>Adjunto a este correo puede encontrar el archivo eliminado.</p> ";
+
+                $personal->setDepartamentoId($file["departamentoId"]);
+                $emails = $personal->getListPersonalByDepartamento("email");
+                if (!SEND_LOG_MOD)
+                    $emails = [];
+
+                $send = new SendMail();
+                $send->PrepareMultipleNotice("NOTIFICACION DE CAMBIOS EN PLATAFORMA", $body, $emails, "", "", "", $currentFile, $nameFile, "noreply@braunhuerin.com.mx", "PLATAFORMA OPERATIVA", true);
+                unlink(DOC_ROOT . "/" . $file["path"]) ;
+            }
         }
         $this->Util()->setError(0,"complete","Arachivo eliminado correctamente");
         $this->Util()->PrintErrors();

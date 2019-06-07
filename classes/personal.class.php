@@ -1277,6 +1277,30 @@ function SubordinadosDetails()
         }
         return $row;
     }
+    /*
+     * funcion getListPersonalByDepartamento retorna informacion de personas dado un departamento que se pasa mediante el metodo setDepartamentoId() del objeto persona.
+     * @field parametro que definira que se retornara como clave valor
+     * - email: retorta como clave el correo y valor el nombre de la persona, solo si el correo es valido
+     * -default: retorna un array associativo de todos los campos de una persona
+     */
+    public function getListPersonalByDepartamento($field="")
+    {
+        $return = [];
+        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE departamentoId='".$this->departamentoId."' ORDER BY name asc ");
+        $empleados = $this->Util()->DB()->GetResult();
+        switch($field){
+            case 'email':
+                foreach($empleados as $key=>$value){
+                    if($this->Util()->ValidateEmail($value["email"]))
+                        $return[$value["email"]] = $value["name"];
+                }
+            break;
+            default:
+                $return = $empleados;
+            break;
+        }
+        return $return;
+    }
     
 }
 

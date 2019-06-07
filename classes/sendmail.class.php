@@ -95,14 +95,13 @@ class SendMail extends Main
 	}
     public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
-        $mail = new PHPMailer(); // defaults to using php "mail()"
+        $mail = new PHPMailer();
 
         $mail->AddReplyTo($from, $fromName);
         $mail->SetFrom($from, $fromName);
         foreach($to as $correo => $name)
         {
            $mail->AddBCC($correo, $name);
-
         }
         if($sendDesarrollador)
             $mail->AddBCC(EMAIL_DEV,'Desarrollador');
