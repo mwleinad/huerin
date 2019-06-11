@@ -268,6 +268,11 @@ class Razon extends Contract
         if($from33)
             $body = utf8_decode($body);
 
+       if(!SEND_LOG_MOD){
+           $correos = [];
+           $encargados = [];
+       }
+
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
        {
            //se actualiza que se envio por correo el comprobante

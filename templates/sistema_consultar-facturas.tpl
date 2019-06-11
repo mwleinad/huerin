@@ -20,7 +20,7 @@
   
   <div class="portlet">
      
-      <div class="portlet-content nopadding borderGray">
+    <div class="portlet-content nopadding borderGray">
      {include file="forms/facturas-busqueda.tpl"}
     <br />
     <div id="total">

@@ -6,11 +6,8 @@
 	include_once(DOC_ROOT.'/libraries.php');
 
 	switch($_POST['type']){
-	
 		case 'showDetails':
-		
-			$id_comprobante = $_POST['id_item'];			
-			
+			$id_comprobante = $_POST['id_item'];
 			$compInfo = $comprobante->GetInfoComprobante($id_comprobante);
 			$user->setUserId($compInfo['userId'],1);
 			$usr = $user->GetUserInfo();
@@ -28,11 +25,8 @@
 			$info = $user->Info();
 			$smarty->assign("info", $info);	
 			$smarty->display(DOC_ROOT.'/templates/boxes/acciones-factura-popup.tpl');
-			
-			break;
-		
+		break;
 		case 'cancelar_div':
-		
 			$id_comprobante = $_POST['id_item'];			
 			
 			$compInfo = $comprobante->GetInfoComprobante($id_comprobante);
@@ -51,37 +45,67 @@
 			$smarty->assign('folio', $folio);
 			$smarty->assign('DOC_ROOT', DOC_ROOT);			
 			$smarty->display(DOC_ROOT.'/templates/boxes/cancelar-factura-popup.tpl');
-			
-			break;
-		
+		break;
 		case 'cancelar_factura':
-		
 			$empresa->setComprobanteId($_POST['id_comprobante']);
 			$empresa->setMotivoCancelacion($_POST['motivo']);
-															
+			$cancelado = true;
 			if(!$empresa->CancelarComprobante()){
 				echo 'fail[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-			}else{				
+			}else{
+				$comprobantes = [];
+                $comprobante->setPage(0);
+                $values["comprobante"] = 0;
+                $values["responsableCuenta"] = 0;
+                $comprobantes = $comprobante->SearchComprobantesByRfc($values);
+                $total = 0;
+                if($comprobantes["items"])
+                {
+                    foreach($comprobantes["items"] as $res){
+                        if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
+                        {
+                            $total += $res['total'];
+                            $subtotal += $res['subTotal'];
+                            $iva += $res['ivaTotal'];
+                            $isr += $res['isrRet'];
+                        }
+                        else
+                        {
+                            $total -= $res['total'];
+                            $subtotal -= $res['subTotal'];
+                            $iva -= $res['ivaTotal'];
+                            $isr -= $res['isrRet'];
+                        }
+                    }
+                }
+                $total = number_format($total,2,'.',',');
+                $subtotal = number_format($subtotal,2,'.',',');
+                $iva = number_format($iva,2,'.',',');
+                $isr = number_format($isr,2,'.',',');
 				echo 'ok[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');				
-				echo '[#]';				
-				//$smarty->assign('folios', $folios->GetFoliosByEmpresa());
-				//$smarty->assign('DOC_ROOT', DOC_ROOT);
-				//$smarty->display(DOC_ROOT.'/templates/lists/folios.tpl');				
+				echo '[#]';
+                $smarty->assign('comprobantes',$comprobantes);
+                $smarty->assign('totalFacturas',$totalFacturas);
+                $smarty->assign('total',$total);
+                $smarty->assign('subtotal',$subtotal);
+                $smarty->assign('iva',$iva);
+                $smarty->assign('isr',$isr);
+                $smarty->display(DOC_ROOT.'/templates/boxes/resumen-facturas.tpl');
+                echo '[#]';
+                $smarty->assign('DOC_ROOT', DOC_ROOT);
+                $smarty->display(DOC_ROOT.'/templates/lists/facturas.tpl');
 			}//else
-			break;			
-		
+		break;
 		case 'buscar':
-				
 				foreach($_POST as $key => $val){
 					$values[$key] = $val;
 				}
-				
 				$comprobantes = array();
+				$comprobante->setPage(0);
 				$comprobantes = $comprobante->SearchComprobantesByRfc($values);				
 				$smarty->assign('comprobantes',$comprobantes);
-				//exit;
 				$total = 0;
 				echo 'ok[#]';
 				if($comprobantes["items"])
@@ -115,16 +139,11 @@
 				$smarty->assign('isr',$isr);				
 				
 				$smarty->display(DOC_ROOT.'/templates/boxes/resumen-facturas.tpl');
-
 				echo '[#]';
-								
 				$smarty->assign('DOC_ROOT', DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/facturas.tpl');
-        
-			break;	
-		
+		break;
 		case 'enviar_email':
-		
 			$id_comprobante = $_POST['id_comprobante'];
 			$razon= new Razon;
 			if($razon->sendComprobante33($id_comprobante,true,true)) {
@@ -135,10 +154,7 @@
 				echo 'fail[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 		 	 }
-      
-		
-			break;
-			
+		break;
 		case 'exportar':
 				
 				foreach($_POST as $key => $val){

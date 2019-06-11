@@ -128,15 +128,19 @@
 			onSuccess: function(transport){
 				var response = transport.responseText || "no response text";
 				var splitResponse = response.split("[#]");
-				if(splitResponse[0] == "fail"){					
-					ShowStatusPopUp(splitResponse[1]);
+				if(splitResponse[0] == "ok"){
+                    $('total').innerHTML = splitResponse[2];
+                    $('facturasListDiv').innerHTML = splitResponse[3];
                     $('loading-img').style.display='none';
                     $('btnCancelar').style.display='block';
+                    $('frmCancelar').reset();
+                    close_popup();
+                    ShowStatusPopUp(splitResponse[1]);
+
 				}else{
-					ShowStatusPopUp(splitResponse[1]);
+                    ShowStatusPopUp(splitResponse[1]);
                     $('loading-img').style.display='none';
                     $('btnCancelar').style.display='block';
-					$('frmCancelar').reset();
 				}
 			},
 		onFailure: function(){ alert('Something went wrong...') }
