@@ -8,6 +8,10 @@
 session_start();
 class ContractRep extends Main
 {
+    private $contractId;
+    public function setContractId($value){
+        $this->contractId=$value;
+    }
     public function findPermission($contrato, $respsCuenta){
         $split = split('-',$contrato['permisos']);
         foreach($split as $sp){
@@ -481,5 +485,70 @@ class ContractRep extends Main
            }
        }
        return $result;
+    }
+    public function getEmailsEncargadosLevel($filtro = []){
+        global $personal;
+
+        $strSociosMayoritarios = "";
+        if(!$filtro["sendBraun"])
+            $strSociosMayoritarios .= " and a.personalId!='".IDBRAUN."' ";
+        if(!$filtro["sendHuerin"])
+            $strSociosMayoritarios .= " and a.personalId!='".IDHUERIN."' ";
+
+        $sql = "select a.departamentoId,a.personalId from contractPermiso a 
+                inner join personal b on a.personalId=b.personalId 
+                where a.contractId = '".$this->contractId."'
+                ";
+        $this->Util()->DB()->setQuery($sql);
+        $responsables = $this->Util()->DB()->GetResult();
+
+        //no tiene responsables se obtienen los gerentes ,socios y coordinadores por default excepto braun y huerin si tiene el flag en false
+        if(empty($responsables)){
+            $sql = "select a.departamentoId,a.name,a.email,a.roleId,b.nivel from personal a inner join roles b on a.roleId=b.rolId where a.active='1' and a.rolId in (1,2) departamentoId NOT IN(32,33) $strSociosMayoritarios ";
+            $this->Util()->DB()->setQuery($sql);
+            $responsables = $this->Util()->DB()->GetResult();
+        }else{
+            $idResponsables  = [];
+            foreach($responsables as $key=>$value){
+                if(!in_array($value["personalId"],$idResponsables))
+                    array_push($idResponsables,$value["personalId"]);
+
+                if($filtro["incluirJefes"]){
+                    $hisJefes= $personal->Jefes($value['personalId']);
+                    $idResponsables = array_merge($idResponsables,$hisJefes);
+                }
+            }
+            $strFilter = "";
+            if($filtro["maxLevelRol"]||is_array($filtro[",maxLevelRol"])>0)
+            {
+                if(is_array($filtro["maxLevelRol"])){
+                    if(count($filtro["maxLevelRol"])>0)
+                        $strFilter .="  and b.nivel in (".implode(",",$filtro["maxLevelRol"]).")";
+                }
+                else
+                    $strFilter .= " and b.nivel <='".$filtro["maxLevelRol"]."' ";
+            }
+
+
+            $idResponsables = array_unique($idResponsables);
+
+            $sql = "select a.departamentoId,a.name,a.email,a.roleId,b.nivel from personal a 
+                    inner join roles b on a.roleId=b.rolId
+                    where a.active='1' and a.personalId IN (".implode(",",$idResponsables).") $strFilter $strSociosMayoritarios
+                    ";
+            $this->Util()->DB()->setQuery($sql);
+            $responsables = $this->Util()->DB()->GetResult();
+        }
+        if(!is_array($responsables))
+            $responsables = [];
+
+        $correos = [];
+        foreach ($responsables as $key=>$value){
+            if(!$filtro["sendBraun"])
+
+            if($this->Util()->ValidateEmail($value["email"]))
+                $correos[$value["email"]] = $value["name"];
+        }
+        return $correos;
     }
 }

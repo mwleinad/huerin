@@ -853,7 +853,7 @@ class Comprobante extends Producto
                 $this->Util()->PrintErrors();
                 return false;
             }
-		}else {
+		    }else{
             //en teoria del 2017 en adelante el codigo siguiente nunca deberia ser usado por que ya no existe facturas con versiones anteriores
             $fileName = $xml . ".pdf";
             $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/facturas/pdf/" . $fileName;
@@ -1222,8 +1222,8 @@ class Comprobante extends Producto
 		$sqlAdd = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
 
 		$sqlQuery = 'SELECT *, comprobante.status AS status, comprobante.comprobanteId AS comprobanteId FROM comprobante
-		LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = comprobante.comprobanteId
-	ORDER BY fecha DESC '.$sqlAdd;
+		             LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = comprobante.comprobanteId 
+	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC '.$sqlAdd;
 
 		$id_empresa = $_SESSION['empresaId'];
 
@@ -1232,22 +1232,16 @@ class Comprobante extends Producto
 
 		$info = array();
 		foreach($comprobantes as $key => $val){
-		//	print_r($val);
 			$user->setUserId($val['userId'],1);
 			$usr = $user->GetUserInfo();
 			$card['rfc'] = $usr['rfc'];
 			$card['nombre'] = $usr['nombre'];
 			$card['fecha'] = date('d-m-Y',strtotime($val['fecha']));
-
-
 			$cadenaOriginal = explode("|", $val["cadenaOriginal"]);
 			$card['subTotal'] = $val["subTotal"];
 			$card['total'] = $val["total"];
-//			$card['ivaTotal'] = $val["ivaTotal"];
-
 			foreach($cadenaOriginal as $keyCadena => $cadena)
 			{
-				//print_r($cadena);
 				if($cadena == "IVA")
 				{
 					if($countIvas == 1)
@@ -1258,14 +1252,11 @@ class Comprobante extends Producto
 					$countIvas++;
 				}
 
-				//print_r($cadena);
 				if($cadena == "ISR")
 				{
 					$card['isrRet'] = $cadenaOriginal[$keyCadena + 1];
 				}
-
 			}
-
 			$card['total_formato'] = number_format($card['total'],2,'.',',');
 			$card['subtotal_formato'] = number_format($card['subTotal'],2,'.',',');
 			$card['iva_formato'] = number_format($card['ivaTotal'],2,'.',',');
@@ -1274,6 +1265,7 @@ class Comprobante extends Producto
 			$card['comprobanteId'] = $val['comprobanteId'];
 			$card['status'] = $val['status'];
 			$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
+            $card['tiposComprobanteId'] = $val['tiposComprobanteId'];
 			$card['instanciaServicioId'] = $val['instanciaServicioId'];
 			$card['version'] = $val['version'];
 			$card['xml'] = $val['xml'];
@@ -1297,27 +1289,18 @@ class Comprobante extends Producto
 
 	function SearchComprobantesByRfc($values){
 		global $user,$personal;
-
 		$sqlSearch = '';
 
-		if($values['folio'] && !$values["folioA"]){
-			$sqlSearch .= ' AND c.folio = "'.$values['folio'].'"';
-		}//if
-
-        if($values['serie']){
+		if($values['folio'])
+			$sqlSearch .= ' AND c.folio >= "'.$values['folio'].'"';
+        if($values["folioA"])
+            $sqlSearch .= ' c.folio <="'.$values["folioA"].'"';
+        if($values['serie'])
             $sqlSearch .= ' AND c.serie = "'.$values['serie'].'"';
-        }
-		if($values['folio'] && $values["folioA"]){
-			$sqlSearch .= ' AND c.folio >= "'.$values['folio'].'" AND c.folio <="'.$values["folioA"].'"';
-		}//if
-
-		if($values['rfc']){
-			$sqlSearch .= ' AND contract.rfc LIKE "%'.$values['rfc'].'%"';
-		}//if
-
-		if($values['nombre']){
-			$sqlSearch .= ' AND (customer.nameContact LIKE "%'.$values['nombre'].'%" OR contract.name LIKE "%'.$values['nombre'].'%") ';
-		}//if
+		if($values['rfc'])
+			$sqlSearch .= ' AND a.rfc LIKE "%'.$values['rfc'].'%"';
+		if($values['nombre'])
+			$sqlSearch .= ' AND (b.nameContact LIKE "%'.$values['nombre'].'%" OR a.name LIKE "%'.$values['nombre'].'%") ';
 
 		if($values['mes'] && $values['status_activo'] != '0'){
 			$sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.$values['mes'];
@@ -1352,110 +1335,57 @@ class Comprobante extends Producto
 		   $ftr['responsableCuenta'] = $values['responsableCuenta'];
 		   $persons = $personal->GetIdResponsablesSubordinados($ftr);
 		   $implodePersons = implode(',',$persons);
-           $innerpermisos =  "INNER JOIN contractPermiso p ON contract.contractId=p.contractId";
+           $innerpermisos =  "INNER JOIN contractPermiso p ON a.contractId=p.contractId";
            $wherepermisos = " AND p.personalId IN($implodePersons) ";
         }
-
-
 		$id_rfc = $this->getRfcActive();
 		switch($values['generateby']){
             case 'automatico':
-                $sqlSearch .= ' AND instanciaServicio.comprobanteId is not null';
+                $sqlSearch .= ' AND d.comprobanteId is not null';
             break;
             case 'manual':
-                $sqlSearch .= ' AND instanciaServicio.comprobanteId is  null';
+                $sqlSearch .= ' AND d.comprobanteId is  null';
             break;
 
         }
         if(!isset($values['addComplemento'])&&!isset($values['comprobante']))
             $sqlSearch .= ' AND c.tiposComprobanteId!=10 ';
-
-		//$sqlSearch .= ' AND customer.active="1" and contract.activo="Si" ';
-
-		$sqlQuery = 'SELECT c.*, c.status AS status , c.comprobanteId AS comprobanteId, tipoServicio.nombreServicio AS concepto, contract.name AS name, contract.rfc AS rfc, contract.contractId AS contractId, instanciaServicio.instanciaServicioId
-			FROM comprobante as c
-		    LEFT JOIN contract ON contract.contractId = c.userId 
-		    '.$innerpermisos.'
-			LEFT JOIN customer ON customer.customerId = contract.customerId
-			LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = c.comprobanteId
-			LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			WHERE 1 '.$wherepermisos.' '.$sqlSearch.'  GROUP BY c.comprobanteId ORDER BY c.serie ASC, fecha DESC, c.comprobanteId DESC '.$sqlAdd;
-
-		$id_empresa = $_SESSION['empresaId'];
-
-		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-		$comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();
-
-		$sqlQuery = 'SELECT nombreServicio FROM tipoServicio';
-
-		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-		$servicios = $this->Util()->DBSelect($id_empresa)->GetResult();
+        //orden por default cuando venga de reporte.
+		$orderBy =  " ORDER BY c.serie ASC, c.fecha DESC, c.comprobanteId DESC ";
+		if(is_numeric($this->page)){
+		   $orderBy = "";
+           $sqlQuery=" SELECT c.comprobanteId
+                        FROM comprobante as c
+                        LEFT JOIN contract a ON a.contractId = c.userId 
+                        $innerpermisos
+                        LEFT JOIN customer b ON b.customerId = a.customerId
+                        LEFT JOIN instanciaServicio d ON d.comprobanteId = c.comprobanteId
+                        LEFT JOIN servicio e ON e.servicioId = d.servicioId
+                        LEFT JOIN tipoServicio f ON f.tipoServicioId = e.tipoServicioId
+                        WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId ";
+            $this->Util()->DB()->setQuery($sqlQuery);
+            $total = count($this->Util()->DB()->GetResult());
+            $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/sistema/consultar-facturas");
+            $sqlAdd = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
+            $orderBy = " ORDER BY c.fecha DESC ";
+        }
+		$sqlQuery="SELECT c.*, c.status AS status,c.comprobanteId AS comprobanteId, f.nombreServicio AS concepto, a.name AS name, a.rfc AS rfc, a.contractId AS contractId, d.instanciaServicioId
+                    FROM comprobante as c
+                    LEFT JOIN contract a ON a.contractId = c.userId 
+                    $innerpermisos
+                    LEFT JOIN customer b ON b.customerId = a.customerId
+                    LEFT JOIN instanciaServicio d ON d.comprobanteId = c.comprobanteId
+                    LEFT JOIN servicio e ON e.servicioId = d.servicioId
+                    LEFT JOIN tipoServicio f ON f.tipoServicioId = e.tipoServicioId
+                    WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId $orderBy ".$sqlAdd;
+		$this->Util()->DB()->setQuery($sqlQuery);
+		$comprobantes = $this->Util()->DB()->GetResult();
 		$info = array();
 		foreach($comprobantes as $key => $val){
-			$user->setUserId($val['userId'],1);
-			$usr = $user->GetUserInfo();
 			$card['serie'] = $val['serie'];
 			$card['folio'] = $val['folio'];
-			$card['rfc'] = $usr['rfc'];
-			$cadenaOAux = strtolower($val["cadenaOriginal"]);
-			$auxC = true;
-			/*
-			foreach ($servicios as $serv) {
-				$servicioAux = "|".strtolower($serv['nombreServicio'])." correspondiente ";
-				$index = strpos($cadenaOAux,$servicioAux);
-				if($index){
-					$inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
-					$aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-					$card['concepto'] = $aux[1];
-					$auxC = false;
-					continue;
-				}else{
-                    $servicioAux = "|".strtolower($serv['nombreServicio'])." ";
-                    $index = strpos($cadenaOAux,$servicioAux);
-                    if($index){
-                        $inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
-                        $aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-                        $card['concepto']  = $aux[1];
-                        $auxC = false;
-                        continue;
-                    }else{
-                        $servicioAux = "|".strtolower($serv['nombreServicio'])."|";
-                        $index = strpos($cadenaOAux,$servicioAux);
-                        if($index){
-                            $inicio=strripos(substr($val["cadenaOriginal"], 0,$index+1), "|");
-                            $aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-                            $card['concepto']  = $aux[1];
-                            $auxC = false;
-                            continue;
-                        }
-                    }
-                }
-			}
-			if($auxC){
-				$servicioAux = " correspondiente";
-				$index = strpos($cadenaOAux,$servicioAux);
-				if($index){
-					$inicio=strripos(substr($val["cadenaOriginal"], 0,$index), "|");
-					$aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-					$card['concepto'] = $aux[1];
-					$auxC = false;
-				}
-				else{
-					$servicioAux = " del mes de ";
-					$index = strpos($cadenaOAux,$servicioAux);
-					if($index){
-						$inicio=strripos(substr($val["cadenaOriginal"], 0,$index), "|");
-						$aux=explode("|",substr($val["cadenaOriginal"], $inicio));
-						$card['concepto'] = $aux[1];
-						$auxC = false;
-					}
-				}
-			}
-			if($auxC){
-				$card['concepto'] = $val['concepto'];
-			}*/
-			$card['nombre'] = $usr['nombre'];
+			$card['rfc'] = $val['rfc'];
+			$card['nombre'] = $val['name'];
 			$card['fecha'] = date('d/m/Y',strtotime($val['fecha']));
             $card['fechaPedimento'] = date('d/m/Y',strtotime($val['fechaPedimento']));
 			$card['subTotal'] = $val['subTotal'];
@@ -1478,7 +1408,6 @@ class Comprobante extends Producto
             $card['xml'] = $val['xml'];
 
             $card['instanciaServicioId'] = $val['instanciaServicioId'];
-
 			$timbreFiscal = unserialize($val['timbreFiscal']);
 			$card["uuid"] = $timbreFiscal["UUID"];
             $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$val['comprobanteId']."' ");
@@ -1487,7 +1416,7 @@ class Comprobante extends Producto
 		}//foreach
 		$data["items"] = $info;
 		$data["pages"] = $pages;
-		$data["total"] = count($comprobantes);
+		$data["total"] = $total;
 
 		return $data;
 

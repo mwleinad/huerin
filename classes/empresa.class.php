@@ -653,26 +653,56 @@ class Empresa extends Main
 	
 	function CancelarComprobante()
 	{
-		global $comprobante;
-	
+		global $comprobante,$personal;
 		if($this->Util()->PrintErrors())
 		{
 			return false;
 		}
 		$id_comprobante = $this->comprobanteId;
 		$motivo_cancelacion = $this->motivoCancelacion;
-		$sqlQuery = 'SELECT data, conceptos, userId FROM comprobante WHERE comprobanteId = '.$id_comprobante;
+		$sqlQuery = "SELECT data, conceptos, userId,serie,folio,
+                     CASE tiposComprobanteId
+                     WHEN 1 THEN 'de la factura'
+                     WHEN 10 THEN 'del complemento de pago'
+                     ELSE 'del documento' END AS tipoDocumento            
+                     FROM comprobante WHERE comprobanteId = ".$id_comprobante;
+
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);		
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-		
 		$data = unserialize(urldecode($row['data']));
 		$conceptos = unserialize(urldecode($row['conceptos']));
 		$_SESSION["conceptos"] = array();
 		$_SESSION["conceptos"] = $conceptos;
 		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $motivo_cancelacion))
 			return false;
-		else
-		    return true;
+		else{
+            //enviar notificacion a los encargados de area, supervisor y gerentes.
+            $this->Util()->DB()->setQuery("select name from contract where contractId ='".$row["userId"]."' ");
+            $razon = $this->Util()->DB()->GetSingle();
+            $currentUser =  $personal->getCurrentUser();
+
+            $body = "";
+            $subject = "CANCELACION DE ".$row['tipoDocumento']." ".$row['serie'].$row['folio'];
+            $body .="<div style='width: 600px;text-align: justify'>";
+            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion ".$row['tipoDocumento']." con folio ".$row['serie'].$row['folio']." de la razon social $razon </p>";
+            $body .="<p>Por el siguiente motivo:</p>";
+            $body .="<p><b>".$motivo_cancelacion."</b></p>";
+            $body .="</div>";
+
+           $contractRep =  new ContractRep();
+		   $contractRep->setContractId($row["userId"]);
+		   $ftr["maxLevelRol"] = [1,2,3,5];
+		   $ftr["incluirJefes"] = true;
+		   $ftr["sendBraun"] = false;
+		   $ftr["senHuerin"] = false;
+		   $correos = $contractRep->getEmailsEncargadosLevel($ftr);
+		   $send = new SendMail();
+		   if(!SEND_LOG_MOD)
+		       $correos = [];
+		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
+		   return true;
+        }
+
 	}
 
 	function DoLogout()
