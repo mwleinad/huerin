@@ -23,6 +23,20 @@ class UtileriaInvoice extends Comprobante
         $this->Util()->PrintErrors();
         return true;
     }
+    function cancelInvoiceInSatByFolio($serie,$folio){
+        $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
+                inner join contract b on a.userId=b.contractId
+                where a.serie='$serie' and a.folio='$folio' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        if(!$row){
+            $this->Util()->setError(0,"error","No se encontro informacion con los parametros proporcionados");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+       $this->findStatusInvoiceByDocument($row);
+       $this->handleCancelationInvoiceActiveInSat();
+    }
     function checkStatusInSat($serie,$folio){
         $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
@@ -35,6 +49,7 @@ class UtileriaInvoice extends Comprobante
             return false;
         }
         $response = $this->findStatusInvoiceByDocument($row);
+        dd($response);
         switch($response["getCFDiStatusReturn"]["status"]){
             case 'Vigente';
                  $mensaje = "La factura con folio $serie$folio se encuentra activa en el SAT";
@@ -48,6 +63,8 @@ class UtileriaInvoice extends Comprobante
                 $typeMsj =  "error";
             break;
             default:
+                $mensaje = "Error al solicitar status en el SAT";
+                $typeMsj =  "error";
             break;
         }
         $this->setListInvoicesActiveInSat([]);
@@ -122,7 +139,7 @@ class UtileriaInvoice extends Comprobante
         return $response;
     }
     function findInvoicesActiveInSat(){
-        $invoices = $this->getListGeneralComprobantes(0,1);
+        $invoices = $this->getListGeneralComprobantes(0,1,2017);
         foreach($invoices as $key=>$value){
            $response = $this->findStatusInvoiceByDocument($value);
         }
@@ -142,6 +159,7 @@ class UtileriaInvoice extends Comprobante
         $pac = new Pac();
         foreach($invoices as $key=>$value){
             $response = $pac->CancelaCfdi2018(USER_PAC,PW_PAC,$value["rfcEmisor"],$value["rfc"],$value["uuid"],$value["total"],$value["path"],$value["password"]);
+            dd($response);
             if($response['cancelado'])
             {
                 $motivo_cancelacion = "Se solicita nuevamente la cancelacion, documento aun vigente en el SAT y en plataforma interna ya se encuentra cancelada";

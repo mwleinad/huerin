@@ -46,6 +46,7 @@ jQ(document).on('click','#btnCheckStatus',function(){
                 var splitResp =  response.split("[#]");
                 if(splitResp[0]=='ok'){
                     jQ('#loading-img').hide();
+                    jQ('#btnCheckStatus').show();
                     ShowStatusPopUp(splitResp[1]);
                 }
                 else{
