@@ -127,7 +127,8 @@ include_once(DOC_ROOT.'/libraries.php');
 		//configuracion
 		 'admin-folios',
          'datos-generales',
-		 'backup_system'
+		 'backup_system',
+		 'utileria'
 
 
 	);

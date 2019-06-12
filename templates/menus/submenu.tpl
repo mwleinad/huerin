@@ -206,6 +206,9 @@
                 {if in_array(221,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-pending" {if $includedTpl == "report-pending"} class="current"{/if}><span>Cambios en plataforma</span></a></li>
                 {/if}
+                {if $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/utileria" {if $includedTpl == "utileria"} class="current"{/if}><span>Herramientas y utilerias</span></a></li>
+                {/if}
             {/if}
        </ul>
       {/if}
