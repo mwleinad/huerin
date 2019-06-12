@@ -47,6 +47,34 @@ class Pac extends Util
 	 * $data =  contiene el mensaje a mostrar al usuario y e informacion que servira para cambiar el status
 	 * de la factura en la bd
 	 */
+	function getStatusCfdi($user, $pw,$rfcE,$rfcR, $uuid,$total,$pfx, $pfxPassword){
+        $fh = fopen($pfx, 'r');
+        $theData = fread($fh, filesize($pfx));
+        $zipFileEncoded = base64_encode($theData);
+        fclose($fh);
+        require_once(DOC_ROOT.'/libs/nusoap.php');
+        $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
+        $client->useHTTPPersistentConnection();
+        if(PROJECT_STATUS == "test")
+            $isTest = true;
+        else
+            $isTest = false;
+
+        $params = array(
+            'user' => $user,
+            'password' => $pw,
+            'rfcE' => $rfcE,
+            'rfcR' => $rfcR,
+            'uuid' => $uuid,
+            'total' => $total,
+            'pfx' => $zipFileEncoded,
+            'pfxPassword'=>$pfxPassword,
+            'test'=>$isTest
+        );
+        $response = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+
+        return $response;
+    }
     function CancelaCfdi2018($user, $pw,$rfcE,$rfcR, $uuid,$total,$pfx, $pfxPassword)
     {
         $fh = fopen($pfx, 'r');

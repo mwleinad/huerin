@@ -125,6 +125,7 @@ include_once(DOC_ROOT."/classes/dropzone.class.php");
 include_once(DOC_ROOT."/classes/coffe.class.php");
 include_once(DOC_ROOT."/classes/compressed.class.php");
 include_once(DOC_ROOT."/classes/changePlatform.class.php");
+include_once(DOC_ROOT."/classes/utileriaInvoice.class.php");
 
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
@@ -207,6 +208,7 @@ $valida = new Validar();
 $dropzone = new Dropzone();
 $catalogue = new Catalogue();
 $change = new ChangePlatform();
+$utileriaInvoice = new UtileriaInvoice();
 
 //cron
 $cronServicio = new CronServicio();
