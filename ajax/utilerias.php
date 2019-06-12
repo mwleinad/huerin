@@ -25,7 +25,15 @@ switch($_POST["type"]){
         $smarty->display(DOC_ROOT.'/templates/boxes/check-status-invoice-popup.tpl');
     break;
     case 'checkStatusInvoiceInSat':
-         $utileriaInvoice->checkStatusInSat($_POST["serie"],$_POST["folio"]);
+        switch($_POST["accion"]){
+            case 'check':
+                $utileriaInvoice->checkStatusInSat($_POST["serie"],$_POST["folio"]);
+            break;
+            case 'cancel':
+                $utileriaInvoice->cancelInvoiceInSatByFolio($_POST["serie"],$_POST["folio"]);
+
+            break;
+        }
          echo "ok[#]";
          $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
