@@ -26,7 +26,6 @@
 				$serie = $compInfo['serie'];
 				$folio = $compInfo['folio'];
 
-	//			print_r($compInfo);
 				$smarty->assign('id_comprobante', $id_comprobante);
 				$smarty->assign('post', $compInfo);
 				$smarty->assign('rfc', $nomRfc);
@@ -44,11 +43,9 @@
 				foreach($_POST as $key => $val){
 					$values[$key] = $val;
 				}
-
 				$comprobantes = array();
 				$comprobantes = $cxc->SearchCuentasPorCobrar($values);
 				$smarty->assign('comprobantes',$comprobantes);
-
 				$total = 0;
 				if($comprobantes["items"])
 				{
@@ -151,10 +148,8 @@
 		break;
 
 		case 'search':
-
 			echo 'ok[#]';
 			$year = $_POST['year'];
-			
 			$formValues['subordinados'] = $_POST['deep'];			
 			$formValues['respCuenta'] = $_POST['responsableCuenta'];
 			$formValues['departamentoId'] = $_POST["departamentoId"];
@@ -215,7 +210,6 @@
 					$items[] = $res;
 				}
 			}
-
 			$comprobantes['items'] = $items;
 			$smarty->assign('comprobantes',$comprobantes);
 			$smarty->assign('totalFacturas',$totalFacturas);
@@ -226,7 +220,6 @@
 			$smarty->assign('DOC_ROOT', DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/cxc.tpl');
 		break;
-
 		case 'editCxC':
 
 			$id_comprobante = $_POST['id'];
