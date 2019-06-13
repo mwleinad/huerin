@@ -133,7 +133,7 @@ class UtileriaInvoice extends Comprobante
         $cad["total"]=$datos["total"];
         $cad["password"] = $password;
         $response = $pac->getStatusCfdi(USER_PAC,PW_PAC,$rfcEmisor["rfc"],$datos["rfc"],$uuid,$datos["total"],$path,$password);
-        if($response["getCFDiStatusReturn"]["status"]=='Cancelado')
+        if($response["getCFDiStatusReturn"]["status"]=='Vigente')
                 $this->listInvoicesActiveInSat[] = $cad;
 
         return $response;
