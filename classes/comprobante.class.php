@@ -1292,9 +1292,9 @@ class Comprobante extends Producto
 		$sqlSearch = '';
 
 		if($values['folio'])
-			$sqlSearch .= ' AND c.folio >= "'.$values['folio'].'"';
+			$sqlSearch .= ' AND c.folio >= "'.$values['folio'].'" ';
         if($values["folioA"])
-            $sqlSearch .= ' c.folio <="'.$values["folioA"].'"';
+            $sqlSearch .= ' AND c.folio <="'.$values["folioA"].'"';
         if($values['serie'])
             $sqlSearch .= ' AND c.serie = "'.$values['serie'].'"';
 		if($values['rfc'])
