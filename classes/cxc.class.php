@@ -7,7 +7,7 @@ class CxC extends Producto
 	    global $user;
 		$sqlSearch = '';
 		$ids = array();
-			$inIds = "0";
+		$inIds = "0";
 		foreach($contracts as $key => $contract)
 		{
 			foreach($contract as $id)
@@ -22,141 +22,131 @@ class CxC extends Producto
         if($values['month'])
                 $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.intval($values['month']);
 
+		$id_rfc = $this->getRfcActive();
+		$sql = "SELECT *, c.status AS status, c.comprobanteId AS comprobanteId,customer.nameContact AS nameContact,contract.rfc
+                FROM comprobante AS c
+                LEFT JOIN contract ON contract.contractId = c.userId
+                LEFT JOIN customer ON customer.customerId = contract.customerId
+                LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
+                WHERE c.status='1' AND c.tiposComprobanteId != 10 $sqlSearch
+                ORDER BY fecha DESC ";
+        $id_empresa = $_SESSION['empresaId'];
+        $this->Util()->DBSelect($id_empresa)->setQuery($sql);
+        $comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();
+        $info = array();
+		if($values['facturador'] != 'Efectivo'){
+            foreach($comprobantes as $key => $val){
+                $card['serie'] = $val['serie'];
+                $card['folio'] = $val['folio'];
+                $card['rfc'] = $val['rfc'];
+                //$card['nombre'] = $usr['nombre'];
+                $card['nombre']=$val['nombreComercial'];
+                $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
+                $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
 
-			
+                $card['subTotal'] = $val['subTotal'];
+                $card['porcentajeDescuento'] = $val['porcentajeDescuento'];
+                $card['descuento'] = $val['descuento'];
+                $card['ivaTotal'] = $val['ivaTotal'];
 
-			$id_rfc = $this->getRfcActive();
-				$sql = "SELECT *, c.status AS status, c.comprobanteId AS comprobanteId,
-						customer.nameContact AS nameContact FROM comprobante AS c
-						LEFT JOIN contract ON contract.contractId = c.userId
-						LEFT JOIN customer ON customer.customerId = contract.customerId
-						LEFT JOIN personal ON contract.responsableCuenta = personal.personalId
-						WHERE c.status='1' AND c.tiposComprobanteId != 10 
-						".$sqlSearch."
-						ORDER BY fecha DESC ".$sqlAdd;
-						
-			$id_empresa = $_SESSION['empresaId'];
-			//echo $sql;
-			//echo $sql;
-			$this->Util()->DBSelect($id_empresa)->setQuery($sql);
-			$comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();
+                //aplicar descuento
+                $card['cxcAmountDiscount'] = $val['total'] * ($val['cxcDiscount'] / 100);
+                $val['total'] = $val['total'] - $card['cxcAmountDiscount'];
+                $card['total'] = $val['total'];
 
-			$info = array();
+                $card['total_formato'] = number_format($val['total'],2,'.',',');
+                $card['subtotal_formato'] = number_format($val['subTotal'],2,'.',',');
+                $card['iva_formato'] = number_format($val['ivaTotal'],2,'.',',');
+                $card['tipoDeMoneda'] = $val['tipoDeMoneda'];
+                $card['tipoDeCambio'] = $val['tipoDeCambio'];
+                $card['facturador'] = $val['facturador'];
+                $card['porcentajeRetIva'] = $val['porcentajeRetIva'];
+                $card['porcentajeRetIsr'] = $val['porcentajeRetIsr'];
+                $card['porcentajeIEPS'] = $val['porcentajeIEPS'];
+                $card['comprobanteId'] = $val['comprobanteId'];
+                $card['status'] = $val['status'];
+                $card['tipoDeComprobante'] = $val['tipoDeComprobante'];
+                $card['cxcDiscount'] = $val['cxcDiscount'];
+                $card['version'] = $val['version'];
+                $card['xml'] = $val['xml'];
+                $card['nameContact'] = $val["nameContact"];
 
-			if($values['facturador'] != 'Efectivo')
-			{
-				foreach($comprobantes as $key => $val){
+                $card['instanciaServicioId'] = $val['instanciaServicioId'];
+                $timbreFiscal = unserialize($val['timbreFiscal']);
+                $card["uuid"] = $timbreFiscal["UUID"];
 
-					$user->setUserId($val['userId'],1);
-					$usr = $user->GetUserInfo();
-					$card['serie'] = $val['serie'];
-					$card['folio'] = $val['folio'];
-					$card['rfc'] = $usr['rfc'];
-					//$card['nombre'] = $usr['nombre'];
-					$card['nombre']=$val['nombreComercial'];
-					$card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
-          			$card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
+                //si tiene solicitud de cancelacion se debe omitir.
+                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' ";
+                $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+                $requestCancel = $this->Util()->DBSelect($id_empresa)->GetSingle();
+                if($requestCancel)
+                    continue;
+                //get payments
+                $sqlQuery = "SELECT * FROM payment
+                             WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
+                $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+                $card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
 
-					$card['subTotal'] = $val['subTotal'];
-					$card['porcentajeDescuento'] = $val['porcentajeDescuento'];
-					$card['descuento'] = $val['descuento'];
-					$card['ivaTotal'] = $val['ivaTotal'];
+                $sqlQuery = "SELECT SUM(amount) FROM payment
+                             WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
+                $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+                $card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
-					//aplicar descuento
-					$card['cxcAmountDiscount'] = $val['total'] * ($val['cxcDiscount'] / 100);
-					$val['total'] = $val['total'] - $card['cxcAmountDiscount'];
-					$card['total'] = $val['total'];
+                //saldo
+                $card['saldo'] = $card["total"] - $card["payment"];
+                $info[$key] = $card;
+                if($values["status_activo"] == "adeuda")
+                {
+                    if($card['saldo'] <= 0.10)
+                    {
+                        unset($info[$key]);
+                        continue;
+                    }
+                }
 
+                if($values["status_activo"] == "pagada")
+                {
+                    if($card['saldo'] > 0.10)
+                    {
+                        unset($info[$key]);
+                        continue;
+                    }
+                }
+			}//foreach
+        }else{
+            foreach($comprobantes as $key => $val){
+                $card['serie']="E";
+                $card['folio']=$val['instanciaServicioId'];
+                $card['nameContact']=$val['nameContact'];
+                $card['nombre']=$val['nombreComercial'];
+                $card['fecha'] = date('Y/m/d',strtotime($val['date']));
+                $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
+                $card['cxcDiscount']=0;
+                $card['status']=1;
+                $card['total_formato'] = $val['costo'];
+                $card['total'] = $val['costo'];
+                $card['instanciaServicioId'] = $val['instanciaServicioId'];
+                $card['comprobanteId'] = $val['instanciaServicioId'];
+                $card['efectivo'] = true;
+                $card['facturador'] = 'Efectivo';
+                //si tiene solicitud de cancelacion se debe omitir.
+                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' ";
+                $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+                $requestCancel = $this->Util()->DBSelect($id_empresa)->GetSingle();
+                if($requestCancel)
+                    continue;
 
-					$card['total_formato'] = number_format($val['total'],2,'.',',');
-					$card['subtotal_formato'] = number_format($val['subTotal'],2,'.',',');
-					$card['iva_formato'] = number_format($val['ivaTotal'],2,'.',',');
-					$card['tipoDeMoneda'] = $val['tipoDeMoneda'];
-					$card['tipoDeCambio'] = $val['tipoDeCambio'];
-					$card['facturador'] = $val['facturador'];
-					$card['porcentajeRetIva'] = $val['porcentajeRetIva'];
-					$card['porcentajeRetIsr'] = $val['porcentajeRetIsr'];
-					$card['porcentajeIEPS'] = $val['porcentajeIEPS'];
-					$card['comprobanteId'] = $val['comprobanteId'];
-					$card['status'] = $val['status'];
-					$card['tipoDeComprobante'] = $val['tipoDeComprobante'];
-					$card['cxcDiscount'] = $val['cxcDiscount'];
-                    $card['version'] = $val['version'];
-                    $card['xml'] = $val['xml'];
+                $sqlQuery = "SELECT SUM(amount) FROM payment
+                             WHERE instanciaServicioId = '".$val["instanciaServicioId"]."' and paymentStatus='activo' ";
+                $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
+                $card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
-					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-					$card['nameContact'] = $val["nameContact"];
-
-					$card['instanciaServicioId'] = $val['instanciaServicioId'];
-
-					$timbreFiscal = unserialize($val['timbreFiscal']);
-					$card["uuid"] = $timbreFiscal["UUID"];
-
-					//get payments
-					$sqlQuery = "SELECT * FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
-					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-					$card["payments"] = $this->Util()->DBSelect($id_empresa)->GetResult();
-
-					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE comprobanteId = '".$val["comprobanteId"]."' and paymentStatus='activo' ";
-					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
-
-					//saldo
-					$card['saldo'] = $card["total"] - $card["payment"];
-
-					$info[$key] = $card;
-
-					if($values["status_activo"] == "adeuda")
-					{
-						if($card['saldo'] <= 0.10)
-						{
-							unset($info[$key]);
-							continue;
-						}
-					}
-
-					if($values["status_activo"] == "pagada")
-					{
-						if($card['saldo'] > 0.10)
-						{
-							unset($info[$key]);
-							continue;
-						}
-					}
-
-				}//foreach
-			}
-			else
-			{
-				foreach($comprobantes as $key => $val){
-					$card['serie']="E";
-					$card['folio']=$val['instanciaServicioId'];
-					$card['nameContact']=$val['nameContact'];
-					$card['nombre']=$val['nombreComercial'];
-					$card['fecha'] = date('Y/m/d',strtotime($val['date']));
-          			$card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
-					$card['cxcDiscount']=0;
-					$card['status']=1;
-					$card['total_formato'] = $val['costo'];
-					$card['total'] = $val['costo'];
-					$card['instanciaServicioId'] = $val['instanciaServicioId'];
-					$card['comprobanteId'] = $val['instanciaServicioId'];
-					$card['efectivo'] = true;
-					$card['facturador'] = 'Efectivo';
-					$sqlQuery = "SELECT SUM(amount) FROM payment
-						WHERE instanciaServicioId = '".$val["instanciaServicioId"]."' and paymentStatus='activo' ";
-					$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-					$card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
-
-					$card['saldo'] = $card["total_formato"] - $card["payment"];
-					if($val['costo'] > 0)
-						$info[$key] = $card;
-				}
-			}//if
+                $card['saldo'] = $card["total_formato"] - $card["payment"];
+                if($val['costo'] > 0)
+                    $info[$key] = $card;
+            }
+		}//if
 			$data["items"] = $info;
-			$data["pages"] = $pages;
 			$data["total"] = count($comprobantes);
 			return $data;
 		}
