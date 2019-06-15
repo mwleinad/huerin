@@ -398,7 +398,7 @@ class Personal extends Main
 	}
     public function InfoWhitRol()
     {
-        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
+        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.jefeInmediato FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
         return $row;
     }

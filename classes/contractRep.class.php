@@ -423,7 +423,7 @@ class ContractRep extends Main
 
         return $new;
     }
-    public function getContracts($ftr=[],$whitServive = false){
+    public function getContracts($ftr=[],$whitService = false){
         global $personal,$rol;
         $ftrCustomer = "";
         $ftrContract = "";
@@ -469,7 +469,7 @@ class ContractRep extends Main
                ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-       if($whitServive){
+       if($whitService){
            if($ftr['departamentoId']>0)
                $ftrService = " and b.departamentoId ='".$ftr['departamentoId']."' ";
 
