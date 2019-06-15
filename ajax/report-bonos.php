@@ -1,22 +1,14 @@
 <?php
-
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
 session_start();
-
 switch($_POST["type"])
 {
-
-
 	case "search":
 			$trimestre = explode(' ',$_POST['trimestre']);
 			$anio = $_POST['anio'];
-
-
 			$reportebonos->setAnio($anio);
-
 			$reportebonos->setMesUno($trimestre[0]);
 			$reportebonos->setMesDos($trimestre[1]);
 			$reportebonos->setMesTres($trimestre[2]);
@@ -38,7 +30,6 @@ switch($_POST["type"])
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/report-bonos.tpl');
 			}
-
 	break;
     case 'searchBonos':
             $data = $reportebonos->generateReportBonosWhitLevel($_POST);
@@ -60,6 +51,9 @@ switch($_POST["type"])
             $smarty->assign("DOC_ROOT", DOC_ROOT);
             $smarty->display(DOC_ROOT.'/templates/lists/report-servicio-bono-order-rol.tpl');
     break;
+	case 'estadoResultado':
+		$reportebonos->generateEstadoResultado();
+	break;
 
 }
 
