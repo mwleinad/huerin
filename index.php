@@ -98,6 +98,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-razon-social',
 		'report-up-down',
         'report-pending',
+		'edo-result',
 
 		//cafeteria
         'coffe',
