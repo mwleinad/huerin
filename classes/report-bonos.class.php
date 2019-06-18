@@ -616,7 +616,6 @@ class ReporteBonos extends Main
                 $service['totalDevengado'] = $temp['totalDevengado'];
                 $totales["granTotalHorizontalCompletado"] += $temp['totalComplete'];
                 $totales["granTotalHorizontalDevengado"] += $temp['totalDevengado'];
-
             }
             else
                 continue;
@@ -858,41 +857,51 @@ class ReporteBonos extends Main
                 }
             }
     }
-    function generateEstadoResultado(){
+    function generateEstadoResultado($ftr=[]){
 	    global $contractRep,$instanciaServicio;
+	    $strFilter ="";
+        if($ftr["responsableCuenta"])
+            $strFilter .= " and personalId = '".$ftr['responsableCuenta']."' ";
 
-        $sql = "select * from personal where roleId=2 and personalId=201 order by name ASC  ";
+        $sql = "select * from personal where roleId=2 $strFilter order by name ASC  limit 3";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
-        $ftr["period"]='efm';
         $mesesBase =  $this->createMonthBase($ftr['period']);
-        $year = 2019;
+        $year = $ftr["year"];
         foreach($gerentes as $key=>$value){
-            $ftr["deep"] = 1;
             $ftr["responsableCuenta"] = $value["personalId"];
             $ftr["departamentoId"] = $value["departamentoId"];
-            $contratos = $contractRep->getContracts($ftr,true);
+            $contratos = $contractRep->getContracts($ftr,false);
             if(count($contratos)<=0){
                 unset($gerentes[$key]);
                 continue;
             }
-            foreach($contratos as $keyContrato=>$contrato){
-              if(count($contrato['servicios'])<=0){
-                    unset($contratos[$keyContrato]);
-                    continue;
-              }
-              $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$contrato['contractId']);
-              $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$contrato['contractId']);
-              $totalDevengadoXempleado = 0;
-              $totalTrabajadoXempleado = 0;
-              foreach($contrato['servicios'] as $ks=>$serv) {
-                    $serv['instancias'] = [];
+            $contratos = $this->Util()->ConvertToLineal($contratos,"contractId");
+            $strFilter = "";
+            if($ftr["departamentoId"])
+                $strFilter .=" AND d.departamentoId='".$ftr["departamentoId"]."' ";
+            $strFilter .= " AND a.contractId IN(".implode(',',$contratos).") ";
+
+            $sql = "SELECT a.servicioId,a.STATUS,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.NAME,d.nombreServicio FROM servicio a 
+                    INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
+                    INNER JOIN contractPermiso c ON a.contractId=c.contractId
+                    INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
+                    WHERE a.STATUS IN ('activo','bajaParcial') AND d.status='1' and a.inicioFactura!='0000-00-00' $strFilter group by a.servicioId";
+
+            $this->Util()->DB()->setQuery($sql);
+            $servicios = $this->Util()->DB()->GetResult();
+            if(count($servicios)<=0){
+                unset($gerentes[$key]);
+                continue;
+            }
+            $totalDevengadoXempleado = 0;
+            $totalTrabajadoXempleado = 0;
+            foreach($servicios as $ks=>$serv) {
+                $temp = [];
                     $isParcial = false;
                     if ($serv['status'] == "bajaParcial")
                         $isParcial = true;
-
-                    $serv['responsable'] = $encargados[$serv['departamentoId']];
-                    switch ($ftr['period']) {
+                    switch ($ftr['period']){
                         case 'efm':
                             $meses = array(1, 2, 3);
                             $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
@@ -917,14 +926,10 @@ class ReporteBonos extends Main
                     $totalDevengadoXempleado += $temp['totalDevengado'];
                     $totalTrabajadoXempleado += $temp['totalComplete'];
                 }
-
-            }
             $gerentes[$key]["totalDevengado"] = $totalDevengadoXempleado;
             $gerentes[$key]["totalTrabajado"] = $totalTrabajadoXempleado;
         }
-        dd($gerentes);
-
-
+        return $gerentes;
     }
 }
 ?>

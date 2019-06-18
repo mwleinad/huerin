@@ -183,24 +183,20 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
+		if($this->roleId)
+		    $sqlFilter = " and a.roleId='".$this->roleId."' ";
+
 		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false || $this->showAll) {
-			$sql = "SELECT
-						a.*,
-						b.name as nombreJefe,
-						c.departamento
-					FROM
-						personal a 
-						LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
-						LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
-					".$sqlFilter.$sqlActive." 
-					ORDER BY
-						a.name ASC";
-	
+			$sql = "SELECT a.*,b.name as nombreJefe,c.departamento
+					FROM personal a 
+					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
+					LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
+					$sqlFilter $sqlActive 
+					ORDER BY a.name ASC";
 			$this->Util()->DB()->setQuery($sql);
 			$result = $this->Util()->DB()->GetResult();
 			return $result;
 		}
-		
 		$this->setPersonalId($infoUser['personalId']);
    	    $result = $this->SubordinadosDetails();
    	    return $result;
@@ -688,7 +684,7 @@ function AddMeToArray()
 function SubordinadosDetails()
 {   
 	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
-		LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+		   LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
 	$this->Util()->DB()->setQuery($sql);
 	$result = $this->Util()->DB()->GetResult($sql);
 	

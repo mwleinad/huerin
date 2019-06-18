@@ -126,6 +126,9 @@
                     <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if}>
                       <span>Bonos juridico</span></a></li>
                 {/if}
+                {if in_array(215,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/edo-result" {if $includedTpl == "edo-result"} class="current"{/if}><span>Estado de resultado</span></a></li>
+                {/if}
                 {if in_array(165,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if}>
                     <span>Cobranza anual</span></a></li>
