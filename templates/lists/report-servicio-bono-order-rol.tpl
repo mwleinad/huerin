@@ -409,7 +409,7 @@
                 {foreach from=$data.totalesEncargadosAcumulado item=enc key=ken}
                     <tr>
                         <td>{$enc.name}</td>
-                        <td>{$enc.totalCompletado|number_format:2:'.':','}</td>
+                        <td>{$enc.totalTrabajado|number_format:2:'.':','}</td>
                         <td></td>
                         <td></td>
                         <td></td>
