@@ -512,7 +512,6 @@ class ReporteBonos extends Main
     }
     function generateReportBonosWhitLevel($ftr=[]){
         global $personal,$contractRep,$instanciaServicio;
-
         $strFilter = "";
         if(strlen($_POST["rfc2"])>0||strlen($_POST["rfc"])>0)
         {
@@ -561,7 +560,7 @@ class ReporteBonos extends Main
         $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId 
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
-                    where b.status='1' and a.status IN ('activo','bajaParcial') $strFilter";
+                    where b.status='1' and a.status IN ('activo','bajaParcial') and a.inicioFactura!='0000-00-00' $strFilter";
         $this->Util()->DB()->setQuery($sqlServ);
         $services = $this->Util()->DB()->GetResult();
 
@@ -609,7 +608,6 @@ class ReporteBonos extends Main
                     $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
                     break;
             }
-
             if(!empty($temp['instancias'])){
                 $service['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
                 $service['totalTrabajado'] = $temp['totalComplete'];
@@ -772,7 +770,6 @@ class ReporteBonos extends Main
                             $totalesEncargados[$encargadoDep]['totalCompletado']+=$itemins['completado'];
                         }
                     }
-
                 break;
                 case 5:
                     $service["nivel"]  = "auxiliar";
@@ -817,7 +814,6 @@ class ReporteBonos extends Main
         }
         $data["serviciosEncontrados"] = $serviciosEncontrados;
         $data["totales"] = $totales;
-
         $data["totalesEncargados"] = $totalesEncargados;
         $newArray = [];
         $totalesEncargados = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
@@ -885,12 +881,11 @@ class ReporteBonos extends Main
                 $strFilter .=" AND d.departamentoId='".$ftr["departamentoId"]."' ";
             $strFilter .= " AND a.contractId IN(".implode(',',$contratos).") ";
 
-            $sql = "SELECT a.servicioId,a.STATUS,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.NAME,d.nombreServicio FROM servicio a 
+            $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.name,d.nombreServicio FROM servicio a 
                     INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
                     INNER JOIN contractPermiso c ON a.contractId=c.contractId
                     INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
-                    WHERE a.STATUS IN ('activo','bajaParcial') AND d.status='1' and a.inicioFactura!='0000-00-00' $strFilter group by a.servicioId";
-
+                    WHERE a.status IN ('activo','bajaParcial') AND d.status='1' and a.inicioFactura!='0000-00-00' $strFilter group by a.servicioId";
             $this->Util()->DB()->setQuery($sql);
             $servicios = $this->Util()->DB()->GetResult();
             if(count($servicios)<=0){
@@ -899,36 +894,41 @@ class ReporteBonos extends Main
             }
             $totalDevengadoXempleado = 0;
             $totalTrabajadoXempleado = 0;
+            $services = [];
             foreach($servicios as $ks=>$serv) {
                 $temp = [];
-                    $isParcial = false;
-                    if ($serv['status'] == "bajaParcial")
-                        $isParcial = true;
-                    switch ($ftr['period']){
-                        case 'efm':
-                            $meses = array(1, 2, 3);
-                            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                        break;
-                        case 'amj':
-                            $meses = array(4, 5, 6);
-                            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                        break;
-                        case 'jas':
-                            $meses = array(7, 8, 9);
-                            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                        break;
-                        case 'ond':
-                            $meses = array(10, 11, 12);
-                            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                        break;
-                        default:
-                            $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                        break;
-                    }
-                    $totalDevengadoXempleado += $temp['totalDevengado'];
-                    $totalTrabajadoXempleado += $temp['totalComplete'];
+                $isParcial = false;
+                if ($serv['status'] == "bajaParcial")
+                    $isParcial = true;
+                switch ($ftr['period']){
+                    case 'efm':
+                        $meses = array(1, 2, 3);
+                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                    break;
+                    case 'amj':
+                        $meses = array(4, 5, 6);
+                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                    break;
+                    case 'jas':
+                        $meses = array(7, 8, 9);
+                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                    break;
+                    case 'ond':
+                        $meses = array(10, 11, 12);
+                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                    break;
+                    default:
+                        $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+                    break;
                 }
+                if(empty($temp)||empty($temp["instancias"]))
+                    continue;
+
+                $totalDevengadoXempleado += $temp['totalDevengado'];
+                $totalTrabajadoXempleado += $temp['totalComplete'];
+                $services[]=$serv["servicioId"];
+            }
             $gerentes[$key]["totalDevengado"] = $totalDevengadoXempleado;
             $gerentes[$key]["totalTrabajado"] = $totalTrabajadoXempleado;
             $gerentes[$key]["sueldoTotalConSub"] = $totalSueldoIncluidoSubordinados;
