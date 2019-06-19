@@ -183,7 +183,7 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
-		if($this->roleId)
+		if($this->roleId && $this->showAll)
 		    $sqlFilter = " and a.roleId='".$this->roleId."' ";
 
 		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false || $this->showAll) {
@@ -434,6 +434,15 @@ class Personal extends Main
 			$this->jefeSupervisor = 0;
 			$this->jefeContador = 0;
 		}
+		$strSueldo ="";
+		if(strlen($this->sueldo)>0)
+        {
+            if(!is_numeric($this->sueldo))
+                $this->sueldo=0;
+            $strSueldo .= " sueldo = '".$this->sueldo."', ";
+        }
+
+
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				personal
@@ -449,7 +458,7 @@ class Personal extends Main
 				skype = '".$this->skype."',
 				puesto = '".$this->puesto."',
 				horario = '".$this->horario."',
-				sueldo = '".$this->sueldo."',
+				$strSueldo
 				grupo = '".$this->grupo."',
 				jefeInmediato = '".$this->jefeInmediato."',
 				computadora = '".$this->computadora."',
@@ -492,6 +501,10 @@ class Personal extends Main
 	public function Save()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
+
+        if(!is_numeric($this->sueldo))
+            $this->sueldo=0;
+
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
 				personal
