@@ -826,30 +826,31 @@ class ReporteBonos extends Main
                 $newArray[$enc["personalId"]]['totalCompletado'] += $enc['totalCompletado'];
             }
             //si tiene jefe inmediato se suma el total del sub al jefe
-            $this->recursiveTotalEncargado($allEncargados,$newArray, $totalesEncargados[$ke]);
+            $this->recursiveTotalEncargado($allEncargados,$newArray, $totalesEncargados[$ke],$enc['totalDevengado'],$enc['totalCompletado']);
         }
         $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'level',false,true);
         $data["totalesEncargadosAcumulado"] = $ordenado;
         return $data;
     }
-    function recursiveTotalEncargado($allEncargados,&$newArray,$value){
+    function recursiveTotalEncargado($allEncargados,&$newArray,$value,$acumDevengado,$acumTrabajado){
             $this->Util()->DB()->setQuery("select b.nivel from personal a inner join roles b on a.roleId=b.rolId where personalId = '".$value['jefeInmediato']."' ");
             $level = $this->Util()->DB()->GetSingle();
 	        if(!$value['jefeInmediato']||$level<=1 || !array_key_exists($value["jefeInmediato"],$allEncargados))
 	           return;
 
             if(array_key_exists($value['jefeInmediato'],$newArray)){
-                $newArray[$value['jefeInmediato']]['totalDevengado']  += $value['totalDevengado'];
-                $newArray[$value['jefeInmediato']]['totalCompletado'] += $value['totalCompletado'];
+                $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
+                $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumTrabajado;
                 if($newArray[$value['jefeInmediato']]){
-                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']]);
+                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']],$acumDevengado,$acumTrabajado);
+
                 }
             }else{
                 $newArray[$value["jefeInmediato"]] = $allEncargados[$value["jefeInmediato"]];
-                $newArray[$value['jefeInmediato']]['totalDevengado']  += $value['totalDevengado'];
-                $newArray[$value['jefeInmediato']]['totalCompletado'] += $value['totalCompletado'];
+                $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
+                $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumTrabajado;
                 if($newArray[$value['jefeInmediato']]){
-                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']]);
+                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']],$acumDevengado,$acumTrabajado);
                 }
             }
     }
