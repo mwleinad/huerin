@@ -56,9 +56,7 @@ switch($_POST["type"]) {
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
-        
         $sheet->setTitle('EDO. RESULTADO');
-
         $sheet->setCellValueByColumnAndRow(0, 3, "INGRESOS DEVENGANDOS");
         $sheet->setCellValueByColumnAndRow(0, 4, "INGRESOS TRABAJADOS");
         $sheet->setCellValueByColumnAndRow(0, 5, "DIFERENCIA");
