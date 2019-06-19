@@ -56,6 +56,7 @@ switch($_POST["type"]) {
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
+        
         $sheet->setTitle('EDO. RESULTADO');
 
         $sheet->setCellValueByColumnAndRow(0, 3, "INGRESOS DEVENGANDOS");
@@ -167,7 +168,7 @@ switch($_POST["type"]) {
             $sheet->setCellValue($porcentCostoServicio, "=+$colCostoServicio/$colTotalIngresos");
 
             $sheet->getStyle($colNominas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->setCellValue($colNominas, "");
+            $sheet->setCellValue($colNominas, $value["sueldoTotalConSub"]);
             $sheet->getStyle($porcentColNominas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
             $sheet->setCellValue($porcentColNominas, "=+$colNominas/$colTotalIngresos");
 

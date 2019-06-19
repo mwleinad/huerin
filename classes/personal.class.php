@@ -169,14 +169,11 @@ class Personal extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->jefeSocio = $value;
 	}
-
 	public function setFechaIngreso($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, '');
 		$this->fechaIngreso = $value;
 	}
-
-
 	public function Enumerate()
 	{
 		global $infoUser;
@@ -210,7 +207,6 @@ class Personal extends Main
 						personal WHERE personalId IN (".$ids.")";
 		$this->Util()->DB()->setQuery($sql);				
 		$result = $this->Util()->DB()->GetResult();
-	
 		return $result;		
 	}
 
@@ -223,7 +219,6 @@ class Personal extends Main
 				".$sqlFilter.$sqlActive."
 				ORDER BY
 					name ASC";
-
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
 
@@ -232,7 +227,6 @@ class Personal extends Main
 
 	public function ListDepartamentos()
 	{
-
 		$sql = "SELECT
 					*
 				FROM
@@ -1309,6 +1303,17 @@ function SubordinadosDetails()
             break;
         }
         return $return;
+    }
+    function getSalarioById($id){
+        $this->Util()->DB()->setQuery("select sueldo from personal where personalId='".$id."' ");
+        return $this->Util()->DB()->GetSingle();
+    }
+    function getTotalSalarioByMultipleId($id=[]){
+        if(empty($id))
+            return 0;
+
+        $this->Util()->DB()->setQuery("select sum(sueldo) from personal where personalId IN (".implode(',',$id).") ");
+        return $this->Util()->DB()->GetSingle();
     }
     
 }

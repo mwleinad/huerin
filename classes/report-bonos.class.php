@@ -858,7 +858,7 @@ class ReporteBonos extends Main
             }
     }
     function generateEstadoResultado($ftr=[]){
-	    global $contractRep,$instanciaServicio;
+	    global $contractRep,$instanciaServicio,$personal;
 	    $strFilter ="";
         if($ftr["responsableCuenta"])
             $strFilter .= " and personalId = '".$ftr['responsableCuenta']."' ";
@@ -871,6 +871,9 @@ class ReporteBonos extends Main
         foreach($gerentes as $key=>$value){
             $ftr["responsableCuenta"] = $value["personalId"];
             $ftr["departamentoId"] = $value["departamentoId"];
+
+            $subordinados = $personal->GetIdResponsablesSubordinados(["deep"=>1,"responsableCuenta"=>$value["personalId"]]);
+            $totalSueldoIncluidoSubordinados  = $personal->getTotalSalarioByMultipleId($subordinados);
             $contratos = $contractRep->getContracts($ftr,false);
             if(count($contratos)<=0){
                 unset($gerentes[$key]);
@@ -928,6 +931,7 @@ class ReporteBonos extends Main
                 }
             $gerentes[$key]["totalDevengado"] = $totalDevengadoXempleado;
             $gerentes[$key]["totalTrabajado"] = $totalTrabajadoXempleado;
+            $gerentes[$key]["sueldoTotalConSub"] = $totalSueldoIncluidoSubordinados;
         }
         return $gerentes;
     }
