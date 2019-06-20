@@ -577,19 +577,16 @@ class Workflow extends Servicio
 	
 	function UploadControl()
 	{
-		global $User;
+		global $User,$personal;
 		$folder = DOC_ROOT."/tasks";
 		$ext = strtolower(end(explode('.', $_FILES["file"]['name'])));
-
-			$this->Util()->DB()->setQuery("
-				SELECT MAX(version) FROM taskFile WHERE 
+		$this->Util()->DB()->setQuery("
+                    SELECT MAX(version) FROM taskFile WHERE 
 					servicioId = ".$_POST["servicioId"]." AND
 					stepId = '".$_POST["stepId"]."' AND
 					taskId = '".$_POST["taskId"]."' AND
 					control = '".$_POST["control"]."'");
-			$version = $this->Util()->DB()->GetSingle()+ 1;
-			
-
+		$version = $this->Util()->DB()->GetSingle()+ 1;
 		$target_path = $folder ."/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext;
 		$target_path_path = basename( $_FILES["file"]['name']); 
 		if(move_uploaded_file($_FILES["file"]['tmp_name'], $target_path)) {
@@ -620,41 +617,26 @@ class Workflow extends Servicio
         
 				$result = $this->StatusById($this->instanciaServicioId);
                 $this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
-                WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
+                                                      WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
                 $this->Util()->DB()->UpdateData();
-				//enviar al jefe inmediato
+
+                $sql = "SELECT b.contractId FROM instanciaServicio a
+                        INNER JOIN servicio b ON a.servicioId=b.servicioId WHERE instanciaServicioId='".$_POST["servicioId"]."' ";
+                $this->Util()->DB()->setQuery($sql);
+                $conId =  $this->Util()->DB()->GetSingle();
+                $contractRep= new ContractRep();
+                $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$conId);
+                $razon = new Razon();
+                $correos = [];
+                if(key_exists(1,$encargados))
+                    $correos =  $razon->findEmailsAscByRespId($encargados[1],[3,4,5]);
+
 				if($version > 1)
 				{
-					$user = new User;
-					$user->setUserId($User["userId"]);
-					$userInfoPrev = $user->Info();
-					//a quien
-					if($userInfo['jefeContador'] != 0)
-					{
-						$enviarA = $userInfo['jefeContador'];
-					}
-					elseif($userInfo['jefeSupervisor'] != 0)
-					{
-						$enviarA = $userInfo['jefeSupervisor'];
-					}
-					elseif($userInfo['jefeGerente'] != 0)
-					{
-						$enviarA = $userInfo['jefeGerente'];
-					}
-					elseif($userInfo['jefeSocio'] != 0)
-					{
-						$enviarA = $userInfo['jefeSocio'];
-					}
-					
-					$user->setUserId($enviarA);
-					$userInfo = $user->Info();
-					$subject = "El contador ".$userInfoPrev["name"]." ha actualizado un archivo";
+					$currentUser = $personal->getCurrentUser();
+					$subject = "El contador ".$currentUser["name"]." ha actualizado un archivo";
 					$body = "El archivo anterior y nuevo va adjunto en este correo.";
 					$sendmail = new SendMail;
-	
-					$to = $userInfo["email"];
-					$toName = $userInfo["name"];
-					
 					$versionAnt = $version - 1;
 					
 					$attachment = DOC_ROOT."/tasks/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext;
@@ -662,8 +644,10 @@ class Workflow extends Servicio
 
 					$attachment2 = DOC_ROOT."/tasks/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$versionAnt.".".$ext;
 					$fileName2 = "ArchivoAnterior.".$ext;
-					
-					$sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName, $attachment2, $fileName2, "admin@avantikdads.com", "Administrador del Sistema") ;
+					if(!SEND_LOG_MOD)
+					    $correos = [];
+
+					$sendmail->PrepareMultipleNotice($subject, $body, $correos, '', $attachment, $fileName, $attachment2, $fileName2, "noreply@branunhuerin.com.mx", "Administrador del Sistema",true) ;
 				}
 				$this->Util()->setError(0,'complete','Archivo guardado correctamente');
                 $this->Util()->PrintErrors();

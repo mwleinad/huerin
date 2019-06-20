@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: RAGNAR
- * Date: 17/01/2018
- * Time: 08:14 PM
- */
+
 session_start();
 class ContractRep extends Main
 {
