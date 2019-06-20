@@ -691,14 +691,16 @@ class Empresa extends Main
 
            $contractRep =  new ContractRep();
 		   $contractRep->setContractId($row["userId"]);
-		   $ftr["maxLevelRol"] = [1,2,3,5];
+		   $ftr["maxLevelRol"] = [3,4,5];
+           $ftr["departamentoId"] = [1,21];
 		   $ftr["incluirJefes"] = true;
 		   $ftr["sendBraun"] = false;
 		   $ftr["senHuerin"] = false;
 		   $correos = $contractRep->getEmailsEncargadosLevel($ftr);
 		   $send = new SendMail();
-		   if(!SEND_LOG_MOD)
-		       $correos = [];
+		   if(!SEND_LOG_MOD){
+               $correos = [];
+           }
 		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
 		   return true;
         }

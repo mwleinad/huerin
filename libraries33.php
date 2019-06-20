@@ -99,6 +99,12 @@ include_once(DOC_ROOT.'/classes/pendiente.class.php');
 
 include_once(DOC_ROOT."/classes/xmlTransform.class.php");
 include_once(DOC_ROOT."/classes/filtro.class.php");
+include_once(DOC_ROOT."/classes/instanciaServicio.class.php");
+include_once(DOC_ROOT."/classes/contractRep.class.php");
+include_once(DOC_ROOT."/classes/serie.class.php");
+include_once(DOC_ROOT."/classes/expediente.class.php");
+include_once(DOC_ROOT."/classes/rol.class.php");
+include_once(DOC_ROOT."/classes/catalogue.class.php");
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");

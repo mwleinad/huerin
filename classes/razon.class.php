@@ -8,35 +8,36 @@
 
 class Razon extends Contract
 {
-   public function findEncargadoAdministracion(){
-       $admin = array();
-       $this->Util()->DB()->setQuery(
-           "SELECT contractId,permisos FROM contract WHERE contractId = '".$this->getContractId()."'"
-       );
-       $row = $this->Util()->DB()->GetRow();
-
-       $permisos = explode('-',$row['permisos']);
-       if(!is_array($permisos))
-           $permisos =  array();
-
-       $id=0;
-       foreach ($permisos as $permiso) {
-           list($depa, $resp) = explode(",", $permiso);
-           if($depa == 21) {
-               $id = $resp;
-               break;
+   public function findEmailsAscByRespId($responsableId,$untilLevel){
+       global $personal;
+       $correos = [];
+       $subordinados =  $personal->Jefes($responsableId);
+       array_push($subordinados,$responsableId);
+       $subordinados = array_unique($subordinados);
+       $strFilter = " and a.personalId NOT IN(".IDBRAUN.",".IDHUERIN.") ";
+       if($untilLevel||is_array($untilLevel)>0)
+       {
+           if(is_array($untilLevel)){
+               if(count($untilLevel)>0)
+                   $strFilter .="  and b.nivel in (".implode(",",$untilLevel).")";
            }
+           else
+               $strFilter .= " and b.nivel <='".$untilLevel."' ";
        }
-       if($id){
-           $this->Util()->DB()->setQuery(
-               "SELECT email,name FROM personal WHERE personalId = '".$id."'"
-           );
-           $correo = $this->Util()->DB()->GetRow();
-           if($this->Util()->ValidateEmail($correo['email'])){
-               $admin = $correo;
-           }
+       $sql = "select a.departamentoId,a.name,a.email,a.roleId,b.nivel from personal a 
+                    inner join roles b on a.roleId=b.rolId
+                    where a.active='1' and a.personalId IN (".implode(",",$subordinados).") $strFilter
+                    ";
+       $this->Util()->DB()->setQuery($sql);
+       $responsables = $this->Util()->DB()->GetResult();
+       if(!is_array($responsables))
+           return $correos;
+
+       foreach ($responsables as $key=>$value){
+           if($this->Util()->ValidateEmail($value["email"]))
+               $correos[$value["email"]] = $value["name"];
        }
-       return $admin;
+       return $correos;
    }
    public function getEmailContractByArea($area=false,$mainCustomer=false){
        $emails=array();
@@ -108,8 +109,7 @@ class Razon extends Contract
        return $row;
    }
    public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false){
-       global $comprobante;
-       global $sendmail;
+       global $comprobante,$sendmail,$personal;
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        if(SEND_FACT_CUSTOMER=='SI'){
            $this->setContractId($compInfo['userId']);
@@ -125,16 +125,12 @@ class Razon extends Contract
            $correos = array();
        }
        //encontrar el encargado de administracion
-       $this->setContractId($compInfo['userId']);
-       $eadmin = $this->findEncargadoAdministracion();
-       $encargados = unserialize(CC_EMAILS);
-       if(!is_array($encargados))
-           $encargados = array();
+       $encargados = [];
+       $contractRep = new ContractRep();
+       $encargadosIds = $contractRep->encargadosCustomKey('departamentoId','personalId',$compInfo['userId']);
+       if(key_exists(21,$encargadosIds))
+            $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[3,4,5]);
 
-       if(!empty($eadmin)){
-           $admin = array($eadmin['email']=>$eadmin['name']);
-           $encargados = array_merge($encargados,$admin);
-       }
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
