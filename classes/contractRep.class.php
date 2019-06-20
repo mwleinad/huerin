@@ -490,15 +490,22 @@ class ContractRep extends Main
         global $personal;
 
         $strSociosMayoritarios = "";
+        $filterMain = "";
         if(!$filtro["sendBraun"])
             $strSociosMayoritarios .= " and a.personalId!='".IDBRAUN."' ";
         if(!$filtro["sendHuerin"])
             $strSociosMayoritarios .= " and a.personalId!='".IDHUERIN."' ";
-
+        if($filtro["departamentoId"]|| is_array($filtro["departamentoId"])){
+            if(is_array($filtro["departamentoId"])){
+                if(count($filtro["departamentoId"])>0)
+                    $filterMain .="  and a.departamentoId in (".implode(",",$filtro["departamentoId"]).")";
+            }
+            else
+                $filterMain .= " and a.departamentoId ='".$filtro["departamentoId"]."' ";
+        }
         $sql = "select a.departamentoId,a.personalId from contractPermiso a 
                 inner join personal b on a.personalId=b.personalId 
-                where a.contractId = '".$this->contractId."'
-                ";
+                where a.contractId = '".$this->contractId."' $filterMain  ";
         $this->Util()->DB()->setQuery($sql);
         $responsables = $this->Util()->DB()->GetResult();
 
@@ -519,7 +526,7 @@ class ContractRep extends Main
                 }
             }
             $strFilter = "";
-            if($filtro["maxLevelRol"]||is_array($filtro[",maxLevelRol"])>0)
+            if($filtro["maxLevelRol"]||is_array($filtro["maxLevelRol"]))
             {
                 if(is_array($filtro["maxLevelRol"])){
                     if(count($filtro["maxLevelRol"])>0)
@@ -544,8 +551,6 @@ class ContractRep extends Main
 
         $correos = [];
         foreach ($responsables as $key=>$value){
-            if(!$filtro["sendBraun"])
-
             if($this->Util()->ValidateEmail($value["email"]))
                 $correos[$value["email"]] = $value["name"];
         }
