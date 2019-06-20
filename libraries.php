@@ -63,6 +63,7 @@ include_once(DOC_ROOT.'/classes/contractCategory.class.php');
 include_once(DOC_ROOT.'/classes/contractSubcategory.class.php');
 include_once(DOC_ROOT.'/classes/documentBasic.class.php');
 include_once(DOC_ROOT.'/classes/report-bonos.class.php');
+include_once(DOC_ROOT."/classes/edoResultado.class.php");
 include_once(DOC_ROOT.'/classes/report-cobranza-ejercicio.class.php');
 include_once(DOC_ROOT.'/classes/report-cobranza-ejercicio-new.class.php');
 include_once(DOC_ROOT.'/classes/documentSellado.class.php');
@@ -127,6 +128,7 @@ include_once(DOC_ROOT."/classes/compressed.class.php");
 include_once(DOC_ROOT."/classes/changePlatform.class.php");
 include_once(DOC_ROOT."/classes/utileriaInvoice.class.php");
 
+
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
 include_once(DOC_ROOT."/classes/backup.class.php");
@@ -159,6 +161,7 @@ $tipoRequerimiento = new TipoRequerimiento;
 $tipoArchivo = new TipoArchivo;
 $departamentos = new Departamentos;
 $reportebonos = new ReporteBonos;
+$edoResultado = new EdoResultado();
 $reporteCobranzaEjercicio = new ReporteCobranzaEjercicio;
 $reporteCobranzaEjercicioNew = new ReporteCobranzaEjercicioNew;
 $documento = new Documento;

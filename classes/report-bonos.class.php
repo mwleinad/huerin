@@ -307,6 +307,12 @@ class ReporteBonos extends Main
         }
         return $base;
     }
+    function createMonthBasesFromArray($meses= []){
+	    $mesesBase = [];
+	    foreach($meses as $mes)
+	        $mesesBase[$mes]=[];
+	    return $mesesBase;
+    }
 	function generateReportBonos($ftr=[]){
 	    global $contractRep,$instanciaServicio,$customer,$personal;
         //encargados del filtro
@@ -345,10 +351,6 @@ class ReporteBonos extends Main
                 continue;
             }
             $serviciosFiltrados = [];
-            $countServ =  count($value['servicios']);
-            $meses=[];
-            //encontrar los encargados de area;
-
             $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
             $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
             $rowCobranza = [];
@@ -854,18 +856,43 @@ class ReporteBonos extends Main
                 }
             }
     }
+    function generarMesesAconsultar($tipoPeriodo,$periodo){
+	    $meses = [];
+	    switch($tipoPeriodo){
+            case 'mensual':
+                if($periodo)
+                    $meses = [$periodo];
+                else
+                    $meses = [1,2,3,4,5,6,7,8,9,10,11,12];
+            break;
+            case 'trimestral':
+                switch($periodo){
+                    case 'efm': $meses = [1,2,3];break;
+                    case 'amj': $meses = [4,5,6];break;
+                    case 'jas': $meses = [7,8,9];break;
+                    case 'ond': $meses = [10,11,12];break;
+                    default:$meses = $meses = [1,2,3,4,5,6,7,8,9,10,11,12];break;
+                }
+            break;
+        }
+        return $meses;
+    }
     function generateEstadoResultado($ftr=[]){
 	    global $contractRep,$instanciaServicio,$personal;
 	    $strFilter ="";
         if($ftr["responsableCuenta"])
             $strFilter .= " and personalId = '".$ftr['responsableCuenta']."' ";
 
-        $sql = "select * from personal where roleId=2 $strFilter order by name ASC  limit 3";
+        $sql = "select * from personal where roleId=2 $strFilter order by name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
-        $mesesBase =  $this->createMonthBase($ftr['period']);
+        //encontrar los meses
+        $meses = $this->generarMesesAconsultar($_POST["tipoPeriodo"],$_POST["period"]);
+        $mesesBase =  $this->createMonthBasesFromArray($meses);
         $year = $ftr["year"];
         foreach($gerentes as $key=>$value){
+            $stackSubordinados = [];
+            $detalleSubordinados = [];
             $ftr["responsableCuenta"] = $value["personalId"];
             $ftr["departamentoId"] = $value["departamentoId"];
 
@@ -882,7 +909,7 @@ class ReporteBonos extends Main
                 $strFilter .=" AND d.departamentoId='".$ftr["departamentoId"]."' ";
             $strFilter .= " AND a.contractId IN(".implode(',',$contratos).") ";
 
-            $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.name,d.nombreServicio FROM servicio a 
+            $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a 
                     INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
                     INNER JOIN contractPermiso c ON a.contractId=c.contractId
                     INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
@@ -893,46 +920,63 @@ class ReporteBonos extends Main
                 unset($gerentes[$key]);
                 continue;
             }
-            $totalDevengadoXempleado = 0;
-            $totalTrabajadoXempleado = 0;
-            $services = [];
+            $totalDevengadoGerente = 0;
+            $totalTrabajadoGerente = 0;
             foreach($servicios as $ks=>$serv) {
                 $temp = [];
                 $isParcial = false;
                 if ($serv['status'] == "bajaParcial")
                     $isParcial = true;
-                switch ($ftr['period']){
-                    case 'efm':
-                        $meses = array(1, 2, 3);
-                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                    case 'amj':
-                        $meses = array(4, 5, 6);
-                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                    case 'jas':
-                        $meses = array(7, 8, 9);
-                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                    case 'ond':
-                        $meses = array(10, 11, 12);
-                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                    default:
-                        $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                        $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                }
+                $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$serv['contractId']);
+                if(!in_array($encargados[$serv['departamentoId']],$subordinados))
+                    continue;
+                $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+
                 if(empty($temp)||empty($temp["instancias"]))
                     continue;
 
-                $totalDevengadoXempleado += $temp['totalDevengado'];
-                $totalTrabajadoXempleado += $temp['totalComplete'];
-                $services[]=$serv["servicioId"];
+                if(!in_array($encargados[$serv['departamentoId']],$stackSubordinados)){
+                    array_push($stackSubordinados,$encargados[$serv["departamentoId"]]);
+                    $personal->setPersonalId($encargados[$serv['departamentoId']]);
+                    $subordinado = $personal->InfoWhitRol();
+                    $subordinado["totalDevengado"] +=$temp["totalDevengado"];
+                    $subordinado["totalTrabajado"] +=$temp["totalComplete"];
+                    $detalleSubordinados[$encargados[$serv['departamentoId']]]=$subordinado;
+                }else{
+                    $detalleSubordinados[$encargados[$serv['departamentoId']]]["totalDevengado"]+=$temp["totalDevengado"];
+                    $detalleSubordinados[$encargados[$serv['departamentoId']]]["totalTrabajado"]+=$temp["totalTrabajado"];
+                }
+
+                $totalDevengadoGerente += $temp['totalDevengado'];
+                $totalTrabajadoGerente += $temp['totalComplete'];
             }
-            $gerentes[$key]["totalDevengado"] = $totalDevengadoXempleado;
-            $gerentes[$key]["totalTrabajado"] = $totalTrabajadoXempleado;
+            $allEncargados = [];
+            foreach($subordinados as $subId){
+                $personal->setPersonalId($subId);
+                $empleado=$personal->InfoWhitRol();
+                $empleado['totalDevengado']=0;
+                $empleado['totalCompletado']=0;
+                $allEncargados[$subId] = $empleado;
+            }
+            $newArray = [];
+            $detalleSubordinados = $this->Util()->orderMultiDimensionalArray($detalleSubordinados,'nivel',true,true);
+            foreach($detalleSubordinados as $ke=>$enc){
+                if(!array_key_exists($enc['personalId'],$newArray)){
+                    $newArray[$enc["personalId"]] = $detalleSubordinados[$ke];
+                }
+                else{
+                    $newArray[$enc["personalId"]]['totalDevengado']  += $enc['totalDevengado'];
+                    $newArray[$enc["personalId"]]['totalCompletado'] += $enc['totalCompletado'];
+                }
+                //si tiene jefe inmediato se suma el total del sub al jefe
+                $this->recursiveTotalEncargado($allEncargados,$newArray, $detalleSubordinados[$ke],$enc['totalDevengado'],$enc['totalCompletado']);
+            }
+            $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'nivel',false,true);
+
+            $gerentes[$key]["totalDevengado"] = $totalDevengadoGerente;
+            $gerentes[$key]["totalTrabajado"] = $totalTrabajadoGerente;
             $gerentes[$key]["sueldoTotalConSub"] = $totalSueldoIncluidoSubordinados;
+            $gerentes[$key]["detalleSubordinados"] = $ordenado;
         }
         return $gerentes;
     }

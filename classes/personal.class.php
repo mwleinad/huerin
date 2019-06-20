@@ -388,14 +388,25 @@ class Personal extends Main
 	}
     public function InfoWhitRol()
     {
-        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.jefeInmediato FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
+        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.jefeInmediato, 
+                                             CASE b.nivel
+                                             WHEN 1 THEN 'Socio'
+                                             WHEN 2 THEN 'Gerente'
+                                             WHEN 3 THEN 'Supervisor'
+                                             WHEN 4 THEN 'Contador'
+                                             WHEN 5 THEN 'Auxiliar' END AS nameLevel
+                                             FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
+        $this->Util()->DB()->setQuery("select name from personal where personalId='".$row['jefeInmediato']."' ");
+        $row["nameJefeInmediato"] = $this->Util()->DB()->GetSingle();
         return $row;
     }
 	public function jefeInmediato(){
         $this->Util()->DB()->setQuery("SELECT j.* FROM personal a INNER JOIN personal j ON a.jefeInmediato=j.personalId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
         $row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
+        $this->Util()->DB()->setQuery("select name from personal where personalId='".$row['jefeInmediato']."' ");
+        $row["nameJefeInmediato"] = $this->Util()->DB()->GetSingle();
         return $row;
     }
 
