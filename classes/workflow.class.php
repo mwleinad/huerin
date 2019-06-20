@@ -647,7 +647,7 @@ class Workflow extends Servicio
 					if(!SEND_LOG_MOD)
 					    $correos = [];
 
-					$sendmail->PrepareMultipleNotice($subject, $body, $correos, '', $attachment, $fileName, $attachment2, $fileName2, "noreply@branunhuerin.com.mx", "Administrador del Sistema",true) ;
+					$sendmail->PrepareMultipleNotice($subject, $body, $correos, '', $attachment, $fileName, $attachment2, $fileName2, "noreply@branunhuerin.com.mx", "Administrador del Sistema",false) ;
 				}
 				$this->Util()->setError(0,'complete','Archivo guardado correctamente');
                 $this->Util()->PrintErrors();
@@ -665,6 +665,15 @@ class Workflow extends Servicio
 	{	
 		$this->Util()->DB()->setQuery("SELECT * FROM `taskFile` WHERE taskFileId = '".$id."'");
 		$file = $this->Util()->DB()->GetRow();
+
+        $sql = "SELECT b.contractId FROM instanciaServicio a
+                        INNER JOIN servicio b ON a.servicioId=b.servicioId WHERE instanciaServicioId='".$this->instanciaServicioId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $conId =  $this->Util()->DB()->GetSingle();
+        $contractRep= new ContractRep();
+        $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$conId);
+        $razon = new Razon();
+        $correos = [];
 		
 		$this->Util()->DB()->setQuery("DELETE FROM `taskFile` WHERE taskFileId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
