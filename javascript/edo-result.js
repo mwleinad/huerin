@@ -27,3 +27,19 @@ jQ(document).on("click","#btnBuscar",function () {
     });
 
 });
+
+jQ(document).on("change","#tipoPeriodo",function () {
+    var periodo = jQ(this).val();
+    if(periodo=='trimestral'){
+        jQ("#divMensual").hide();
+        jQ('#periodMensual').prop('disabled',true);
+        jQ('#periodTrimestral').prop('disabled',false);
+        jQ("#divTrimestral").show();
+    }else if(periodo=='mensual'){
+        jQ("#divMensual").show();
+        jQ("#divTrimestral").hide();
+        jQ('#periodMensual').prop('disabled',false);
+        jQ('#periodTrimestral').prop('disabled',true);
+    }
+
+});
