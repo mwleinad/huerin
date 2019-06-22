@@ -1,6 +1,6 @@
 <?php
 $user->allowAccess(7);
-$user->allowAccess(215);
+$user->allowAccess(225);
 /* End Session Control */
 
 if($_SESSION["search"]["year"])

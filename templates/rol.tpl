@@ -10,8 +10,7 @@
         <div id="loadPrint">
         </div>
     </div>
-    <div class="clear">
-    </div>
+    <div class="clear"></div>
     <div id="portlets">
         <div class="clear"></div>
         <div class="portlet">
@@ -21,5 +20,22 @@
             </div>
         </div>
     </div>
+    {if in_array(226,$permissions) || $User.isRoot}
+    <div class="grid_6" id="eventboxLeft">
+        {if in_array(227,$permissions) || $User.isRoot}
+        <a href="javascript:void(0)" class="inline_add" id="addPorcentBono" title="Agregar nivel y %">Agregar</a>
+        <div id="loadPrint">
+        </div>
+        {/if}
+    </div>
     <div class="clear"></div>
+    <div id="portlets">
+        <div class="portlet">
+            <div class="portlet-title">Porcentaje de bonos por categoria</div>
+            <div class="portlet-content nopadding borderGray" id="contenidoPorcentBono">
+                {include file="lists/porcent-bonos.tpl"}
+            </div>
+        </div>
+    </div>
+    {/if}
 </div>

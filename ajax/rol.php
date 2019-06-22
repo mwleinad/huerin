@@ -52,6 +52,11 @@ switch($_POST['type']){
         $smarty->assign('title','Agregar Rol');
         $smarty->display(DOC_ROOT.'/templates/boxes/add-rol-popup.tpl');
     break;
+    case 'addPorcentBono':
+        $smarty->assign('deps',$deps);
+        $smarty->assign('title','Agregar registro');
+        $smarty->display(DOC_ROOT.'/templates/boxes/porcent-bono-popup.tpl');
+        break;
     case 'saveRol':
          $rol->setDepartamentoId($_POST['depId']);
          $rol->setName($_POST['name']);
@@ -80,6 +85,13 @@ switch($_POST['type']){
         $smarty->assign('title','Editar Rol');
         $smarty->display(DOC_ROOT.'/templates/boxes/add-rol-popup.tpl');
     break;
+    case 'editPorcent':
+        $rol->setPorcentId($_POST['id']);
+        $post = $rol->InfoPorcent();
+        $smarty->assign('post',$post);
+        $smarty->assign('title','Editar porcentaje');
+        $smarty->display(DOC_ROOT.'/templates/boxes/porcent-bono-popup.tpl');
+        break;
     case 'updateRol':
         $rol->setRolId($_POST['rolId']);
         $rol->setDepartamentoId($_POST['depId']);
@@ -98,7 +110,7 @@ switch($_POST['type']){
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
-        break;
+    break;
     case 'deleteRol':
         $rol->setRolId($_POST['id']);
         if($rol->Delete())
@@ -198,4 +210,58 @@ switch($_POST['type']){
         }
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/roles.".$_POST['tipo'];
     break;
+    case 'savePorcentBono':
+        $rol->setNamePorcent($_POST["name"]);
+        $rol->setPorcentaje($_POST["porcentaje"]);
+        $rol->setCategoria($_POST["categoria"]);
+        if($rol->SavePorcent())
+        {
+            $porcentajes = $rol->EnumeratePorcentajes();
+            $smarty->assign('porcentajes',$porcentajes);
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $smarty->display(DOC_ROOT.'/templates/lists/porcent-bonos.tpl');
+        }
+        else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+
+    break;
+    case 'updatePorcentBono':
+        $rol->setPorcentId($_POST["porcentId"]);
+        $rol->setPorcentaje($_POST["porcentaje"]);
+        $rol->setCategoria($_POST["categoria"]);
+        if($rol->UpdatePorcent())
+        {
+            $porcentajes = $rol->EnumeratePorcentajes();
+            $smarty->assign('porcentajes',$porcentajes);
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $smarty->display(DOC_ROOT.'/templates/lists/porcent-bonos.tpl');
+
+        }
+        else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    }
+    break;
+    case 'deletePorcent':
+        $rol->setPorcentId($_POST['id']);
+        if($rol->DeletePorcent())
+        {
+            $porcentajes = $rol->EnumeratePorcentajes();
+            $smarty->assign('porcentajes',$porcentajes);
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+            echo "[#]";
+            $smarty->display(DOC_ROOT.'/templates/lists/porcent-bonos.tpl');
+
+        }
+        else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    }
 }
