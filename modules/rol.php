@@ -7,3 +7,7 @@ $user->allowAccess(111);//level 2
 $roles = $rol->Enumerate();
 $smarty->assign('roles',$roles);
 $smarty->assign('mainMnu','catalogos');
+
+$porcentajes = $rol->EnumeratePorcentajes();
+$smarty->assign('porcentajes',$porcentajes);
+$smarty->assign('mainMnu','catalogos');

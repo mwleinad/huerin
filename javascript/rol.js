@@ -20,6 +20,25 @@ jQ(document).ready(function(){
 
         });
     });
+    jQ('#addPorcentBono').on('click',function(){
+        jQ('#fview').show();
+        jQ.ajax({
+            url:AJAX_PATH,
+            method:'post',
+            data:{id:this.id,type:'addPorcentBono'},
+            success:function (response) {
+                FViewOffSet('');
+                FViewOffSet(response);
+                jQ('#closePopUpDiv').on('click',function(){
+                    close_popup();
+                });
+                jQ('#btnPorcent').on('click',function(){
+                    ExecuteFunPorcent(this);
+                });
+            }
+
+        });
+    });
 
 
 });
@@ -78,6 +97,25 @@ jQ(document).on('click',".spanEdit",function(){
 
     });
 });
+jQ(document).on('click',".spanEditPorcent",function(){
+    grayOut(true);
+    jQ('#fview').show();
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:{id:this.id,type:'editPorcent'},
+        success:function (response) {
+            FViewOffSet(response);
+            jQ('#closePopUpDiv').on('click',function(){
+                close_popup();
+            });
+            jQ('#btnPorcent').on('click',function(){
+                ExecuteFunPorcent(this);
+            });
+        }
+
+    });
+});
 jQ(document).on('click',".spanDelete",function(){
    var con =  confirm("¿ Esta seguro de realizar esta accion?");
    if(!con)
@@ -92,6 +130,27 @@ jQ(document).on('click',".spanDelete",function(){
             if (splitResp[0] == 'ok') {
                 ShowStatusPopUp(splitResp[1]);
                 jQ('#contenido').html(splitResp[2]);
+            }
+            else {
+                ShowStatusPopUp(splitResp[1]);
+            }
+        }
+    });
+});
+jQ(document).on('click',".spanDeletePorcent",function(){
+    var con =  confirm("¿ Esta seguro de realizar esta accion?");
+    if(!con)
+        return;
+
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:{id:this.id,type:'deletePorcent'},
+        success:function (response) {
+            var splitResp = response.split("[#]");
+            if (splitResp[0] == 'ok') {
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#contenidoPorcentBono').html(splitResp[2]);
             }
             else {
                 ShowStatusPopUp(splitResp[1]);
@@ -172,6 +231,36 @@ function ExecuteFunRol(self){
             else{
                 jQ('#loading-img').hide();
                 jQ('#btnRol').show();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        }
+    });
+}
+function ExecuteFunPorcent(self){
+    var form = jQ(self).parents('form:first');
+    var fd =  new FormData(form[0]);
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend: function(){
+            jQ('#btnPorcent').hide();
+            jQ('#loading-img').show();
+
+        },
+        success: function(response){
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                close_popup();
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#contenidoPorcentBono').html(splitResp[2]);
+            }
+            else{
+                jQ('#loading-img').hide();
+                jQ('#btnPorcent').show();
                 ShowStatusPopUp(splitResp[1]);
             }
         }

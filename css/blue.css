@@ -48,6 +48,14 @@ h3 { font-size: 13px !important; }
 	width: 375px !important;
 	position:relative;
 }
+#eventboxLeft{
+	font-size:11px;
+	text-align:left;
+	margin-top: 10px;
+	line-height:35px;
+	width: 375px !important;
+	position:relative;
+}
 a.inline_calendar { padding-left:21px; background:url(../images/icons/calendar.gif) no-repeat left top; }
 a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.gif) no-repeat left top; }
 .hidden_calendar { position:absolute; top:35px; right:20px; width:200px; height:200px; display:none; }

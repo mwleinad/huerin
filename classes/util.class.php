@@ -92,7 +92,6 @@ class Util extends Error
 		$this->FormatDateMySql($date);
 	}
 
-
 	function ValidateInteger(&$number, $max = 0, $min = 0)
 	{
 		if (!preg_match("/^[0-9]+$/",$number)) $number = 0;
@@ -114,6 +113,31 @@ class Util extends Error
 			$number = 9223372036854775807;
 		}
 	}
+	function ValidateNumericWhitRange($value, $min = -1, $max = 0,$field="")
+    {
+        if (!is_numeric($value)){
+            $this->setError(10055, 'error', "Debe ingresar un valor numerico", $field);
+            return false;
+        }
+
+        if($min>=0)
+        {
+            if($value<$min){
+                $this->setError(10055, 'error', "El valor minimo permitido es $min", $field);
+                return false;
+            }
+
+        }
+        if($max)
+        {
+            if($value>$max){
+                $this->setError(10055, 'error', "El valor maximo permito es $max", $field);
+                return false;
+            }
+
+        }
+        return true;
+    }
 
 	function limpiaNumero($numero){
 

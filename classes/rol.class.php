@@ -33,8 +33,35 @@ class Rol extends main
     public function setTitulo($value){
         $this->titulo=$value;
     }
+    private $porcentId;
+    function setPorcentId($value){
+        $this->porcentId=$value;
+    }
+    private $namePorcent;
+    public function setNamePorcent($value){
+        $this->Util()->ValidateRequireField($value,'Nombre');
+        $this->namePorcent=$value;
+    }
+    private $categoria;
+    public function setCategoria($value){
+        $this->Util()->ValidateRequireField($value,'Categoria');
+        $this->Util()->ValidateOnlyNumeric($value,"categoria");
+        $this->categoria=$value;
+    }
+    private $porcentaje;
+    public function setPorcentaje($value){
+        $this->Util()->ValidateRequireField($value,'Porcentaje');
+        $this->Util()->ValidateNumericWhitRange($value,1,100,'Porcentaje');
+        $this->porcentaje=$value;
+    }
     public function Info(){
         $sql = "SELECT * FROM roles WHERE status='activo' AND rolId='".$this->rolId."' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $info = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
+        return $info;
+    }
+    public function InfoPorcent(){
+        $sql = "SELECT * FROM porcentajesBonos WHERE  porcentId='".$this->porcentId."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $info = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         return $info;
@@ -70,6 +97,12 @@ class Rol extends main
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
+    }
+    public function EnumeratePorcentajes(){
+        $sql ="SELECT * FROM porcentajesBonos order by categoria ASC";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+        return $result;
     }
     public function GetRolesGroupByDep(){
        $res = $this->Enumerate();
@@ -111,6 +144,25 @@ class Rol extends main
         $this->Util()->PrintErrors();
         return true;
     }
+    public function SavePorcent(){
+        $sql = "SELECT porcentId FROM  porcentajesBonos WHERE LOWER(name)='".strtolower($this->name)."' OR categoria='".$this->categoria."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        if(!empty($res))
+            $this->Util()->setError(0,'error',"Ya existe un registro con el nombre o categoria proporcionado");
+
+
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "INSERT INTO porcentajesBonos(name,categoria,porcentaje) VALUES('".$this->namePorcent."',$this->categoria,'".$this->porcentaje."') ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->InsertData();
+
+        $this->Util()->setError(0,"complete",'Se ha creado el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+    }
     function Update(){
         $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' AND rolId!='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
@@ -130,6 +182,25 @@ class Rol extends main
         $this->Util()->PrintErrors();
         return true;
     }
+    function UpdatePorcent(){
+        $sql = "SELECT porcentId FROM  porcentajesBonos WHERE categoria='".$this->categoria."' and  porcentId!='".$this->porcentId."'";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        if(!empty($res))
+            $this->Util()->setError(0,'error',"Ya existe un registro con la categoria proporcionado");
+
+
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "UPDATE porcentajesBonos SET categoria='".$this->categoria."',porcentaje='".$this->porcentaje."' WHERE porcentId='".$this->porcentId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
+
+        $this->Util()->setError(0,"complete",'Se ha actualizado el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+    }
     function Delete(){
 
         $sql = "UPDATE roles SET status='baja' WHERE rolId='".$this->rolId."' ";
@@ -139,6 +210,16 @@ class Rol extends main
         $sqlDel = "DELETE FROM rolesPermisos WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sqlDel);
         $this->Util()->DB()->DeleteData();
+
+        $this->Util()->setError(0,"complete",'Se ha dado de baja el registro correctamente');
+        $this->Util()->PrintErrors();
+        return true;
+    }
+    function DeletePorcent(){
+
+        $sql = "delete from porcentajesBonos  WHERE porcentId='".$this->porcentId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->UpdateData();
 
         $this->Util()->setError(0,"complete",'Se ha dado de baja el registro correctamente');
         $this->Util()->PrintErrors();
