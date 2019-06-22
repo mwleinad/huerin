@@ -51,7 +51,7 @@ class Rol extends main
     private $porcentaje;
     public function setPorcentaje($value){
         $this->Util()->ValidateRequireField($value,'Porcentaje');
-        $this->Util()->ValidateNumericWhitRange($value,1,100,'Porcentaje');
+        $this->Util()->ValidateNumericWhitRange($value,0,100,'Porcentaje');
         $this->porcentaje=$value;
     }
     public function Info(){
