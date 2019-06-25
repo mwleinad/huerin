@@ -23,9 +23,6 @@ switch($_POST["type"])
 		unset($_SESSION['Usr']);
 		
 		if($user->doLogin()){
-			//echo session_id();
-//			print_r($_SESSION);
-//			exit;
 			echo "ok[#]";
 		}else{
 			echo "fail[#]";

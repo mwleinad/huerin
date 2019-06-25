@@ -95,25 +95,19 @@ class User extends Sucursal
 			return false;
 		}
 
-		$sqlQuery = "SELECT
-				*
-		   FROM
-				user
-			WHERE
-				username = '".$this->username."'
-			AND
-				passwd = '".md5($this->password)."'
-			AND
-				active = '1'
-		";
+		$sqlQuery = "SELECT * 
+		   			 FROM user
+					 WHERE username = '".$this->username."'
+					 AND passwd = '".md5($this->password)."'
+					 AND active = '1' ";
 		$this->Util()->DB()->setQuery($sqlQuery);
 		$row = $this->Util()->DB()->GetRow();
-
 		if($row){
-
 			$card['userId'] = 999990000;
 			$card['roleId'] = $row['type'];
+            $card['level'] = 1;
 			$card['username'] = $row['name'];
+            $card['level'] = $row['name'];
 			$card['isLogged'] = true;
             $card['isRoot'] = true;
 
@@ -125,85 +119,51 @@ class User extends Sucursal
 			return true;
 
 		}else{
-
-			//Personal de Roqueni
-
-			$sql = "SELECT
-					*
-			   FROM
-					personal
-				WHERE
-					username = '".$this->username."'
-				AND
-					passwd = '".$this->password."'
-				AND
-					active = '1'
-			";
+            $sql = "SELECT a.*,b.nivel
+		   			 FROM personal a
+		   			 LEFT JOIN roles b ON a.roleId=b.rolId
+					 WHERE a.username = '".$this->username."'
+					 AND a.passwd = '".$this->password."'
+					 AND a.active = '1' ";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
-
 			if($row){
-
 				$card['userId'] = $row['personalId'];
-				$card['roleId'] = 2;
+				$card['roleId'] = $row["roleId"];
+                $card['level'] = $row["nivel"];
 				$card['username'] = $row['username'];
 				$card['departamentoId'] = $row['departamentoId'];
 				$card['isLogged'] = true;
 				$card['tipoPers'] = $row['tipoPersonal'];
-				
 				$_SESSION['User'] = $card;
 				return true;
-
 			}else{
-
-				//Usuarios Wallmart
-
-				$sql = "SELECT
-						*
-				   FROM
-						customer
-					WHERE
-						email = '".$this->username."'
-					AND
-						password = '".$this->password."'
-					AND
-						active = '1'
-				";
+				$sql = "SELECT  *
+				   FROM customer
+				   WHERE email = '".$this->username."'
+				   AND 	password = '".$this->password."'
+				   AND  active = '1' ";
 				$this->Util()->DB()->setQuery($sql);
 				$row = $this->Util()->DB()->GetRow();
-
 				if($row){
-
 					$card['userId'] = $row['customerId'];
 					$card['roleId'] = 4;
 					$card['username'] = $row['nameContact'];
 					$card['isLogged'] = true;
-
 					$_SESSION['User'] = $card;
-
 					return true;
-
 				}else{
-
 					$this->Util()->setError(10006, "error", "");
 					$this->Util()->PrintErrors();
-
 				}//else
-
 			}//else
-
 		}//else
-
 		return false;
-
 	}//doLogin
-
 	public function doLogout(){
-
 		$_SESSION['User'] = '';
 		unset($_SESSION['User']);
 		session_destroy();
-
 	}//doLogout
 
 	function GetUserInfo()

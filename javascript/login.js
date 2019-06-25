@@ -20,16 +20,15 @@ function DoLogin()
     onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			console.log(response);
-
 			var splitResponse = response.split("[#]");
-			if(splitResponse[0].trim() == "fail")
+			if(splitResponse[0].trim() == "ok")
 			{
-				ShowStatusPopUp(splitResponse[1]);
-				Event.observe($('close_icon'), "click", function(){ ClosePopUp(); });
+                location.href = WEB_ROOT;
 			}
 			else
 			{
-				location.href = WEB_ROOT;
+                ShowStatusPopUp(splitResponse[1]);
+                Event.observe($('close_icon'), "click", function(){ ClosePopUp(); });
 			}
 
 		},
