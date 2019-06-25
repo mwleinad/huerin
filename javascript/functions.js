@@ -294,16 +294,6 @@ function Logout() {
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
-function Logout() {
-	new Ajax.Request(WEB_ROOT+'/ajax/logout.php',
-	{
-		method:'post',
-    onSuccess: function(transport){
-      Redirect('');
-		},
-    onFailure: function(){ alert('Something went wrong...') }
-  });
-}
 function CambiarRfcActivo()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
