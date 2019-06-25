@@ -191,7 +191,7 @@ class CxC extends Producto
             $card['serie']=$val['serie'];
             $card['folio']=$val['folio'];
             $card['nameContact']=$val['nameContact'];
-            $card['nombre']=$val['nameContact'];
+            $card['nombre']=$val['name'];
             $card['contractId']=$val['contractId'];
             $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
             $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
