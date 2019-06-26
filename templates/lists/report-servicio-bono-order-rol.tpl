@@ -397,24 +397,25 @@
             <thead>
             <tr>
                 <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%">Nombre</th>
-                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">I</th>
-                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">G</th>
-                <th class="cabeceraTabla" align="center" style="text-align: left">U</th>
-                <th class="cabeceraTabla" align="center" style="text-align: left">%Bono</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Ingresos</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Gastos</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">Utilidad</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left">% BONO</th>
                 <th class="cabeceraTabla" align="center" style="text-align: left">BONO</th>
                 <th class="cabeceraTabla" align="center" style="text-align: left">Bono Entregado</th>
             </tr>
             </thead>
             <tbody>
                 {foreach from=$data.totalesEncargadosAcumulado item=enc key=ken}
+					{math equation ='I-G' I=$enc.totalCompletado G=$enc.sueldoTotal assign=utilidad}
                     <tr>
                         <td>{$enc.name}</td>
                         <td>{$enc.totalCompletado|number_format:2:'.':','}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{$enc.sueldoTotal|number_format:2:'.':','}</td>
+                        <td>{$utilidad|number_format:2:'.':','}</td>
+                        <td>{$enc.porcentajeBono} %</td>
+                        <td>{if $utilidad>0}{$utilidad|number_format:2:'.':','}{else}0.00{/if}</td>
+                        <td>{if $utilidad>0}{$utilidad|round:2|number_format:2:'.':','}{else}0.00{/if}</td>
                     </tr>
                 {/foreach}
             </tbody>
