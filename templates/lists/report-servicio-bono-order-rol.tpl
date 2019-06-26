@@ -414,8 +414,8 @@
                         <td>{$enc.sueldoTotal|number_format:2:'.':','}</td>
                         <td>{$utilidad|number_format:2:'.':','}</td>
                         <td>{$enc.porcentajeBono} %</td>
-                        <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/1000))|number_format:2:'.':','}{else}0.00{/if}</td>
-                        <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/1000))|round:2|number_format:2:'.':','}{else}0.00{/if}</td>
+                        <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/100))|number_format:2:'.':','}{else}0.00{/if}</td>
+                        <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/100))|round:2|number_format:2:'.':','}{else}0.00{/if}</td>
                     </tr>
                 {/foreach}
             </tbody>
