@@ -388,7 +388,7 @@ class Personal extends Main
 	}
     public function InfoWhitRol()
     {
-        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.jefeInmediato, 
+        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.sueldo,a.jefeInmediato, 
                                              CASE b.nivel
                                              WHEN 1 THEN 'Socio'
                                              WHEN 2 THEN 'Gerente'
@@ -399,6 +399,8 @@ class Personal extends Main
         $row = $this->Util()->DB()->GetRow();
         $this->Util()->DB()->setQuery("select name from personal where personalId='".$row['jefeInmediato']."' ");
         $row["nameJefeInmediato"] = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("select porcentaje from porcentajesBonos where categoria='".$row['nivel']."' ");
+        $row["porcentajeBono"] = $this->Util()->DB()->GetSingle();
         return $row;
     }
 	public function jefeInmediato(){
