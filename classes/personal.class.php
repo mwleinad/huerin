@@ -198,6 +198,22 @@ class Personal extends Main
    	    $result = $this->SubordinadosDetails();
    	    return $result;
 	}
+    public function EnumerateGerenteDepartamento($dep)
+    {
+        $this->Util()->DB()->setQuery("select departamentoId from departamentos where lower(departamento)='".strtolower($dep)."' ");
+        $depId = $this->Util()->DB()->GetSingle();
+        if(!$depId)
+            return [];
+
+        $this->Util()->DB()->setQuery("select personalId from personal inner join roles on personal.roleId=roles.rolId where personal.departamentoId='".$depId."' and nivel=2");
+        $perId = $this->Util()->DB()->GetSingle();
+        if(!$perId)
+            return [];
+
+        $this->setPersonalId($perId);
+        $result = $this->SubordinadosDetailsAddPass();
+        return $result;
+    }
 	
 	function EnumerateById($ids)
 	{
@@ -700,6 +716,15 @@ function AddMeToArray()
 
 	array_unshift($_SESSION["lineal"], $row);
 }
+function AddPassToArray()
+{
+    $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
+    LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato WHERE personal.personalId = '".$this->personalId."'ORDER BY name ASC";
+    $this->Util()->DB()->setQuery($sql);
+    $row = $this->Util()->DB()->GetRow($sql);
+
+    array_unshift($_SESSION["lineal"], $row);
+}
 
 function SubordinadosDetails()
 {   
@@ -712,13 +737,28 @@ function SubordinadosDetails()
 	
 	$_SESSION["lineal"] = array();
 	$this->JerarquiaLineal($jerarquia);
-	
+
 	$this->AddMeToArray();
 	
 	return $_SESSION["lineal"];
-}	
-	
-	function GetRoleId($tipoPersonal)
+}
+function SubordinadosDetailsAddPass()
+{
+    $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
+       LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+    $this->Util()->DB()->setQuery($sql);
+    $result = $this->Util()->DB()->GetResult($sql);
+
+    $jerarquia = $this->Jerarquia($result, $this->personalId);
+
+    $_SESSION["lineal"] = array();
+    $this->JerarquiaLineal($jerarquia);
+    $this->AddPassToArray();
+
+    return $_SESSION["lineal"];
+}
+
+    function GetRoleId($tipoPersonal)
 	{
 	  switch($tipoPersonal)
 	  {

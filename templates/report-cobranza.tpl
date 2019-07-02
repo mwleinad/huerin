@@ -4,8 +4,7 @@
   <h1 class="reportes">Cobranza acumulada</h1>
   </div>
   <div class="grid_6" id="eventbox">
-    <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
-    <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
+    <a style="cursor:pointer" title="Exportar a Excel" onclick="ExportRepServBono()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
     <div id="loadPrint">
     </div>
   </div>
