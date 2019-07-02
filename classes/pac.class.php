@@ -102,11 +102,11 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        if($rfcR=='RLM140514NV3'){
+        /*if($rfcR=='XAXX010101000'){
             dd($response);
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             dd($cancelado);
-        }
+        }*/
         if($response['cancelCFDiAsyncReturn']['status']==201||$response['detail']['fault']['cod']==201){
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $data['cancelado'] = true;
@@ -125,19 +125,27 @@ class Pac extends Util
                 break;
             }
         }else{
-            switch($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']){
-                case 'Cancelado':
+            if($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']!='No Encontrado'){
+                switch($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']){
+                    case 'Cancelado':
+                        $data['cancelado'] =  true;
+                        $data['message'] =  "Documento cancelado correctamente.";
+                        break;
+                    default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
+                        $data['cancelado'] =  false;
+                        $data['message'] =  "Hubo un problema al cancelar el documento. Si la factura es reciente espere 24 Hrs para su cancelacion, si no es el caso intente nuevamente.";
+                        if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
+                            $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
+                        }
+                        break;
+                }
+            }else{
+                if(strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'],'Cancelado')!==false){
                     $data['cancelado'] =  true;
-                    $data['message'] =  "Documento cancelado anteriomente.";
-                break;
-                default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
-                    $data['cancelado'] =  false;
-                    $data['message'] =  "Hubo un problema al cancelar el documento. Si la factura es reciente espere 24 Hrs para su cancelacion, si no es el caso intente nuevamente.";
-                    if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
-                        $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
-                    }
-                break;
+                    $data['message'] =  "Documento cancelado correctamente.";
+                }
             }
+
         }
         //errors
         return $data;
