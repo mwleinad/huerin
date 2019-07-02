@@ -1,5 +1,5 @@
 <div align="center" id="divForm">
-	<form name="frmSearch" id="frmSearch" action="" method="post">
+	<form name="frmSearch" id="frmSearch"  method="post" action="export/report-cobranza.php">
 		<input type="hidden" name="type" id="type" value="searchAcumulada">
 		<input type="hidden" name="cliente" id="cliente" value="0" />
 		<table class="tableFull " align="center">

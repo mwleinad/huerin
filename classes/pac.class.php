@@ -125,24 +125,28 @@ class Pac extends Util
                 break;
             }
         }else{
+            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             if($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']!='No Encontrado'){
                 switch($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']){
                     case 'Cancelado':
                         $data['cancelado'] =  true;
                         $data['message'] =  "Documento cancelado correctamente.";
-                        break;
+                    break;
                     default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
                         $data['cancelado'] =  false;
-                        $data['message'] =  "Hubo un problema al cancelar el documento. Si la factura es reciente espere 24 Hrs para su cancelacion, si no es el caso intente nuevamente.";
+                        $data['message'] ="Error al cancelar: ".$cancelado['getCFDiStatusReturn']['status']." ".$cancelado['getCFDiStatusReturn']['statusCode'];
                         if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
                             $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
                         }
-                        break;
+                    break;
                 }
             }else{
                 if(strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'],'Cancelado')!==false){
                     $data['cancelado'] =  true;
                     $data['message'] =  "Documento cancelado correctamente.";
+                }else{
+                    $data['cancelado'] =  false;
+                    $data['message'] =  "Error al cancelar: ".$cancelado['getCFDiStatusReturn']['status']." ".$cancelado['getCFDiStatusReturn']['statusCode'];
                 }
             }
 

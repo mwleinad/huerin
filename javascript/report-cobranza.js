@@ -118,3 +118,10 @@ jQ(document).on('click','#btnSearch',function(){
         }
 	});
 });
+function ExportRepServBono()
+{
+    var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+    if(!resp)
+        return;
+    $('frmSearch').submit(); return true;
+}
