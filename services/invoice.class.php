@@ -144,6 +144,27 @@ class Invoice extends Comprobante
                unset($servicesHuerin[$key]);
                continue;
            }
+           // filtrar los servicios que tengan baja parcial tomando en cuenta la fecha de ultimo workflow creado.
+           if($servicio["status"]=='bajaParcial'){
+               //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+               $this->Util()->DB()->setQuery("select lastDateWorkflow from servicio where servicioId='".$servicio['servicioId']."' ");
+               $lastWorkflow=  $this->Util()->DB()->GetSingle();
+               if(!$this->Util()->isValidateDate($lastWorkflow,'Y-m-d'))
+               {
+                   $afterDateHuerin++;
+                   $allAfterDate++;
+                   unset($servicesHuerin[$key]);
+                   continue;
+               }
+               $firstDayLastDateWorkflow = $this->Util()->getFirstDate($lastWorkflow);
+               $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
+               if($firstDayCurrentDate>$firstDayLastDateWorkflow){
+                   $afterDateHuerin++;
+                   $allAfterDate++;
+                   unset($servicesHuerin[$key]);
+                   continue;
+               }
+           }
        }
        $afterDateBraun=0;
        foreach($servicesBraun as $key => $servicio)
@@ -169,6 +190,27 @@ class Invoice extends Comprobante
                $allAfterDate++;
                unset($servicesBraun[$key]);
                continue;
+           }
+           // filtrar los servicios que tengan baja parcial tomando en cuenta la fecha de ultimo workflow creado.
+           if($servicio["status"]=='bajaParcial'){
+               //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
+               $this->Util()->DB()->setQuery("select lastDateWorkflow from servicio where servicioId='".$servicio['servicioId']."' ");
+               $lastWorkflow=  $this->Util()->DB()->GetSingle();
+               if(!$this->Util()->isValidateDate($lastWorkflow,'Y-m-d'))
+               {
+                   $afterDateBraun++;
+                   $allAfterDate++;
+                   unset($servicesBraun[$key]);
+                   continue;
+               }
+               $firstDayLastDateWorkflow = $this->Util()->getFirstDate($lastWorkflow);
+               $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
+               if($firstDayCurrentDate>$firstDayLastDateWorkflow){
+                   $afterDateBraun++;
+                   $allAfterDate++;
+                   unset($servicesBraun[$key]);
+                   continue;
+               }
            }
        }
        $cadLog .="TOTAL FECHAS POSTERIORES = ".$allAfterDate.chr(13).chr(10);
