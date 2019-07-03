@@ -104,16 +104,19 @@ class Personal extends Main
 
 	public function setEmail($value)
 	{
+	    $this->Util()->ValidateMail($value,"Correo Electrónico");
 		$this->email = $value;
 	}
 
 	public function setUsername($value)
 	{
+        $this->Util()->ValidateRequireField($value, "Usuario");
 		$this->username = $value;
 	}
 
 	public function setPasswd($value)
 	{
+        $this->Util()->ValidateRequireField($value, "Contraseña");
 		$this->passwd = $value;
 	}
 
@@ -431,89 +434,75 @@ class Personal extends Main
 	public function Edit()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-
-		if($this->tipoPersonal == "Contador")
-		{
-			$this->jefeContador = 0;
-		}
-
-		if($this->tipoPersonal == "Supervisor")
-		{
-			$this->jefeSupervisor = 0;
-			$this->jefeContador = 0;
-		}
-
-		if($this->tipoPersonal == "Gerente")
-		{
-			$this->jefeGerente = 0;
-			$this->jefeSupervisor = 0;
-			$this->jefeContador = 0;
-		}
-
-		if($this->tipoPersonal == "Socio")
-		{
-			$this->jefeSocio = 0;
-			$this->jefeGerente = 0;
-			$this->jefeSupervisor = 0;
-			$this->jefeContador = 0;
-		}
-		$strSueldo ="";
+		$strUpdate ="";
 		if(strlen($this->sueldo)>0)
         {
             if(!is_numeric($this->sueldo))
                 $this->sueldo=0;
-            $strSueldo .= " sueldo = '".$this->sueldo."', ";
+            $strUpdate .= " sueldo = '".$this->sueldo."', ";
         }
-
+        if(strlen($this->phone)>0)
+            $strUpdate .=" phone='".$this->phone."', ";
+        if(strlen($this->email)>0)
+            $strUpdate .=" email='".$this->email."', ";
+        if(strlen($this->username)>0)
+            $strUpdate .=" username='".$this->username."', ";
+        if(strlen($this->passwd)>0)
+            $strUpdate .=" passwd='".$this->passwd."', ";
+        if(strlen($this->ext)>0)
+            $strUpdate .="ext='".$this->ext."', ";
+        if(strlen($this->celphone)>0)
+            $strUpdate .=" celphone='".$this->celphone."', ";
+        if(strlen($this->aspel)>0)
+            $strUpdate .=" aspel='".$this->aspel."', ";
+        if(strlen($this->skype)>0)
+            $strUpdate .=" skype='".$this->skype."', ";
+        if(strlen($this->horario)>0)
+            $strUpdate .=" horario='".$this->horario."', ";
+        if(strlen($this->fechaIngreso)>0)
+            $strUpdate .=" fechaIngreso='".$this->fechaIngreso."', ";
+        if(strlen($this->computadora)>0)
+            $strUpdate .=" computadora='".$this->computadora."', ";
+        if(strlen($this->grupo)>0)
+            $strUpdate .=" grupo='".$this->grupo."', ";
 
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				personal
 			SET
 				`name` = '".$this->name."',
-				phone = '".$this->phone."',
-				email = '".$this->email."',
-				username = '".$this->username."',
-				passwd = '".$this->passwd."',
-				ext = '".$this->ext."',
-				celphone = '".$this->celphone."',
-				aspel = '".$this->aspel."',
-				skype = '".$this->skype."',
-				puesto = '".$this->puesto."',
-				horario = '".$this->horario."',
-				$strSueldo
-				grupo = '".$this->grupo."',
+				$strUpdate
 				jefeInmediato = '".$this->jefeInmediato."',
-				computadora = '".$this->computadora."',
 				tipoPersonal = '".trim($this->tipoPersonal)."',
 				roleId = '".trim($this->roleId)."',
 				departamentoId = '".$this->departamentoId."',
-				fechaIngreso = '".$this->fechaIngreso."',
 				active = '".$this->active."'
 			WHERE personalId = '".$this->personalId."'");
 		$this->Util()->DB()->UpdateData();
         //actualizar los expedientes.
-        if(!empty($_POST['expe'])){
-            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT expedienteId from personalExpedientes WHERE personalId="'.$this->personalId.'" ');
-            $arrayExp = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
-            $expActual = $this->Util()->ConvertToLineal($arrayExp,'expedienteId');
-            $sql2 = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
-            foreach($_POST['expe'] as $exp){
-                if($exp===end($_POST['expe']))
-                    $sql2 .="(".$this->personalId.",".$exp.");";
-                else
-                    $sql2 .="(".$this->personalId.",".$exp."),";
-                //encontrar la posicion de $exp en expActual
-                $key = array_search($exp,$expActual);
-                unset($expActual[$key]);
-            }
+        if(isset($_POST["expe"])){
+            if(!empty($_POST['expe'])){
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT expedienteId from personalExpedientes WHERE personalId="'.$this->personalId.'" ');
+                $arrayExp = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+                $expActual = $this->Util()->ConvertToLineal($arrayExp,'expedienteId');
+                $sql2 = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
+                foreach($_POST['expe'] as $exp){
+                    if($exp===end($_POST['expe']))
+                        $sql2 .="(".$this->personalId.",".$exp.");";
+                    else
+                        $sql2 .="(".$this->personalId.",".$exp."),";
+                    //encontrar la posicion de $exp en expActual
+                    $key = array_search($exp,$expActual);
+                    unset($expActual[$key]);
+                }
 
-            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql2);
-            $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
-            if(!empty($expActual)){
-                $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId IN(".implode(",",$expActual).") AND personalId='".$this->personalId."'";
-                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
-                $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql2);
+                $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+                if(!empty($expActual)){
+                    $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId IN(".implode(",",$expActual).") AND personalId='".$this->personalId."'";
+                    $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
+                    $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+                }
             }
         }
 		$this->Util()->setError(10049, "complete");
@@ -579,17 +568,20 @@ class Personal extends Main
 				'".$this->active."'
 		);");
 		$id = $this->Util()->DB()->InsertData();
-        if(!empty($_POST['expe'])){
-            $sql = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
-            foreach($_POST['expe'] as $exp){
-                if($exp===end($_POST['expe']))
-                    $sql .="(".$id.",".$exp.");";
-                else
-                    $sql .="(".$id.",".$exp."),";
+		if(isset($_POST["expe"])){
+            if(!empty($_POST['expe'])){
+                $sql = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
+                foreach($_POST['expe'] as $exp){
+                    if($exp===end($_POST['expe']))
+                        $sql .="(".$id.",".$exp.");";
+                    else
+                        $sql .="(".$id.",".$exp."),";
+                }
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+                $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
             }
-            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-            $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
         }
+
 		$this->Util()->setError(10048, "complete");
 		$this->Util()->PrintErrors();
 		return true;

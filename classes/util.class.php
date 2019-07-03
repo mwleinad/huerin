@@ -270,13 +270,15 @@ class Util extends Error
 		return true;
 	}
 
-	function ValidateMail($mail)
+	function ValidateMail($mail,$field="")
 	{
 		$mail = strtolower($mail);
 		if (!preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/',trim($mail)))
 		{
-			return $this->setError(10002, "error", "", "EMail");
+			$this->setError(10002, "error", "", $field);
+			return false;
 		}
+		return true;
 	}
 
 	function ValidateEmail($mail)
