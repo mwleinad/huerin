@@ -120,7 +120,7 @@ function EditPersonal()
 	new Ajax.Request(WEB_ROOT+'/ajax/personal.php',
 	{
 		method:'post',
-		parameters: $('editPersonalForm').serialize(true),
+		parameters: $('personalForm').serialize(true),
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
@@ -191,7 +191,7 @@ function AddPersonal()
 	new Ajax.Request(WEB_ROOT+'/ajax/personal.php',
 	{
 		method:'post',
-		parameters: $('addPersonalForm').serialize(true),
+		parameters: $('personalForm').serialize(true),
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");

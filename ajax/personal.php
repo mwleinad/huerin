@@ -31,40 +31,55 @@ switch($_POST["type"])
 			if(!strpos(strtolower($value['name']),'fonacot'))
 				$expedientes[$key]['find']=true;
 		}
-
+		$data["idBtn"] ="btnAddPersonal";
+		$data["nameBtn"] = "Agregar";
+		$data["title"] ="Agregar empleado";
 		$smarty->assign("expedientes", $expedientes);
-
+        $smarty->assign("data", $data);
 		$smarty->assign("DOC_ROOT", DOC_ROOT);
-		$smarty->display(DOC_ROOT.'/templates/boxes/add-personal-popup.tpl');
+		$smarty->display(DOC_ROOT.'/templates/boxes/personal-popup.tpl');
 	break;
 	case "saveAddPersonal":
+
 		$personal->setName($_POST['name']);
-		$personal->setPhone($_POST['phone']);
-		$personal->setEmail($_POST['email']);
-		$personal->setUsername($_POST['username']);
-		$personal->setPasswd($_POST['passwd']);
-
-		$personal->setAspel($_POST['aspel']);
-		$personal->setExt($_POST['ext']);
-		$personal->setCelphone($_POST['celphone']);
-		$personal->setSkype($_POST['skype']);
-		$personal->setPuesto($_POST['puesto']);
-		$personal->setHorario($_POST['horario']);
-		if(isset($_POST["sueldo"]))
-			$personal->setSueldo($_POST['sueldo']);
-
-		$personal->setGrupo($_POST['grupo']);
-		$personal->setComputadora($_POST['computadora']);
-
-		$personal->setTipoPersonal($_POST['tipoPersonal']);
-		$rol->setTitulo($_POST['tipoPersonal']);
-		$roleId=$rol->GetIdByName();
-		$personal->setRole($roleId);
-
-		$personal->setDepartamentoId($_POST['departamentoId']);
-		$personal->setJefeInmediato($_POST['jefeInmediato']);
-		$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));
-		$personal->setFechaIngreso($fechaIngreso);
+        if(isset($_POST["sueldo"]))
+            $personal->setSueldo($_POST['sueldo']);
+        if(isset($_POST["phone"]))
+            $personal->setPhone($_POST['phone']);
+        if(isset($_POST["celphone"]))
+            $personal->setCelphone($_POST['celphone']);
+        if(isset($_POST["email"]))
+            $personal->setEmail($_POST['email']);
+        if(isset($_POST["skype"]))
+            $personal->setSkype($_POST['skype']);
+        if(isset($_POST["aspel"]))
+            $personal->setAspel($_POST['aspel']);
+        if(isset($_POST["horario"]))
+            $personal->setHorario($_POST['horario']);
+        if(isset($_POST["fechaIngreso"])){
+            $fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));
+            $personal->setFechaIngreso($fechaIngreso);
+        }
+        if(isset($_POST["grupo"]))
+            $personal->setGrupo($_POST['grupo']);
+        if(isset($_POST["computadora"]))
+            $personal->setComputadora($_POST['computadora']);
+        if(isset($_POST["username"]))
+            $personal->setUsername($_POST['username']);
+        if(isset($_POST["passwd"]))
+            $personal->setPasswd($_POST['passwd']);
+        if(isset($_POST["puesto"]))
+            $personal->setPuesto($_POST['puesto']);
+        if(isset($_POST["tipoPersonal"])){
+            $personal->setTipoPersonal($_POST['tipoPersonal']);
+            $rol->setTitulo($_POST['tipoPersonal']);
+            $roleId=$rol->GetIdByName();
+            $personal->setRole($roleId);
+		}
+        if(isset($_POST["departamentoId"]))
+			$personal->setDepartamentoId($_POST['departamentoId']);
+        if(isset($_POST["jefeInmediato"]))
+			$personal->setJefeInmediato($_POST['jefeInmediato']);
 
 		if($_POST['active'])
 			$personal->setActive(1);
@@ -83,7 +98,6 @@ switch($_POST["type"])
 			echo "[#]";
 			$resPersonals = $personal->Enumerate();
 			//$personals = $util->EncodeResult($resPersonals);
-
 			$smarty->assign("personals", $resPersonals);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/personal.tpl');
@@ -159,37 +173,55 @@ switch($_POST["type"])
 					$expedientes[$key]['find']=false;
 			}
 		}
-		$smarty->assign("expedientes", $expedientes);
-		$smarty->display(DOC_ROOT.'/templates/boxes/edit-personal-popup.tpl');
+        $data["idBtn"] ="editPersonal";
+        $data["nameBtn"] = "Actualizar";
+        $data["title"] ="Editar empleado";
+        $smarty->assign("data", $data);
+        $smarty->assign("expedientes", $expedientes);
+		$smarty->display(DOC_ROOT.'/templates/boxes/personal-popup.tpl');
 	break;
 	case "saveEditPersonal":
 		$personal->setPersonalId($_POST['personalId']);
 		$personal->setName($_POST['name']);
-		$personal->setPhone($_POST['phone']);
-		$personal->setEmail($_POST['email']);
-		$personal->setUsername($_POST['username']);
-		$personal->setPasswd($_POST['passwd']);
+        if(isset($_POST["sueldo"]))
+            $personal->setSueldo($_POST['sueldo']);
+        if(isset($_POST["phone"]))
+            $personal->setPhone($_POST['phone']);
+        if(isset($_POST["celphone"]))
+            $personal->setCelphone($_POST['celphone']);
+        if(isset($_POST["email"]))
+            $personal->setEmail($_POST['email']);
+        if(isset($_POST["skype"]))
+            $personal->setSkype($_POST['skype']);
+        if(isset($_POST["aspel"]))
+            $personal->setAspel($_POST['aspel']);
+        if(isset($_POST["horario"]))
+            $personal->setHorario($_POST['horario']);
+        if(isset($_POST["fechaIngreso"])){
+            $fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));
+            $personal->setFechaIngreso($fechaIngreso);
+        }
+        if(isset($_POST["grupo"]))
+            $personal->setGrupo($_POST['grupo']);
+        if(isset($_POST["computadora"]))
+            $personal->setComputadora($_POST['computadora']);
+        if(isset($_POST["username"]))
+            $personal->setUsername($_POST['username']);
+        if(isset($_POST["passwd"]))
+            $personal->setPasswd($_POST['passwd']);
+        if(isset($_POST["puesto"]))
+            $personal->setPuesto($_POST['puesto']);
 
-		$personal->setAspel($_POST['aspel']);
-		$personal->setExt($_POST['ext']);
-		$personal->setCelphone($_POST['celphone']);
-		$personal->setSkype($_POST['skype']);
-		$personal->setPuesto($_POST['puesto']);
-		$personal->setHorario($_POST['horario']);
-		if(isset($_POST["sueldo"]))
-			$personal->setSueldo($_POST['sueldo']);
-		$personal->setGrupo($_POST['grupo']);
-		$personal->setComputadora($_POST['computadora']);
-
-		$personal->setTipoPersonal($_POST['tipoPersonal']);
-		$rol->setTitulo($_POST['tipoPersonal']);
-		$roleId=$rol->GetIdByName();
-		$personal->setRole($roleId);
-
-		$personal->setDepartamentoId($_POST['departamentoId']);
-		$personal->setJefeInmediato($_POST['jefeInmediato']);
-		$fechaIngreso = ($_POST['fechaIngreso'] == '') ? '' : date('Y-m-d',strtotime($_POST['fechaIngreso']));
-		$personal->setFechaIngreso($fechaIngreso);
+        if(isset($_POST["tipoPersonal"])){
+            $personal->setTipoPersonal($_POST['tipoPersonal']);
+            $rol->setTitulo($_POST['tipoPersonal']);
+            $roleId=$rol->GetIdByName();
+            $personal->setRole($roleId);
+        }
+        if(isset($_POST["departamentoId"]))
+            $personal->setDepartamentoId($_POST['departamentoId']);
+        if(isset($_POST["jefeInmediato"]))
+            $personal->setJefeInmediato($_POST['jefeInmediato']);
 
 		if($_POST['active'])
 			$personal->setActive(1);
@@ -213,11 +245,9 @@ switch($_POST["type"])
 		}
 	break;
     case "showFile":
-
         $personal->setPersonalId($_POST['personalId']);
         $myPersonal = $personal->Info();
 		$expedientes = $personal->GetExpedientes();
-
         $smarty->assign("DOC_ROOT", DOC_ROOT);
         $smarty->assign("info", $myPersonal);
         $smarty->assign("expedientes", $expedientes);

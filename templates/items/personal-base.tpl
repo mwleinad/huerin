@@ -1,19 +1,18 @@
 {foreach from=$personals item=item key=key}
 	<tr id="1">
-		<td align="center">{$item.personalId}</td>
+		{if in_array(243,$permissions)|| $User.isRoot}<td align="center">{$item.personalId}</td>{/if}
 		<td align="center">{$item.name}</td>
-		<td align="center">{$item.celphone}</td>
-        <td align="center">{$item.email}</td>
-		<td align="center">{$item.skype}</td>
-		<td align="center">{$item.computadora}</td>
-		<td align="center">{$item.aspel}</td>
-		<td align="center">{$item.username}</td>
-		<td align="center">{$item.passwd}</td>
-		<td align="center">{$item.fechaIngreso}</td>
-		<td align="center">{$item.tipoPersonal}</td>
-		<td align="center">{$item.departamento}</td>
-		<td align="center">{$item.puesto}</td>
-		<td align="center">{$item.nombreJefe}</td>
+		{if in_array(232,$permissions)|| $User.isRoot}<td align="center">{$item.celphone}</td>{/if}
+		{if in_array(233,$permissions)|| $User.isRoot}<td align="center">{$item.email}</td>{/if}
+		{if in_array(234,$permissions)|| $User.isRoot}<td align="center">{$item.skype}</td>{/if}
+		{if in_array(235,$permissions)|| $User.isRoot}<td align="center">{$item.aspel}</td>{/if}
+		{if in_array(237,$permissions)|| $User.isRoot}<td align="center">{$item.fechaIngreso}</td>{/if}
+		{if in_array(239,$permissions)|| $User.isRoot}<td align="center">{$item.computadora}</td>{/if}
+		{if in_array(241,$permissions)|| $User.isRoot}<td align="center">{$item.username}</td>{/if}
+		{if in_array(241,$permissions)|| $User.isRoot}<td align="center">{$item.passwd}</td>{/if}
+		{if in_array(244,$permissions)|| $User.isRoot}<td align="center">{$item.tipoPersonal}</td>{/if}
+		{if in_array(245,$permissions)|| $User.isRoot}<td align="center">{$item.departamento}</td>{/if}
+		{if in_array(246,$permissions)|| $User.isRoot}<td align="center">{$item.nombreJefe}</td>{/if}
 		<td align="center">
             {if in_array(9,$permissions)|| $User.isRoot}
 			<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" id="{$item.personalId}" title="Eliminar"/>
@@ -27,5 +26,5 @@
 		</td>
 	</tr>
 {foreachelse}
-<tr><td colspan="15" align="center">No se encontr&oacute; ning&uacute;n registro.</td></tr>
+<tr><td colspan="14" align="center">No se encontr&oacute; ning&uacute;n registro.</td></tr>
 {/foreach}
