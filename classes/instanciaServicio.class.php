@@ -30,8 +30,6 @@ class InstanciaServicio extends  Servicio
 
             if($year==$ylast)
                 $ftrTemporal .=  " AND MONTH(instanciaServicio.date)<=MONTH(servicio.lastDateWorkflow) ";
-
-
         }
         $sinceMonth ="";
         if($foperaciones=="0000-00-00")

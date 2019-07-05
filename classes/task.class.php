@@ -177,18 +177,34 @@ class Task extends Step
 	public function checkTasksByStep()
     {
         global $workflow;
+        $sql = "SELECT b.nombreServicio,a.nombreStep from step a 
+                INNER JOIN tipoServicio b ON a.servicioId=b.tipoServicioId
+                WHERE a.stepId='".$this->getStepId()."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $dataService = $this->Util()->DB()->GetRow();
+
+        $workflow->setInstanciaServicioId($this->workId);
+        $data['workflow'] = $workflow->infoWorkflow();
+        $dateWorkflow =  explode('-',$data["workflow"]["date"]);
+
+        $strFiltroStepTask ="";
+        switch(strtoupper(trim($dataService["nombreServicio"]))){
+            case 'IMSS E INFONAVIT':
+            case 'IMSS E INFONAVIT ESTADO DE MEXICO':
+                if(strtoupper(trim($dataService["nombreStep"]))=='MOVIMIENTOS IMSS')
+                    if($dateWorkflow[0]<2019)
+                            $strFiltroStepTask .=" and LOWER(nombreTask)!='MOVIMIENTOS IMSS' ";
+            break;
+        }
         //workflowId  es la instanciaServicioId viene desde url
-        $this->Util()->DB()->setQuery("SELECT * FROM task 
-                                              WHERE stepId = '" . $this->getStepId() . "'");
+        $this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '" . $this->getStepId() . "' $strFiltroStepTask");
         $data['tasks'] = $this->Util()->DB()->GetResult();
         $data["totalTasks"] = count($data["tasks"]);
         $data['completedTasks'] = 0;
         $data['stepId']=$this->getStepId();
-
         $porcentajeTotal = 0;
         $porcentajeDone = 0;
         foreach ($data['tasks'] as $keyTask => $valueTask) {
-
             $porcentajeTotal += 100;
             $data["tasks"][$keyTask]["controlFile"] = 0;
             if ($valueTask["control"]) {
@@ -234,8 +250,7 @@ class Task extends Step
         if ($data["completedTasks"] == $data["totalTasks"]) {
             $data["stepCompleted"] = 1;
         }//if
-         $workflow->setInstanciaServicioId($this->workId);
-         $data['workflow'] = $workflow->infoWorkflow();
+
 
 
         //comprobar que el step anterior este completo de lo contrario no puede avanzar

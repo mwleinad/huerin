@@ -8,7 +8,6 @@ session_start();
 switch($_POST["type"])
 {
 	case "goToWorkflow":
-		
 			$_SESSION["search"]["rfc"] = $_POST["rfc"];
 			$_SESSION["search"]["responsableCuenta"] = $_POST["responsableCuenta"];
 			$_SESSION["search"]["status"] = $_POST["status"];
@@ -16,9 +15,7 @@ switch($_POST["type"])
 			$_SESSION["search"]["year"] = $_POST["year"];
 			$_SESSION["search"]["from"] = $_POST["from"];
 			$_SESSION["search"]["atrasados"] = $_POST["atrasados"];
-			
 			echo "ok";
-		
 		break;
 	case "search":
 	case "sendEmail":

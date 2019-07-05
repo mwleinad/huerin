@@ -153,8 +153,8 @@ class Compressed extends  Main
             //dd($rowTask);
             //comprobar extension, si esta vacio se acepta cualquier archivo
             if($rowTask['extensiones']!=''){
-                $extExplode = explode(',',str_replace(".","",$rowTask['extensiones']));
-                if(!in_array($extension,$extExplode)){
+                $extExplode = explode(',',str_replace(".","",strtolower($rowTask['extensiones'])));
+                if(!in_array(strtolower($extension),$extExplode)){
                    $ignored++;
                    continue;
                 }
@@ -378,8 +378,8 @@ class Compressed extends  Main
             //dd($rowTask);
             //comprobar extension, si esta vacio se acepta cualquier archivo
             if($rowTask['extensiones']!=''){
-                $extExplode = explode(',',str_replace(".","",$rowTask['extensiones']));
-                if(!in_array($extension,$extExplode)){
+                $extExplode = explode(',',str_replace(".","",strtolower($rowTask['extensiones'])));
+                if(!in_array(strtolower($extension),$extExplode)){
                     $this->Util()->setError(0,"error","Tipo de archivo no permitido en : ".$file.", revisar archivos permitidos para la tarea ".$rowTask['nombreTask']);
                     $isValid =  false;
                     break;

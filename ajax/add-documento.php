@@ -94,7 +94,6 @@ switch($_POST["type"])
             $workflow->setInstanciaServicioId($id);
             //comprobar departamento del usuario logueado
             $fltDeps = [8,24];
-
             if($workflow->UploadControl()){
                 $task->setWorkflowId($id);
                 $task->setStepId($_POST['stepId']);

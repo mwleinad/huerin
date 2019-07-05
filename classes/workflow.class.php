@@ -410,92 +410,89 @@ class Workflow extends Servicio
 		LEFT JOIN customer ON customer.customerId = contract.customerId
 		WHERE instanciaServicioId = '".$this->instanciaServicioId."'".$add."");
 		$row = $this->Util()->DB()->GetRow();
-
 		$date = explode("-", $row["date"]);
 		$contabilidad2015 = false;
 		if($row["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016) 
 		{
-					$this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
+		    $this->Util()->DB()->setQuery("SELECT * FROM step 
+		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
 		}
 		elseif($row["tipoServicioId"] == 3 && $date["0"] < 2016) 
 		{
-					$this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
+		    $this->Util()->DB()->setQuery("SELECT * FROM step 
+		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
 		}
 		else
 		{
-					$this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE servicioId = '".$row["tipoServicioId"]."'");
+		    $this->Util()->DB()->setQuery("SELECT * FROM step 
+		    WHERE servicioId = '".$row["tipoServicioId"]."'");
 
 		}
+		$strFiltroStepTask ="";
+		$concatFiltro = false;
+		switch(strtoupper(trim($row["nombreServicio"]))){
+            case 'IMSS E INFONAVIT':
+            case 'IMSS E INFONAVIT ESTADO DE MEXICO':
+                $concatFiltro =  true;
+            break;
+        }
 		//Get Steps
 		$row["steps"] = $this->Util()->DB()->GetResult();
-
-
 		//Get Tasks
-		
 		$ii = 1;
 		$row["completedSteps"] = 0;
 		foreach($row["steps"] as $key => $value){
-			
+		    if($concatFiltro){
+		        switch(strtoupper(trim($value["nombreStep"]))){
+                    case 'MOVIMIENTOS IMSS':
+                        if($date[0]<2019)
+                            $strFiltroStepTask .=" and LOWER(nombreTask)!='MOVIMIENTOS IMSS' ";
+                    break;
+                }
+            }
+
+
 			$row["steps"][$key]["step"] = $ii;
-			$this->Util()->DB()->setQuery("SELECT * FROM task 
-			WHERE stepId = '".$value["stepId"]."'");
+			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask");
 			$row["steps"][$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$row["steps"][$key]["totalTasks"] = count($row["steps"][$key]["tasks"]);
-			
 			$row["steps"][$key]["completedTasks"] = 0;			
 			if(count($row["steps"][$key]["tasks"]) == 0){
 				unset($row["steps"][$key]);
 				continue;
 			}
-			
 			$porcentajeTotal = 0;
 			$porcentajeDone = 0;
 			foreach($row["steps"][$key]["tasks"] as $keyTask => $valueTask){
-			
 				$porcentajeTotal += 100;
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile"] = 0;
-				
 				if($valueTask["control"]){
-				
 					//Checar si ya se subio ese archivo
 					$this->Util()->DB()->setQuery("SELECT COUNT(*) FROM taskFile 
 					WHERE servicioId = '".$this->instanciaServicioId."' AND stepId = '".$valueTask["stepId"]."' AND taskId = '".$valueTask["taskId"]."' AND control = 1");
 					$done = $this->Util()->DB()->GetSingle();
-					
 					if($done > 0){
 						$row["steps"][$key]["tasks"][$keyTask]["controlFile"] = 1;
 					}
-
 					$this->Util()->DB()->setQuery("SELECT * FROM taskFile 
 					WHERE servicioId = '".$this->instanciaServicioId."' AND stepId = '".$valueTask["stepId"]."' AND taskId = '".$valueTask["taskId"]."' AND control = 1 ORDER BY version DESC");
 					$row["steps"][$key]["tasks"][$keyTask]["controlFileInfo"] = $this->Util()->DB()->GetResult();
-					
 				}else{
 					$row["steps"][$key]["tasks"][$keyTask]["controlFile"] = 1;
 				}//else
-
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile2"] = 1;
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile3"] = 1;
-
 				$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 0; 
 				if($row["steps"][$key]["tasks"][$keyTask]["controlFile"] + $row["steps"][$key]["tasks"][$keyTask]["controlFile2"] + $row["steps"][$key]["tasks"][$keyTask]["controlFile3"] == 3){
 				
 					$porcentajeDone += 100; 
 					$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 1; 
-					$row["steps"][$key]["completedTasks"]++;			
-					
+					$row["steps"][$key]["completedTasks"]++;
 				}//if
-				
 			}//foreach
-			
 			if($porcentajeTotal == 0)
 				$porcentajeTotal = 1;
-						
 			$realPercent = $porcentajeDone / $porcentajeTotal * 100;
-			
 			if($realPercent == 0)
 				$row["steps"][$key]["class"] = "PorIniciar";
 			elseif($realPercent > 0 && $realPercent < 70)
@@ -504,30 +501,24 @@ class Workflow extends Servicio
 				$row["steps"][$key]["class"] = "PorCompletar";
 			else
 				$row["steps"][$key]["class"] = "Completo";
-			
 			$row["steps"][$key]["stepCompleted"] = 0;
 			if($row["steps"][$key]["completedTasks"] == $row["steps"][$key]["totalTasks"]){
 				$row["steps"][$key]["stepCompleted"] = 1;
 				$row["completedSteps"]++;
 			}//if
-
 			//Get prev step
 			$this->Util()->DB()->setQuery("SELECT * FROM step 
 			WHERE servicioId = '".$row["tipoServicioId"]."' AND stepId < '".$value["stepId"]."' LIMIT 1");
 			$row["steps"][$key]["prevStep"] = $this->Util()->DB()->GetRow();
-			
 			$row["steps"][$key]["prevStep"]["completed"] = $row["steps"][$key - 1]["stepCompleted"];
 			$ii++;
-			
 		}//foreach
 		
 		$row["totalSteps"] = count($row["steps"]);
-
 		$completo = explode("-", $row["fechaCompleta"]);
 		$fechaInstancia = explode("-", $row["date"]);
 		
 		//Si se completo en un anio mayor es completo tardio
-				
 		$row["completoTardio"] = 'No';
 		if($completo[0] < 2014 || ($completo[0] == 2014 && $completo[1] < 2))
 			$row["completoTardio"] = "No";
@@ -652,7 +643,7 @@ class Workflow extends Servicio
 				$this->Util()->setError(0,'complete','Archivo guardado correctamente');
                 $this->Util()->PrintErrors();
                 return true;
-			}
+		}
 		else
 		{
             $this->Util()->setError(0,'error','Error al guardar archivo');
@@ -806,28 +797,17 @@ class Workflow extends Servicio
 	}
 	function StatusById($id)
 	{
-		$this->Util()->DB()->setQuery("SELECT instanciaServicioId  FROM instanciaServicio 
-		LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
-		WHERE 
-			instanciaServicioId = '".$id."' 
-			AND (servicio.status != 'baja' AND instanciaServicio.status != 'inactiva')");
-			//echo $this->Util()->DB()->query;
+	    $sql  ="SELECT instanciaServicioId  FROM instanciaServicio 
+		        LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+		        WHERE  instanciaServicioId = '".$id."' 
+			    AND (servicio.status != 'baja' AND instanciaServicio.status != 'inactiva')";
+		$this->Util()->DB()->setQuery($sql);
 		$instancia = $this->Util()->DB()->GetRow();
 
-		$totalPorcentajeSteps = 0;
-		$totalPorcentajeStepsCompleted = 0;
-
-		if(count($instancia) == 0)
-		{
-			$totalPorcentajeSteps = 100;
-			$totalPorcentajeStepsCompleted = 100;
-//					continue;
-		}
 		$this->setInstanciaServicioId($instancia["instanciaServicioId"]);
 		$instancia = $this->Info();				
 		
 		$fechaCompletoServicio = strtotime($instancia["fechaCompleta"]);
-
 		if($instancia["totalSteps"] > 0)
 		{
 			$instancia["porcentajeSteps"] = floor($instancia["completedSteps"] * 100 / $instancia["totalSteps"]);
