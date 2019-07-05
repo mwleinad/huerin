@@ -391,7 +391,7 @@ $titlesPages = [
     'balance'=>'Estados de cuenta',
 
     //facturacion
-    'sistema'=>'Configuracion',
+    'sistema_consultar-facturas'=>'Consulta de Comprobantes',
     'cfdi33-generate'=>'Nuenva factura',//cfdi 3.3
     'cfdi33-generate-pdf'=>'Pdf de factura',//cfdi 3.3
     'comp-from-xml'=>'Comprobantes desde xml',//cfdi 3.3
@@ -443,9 +443,11 @@ $titlesPages = [
     'customer-only'=>'Cliente',
 
     //configuracion
-    'admin-folios'=>'Folios',
+    'admin-folios_nuevos-folios'=>'Lista de folios',
+    'admin-folios_actualizar-certificado'=>'Actualizar Certificado',
     'datos-generales'=>'Datos generales',
-    'backup_system'=>'Respaldos'
+    'backup_system'=>'Respaldos',
+    'utileria'=>'Herramientas y Utilerias',
 
 ]
 

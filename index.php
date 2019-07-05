@@ -145,13 +145,13 @@ include_once(DOC_ROOT.'/libraries.php');
 	$smarty->assign('page', $page);
 	$smarty->assign('section', $_GET['section']);
 	$smarty->assign('User',$User);
-    $titlePage = $titlesPages[$page];
-    $smarty->assign('titlePage',$titlePage);
 	$includedTpl =  $page;
 	if($_GET['section'])
 	{
 		$includedTpl =  $_GET['page']."_".$_GET['section'];
 	}
+	$titlePage = $titlesPages[$includedTpl];
+	$smarty->assign('titlePage',$titlePage);
 	$smarty->assign('includedTpl', $includedTpl);
 	$smarty->assign('lang', $lang);
 	$smarty->assign('timestamp', time());
