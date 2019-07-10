@@ -42,24 +42,36 @@ class Servicio extends Contract
 	{
         $this->Util()->validateDateFormat($value,"Inicio operaciones");
 		$value = $this->Util()->FormatDateMySql($value);
-		//si el servicio es anual o anual auditada, para persona fisica abrir en abril y en marzo para personas morales.
-        if($this->tipoServicioId==ANUAL){
-          $sql = "select type from contract where contractId='".$this->getContractId()."' ";
-          $this->Util()->DB()->setQuery($sql);
-          $tipoPersona = $this->Util()->DB()->GetSingle();
-          switch(strtoupper($tipoPersona)){
-              case 'PERSONA FISICA':
-                  if(date('m',strtotime($value))!='04')
-                      $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona fisica");
-              break;
-              case 'PERSONA MORAL':
-                  if(date('m',strtotime($value))!='03')
-                      $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona moral");
-              break;
-          }
-        }
+		$this->validateFechaInicioOperaciones($value);
 		$this->inicioOperaciones = $value;
 	}
+	function validateFechaInicioOperaciones($value){
+	    $sql ="select nombreServicio from tipoServicio where tipoServicioId='".$this->tipoServicioId."' ";
+	    $this->Util()->DB()->setQuery($sql);
+	    $name = $this->Util()->DB()->GetSingle();
+	    switch(strtoupper($name)){
+            case 'PRIMA RIESGO DE TRABAJO':
+                if(date('m',strtotime($value))!='02')
+                    $this->Util()->setError(0,"error","Fecha de inicio de operación invalida.");
+            break;
+            case 'ANUAL':
+            case 'ANUAL AUDITADA':
+            $sql = "select type from contract where contractId='".$this->getContractId()."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $tipoPersona = $this->Util()->DB()->GetSingle();
+                switch(strtoupper($tipoPersona)){
+                    case 'PERSONA FISICA':
+                        if(date('m',strtotime($value))!='04')
+                            $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona fisica");
+                        break;
+                    case 'PERSONA MORAL':
+                        if(date('m',strtotime($value))!='03')
+                            $this->Util()->setError(0,"error","Fecha inicio de operacion invalida para persona moral");
+                        break;
+                }
+            break;
+        }
+    }
 	public function setServicioId($value)
 	{
 		$this->Util()->ValidateInteger($value);
@@ -1346,30 +1358,10 @@ class Servicio extends Contract
                 $this->Util()->setError(0, 'error', 'Fecha invalida en inicio de operaciones. ');
                 break;
             }else{
-                //si el servicio es anual o anual auditada, para persona fisica abrir en abril y en marzo para personas morales.
                 $this->Util()->DB()->setQuery("select tipoServicioId from servicio where servicioId ='$servId' ");
                 $tipServId = $this->Util()->DB()->GetSingle();
-                if($tipServId==ANUAL){
-                    $sql = "select type from contract where contractId='".$this->getContractId()."' ";
-                    $this->Util()->DB()->setQuery($sql);
-                    $tipoPersona = $this->Util()->DB()->GetSingle();
-                    switch(strtoupper($tipoPersona)){
-                        case 'PERSONA FISICA':
-                            if(date('m',strtotime($this->Util()->FormatDateMySql($io)))!='04'){
-                                $this->Util()->setError(0,"error","La fecha de inicio de operacion en servicio ANUAL no es valida para persona fisica");
-                                $io = false;
-                            }
-                        break;
-                        case 'PERSONA MORAL':
-                            if(date('m',strtotime($this->Util()->FormatDateMySql($io)))!='03'){
-                                $this->Util()->setError(0,"error","La fecha de inicio de operacion en servicio ANUAL no es valida para persona moral");
-                                $io=false;
-                            }
-                        break;
-                    }
-                }
-                if(!$io)
-                    break;
+                $this->setTipoServicioId($tipServId);
+                $this->validateFechaInicioOperaciones($io);
             }
             if(!$if)
             {
