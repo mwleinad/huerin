@@ -1409,29 +1409,47 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
     return file_exists($path.$file);
   }
 
-	function ZipTasks($zipPath, $files)
-	{
-		
+  function ZipTasks($zipPath, $files)
+  {
 		$zip = new ZipArchive();
 		$res = $zip->open($zipPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
 		if ($res === TRUE)
 		{
 			foreach($files as $key => $file)
 			{
-				$file["nombreTask"] = str_replace(" ", "_", $file["nombreTask"]);
-				$file["date"] = str_replace("-", "_", $file["date"]);
-				$attachment = DOC_ROOT."/tasks/".$file["servicioId"]."_".$file["stepId"]."_".$file["taskId"]."_".$file["control"]."_".$file["version"].".".$file["ext"];
-				$name = $file["nombreTask"]."_".$file["date"]."_".$file["servicioId"]."_".$file["stepId"]."_".$file["taskId"]."_".$file["control"]."_".$file["version"].".".$file["ext"];
-				$zip->addFile($attachment, $name);
+				$this->InsertFileIntoZip($zip,$file);
 			}
     	$zip->close();
 		}
 
     return file_exists($zipPath);
   }
+  function InsertFileIntoZip($objZip,$item){
+	  global $monthsComplete;
+	  $dateExploded =  explode("-",$item["date"]);
+	  $anio = $dateExploded[0];
+      $month = strtolower($monthsComplete[$dateExploded[1]]);
+      $nombreServicio = strtolower(str_replace(" ","",trim($item["nombreServicio"])));
+      $this->Util()->DB()->setQuery("select nombreStep from step where stepId='".$item["stepId"]."' ");
+      $nombreStep = $this->Util()->DB()->GetSingle();
+      $nombreStep = strtolower(str_replace(" ","",trim($nombreStep)));
+      $rutaEnzip = $anio."/".$nombreServicio."/".$month."/".$nombreStep."/";
 
-	function ExplodeEmails($email)
-	{
+      if(is_file(DOC_ROOT."/tasks".$item["ruta"])&&file_exists(DOC_ROOT."/tasks".$item["ruta"])){
+         $attachment =  DOC_ROOT."/tasks".$item["ruta"];
+         $name = end(explode("/",$item["ruta"]));
+      }
+      else{
+          $name = $item["servicioId"]."_".$item["stepId"]."_".$item["taskId"]."_".$item["control"]."_".$item["version"].".".$item["ext"];
+          $attachment = DOC_ROOT."/tasks/".$name;
+      }
+      if(file_exists($attachment)){
+          $objZip->addFile($attachment,$rutaEnzip.$name);
+      }
+
+  }
+  function ExplodeEmails($email)
+  {
 		$email = trim($email);
 		$email = str_replace("/", ",", $email);
 		$email = str_replace(" ", ",", $email);

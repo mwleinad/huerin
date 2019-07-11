@@ -22,21 +22,45 @@ Event.observe(window, 'load', function()
 			FillRFC(1, id);
 			return;
 		}
-		
 		del = el.hasClassName('closeSuggestUserDiv');
 		if(del == true){
 			$('suggestionDiv').hide();
 			return;
 		}		
 	}
-
 	if($('divForm')!= undefined)
-	{
 		$('divForm').observe("click", AddSuggestListener);
-	}
-		
-});
 
+    document.querySelector('#contenido').addEventListener('click',function (event) {
+        if(!event.target)
+            return;
+        if(event.target.matches('.spanDownloadFilesMonth'))
+            DownloadFilesTasks(event);
+    })
+});
+function DownloadFilesTasks(event) {
+	var req =  new XMLHttpRequest();
+	var form =  new FormData();
+	form.append("type",event.target.dataset.type);
+	form.append('id',event.target.dataset.id);
+    form.append('contrato',event.target.dataset.contrato);
+    form.append('year',event.target.dataset.year);
+    form.append('month',event.target.dataset.month);
+    req.open('post',WEB_ROOT+"/ajax/tasks.php");
+    req.onreadystatechange =  function (ev) {
+    	if(req.readyState==4){
+            if(req.status == 200){
+                var splitRespose = req.responseText.split("[#]");
+                if(splitRespose[0]=='ok'){
+                    location.href = splitRespose[1];
+                }else{
+                    ShowStatusPopUp(splitRespose[1]);
+                }
+			}
+		}
+	};
+	req.send(form);
+}
 function GoToWorkflow(path, id)
 {
 	if($('responsableCuenta'))

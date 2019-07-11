@@ -79,10 +79,10 @@
 					<div style="cursor:pointer" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
 					{$item.nombreServicio|truncate:5:""}
 					{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696">(Inactivo)</span>{/if}
-						{if in_array(99,$permissions)||$User.isRoot}
-						 <a href="{$WEB_ROOT}/download_tasks.php?id={$instanciaServicio.instanciaServicioId}" style="color:#FFF;font-weight:bold">Archivos</a>
-						{/if}
 					</div>
+						{if in_array(99,$permissions)||$User.isRoot}
+							<a href="javascript:;" class="spanDownloadFilesMonth spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$instanciaServicio.anio}" data- style="color:#FFF;font-weight:700" title="Descargar archivos del mes">Archivos</a>
+						{/if}
 					</td>
 				{/foreach}
 		</tr>

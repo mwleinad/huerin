@@ -9,7 +9,7 @@
               <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
               Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
             <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  {if in_array(116,$permissions)||$User.isRoot}onclick="Calendario(this)"{/if} value="{$myWorkflow.date}" />
-      </span> |{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/report-servicio">Regresar</a><br />
+      </span>|{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/report-servicio">Regresar</a><br />
       </form>
   <div class="clearfix"></div>
   <div class="portlet">

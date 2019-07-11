@@ -104,16 +104,15 @@ class Personal extends Main
 
 	public function setEmail($value)
 	{
-	    $this->Util()->ValidateMail($value,"Correo Electrónico");
+	    if(strlen($value)>0)
+	        $this->Util()->ValidateMail($value,"Correo Electrónico");
 		$this->email = $value;
 	}
 
 	public function setUsername($value)
 	{
-        $this->Util()->ValidateRequireField($value, "Usuario");
 		$this->username = $value;
 	}
-
 	public function setPasswd($value)
 	{
         $this->Util()->ValidateRequireField($value, "Contraseña");
@@ -186,7 +185,7 @@ class Personal extends Main
 		if($this->roleId && $this->showAll)
 		    $sqlFilter = " and a.roleId='".$this->roleId."' ";
 
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'RRHH')!==false || $this->showAll) {
+		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'DH')!==false || $this->showAllstripos($infoUser['tipoPersonal'],'Sistema')!==false) {
 			$sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 

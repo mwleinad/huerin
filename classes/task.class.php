@@ -61,6 +61,13 @@ class Task extends Step
 		$this->Util()->ValidateString($value, 255, 0, 'Control Tres');
 		$this->control3 = $value;
 	}
+    private $rutaZipCreated;
+	public function  setRutaZipCreated($value){
+	    $this->rutaZipCreated = $value;
+    }
+    public function  getRutaZipCreated(){
+        return $this->rutaZipCreated;
+    }
     private $extensiones=[];
     public function setExtensiones($value)
     {
@@ -157,13 +164,10 @@ class Task extends Step
 		$this->Util()->PrintErrors();
 		return true;
 	}
-
 	public function Delete()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-		
 		$info = $this->Info();
-		
 		$this->Util()->DB()->setQuery("
 			DELETE FROM 
 				task
@@ -260,6 +264,46 @@ class Task extends Step
         $row["steps"][$key]["prevStep"] = $this->Util()->DB()->GetRow();*/
 
         return $data;
+    }
+    public function getFilesByWorkflow(){
+        $sql = "SELECT taskFile.*, tipoServicio.nombreServicio, task.nombreTask, contract.name, instanciaServicio.date FROM taskFile
+                INNER JOIN task ON task.taskId = taskFile.taskId
+                INNER JOIN instanciaServicio ON instanciaServicio.instanciaServicioId = taskFile.servicioId
+                INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
+                INNER JOIN contract ON contract.contractId = servicio.contractId
+                INNER JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                WHERE taskFile.servicioId = ".$this->workId;
+        $this->Util()->DB()->setQuery($sql);
+        $files = $this->Util()->DB()->GetResult();
+        return $files;
+    }
+    function CreateZipTasks(){
+        global $monthsComplete;
+        $files = $this->getFilesByWorkflow();
+        if(!$files){
+            $this->Util()->setError(0,"error","No existen archivos dentro del workflow.");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+        $fecha = $files[0]["date"];
+        $dateExploded =  explode("-",$fecha);
+        $anio = $dateExploded[0];
+        $month = strtolower($monthsComplete[$dateExploded[1]]);
+        $nombreServicio = $files[0]["nombreServicio"];
+        $nombreServicio = str_replace(" ", "_", $nombreServicio);
+        $nombreCliente = $files[0]["name"];
+        $nombreCliente = str_replace(" ", "_", $nombreCliente);
+        $name = $nombreCliente."_".$nombreServicio."_".$anio."_".$month;
+        $name = strtolower($name);
+        $zip = DOC_ROOT."/archivos/".$name.".zip";
+        if(!$this->Util()->ZipTasks($zip,$files))
+        {
+            $this->Util()->setError(0,"error","Ocurrio un error al generar archivo.");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+        $this->setRutaZipCreated($zip);
+        return true;
     }
 
 }
