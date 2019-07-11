@@ -29,7 +29,7 @@
         {/if}
         {if in_array(233,$permissions)|| $User.isRoot}
         <div class="formLine" style="width:100%; text-align:left">
-            <div style="width:30%;float:left">* Correo electr&oacute;nico:</div>
+            <div style="width:30%;float:left">Correo electr&oacute;nico:</div>
             <input class="smallInput medium" name="email" id="email" type="text" value="{$post.email}" size="50"/>
             <hr />
         </div>
@@ -78,7 +78,7 @@
         {/if}
         {if in_array(241,$permissions)|| $User.isRoot}
         <div class="formLine" style="width:100%; text-align:left">
-            <div style="width:30%;float:left">* Usuario:</div>
+            <div style="width:30%;float:left">Usuario:</div>
             <input class="smallInput medium" name="username" id="username" type="text" value="{$post.username}" size="50"/>
             <hr />
         </div>
