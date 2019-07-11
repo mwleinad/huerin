@@ -1320,8 +1320,8 @@ class Customer extends Main
             }
               //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
             $rol->setRolId($User['roleId']);
-            $unlimited  = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente','recepcion'));
-            $unlimited2 = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','cliente','recepcion'));
+            $unlimited  = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'));
+            $unlimited2 = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','cliente'));
             if ($unlimited) {
               $result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
             } else {
