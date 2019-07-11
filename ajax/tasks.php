@@ -86,35 +86,42 @@ switch($_POST["type"])
 		break;
 		
 	case "saveEditTask":
-			$task->setNombreTask($_POST['nombreTask']);
-			$task->setDiaVencimiento($_POST['diaVencimiento']);			
-			$task->setProrroga($_POST['prorroga']);			
-			$task->setControl($_POST['control']);
-			$task->setExtensiones($_POST['extensiones']);
-			$task->setControl2($_POST['control2']);			
-			$task->setControl3($_POST['control3']);			
-			$task->setTaskId($_POST['taskId']);
-			//$myStep = $step->Info();
-			
-			if(!$task->Edit())
-			{
-				echo "fail[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-			}
-			else
-			{
-				echo "ok[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-				echo "[#]";
-				$step->setServicioId($_POST["servicioId"]);
-				$steps = $step->Enumerate();
-					
-				$smarty->assign("steps", $steps);
-				$smarty->assign("DOC_ROOT", DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/steps.tpl');
-			}
-			
-		break;
+		$task->setNombreTask($_POST['nombreTask']);
+		$task->setDiaVencimiento($_POST['diaVencimiento']);
+		$task->setProrroga($_POST['prorroga']);
+		$task->setControl($_POST['control']);
+		$task->setExtensiones($_POST['extensiones']);
+		$task->setControl2($_POST['control2']);
+		$task->setControl3($_POST['control3']);
+		$task->setTaskId($_POST['taskId']);
+		if(!$task->Edit())
+		{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		else
+		{
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			echo "[#]";
+			$step->setServicioId($_POST["servicioId"]);
+			$steps = $step->Enumerate();
+
+			$smarty->assign("steps", $steps);
+			$smarty->assign("DOC_ROOT", DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/lists/steps.tpl');
+		}
+	break;
+	case 'downloadFilesMonth':
+	      $task->setWorkflowId($_POST["id"]);
+	      if($task->CreateZipTasks()){
+	      	echo "ok[#]";
+            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".basename($task->getRutaZipCreated());
+		  }else{
+              echo "fail[#]";
+              $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		  }
+	break;
 		
 }
 ?>
