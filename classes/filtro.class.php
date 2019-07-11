@@ -40,7 +40,7 @@ class Filtro extends Util
         //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar(el gerente igual debe ser limitado)
         //hasta este apartado el rol cliente no debe tener problemas por que ya esta filtrado a que solo sus contratos pueda ver.
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','recepcion','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
 		//if el rol del usuario tiene privilegio de ver todos los contrartos
 		if($unlimited){
 			$withPermission = true;
@@ -141,7 +141,7 @@ class Filtro extends Util
 	{
 	    global $rol;
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','recepcion','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
 		if((count($servicios) == 0 && $unlimited)){
 			return 1;
 		}
@@ -169,7 +169,7 @@ class Filtro extends Util
 	    global $rol;
 	    //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','recepcion','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
+        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','Supervisor de Juridico'));
 		if (
 			($showCliente === 0 && 
 				(!$unlimited)//($roleId > 1 && $roleId < 4)
