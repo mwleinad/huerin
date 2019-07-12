@@ -11,7 +11,7 @@ class Task extends Step
 	public $workId;
     public function setWorkflowId($value)
     {
-        $this->Util()->ValidateInteger($value);
+        //$this->Util()->ValidateInteger($value);
         $this->workId = $value;
     }
 
@@ -266,15 +266,26 @@ class Task extends Step
         return $data;
     }
     public function getFilesByWorkflow(){
+        if(is_array($this->workId)){
+            $in = "0";
+            if(count($this->workId)>0)
+                $in .= ",".implode(",",$this->workId);
+
+            $where = " taskFile.servicioId IN($in) ";
+        }
+        else
+            $where =" taskFile.servicioId = ".$this->workId;
+
         $sql = "SELECT taskFile.*, tipoServicio.nombreServicio, task.nombreTask, contract.name, instanciaServicio.date FROM taskFile
                 INNER JOIN task ON task.taskId = taskFile.taskId
                 INNER JOIN instanciaServicio ON instanciaServicio.instanciaServicioId = taskFile.servicioId
                 INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
                 INNER JOIN contract ON contract.contractId = servicio.contractId
                 INNER JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-                WHERE taskFile.servicioId = ".$this->workId;
+                WHERE $where";
         $this->Util()->DB()->setQuery($sql);
         $files = $this->Util()->DB()->GetResult();
+
         return $files;
     }
     function CreateZipTasks(){
@@ -294,6 +305,35 @@ class Task extends Step
         $nombreCliente = $files[0]["name"];
         $nombreCliente = str_replace(" ", "_", $nombreCliente);
         $name = $nombreCliente."_".$nombreServicio."_".$anio."_".$month;
+        $name = strtolower($name);
+        $zip = DOC_ROOT."/archivos/".$name.".zip";
+        if(!$this->Util()->ZipTasks($zip,$files))
+        {
+            $this->Util()->setError(0,"error","Ocurrio un error al generar archivo.");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+        $this->setRutaZipCreated($zip);
+        return true;
+    }
+    function CreateZipTasksAnual(){
+        $sql = "select instanciaServicioId from instanciaServicio where servicioId='".$this->getServicioId()."' and year(date)=".$_POST['year']." ";
+        $this->Util()->DB()->setQuery($sql);
+        $instancias = $this->Util()->DB()->GetResult();
+        $workflows = $this->Util()->ConvertToLineal($instancias,'instanciaServicioId');
+        $this->setWorkflowId($workflows);
+        $files = $this->getFilesByWorkflow();
+        if(!$files){
+            $this->Util()->setError(0,"error","No existen archivos para descargar.");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+        $anio = $_POST["year"];
+        $nombreServicio = $files[0]["nombreServicio"];
+        $nombreServicio = str_replace(" ", "_", $nombreServicio);
+        $nombreCliente = $files[0]["name"];
+        $nombreCliente = str_replace(" ", "_", $nombreCliente);
+        $name = $nombreCliente."_".$nombreServicio."_".$anio;
         $name = strtolower($name);
         $zip = DOC_ROOT."/archivos/".$name.".zip";
         if(!$this->Util()->ZipTasks($zip,$files))

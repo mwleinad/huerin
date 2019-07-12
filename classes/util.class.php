@@ -1412,6 +1412,8 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
   function ZipTasks($zipPath, $files)
   {
 		$zip = new ZipArchive();
+		if(is_file($zipPath))
+		    unlink($zipPath);
 		$res = $zip->open($zipPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
 		if ($res === TRUE)
 		{
