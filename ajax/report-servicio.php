@@ -132,6 +132,8 @@ switch($_POST["type"])
 							$card["responsable"] = $servicio["responsable"]["name"];
                             $card["supervisadoBy"] = $servicio["supervisadoBy"];
 							$card["name"] = $contract["name"];
+                            $card["contractId"] = $contract["contractId"];
+                            $card["anio"] = $year;
 							$card["instanciasServicio"] = $servicio["instancias"];;
 							$card["nombreServicio"] = $servicio["nombreServicio"];
 							$cleanedArray[] = $card;

@@ -115,7 +115,7 @@ class Personal extends Main
 	}
 	public function setPasswd($value)
 	{
-        $this->Util()->ValidateRequireField($value, "Contraseña");
+        //$this->Util()->ValidateRequireField($value, "Contraseña");
 		$this->passwd = $value;
 	}
 

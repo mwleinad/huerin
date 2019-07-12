@@ -18,6 +18,9 @@
 		<th align="center" width="50">Oct</th>
 		<th align="center" width="50">Nov</th>
 		<th align="center" width="50">Dic</th>
+		{if in_array(248,$permissions)||$User.isRoot}
+		<th align="center" width="10"></th>
+		{/if}
 	</tr>
 </thead>
 		{foreach from=$cleanedArray item=item key=key}
@@ -55,6 +58,9 @@
 					</td>
                     {/if}
 				{/foreach}
+				{if in_array(248,$permissions)||$User.isRoot}
+					<td></td>
+				{/if}
 			</tr>
 		{else}
 		<tr>
@@ -81,15 +87,22 @@
 					{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696">(Inactivo)</span>{/if}
 					</div>
 						{if in_array(99,$permissions)||$User.isRoot}
-							<a href="javascript:;" class="spanDownloadFilesMonth spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$instanciaServicio.anio}" data- style="color:#FFF;font-weight:700" title="Descargar archivos del mes">Archivos</a>
+							<a href="javascript:;" class="spanDownloadFiles spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$item.anio}" style="color:#FFF;font-weight:700" title="Descargar archivos del mes">Archivos</a>
 						{/if}
 					</td>
 				{/foreach}
+			{if in_array(248,$permissions)||$User.isRoot}
+				<td>
+					<a href="javascript:;" class="spanDownloadFiles spanAll" title="Descargar archivos anual" data-id="{$item.servicioId}" data-month="" data-type="downloadFilesYear" data-contrato="{$item.contractId}" data-year="{$item.anio}">
+						<img src="{$WEB_ROOT}/images/icons/downFile.png" class="no-clickable">
+					</a>
+				</td>
+			{/if}
 		</tr>
 		{/if}
 		{foreachelse}
 		<tr>
-			<td colspan="16" align="center">Ning&uacute;n registro encontrado.</td>
+			<td colspan="{if in_array(248,$permissions)||$User.isRoot}17{else}16{/if}" align="center">Ning&uacute;n registro encontrado.</td>
 		</tr>
 		{/foreach}
 </tbody>

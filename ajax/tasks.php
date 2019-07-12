@@ -122,6 +122,16 @@ switch($_POST["type"])
               $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 		  }
 	break;
+	case 'downloadFilesYear':
+		$task->setServicioId($_POST["id"]);
+		if($task->CreateZipTasksAnual()){
+            echo "ok[#]";
+            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".basename($task->getRutaZipCreated());
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
+	break;
 		
 }
 ?>

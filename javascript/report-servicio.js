@@ -34,7 +34,7 @@ Event.observe(window, 'load', function()
     document.querySelector('#contenido').addEventListener('click',function (event) {
         if(!event.target)
             return;
-        if(event.target.matches('.spanDownloadFilesMonth'))
+        if(event.target.matches('.spanDownloadFiles'))
             DownloadFilesTasks(event);
     })
 });

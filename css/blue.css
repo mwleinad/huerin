@@ -749,6 +749,9 @@ opacity:0.7 !important;
 .spanAll:hover{
 	text-decoration: none;
 }
+.no-clickable{
+	pointer-events: none;
+}
 .borderGray{
 	border:1px solid #999;
 }
