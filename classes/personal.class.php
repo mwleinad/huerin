@@ -464,6 +464,14 @@ class Personal extends Main
             $strUpdate .=" computadora='".$this->computadora."', ";
         if(strlen($this->grupo)>0)
             $strUpdate .=" grupo='".$this->grupo."', ";
+        if(strlen($this->tipoPersonal)>0)
+            $strUpdate .=" tipoPersonal='".$this->tipoPersonal."', ";
+        if(strlen($this->roleId)>0)
+            $strUpdate .=" roleId='".$this->roleId."', ";
+        if(strlen($this->departamentoId)>0)
+            $strUpdate .=" $this->departamentoId='".$this->departamentoId."', ";
+        if(strlen($this->jefeInmediato)>0)
+            $strUpdate .=" $this->jefeInmediato='".$this->jefeInmediato."', ";
 
 		$this->Util()->DB()->setQuery("
 			UPDATE
@@ -471,10 +479,6 @@ class Personal extends Main
 			SET
 				`name` = '".$this->name."',
 				$strUpdate
-				jefeInmediato = '".$this->jefeInmediato."',
-				tipoPersonal = '".trim($this->tipoPersonal)."',
-				roleId = '".trim($this->roleId)."',
-				departamentoId = '".$this->departamentoId."',
 				active = '".$this->active."'
 			WHERE personalId = '".$this->personalId."'");
 		$this->Util()->DB()->UpdateData();
