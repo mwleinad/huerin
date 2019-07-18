@@ -40,7 +40,7 @@ class CxC extends Producto
                 $card['folio'] = $val['folio'];
                 $card['rfc'] = $val['rfc'];
                 //$card['nombre'] = $usr['nombre'];
-                $card['nombre']=$val['nombreComercial'];
+                $card['nombre']=$val['name'];
                 $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
                 $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
 
@@ -118,7 +118,7 @@ class CxC extends Producto
                 $card['serie']="E";
                 $card['folio']=$val['instanciaServicioId'];
                 $card['nameContact']=$val['nameContact'];
-                $card['nombre']=$val['nombreComercial'];
+                $card['nombre']=$val['name'];
                 $card['fecha'] = date('Y/m/d',strtotime($val['date']));
                 $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
                 $card['cxcDiscount']=0;
@@ -375,7 +375,7 @@ class CxC extends Producto
 					$card['folio'] = $val['folio'];
 					$card['rfc'] = $usr['rfc'];
 					//$card['nombre'] = $usr['nombre'];
-					$card['nombre']=$val['nombreComercial'];
+					$card['nombre']=$val['name'];
 					$card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
           			$card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
 
@@ -456,7 +456,7 @@ class CxC extends Producto
 					$card['serie']="E";
 					$card['folio']=$val['instanciaServicioId'];
 					$card['nameContact']=$val['nameContact'];
-					$card['nombre']=$val['nombreComercial'];
+					$card['nombre']=$val['name'];
 					$card['fecha'] = date('Y/m/d',strtotime($val['date']));
           			$card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
 					$card['cxcDiscount']=0;
