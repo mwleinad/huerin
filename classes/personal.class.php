@@ -469,9 +469,9 @@ class Personal extends Main
         if(strlen($this->roleId)>0)
             $strUpdate .=" roleId='".$this->roleId."', ";
         if(strlen($this->departamentoId)>0)
-            $strUpdate .=" $this->departamentoId='".$this->departamentoId."', ";
+            $strUpdate .=" departamentoId='".$this->departamentoId."', ";
         if(strlen($this->jefeInmediato)>0)
-            $strUpdate .=" $this->jefeInmediato='".$this->jefeInmediato."', ";
+            $strUpdate .=" jefeInmediato='".$this->jefeInmediato."', ";
 
 		$this->Util()->DB()->setQuery("
 			UPDATE
