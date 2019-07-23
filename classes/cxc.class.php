@@ -23,7 +23,7 @@ class CxC extends Producto
                 $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.intval($values['month']);
 
 		$id_rfc = $this->getRfcActive();
-		$sql = "SELECT *, c.status AS status, c.comprobanteId AS comprobanteId,customer.nameContact AS nameContact,contract.rfc
+		$sql = "SELECT *, c.status AS status, c.comprobanteId AS comprobanteId,customer.nameContact AS nameContact,contract.rfc,contract.name as razon
                 FROM comprobante AS c
                 LEFT JOIN contract ON contract.contractId = c.userId
                 LEFT JOIN customer ON customer.customerId = contract.customerId
@@ -40,7 +40,7 @@ class CxC extends Producto
                 $card['folio'] = $val['folio'];
                 $card['rfc'] = $val['rfc'];
                 //$card['nombre'] = $usr['nombre'];
-                $card['nombre']=$val['name'];
+                $card['nombre']=$val['razon'];
                 $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
                 $card['fecha'] = $this->Util()->GetMesDiagonal($card['fecha']);
 
