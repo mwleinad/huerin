@@ -808,7 +808,6 @@ class ReporteBonos extends Main
                         if(!in_array($encargadoDep,$listsEncargados)){
                             array_push($listsEncargados,$encargadoDep);
                             $cad['name']=$encargado['name'];
-                            $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
                             $cad['jefeInmediato']=$jefeContador['personalId'];
@@ -981,7 +980,7 @@ class ReporteBonos extends Main
                     $newArray[$enc["personalId"]]['totalCompletado'] += $enc['totalCompletado'];
                 }
                 //si tiene jefe inmediato se suma el total del sub al jefe
-                $this->recursiveTotalEncargado($allEncargados,$newArray, $detalleSubordinados[$ke],$enc['totalDevengado'],$enc['totalCompletado']);
+                $this->recursiveTotalEncargado($allEncargados,$newArray, $detalleSubordinados[$ke],$enc['totalDevengado'],$enc['totalCompletado'],0);
             }
             $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'nivel',false,true);
 
