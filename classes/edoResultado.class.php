@@ -57,7 +57,7 @@ class EdoResultado extends ReporteBonos
             $sheet->setCellValueByColumnAndRow($col + 1, 3, "=$coorDevengado/$coorDevengado");
             $sheet->getStyle($porcentDevengado)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
             $sheet->getStyle($coorDevengado)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->setCellValueByColumnAndRow($col, 4, $value["totalTrabajado"]);
+            $sheet->setCellValueByColumnAndRow($col, 4, $value["totalCompletado"]);
             $coorTrabajado = $stringColCurrent . "4";
             $totalesTrabajado[] = $coorTrabajado;
             $porcentTrabajado = $stringColCurrent1 . "4";
@@ -140,7 +140,8 @@ class EdoResultado extends ReporteBonos
             $totalesUtilidadBruta [] =$colUtilidadBruta;
 
             $sheet->getStyle($colBonosAreas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->setCellValue($colBonosAreas, "");
+            $porcentBono = $value["porcentajeBono"]/100;
+            $sheet->setCellValue($colBonosAreas,"=+$colUtilidadBruta*$porcentBono");
             $sheet->getStyle($porcentColBonosAreas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
             $sheet->setCellValue($porcentColBonosAreas, "=+$colBonosAreas/$colTotalIngresos");
 
@@ -409,7 +410,7 @@ class EdoResultado extends ReporteBonos
                 $sheet->setCellValue($porcentCostoServicio, "=+$colCostoServicio/$colTotalIngresos");
 
                 $sheet->getStyle($colNominas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValue($colNominas, "");
+                $sheet->setCellValue($colNominas, $value["sueldoTotal"]);
                 $sheet->getStyle($porcentColNominas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
                 $sheet->setCellValue($porcentColNominas, "=+$colNominas/$colTotalIngresos");
 
@@ -427,7 +428,8 @@ class EdoResultado extends ReporteBonos
                 $totalesUtilidadBruta [] =$colUtilidadBruta;
 
                 $sheet->getStyle($colBonosAreas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValue($colBonosAreas, "");
+                $porcentBono = $value["porcentajeBono"]/100;
+                $sheet->setCellValue($colBonosAreas, "=+$colUtilidadBruta*$porcentBono");
                 $sheet->getStyle($porcentColBonosAreas)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
                 $sheet->setCellValue($porcentColBonosAreas, "=+$colBonosAreas/$colTotalIngresos");
 
