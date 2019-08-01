@@ -207,8 +207,9 @@ class Task extends Step
             case 'REVISION MENSUAL':
             case 'RIF':
             case 'SUELDOS Y SALARIOS':
+                echo strtoupper(trim($dataService["nombreStep"]));
                     if(strtoupper(trim($dataService["nombreStep"]))=='DOCUMENTACION' ||strtoupper(trim($dataService["nombreStep"]))=='REQUERIMIENTO DE INFORMACION'||strtoupper(trim($dataService["nombreStep"]))=='RECEPCION DE DOCUMENTACION')
-                        if($data['workflow']<'2019-07-01')
+                        if($data['workflow']['date']<'2019-07-01')
                             $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES' ";
 
             break;
