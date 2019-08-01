@@ -433,6 +433,14 @@ class Workflow extends Servicio
 		switch(strtoupper(trim($row["nombreServicio"]))){
             case 'IMSS E INFONAVIT':
             case 'IMSS E INFONAVIT ESTADO DE MEXICO':
+            case 'ARRENDAMIENTO':
+            case 'ASALARIADOS':
+            case 'CERO':
+            case 'CONTABILIDAD FINANCIERA':
+            case 'CONTABILIDAD MENSUAL':
+            case 'REVISION MENSUAL':
+            case 'RIF':
+            case 'SUELDOS Y SALARIOS':
                 $concatFiltro =  true;
             break;
         }
@@ -446,12 +454,17 @@ class Workflow extends Servicio
 		        switch(strtoupper(trim($value["nombreStep"]))){
                     case 'MOVIMIENTOS IMSS':
                         if($date[0]<2019)
-                            $strFiltroStepTask .=" and LOWER(nombreTask)!='MOVIMIENTOS IMSS' ";
+                            $strFiltroStepTask .=" and UPPER(nombreTask)!='MOVIMIENTOS IMSS' ";
                     break;
+                    case 'DOCUMENTACION':
+                    case 'REQUERIMIENTO DE INFORMACION':
+                    case 'RECEPCION DE DOCUMENTACION':
+                    if($row['date']<'2019-07-01')
+                        $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES'";
+                    break;
+
                 }
             }
-
-
 			$row["steps"][$key]["step"] = $ii;
 			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask");
 			$row["steps"][$key]["tasks"] = $this->Util()->DB()->GetResult();

@@ -197,8 +197,22 @@ class Task extends Step
             case 'IMSS E INFONAVIT ESTADO DE MEXICO':
                 if(strtoupper(trim($dataService["nombreStep"]))=='MOVIMIENTOS IMSS')
                     if($dateWorkflow[0]<2019)
-                            $strFiltroStepTask .=" and LOWER(nombreTask)!='MOVIMIENTOS IMSS' ";
+                            $strFiltroStepTask .=" and UPPER(nombreTask)!='MOVIMIENTOS IMSS' ";
             break;
+            case 'ARRENDAMIENTO':
+            case 'ASALARIADOS':
+            case 'CERO':
+            case 'CONTABILIDAD FINANCIERA':
+            case 'CONTABILIDAD MENSUAL':
+            case 'REVISION MENSUAL':
+            case 'RIF':
+            case 'SUELDOS Y SALARIOS':
+                    if(strtoupper(trim($dataService["nombreStep"]))=='DOCUMENTACION' ||strtoupper(trim($dataService["nombreStep"]))=='REQUERIMIENTO DE INFORMACION'||strtoupper(trim($dataService["nombreStep"]))=='RECEPCION DE DOCUMENTACION')
+                        if($data['workflow']<'2019-07-01')
+                            $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES'";
+
+            break;
+
         }
         //workflowId  es la instanciaServicioId viene desde url
         $this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '" . $this->getStepId() . "' $strFiltroStepTask");
