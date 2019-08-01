@@ -120,6 +120,9 @@ class Departamentos extends Main
 	{
 		if($this->Util()->PrintErrors()){ return false; }
 
+        $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$this->departamentoId."' ");
+		$currentDepartamento = $this->Util()->DB()->GetSingle();
+
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				departamentos
@@ -127,8 +130,13 @@ class Departamentos extends Main
 				`departamentoId` = '".$this->departamentoId."',
 				`departamento` = '".$this->departamento."'
 			WHERE departamentoId = '".$this->departamentoId."'");
-		$this->Util()->DB()->UpdateData();
-
+		$affect = $this->Util()->DB()->UpdateData();
+        if($affect>0){
+            $sql = "UPDATE permisos 
+                    SET titulo = '".$this->departamento."' where titulo='$currentDepartamento' ";
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->UpdateData();
+        }
 		$this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -136,21 +144,44 @@ class Departamentos extends Main
 
 	public function Save()
 	{
+	    global $rol;
 		if($this->Util()->PrintErrors()){ return false; }
+		$sql = "INSERT INTO departamentos
+                (
+                    `departamentoId`,
+                    `departamento`
+                )
+                VALUES
+                (
+                    '".$this->departamentoId."',
+                    '".$this->departamento."'
+                );";
+		$this->Util()->DB()->setQuery($sql);
+		$id = $this->Util()->DB()->InsertData();
+		//Al agregar un departamento nuevo debe agregarse como permiso
+		if($id){
+		    $sql= "INSERT INTO permisos
+                  (
+                    titulo,
+                    parentId,
+                    levelDeep
+                  )VALUES(
+                   '".$this->departamento."',
+                   6,
+                   1
+                  )
+                  ";
+            $this->Util()->DB()->setQuery($sql);
+            $permiso = $this->Util()->DB()->InsertData();
+            //por default asignar permiso para socio y coordinador
+            if($permiso>0){
+                $rol->setRolId(1);
+                $rol->AssignPermisoToRol($permiso);
+                $rol->setRolId(5);
+                $rol->AssignPermisoToRol($permiso);
+            }
 
-		$this->Util()->DB()->setQuery("
-			INSERT INTO
-				departamentos
-			(
-				`departamentoId`,
-				`departamento`
-		)
-		VALUES
-		(
-				'".$this->departamentoId."',
-				'".$this->departamento."'
-		);");
-		$this->Util()->DB()->InsertData();
+        }
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -158,16 +189,34 @@ class Departamentos extends Main
 
 	public function Delete()
 	{
-			if($this->Util()->PrintErrors()){ return false; }
+		global $rol;
+	    if($this->Util()->PrintErrors()){ return false; }
 
-			$this->Util()->DB()->setQuery("
+        $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$this->departamentoId."' ");
+        $currentDepartamento = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("
 				DELETE FROM
 					departamentos
 				WHERE
 					departamentoId = '".$this->departamentoId."'");
-			$this->Util()->DB()->DeleteData();
-			$this->Util()->setError(3, "complete");
-			$this->Util()->PrintErrors();
+        $affect = $this->Util()->DB()->DeleteData();
+        if($affect>0){
+            $sql = "select permisoId from permisos where titulo='".$currentDepartamento."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $idPermiso = $this->Util()->DB()->GetSingle();
+
+            $sql = "DELETE FROM permisos 
+                    WHERE titulo='$currentDepartamento' ";
+            $this->Util()->DB()->setQuery($sql);
+            $affect = $this->Util()->DB()->DeleteData();
+            if($affect>0)
+                if($idPermiso>0){
+                    $rol->setRolId(0);
+                    $rol->RemovePermisoToRol($idPermiso);
+                }
+        }
+        $this->Util()->setError(3, "complete");
+        $this->Util()->PrintErrors();
 		return true;
 	}
 	function SubirArchivo()

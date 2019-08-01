@@ -322,6 +322,30 @@ class Rol extends main
        $this->Util()->PrintErrors();
        return true;
    }
+   function AssignPermisoToRol($permiso){
+        $sql = "REPLACE INTO rolesPermisos
+                (
+                    rolId,
+                    permisoId,
+                    date
+                )
+                VALUES(
+                    '".$this->rolId."',
+                    '".$permiso."',
+                    '".date('Y-m-d')."'
+                    
+                )";
+       $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+       $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+    }
+    function RemovePermisoToRol($permiso){
+        $ftr = "";
+        if($this->rolId>0)
+            $ftr =" and rolId ='".$this->rolId."' ";
+        $sql = "DELETE FROM rolesPermisos WHERE permisoId='".$permiso."' $ftr ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+    }
    function GetPermisosByRol(){
        if($this->isAdmin())
            $sql =  "SELECT permisoId from rolesPermisos where 1";
