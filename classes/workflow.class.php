@@ -460,7 +460,7 @@ class Workflow extends Servicio
                     case 'REQUERIMIENTO DE INFORMACION':
                     case 'RECEPCION DE DOCUMENTACION':
                     if($row['date']<'2019-07-01')
-                        $strFiltroStepTask .=" and (UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' OR  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES')";
+                        $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES'";
                     break;
 
                 }
