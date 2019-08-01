@@ -144,6 +144,7 @@ class Departamentos extends Main
 
 	public function Save()
 	{
+	    global $rol;
 		if($this->Util()->PrintErrors()){ return false; }
 		$sql = "INSERT INTO departamentos
                 (
@@ -171,7 +172,15 @@ class Departamentos extends Main
                   )
                   ";
             $this->Util()->DB()->setQuery($sql);
-            $this->Util()->DB()->InsertData();
+            $permiso = $this->Util()->DB()->InsertData();
+            //por default asignar permiso para socio y coordinador
+            if($permiso>0){
+                $rol->setRolId(1);
+                $rol->AssignPermisoToRol($permiso);
+                $rol->setRolId(5);
+                $rol->AssignPermisoToRol($permiso);
+            }
+
         }
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
@@ -180,7 +189,8 @@ class Departamentos extends Main
 
 	public function Delete()
 	{
-			if($this->Util()->PrintErrors()){ return false; }
+		global $rol;
+	    if($this->Util()->PrintErrors()){ return false; }
 
         $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$this->departamentoId."' ");
         $currentDepartamento = $this->Util()->DB()->GetSingle();
@@ -191,12 +201,20 @@ class Departamentos extends Main
 					departamentoId = '".$this->departamentoId."'");
         $affect = $this->Util()->DB()->DeleteData();
         if($affect>0){
+            $sql = "select permisoId from permisos where titulo='".$currentDepartamento."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $idPermiso = $this->Util()->DB()->GetSingle();
+
             $sql = "DELETE FROM permisos 
                     WHERE titulo='$currentDepartamento' ";
             $this->Util()->DB()->setQuery($sql);
-            $this->Util()->DB()->DeleteData();
+            $affect = $this->Util()->DB()->DeleteData();
+            if($affect>0)
+                if($idPermiso>0){
+                    $rol->setRolId(0);
+                    $rol->RemovePermisoToRol($idPermiso);
+                }
         }
-
         $this->Util()->setError(3, "complete");
         $this->Util()->PrintErrors();
 		return true;
