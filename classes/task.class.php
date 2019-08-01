@@ -209,7 +209,7 @@ class Task extends Step
             case 'SUELDOS Y SALARIOS':
                     if(strtoupper(trim($dataService["nombreStep"]))=='DOCUMENTACION' ||strtoupper(trim($dataService["nombreStep"]))=='REQUERIMIENTO DE INFORMACION'||strtoupper(trim($dataService["nombreStep"]))=='RECEPCION DE DOCUMENTACION')
                         if($data['workflow']<'2019-07-01')
-                            $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES'";
+                            $strFiltroStepTask .=" and (UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' OR  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES')";
 
             break;
 
