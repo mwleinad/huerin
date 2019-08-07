@@ -1,5 +1,6 @@
 <?php
-$user->allowAccess(3);  //level 1
+$user->allowAccess(7);  //level 1
+$user->allowAccess(163);//level 2
 
 $departamentos = $departamentos->Enumerate();
 $smarty->assign("departamentos", $departamentos);
