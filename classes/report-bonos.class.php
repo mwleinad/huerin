@@ -561,7 +561,7 @@ class ReporteBonos extends Main
             $allEncargados[$subId] = $sub;
         }
 
-        $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId 
+        $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
                     where b.status='1' and a.status IN ('activo','bajaParcial') and a.inicioFactura!='0000-00-00' $strFilter";
