@@ -1,9 +1,7 @@
 <?php
-
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
 switch($_POST["type"])
 {
 	case "search":
@@ -82,16 +80,15 @@ switch($_POST["type"])
 			$smarty->assign("customers", $result);			
 			$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
 			
-		break;	
-			case "addCustomer": 
+	break;
+		case "addCustomer":
 
-			$empleados = $personal->Enumerate();			
-			$smarty->assign("empleados", $empleados);
-			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			$smarty->display(DOC_ROOT.'/templates/boxes/add-customer-popup.tpl');
-		
-		break;	
-		
+		$empleados = $personal->Enumerate();
+		$smarty->assign("empleados", $empleados);
+		$smarty->assign("DOC_ROOT", DOC_ROOT);
+		$smarty->display(DOC_ROOT.'/templates/boxes/add-customer-popup.tpl');
+
+	break;
 	case "saveAddCustomer":
 			$customer->setName($_POST['name']);			
 			$customer->setPhone($_POST['phone']);

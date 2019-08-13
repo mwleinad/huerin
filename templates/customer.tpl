@@ -17,17 +17,13 @@
       <a href="javascript:void(0)" class="inline_add" id="addCustomer">Agregar Cliente</a>
       <input type="hidden" id="tipoModulo" name="tipoModulo" value="{$tipo}"/>
   {/if}  
-	<div id="loadPrint">   
+	<div id="loadPrint">
   	</div>  
   </div>
-  
   <div class="clear">
   </div>
-  
   <div id="portlets">
-
   <div class="clear"></div>
-  
   <div class="portlet">
   
   {include file="forms/search-customer.tpl"} 

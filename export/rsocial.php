@@ -26,8 +26,6 @@ if($_POST['responsableCuenta']>0)
 else
     $post["selectedResp"] = false;
 $clientes =  $customer->SuggestCustomerRazon($post);
-//$clientes = $customer->SuggestCustomerCatalog($rfc, $subor, $customerId = 0, $tipo);
-
 $x .=
 "<table border=\"1\">
 	<thead>
@@ -87,79 +85,6 @@ $x .=
         </tr>
 	</thead>
 	<tbody>";
-
-/*foreach($clientes as $res){
-
-    $activo = ($res['active'] == 1) ? 'Activo' : 'Inactivo';
-
-    if(count($res['contracts']) > 0){
-
-        foreach($res['contracts'] as $con){
-
-            $regimen->setRegimenId($con['regimenId']);
-            $nomRegimen = $regimen->GetNameById();
-
-            $x .= "
-				<tr>
-    				<td style=\"text-align:center;mso-number-format:'@';\">".$res['customerId']."</td>
-    				<td style=\"text-align:center;mso-number-format:'@';\">".$con['contractId']."</td>
-        			<td style=\"text-align:left;mso-number-format:'@';\">".utf8_decode($res['nameContact'])."</td>
-	        		<td style=\"text-align:center;mso-number-format:'@';\">".$res['phone']."</td>
-		        	<td style=\"text-align:left;mso-number-format:'@';\">".$res['email']."</td>
-    			    <td style=\"text-align:center;mso-number-format:'@';\">".$res['password']."</td>
-	    		    <td style=\"text-align:center;mso-number-format:'@';\">".count($res['contracts'])."</td>
-		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d-m-Y',strtotime($res['fechaAlta']))."</td>
-			        <td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($res['observaciones'])."</td>
-			        <td style=\"text-align:center;mso-number-format:'@';\">".$activo."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['name'])."</td>
-					<td style=\"text-align:left;mso-number-format:'@';\">$ ".$con['totalMensual']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['type'])."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['rfc']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($nomRegimen)."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['activo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nombreComercial']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['direccionComercial']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['address']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['noExtAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['noIntAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['coloniaAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['municipioAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['estadoAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['paisAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['cpAddress']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameContactoAdministrativo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['emailContactoAdministrativo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoContactoAdministrativo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameContactoContabilidad']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['emailContactoContabilidad']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoContactoContabilidad']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameContactoDirectivo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['emailContactoDirectivo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoContactoDirectivo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoCelularDirectivo']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveCiec']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveFiel']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveIdse']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveIsn']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['facturador']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['metodoDePago']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['noCuenta']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['responsable']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['supervisadoBy']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameContabilidad']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameNominas']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAdministracion']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameJuridico']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameImss']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameMensajeria']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAuditoria']."</td>
-				</tr>";
-
-        }//foreach
-
-    }//if
-
-}//foreach*/
 foreach($clientes as $con){
 
             $regimen->setRegimenId($con['regimenId']);
