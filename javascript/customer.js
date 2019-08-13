@@ -59,7 +59,8 @@ Event.observe(window, 'load', function() {
 		$('divForm').observe("click", AddSuggestListener);
 	}
 
-	Event.observe('addCustomerFormSearch', 'submit', function(event) {
+	Event.observe('frmCustomerSearch', 'submit', function(event) {
+		console.log(event);
 		Event.stop(event);
 	});
 	

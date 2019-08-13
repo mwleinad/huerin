@@ -32,6 +32,7 @@
                   <select class="largeInput" name="tipos" id="tipos">
                       <option value="">Todos</option>
                       <option value="activos">Activos</option>
+                      <option value="temporal">Bajas temporales</option>
                       <option value="inactivos">Inactivos</option>
                   </select>
                 </td>

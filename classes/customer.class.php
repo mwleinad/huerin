@@ -1356,6 +1356,7 @@ class Customer extends Main
       $fltSearch = "";
       $fltContract = "";
       switch($filter['tipos']){
+          case 'temporal':
           case 'activos':
               $fltSearch .= " and a.active='1'  and b.activo='Si' ";
               $fltContract .= " and ax.activo='Si' ";
@@ -1394,12 +1395,12 @@ class Customer extends Main
       }else{
           //si el rol es ilimitado  comprobar que en el array de encargados no este su id, si esta se usa el query que obtiene todos los contratos, si no esta entonces esta buscando de otra persona
           if($filter["selectedResp"]){
-              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
+             $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
                inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(".implode(',',$filter['encargados']).") group by ax.contractId) as b
                on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
               ";
           }else{
-              $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
+             $str="select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
                left join (select ax.* from contract ax left join contractPermiso bx on ax.contractId=bx.contractId and bx.personalId in(".implode(',',$filter['encargados']).")  where 1 $fltContract group by ax.contractId) as b
                on a.customerId=b.customerId where 1 $fltSearch  order by a.nameContact asc, b.name asc  
               ";
@@ -1451,6 +1452,16 @@ class Customer extends Main
               case 'Auxiliar':
                   $result[$key]["supervisadoBy"] = $jefes['Supervisor'];
                   break;
+          }
+          if($filter["tipos"]=='temporal'){
+              //si el filtro tiene activo busqueda de bajas temporales, evaluar si la empresa tiene servicios con baja temporal de no tenerlo no deberia mostrarse
+              $serviciosBajaTemporal = $this->GetServicesByContract($val["contractId"],'bajaParcial');
+              if(count($serviciosBajaTemporal)<=0){
+                  unset($result[$key]);
+                  continue;
+              }else{
+                  $result[$key]["activo"] = "Activo/con baja temporal";
+              }
           }
           //obtener los servicios del contrato
           $serviciosContrato = $this->GetServicesByContract($val["contractId"]);
