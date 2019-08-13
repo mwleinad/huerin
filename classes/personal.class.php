@@ -12,7 +12,6 @@ class Personal extends Main
 	private $ext;
 	private $fechaIngreso;
 	private $showAll =  false;
-
 	public function setExt($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Extension");
@@ -33,6 +32,11 @@ class Personal extends Main
     {
         if($this->Util()->ValidateRequireField($value, "Tipo de Usuario(rolId)"))
         $this->roleId = $value;
+    }
+    private $levelRol;
+    public function setLevelRol($value)
+    {
+            $this->levelRol = $value;
     }
 	private $skype;
 	public function setSkype($value)
@@ -182,13 +186,14 @@ class Personal extends Main
 		//Socio y Asistente pueden ver todo el personal.
 		if($this->active)
 			$sqlActive = " AND a.active = '1'";
-		if($this->roleId && $this->showAll)
-		    $sqlFilter = " and a.roleId='".$this->roleId."' ";
+		if($this->levelRol && $this->showAll)
+		    $sqlFilter = " and d.nivel='".$this->levelRol."' ";
 
 		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'DH')!==false || $this->showAll||stripos($infoUser['tipoPersonal'],'Sistema')!==false) {
 			$sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
+					LEFT JOIN roles d on a.roleId=d.rolId
 					LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
 					$sqlFilter $sqlActive 
 					ORDER BY a.name ASC";

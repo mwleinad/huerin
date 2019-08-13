@@ -2,7 +2,6 @@
 $user->allowAccess(7);
 $user->allowAccess(225);
 /* End Session Control */
-
 if($_SESSION["search"]["year"])
 {
     $year = $_SESSION["search"]["year"];
@@ -16,7 +15,7 @@ $departamentos = $departamentos->Enumerate();
 $smarty->assign("departamentos", $departamentos);
 
 $personal->isShowAll();
-$personal->setRole(2);
+$personal->setLevelRol(2);
 $personals = $personal->Enumerate();
 $smarty->assign("personals", $personals);
 
