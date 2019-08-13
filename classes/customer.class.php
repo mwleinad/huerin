@@ -1453,14 +1453,15 @@ class Customer extends Main
                   $result[$key]["supervisadoBy"] = $jefes['Supervisor'];
                   break;
           }
+          $serviciosBajaTemporal = $this->GetServicesByContract($val["contractId"],'bajaParcial');
+          if(count($serviciosBajaTemporal)>0){
+              $result[$key]["activo"] = "Activo/con baja temporal";
+          }
           if($filter["tipos"]=='temporal'){
               //si el filtro tiene activo busqueda de bajas temporales, evaluar si la empresa tiene servicios con baja temporal de no tenerlo no deberia mostrarse
-              $serviciosBajaTemporal = $this->GetServicesByContract($val["contractId"],'bajaParcial');
               if(count($serviciosBajaTemporal)<=0){
                   unset($result[$key]);
                   continue;
-              }else{
-                  $result[$key]["activo"] = "Activo/con baja temporal";
               }
           }
           //obtener los servicios del contrato

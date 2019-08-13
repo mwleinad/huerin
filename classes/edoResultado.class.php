@@ -297,8 +297,10 @@ class EdoResultado extends ReporteBonos
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
+        $sheet = $book->createSheet($hoja);
         foreach ($result as $keyMain => $valueMain) {
-            $sheet = $book->createSheet($hoja);
+            if($hoja!=0)
+                $sheet = $book->createSheet($hoja);
             $sheet->setTitle(strtoupper(substr($valueMain["name"], 0, 6)));
             $sheet->setCellValueByColumnAndRow(0, 3, "INGRESOS DEVENGANDOS");
             $sheet->setCellValueByColumnAndRow(0, 4, "INGRESOS TRABAJADOS");

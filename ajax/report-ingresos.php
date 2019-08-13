@@ -18,7 +18,6 @@ switch($_POST["type"])
 			$idContracts = array();
 			$contratosClte = array();
 			foreach($contracts as $res){
-								
 				$contractId = $res['contractId'];
 				$customerId = $res['customerId'];
 				if($idContrato > 0 && $contractId != $idContrato)
@@ -32,27 +31,19 @@ switch($_POST["type"])
 					$contratosClte[$customerId][] = $res;
 				}
 			}//foreach
-						
 			$clientes = array();
 			foreach($idClientes as $customerId){
-				
 				$customer->setCustomerId($customerId);
 				$infC = $customer->Info();
-				
 				$infC['contracts'] = $contratosClte[$customerId];
-				
 				$clientes[] = $infC;
-				
 			}//foreach
-			
 			$totalPeriodo = 0;
 			$totalCosto = 0;
 			$resClientes = array();
 			foreach($clientes as $clte){
-				
 				$contratos = array();
 				foreach($clte['contracts'] as $con){
-										
 					//Checamos Permisos
 					$resPermisos = explode('-',$con['permisos']);
 					foreach($resPermisos as $res){
@@ -77,21 +68,21 @@ switch($_POST["type"])
                         $rowTipoServ = $util->DB()->GetRow();
                         $departamentoId = $rowTipoServ["departamentoId"];
                         $costoVisual = $rowTipoServ["costoVisual"];
-
                         $resPermisos = explode('-', $con['permisos']);
-
                         $personalId = 0;
                         foreach ($resPermisos as $res2) {
                             $value = explode(',', $res2);
-
                             $idPersonal = $value[1];
                             $idDepto = $value[0];
-
                             if ($idDepto == $departamentoId)
                                 $personalId = $idPersonal;
-
                         }
-
+                        switch($serv["servicioStatus"]){
+                            case 'activo': $serv["nameStatusComplete"] = 'Activo'; break;
+                            case 'readonly': $serv["nameStatusComplete"] = 'Activo/Solo Lectura'; break;
+                            case 'bajaParcial': $serv["nameStatusComplete"] = 'Baja Temporal'; break;
+                            case 'baja': $serv["nameStatusComplete"] = 'Baja'; break;
+                        }
                         $personal->setPersonalId($personalId);
                         $infP = $personal->Info();
                         $role = $rol->getInfoByData($infP);

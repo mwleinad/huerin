@@ -5,10 +5,11 @@
 		<th align="center" width="60">Raz&oacute;n Social</th>
 		<th align="center" width="60">Servicio</th>
 		<th align="center" width="60">Periodo</th>
-        <th align="center" width="60">Fecha inicio facturacion</th>
-        <th align="center" width="60">Fecha Inicio Operacion</th>
+        <th align="center" width="60">Inicio facturacion</th>
+        <th align="center" width="60">Inicio Operacion</th>
+        <th align="center" width="60">Status</th>
+        <th align="center" width="60">Ultimo Workflow</th>
 		<th align="center" width="60">Costo por Periodo</th>
-        <th align="center" width="60">Costo Mensual</th>
         <th align="center" width="60">Costo Informativo</th>
         <th align="center" width="60">Auxiliar</th>
         <th align="center" width="60">Contador</th>
@@ -27,8 +28,9 @@
             <td align="center">{$servicio.periodicidad}</td>
             <td align="center">{$servicio.inicioFactura}</td>
             <td align="center">{$servicio.inicioOperaciones}</td>
+            <td align="center">{$servicio.nameStatusComplete}</td>
+            <td align="center">{if $servicio.servicioStatus eq 'bajaParcial'}{$servicio.lastDateWorkflow}{else}N/A{/if}</td>
             <td align="center">${$servicio.costo|number_format:2}</td>
-            <td align="center">${$servicio.costoMens}</td>
             <td align="center">${$servicio.costoVisual}</td>
             <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
             <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
@@ -51,8 +53,10 @@
     <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
+    <td align="center"></td>
+    <td align="center"></td>
     <td align="center">${$totalPeriodo|number_format:2}</td>
-    <td align="center">${$totalMens|number_format:2}</td>
+    <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
