@@ -1,9 +1,14 @@
 <?php
-
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+if(!$User["isLogged"]){
+	if($util->isAjax()) {
+        echo "fail[#]";
+        echo "login";
+        exit;
+    }
+}
 switch($_POST["type"])
 {
 	case "addNotice":
@@ -13,13 +18,12 @@ switch($_POST["type"])
 			$smarty->assign("noticeId", $noticeId+1);
 			$smarty->assign("userId", $_SESSION["User"]["userId"]);
 			$smarty->assign("usuario", $_SESSION["User"]["username"]);
+			echo "ok[#]";
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-aviso-popup.tpl');
 			
-		break;	
-
-	case "addPendiente": 
-	
+	break;
+	case "addPendiente":
 	        $noticeId = $pendiente->GetLast();
 			$smarty->assign("noticeId", $noticeId+1);
 			$smarty->assign("userId", $_SESSION["User"]["userId"]);
@@ -29,45 +33,38 @@ switch($_POST["type"])
 			//usuarios
 			$usuarios = $personal->EnumerateAll();
 			$smarty->assign("usuarios", $usuarios);
-			
+			echo "ok[#]";
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-pendiente-popup.tpl');
 			
 		break;	
 
-	case "addHistorialPendiente": 
-	
-			$pendiente->setNoticeId($_POST["noticeId"]);
-      $notice = $pendiente->Info();
-			$smarty->assign("notice", $notice);
-			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			
-			
-      $comentarios = $pendiente->Comentarios();
-			$smarty->assign("comentarios", $comentarios);
-			
-			$smarty->display(DOC_ROOT.'/templates/boxes/add-historialPendiente-popup.tpl');
-			
-		break;	
-		
+	case "addHistorialPendiente":
+		$pendiente->setNoticeId($_POST["noticeId"]);
+		$notice = $pendiente->Info();
+		$smarty->assign("notice", $notice);
+		$smarty->assign("DOC_ROOT", DOC_ROOT);
+		$comentarios = $pendiente->Comentarios();
+		$smarty->assign("comentarios", $comentarios);
+		$smarty->display(DOC_ROOT.'/templates/boxes/add-historialPendiente-popup.tpl');
+	break;
 	case "saveAddPendiente":
-	
-	        $fecha  = date("Y-m-d");
-			$pendiente->setFecha($fecha);
-			$pendiente->setPrioridad($_POST['prioridad']);
-			$pendiente->setDescription($_POST['descripcion']);
-			$pendiente->setUsuario($_POST['usuario']);
-			//$noticeId = $notice->Save();
-			
-			/*if(!$noticeId)
-			{
-				echo "fail[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-			}
-			else
-			{*/
-				echo "ok[#]";
-				echo $noticeId;				
-			//}
+		$fecha  = date("Y-m-d");
+		$pendiente->setFecha($fecha);
+		$pendiente->setPrioridad($_POST['prioridad']);
+		$pendiente->setDescription($_POST['descripcion']);
+		$pendiente->setUsuario($_POST['usuario']);
+		//$noticeId = $notice->Save();
+
+		/*if(!$noticeId)
+		{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		else
+		{*/
+			echo "ok[#]";
+			echo $noticeId;
+		//}
 			
 		break;		
 		

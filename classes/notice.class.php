@@ -268,7 +268,6 @@ class Notice extends Main
                 if (file_exists($destino)) {
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
-
                 $sendmail->PrepareMultipleNotice($subject, $body, $mails, '', $destino, $fileName, "", "",'noreply@braunhuerin.com.mx','AVISO DE PLATAFORMA',true);
             }
         }

@@ -203,6 +203,10 @@ class Personal extends Main
 		}
 		$this->setPersonalId($infoUser['personalId']);
    	    $result = $this->SubordinadosDetails();
+        if(stripos($infoUser['tipoPersonal'],'Gerente de Juridico')!==false){
+
+        }
+
    	    return $result;
 	}
     public function EnumerateGerenteDepartamento($dep)

@@ -160,7 +160,7 @@ class Log extends Util
                             $encargados[trim($pers['email'])] = $pers['name'];
                     }
                 }
-                $body .="La sigiuiente razon social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
+                $body .="La siguiente razón social : ".$contrato['razon']." del cliente ".$contrato['cliente']."<br>";
                 $body .=$accion."  por el colaborador ".$who."<br>";
                 break;
             case 'servicio':

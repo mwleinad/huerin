@@ -60,10 +60,6 @@ class User extends Sucursal
 
 	public function allowAccess($page = ''){
 		$User = $_SESSION['User'];
-		//print_r($_SESSION);
-		//$infoUser = $this->Info();
-		//print_r($infoUser);
-		//exit;
 		if(!$User['isLogged']){
 			header('Location: '.WEB_ROOT.'/login');
 			exit;
