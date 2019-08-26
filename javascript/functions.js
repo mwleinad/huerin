@@ -64,9 +64,15 @@ function AddNoticePopup(id)
 		parameters: {type: "addNotice"},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			FViewOffSet(response);
-			Event.observe($('closePopUpDiv'), "click", function(){ AddNoticePopup(0); });
-			Event.observe($('saveNotice'), "click", AddNotice);
+			var splitResp = response.split("[#]");
+			if(splitResp[0]=='ok'){
+                FViewOffSet(splitResp[1]);
+                Event.observe($('closePopUpDiv'), "click", function(){ AddNoticePopup(0); });
+                Event.observe($('saveNotice'), "click", AddNotice);
+			}else{
+				Redirect("/"+splitResp[1]);
+			}
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
@@ -89,8 +95,15 @@ function HistorialPopup(id)
 		parameters: {type: "addHistorialPendiente", noticeId:id},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			FViewOffSet(response);
-			Event.observe($('closePopUpDiv'), "click", function(){ HistorialPopup(0); });
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok') {
+                FViewOffSet(splitResp[1]);
+                Event.observe($('closePopUpDiv'), "click", function () {
+                    HistorialPopup(0);
+                });
+            }else{
+                Redirect("/"+splitResp[1]);
+			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
@@ -114,8 +127,15 @@ function AddPendientePopup(id)
 		parameters: {type: "addPendiente"},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			FViewOffSet(response);
-			Event.observe($('closePopUpDiv'), "click", function(){ AddPendientePopup(0); });
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok') {
+                FViewOffSet(splitResp[1]);
+                Event.observe($('closePopUpDiv'), "click", function () {
+                    AddPendientePopup(0);
+                });
+            }else{
+                Redirect("/"+splitResp[1]);
+			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
@@ -238,7 +258,7 @@ function DeleteNotice(id)
 			if(splitResponse[0] == "ok")
 			{
 				ShowStatus(splitResponse[1]);
-				$("contenido").innerHTML = splitResponse[2];
+				$("contenidoAviso").innerHTML = splitResponse[2];
 			}
 			else
 			{
