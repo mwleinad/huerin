@@ -13,7 +13,7 @@ class Validar extends Main
         $fp = fopen($file_temp,'r');
         $fila=1;
         while(($row=fgetcsv($fp,4096,","))==true) {
-            if(count($row)!=51)
+            if(count($row)!=52)
             {
                 $this->Util()->setError(0,'error','Archivo no valido');
                 break;
