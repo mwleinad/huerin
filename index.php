@@ -2,12 +2,7 @@
 include_once('init.php');
 include_once('config.php');
 include_once(DOC_ROOT.'/libraries.php');
-	if (!isset($_SESSION))
-	{
-	  session_start();
-	}
 	$User['tipoPersonal'] = $infoUser['tipoPersonal'];
-	$_SESSION['empresaId'] = IDEMPRESA;
 	$pages = array(
 		//login,homepage
 		'login',
