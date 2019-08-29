@@ -115,12 +115,15 @@ switch($_POST['type']){
             //encontrar regimen
             $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
             $regimenId=$db->GetSingle();
-            echo $strContract ="UPDATE contract SET 
+            $nameRazon  = str_replace("'","\'",trim(row[10]));
+            $actividadEco = str_replace("'","\'",trim(row[16]));
+
+            $strContract ="UPDATE contract SET 
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
-                            name='".trim($row[10])."',
-                            nombreComercial='".$row[16]."',
+                            name='$nameRazon',
+                            nombreComercial='$actividadEco',
                             direccionComercial='".$row[17]."',
                             address='".trim($row[18])."',
                             noExtAddress='".trim($row[19])."',
