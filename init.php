@@ -1,4 +1,10 @@
 <?php
+ini_set("session.cookie_lifetime","1040");
+ini_set("session.gc_maxlifetime","1040");
+if (!isset($_SESSION))
+{
+    session_start();
+}
 
 if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] == 'vp_menu')) {
   ini_set("display_errors", "ON");
@@ -7,18 +13,11 @@ if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] 
   date_default_timezone_set('America/Mexico_City');
   header('Content-type: text/html; charset=iso-8859-1');
 } else {
-  ini_set("session.cookie_lifetime","86400");
-  ini_set("session.gc_maxlifetime","86400");
+
   ini_set("memory_limit","2048M");
   ini_set("max_execution_time","7200");
 
-
-  if (!isset($_SESSION))
-  {
-    session_start();
-  }
-
-  @setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
+ @setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
 
   ini_set("display_errors", "ON");
   error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);

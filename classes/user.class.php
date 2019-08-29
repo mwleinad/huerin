@@ -111,6 +111,7 @@ class User extends Sucursal
 				$card['tipoPers'] = 'Admin';
 
 			$_SESSION['User'] = $card;
+			$_SESSION["empresaId"] = IDEMPRESA;
 
 			return true;
 
@@ -132,6 +133,7 @@ class User extends Sucursal
 				$card['isLogged'] = true;
 				$card['tipoPers'] = $row['tipoPersonal'];
 				$_SESSION['User'] = $card;
+                $_SESSION["empresaId"] = IDEMPRESA;
 				return true;
 			}else{
 				$sql = "SELECT  *
@@ -147,18 +149,24 @@ class User extends Sucursal
 					$card['username'] = $row['nameContact'];
 					$card['isLogged'] = true;
 					$_SESSION['User'] = $card;
+                    $_SESSION["empresaId"] = IDEMPRESA;
 					return true;
 				}else{
+					unset($_SESSION["User"]);
+                    unset($_SESSION["empresaId"]);
 					$this->Util()->setError(10006, "error", "");
 					$this->Util()->PrintErrors();
 				}//else
 			}//else
 		}//else
+        unset($_SESSION["User"]);
+        unset($_SESSION["empresaId"]);
 		return false;
 	}//doLogin
 	public function doLogout(){
 		$_SESSION['User'] = '';
 		unset($_SESSION['User']);
+        unset($_SESSION['empresaId']);
 		session_destroy();
 	}//doLogout
 

@@ -115,7 +115,7 @@ switch($_POST['type']){
             //encontrar regimen
             $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
             $regimenId=$db->GetSingle();
-            $strContract ="UPDATE contract SET 
+            echo $strContract ="UPDATE contract SET 
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
