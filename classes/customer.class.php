@@ -63,6 +63,11 @@ class Customer extends Main
     $this->Util()->ValidateInteger($value);
     $this->responsableCuenta = $value;
   }
+    private $observacion;
+    public function setObservacion($value)
+    {
+        $this->observacion = $value;
+    }
 
   private $nameContact;
   public function setNameContact($value)
@@ -797,7 +802,8 @@ class Customer extends Main
         password = '".$this->password."',        
         noFactura13 = '".$this->noFactura13."',        
         encargadoCuenta = '".$this->encargadoCuenta."',        
-        responsableCuenta = '".$this->responsableCuenta."',        
+        responsableCuenta = '".$this->responsableCuenta."', 
+        observacion = '".$this->observacion."',        
         fechaAlta = '".$this->fechaAlta."',        
         active = '".$this->active."'
       WHERE customerId = '".$this->customerId."'"

@@ -167,6 +167,7 @@ switch($_POST["type"])
 			$customer->setEncargadoCuenta($_POST['encargadoCuenta']);
 			$customer->setResponsableCuenta($_POST['responsableCuenta']);
 			$customer->setFechaAlta($_POST['fechaAlta']);
+        	$customer->setObservacion($_POST['observacion']);
 			
 			$info = $customer->Info();
 			

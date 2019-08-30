@@ -118,7 +118,7 @@ switch($_POST['type']){
             $nameRazon  = str_replace("'","\'",trim($row[10]));
             $actividadEco = str_replace("'","\'",trim($row[16]));
 
-            echo $strContract ="UPDATE contract SET 
+            $strContract ="UPDATE contract SET 
                             permisos='".$permisos."',
                             type='".$row[12]."',
                             regimenId='".$regimenId."',
