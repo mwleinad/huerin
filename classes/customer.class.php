@@ -863,7 +863,8 @@ class Customer extends Main
         nameContact,        
         password,        
         responsableCuenta,        
-        encargadoCuenta,        
+        encargadoCuenta, 
+        observacion,        
         fechaAlta,        
         active
     )
@@ -875,7 +876,8 @@ class Customer extends Main
         '".$this->nameContact."',        
         '".$this->password."',        
         '".$this->responsableCuenta."',        
-        '".$this->encargadoCuenta."',        
+        '".$this->encargadoCuenta."', 
+        '".$this->observacion."',        
         '".$this->fechaAlta."',        
         '".$this->active."'
     );");
