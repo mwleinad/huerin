@@ -27,7 +27,7 @@
 
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">Observaciones:</div>
-                <textarea class="smallInput medium" name="state" id="state" size="50">{$post.observacion}</textarea>
+                <textarea class="smallInput medium" name="observacion" id="observacion" size="50">{$post.observacion}</textarea>
                 <hr />
 			</div>          
       
