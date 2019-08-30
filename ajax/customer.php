@@ -98,6 +98,7 @@ switch($_POST["type"])
 			$customer->setResponsableCuenta($_POST['responsableCuenta']);
 			$customer->setFechaAlta($_POST['fechaAlta']);
 			$customer->setPassword($_POST['password']);
+			$customer->setObservacion($_POST["observacion"]);
 						
 			if($_POST['active'])
 				$customer->setActive(1);
