@@ -1,6 +1,6 @@
 <?php
-ini_set("session.cookie_lifetime","1040");
-ini_set("session.gc_maxlifetime","1040");
+ini_set("session.cookie_lifetime","2100");
+ini_set("session.gc_maxlifetime","2100");
 if (!isset($_SESSION))
 {
     session_start();
