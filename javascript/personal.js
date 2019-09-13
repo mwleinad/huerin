@@ -317,7 +317,7 @@ function LoadBoxDropzone(){
             autoProcessQueue: true,
             maxFiles:1,
             uploadMultiple:false,
-            acceptedFiles:'application/pdf,image/jpeg,image/png',
+            acceptedFiles:'application/pdf',
             init: function() {
                 var my = this;
                 this.on('sending',function(file,xhr,formData){
