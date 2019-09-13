@@ -494,26 +494,37 @@ class Personal extends Main
         //actualizar los expedientes.
         if(isset($_POST["expe"])){
             if(!empty($_POST['expe'])){
-                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery('SELECT expedienteId from personalExpedientes WHERE personalId="'.$this->personalId.'" ');
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery("SELECT expedienteId from personalExpedientes WHERE personalId='".$this->personalId."' ");
                 $arrayExp = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
                 $expActual = $this->Util()->ConvertToLineal($arrayExp,'expedienteId');
-                $sql2 = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
+
                 foreach($_POST['expe'] as $exp){
-                    if($exp===end($_POST['expe']))
-                        $sql2 .="(".$this->personalId.",".$exp.");";
-                    else
-                        $sql2 .="(".$this->personalId.",".$exp."),";
-                    //encontrar la posicion de $exp en expActual
+                    //si ya tiene archivo adjunto no debe reemplazar
+                    $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery("select expedienteId from personalExpedientes where expedienteId='$exp' and personalId='".$this->personalId."' ");
+                    $expExist = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
                     $key = array_search($exp,$expActual);
                     unset($expActual[$key]);
+                    if($expExist)
+                        continue;
+                    $sql =  "INSERT INTO personalExpedientes(personalId,expedienteId)VALUES(".$this->personalId.",$exp)";
+                    $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+                    $this->Util()->DBSelect($_SESSION['empresaId'])->InsertData();
                 }
 
-                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql2);
-                $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
                 if(!empty($expActual)){
-                    $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId IN(".implode(",",$expActual).") AND personalId='".$this->personalId."'";
-                    $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
-                    $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+                    //eliminar los expedientes que se deseleccionaron incluyendo su archivo si tiene
+                    foreach ($expActual as $expA){
+                        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery("select path from personalExpedientes where expedienteId='$expA' and personalId='".$this->personalId."' ");
+                        $nameFile= $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
+                        $file = DOC_ROOT."/expedientes/".$this->personalId."/".$nameFile;
+                        $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId='$expA'AND personalId='".$this->personalId."'";
+                        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
+                        $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
+                        if(file_exists($file)){
+                            unlink($file);
+                        }
+                    }
+
                 }
             }
         }

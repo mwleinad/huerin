@@ -28,7 +28,7 @@ if(file_exists($actual_file)&&is_file($actual_file))
 if(move_uploaded_file($temp,$dir_employe.'/'.$name_file))
 {
   //si se subio el archivo actualizar tablas
-    $sql ="UPDATE personalExpedientes SET fecha='".date('Y-m-d')."', path='".$name_file."' WHERE personalId='".$_POST['idp']."' AND expedienteId='".$_POST['ide']."'";
+   $sql ="UPDATE personalExpedientes SET fecha='".date('Y-m-d')."', path='".$name_file."' WHERE personalId='".$_POST['idp']."' AND expedienteId='".$_POST['ide']."'";
     $db->setQuery($sql);
     $db->UpdateData();
 
