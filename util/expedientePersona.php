@@ -20,7 +20,8 @@ foreach($personas as $key=>$person){
         $nameFile = "employe_file".$person['personalId'].$v['expedienteId'].".pdf";
         $file = DOC_ROOT."/expedientes/".$person["personalId"]."/".$nameFile;
         if(file_exists($file)){
-            if($v["path"]==""){
+            $extensionActual =  end(explode(".",$v["path"]));
+            if($v["path"]==""||$extensionActual!='pdf'){
                 $fecha = date("Y-m-d",filemtime($file));
                 $sql = "update personalExpedientes set path='$nameFile',fecha='$fecha' where personalId='".$person["personalId"]."' and expedienteId='".$v["expedienteId"]."'   ";
                 $db->setQuery($sql);
