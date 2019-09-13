@@ -9,7 +9,7 @@ include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT."/libraries.php");
 
-$sql = "SELECT personalId  FROM personal WHERE active='1' and personalId=259 ORDER BY personalId ASC";
+$sql = "SELECT personalId  FROM personal WHERE active='1' ORDER BY personalId ASC";
 $db->setQuery($sql);
 $personas = $db->GetResult();
 foreach($personas as $key=>$person){
