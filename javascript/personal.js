@@ -311,15 +311,13 @@ function LoadBoxDropzone(){
             url: WEB_ROOT + '/ajax/expediente.php',
             paramName:'file_'+sp[1]+sp[2],
             addRemoveLinks: true,
-            dictInvalidFileType:'Archivo no valido',
+            dictInvalidFileType:'La extension de archivo no es valida',
             dictRemoveFile:'Eliminar',
             maxFileSize:2,
             autoProcessQueue: true,
             maxFiles:1,
             uploadMultiple:false,
             acceptedFiles:'application/pdf,image/jpeg,image/png',
-            thumbnailWidth:'112px',
-            thumbnailHeight:'100px',
             init: function() {
                 var my = this;
                 this.on('sending',function(file,xhr,formData){
@@ -342,6 +340,11 @@ function LoadBoxDropzone(){
                     else
                         alert(splitResp[1]);
                 });
+                this.on('error',function (error,errorMessage,xhr) {
+					if(error.status=='error'){
+						ShowErrorOnPopup(errorMessage,1);
+					}
+				})
             }
         });
     });
