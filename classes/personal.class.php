@@ -203,10 +203,6 @@ class Personal extends Main
 		}
 		$this->setPersonalId($infoUser['personalId']);
    	    $result = $this->SubordinadosDetails();
-        if(stripos($infoUser['tipoPersonal'],'Gerente de Juridico')!==false){
-
-        }
-
    	    return $result;
 	}
     public function EnumerateGerenteDepartamento($dep)
@@ -520,7 +516,7 @@ class Personal extends Main
                         $sqlu = "DELETE FROM personalExpedientes WHERE expedienteId='$expA'AND personalId='".$this->personalId."'";
                         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlu);
                         $this->Util()->DBSelect($_SESSION['empresaId'])->DeleteData();
-                        if(file_exists($file)){
+                        if(file_exists($file)&&is_file($file)){
                             unlink($file);
                         }
                     }
@@ -1372,16 +1368,76 @@ function SubordinadosDetailsAddPass()
         }
         return $return;
     }
-    function getSalarioById($id){
-        $this->Util()->DB()->setQuery("select sueldo from personal where personalId='".$id."' ");
-        return $this->Util()->DB()->GetSingle();
-    }
     function getTotalSalarioByMultipleId($id=[]){
         if(empty($id))
             return 0;
 
         $this->Util()->DB()->setQuery("select sum(sueldo) from personal where personalId IN (".implode(',',$id).") ");
         return $this->Util()->DB()->GetSingle();
+    }
+    function GenerateReportExpediente(){
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select expedienteId,name from expedientes where status='activo' order by name ASC ");
+        $expedientes = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+        $baseExp = [];
+        foreach($expedientes as $exp){
+            $cad["background"] = "#EFEFEF";//iniciar class para todos expedientes como no aplica
+            $cad["name"] = $exp["name"];
+            $cad["fecha"] = "";
+            $baseExp[$exp["expedienteId"]] = $cad;
+        }
+        $filter = "";
+        if($this->personalId)
+            $filter .= " and personalId = '".$this->personalId."' ";
+
+        $sql = "select personalId,name from personal where 1 $filter order by name asc";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
+        $employes = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+        foreach($employes as $key=>$value){
+            $complete = 0;
+            $baseExpOwn=$baseExp;
+            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select expedienteId,path,fecha from personalExpedientes where personalId = '".$value["personalId"]."' ");
+            $ownFiles =$this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+            $countOwnFiles =  count($ownFiles);
+
+            foreach($ownFiles as $ownFile){
+                $file = DOC_ROOT."/expedientes/".$value["personalId"]."/".$ownFile["path"];
+               if(file_exists($file)&&is_file($file)){
+                   $baseExpOwn[$ownFile["expedienteId"]]["background"] ="#009900";
+                   $baseExpOwn[$ownFile["expedienteId"]]["fecha"] =$ownFile["fecha"];
+                   $complete++;
+               }else{
+                   if(array_key_exists($ownFile["expedienteId"],$baseExpOwn))
+                       $baseExpOwn[$ownFile["expedienteId"]]["background"] ="#F00";
+               }
+            }
+             switch ($_POST["status"]) {
+                 case 'incomplete':
+                     if($complete<$countOwnFiles)
+                         $employes[$key]["ownExpedientes"] = $baseExpOwn;
+                     else
+                         unset($employes[$key]);
+                 break;
+                 case 'complete':
+                     if($complete==$countOwnFiles&&$countOwnFiles>0)
+                         $employes[$key]["ownExpedientes"] = $baseExpOwn;
+                     else
+                         unset($employes[$key]);
+                 break;
+                 default:
+                     if($countOwnFiles>0)
+                        $employes[$key]["ownExpedientes"] = $baseExpOwn;
+                     else
+                         $employes[$key]["ownExpedientes"] = [];
+
+                 break;
+             }
+        }
+        if(!is_array($employes))
+            $employes = [];
+
+        $data["employes"] = $employes;
+        $data["expedientes"] = $expedientes;
+        return $data;
     }
     
 }
