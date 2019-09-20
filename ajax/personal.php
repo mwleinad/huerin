@@ -288,6 +288,12 @@ switch($_POST["type"])
                $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 		   }
 	break;
+	case "generateReportExp":
+			$personal->setPersonalId($_POST["responsableCuenta"]);
+			$results = $personal->GenerateReportExpediente();
+			$smarty->assign("results", $results);
+			$smarty->display(DOC_ROOT.'/templates/lists/report-exp-employe.tpl');
+	break;
 		
 }
 ?>

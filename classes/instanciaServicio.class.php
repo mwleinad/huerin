@@ -262,7 +262,6 @@ class InstanciaServicio extends  Servicio
         $newArray = [];
         $this->Util()->DB()->setQuery("select tipoServicioId from servicio where servicioId='".$servicioId."' ");
         $tipoServicio =  $this->Util()->DB()->GetSingle();
-
         if($isParcial){
             //obtener el año de la lastDateWorkflow , si el año coincide con  $year el filtro aplica. $year es el año que se esta consultando.
             $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");

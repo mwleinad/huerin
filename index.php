@@ -8,7 +8,6 @@ include_once(DOC_ROOT.'/libraries.php');
 		'login',
 		'logout',
 		'homepage',
-
 		//catalogos
         'personal',
         'state',
@@ -94,6 +93,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-up-down',
         'report-pending',
 		'edo-result',
+		'report-exp-employe',
 
 		//cafeteria
         'coffe',
