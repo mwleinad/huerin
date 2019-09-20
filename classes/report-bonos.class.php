@@ -536,7 +536,6 @@ class ReporteBonos extends Main
                 }
             }
             $strFilter .=" and contractId in(select a.contractId from contract a inner join customer b on a.customerId = b.customerId where b.active='1' and a.activo='Si' $subStr )";
-
         }
         //filtro departamento
         if($ftr["departamentoId"])
@@ -564,7 +563,7 @@ class ReporteBonos extends Main
         $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
-                    where b.status='1' and a.status IN ('activo','bajaParcial') and a.inicioFactura!='0000-00-00' $strFilter";
+                    where b.status='1' and a.status IN ('activo','bajaParcial')  $strFilter";
         $this->Util()->DB()->setQuery($sqlServ);
         $services = $this->Util()->DB()->GetResult();
 
@@ -583,9 +582,11 @@ class ReporteBonos extends Main
             $contrato = $this->Util()->DB()->GetRow();
             if(!$contrato)
                 continue;
+
             $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$service['contractId']);
             if(!in_array($encargados[$service['departamentoId']],$fullSubordinados))
                 continue;
+
             //encontrar instancias de servicios
             $isParcial = false;
             if ($service['status']=="bajaParcial")
@@ -621,7 +622,6 @@ class ReporteBonos extends Main
             }
             else
                 continue;
-
             $encargadoDep = $encargados[$service['departamentoId']];
             $personal->setPersonalId($encargadoDep);
             $encargado =$personal->InfoWhitRol();
