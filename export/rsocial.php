@@ -46,7 +46,7 @@ $x .=
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RFC</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>REGIMEN FISCAL</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RAZON ACTIVA</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>NOMBRE COMERCIAL</b></th>
+            <th style=\"background:#D7EBFF;text-align:center;\"><b>ACTIVIDAD COMERCIAL</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>DIRECCION COMERCIAL</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>CALLE</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>No. EXTERIOR</b></th>
@@ -66,6 +66,7 @@ $x .=
             <th style=\"background:#D7EBFF;text-align:center;\"><b>EMAIL CONTACTO DIRECTIVO</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>TELEFONO CONTACTO DIRECTIVO</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>CELULAR CONTACTO DIRECTIVO</b></th>
+            <th style=\"background:#D7EBFF;text-align:center;\"><b>REPRESENTANTE LEGAL</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>CLAVE CIEC</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>CLAVE FIEL</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>CLAVE IDSE</b></th>
@@ -81,7 +82,8 @@ $x .=
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. JURIDICO</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. IMSS</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. AUDITORIA</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>Genera factura de mes 13</b></th>
+            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. DH</b></th>
+            <th style=\"background:#D7EBFF;text-align:center;\"><b>GENERAR FACTURA DE MES 13</b></th>
         </tr>
 	</thead>
 	<tbody>";
@@ -128,6 +130,7 @@ foreach($clientes as $con){
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['emailContactoDirectivo']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoContactoDirectivo']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['telefonoCelularDirectivo']."</td>
+					<td style=\"text-align:center;\">".$con['nameRepresentanteLegal']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveCiec']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveFiel']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['claveIdse']."</td>
@@ -143,6 +146,7 @@ foreach($clientes as $con){
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameJuridico']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameImss']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAuditoria']."</td>
+					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameDesarrollohumano']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['generaFactura13']."</td>
 				</tr>";
 

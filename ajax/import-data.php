@@ -36,6 +36,8 @@ switch($_POST['type']){
             echo $cad;
             exit;
         }
+        $contCustomerUpdate=0;
+        $contCustomerNoUpdate=0;
         $contActualizado=0;
         $contNoActualizado=0;
         $contratoNoEncontrado=0;
@@ -65,10 +67,13 @@ switch($_POST['type']){
             $strPassContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[5]);
             $strAltaCustomer .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$util->FormatDateMySqlSlash($row[7]));
             $idsCustomer[] =$row[0];*/
-
+            $generaFactura13 = $row[53]=='Si'?'No':$row[53]=='No'?'Si':'No';
             $customer->setCustomerId($row[0]);
             $beforeCustomer = $customer->Info();
-            $strCust ="UPDATE customer SET nameContact ='".trim($row[2])."', phone='".trim($row[3])."',email='".trim($row[4])."', password='".trim($row[5])."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."',observacion='".trim($row[8])."'  where customerId ='".$row[0]."'";
+            $strCust ="UPDATE customer SET nameContact ='".trim($row[2])."', phone='".trim($row[3])."',email='".trim($row[4])."', 
+                       password='".trim($row[5])."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."',observacion='".trim($row[8])."',
+                       noFactura13='$generaFactura13'
+                       where customerId ='".$row[0]."'";
             $db->setQuery($strCust);
             $upCustomer =  $db->UpdateData();
             if($upCustomer>0){
@@ -89,9 +94,7 @@ switch($_POST['type']){
                     $logCustLocal ="<p>El cliente ".$beforeCustomer['nameContact']." ha sido modificado</p>";
                     $logCustLocal .=$log->PrintInFormatText($changes);
                 }
-                $contActualizado++;
-            }else{
-                $contNoActualizado++;
+                $contCustomerUpdate++;
             }
             //concatenar log de updates de clientes
             $generalCustomerLog .=$logCustLocal;
@@ -99,12 +102,11 @@ switch($_POST['type']){
             //encontrar cambios en encargados
             $contract->setContractId($row[1]);
             $encargados = array();
-            $encargados = array($row[1],$row[45],$row[46],$row[47],$row[48],$row[49],$row[50]);
+            $encargados = array($row[1],$row[46],$row[47],$row[48],$row[49],$row[50],$row[51],$row[52]);
             $permisos= $contract->ValidateEncargados($encargados);
             if($permisos===false)
             {
                 $contratoNoEncontrado++;
-                $contratosIngorados .="La razon social con ID=".$row[1]." de la fila ".$fila." no se encuentra registrada";
                 $fila++;
                 continue;
             }
@@ -143,14 +145,15 @@ switch($_POST['type']){
                             emailContactoDirectivo='".$row[33]."',
                             telefonoContactoDirectivo='".$row[34]."',
                             telefonoCelularDirectivo='".$row[35]."',
-                            claveCiec='".$row[36]."',
-                            claveFiel='".$row[37]."',
-                            claveIdse='".$row[38]."',
-                            claveIsn='".$row[39]."',
+                            nameRepresentanteLegal='".$row[36]."',
+                            claveCiec='".$row[37]."',
+                            claveFiel='".$row[38]."',
+                            claveIdse='".$row[39]."',
+                            claveIsn='".$row[40]."',
                             rfc='".$row[13]."',
-                            facturador='".$row[40]."',
-                            metodoDePago='".$row[41]."',
-                            noCuenta='".$row[42]."'
+                            facturador='".$row[41]."',
+                            metodoDePago='".$row[42]."',
+                            noCuenta='".$row[43]."'
                             WHERE contractId='".$row[1]."' ";
             $db->setQuery($strContract);
             $upContract =  $db->UpdateData();
@@ -230,8 +233,8 @@ switch($_POST['type']){
         if(is_file($file2))
             unlink($file2);
         fclose($fp);
-        $util->setError(0,'complete',$contActualizado." registros actualizados");
-        $util->setError(0,'complete',$contNoActualizado." registros no actualizados por tener informacion correcta");
+        $util->setError(0,'complete',$contCustomerUpdate." clientes principales actualizados");
+        $util->setError(0,'complete',$contActualizado." contratos actualizados y ".$contNoActualizado." contratos no actualizados por tener informacion correcta");
         $util->setError(0,'complete',$contratoNoEncontrado." registros no encontrados en el sistema");
         $util->PrintErrors();
         echo "ok[#]";
@@ -439,7 +442,7 @@ switch($_POST['type']){
             }
             $contract->setContractId($row[1]);
             $encargados=array();
-            $encargados = array($row[1],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9]);
+            $encargados = array($row[1],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10]);
             $permisos= $contract->ValidateEncargados($encargados);
             if($permisos===false)
             {

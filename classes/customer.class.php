@@ -1424,8 +1424,8 @@ class Customer extends Main
           $result[$key]["contracts"]=  $allContracts;
           $nameEncargados = $creport->encargadosArea($val['contractId']);
           foreach($nameEncargados as $var ){
-              $result[$key]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
-              $result[$key]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
+              $result[$key]['resp'.ucfirst(strtolower(str_replace(" ","",$var['departamento'])))] = $var['personalId'];
+              $result[$key]['name'.ucfirst(strtolower(str_replace(" ","",$var['departamento'])))] = $var['name'];
           }
           //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
           $idResponsable = $result[$key]['respContabilidad'];
@@ -1809,8 +1809,8 @@ class Customer extends Main
         {
             $nameEncargados = $creport->encargadosArea($val['contractId']);
             foreach($nameEncargados as $var ){
-                $result[$key]['resp'.ucfirst(strtolower($var['departamento']))] = $var['personalId'];
-                $result[$key]['name'.ucfirst(strtolower($var['departamento']))] = $var['name'];
+                $result[$key]['resp'.ucfirst(strtolower(str_replace(" ","",$var['departamento'])))] = $var['personalId'];
+                $result[$key]['name'.ucfirst(strtolower(str_replace(" ","",$var['departamento'])))] = $var['name'];
             }
         }//foreach
         return $result;
