@@ -13,7 +13,7 @@ class Validar extends Main
         $fp = fopen($file_temp,'r');
         $fila=1;
         while(($row=fgetcsv($fp,4096,","))==true) {
-            if(count($row)!=52)
+            if(count($row)!=54)
             {
                 $this->Util()->setError(0,'error','Archivo no valido');
                 break;
@@ -38,6 +38,16 @@ class Validar extends Main
             {
                 $this->Util()->setError(0,'error','Falta nombre del cliente  en la fila '.$fila);
                 break;
+            }
+            if(trim($row[53])=="")
+            {
+                $this->Util()->setError(0,'error','Falta ingresar valor de Si o No en la columna Genera factura de mes 13 en la fila '.$fila);
+                break;
+            }else{
+                if($row[53]!="Si"&&$row[53]!="No"){
+                    $this->Util()->setError(0,'error','Valor no permitido  en columna Genera factura de mes 13 en la fila '.$fila." ingresar unicamente Si o No");
+                    break;
+                }
             }
             //fecha de alta del cliente
             if($row[7]==""){
@@ -141,33 +151,33 @@ class Validar extends Main
                 break;
             }
             */
-            if($row[36]==""){
+            if($row[37]==""){
                 $this->Util()->setError(0,'error','Falta clave CIEC en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[37]==""){
+            if($row[38]==""){
                 $this->Util()->setError(0,'error','Falta clave FIEL en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[38]==""){
+            if($row[39]==""){
                 $this->Util()->setError(0,'error','Falta clave IDSE en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[39]==""){
+            if($row[40]==""){
                 $this->Util()->setError(0,'error','Falta clave ISN en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[40]==""){
+            if($row[41]==""){
                 $this->Util()->setError(0,'error','Fatla facturador en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
-            if($row[41]==""){
+            if($row[42]==""){
                 $this->Util()->setError(0,'error','Falta metodo de pago  en fila(Usar NO APLICA en caso de no existir) '.$fila);
                 break;
             }
             //comprobar que los encargados esten dados de alta siempre y cuando no este vacio
-            if($row[45]!="" and $row[45]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[45])."'");
+            if($row[46]!="" and $row[46]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower($row[46])."'");
                 $idCont=$this->Util()->DB()->GetSingle();
                 if(!$idCont)
                 {
@@ -175,8 +185,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[46]!="" and $row[46]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[46]))."' ");
+            if($row[4748]!="" and $row[4748]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[4748]))."' ");
                 $idNom=$this->Util()->DB()->GetSingle();
                 if(!$idNom)
                 {
@@ -184,8 +194,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[47]!="" and $row[47]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[47]))."'");
+            if($row[48]!="" and $row[48]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[48]))."'");
                 $idAdmin=$this->Util()->DB()->GetSingle();
                 if(!$idAdmin)
                 {
@@ -193,8 +203,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[48]!="" and $row[48]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[48]))."'");
+            if($row[49]!="" and $row[49]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[49]))."'");
                 $idJur=$this->Util()->DB()->GetSingle();
                 if(!$idJur)
                 {
@@ -202,8 +212,8 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[49]!="" and $row[49]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[49]))."'");
+            if($row[50]!="" and $row[50]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[50]))."'");
                 $idImss=$this->Util()->DB()->GetSingle();
                 if(!$idImss)
                 {
@@ -211,12 +221,21 @@ class Validar extends Main
                     break;
                 }
             }
-            if($row[50]!="" and $row[50]!="--" ){
-                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[50]))."'");
+            if($row[51]!="" and $row[51]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[51]))."'");
                 $idAud=$this->Util()->DB()->GetSingle();
                 if(!$idAud)
                 {
                     $this->Util()->setError(0,'error','Responsable de auditoria de la fila '.$fila.' no se encuentra dado de alta ');
+                    break;
+                }
+            }
+            if($row[52]!="" and $row[52]!="--" ){
+                $this->Util()->DB()->setQuery("SELECT personalId FROM  personal WHERE lower(name)='".mb_strtolower(trim($row[52]))."'");
+                $idDh=$this->Util()->DB()->GetSingle();
+                if(!$idDh)
+                {
+                    $this->Util()->setError(0,'error','Responsable de Desarrollo Humano de la fila '.$fila.' no se encuentra dado de alta ');
                     break;
                 }
             }
@@ -508,7 +527,7 @@ class Validar extends Main
         $fp = fopen($file_temp,'r');
         $fila=1;
         while(($row=fgetcsv($fp,4096,","))==true) {
-            if(count($row)!=10)
+            if(count($row)!=11)
             {
                 $this->Util()->setError(0,'error','Archivo no valido');
                 break;

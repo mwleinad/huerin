@@ -34,11 +34,15 @@ class Permiso extends Main
                 if($dep==26)
                     $dep=33;
 
+                $this->Util()->DB()->setQuery("select departamentoId  from departamentos where departamentoId='$dep' ");
+                $depExist = $this->Util()->DB()->GetSingle();
+                if($depExist<=0)
+                    continue;
+
                 $sqlComp .= "($this->contractId,$dep,$id),";
             }
 
         }
-
         if($sqlComp!=""){
             $sqlComp = substr($sqlComp,0,strlen($sqlComp)-1);
             $sql = $sqlPer.$sqlComp;
