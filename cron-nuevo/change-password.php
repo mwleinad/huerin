@@ -22,27 +22,21 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-$timeStart = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
+$timeStart = date("d-m-Y").' a las '.date('H:i:s');
 $sql =  "SELECT * FROM personal WHERE active='1' ORDER BY personalId ASC ";
 $util->DB()->setQuery($sql);
 $results =  $util->DB()->GetResult();
 $mod=0;
 $nomod=0;
+$entry = "Inicio ".$timeStart." Hrs.".chr(13).chr(10).chr(13).chr(10);
 foreach($results as $key =>$item){
-    $fecha = strtotime('+3 month', strtotime($item['lastChangePassword']));
-    $month3 = date('Y-m-d',$fecha);
-
-    if(date('Y-m-d')<$month3){
-        $nomod++;
-        continue;
-    }
     $cadena = $util->generateRandomString(6,true);
 
     $util->DB()->setQuery('UPDATE personal SET passwd="'.$cadena.'" WHERE personalId='.$item['personalId'].'');
     if($util->DB()->UpdateData()){
         $util->DB()->setQuery('UPDATE personal SET lastChangePassword="'.date('Y-m-d').'" WHERE personalId='.$item['personalId'].'');
-        if($util->DB()->UpdateData()){
-            $body="ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
+        $util->DB()->UpdateData();
+           $body="ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
                    SE HA REALIZADO EL CAMBIO DE CONTRASE&Ntilde;A DE SU CUENTA, CIERRE SU SESSION SI SE ENCUENTRA ACTUALMENTE EN LA PLATAFORMA E INGRESE NUEVAMENTE CON LOS SIGUIENTES DATOS:  <br>
                    USUARIO:".$item['username']." <br>
                    PASSWD:".$cadena." 
@@ -54,17 +48,33 @@ foreach($results as $key =>$item){
             $toName= $item['name'];
 
             $sendmail = new SendMail;
-            $sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA") ;
-            echo "Contraseña cambiada correctamente para ".$item['username']." y correo enviado a ".$item['email'].'\n'.chr(13).chr(10);
-            echo "<br>";
-            $mod++;
-        }
+            if($sendmail->Prepare($subject, $body, $to, $toName, $attachment, $fileName.".xlsx","", "",'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA")){
+                $entry .= "Contraseña cambiada correctamente para ".$item["name"]."(".$item['username'].") y correo enviado a ".$item['email'].'\n'.chr(13).chr(10);
+                $mod++;
+            }else{
+                $entry .= "Contraseña cambiada correctamente para ".$item["name"]."(".$item['username'].", hubo un error al enviar correo a  ".$item['email'].chr(13).chr(10);
+                $mod++;
+            }
     }else{
         $nomod++;
     }
 }
+$time = date("d-m-Y").' a las '.date('H:i:s');
+$entry .= chr(13).chr(10).chr(13).chr(10);
+$entry .= "Fin ".$time." Hrs.".chr(13).chr(10);
+$entry .="Total modificados ".$mod.chr(13).chr(10);
+$file = DOC_ROOT."/sendFiles/log_change_password.txt";
+$open = fopen($file,"w+");
+if ( $open ) {
+    fwrite($open,$entry);
+    fclose($open);
+}
+if($mod>0){
+    $to = [];
+    $send = new SendMail;
+    $subject  = utf8_decode("LOG CAMBIOS DE CONTRASEÑA");
+    $body ="<p>Se han realizado cambios de contraseña del catalogo de colaboradores, revisar archivo adjunto para mas detalles.</p>";
+    $send->PrepareMultipleNotice($subject,$body,$to,"",$file,"log_change_password.txt","","","noreply@braunhuerin.com.mx","ADMINISTRADOR DE PLATAFORMA",true);
+}
 $end = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
-echo "total modificados".'\n'.$mod.chr(13).chr(10);
-echo "<br>";
-echo "total no modificados".'\n'.$nomod.chr(13).chr(10);
 echo "Script ejecutado de  ".$timeStart." HASTA ".$end.'\n'.chr(13).chr(10);

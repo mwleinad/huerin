@@ -590,7 +590,7 @@ class PHPMailer {
 	  $this->SentMIMEMessage = '';
       $this->SetError($e->getMessage());
       if ($this->exceptions) {
-        //throw $e;
+        throw $e;
       }
       return false;
     }
