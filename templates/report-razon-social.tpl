@@ -3,7 +3,6 @@
         <h1 class="catalogos">Razones sociales</h1>
     </div>
     <div class="grid_6" id="eventbox">
-        <a style="cursor:pointer" title="Actualizar pagos desde xml" class="spanAll spanUpdatePayments"><img src="{$WEB_ROOT}/images/icons/update_payments.png" width="16" /></a>
         <div id="loadPrint">
         </div>
     </div>
