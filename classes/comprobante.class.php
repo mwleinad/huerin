@@ -1527,36 +1527,17 @@ class Comprobante extends Producto
 		$body .= "<br><br>";
 		$body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
 
-		if($compInfo["empresaId"] == 15)
-		{
-			$body .= "CFDi emitido por:BRAUN HUERIN SC<br>";
-			$body .= "R.F.C: BHU120320CQ1<br>";
-			$body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
-			$body .= "Nombre    Braun Huerin S.C.<br><br>";
-			$body .= "Banco     BBV Bancomer<br>";
-			$body .= "Cuenta    0189768785<br>";
-			$body .= "Clabe     012180-001897-687857<br><br>";
-		}
-		elseif($compInfo["empresaId"] == 20)
-		{
-			$body .= "CFDi emitido por: JACOBO BRAUN BRUCKMAN<br>";
-			$body .= "R.F.C: BABJ701019LD7<br>";
-			$body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
-			$body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-			$body .= "Banco     Scotiabank<br>";
-			$body .= "Cuenta    00105313691<br>";
-			$body .= "Clabe      044180-001053-136916<br><br>";
-		}
-		elseif($compInfo["empresaId"] == 21)
-		{
-			$body .= "CFDi emitido por: BHSC CONTADORES SC<br>";
-			$body .= "R.F.C: BCO160224ECA<br>";
-			$body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
-			$body .= "Nombre    BHSC CONTADORES S.C.<br><br>";
-			$body .= "Banco     Banamex<br>";
-			$body .= "Cuenta    8376226 Suc 7010<br>";
-			$body .= "Clabe      002180701083762265<br><br>";
-		}
+	
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.empresaId=b.empresaId where a.empresaId = '".$compInfo["empresaId"]."' ");
+        $bankData = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $body .= "Estimado Cliente:<br><br>";
+		$body .= "Anexo encontrara su factura emitida por ".$bankData["empresa"].", la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+		$body .= "DATOS DE PAGO:<br><br>";
+		$body .= "Nombre    ".$bankData["empresa"]."<br><br>";
+		$body .= "Banco     ".$bankData["name"]."<br>";
+		$body .= "Cuenta    ".$bankData["account"]."<br>";
+		$body .= "Clabe     ".$bankData["clabe"]."<br>";
 
 		$body .= "Gracias.<br>";
 		$mail->Body = $body;
@@ -1682,55 +1663,18 @@ class Comprobante extends Producto
 		$body .= "<br><br>";
 		$body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
 
-		if($compInfo["empresaId"] == 15)
-		{
-			$body .= "Estimado Cliente:<br><br>";
+	 	$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.empresaId=b.empresaId where a.empresaId = '".$compInfo["empresaId"]."' ");
+        $bankData = $this->sUtil()->DBSelect($_SESSION["empresaId"])->GetRow();
 
-			$body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
-
-			$body .= "DATOS DE PAGO:<br><br>";
-
-			// $body .= "CFDi emitido por:BRAUN HUERIN SC<br>";
-			// $body .= "R.F.C: BHU120320CQ1<br>";
-			// $body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
-			$body .= "Nombre    Braun Huerin S.C.<br><br>";
-			$body .= "Banco     BBV Bancomer<br>";
-			$body .= "Cuenta    0189768785<br>";
-			$body .= "Clabe     012180-001897-687857<br><br>";
-			$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-		}
-		elseif($compInfo["empresaId"] == 20)
-		{
-			$body .= "Estimado Cliente:<br><br>";
-
-			$body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta antes del día 27 del mes en curso, esto para evitar molestias de cobro.<br><br>";
-
-			$body .= "DATOS DE PAGO:<br><br>";
-
-			// $body .= "CFDi emitido por: JACOBO BRAUN BRUCKMAN<br>";
-			// $body .= "R.F.C: BABJ701019LD7<br>";
-			// $body .= "Numero de Cuenta al que debe de realizar su deposito:<br><br>";
-			$body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-            $body .= "Banco     Scotiabank<br>";
-            $body .= "Cuenta    00105313691<br>";
-            $body .= "Clabe      044180-001053-136916<br><br>";
-			$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-		}
-		elseif($compInfo["empresaId"] == 21)
-		{
-			$body .= "Estimado Cliente:<br><br>";
-
-			$body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
-
-			$body .= "DATOS DE PAGO:<br><br>";
-
-			$body .= "Nombre    BHSC CONTADORES S.C<br><br>";
-			$body .= "Banco     INBURSA<br>";
-			$body .= "Cuenta    5003-6325-646<br>";
-			$body .= "Clabe     036-1805-0036-3256-464<br><br>";
-			$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-		}
-
+        $body .= "Estimado Cliente:<br><br>";
+		$body .= "Anexo encontrara su factura emitida por ".$bankData["empresa"].", la cual se solicita sea cubierta antes del día 22 del mes en curso, esto para evitar molestias de cobro.<br><br>";
+		$body .= "DATOS DE PAGO:<br><br>";
+		$body .= "Nombre    ".$bankData["empresa"]."<br><br>";
+		$body .= "Banco     ".$bankData["name"]."<br>";
+		$body .= "Cuenta    ".$bankData["account"]."<br>";
+		$body .= "Clabe     ".$bankData["clabe"]."<br>";
+		$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
+	
 		$body .= "Gracias.<br>";
 		$mail->Body = $body;
 
