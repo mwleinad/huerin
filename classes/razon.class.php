@@ -243,7 +243,7 @@ class Razon extends Contract
        else
        {
            if($showErrors){
-               $this->Util()->setError(20023, 'complete', 'Hubo un error al enviar el comprobante, el correo de la cuenta es correcto?');
+               $this->Util()->setError(20023, 'error', 'Hubo un error al enviar el comprobante');
                $this->Util()->PrintErrors();
            }
            return false;
