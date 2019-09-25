@@ -227,6 +227,11 @@ class Razon extends Contract
            $correos = [];
            $encargados=[];
        }
+       if($compInfo["userId"]==2343){
+           dd($correos);
+           dd($encargados);
+           echo $body;
+       }
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
        {
