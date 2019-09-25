@@ -72,6 +72,8 @@ class SendMail extends Main
                     $mail->AddBCC($ccEmail, $ccName);
                 }
                 $mail->AddBCC(EMAIL_DEV,'COPIA CARBON');
+            }else{
+                $mail->AddBCC(EMAIL_DEV, 'DEVELOPER');
             }
 			$mail->Subject    = $subject;
 			$mail->MsgHTML($body);
