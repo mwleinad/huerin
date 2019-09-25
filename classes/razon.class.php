@@ -225,7 +225,7 @@ class Razon extends Contract
 
        if(!SEND_LOG_MOD){
            $correos = [];
-           $encargados['isc061990@gmail.com']="hector";
+           $encargados=[];
        }
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
