@@ -190,65 +190,24 @@ class Razon extends Contract
            return false;
        }
        $body = " <pre>";
-       if($compInfo["empresaId"] == 15)
+
+       if($compInfo['tiposComprobanteId']==10)
        {
-           if($compInfo['tiposComprobanteId']==10)
-           {
-               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura complemento emitida por BRAUN HUERIN SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
+          $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+          $body .= "Anexo encontrara su factura complemento emitida por BRAUN HUERIN SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
 
-           }else{
-               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por BRAUN HUERIN SC , la cual se solicita sea cubierta dentro de los primeros 15 dias del mes, esto para evitar molestias de cobro.<br><br>";
-               $body .= "DATOS DE PAGO:<br><br>";
-               $body .= "Nombre    Braun Huerin S.C.<br><br>";
-               $body .= "Banco     BBV Bancomer<br>";
-               $body .= "Cuenta    0189768785<br>";
-               $body .= "Clabe     012180-001897-687857<br><br>";
-               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-
-            }
-       }
-       elseif($compInfo["empresaId"] == 20)
-       {
-           if($compInfo['tiposComprobanteId']==10)
-           {
-               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura complemento emitida por JACOBO BRAUN BRUCKMAN , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
-
-           }else
-           {
-               $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por JACOBO BRAUN BRUCKMAN, la cual se solicita sea cubierta dentro de los primeros 15 dias del mes, esto para evitar molestias de cobro.<br><br>";
-               $body .= "DATOS DE PAGO:<br><br>";
-               $body .= "Nombre    Jacobo  Braun Bruckman<br><br>";
-               $body .= "Banco     Scotiabank<br>";
-               $body .= "Cuenta    00105313691<br>";
-               $body .= "Clabe      044180-001053-136916<br><br>";
-               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-
-           }
-       }
-       elseif($compInfo["empresaId"] == 21)
-       {
-           if($compInfo['tiposComprobanteId']==10)
-           {
-               $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura complemento emitida por BHSC CONTADORES SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
-
-           }else{
-               $body .= "Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
-               $body .= "Anexo encontrara su factura emitida por BHSC CONTADORES SC , la cual se solicita sea cubierta dentro de los primeros 15 dias del mes, esto para evitar molestias de cobro.<br><br>";
-               $body .= "DATOS DE PAGO:<br><br>";
-               $body .= "Nombre    BHSC CONTADORES S.C<br><br>";
-               $body .= "Banco     INBURSA<br>";
-               $body .= "Cuenta    5003-6325-646<br>";
-               $body .= "Clabe     036-1805-0036-3256-464<br><br>";
-               $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-
-           }
-       }
-
+       }else{
+          $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.empresaId=b.empresaId where a.empresaId = '".$compInfo["empresaId"]."' ");
+          $bankData = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+          $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
+          $body .= "Anexo encontrara su factura emitida por ".$bankData["empresa"].", la cual se solicita sea cubierta dentro de los primeros 15 dias del mes, esto para evitar molestias de cobro.<br><br>";
+          $body .= "DATOS DE PAGO:<br><br>";
+          $body .= "Nombre    :".$bankData["empresa"]."<br><br>";
+          $body .= "Banco     :".$bankData["name"]."<br>";
+          $body .= "Cuenta    :".$bankData["account"]."<br>";
+          $body .= "Clabe     :".$bankData["clabe"]."<br>";
+          $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
+       } 
        if($compInfo['tiposComprobanteId']==10){
            $body .= "Quedo de usted. Saludos cordiales! Gracias.<br><br><br>";
            $body .= "Favor de revisar el archivo adjunto para ver comprobante.\r\n";
@@ -266,7 +225,7 @@ class Razon extends Contract
 
        if(!SEND_LOG_MOD){
            $correos = [];
-           $encargados = [];
+           $encargados['isc061990@gmail.com']="hector";
        }
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
