@@ -73,7 +73,6 @@ class Pac33 extends Util
         else
         {
             $response = $client->call('getCfdi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-           dd($response);
             if($response["faultcode"])
             {
                 $data['worked'] = false;
