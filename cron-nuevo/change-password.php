@@ -22,6 +22,11 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
+
+if(!$util->is_cli()){
+    echo "Execution, Not Permitted!!!";
+    exit;
+}
 $timeStart = date("d-m-Y").' a las '.date('H:i:s');
 $sql =  "SELECT * FROM personal WHERE active='1' ORDER BY personalId ASC ";
 $util->DB()->setQuery($sql);
