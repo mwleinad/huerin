@@ -30,7 +30,7 @@ $mod=0;
 $nomod=0;
 $entry = "Inicio ".$timeStart." Hrs.".chr(13).chr(10).chr(13).chr(10);
 foreach($results as $key =>$item){
-    $cadena = $util->generateRandomString(6,true);
+    /*$cadena = $util->generateRandomString(6,true);
 
     $util->DB()->setQuery('UPDATE personal SET passwd="'.$cadena.'" WHERE personalId='.$item['personalId'].'');
     if($util->DB()->UpdateData()){
@@ -57,24 +57,26 @@ foreach($results as $key =>$item){
             }
     }else{
         $nomod++;
-    }
+    }*/
+    $mod++;
 }
+$entry .="HAZ CASO OMISO A ESTE TXT, ES UNA PRUEBA QUE REALIZE PARA";
 $time = date("d-m-Y").' a las '.date('H:i:s');
 $entry .= chr(13).chr(10).chr(13).chr(10);
 $entry .= "Fin ".$time." Hrs.".chr(13).chr(10);
 $entry .="Total modificados ".$mod.chr(13).chr(10);
 $file = DOC_ROOT."/sendFiles/log_change_password.txt";
-$open = fopen($file,"w+");
+$open = fopen($file,"w");
 if ( $open ) {
     fwrite($open,$entry);
     fclose($open);
 }
 if($mod>0){
-    $to = [];
+    $to["isc061990@gmail.com"] = "hector";
     $send = new SendMail;
     $subject  = utf8_decode("LOG CAMBIOS DE CONTRASEÑA");
     $body ="<p>Se han realizado cambios de contraseña del catalogo de colaboradores, revisar archivo adjunto para mas detalles.</p>";
-    $send->PrepareMultipleNotice($subject,$body,$to,"",$file,"log_change_password.txt","","","noreply@braunhuerin.com.mx","ADMINISTRADOR DE PLATAFORMA",true);
+    $send->PrepareMultipleNotice($subject,$body,$to,"",$file,"log_change_password.txt","","","noreply@braunhuerin.com.mx","ADMINISTRADOR DE PLATAFORMA",false);
 }
 $end = date("d-m-Y").' a las '.date('H:i:s').chr(13).chr(10);;
 echo "Script ejecutado de  ".$timeStart." HASTA ".$end.'\n'.chr(13).chr(10);
