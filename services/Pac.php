@@ -32,8 +32,6 @@ class Pac33 extends Util
         }
         return $response;
     }
-
-
     function GetCfdi($xmlConSello)
     {
         $user = "STI070725SAA";
@@ -51,17 +49,21 @@ class Pac33 extends Util
         require_once(DOC_ROOT.'/libs/nusoap.php');
         $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
         $client->useHTTPPersistentConnection();
-
         $params = array(
             'user' => $user,
             'password' => $pw,
             'file' => "$zipFileEncoded"
         );
-
-        //demo
         if(PROJECT_STATUS == "test")
         {
             $response = $client->call('getCfdiTest', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+            $error = $client->getError();
+            if($error){
+                $data['worked'] = false;
+                $response["faultstring"] = "Error al Timbrar Documento, Revisar Conexion a Internet del Servidor.";
+                $data['response'] = $response;
+                return $data;
+            }
             if($response["faultcode"])
             {
                 $data['worked'] = false;
@@ -69,11 +71,16 @@ class Pac33 extends Util
                 return $data;
             }
             $data = base64_decode($response["getCfdiTestReturn"]);
-        }
-        else
+        }else
         {
             $response = $client->call('getCfdi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-           dd($response);
+            $error = $client->getError();
+            if($error){
+                $data['worked'] = false;
+                $response["faultstring"] = "Error al Timbrar Documento, REvisar Conexion a Internet del Servidor.";
+                $data['response'] = $response;
+                return $data;
+            }
             if($response["faultcode"])
             {
                 $data['worked'] = false;
@@ -85,9 +92,7 @@ class Pac33 extends Util
 
         $fh = fopen($xmlConSello['zipSignedFile'], 'w') or die("can't open file");
         $fh = fwrite($fh, $data);
-
         $this->Unzip($xmlConSello['root'], $xmlConSello['zipSignedFile']);
-
         $return['worked'] = true;
         $return['response'] = $response;
         return $return;
