@@ -131,6 +131,11 @@ class Razon extends Contract
        if(key_exists(21,$encargadosIds))
             $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[3,4,5]);
 
+       if($id_comprobante==56544){
+           dd($encargados);
+       }
+
+
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
@@ -230,10 +235,8 @@ class Razon extends Contract
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
        {
-           //se actualiza que se envio por correo el comprobante
            $this->Util()->DB()->setQuery("UPDATE comprobante SET sent = 'si' WHERE comprobanteId='".$id_comprobante."' ");
            $this->Util()->DB()->UpdateData();
-
            if($showErrors){
                $this->Util()->setError(20023, 'complete', "Has enviado el comprobante correctamente");
                $this->Util()->PrintErrors();
