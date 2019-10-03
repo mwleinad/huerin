@@ -82,7 +82,13 @@ class SendMail extends Main
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
-                //		$mail->SMTPSecure="ssl";
+                $mail->SMTPOptions = array(
+                    'ssl' => array(
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    )
+                );
                 $mail->SMTPDebug=0;
 
                 if($attachment != "")
