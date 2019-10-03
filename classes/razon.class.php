@@ -135,9 +135,6 @@ class Razon extends Contract
            dd($encargados);
            dd($encargadosIds);
        }
-       return false;
-
-
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
