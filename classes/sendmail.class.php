@@ -89,7 +89,8 @@ class SendMail extends Main
                         'allow_self_signed' => true
                     )
                 );
-                $mail->SMTPDebug=2;
+                $mail->SMTPDebug=1;
+                $mail->Timeout=600;
 
                 if($attachment != "")
                 {
