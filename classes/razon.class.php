@@ -131,7 +131,7 @@ class Razon extends Contract
        if(key_exists(21,$encargadosIds))
             $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[3,4,5]);
 
-       if($id_comprobante==56544){
+       if($id_comprobante==56544||$compInfo['folio']==23712){
            dd($encargados);
        }
 
