@@ -471,7 +471,6 @@ class Cfdi extends Comprobante
 
         }
         //End notaVenta
-
         //Enviar por correo despues de crear factura.
         $razon =  new Razon;
         $razon->sendComprobante33($comprobanteId,false,true);

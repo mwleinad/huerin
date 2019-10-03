@@ -38,13 +38,11 @@ class Rfc extends Empresa
 	
 	function getRfcActive(){
 		$id_empresa = $_SESSION['empresaId'];
-		$sqlQuery = 'SELECT rfcId FROM rfc WHERE activo = "si" AND empresaId = '.$_SESSION['empresaId'];
+		$sqlQuery = "SELECT rfcId FROM rfc WHERE activo = 'si' AND empresaId = ".$_SESSION["empresaId"];
 		
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 		$rfc = $this->Util()->DBSelect($id_empresa)->GetSingle();
-		
 		return $rfc;
-	
 	}//getRfcActive
 
 	function InfoRfc()
