@@ -131,10 +131,6 @@ class Razon extends Contract
        if(key_exists(21,$encargadosIds))
             $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[3,4,5]);
 
-       if(($compInfo['folio']>='23711'&&$compInfo['folio']<='23713') || ($compInfo['folio']>=23711&&$compInfo['folio']<=23713)){
-           dd($encargados);
-           dd($encargadosIds);
-       }
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
