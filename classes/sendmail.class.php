@@ -46,60 +46,64 @@ class SendMail extends Main
 
 	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array())
 	{
-			$mail = new PHPMailer(); // defaults to using php "mail()"
-			
-			$mail->AddReplyTo($from, $fromName);
-			$mail->SetFrom($from, $fromName);
-
-			foreach($to as $correo => $name)
-			{
-			    switch($name){
-                    case 'Desarrollador':
-                        if(count($to)>1)
-                            $mail->AddBCC($correo, $name);
-                        else
-                            $mail->AddAddress($correo, $name);
-                    break;
-                    default:
-                        $mail->AddAddress($correo, $name);
-                    break;
-                }
-			}
-			if(count($cc)>0)
-            {
-                foreach($cc as $ccEmail => $ccName)
+			$mail = new PHPMailer(true); // defaults to using php "mail()"
+            try{
+                $mail->AddReplyTo($from, $fromName);
+                $mail->SetFrom($from, $fromName);
+                foreach($to as $correo => $name)
                 {
-                    $mail->AddBCC($ccEmail, $ccName);
+                    switch($name){
+                        case 'Desarrollador':
+                            if(count($to)>1)
+                                $mail->AddBCC($correo, $name);
+                            else
+                                $mail->AddAddress($correo, $name);
+                            break;
+                        default:
+                            $mail->AddAddress($correo, $name);
+                            break;
+                    }
                 }
-                $mail->AddBCC(EMAIL_DEV,'COPIA CARBON');
-            }else{
-                $mail->AddAddress(EMAIL_DEV, 'DEVELOPER');
+                if(count($cc)>0)
+                {
+                    foreach($cc as $ccEmail => $ccName)
+                    {
+                        $mail->AddBCC($ccEmail, $ccName);
+                    }
+                    $mail->AddBCC(EMAIL_DEV,'COPIA CARBON');
+                }else{
+                    $mail->AddAddress(EMAIL_DEV, 'DEVELOPER');
+                }
+                $mail->Subject    = $subject;
+                $mail->MsgHTML($body);
+                $mail->IsSMTP();
+                $mail->SMTPAuth   = true;
+                $mail->Host       = SMTP_HOST2;
+                $mail->Port       = SMTP_PORT2;
+                $mail->Username   = SMTP_USER2;
+                $mail->Password   = SMTP_PASS2;
+                //		$mail->SMTPSecure="ssl";
+                $mail->SMTPDebug=0;
+
+                if($attachment != "")
+                {
+                    $mail->AddAttachment($attachment, $fileName);
+                }
+
+                if($attachment2 != "")
+                {
+                    $mail->AddAttachment($attachment2, $fileName2);
+                }
+                $mail->Send();
+            }catch(phpmailerException $e){
+                echo $e->errorMessage();
+                return false;
+            }catch(Exception $e){
+                echo $e->errorMessage();
+                return false;
             }
-			$mail->Subject    = $subject;
-			$mail->MsgHTML($body);
-            $mail->IsSMTP();
-			$mail->SMTPAuth   = true;
-            $mail->Host       = SMTP_HOST2;
-            $mail->Port       = SMTP_PORT2;
-            $mail->Username   = SMTP_USER2;
-            $mail->Password   = SMTP_PASS2;
-	//		$mail->SMTPSecure="ssl";
-			$mail->SMTPDebug=0;
 
-			if($attachment != "")
-			{
-				$mail->AddAttachment($attachment, $fileName);
-			}
-
-			if($attachment2 != "")
-			{
-				$mail->AddAttachment($attachment2, $fileName2);
-			}
-			if($mail->Send())
-			    return true;
-			else
-			    return false;
-
+        return true;
 	}
     public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
