@@ -58,15 +58,14 @@ class Pac33 extends Util
         {
             $response = $client->call('getCfdiTest', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $error = $client->getError();
-            if($error){
-                $data['worked'] = false;
-                $response["faultstring"] = "Error al Timbrar Documento, Revisar Conexion a Internet del Servidor.";
-                $data['response'] = $response;
-                return $data;
-            }
             if($response["faultcode"])
             {
                 $data['worked'] = false;
+                $data['response'] = $response;
+                return $data;
+            }elseif($error){
+                $data['worked'] = false;
+                $response["faultstring"] = "Error al Timbrar Documento, Revisar Conexion a Internet del Servidor.";
                 $data['response'] = $response;
                 return $data;
             }
@@ -75,15 +74,14 @@ class Pac33 extends Util
         {
             $response = $client->call('getCfdi', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $error = $client->getError();
-            if($error){
-                $data['worked'] = false;
-                $response["faultstring"] = "Error al Timbrar Documento, REvisar Conexion a Internet del Servidor.";
-                $data['response'] = $response;
-                return $data;
-            }
             if($response["faultcode"])
             {
                 $data['worked'] = false;
+                $data['response'] = $response;
+                return $data;
+            }elseif($error){
+                $data['worked'] = false;
+                $response["faultstring"] = "Error al Timbrar Documento, Revisar Conexion a Internet del Servidor.";
                 $data['response'] = $response;
                 return $data;
             }
