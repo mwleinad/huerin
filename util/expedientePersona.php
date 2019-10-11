@@ -9,24 +9,33 @@ include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT."/libraries.php");
 
+$sql = "SELECT expedienteId  FROM expedientes WHERE status='activo' and upper(name) not like'%INFONAVIT O FONACOT%'";
+$db->setQuery($sql);
+$expedientes = $db->GetResult();
+$expedientes = $util->ConvertToLineal($expedientes,'expedienteId');
+
 $sql = "SELECT personalId  FROM personal WHERE active='1' ORDER BY personalId ASC";
 $db->setQuery($sql);
 $personas = $db->GetResult();
+$personUpdate = 0;
 foreach($personas as $key=>$person){
-    $sqle ="SELECT expedienteId,path FROM personalExpedientes WHERE personalId='".$person['personalId']."' ";
-    $db->setQuery($sqle);
-    $findExpedientes = $db->GetResult();
-    foreach($findExpedientes as $k=>$v){
-        $nameFile = "employe_file".$person['personalId'].$v['expedienteId'].".pdf";
-        $file = DOC_ROOT."/expedientes/".$person["personalId"]."/".$nameFile;
-        if(file_exists($file)){
-            $extensionActual =  end(explode(".",$v["path"]));
-            if($v["path"]==""||$extensionActual!='pdf'){
-                $fecha = date("Y-m-d",filemtime($file));
-                $sql = "update personalExpedientes set path='$nameFile',fecha='$fecha' where personalId='".$person["personalId"]."' and expedienteId='".$v["expedienteId"]."'   ";
-                $db->setQuery($sql);
-                $db->UpdateData();
-               }
-        }
+    $up =  false;
+    $personalId = $person["personalId"];
+    $sqle ="SELECT expedienteId,path FROM personalExpedientes WHERE personalId='$personalId' ";
+    $util->DBSelect($_SESSION['empresaId'])->setQuery("SELECT expedienteId from personalExpedientes WHERE personalId='$personalId' ");
+    $arrayExp = $util->DBSelect($_SESSION['empresaId'])->GetResult();
+    $expActual = $util->ConvertToLineal($arrayExp,'expedienteId');
+
+    foreach($expedientes as $exp){
+        if(in_array($exp,$expActual))
+            continue;
+
+        $sql =  "INSERT INTO personalExpedientes(personalId,expedienteId)VALUES($personalId,$exp)";
+        $util->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $util->DBSelect($_SESSION['empresaId'])->InsertData();
+        $up = true;
     }
+    if($up)
+        $personUpdate++;
 }
+echo "Actualizados $personUpdate";
