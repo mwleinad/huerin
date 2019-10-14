@@ -116,7 +116,9 @@ switch($_POST["type"])
 	      $task->setWorkflowId($_POST["id"]);
 	      if($task->CreateZipTasks()){
 	      	echo "ok[#]";
-            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".basename($task->getRutaZipCreated());
+	      	$fileName =  end(explode("/",$task->getRutaZipCreated()));
+			$fileName=  urlencode($fileName);
+            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".$fileName;
 		  }else{
               echo "fail[#]";
               $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
@@ -126,7 +128,9 @@ switch($_POST["type"])
 		$task->setServicioId($_POST["id"]);
 		if($task->CreateZipTasksAnual()){
             echo "ok[#]";
-            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".basename($task->getRutaZipCreated());
+			$fileName =  end(explode("/",$task->getRutaZipCreated()));
+			$fileName=  urlencode($fileName);
+            echo WEB_ROOT."/download.php?file=".WEB_ROOT."/archivos/".$fileName;
         }else{
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
