@@ -19,24 +19,37 @@ $files = $db->GetResult();
 
 $nombreServicio = $files[0]["nombreServicio"];
 $nombreServicio = str_replace(" ", "_", $nombreServicio);
+$nombreServicio = str_replace(".", "_", $nombreServicio);
+$nombreServicio = str_replace(",", "_", $nombreServicio);
+$nombreServicio = str_replace("/", "", $nombreServicio);
 $nombreCliente = $files[0]["name"];
 $nombreCliente = str_replace(" ", "_", $nombreCliente);
+$nombreCliente = str_replace("'", "_", $nombreCliente);
+$nombreCliente = str_replace(".", "_", $nombreCliente);
+$nombreCliente = str_replace(",", "_", $nombreCliente);
+$nombreCliente = str_replace("/", "", $nombreCliente);
 $fecha = $files[0]["date"];
 $fecha = str_replace("-", "_", $fecha);
 $zip = DOC_ROOT."/archivos/".$fecha."_".$nombreCliente."_".$nombreServicio."_".$_GET["id"].".zip";
 
 @unlink($zip);
 $util->ZipTasks($zip, $files);
-
 $mime = $mime_types["zip"];
 $file = explode("/", $zip);
-header('Content-Disposition: attachment; filename='.@end($file));
-header('Content-type:'.$mime);
-//readfile(urldecode($_GET["file"]));
-$_GET["file"] = str_replace(WEB_ROOT,"", $_GET["file"]);
-
+$filename = @end($file);
+header("Pragma: public");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header("Cache-Control: public");
+header("Content-Description: File Transfer");
+header("Content-type: application/octet-stream");
+header("Content-Disposition: attachment; filename=\"".$filename."\"");
+header("Content-Transfer-Encoding: binary");
+header("Content-Length: ".filesize($zip));
 $file = $zip;
-
+ob_clean();
+flush();
 readfile($file);
-
+ob_clean();
+flush();
 ?>
