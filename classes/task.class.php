@@ -325,6 +325,7 @@ class Task extends Step
         $nombreCliente = str_replace(".", "_", $nombreCliente);
         $nombreCliente = str_replace(",", "_", $nombreCliente);
         $nombreCliente = str_replace("/", "", $nombreCliente);
+        $nombreCliente = str_replace("&", "and", $nombreCliente);
         $name = $nombreCliente."_".$nombreServicio."_".$anio."_".$month;
         $name = strtolower($name);
         $zip = DOC_ROOT."/archivos/".$name.".zip";
@@ -360,6 +361,7 @@ class Task extends Step
         $nombreCliente = str_replace(".", "_", $nombreCliente);
         $nombreCliente = str_replace(",", "_", $nombreCliente);
         $nombreCliente = str_replace("/", "", $nombreCliente);
+        $nombreCliente = str_replace("&", "and", $nombreCliente);
         $name = $nombreCliente."_".$nombreServicio."_".$anio;
         $name = strtolower($name);
         $zip = DOC_ROOT."/archivos/".$name.".zip";
