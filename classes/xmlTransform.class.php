@@ -67,7 +67,7 @@ class XmlTransform extends Comprobante
 
 		
 		//
-		$this->Util()->DBSelect($_SESSION["empresaId"])>setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
 		$pending_cancel= $this->Util()->DB()->GetResult();
 
 		$cancelado = ($fact['status'] == 0 || count($pending_cancel)) ? 1 : 0;
