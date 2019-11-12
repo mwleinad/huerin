@@ -9,7 +9,6 @@ switch($_POST["type"])
 			{
 				$page = "report-servicio";
 			}
-			
 			$personals = $personal->Enumerate();
 			//$subordinados = $filtro->Subordinados($User["userId"], true);
 			//print_r($subordinados);

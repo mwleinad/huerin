@@ -1589,7 +1589,17 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
             return true;
         }
         return false;
-    }
+	}
+	function validateRfc($var){
+		if($var == "123123123123")
+    	   return false;
+        if(!$var)
+          return false;
+        if(strlen($var) < 12)
+		 return false;
+		 
+		 return true;
+	}
 
 
 

@@ -8,14 +8,14 @@
 		{/if}
 		<fieldset>
 			<div class="formLine" style="width:100%;  display: inline-block;">
-				<div style="width:30%;float:left">Nombre de rol</div>
+				<div style="width:30%;float:left"> * Nombre de rol</div>
 				<div style="width:70%;float: left;">
 					<input type="text" name="name" id="name" value="{$post.name}" class="largeInput "/>
 				</div>
 				<hr>
 			</div>
 			<div class="formLine" style="width:100%;  display: inline-block;">
-				<div style="width:30%;float:left">Departamento</div>
+				<div style="width:30%;float:left">* Departamento</div>
 				<div style="width:70%;float: left;">
 					<select name="depId" id="depId" class="largeInput">
 						<option value="">Seleccionar..</option>
@@ -24,11 +24,24 @@
 						{/foreach}
 					</select>
 				</div>
-
+			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left">* Categoria</div>
+				<div style="width:70%;float: left;">
+					<select name="nivel" id="nivel" class=" largeInput">
+						<option value="">Seleccionar..</option>
+						{foreach from=$niveles item=item key=key}
+							<option value="{$item.categoria}" {if $item.categoria eq $post.nivel}selected{/if}>{$item.categoria}</option>
+						{/foreach}
+						<option value="100" {if $post.nivel >= 100}selected{/if}>100</option>
+					</select>
+				</div>
+				<hr>
 			</div>
 			<div style="clear:both"></div>
 			<hr />
 			<div class="formLine" style="text-align:center">
+				<span style="float:left">* Campos Obligatorios</span>
 				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-imgs"/>
 				<input type="submit" {if !$post}id="btnRol" name="btnRol"{else}id="btnEdit" name="btnEdit"{/if} class="buttonForm" value="{if $post}Actualizar{else}Guardar{/if}" />
 			</div>

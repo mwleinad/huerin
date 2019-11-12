@@ -48,6 +48,8 @@ switch($_POST['type']){
         break;
     case 'addRol':
         $deps =  $departamentos->GetListDepartamentos();
+        $niveles =  $rol->EnumeratePorcentajes();
+        $smarty->assign('niveles',$niveles);
         $smarty->assign('deps',$deps);
         $smarty->assign('title','Agregar Rol');
         $smarty->display(DOC_ROOT.'/templates/boxes/add-rol-popup.tpl');
@@ -59,6 +61,7 @@ switch($_POST['type']){
         break;
     case 'saveRol':
          $rol->setDepartamentoId($_POST['depId']);
+         $rol->setCategoria($_POST['nivel']);
          $rol->setName($_POST['name']);
          if($rol->Save())
          {
@@ -80,6 +83,8 @@ switch($_POST['type']){
         $deps =  $departamentos->GetListDepartamentos();
         $rol->setRolId($_POST['id']);
         $post = $rol->Info();
+        $niveles =  $rol->EnumeratePorcentajes();
+        $smarty->assign('niveles',$niveles);
         $smarty->assign('deps',$deps);
         $smarty->assign('post',$post);
         $smarty->assign('title','Editar Rol');
@@ -95,6 +100,7 @@ switch($_POST['type']){
     case 'updateRol':
         $rol->setRolId($_POST['rolId']);
         $rol->setDepartamentoId($_POST['depId']);
+        $rol->setCategoria($_POST['nivel']);
         $rol->setName($_POST['name']);
         if($rol->Update())
         {

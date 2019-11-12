@@ -14,6 +14,7 @@
         <th align="center" width="60">Auxiliar</th>
         <th align="center" width="60">Contador</th>
         <th align="center" width="60">Supervisor</th>
+        <th align="center" width="60">Subgerente</th>
         <th align="center" width="60">Gerente</th>
 	</tr>
 </thead>
@@ -35,13 +36,14 @@
             <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
             <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
             <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
+            <td align="center">{if $servicio.subgerente eq ''}--{else}{$servicio.subgerente}{/if}</td>
             <td align="center">{if $servicio.gerente eq ''}--{else}{$servicio.gerente}{/if}</td>
         </tr> 
         {/foreach}
     {/foreach}
 {foreachelse}
 <tr>
-	<td colspan="10" align="center">Ning&uacute;n registro encontrado</td>
+	<td colspan="15" align="center">Ning&uacute;n registro encontrado</td>
 </tr>
 {/foreach}
 
@@ -56,6 +58,7 @@
     <td align="center"></td>
     <td align="center"></td>
     <td align="center">${$totalPeriodo|number_format:2}</td>
+    <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
     <td align="center"></td>
