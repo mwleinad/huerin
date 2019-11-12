@@ -1,5 +1,4 @@
 <?php
-
 class Personal extends Main
 {
 	private $personalId;
@@ -180,31 +179,31 @@ class Personal extends Main
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, '');
 		$this->fechaIngreso = $value;
 	}
-	public function Enumerate()
-	{
-		global $infoUser;
-		//Socio y Asistente pueden ver todo el personal.
-		if($this->active)
-			$sqlActive = " AND a.active = '1'";
-		if($this->levelRol && $this->showAll)
-		    $sqlFilter = " and d.nivel='".$this->levelRol."' ";
+    public function Enumerate()
+    {
+        global $infoUser;
+        //Socio y Asistente pueden ver todo el personal.
+        if ($this->active)
+            $sqlActive = " AND a.active = '1'";
+        if ($this->levelRol && $this->showAll)
+            $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
 
-		if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'],'DH')!==false || $this->showAll||stripos($infoUser['tipoPersonal'],'Sistema')!==false) {
-			$sql = "SELECT a.*,b.name as nombreJefe,c.departamento
+        if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($infoUser['tipoPersonal'], 'Sistema') !== false) {
+            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
 					LEFT JOIN roles d on a.roleId=d.rolId
 					LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
 					$sqlFilter $sqlActive 
 					ORDER BY a.name ASC";
-			$this->Util()->DB()->setQuery($sql);
-			$result = $this->Util()->DB()->GetResult();
-			return $result;
-		}
-		$this->setPersonalId($infoUser['personalId']);
-   	    $result = $this->SubordinadosDetails();
-   	    return $result;
-	}
+            $this->Util()->DB()->setQuery($sql);
+            $result = $this->Util()->DB()->GetResult();
+            return $result;
+        }
+        $this->setPersonalId($infoUser['personalId']);
+        $result = $this->SubordinadosDetails();
+        return $result;
+    }
     public function EnumerateGerenteDepartamento($dep)
     {
         $this->Util()->DB()->setQuery("select departamentoId from departamentos where lower(departamento)='".strtolower($dep)."' ");
@@ -415,9 +414,11 @@ class Personal extends Main
                                              CASE b.nivel
                                              WHEN 1 THEN 'Socio'
                                              WHEN 2 THEN 'Gerente'
-                                             WHEN 3 THEN 'Supervisor'
-                                             WHEN 4 THEN 'Contador'
-                                             WHEN 5 THEN 'Auxiliar' END AS nameLevel
+											 WHEN 3 THEN 'Subgerente'
+                                             WHEN 4 THEN 'Supervisor'
+                                             WHEN 5 THEN 'Contador'
+                                             WHEN 6 THEN 'Auxiliar'
+                                             WHEN 100 THEN 'Auxiliar' END AS nameLevel
                                              FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
         $this->Util()->DB()->setQuery("select name from personal where personalId='".$row['jefeInmediato']."' ");
@@ -812,12 +813,7 @@ function SubordinadosDetailsAddPass()
 		
 		foreach($tree as $key => $value)
 		{
-/*			$card["tipoPersonal"] = $value["tipoPersonal"];
-			$card["name"] = $value["name"];
-			$card["jefeName"] = $value["jefeName"];
-			$card["personalId"] = $value["personalId"];
-*/			$_SESSION["lineal"][] = $value;
-		
+		    $_SESSION["lineal"][] = $value;
 			if(count($value["children"]) > 0)
 			{
 				$this->JerarquiaLineal($value["children"]);
@@ -1065,207 +1061,118 @@ function SubordinadosDetailsAddPass()
         }
         return $result;
     }
-    public function findDeepJefes($personalId,&$jefes=array(),$me=false){
+    function deepJefesArray(&$jefes = [], $me = false)
+    {
         global $rol;
+        $employe = $this->InfoWhitRol();
+        if ($me)
+            $jefes['me'] = $employe['name'];
 
-        $this->setPersonalId($personalId);
-        $info = $this->Info();
-        if($me){
-                $jefes['me'] = $info['name'];
+        if ($employe["jefeInmediato"]) {
+            $this->setPersonalId($employe['jefeInmediato']);
+            $inmediato = $this->InfoWhitRol();
+            $jefes[$inmediato["nameLevel"]] = $inmediato["name"];
+            $this->setPersonalId($inmediato["personalId"]);
+            $this->deepJefesArray($jefes);
         }
-        if($info['jefeInmediato']>0) {
-                $this->setPersonalId($info['jefeInmediato']);
-                $info = $this->Info();
-                $role = $rol->getInfoByData($info);
-                $rolArray = explode(' ',$role['name']);
-                $needle =trim($rolArray[0]);
-                switch($needle){
-                    case 'Sistemas':
-                    case 'Gestoria':
-                    case 'Supervisor':
-                     $needle='Supervisor';
-                     break;
-                    case 'Asistente':
-                    case 'Cuentas':
-                    case 'cxc':
-                    case 'Contador':
-                    $needle='Contador';
-                    break;
-                    case 'Recepcion':
-                    case 'Auxiliar':
-                    $needle='Auxiliar';
-                    break;
-                    case 'Coordinador':
-                    case 'Socio':
-                        $needle='Socio';
-                    break;
-                }
-                $jefes[$needle] = $this->GetNameById();
-                $this->findDeepJefes($info['personalId'],$jefes);
-            }else{
-                $this->setPersonalId($info['jefeInmediato']);
-                $info = $this->Info();
-                $role = $rol->getInfoByData($info);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                switch($needle){
-                    case 'Sistemas':
-                    case 'Gestoria':
-                    case 'Supervisor':
-                        $needle='Supervisor';
-                        break;
-                    case 'Asistente':
-                    case 'Cuentas':
-                    case 'Contador':
-                        $needle='Contador';
-                        break;
-                    case 'Recepcion':
-                    case 'Auxiliar':
-                        $needle='Auxiliar';
-                        break;
-                    case 'Coordinador':
-                    case 'Socio':
-                        $needle='Socio';
-                        break;
-                }
-                $per =   $this->GetNameById();
-                if($per=='')
-                   $jefes[$needle] ='Sin jefe';
-                else
-                    $jefes[$needle] =$per;
-            }
-
     }
-    public function changePassword(){
+    public function changePassword()
+    {
         $sendmail = new SendMail;
         $sql =  "SELECT * FROM personal WHERE active='1' ORDER BY personalId ASC ";
         $this->Util()->DB()->setQuery($sql);
         $results =  $this->Util()->DB()->GetResult();
 
-        foreach($results as $key =>$item){
+        foreach ($results as $key => $item) {
             //if($item['personalId']!='259')
-              //  continue;
-            $cadena ="";
-            $cadena = $this->Util()->generateRandomString(6,true);
-            $this->Util()->DB()->setQuery("UPDATE personal SET passwd='".$cadena."' WHERE personalId='".$item['personalId']."' ");
+            //  continue;
+            $cadena = "";
+            $cadena = $this->Util()->generateRandomString(6, true);
+            $this->Util()->DB()->setQuery("UPDATE personal SET passwd='" . $cadena . "' WHERE personalId='" . $item['personalId'] . "' ");
             $this->Util()->DB()->UpdateData();
             //if($this->Util()->DB()->UpdateData()){
-                $this->Util()->DB()->setQuery("UPDATE personal SET lastChangePassword='".date('Y-m-d')."' WHERE personalId='".$item['personalId']."' ");
-                $this->Util()->DB()->UpdateData();
-                $body="ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
+            $this->Util()->DB()->setQuery("UPDATE personal SET lastChangePassword='" . date('Y-m-d') . "' WHERE personalId='" . $item['personalId'] . "' ");
+            $this->Util()->DB()->UpdateData();
+            $body = "ESTIMADO USUARIO CON EL FIN DE MANTENER LA SEGURIDAD DE SUS DATOS Y DE LOS CLIENTES QUE SE ENCUENTRAN EN LA PLATAFORMA BAJO SU RESPONSABILIDAD 
                 SE HA REALIZADO EL CAMBIO DE CONTRASE&Ntilde;A DE SU CUENTA, CIERRE SU SESSION SI SE ENCUENTRA ACTUALMENTE EN LA PLATAFORMA E INGRESE NUEVAMENTE CON LOS SIGUIENTES DATOS:  <br>
-                USUARIO:".$item['username']." <br>
-                PASSWD:".$cadena." 
+                USUARIO:" . $item['username'] . " <br>
+                PASSWD:" . $cadena . " 
                 <br><br>
                 Este correo se creo automaticamente, favor de no responder.
                 ";
-                $subject="CAMBIO DE CONTRASEÑA ".$item['name'];
-                $to = $item['email'];
-                $toName= $item['name'];
-                $sendmail->Prepare($subject, $body, $to, $toName, '', "", "", "",'noreply@braunhuerin.com.mx' , "ADMINISTRADOR DE PLATAFORMA") ;
+            $subject = "CAMBIO DE CONTRASEÑA " . $item['name'];
+            $to = $item['email'];
+            $toName = $item['name'];
+            $sendmail->Prepare($subject, $body, $to, $toName, '', "", "", "", 'noreply@braunhuerin.com.mx', "ADMINISTRADOR DE PLATAFORMA");
             //}
         }
-        $this->Util()->setError(0,"complete","Se han cambiado las contraseñas correctamente");
+        $this->Util()->setError(0, "complete", "Se han cambiado las contraseñas correctamente");
         $this->Util()->PrintErrors();
-	    return  true;
+        return  true;
     }
-    public function unlinkExpendiente($expedienteId,$perId){
-        $base_path = DOC_ROOT.'/expedientes';
+    public function unlinkExpendiente($expedienteId, $perId)
+    {
+        $base_path = DOC_ROOT . '/expedientes';
         //almacenar el archivo en el servidor
-        $dir_employe = $base_path.'/'.$perId;
+        $dir_employe = $base_path . '/' . $perId;
         //comprobar si tiene un archivo actualmente y eliminarlo
-        $sqlc ="SELECT path FROM personalExpedientes  WHERE personalId='".$perId."' AND expedienteId='".$expedienteId."'";
+        $sqlc = "SELECT path FROM personalExpedientes  WHERE personalId='" . $perId . "' AND expedienteId='" . $expedienteId . "'";
         $this->Util()->DB()->setQuery($sqlc);
         $nameFile = $this->Util()->DB()->GetSingle();
-        $file = $dir_employe.'/'.$nameFile;
-        if(file_exists($file)&&is_file($file)){
-            if(unlink($file))
-            {
-                $sql ="UPDATE personalExpedientes SET path=null,fecha=null WHERE personalId='".$perId."' AND expedienteId='".$expedienteId."'";
+        $file = $dir_employe . '/' . $nameFile;
+        if (file_exists($file) && is_file($file)) {
+            if (unlink($file)) {
+                $sql = "UPDATE personalExpedientes SET path=null,fecha=null WHERE personalId='" . $perId . "' AND expedienteId='" . $expedienteId . "'";
                 $this->Util()->DB()->setQuery($sql);
                 $this->Util()->DB()->UpdateData();
-                $this->Util()->setError(0,'complete','Archivo eliminado correctamente');
+                $this->Util()->setError(0, 'complete', 'Archivo eliminado correctamente');
                 $this->Util()->PrintErrors();
                 return true;
-            }
-            else{
-                $this->Util()->setError(0,'error','Error al eliminar archivo');
+            } else {
+                $this->Util()->setError(0, 'error', 'Error al eliminar archivo');
                 $this->Util()->PrintErrors();
                 return false;
-
             }
-        }
-        else{
-            $this->Util()->setError(0,'error','Error al encontrar archivo');
+        } else {
+            $this->Util()->setError(0, 'error', 'Error al encontrar archivo');
             $this->Util()->PrintErrors();
             return false;
         }
-     }
-    public function findSupervisor($id){
-	    global $rol;
-         $this->setPersonalId($id);
-         $infP = $this->Info();
-         $role = $rol->getInfoByData($infP);
-         $rolArray = explode(' ',$role['name']);
-         $needle = trim($rolArray[0]);
-         $jefes = array();
-         $this->findDeepJefes($id, $jefes,true);
-         $supervisor="";
-         switch($needle){
-             case 'Coordinador':
-             case 'Gestoria':
-             case 'Sistemas':
-             case 'Supervisor':
-             case 'Gerente':
-             case 'socio':
-                 $supervisor = $jefes['me'];
-                 break;
-             case 'Recepcion':
-             case 'Cuentas':
-             case 'Contador':
-             case 'Asistente':
-             case 'Auxiliar':
-                 $supervisor = $jefes['Supervisor'];
-                 break;
-         }
-         return $supervisor;
     }
-    public function getOrdenJefes(){
-	    global $rol;
-	    $ordenJefes = [];
-	    $this->setPersonalId($this->personalId);
-        $infP = $this->Info();
-        $role = $rol->getInfoByData($infP);
-        $rolArray = explode(' ', $role['name']);
-        $needle = trim($rolArray[0]);
-        switch ($needle) {
-            case 'Sistemas':
-            case 'Gestoria':
-            case 'Supervisor':
-                $needle = 'supervisor';
-                break;
-            case 'Asistente':
-            case 'Cuentas':
-            case 'Contador':
-                $needle = 'contador';
-                break;
-            case 'Recepcion':
-            case 'Auxiliar':
-                $needle = 'auxiliar';
-                break;
+    public function findSupervisor($id)
+    {
+        global $rol;
+        $this->setPersonalId($id);
+        $infP = $this->InfoWhitRol();
+        $jefes = [];
+        $this->deepJefesArray($jefes, true);
+        $supervisor = "";
+        switch ($infP["nameLevel"]) {
             case 'Coordinador':
-            case 'Socio':
-                $needle = 'socio';
-                break;
+            case 'Supervisor':
             case 'Gerente':
-                $needle = 'gerente';
+            case 'Socio':
+                $supervisor = $jefes['me'];
+                break;
+            case 'Contador':
+            case 'Auxiliar':
+                $supervisor = $jefes['Supervisor'];
                 break;
         }
+        return $supervisor;
+    }
+    public function getOrdenJefes()
+    {
+        $ordenJefes = [];
+        $this->setPersonalId($this->personalId);
+        $infP = $this->InfoWhitRol();
+        $needle = strtolower($infP["nameLevel"]);
         if (!empty($infP)) {
             $jefes = array();
-            $this->findDeepJefes($this->personalId, $jefes, true);
+            $this->deepJefesArray($jefes, true);
             $ordenJefes['contador'] = $jefes['Contador'];
             $ordenJefes['supervisor'] = $jefes['Supervisor'];
+            $ordenJefes['subgerente'] = $jefes['Subgerente'];
             $ordenJefes['gerente'] = $jefes['Gerente'];
             $ordenJefes['jefeMax'] = $jefes['Socio'];
             $ordenJefes[$needle] = $jefes['me'];
@@ -1273,61 +1180,62 @@ function SubordinadosDetailsAddPass()
             $ordenJefes['auxiliar'] = 'N/E';
             $ordenJefes['contador'] = 'N/E';
             $ordenJefes['supervisor'] = 'N/E';
+            $ordenJefes['subgerente'] = 'N/E';
             $ordenJefes['gerente'] = 'N/E';
         }
         return $ordenJefes;
     }
-    public function GetIdResponsablesSubordinados($filtro=[]){
-	    global $User;
-        $idPersons= [];
+    public function GetIdResponsablesSubordinados($filtro = [])
+    {
+        global $User;
+        $idPersons = [];
 
-        if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'||$this->showAll){
+        if ($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador' || $this->showAll) {
             //Si seleccionaron TODOS
-            if($filtro['responsableCuenta'] == 0){
+            if ($filtro['responsableCuenta'] == 0) {
                 $this->setActive(1);
                 $socios = $this->ListSocios();
-                foreach($socios as $res){
-                    array_push($idPersons,$res['personalId']);
+                foreach ($socios as $res) {
+                    array_push($idPersons, $res['personalId']);
                     $this->setPersonalId($res['personalId']);
                     $subordinados = $this->Subordinados();
-                    if(empty($subordinados))
+                    if (empty($subordinados))
                         continue;
 
-                    $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
-                    $idPersons=array_merge($idPersons,$subsLine);
+                    $subsLine = $this->Util()->ConvertToLineal($subordinados, 'personalId');
+                    $idPersons = array_merge($idPersons, $subsLine);
                     unset($subsLine);
                     unset($subordinados);
-                }//foreac
+                } //foreac
                 $idPersons = array_unique($idPersons);
-            }else{
+            } else {
                 $idPersons = array();
                 $respCuenta = $filtro['responsableCuenta'];
-                array_push($idPersons,$respCuenta);
-                if($filtro['deep']){
+                array_push($idPersons, $respCuenta);
+                if ($filtro['deep']) {
                     $this->setPersonalId($respCuenta);
                     $subordinados = $this->Subordinados();
-                    if(!empty($subordinados)){
-                        $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
-                        $idPersons=array_merge($idPersons,$subsLine);
+                    if (!empty($subordinados)) {
+                        $subsLine = $this->Util()->ConvertToLineal($subordinados, 'personalId');
+                        $idPersons = array_merge($idPersons, $subsLine);
                         unset($subsLine);
                         unset($subordinados);
                     }
                 }
             }
-
-        }else{
+        } else {
             $idPersons = array();
-            if($filtro['responsableCuenta']==0)
+            if ($filtro['responsableCuenta'] == 0)
                 $respCuenta = $User['userId'];
             else
                 $respCuenta = $filtro['responsableCuenta'];
-            array_push($idPersons,$respCuenta);
-            if($filtro['deep']){
+            array_push($idPersons, $respCuenta);
+            if ($filtro['deep']) {
                 $this->setPersonalId($respCuenta);
                 $subordinados = $this->Subordinados();
-                if(!empty($subordinados)){
-                    $subsLine = $this->Util()->ConvertToLineal($subordinados,'personalId');
-                    $idPersons=array_merge($idPersons,$subsLine);
+                if (!empty($subordinados)) {
+                    $subsLine = $this->Util()->ConvertToLineal($subordinados, 'personalId');
+                    $idPersons = array_merge($idPersons, $subsLine);
                     unset($subsLine);
                     unset($subordinados);
                 }
@@ -1375,71 +1283,69 @@ function SubordinadosDetailsAddPass()
         $this->Util()->DB()->setQuery("select sum(sueldo) from personal where personalId IN (".implode(',',$id).") ");
         return $this->Util()->DB()->GetSingle();
     }
-    function GenerateReportExpediente(){
+    function GenerateReportExpediente()
+    {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select expedienteId,name from expedientes where status='activo' order by name ASC ");
         $expedientes = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
         $baseExp = [];
-        foreach($expedientes as $exp){
-            $cad["background"] = "#EFEFEF";//iniciar class para todos expedientes como no aplica
+        foreach ($expedientes as $exp) {
+            $cad["background"] = "#EFEFEF"; //iniciar class para todos expedientes como no aplica
             $cad["name"] = $exp["name"];
             $cad["fecha"] = "";
             $baseExp[$exp["expedienteId"]] = $cad;
         }
         $filter = "";
-        if($this->personalId)
-            $filter .= " and personalId = '".$this->personalId."' ";
+        if ($this->personalId)
+            $filter .= " and personalId = '" . $this->personalId . "' ";
 
         $sql = "select personalId,name from personal where 1 $filter order by name asc";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $employes = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
-        foreach($employes as $key=>$value){
+        foreach ($employes as $key => $value) {
             $complete = 0;
-            $baseExpOwn=$baseExp;
-            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select expedienteId,path,fecha from personalExpedientes where personalId = '".$value["personalId"]."' ");
-            $ownFiles =$this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+            $baseExpOwn = $baseExp;
+            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select expedienteId,path,fecha from personalExpedientes where personalId = '" . $value["personalId"] . "' ");
+            $ownFiles = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
             $countOwnFiles =  count($ownFiles);
 
-            foreach($ownFiles as $ownFile){
-                $file = DOC_ROOT."/expedientes/".$value["personalId"]."/".$ownFile["path"];
-               if(file_exists($file)&&is_file($file)){
-                   $baseExpOwn[$ownFile["expedienteId"]]["background"] ="#009900";
-                   $baseExpOwn[$ownFile["expedienteId"]]["fecha"] =$ownFile["fecha"];
-                   $complete++;
-               }else{
-                   if(array_key_exists($ownFile["expedienteId"],$baseExpOwn))
-                       $baseExpOwn[$ownFile["expedienteId"]]["background"] ="#F00";
-               }
+            foreach ($ownFiles as $ownFile) {
+                $file = DOC_ROOT . "/expedientes/" . $value["personalId"] . "/" . $ownFile["path"];
+                if (file_exists($file) && is_file($file)) {
+                    $baseExpOwn[$ownFile["expedienteId"]]["background"] = "#009900";
+                    $baseExpOwn[$ownFile["expedienteId"]]["fecha"] = $ownFile["fecha"];
+                    $complete++;
+                } else {
+                    if (array_key_exists($ownFile["expedienteId"], $baseExpOwn))
+                        $baseExpOwn[$ownFile["expedienteId"]]["background"] = "#F00";
+                }
             }
-             switch ($_POST["status"]) {
-                 case 'incomplete':
-                     if($complete<$countOwnFiles)
-                         $employes[$key]["ownExpedientes"] = $baseExpOwn;
-                     else
-                         unset($employes[$key]);
-                 break;
-                 case 'complete':
-                     if($complete==$countOwnFiles&&$countOwnFiles>0)
-                         $employes[$key]["ownExpedientes"] = $baseExpOwn;
-                     else
-                         unset($employes[$key]);
-                 break;
-                 default:
-                     if($countOwnFiles>0)
+            switch ($_POST["status"]) {
+                case 'incomplete':
+                    if ($complete < $countOwnFiles)
                         $employes[$key]["ownExpedientes"] = $baseExpOwn;
-                     else
-                         $employes[$key]["ownExpedientes"] = [];
+                    else
+                        unset($employes[$key]);
+                    break;
+                case 'complete':
+                    if ($complete == $countOwnFiles && $countOwnFiles > 0)
+                        $employes[$key]["ownExpedientes"] = $baseExpOwn;
+                    else
+                        unset($employes[$key]);
+                    break;
+                default:
+                    if ($countOwnFiles > 0)
+                        $employes[$key]["ownExpedientes"] = $baseExpOwn;
+                    else
+                        $employes[$key]["ownExpedientes"] = [];
 
-                 break;
-             }
+                    break;
+            }
         }
-        if(!is_array($employes))
+        if (!is_array($employes))
             $employes = [];
 
         $data["employes"] = $employes;
         $data["expedientes"] = $expedientes;
         return $data;
     }
-    
 }
-
-?>

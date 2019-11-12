@@ -34,43 +34,33 @@ $results = $db->GetResult();
 $new = array();
 foreach($results as $key => $value){
     $cad=$value;
-    $role = $rol->getInfoByData($value);
-    $rolArray = explode(' ',$role['name']);
-    $needle = strtolower(trim($rolArray[0]));
-    $jefes=array();
-    $personal->findDeepJefes($value['personalId'],$jefes,true);
-
-
+    $personal->setPersonalId($value["personalId"]);
+    $info = $personal->InfoWhitRol();
+    $needle = strtolower(trim($info["nameLevel"]));
+    $jefes=[];
+    $personal->deepJefesArray($jefes,true);
     $cad['contador'] = $jefes['Contador'];
     $cad['supervisor'] = $jefes['Supervisor'];
+    $cad['subgerente'] = $jefes['Subgerente'];
     $cad['gerente'] = $jefes['Gerente'];
     $cad['jefeMax'] = $jefes['Socio'];
-
+    /*
+     Al final se reemplaza, los numeros vienen del nivel del rol.
+      1 = socio
+      2 = gerente
+      3 = subgerente
+      4 = supervisor,gestoria,sistemas
+      5 = contador,cxc,cuentas,asistente
+      6 = auxiliar,recepcion
+    */
     switch($needle){
-        case 'gerente':
-            $cad['gerente'] = $jefes['me'];
-            break;
-        case 'sistemas':
-        case 'gestoria':
-        case 'supervisor':
-            $cad['supervisor'] = $jefes['me'];
-            break;
-        case 'asistente':
-        case 'cuentas':
-        case 'cxc':
-        case 'contador':
-           $cad['contador'] = $jefes['me'];
-        break;
-        case 'recepcion':
-        case 'auxiliar':
-           $cad['auxiliar'] = $jefes['me'];
-        break;
         case 'coordinador':
         case 'socio':
-            $cad['jefeMax'] = $jefes['me'];
-            break;
-    }
+            $cad['jefeMax'] = $jefes['me']; break;
+        break;
+        default: $cad[$needle] = $jefes["me"]; break;
 
+    }
     $new[] = $cad;
 }
 $html = '<html>

@@ -703,6 +703,7 @@ class ReporteBonos extends Main
 
                     }
                 break;
+                //subgerente
                 case 3:
                     $service["nivel"]  = "supervisor";
                     $personal->setPersonalId($encargadoDep);

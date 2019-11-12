@@ -26,7 +26,8 @@ class Rol extends main
     }
     private $depId;
     public function setDepartamentoId($value){
-        $this->Util()->ValidateRequireField($value,'Departamento');
+        if(!$_SESSION["User"]["isRoot"])
+            $this->Util()->ValidateRequireField($value,'Departamento');
         $this->depId=$value;
     }
     private $titulo;
@@ -91,7 +92,9 @@ class Rol extends main
         }
 
        $sql ="SELECT a.*,
-              CASE WHEN a.departamentoId is null THEN 'SIN DEPARTAMENTO'
+              CASE 
+              WHEN a.departamentoId is null  THEN 'SIN DEPARTAMENTO'
+              WHEN a.departamentoId <=0 THEN 'SIN DEPARTAMENTO'
               ELSE b.departamento END AS departamento
               FROM roles a LEFT JOIN departamentos b ON a.departamentoId=b.departamentoId WHERE a.status='activo' ".$where." ORDER BY b.departamento ASC,a.name ASC";
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
@@ -136,7 +139,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO roles(name,status,departamentoId) VALUES('".$this->name."','activo','".$this->depId."') ";
+        $sql = "INSERT INTO roles(name,status,departamentoId,nivel) VALUES('".$this->name."','activo','".$this->depId."','".$this->categoria."') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -174,7 +177,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."' WHERE rolId='".$this->rolId."' ";
+        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."',nivel='".$this->categoria."' WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 

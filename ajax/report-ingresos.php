@@ -84,41 +84,16 @@ switch($_POST["type"])
                             case 'baja': $serv["nameStatusComplete"] = 'Baja'; break;
                         }
                         $personal->setPersonalId($personalId);
-                        $infP = $personal->Info();
-                        $role = $rol->getInfoByData($infP);
-                        $rolArray = explode(' ',$role['name']);
-                        $needle = trim($rolArray[0]);
-                        switch($needle){
-                            case 'Sistemas':
-                            case 'Gestoria':
-                            case 'Supervisor':
-                                $needle='supervisor';
-                                break;
-                            case 'Asistente':
-                            case 'Cuentas':
-                            case 'Contador':
-                                $needle='contador';
-                                break;
-                            case 'Recepcion':
-                            case 'Auxiliar':
-                                $needle='auxiliar';
-                                break;
-                            case 'Coordinador':
-                            case 'Socio':
-                                $needle='socio';
-                                break;
-                            case 'Gerente':
-                                $needle='gerente';
-                                break;
-                        }
+                        $infP = $personal->InfoWhitRol();
                         if(!empty($infP)){
                             $jefes = array();
-                            $personal->findDeepJefes($personalId, $jefes,true);
-                            $serv['contador'] = $jefes['Contador'];
+                            $personal->setPersonalId($personalId);
+                            $personal->deepJefesArray($jefes,true);
+                            $serv["contador"] = $jefes['Contador'];
                             $serv['supervisor'] = $jefes['Supervisor'];
                             $serv['gerente'] = $jefes['Gerente'];
                             $serv['jefeMax'] = $jefes['Socio'];
-                            $serv[$needle] = $jefes['me'];
+                            $serv[strtolower($infP["nameLevel"])] = $jefes['me'];
                         }else {
                             $serv['auxiliar'] = 'N/E';
                             $serv['contador'] = 'N/E';
@@ -170,7 +145,6 @@ switch($_POST["type"])
 		break;
     case 'searchAltasBajas':
         echo 'ok[#]';
-
         $formValues['subordinados'] = $_POST['subordinados'];
         $formValues['respCuenta'] = $_POST['responsableCuenta'];
         $formValues['departamentoId'] = $_POST["departamentoId"];
@@ -439,5 +413,3 @@ switch($_POST["type"])
             break;
         }
 }
-
-?>
