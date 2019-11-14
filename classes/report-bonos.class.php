@@ -633,11 +633,20 @@ class ReporteBonos extends Main
 
             $cad['porcentajeBono']=$encargado['porcentajeBono'];
             $cad['sueldoTotal']=$encargado['sueldo']*3;
+            //deep jefes
+            $jefesAsc = [];
+            $personal->setPersonalId($encargadoDep);
+            $personal->deepJefesAssoc($jefesAsc,true);
+            $service["nivel"]  = strtolower($jefesAsc["me"]["nameLevel"]);
+            $socio = isset($jefesAsc["Socio"])?$jefesAsc["Socio"]["personalId"]:0;
+            $gerente = isset($jefesAsc["Gerente"])?$jefesAsc["Gerente"]["personalId"]:0;
+            $subgerente = isset($jefesAsc["Subgerente"])?$jefesAsc["Subgerente"]["personalId"]:0;
+            $supervisor = isset($jefesAsc["Supervisor"])?$jefesAsc["Supervisor"]["personalId"]:0;
+            $contador = isset($jefesAsc["Contador"])?$jefesAsc["Contador"]["personalId"]:0;
+            $auxiliar = isset($jefesAsc["Auxiliar"])?$jefesAsc["Auxiliar"]["personalId"]:0;
             switch($encargado["nivel"]){
                 case 1:
-                    $service["nivel"] = "socio";
                     $serviciosEncontrados[$encargadoDep]["propios"][]=$service;
-
                     if(!is_array($serviciosEncontrados[$encargadoDep]['contratos']))
                         $serviciosEncontrados[$encargadoDep]['contratos'] = [];
 
@@ -668,21 +677,18 @@ class ReporteBonos extends Main
                     }
                 break;
                 case 2://gerente
-                    $personal->setPersonalId($encargadoDep);
-                    $jefe = $personal->jefeInmediato();//un gerente tiene como jefe a un socio siempre debe cumplirse
-                                            //socio             gerente         idGerente
-                    $serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['propios'][]=$service;
-                    if(!is_array($serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['contratos']))
-                        $serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['contratos'] = [];
+                    $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    if(!is_array($serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos']))
+                        $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos'] = [];
 
-                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['contratos'])){
-                        $serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['contratos'][]=$contrato['contractId'];
+                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos'])){
+                        $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos'][]=$contrato['contractId'];
                         $totales["totalEmpresas"]++;
                     }
 
                     foreach($service["instancias"] as $ikey=>$itemins){
-                        $serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
-                        $serviciosEncontrados[$jefe['personalId']]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
+                        $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
+                        $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
                         $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
                         $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
 
@@ -692,7 +698,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$jefe['personalId'];
+                            $cad['jefeInmediato']=$socio;
                             $cad['level']=2;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -702,27 +708,20 @@ class ReporteBonos extends Main
                         }
 
                     }
-                break;
-                //subgerente
-                case 3:
-                    $service["nivel"]  = "supervisor";
-                    $personal->setPersonalId($encargadoDep);
-                    $jefeGerente = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeGerente['personalId']);
-                    $jefeSocio = $personal->jefeInmediato();
-                                                //socio              //gerentes       idGerente                  supervisores   idSupervisor    propiosSup
-                    $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['propios'][]=$service;
-                    if(!is_array($serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['contratos']))
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['contratos'] = [];
+                break;   
+                case 3: //subgerente                                              
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'][]=$service;
+                    if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos']))
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos'] = [];
 
-                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['contratos'])){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['contratos'][]=$contrato['contractId'];
+                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos'])){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos'][]=$contrato['contractId'];
                         $totales["totalEmpresas"]++;
                     }
 
                     foreach($service["instancias"] as $ikey=>$itemins){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
                         $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
                         $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
 
@@ -732,7 +731,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$jefeGerente['personalId'];
+                            $cad['jefeInmediato']=$gerente;
                             $cad['level']=3;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -742,27 +741,19 @@ class ReporteBonos extends Main
                         }
                     }
                 break;
-                case 4:
-                    $service["nivel"]  = "contador";
-                    $personal->setPersonalId($encargadoDep);
-                    $jefeSupervisor = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeSupervisor['personalId']);
-                    $jefeGerente = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeGerente['personalId']);
-                    $jefeSocio = $personal->jefeInmediato();
-                    $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['propios'][]=$service;
+                case 4://supervisor
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos']))
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos'] = [];
 
-                    if(!is_array($serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['contratos']))
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['contratos'] = [];
-
-                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['contratos'])){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['contratos'][]=$contrato['contractId'];
+                    if(!in_array($contrato['contractId'],$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos'])){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos'][]=$contrato['contractId'];
                         $totales["totalEmpresas"]++;
                     }
 
                     foreach($service["instancias"] as $ikey=>$itemins){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
                         $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
                         $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
 
@@ -772,7 +763,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$jefeSupervisor['personalId'];
+                            $cad['jefeInmediato']=$subgerente;
                             $cad['level']=4;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -782,27 +773,18 @@ class ReporteBonos extends Main
                         }
                     }
                 break;
-                case 5:
-                    $service["nivel"]  = "auxiliar";
-                    $personal->setPersonalId($encargadoDep);
-                    $jefeContador = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeContador["personalId"]);
-                    $jefeSupervisor = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeSupervisor['personalId']);
-                    $jefeGerente = $personal->jefeInmediato();
-                    $personal->setPersonalId($jefeGerente['personalId']);
-                    $jefeSocio = $personal->jefeInmediato();
-                    $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]['propios'][]=$service;
-                    if(!is_array($serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]["contratos"]))
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]["contratos"]=[];
+                case 5://contador
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"]))
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"]=[];
 
-                    if(!in_array($contrato["contractId"],$serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]["contratos"])){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]["contratos"][]=$contrato["contractId"];
+                    if(!in_array($contrato["contractId"],$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"])){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"][]=$contrato["contractId"];
                         $totales["totalEmpresas"]++;
                     }
-                        foreach($service["instancias"] as $ikey=>$itemins){
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
-                        $serviciosEncontrados[$jefeSocio["personalId"]]['subordinados'][$jefeGerente['personalId']]['subordinados'][$jefeSupervisor['personalId']]["subordinados"][$jefeContador['personalId']]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
+                    foreach($service["instancias"] as $ikey=>$itemins){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
                         $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
                         $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
 
@@ -811,7 +793,7 @@ class ReporteBonos extends Main
                             $cad['name']=$encargado['name'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$jefeContador['personalId'];
+                            $cad['jefeInmediato']=$supervisor;
                             $cad['level']=5;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -821,6 +803,36 @@ class ReporteBonos extends Main
                         }
                     }
                 break;
+                case 6://auxiliar
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"]))
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"]=[];
+
+                    if(!in_array($contrato["contractId"],$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"])){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"][]=$contrato["contractId"];
+                        $totales["totalEmpresas"]++;
+                    }
+                    foreach($service["instancias"] as $ikey=>$itemins){
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
+                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
+                        $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
+                        $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
+
+                        if(!in_array($encargadoDep,$listsEncargados)){
+                            array_push($listsEncargados,$encargadoDep);
+                            $cad['name']=$encargado['name'];
+                            $cad['totalDevengado']=$itemins['costo'];
+                            $cad['totalCompletado']=$itemins['completado'];
+                            $cad['jefeInmediato']=$contador;
+                            $cad['level']=6;
+                            $cad['personalId']=$encargadoDep;
+                            $totalesEncargados[$encargadoDep]=$cad;
+                        }else{
+                            $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
+                            $totalesEncargados[$encargadoDep]['totalCompletado']+=$itemins['completado'];
+                        }
+                    }
+                break;    
             }
         }
         $data["serviciosEncontrados"] = $serviciosEncontrados;

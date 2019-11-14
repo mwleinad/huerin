@@ -1075,6 +1075,21 @@ function SubordinadosDetailsAddPass()
             $this->setPersonalId($inmediato["personalId"]);
             $this->deepJefesArray($jefes);
         }
+	}
+	function deepJefesAssoc(&$jefes = [], $me = false)
+    {
+        global $rol;
+        $employe = $this->InfoWhitRol();
+        if ($me)
+            $jefes['me'] = $employe;
+
+        if ($employe["jefeInmediato"]) {
+            $this->setPersonalId($employe['jefeInmediato']);
+            $inmediato = $this->InfoWhitRol();
+            $jefes[$inmediato["nameLevel"]] = $inmediato;
+            $this->setPersonalId($inmediato["personalId"]);
+            $this->deepJefesAssoc($jefes);
+        }
     }
     public function changePassword()
     {
@@ -1148,16 +1163,13 @@ function SubordinadosDetailsAddPass()
         $this->deepJefesArray($jefes, true);
         $supervisor = "";
         switch ($infP["nameLevel"]) {
-            case 'Coordinador':
-            case 'Supervisor':
-            case 'Gerente':
-            case 'Socio':
-                $supervisor = $jefes['me'];
-                break;
             case 'Contador':
             case 'Auxiliar':
                 $supervisor = $jefes['Supervisor'];
-                break;
+			break;
+			default:
+				$supervisor = $jefes['me'];
+			break;
         }
         return $supervisor;
     }
