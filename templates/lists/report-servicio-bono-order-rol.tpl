@@ -15,7 +15,7 @@
 	</thead>
 	<tbody>
 	{foreach from=$data.serviciosEncontrados item=item key=key}
-		{foreach from=$item.propios item=item2 key=key2 name=socios}
+		{foreach from=$item.propios item=item2 key=key2 name=socios}<!--star socios-->
 		<tr>
 			<td>{$item2.cliente}</td>
 			<td>{$item2.encargado}</td>
@@ -71,8 +71,8 @@
 				<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item2.encargadoId]['totalDevengado']-$data.totalesEncargados[$item2.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 			</tr>
 		{/if}
-		{/foreach}
-		{foreach from=$item.subordinados item=item22 key=key22}
+		{/foreach}<!--End socios-->
+		{foreach from=$item.subordinados item=item22 key=key22}<!--Start gerentes -->
 			{foreach from=$item22.propios item=item3 key=key3 name=gerentes}
 				<tr>
 					<td>{$item3.cliente}</td>
@@ -129,9 +129,9 @@
 						<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item3.encargadoId]['totalDevengado']-$data.totalesEncargados[$item3.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 					</tr>
 				{/if}
-			{/foreach}
-			{foreach from=$item22.subordinados item=item33 key=key33}
-				{foreach from=$item33.propios item=item4 key=key4 name=supervisores}
+			{/foreach}<!-- end gerentes -->
+			{foreach from=$item22.subordinados item=item33 key=key33}<!--start subgerentes-->
+				{foreach from=$item33.propios item=item4 key=key4 name=subgerentes}
 					<tr>
 						<td>{$item4.cliente}</td>
 						<td>{$item4.encargado}</td>
@@ -161,7 +161,7 @@
 						<td>{$item4.totalDevengado|number_format:2:'.':','}</td>
 						<td>{$item4.totalDevengado-$item4.totalTrabajado|number_format:2:'.':','}</td>
 					</tr>
-					{if $smarty.foreach.supervisores.last}
+					{if $smarty.foreach.subgerentes.last}
 						<tr>
 							<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 							<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total empresas</td>
@@ -188,9 +188,9 @@
 
 						</tr>
 					{/if}
-				{/foreach}
-				{foreach from=$item33.subordinados item=item44 key=key44}
-					{foreach from=$item44.propios item=item5 key=key5 name=contadores}
+				{/foreach}<!-- end subgerentes -->
+				{foreach from=$item33.subordinados item=item44 key=key44}<!-- start supervisores -->
+					{foreach from=$item44.propios item=item5 key=key5 name=supervisores}
 						<tr>
 							<td>{$item5.cliente}</td>
 							<td>{$item5.encargado}</td>
@@ -220,7 +220,7 @@
 							<td>{$item5.totalDevengado|number_format:2:'.':','}</td>
 							<td>{$item5.totalDevengado-$item5.totalTrabajado|number_format:2:'.':','}</td>
 						</tr>
-						{if $smarty.foreach.contadores.last}
+						{if $smarty.foreach.supervisores.last}
 							<tr>
 								<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 								<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total empresas</td>
@@ -246,9 +246,9 @@
 								<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item5.encargadoId]['totalDevengado']-$data.totalesEncargados[$item5.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 							</tr>
 						{/if}
-					{/foreach}
-					{foreach from=$item44.subordinados item=item55 key=key55}
-						{foreach from=$item55.propios item=item6 key=key6 name=auxiliares}
+					{/foreach}<!-- end supervisores -->
+					{foreach from=$item44.subordinados item=item55 key=key55}<!-- start contadores -->
+						{foreach from=$item55.propios item=item6 key=key6 name=contadores}<!-- start contadores propios -->
 							<tr>
 								<td>{$item6.cliente}</td>
 								<td>{$item6.encargado}</td>
@@ -278,7 +278,7 @@
 								<td>{$item6.totalDevengado|number_format:2:'.':','}</td>
 								<td>{$item6.totalDevengado-$item6.totalTrabajado|number_format:2:'.':','}</td>
 							</tr>
-							{if $smarty.foreach.auxiliares.last}
+							{if $smarty.foreach.contadores.last}
 								<tr>
 									<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 									<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total empresas</td>
@@ -304,9 +304,67 @@
 									<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item6.encargadoId]['totalDevengado']-$data.totalesEncargados[$item6.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
 								</tr>
 							{/if}
-						{/foreach}
-					{/foreach}
-
+						{/foreach}<!-- end contadores propios -->
+						{foreach from=$item55.subordinados item=item66 key=key66}<!-- start auxiliares -->
+							{foreach from=$item66.propios item=item7 key=key7 name=auxiliares}<!-- start auxiliares propios -->
+								<tr>
+									<td>{$item7.cliente}</td>
+									<td>{$item7.encargado}</td>
+									<td>{$item7.contrato}</td>
+									<td>{$item7.nombreServicio}</td>
+									{foreach from=$item7.instancias item=instancia7}
+										<td style="{if $instancia7.class eq 'CompletoTardio' || $instancia7.class eq 'Completo'}
+													background-color:#009900 !important;color:#FFF;
+											{else}
+													{if $instancia7.class eq 'Iniciado' || $instancia7.class eq 'PorCompletar'}
+														background-color:#FC0 !important;color:#FFF;
+													{else}
+														{if $instancia7.class == "PorIniciar"}
+															background-color:#F00 !important;color:#FFF
+														{/if}
+													{/if}
+											{/if}">
+											<div style="cursor:pointer" >
+												${$instancia7.costo|number_format:2:".":","}
+												{if $instancia7.status eq 'baja'}
+													<span style="color:#DA9696">(Inactivo)</span>
+												{/if}
+											</div>
+										</td>
+									{/foreach}
+									<td>{$item7.totalTrabajado|number_format:2:'.':','}</td>
+									<td>{$item7.totalDevengado|number_format:2:'.':','}</td>
+									<td>{$item7.totalDevengado-$item6.totalTrabajado|number_format:2:'.':','}</td>
+								</tr>
+								{if $smarty.foreach.auxiliares.last}
+									<tr>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total empresas</td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$item66.contratos|count}</td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total trabajado</td>
+										{foreach from=$item66.totalVerticalCompletado item=totalItemComp6}
+											<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$totalItemComp6|number_format:2:'.':','}</td>
+										{/foreach}
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item7.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+									</tr>
+									<tr>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">Total devengado</td>
+										{foreach from=$item66.totalVerticalDevengado item=totalItemDev6}
+											<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$totalItemDev6|number_format:2:'.':','}</td>
+										{/foreach}
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item7.encargadoId]['totalDevengado']|number_format:2:'.':','}</td>
+										<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totalesEncargados[$item7.encargadoId]['totalDevengado']-$data.totalesEncargados[$item7.encargadoId]['totalCompletado']|number_format:2:'.':','}</td>
+									</tr>
+								{/if}
+							{/foreach}<!-- end auxiliares propios -->
+						{/foreach}<!-- end auxiliares-->
+					{/foreach}<!-- end contadores -->
 				{/foreach}
 			{/foreach}
 		{/foreach}
