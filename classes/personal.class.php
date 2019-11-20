@@ -201,7 +201,12 @@ class Personal extends Main
             return $result;
         }
         $this->setPersonalId($infoUser['personalId']);
-        $result = $this->SubordinadosDetails();
+		$result = $this->SubordinadosDetails();
+		foreach($result as $key => $var){
+			$this->Util()->DB()->setQuery("select departamento from departamento where departamentoId = '".$var["departamentoId"]."' ");
+			$result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
+			$result[$key]["nombreJefe"] = $var["jefeName"];
+		}
         return $result;
     }
     public function EnumerateGerenteDepartamento($dep)
