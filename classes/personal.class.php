@@ -203,7 +203,7 @@ class Personal extends Main
         $this->setPersonalId($infoUser['personalId']);
 		$result = $this->SubordinadosDetails();
 		foreach($result as $key => $var){
-			$this->Util()->DB()->setQuery("select departamento from departamento where departamentoId = '".$var["departamentoId"]."' ");
+			$this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$var["departamentoId"]."' ");
 			$result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
 			$result[$key]["nombreJefe"] = $var["jefeName"];
 		}
