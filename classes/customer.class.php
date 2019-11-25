@@ -265,7 +265,7 @@ class Customer extends Main
           }
         } else {
           $rol->setRolId($User['roleId']);
-          $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+          $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
           if (($User["userId"] == $value["responsableCuenta"]
               || $userInfo["jefeContador"] == $User["userId"]
               || $userInfo["jefeSupervisor"] == $User["userId"]
@@ -363,7 +363,7 @@ class Customer extends Main
         }
         //comprobar privilegios del rol o permisos del usuario activo
         $rol->setRolId($User['roleId']);
-        $unlimitedRol = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+        $unlimitedRol = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
         $unlimited = false;
         if ($unlimitedRol) {
           $unlimited = true;
@@ -402,7 +402,7 @@ class Customer extends Main
       }
       $result[$key]['allEmails'] = $allEmailsCliente;
       $rol->setRolId($User['roleId']);
-      $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+      $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
       if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
         unset($result[$key]);
       }
@@ -508,7 +508,7 @@ class Customer extends Main
           }
           //si es usuario con privilegio de ver todos los contratos, de lo contrario que verifique permisos
           $rol->setRolId($User['roleId']);
-          $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+          $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
           if ($unlimited) {
             $result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
           } else {
@@ -528,7 +528,7 @@ class Customer extends Main
         }
       }
       $rol->setRolId($User['roleId']);
-      $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+      $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
       if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
         unset($result[$key]);
       }
@@ -1026,7 +1026,7 @@ class Customer extends Main
 
     $result = $this->Util()->DB()->GetResult();
     $rol->setRolId($User['roleId']);
-    $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'));
+    $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
     foreach ($result as $key => $value) {
       if ($User['departamentoId'] != "1" && !$unlimited) {
         $this->Util()->DB()->setQuery(
@@ -1099,7 +1099,7 @@ class Customer extends Main
     $subordinados = $personal->GetIdResponsablesSubordinados($fil);
     $subs =  implode(",", $subordinados);
     $rol->setRolId($User['roleId']);
-    $unlimited = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar', 'cliente'), array('Juridico RRHH', 'Supervisor de Juridico'));
+    $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar', 'cliente'), array('Juridico RRHH', 'Subgerente'));
     if ($unlimited)
       $join =  " LEFT JOIN ";
     else
@@ -1220,7 +1220,7 @@ class Customer extends Main
           }
           //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
           $rol->setRolId($User['roleId']);
-          $unlimited  = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar', 'cliente'));
+          $unlimited  = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar', 'cliente'));
           $unlimited2 = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar', 'cliente'));
           if ($unlimited) {
             $result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
@@ -1283,7 +1283,7 @@ class Customer extends Main
 
     //comprobar rol si es limitado se usa query diferente
     $rol->setRolId($User['roleId']);
-    $ilimitado = $rol->ValidatePrivilegiosRol(array('gerente', 'supervisor', 'contador', 'auxiliar'), array('Juridico RRHH'));
+    $ilimitado = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'), array('Juridico RRHH','Subgerente'));
 
     if (!$ilimitado) {
       $str = "select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
