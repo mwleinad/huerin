@@ -559,7 +559,6 @@ class ReporteBonos extends Main
             $sub['personalId']=$subId;
             $allEncargados[$subId] = $sub;
         }
-
         $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
@@ -839,45 +838,53 @@ class ReporteBonos extends Main
         $data["totales"] = $totales;
         $data["totalesEncargados"] = $totalesEncargados;
         $newArray = [];
+
         $totalesEncargados = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
         foreach($totalesEncargados as $ke=>$enc){
             if(!array_key_exists($enc['personalId'],$newArray)){
                 $newArray[$enc["personalId"]] = $totalesEncargados[$ke];
-                //si tiene jefe inmediato se suma el total del sub al jefe
                 $this->recursiveTotalEncargado($allEncargados,$newArray, $totalesEncargados[$ke],$enc['totalDevengado'],$enc['totalCompletado'],$enc['sueldoTotal']);
             }
             else{
                 $newArray[$enc["personalId"]]['totalDevengado']  += $enc['totalDevengado'];
                 $newArray[$enc["personalId"]]['totalCompletado'] += $enc['totalCompletado'];
                 $newArray[$enc["personalId"]]['sueldoTotal'] += $enc['sueldoTotal'];
+
+                if($newArray[$enc["personalId"]]["jefeInmediato"]){
+                    $this->recursiveTotalEncargado($allEncargados,$newArray, $totalesEncargados[$ke],$enc['totalDevengado'],$enc['totalCompletado'],$enc['sueldoTotal']);
+                }
             }
         }
+        
         $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'level',false,true);
         $data["totalesEncargadosAcumulado"] = $ordenado;
+        
         return $data;
     }
     function recursiveTotalEncargado($allEncargados,&$newArray,$value,$acumDevengado,$acumCompletado,$sueldo){
-            $this->Util()->DB()->setQuery("select b.nivel from personal a inner join roles b on a.roleId=b.rolId where personalId = '".$value['jefeInmediato']."' ");
-            $level = $this->Util()->DB()->GetSingle();
-	        if(!$value['jefeInmediato']||$level<=1 || !array_key_exists($value["jefeInmediato"],$allEncargados))
-	           return;
-	        if(array_key_exists($value['jefeInmediato'],$newArray)){
-                $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
-                $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
-                $newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
-                if($newArray[$value['jefeInmediato']]['jefeInmediato']){
-                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']],$acumDevengado,$acumCompletado,$sueldo);
-                }
-            }else{
-                $newArray[$value["jefeInmediato"]] = $allEncargados[$value["jefeInmediato"]];
-                $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
-                $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
-                $newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
-                $sueldo = $newArray[$value['jefeInmediato']]["sueldo"]+$sueldo;
-                if($newArray[$value['jefeInmediato']]['jefeInmediato']){
-                    $this->recursiveTotalEncargado($allEncargados,$newArray,$newArray[$value['jefeInmediato']],$acumDevengado,$acumCompletado,$sueldo);
-                }
+        $this->Util()->DB()->setQuery("select b.nivel from personal a inner join roles b on a.roleId=b.rolId where personalId = '" . $value['jefeInmediato'] . "' ");
+        $level = $this->Util()->DB()->GetSingle();
+
+        if (!$value['jefeInmediato'] || $level <= 1 || !array_key_exists($value["jefeInmediato"], $allEncargados))
+            return;
+
+        if (array_key_exists($value['jefeInmediato'], $newArray)) {
+            $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
+            $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
+            $newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
+            if ($newArray[$value['jefeInmediato']]['jefeInmediato']) {
+                $this->recursiveTotalEncargado($allEncargados, $newArray, $newArray[$value['jefeInmediato']], $acumDevengado, $acumCompletado, $sueldo);
             }
+        } else {
+            $newArray[$value["jefeInmediato"]] = $allEncargados[$value["jefeInmediato"]];
+            $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
+            $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
+            $newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
+            $sueldo = $newArray[$value['jefeInmediato']]["sueldo"] + $sueldo;
+            if ($newArray[$value['jefeInmediato']]['jefeInmediato']) {
+                $this->recursiveTotalEncargado($allEncargados, $newArray, $newArray[$value['jefeInmediato']], $acumDevengado, $acumCompletado, $sueldo);
+            }
+        }
     }
     function generarMesesAconsultar($tipoPeriodo,$periodo){
 	    $meses = [];
@@ -951,11 +958,15 @@ class ReporteBonos extends Main
             foreach($servicios as $ks=>$serv) {
                 $temp = [];
                 $isParcial = false;
+
                 if ($serv['status'] == "bajaParcial")
                     $isParcial = true;
+                    
                 $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$serv['contractId']);
+
                 if(!in_array($encargados[$serv['departamentoId']],$subordinados))
                     continue;
+
                 $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
 
                 if(empty($temp)||empty($temp["instancias"]))
@@ -977,7 +988,9 @@ class ReporteBonos extends Main
                 $totalDevengadoGerente += $temp['totalDevengado'];
                 $totalTrabajadoGerente += $temp['totalComplete'];
             }
+
             $allEncargados = [];
+
             foreach($subordinados as $subId){
                 $personal->setPersonalId($subId);
                 $empleado=$personal->InfoWhitRol();
@@ -987,23 +1000,28 @@ class ReporteBonos extends Main
                 $empleado['totalCompletado']=0;
                 $allEncargados[$subId] = $empleado;
             }
+
             $newArray = [];
             $detalleSubordinados = $this->Util()->orderMultiDimensionalArray($detalleSubordinados,'nivel',true,true);
+
             foreach($detalleSubordinados as $ke=>$enc){
                 if(!array_key_exists($enc['personalId'],$newArray)){
                     $newArray[$enc["personalId"]] = $detalleSubordinados[$ke];
-                    //si tiene jefe inmediato se suma el total del sub al jefe
                     if($detalleSubordinados[$ke]["jefeInmediato"])
                         $this->recursiveTotalEncargado($allEncargados,$newArray, $detalleSubordinados[$ke],$enc['totalDevengado'],$enc['totalCompletado'],$enc['sueldoTotal']);
                 }
                 else{
                     $newArray[$enc["personalId"]]['totalDevengado']  += $enc['totalDevengado'];
                     $newArray[$enc["personalId"]]['totalCompletado'] += $enc['totalCompletado'];
+
+                    if($newArray[$enc["personalId"]]["jefeInmediato"])
+                        $this->recursiveTotalEncargado($allEncargados,$newArray, $detalleSubordinados[$ke],$enc['totalDevengado'],$enc['totalCompletado'],$enc['sueldoTotal']);
+
                 }
 
             }
-            $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'nivel',false,true);
 
+            $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'nivel',false,true);
             $personal->setPersonalId($value["personalId"]);
             $currentGerente=$personal->InfoWhitRol();
             $gerentes[$key]["porcentajeBono"] = $currentGerente["porcentajeBono"];
@@ -1012,6 +1030,7 @@ class ReporteBonos extends Main
             $gerentes[$key]["sueldoTotalConSub"] = $totalSueldoIncluidoSubordinados*$countMonth;
             $gerentes[$key]["detalleSubordinados"] = $ordenado;
         }
+
         return $gerentes;
     }
     function generateReportBonosJuridico($contracts = [],$POST=[]){
