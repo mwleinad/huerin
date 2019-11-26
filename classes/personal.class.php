@@ -1110,6 +1110,20 @@ function SubordinadosDetailsAddPass()
         }
         return $ordenJefes;
     }
+    public function ListSocios()
+	{
+		if($this->active)
+			$sqlActive = " AND active = '1'";
+
+		$sql = "SELECT * FROM personal
+				WHERE tipoPersonal = 'Socio' OR roleId in(1,5)
+				".$sqlActive."
+				ORDER BY name ASC";
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+
+		return $result;
+	}
     public function GetIdResponsablesSubordinados($filtro = [])
     {
         global $User;
