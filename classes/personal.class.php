@@ -181,8 +181,8 @@ class Personal extends Main
 	}
     public function Enumerate()
     {
-        global $infoUser;
-        //Socio y Asistente pueden ver todo el personal.
+		global $infoUser;
+		
         if ($this->active)
             $sqlActive = " AND a.active = '1'";
         if ($this->levelRol && $this->showAll)
@@ -199,14 +199,18 @@ class Personal extends Main
             $this->Util()->DB()->setQuery($sql);
             $result = $this->Util()->DB()->GetResult();
             return $result;
-        }
+		}
+		
         $this->setPersonalId($infoUser['personalId']);
 		$result = $this->SubordinadosDetails();
+
 		foreach($result as $key => $var){
 			$this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$var["departamentoId"]."' ");
 			$result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
 			$result[$key]["nombreJefe"] = $var["jefeName"];
 		}
+		$result = $this->Util()->orderMultiDimensionalArray($result,'name');
+
         return $result;
     }
     public function EnumerateGerenteDepartamento($dep)
@@ -254,20 +258,21 @@ class Personal extends Main
 
 	public function ListDepartamentos()
 	{
+		$filtro = "";
+		$filtro .= $_SESSION["User"]["tipoPers"] !="Socio" && $_SESSION["User"]["tipoPers"] !="Coordinador" && !$_SESSION['User']['isRoot'] ? 
+                    " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
+                    : "";
 		$sql = "SELECT
 					*
 				FROM
 					departamentos
+					$filtro
 				ORDER BY
-					departamento ASC";
+					departamento
+				ASC ";
 
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
-
-		foreach($result as $key => $res)
-		{
-			$result[$key]["departamento"] = $result[$key]["departamento"];
-		}
 
 		return $result;
 	}
@@ -283,66 +288,10 @@ class Personal extends Main
 					personal
 				WHERE 1 
 				".$sqlActive."
-				ORDER BY
-					name ASC";
+				ORDER BY name ASC";
 
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
-
-		foreach($result as $key => $res)
-		{
-			$result[$key]["name"] = $result[$key]["name"];
-		}
-
-		return $result;
-	}
-
-	public function ListContadores()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
-
-		$sql = "SELECT
-					*
-				FROM
-					personal
-				WHERE tipoPersonal = 'Contador'
-				".$sqlActive."
-				ORDER BY
-					name ASC";
-
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
-
-		foreach($result as $key => $res)
-		{
-			$result[$key]["name"] = $result[$key]["name"];
-		}
-
-		return $result;
-	}
-
-	public function ListSupervisores()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
-
-		$sql = "SELECT
-					*
-				FROM
-					personal
-				WHERE tipoPersonal = 'Supervisor'
-				".$sqlActive."
-				ORDER BY
-					name ASC";
-
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
-
-		foreach($result as $key => $res)
-		{
-			$result[$key]["name"] = $result[$key]["name"];
-		}
 
 		return $result;
 	}
@@ -365,47 +314,6 @@ class Personal extends Main
 
 		return $result;
 	}
-
-	public function ListGerentes()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
-
-		$sql = "SELECT
-					*
-				FROM
-					personal
-				WHERE tipoPersonal = 'Gerente'
-				".$sqlActive."
-				ORDER BY
-					name ASC";
-
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
-
-		foreach($result as $key => $res)
-		{
-			$result[$key]["name"] = $result[$key]["name"];
-		}
-
-		return $result;
-	}
-
-	public function ListSocios()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
-
-		$sql = "SELECT * FROM personal
-				WHERE tipoPersonal = 'Socio' OR roleId in(1,5)
-				".$sqlActive."
-				ORDER BY name ASC";
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
-
-		return $result;
-	}
-
 	public function Info()
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = '".$this->personalId."'");
