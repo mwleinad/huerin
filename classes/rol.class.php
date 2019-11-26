@@ -384,20 +384,17 @@ class Rol extends main
        return $firstPages;
    }
     public function GetListRoles(){
-        global $User;
+
         $filtro ="";
-        if($User['tipoPers']!='Admin'&&$User['tipoPers']!='Socio'&&$User['tipoPers']!='Coordinador'){
-            $filtro .= " AND lower(name)!='socio' AND lower(name)!='coordinador' ";
-        }else{
-            if($_SESSION['User']['tipoPers']=='Socio')
-                $filtro .=  " AND rolId!=1 ";
-            elseif($_SESSION['User']['tipoPers']=='Coordinador'){
-                $filtro .=  " AND rolId NOT IN (1,5,30)";
-            }
-        }
-        $sql ="SELECT * FROM roles WHERE status='activo' and lower(name)!='cliente' ".$filtro." ORDER BY name ASC";
+        $filtro .= !$_SESSION['User']['isRoot'] ? " and nivel >= '".$_SESSION['User']['level']."' and lower(name) not in ('socio','coordinador') " : "";
+        $filtro .= $_SESSION["User"]["tipoPers"] !="Socio" && $_SESSION["User"]["tipoPers"] !="Coordinador" && !$_SESSION['User']['isRoot'] ? 
+                    " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
+                    : "";
+
+        $sql ="SELECT * FROM roles WHERE status='activo' ".$filtro." ORDER BY name ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+
         return $result;
     }
     public function ValidatePrivilegiosRol($incluye=array(),$except=array()){

@@ -8,20 +8,8 @@ switch($_POST["type"])
 		$departamentos = $personal->ListDepartamentos();
 		$smarty->assign("departamentos", $departamentos);
 
-		$miPersonal = $personal->ListAll();
+		$miPersonal = $personal->Enumerate();
 		$smarty->assign("personal", $miPersonal);
-
-		$contadores = $personal->ListContadores();
-		$smarty->assign("contadores", $contadores);
-
-		$supervisores = $personal->ListSupervisores();
-		$smarty->assign("supervisores", $supervisores);
-
-		$gerentes = $personal->ListGerentes();
-		$smarty->assign("gerentes", $gerentes);
-
-		$socios = $personal->ListSocios();
-		$smarty->assign("socios", $socios);
 
 		$roles = $rol->GetListRoles();
 		$smarty->assign("roles", $roles);
@@ -119,7 +107,7 @@ switch($_POST["type"])
 		}
 	break;
 	case "editPersonal":
-		$miPersonal = $personal->ListAll();
+		$miPersonal = $personal->Enumerate();
 		$smarty->assign("personal", $miPersonal);
 
 		$smarty->assign("DOC_ROOT", DOC_ROOT);
@@ -136,17 +124,6 @@ switch($_POST["type"])
 		$departamentos = $personal->ListDepartamentos();
 		$smarty->assign("departamentos", $departamentos);
 
-		$contadores = $personal->ListContadores();
-		$smarty->assign("contadores", $contadores);
-
-		$supervisores = $personal->ListSupervisores();
-		$smarty->assign("supervisores", $supervisores);
-
-		$gerentes = $personal->ListGerentes();
-		$smarty->assign("gerentes", $gerentes);
-
-		$socios = $personal->ListSocios();
-		$smarty->assign("socios", $socios);
 		//comprobar si se encuentra configurado el empleado con sus expedientes
 		$db->setQuery('select * from personalExpedientes where personalId="'.$myPersonal['personalId'].'" ');
 		$resExp = $db->GetResult();
