@@ -363,7 +363,7 @@ class Log extends Util
 	     $news=array();
          $olds=array();
 	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow');
+             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -462,7 +462,7 @@ class Log extends Util
         $allElements = unserialize($elements);
         $news=array();
         $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja');
+            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
