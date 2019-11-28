@@ -2,9 +2,9 @@
 <thead>
 	<tr>
 		<th align="center" colspan="2">
-        <div style="float:left; margin-left:330px">INFORMACION BASICA DE LA RAZON SOCIAL</div>
-        <div class="iconSH" id="tbInfoProyS" onclick="toggleSection('tbInfoProy',1)" style="display:none">[+]</div>
-        <div class="iconSH" id="tbInfoProyH" onclick="toggleSection('tbInfoProy',0)">[-]</div>
+            <div style="float:left; margin-left:330px">INFORMACION BASICA DE LA RAZON SOCIAL</div>
+            <div class="iconSH" id="tbInfoProyS" onclick="toggleSection('tbInfoProy',1)" style="display:none">[+]</div>
+            <div class="iconSH" id="tbInfoProyH" onclick="toggleSection('tbInfoProy',0)">[-]</div>
         </th>
 	</tr>
 </thead>
@@ -12,34 +12,32 @@
     <tr>
 		<td align="left" width="40%">* Tipo</td>
 		<td align="left">
-    	<select name="type" id="type" class="smallInput medium" onchange="ChangeTipo()">
-      <option value="">Seleccione...</option>
-      <option value="Persona Fisica" {if $contractInfo.type == "Persona Fisica"} selected="selected" {/if} >Persona Fisica</option>
-      <option value="Persona Moral" {if $contractInfo.type == "Persona Moral"} selected="selected" {/if}>Persona Moral</option>
-      </select></td>
+            <select name="type" id="type" class="smallInput medium" onchange="ChangeTipo()">
+                <option value="">Seleccione...</option>
+                <option value="Persona Fisica" {if $contractInfo.type == "Persona Fisica"} selected="selected" {/if} >Persona Fisica</option>
+                <option value="Persona Moral" {if $contractInfo.type == "Persona Moral"} selected="selected" {/if}>Persona Moral</option>
+            </select>
+        </td>
 	</tr>
-
     <tr>
 		<td align="left" width="40%">* Facturador</td>
 		<td align="left">
-    	<select name="facturador" id="facturador" class="smallInput medium">
-         <option value="BHSC" {if $contractInfo.facturador == "BHSC"} selected="selected" {/if} >BHSC</option>
-	     <option value="Huerin" {if $contractInfo.facturador == "Huerin"} selected="selected" {/if} >Braun Huerin SC</option>
-	     <option value="Braun" {if $contractInfo.facturador == "Braun"} selected="selected" {/if} >Jacobo Braun</option>
-	     <option value="Efectivo" {if $contractInfo.facturador == "Efectivo"} selected="selected" {/if} >Efectivo</option>
-      </select></td>
+            <select name="facturador" id="facturador" class="smallInput medium">
+                <option value="BHSC" {if $contractInfo.facturador == "BHSC"} selected="selected" {/if} >BHSC</option>
+                <option value="Huerin" {if $contractInfo.facturador == "Huerin"} selected="selected" {/if} >Braun Huerin SC</option>
+                <option value="Braun" {if $contractInfo.facturador == "Braun"} selected="selected" {/if} >Jacobo Braun</option>
+                <option value="Efectivo" {if $contractInfo.facturador == "Efectivo"} selected="selected" {/if} >Efectivo</option>
+            </select>
+      </td>
 	</tr>
-
     <tr>
 		<td align="left" width="40%">* Raz&oacute;n Social</td>
 		<td align="left"><input name="name" id="name" type="text" value="{$contractInfo.name}" class="smallInput medium" size="50"/></td>
 	</tr>
-
     <tr>
 		<td align="left" width="40%">* RFC</td>
 		<td align="left"><input name="rfc" id="rfc" type="text" value="{$contractInfo.rfc}" class="smallInput medium" size="50"/></td>
 	</tr>
-
     <tr id="tipoDeSociedad" {if $contractInfo.type == "Persona Fisica"}style="display:none"{/if}>
 		<td align="left" width="40%">* Tipo de Sociedad</td>
 		<td align="left">
@@ -51,25 +49,25 @@
             </select>
 			</td>
 		</tr>
-   <tr  id="regimenesFisicos" {if $contractInfo.type == "Persona Moral"}style="display:none"{/if}>
+    <tr  id="regimenesFisicos" {if $contractInfo.type == "Persona Moral"}style="display:none"{/if}>
 		<td align="left" width="40%">* Regimen Fiscal</td>
 		<td align="left">
-            	<select class="smallInput" name="regimenId" id="regimenId" onchange="LoadSubcontracts()">
+            <select class="smallInput" name="regimenId" id="regimenId" onchange="LoadSubcontracts()">
             <option value="">Seleccione</option>
-            {foreach from=$regimenes item=item}
-             <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
-            {/foreach}
+                {foreach from=$regimenes item=item}
+                <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
+                {/foreach}
             </select>
         </td>
 	</tr>
     <tr  id="regimenesMorales" {if $contractInfo.type == "Persona Fisica"}style="display:none"{/if}>
 		<td align="left" width="40%">* Regimen Fiscal</td>
 		<td align="left">
-            	<select class="smallInput" name="regimenIdMoral" id="regimenIdMoral" onchange="LoadSubcontracts()">
-            <option value="">Seleccione</option>
-            {foreach from=$regimenesMoral item=item}
-            <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
-            {/foreach}
+            <select class="smallInput" name="regimenIdMoral" id="regimenIdMoral" onchange="LoadSubcontracts()">
+                <option value="">Seleccione</option>
+                {foreach from=$regimenesMoral item=item}
+                <option value="{$item.regimenId}" {if $contractInfo.regimenId == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona} | {$item.nombreRegimen}</option>
+                {/foreach}
             </select>
         </td>
 	</tr>
@@ -164,20 +162,17 @@
             </select>
         </td>
     </tr>
-
     <tr>
         <td align="left" width="40%" class="tdPad"># Cuenta:</td>
         <td align="left" class="tdPad">
             <input type="text" name="noCuenta" id="noCuenta" class="smallInput" style="width:350px" value="{$contractInfo.noCuenta}"/>
         </td>
     </tr>
-
     <tr>
 		<td align="left" width="40%" class="tdPad">* Direccion de Recoleccion de Papeleria</td>
 		<td align="left" class="tdPad">
-
-        <textarea name="direccionComercial" id="direccionComercial" class="smallInput" style="width:350px" rows="5">{$contractInfo.direccionComercial}</textarea>
-    </td>
+            <textarea name="direccionComercial" id="direccionComercial" class="smallInput" style="width:350px" rows="5">{$contractInfo.direccionComercial}</textarea>
+        </td>
 	</tr>
     <tr>
 		<td align="left" width="40%" class="tdPad">* Responsable contabilidad:</td>
@@ -185,7 +180,7 @@
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
           <option value="">Seleccionar.......</option>
           {foreach from=$empleados item=item}
-            {if $item.name neq '.'}
+            {if $item.name neq '.' && $item.departamentoId eq 1}
           	    <option value="{$item.personalId}" {if $permisos[1]== $item.personalId} selected="selected"{/if}>{$item.name}</option>
             {/if}
           {/foreach}
@@ -194,18 +189,31 @@
 	</tr>
 
 {foreach from=$departamentos item=depto}
+  {assign var="deps" value=[]}
+  {if $depto.departamento eq 'Administracion'}
+    {append var="deps"  value=22 index=$depto.departamentoId}
+  {else}
+    {if $depto.departamento eq 'IMSS'}
+       {append var="deps"  value=8 index=8}
+    {/if}    
+    {if $depto.departamento eq 'Nominas'}
+        {append var="deps"  value=24 index=24}
+    {/if}  
+    {append var="deps"  value=$depto.departamentoId index=$depto.departamentoId}  
+  {/if}
+  
   {if $depto.departamentoId!=1}
   <tr>
-		<td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>
-		<td align="left" class="tdPad">
-          <select name="permisos[]" id="permisos[]" class="smallInput medium">
-          	<option value="">Seleccionar......</option>
-          {foreach from=$empleados item=item}
-            {if $item.name neq '.'}
-          	<option value="{$depto.departamentoId},{$item.personalId}" {if $permisos.{$depto.departamentoId} == $item.personalId} selected="selected"{/if}>{$item.name}</option>
-            {/if}
-          {/foreach}
-          </select>
+    <td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>
+    <td align="left" class="tdPad">
+        <select name="permisos[]" id="permisos[]" class="smallInput medium">
+            <option value="">Seleccionar......</option>
+            {foreach from=$empleados item=item}
+                {if $item.name neq '.' && in_array($item.departamentoId,$deps)}
+                    <option value="{$depto.departamentoId},{$item.personalId}" {if $permisos.{$depto.departamentoId} == $item.personalId} selected="selected"{/if}>{$item.name}</option>
+                {/if}
+            {/foreach}
+        </select>
     </td>
 	</tr>
 	{/if}
