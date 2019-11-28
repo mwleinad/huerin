@@ -123,14 +123,6 @@ class Main
 		
 		return $result;
 	}
-
-	function ListSocios()
-	{
-		$this->Util()->DB()->setQuery("SELECT * FROM socio ORDER BY socioId");
-		$result = $this->Util()->DB()->GetResult();
-		return $result;
-	}
-
 	function SuggestProveedores($value)
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM usuario WHERE email LIKE '%".$value."%'ORDER BY email");

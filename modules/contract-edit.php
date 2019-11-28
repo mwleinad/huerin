@@ -5,12 +5,12 @@
      $user->allowAccess(62);//level 2
      $user->allowAccess(64);//level 3
 	/* End Session Control */
-        if($_SESSION['User']['roleId']==4){
-            header('Location: '.WEB_ROOT.'/customer-only');
-        }
+	if($_SESSION['User']['roleId']==4){
+		header('Location: '.WEB_ROOT.'/customer-only');
+	}
+
 	if($_POST)
 	{
-		//print_r($_POST);
 		if($_POST["type"] == "Persona Moral")
 		{
 			$_POST['regimenId'] = $_POST['regimenIdMoral'];
@@ -39,13 +39,6 @@
 
         //direccion comercial
         $contract->setDireccionComercial($_POST['direccionComercial']);
-        /*$contract->setNoExtComercial($_POST['noExtComercial']);
-        $contract->setNoIntComercial($_POST['noIntComercial']);
-        $contract->setColoniaComercial($_POST['coloniaComercial']);
-        $contract->setMunicipioComercial($_POST['municipioComercial']);
-        $contract->setEstadoComercial($_POST['estadoComercial']);
-        $contract->setCpComercial($_POST['cpComercial']);*/
-
         //responsables de area (no se validan si son obligatorios aunque si deberia)
         $contract->setEncargadoCuenta($_POST['encargadoCuenta']);
         $contract->setResponsableCuenta($_POST['responsableCuenta']);
