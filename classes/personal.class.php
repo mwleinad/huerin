@@ -181,15 +181,15 @@ class Personal extends Main
 	}
     public function Enumerate()
     {
-		global $infoUser;
+		global $User;
 		
         if ($this->active)
             $sqlActive = " AND a.active = '1'";
         if ($this->levelRol && $this->showAll)
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
-
-        if ($infoUser['tipoPersonal'] == "Socio" || $infoUser['tipoPersonal'] == "Admin" || $infoUser['tipoPersonal'] == "Coordinador" || stripos($infoUser['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($infoUser['tipoPersonal'], 'Sistema') !== false) {
-            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
+        
+        if ((int)$User['level'] == 1 || stripos($User['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($User['tipoPersonal'], 'Sistema') !== false) {
+           $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
 					LEFT JOIN roles d on a.roleId=d.rolId
@@ -200,8 +200,8 @@ class Personal extends Main
             $result = $this->Util()->DB()->GetResult();
             return $result;
 		}
-		
-        $this->setPersonalId($infoUser['personalId']);
+	
+        $this->setPersonalId($User['personalId']);
 		$result = $this->SubordinadosDetails();
 
 		foreach($result as $key => $var){
@@ -259,7 +259,7 @@ class Personal extends Main
 	public function ListDepartamentos()
 	{
 		$filtro = "";
-		$filtro .= $_SESSION["User"]["tipoPers"] !="Socio" && $_SESSION["User"]["tipoPers"] !="Coordinador" && !$_SESSION['User']['isRoot'] ? 
+		$filtro .= (int)$_SESSION["User"]["level"] != 1 ? 
                     " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
                     : "";
 		$sql = "SELECT
@@ -1129,7 +1129,7 @@ function SubordinadosDetailsAddPass()
         global $User;
         $idPersons = [];
 
-        if ($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador' || $this->showAll) {
+        if ( (int)$User["level"] == 1|| $this->showAll) {
             //Si seleccionaron TODOS
             if ($filtro['responsableCuenta'] == 0) {
                 $this->setActive(1);

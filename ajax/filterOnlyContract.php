@@ -1,5 +1,5 @@
 <?php
-if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
+if((int)$User["level"] == 1){
     //Si seleccionaron TODOS
     if($formValues['respCuenta'] == 0){
         $personal->setActive(1);
@@ -42,10 +42,7 @@ if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User
 
 }else{
     $idPersons = array();
-    if($formValues['respCuenta']==0)
-        $respCuenta = $User['userId'];
-    else
-        $respCuenta = $formValues['respCuenta'];
+    $respCuenta = $formValues['respCuenta']?$formValues['respCuenta']:$User['userId'];
     array_push($idPersons,$respCuenta);
     if($formValues['subordinados']){
         $personal->setPersonalId($respCuenta);

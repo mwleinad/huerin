@@ -15,7 +15,7 @@
               
          </a> 
          {/if}  
-         {if $User.tipoPersonal == "Socio" || $User.tipoPersonal == "Coordinador"||$User.tipoPersonal == 'Admin'}
+         {if $User.level eq 1}
          <a href="javascript:;" onclick="DeleteNotice({$item.noticeId})">
 	   		<img src="{$WEB_ROOT}/images/icons/action_delete.gif" border="0"/>               
          </a> 

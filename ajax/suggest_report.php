@@ -3,9 +3,6 @@ include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-
-//$user->setEmpresaId($_SESSION["empresaId"], 1);
-//$user->setRfcId($user->getRfcActive());
 $result = $customer->SuggestCustomer($_POST["value"]);
 if(!$result)
 {
