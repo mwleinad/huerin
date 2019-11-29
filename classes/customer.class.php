@@ -1535,12 +1535,12 @@ class Customer extends Main
       $addLimite = "";
 
     $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name, customer.phone, customer.email, customer.password,customer.active 
-				FROM customer
-			    LEFT JOIN contract ON contract.customerId = customer.customerId	 
-				WHERE 1 $ftrCustomer $ftrContract
-			    GROUP BY customerId 	
-				ORDER BY nameContact ASC 
-			$addLimite ";
+				    FROM customer
+			      LEFT JOIN contract ON contract.customerId = customer.customerId	 
+				    WHERE 1 $ftrCustomer $ftrContract
+			      GROUP BY customerId 	
+				    ORDER BY nameContact ASC 
+			      $addLimite ";
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
 

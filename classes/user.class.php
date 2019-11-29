@@ -103,7 +103,6 @@ class User extends Sucursal
 			$card['roleId'] = $row['type'];
             $card['level'] = 1;
 			$card['username'] = $row['name'];
-            $card['level'] = $row['name'];
 			$card['isLogged'] = true;
             $card['isRoot'] = true;
 

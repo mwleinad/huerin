@@ -1,5 +1,5 @@
 <?php
-if($User['tipoPersonal'] == 'Admin' || $User['tipoPersonal'] == 'Socio' || $User['tipoPersonal'] == 'Coordinador'){
+if((int)$User['level'] == 1){
     //Si seleccionaron TODOS
     if($formValues['respCuenta'] == 0){
         $personal->setActive(1);

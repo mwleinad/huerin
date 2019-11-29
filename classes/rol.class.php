@@ -85,11 +85,10 @@ class Rol extends main
     }
     public function Enumerate(){
         $where ="";
-        if($_SESSION['User']['tipoPers']=='Socio')
-            $where =  " AND a.rolId!=1 ";
-        elseif($_SESSION['User']['tipoPers']=='Coordinador'){
-            $where =  " AND a.rolId NOT IN (1,5,30)";
-        }
+        $where .=!$_SESSION["User"]["isRoot"] ? (int)$_SESSION["User"]["level"] != 1 ? " and nivel >= '".$_SESSION['User']['level']."' ":" and nivel > '".$_SESSION['User']['level']."' ":"";
+        $where .= (int)$_SESSION["User"]["level"] != 1? 
+                    " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
+                    : "";
 
        $sql ="SELECT a.*,
               CASE 
@@ -386,8 +385,9 @@ class Rol extends main
     public function GetListRoles(){
 
         $filtro ="";
-        $filtro .= !$_SESSION['User']['isRoot'] ? " and nivel >= '".$_SESSION['User']['level']."' and lower(name) not in ('socio','coordinador') " : "";
-        $filtro .= $_SESSION["User"]["tipoPers"] !="Socio" && $_SESSION["User"]["tipoPers"] !="Coordinador" && !$_SESSION['User']['isRoot'] ? 
+        // $filtro .= !$_SESSION['User']['isRoot'] ? " and nivel >= '".$_SESSION['User']['level']."' " : " and nivel > '".$_SESSION['User']['level']."' ";
+        $filtro .=!$_SESSION["User"]["isRoot"] ? (int)$_SESSION["User"]["level"] != 1 ? " and nivel >= '".$_SESSION['User']['level']."' ":" and nivel > '".$_SESSION['User']['level']."' ":"";
+        $filtro .= (int)$_SESSION["User"]["level"] != 1? 
                     " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
                     : "";
 

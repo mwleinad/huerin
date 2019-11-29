@@ -54,7 +54,7 @@ class Notice extends Main
 
 		//comprobar si el usuario esta permitido que ve el aviso
         foreach($result as $key => $value){
-            if($User['tipoPersonal']!='Admin'&&$User['tipoPersonal']!='Socio'&&$User['tipoPersonal']!='Coordinador'){
+            if( (int)$User["level"] != 1){
                 $this->Util()->DB()->setQuery('SELECT * FROM noticeOwners WHERE noticeId="'.$value['noticeId'].'" ');
                 $res  = $this->Util()->DB()->GetResult();
                 $owners =array();
