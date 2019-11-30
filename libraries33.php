@@ -192,6 +192,7 @@ include_once(DOC_ROOT."/services/CfdiUtil.php");
 include_once(DOC_ROOT."/services/PdfService.php");
 include_once(DOC_ROOT."/services/XmlReaderService.php");
 include_once(DOC_ROOT."/services/QrService.php");
+include_once(DOC_ROOT."/services/invoice/invoice.php");
 
 
 $cfdi = new Cfdi;
@@ -203,6 +204,7 @@ $cfdiUtil = new CfdiUtil;
 $pdfService = new PdfService;
 $xmlReaderService = new XmlReaderService;
 $qrService = new QrService;
+$invoiceService = new InvoiceService;
 
 
 $smarty = new Smarty;

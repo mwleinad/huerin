@@ -1231,29 +1231,12 @@ class Comprobante extends Producto
 			$card['rfc'] = $usr['rfc'];
 			$card['nombre'] = $usr['nombre'];
 			$card['fecha'] = date('d-m-Y',strtotime($val['fecha']));
-			$cadenaOriginal = explode("|", $val["cadenaOriginal"]);
 			$card['subTotal'] = $val["subTotal"];
 			$card['total'] = $val["total"];
-			foreach($cadenaOriginal as $keyCadena => $cadena)
-			{
-				if($cadena == "IVA")
-				{
-					if($countIvas == 1)
-					{
-						$card['ivaTotal'] = $cadenaOriginal[$keyCadena + 2];
-						$countIvas = 0;
-					}
-					$countIvas++;
-				}
-
-				if($cadena == "ISR")
-				{
-					$card['isrRet'] = $cadenaOriginal[$keyCadena + 1];
-				}
-			}
+			
 			$card['total_formato'] = number_format($card['total'],2,'.',',');
 			$card['subtotal_formato'] = number_format($card['subTotal'],2,'.',',');
-			$card['iva_formato'] = number_format($card['ivaTotal'],2,'.',',');
+			$card['iva_formato'] = number_format($val['ivaTotal'],2,'.',',');
 			$card['serie'] = $val['serie'];
 			$card['folio'] = $val['folio'];
 			$card['comprobanteId'] = $val['comprobanteId'];

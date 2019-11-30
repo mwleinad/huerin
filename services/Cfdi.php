@@ -220,15 +220,12 @@ class Cfdi extends Comprobante
         if(!$xml->isNomina()){
             $vs->setUserId($userId, 1);
             $nodoReceptor = $vs->GetUserInfo($userId);
-
             $nodoReceptor["rfc"] = str_replace("&AMP;", "&", $nodoReceptor["rfc"]);
-
         } else {
             $usuario = new Usuario;
             $usuario->setUsuarioId($userId);
             $nodoReceptor = $usuario->InfoUsuario();
         }
-
         $data["nodoReceptor"] = $nodoReceptor;
         //checar si nos falta unidad en alguno
         foreach($_SESSION["conceptos"] as $concepto)
