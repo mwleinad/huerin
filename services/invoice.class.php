@@ -283,7 +283,7 @@ class Invoice extends Comprobante
                    $row['comprobanteId'] =0;
 
                 $row['date'] =date('Y-m-d');
-                $row['isRifNoInstance'] =true;
+                $row['isRifNoInstance']=true;
                }
            }
            //comprobar si la instancia del mes en cuestion no tenga comprobante emitido , de existir se excluye.

@@ -20,7 +20,7 @@ class CronServicio extends Contract
                  inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId  and b.status='1'
                  inner join contract c on a.contractId=c.contractId and c.activo='Si' $sqlContract
                  inner join customer d on c.customerId=d.customerId and d.active='1' $sqlCustomer
-                 where a.status in('activo','bajaParcial') and a.inicioOperaciones!='0000-00-00' and a.lastDateCreateWorkflow<'".$fechaCorriente."' limit 300";
+                 where a.status in('activo','bajaParcial') and a.inicioOperaciones!='0000-00-00' and a.lastDateCreateWorkflow<'".$fechaCorriente."' order by a.contractId asc limit 300";
          $this->Util()->DB()->setQuery($sql);
          return $this->Util()->DB()->GetResult();
     }
@@ -226,7 +226,6 @@ class CronServicio extends Contract
     public function CreateWorkflow(){
         //encontrar los servicios sin necesidad de filtros
        $fechaCorriente=  $this->Util()->getFirstDate(date('Y-m-d'));
-
        $servicios = $this->getListServices();
        foreach($servicios as $key=>$servicio){
            $costoWorkflow = $servicio['costo'];

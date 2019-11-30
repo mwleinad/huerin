@@ -45,8 +45,6 @@ Event.observe(window, 'load', function()
 		}
 		
 	}
-
-		
 		AddSuggestListener2 = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
@@ -55,7 +53,6 @@ Event.observe(window, 'load', function()
 			FillRFC2(1, id);
 			return;
 		}
-
 		del = el.hasClassName('closeSuggestUserDiv');
 		if(del == true){
 			$('suggestionDiv2').hide();
@@ -89,7 +86,6 @@ function FillRFC2(elem, id)
 function FillDatos(id)
 {
 	$('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-//	$('suggestionDiv').hide();
 	new Ajax.Request(WEB_ROOT+'/ajax/fill_form_report.php', 
 	{
   	parameters: {value: id, type: "datos"},
@@ -109,8 +105,6 @@ function FillDatos(id)
 function FillDatos2(id)
 {
 	$('loadingDivDatosFactura2').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-
-//	$('suggestionDiv').hide();
 	new Ajax.Request(WEB_ROOT+'/ajax/fill_form_servicios.php', 
 	{
   	parameters: {value: id, type: "datos"},
