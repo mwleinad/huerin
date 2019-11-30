@@ -53,4 +53,6 @@ array_map('unlink', glob($mask));
 $mask = DOC_ROOT.'/temp/20_B_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));
-$res = $invoiceService->GenerateInvoices(28);
+echo " inicio ". date("Y-m-d H:i:s").chr(13).chr(10);
+$res = $invoiceService->GenerateInvoices();
+echo " fin ". date("Y-m-d H:i:s").chr(13).chr(10);
