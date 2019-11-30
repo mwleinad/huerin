@@ -13,6 +13,7 @@ class InvoiceService extends Cfdi{
     private $logString;
     private $createdInvoice;
     private $month13=false;
+    private $procesoRealizado;
     function getServiciosToConceptos(){
         return $this->serviciosToConceptos;
     }
@@ -39,6 +40,9 @@ class InvoiceService extends Cfdi{
     }
     function setMonth13($val){
         $this->month13 =  $val;
+    }
+    function setProcesoRealizado($val){
+        $this->procesoRealizado =  $val;
     }
     function setEmisor(){
         switch($this->currentContract["facturador"]){
@@ -136,7 +140,7 @@ class InvoiceService extends Cfdi{
        $results =  $this->Util()->DB()->GetResult();
        foreach($results as $item){
            if(!$this->Util()->isValidateDate($item["inicioFactura"],'Y-m-d'))
-            continue;
+                continue;
 
            $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
            $firstDayInicioFactura = $this->Util()->getFirstDate($item["inicioFactura"]);
@@ -284,12 +288,14 @@ class InvoiceService extends Cfdi{
         $this->GetFilterServicesByContract();
         if(!count($this->getServiciosToConceptos()))
             return false;
+
         $this->setMonth13(false);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
         $result = $this->Generar($this->data);
         $this->isCreatedInvoice(true);
         if(!$result){
+            $this->setProcesoRealizado(false);
             $this->logString .=chr(13).chr(10)." Error al generar factura para ".$this->currentContract['name']." con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
             $this->logString .="ERROR PAC =".$_SESSION['errorPac'].chr(13).chr(10);
         } else {
@@ -309,10 +315,15 @@ class InvoiceService extends Cfdi{
     function CreateInvoice13(){
         $_SESSION["conceptos"] = [];
         $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
+        if(!$this->procesoRealizado)
+            return false;
+
         if(date("m",strtotime($firstDayCurrentDate))!=12)
             return false;
+
         if(!count($this->getServiciosToConceptos()))
             return false;
+
         $this->setMonth13(true);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
@@ -329,6 +340,7 @@ class InvoiceService extends Cfdi{
         $contratos =  $this->GetContracts($id);
         foreach($contratos as $contrato){
             $this->setMonth13(false);
+            $this->setProcesoRealizado(true);
             $this->resetLogString();
             $this->setInitTimeExecution();
             $this->isCreatedInvoice(false);
@@ -341,13 +353,15 @@ class InvoiceService extends Cfdi{
             if($contrato["noFactura13"]=="No"){
                 $this->CreateInvoice13();
             }
-                
-
+    
             $this->ChangeLastProcessInvoice();
             $this->GenerateSendLog();
         }
     }
     function ChangeLastProcessInvoice(){
+        if(!$this->procesoRealizado)
+            return false;
+
         $currentDate = date("Y-m-d");
         $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
                 WHERE contractId='".$this->currentContract["contractId"]."' ";
