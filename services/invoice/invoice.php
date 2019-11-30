@@ -346,6 +346,7 @@ class InvoiceService extends Cfdi{
             $this->isCreatedInvoice(false);
             $this->resetWorkflows();
             $this->setCurrentContract($contrato);
+            echo "s l";
             if(!$this->Util->ValidateRfc($this->currentContract["rfc"]))
                 continue;
 
@@ -363,7 +364,7 @@ class InvoiceService extends Cfdi{
             return false;
 
         $currentDate = date("Y-m-d");
-        echo $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
+        $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
                 WHERE contractId='".$this->currentContract["contractId"]."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
