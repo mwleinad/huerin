@@ -354,6 +354,7 @@ class InvoiceService extends Cfdi{
             if($contrato["noFactura13"]=="No"){
                 $this->CreateInvoice13();
             }
+            echo "ssss";
     
             $this->ChangeLastProcessInvoice();
             $this->GenerateSendLog();
