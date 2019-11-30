@@ -363,7 +363,7 @@ class InvoiceService extends Cfdi{
             return false;
 
         $currentDate = date("Y-m-d");
-        $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
+        echo $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
                 WHERE contractId='".$this->currentContract["contractId"]."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
