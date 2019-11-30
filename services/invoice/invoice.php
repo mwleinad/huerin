@@ -346,7 +346,7 @@ class InvoiceService extends Cfdi{
             $this->isCreatedInvoice(false);
             $this->resetWorkflows();
             $this->setCurrentContract($contrato);
-            echo "s l";
+
             if(!$this->Util->ValidateRfc($this->currentContract["rfc"]))
                 continue;
 
@@ -354,7 +354,7 @@ class InvoiceService extends Cfdi{
             if($contrato["noFactura13"]=="No"){
                 $this->CreateInvoice13();
             }
-            echo "ssss";
+
     
             $this->ChangeLastProcessInvoice();
             $this->GenerateSendLog();
