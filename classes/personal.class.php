@@ -189,7 +189,7 @@ class Personal extends Main
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
         
         if ((int)$User['level'] == 1 || stripos($User['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($User['tipoPersonal'], 'Sistema') !== false) {
-           $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
+           echo $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
 					LEFT JOIN roles d on a.roleId=d.rolId
@@ -199,18 +199,17 @@ class Personal extends Main
             $this->Util()->DB()->setQuery($sql);
             $result = $this->Util()->DB()->GetResult();
             return $result;
+
 		}
 	
-        $this->setPersonalId($User['personalId']);
+        $this->setPersonalId($User['userId']);
 		$result = $this->SubordinadosDetails();
-
 		foreach($result as $key => $var){
 			$this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$var["departamentoId"]."' ");
 			$result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
 			$result[$key]["nombreJefe"] = $var["jefeName"];
 		}
 		$result = $this->Util()->orderMultiDimensionalArray($result,'name');
-
         return $result;
     }
     public function EnumerateGerenteDepartamento($dep)

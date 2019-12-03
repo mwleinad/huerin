@@ -85,7 +85,13 @@ class Rol extends main
     }
     public function Enumerate(){
         $where ="";
-        $where .=!$_SESSION["User"]["isRoot"] ? (int)$_SESSION["User"]["level"] != 1 ? " and nivel >= '".$_SESSION['User']['level']."' ":" and nivel > '".$_SESSION['User']['level']."' ":"";
+        $where .=!$_SESSION["User"]["isRoot"] ? 
+                 (int)$_SESSION["User"]["level"] != 1 ? 
+                 " and nivel >= '".$_SESSION['User']['level']."' "
+                 :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ? 
+                 " and nivel > '".$_SESSION['User']['level']."' "
+                 : " and (nivel > '".$_SESSION['User']['level']."'  or lower(name) = 'asistente socio') "
+                 :"";
         $where .= (int)$_SESSION["User"]["level"] != 1? 
                     " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
                     : "";
@@ -385,8 +391,13 @@ class Rol extends main
     public function GetListRoles(){
 
         $filtro ="";
-        // $filtro .= !$_SESSION['User']['isRoot'] ? " and nivel >= '".$_SESSION['User']['level']."' " : " and nivel > '".$_SESSION['User']['level']."' ";
-        $filtro .=!$_SESSION["User"]["isRoot"] ? (int)$_SESSION["User"]["level"] != 1 ? " and nivel >= '".$_SESSION['User']['level']."' ":" and nivel > '".$_SESSION['User']['level']."' ":"";
+        $filtro .=!$_SESSION["User"]["isRoot"] ? 
+                   (int)$_SESSION["User"]["level"] != 1 ? 
+                   " and nivel >= '".$_SESSION['User']['level']."' "
+                   :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ? 
+                   " and nivel > '".$_SESSION['User']['level']."' "
+                   : " and (nivel > '".$_SESSION['User']['level']."'  or lower(name) = 'asistente socio') "
+                   :"";
         $filtro .= (int)$_SESSION["User"]["level"] != 1? 
                     " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
                     : "";
