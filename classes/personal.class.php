@@ -189,7 +189,7 @@ class Personal extends Main
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
         
         if ((int)$User['level'] == 1 || stripos($User['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($User['tipoPersonal'], 'Sistema') !== false) {
-           echo $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
+           $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
 					LEFT JOIN roles d on a.roleId=d.rolId
