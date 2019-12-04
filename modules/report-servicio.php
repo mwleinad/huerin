@@ -8,9 +8,7 @@
 
     $departamentos = $departamentos->Enumerate();
 	$smarty->assign("departamentos", $departamentos);
-	
-	//$clientes = $customer->Enumerate();
-	$smarty->assign("clientes", $clientes);
+
 	$smarty->assign("search", $_SESSION["search"]);
 	
 	//$clientes = $workflow->EnumerateWorkflows($clientes, date("m"), date("Y"));
