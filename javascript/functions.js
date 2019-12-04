@@ -17,8 +17,7 @@ function LoginCheck()
   	parameters: $('loginForm').serialize(true),
 		method:'post',
     onSuccess: function(transport){
-      var response = transport.responseText || "no response text";
-			console.log(response);
+      		var response = transport.responseText || "no response text";
 			var splitResponse = response.split("|");
 			if(splitResponse[0] == "fail")
 			{
@@ -30,10 +29,9 @@ function LoginCheck()
 			{
 				Redirect('/sistema');
 			}
-		},
+	},
     onFailure: function(){ alert('Something went wrong...') }
   });
-
 }
 function ToogleStatusDiv()
 {

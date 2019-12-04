@@ -4,12 +4,13 @@
 			<input type="hidden" id="sociedadId" name="sociedadId" value="{$post.sociedadId}"/>
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">* Nombre de la Sociedad:</div><input name="nombreSociedad" id="nombreSociedad" type="text" value="{$post.nombreSociedad}" size="50"/>
+				<div style="width:30%;float:left">* Nombre de la Sociedad:</div><input name="nombreSociedad" id="nombreSociedad" type="text" value="{$post.nombreSociedad}"  class="largeInput"/>
 			</div>
 			<div style="clear:both"></div>
 			<hr />
-			<div class="formLine" style="text-align:center">
-				<input type="button" id="addSociedadButton" name="addSociedadButton" class="buttonForm" value="Agregar" />
+			{include file= "{$DOC_ROOT}/templates/boxes/loader.tpl"}
+			<div class="formLine" style="text-align:center; margin-left:300px">
+				<a class="button_grey" id="addSociedadButton" name="addSociedadButton"><span>Agregar</span></a>
 			</div>
 		</fieldset>
 	</form>

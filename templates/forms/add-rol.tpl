@@ -42,7 +42,7 @@
 			<hr />
 			<div class="formLine" style="text-align:center">
 				<span style="float:left">* Campos Obligatorios</span>
-				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-imgs"/>
+				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
 				<input type="submit" {if !$post}id="btnRol" name="btnRol"{else}id="btnEdit" name="btnEdit"{/if} class="buttonForm" value="{if $post}Actualizar{else}Guardar{/if}" />
 			</div>
 		</fieldset>

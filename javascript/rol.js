@@ -177,6 +177,7 @@ function SaveConfig(self){
         contentType: false,
         type: 'POST',
         beforeSend: function(){
+            jQ("#loader").show();
             jQ('#saveConfig').hide();
         },
         success: function(response){
@@ -186,6 +187,7 @@ function SaveConfig(self){
                 ShowStatusPopUp(splitResp[1]);
             }
             else{
+                jQ("#loader").hide();
                 jQ('#saveConfig').show();
                 ShowStatusPopUp(splitResp[1]);
             }
@@ -217,9 +219,8 @@ function ExecuteFunRol(self){
         contentType: false,
         type: 'POST',
         beforeSend: function(){
-            jQ('#btnRol').hide();
+            jQ('.buttonForm').hide();
             jQ('#loading-img').show();
-
         },
         success: function(response){
             var splitResp = response.split("[#]");
@@ -230,7 +231,7 @@ function ExecuteFunRol(self){
             }
             else{
                 jQ('#loading-img').hide();
-                jQ('#btnRol').show();
+                jQ('#buttonForm').show();
                 ShowStatusPopUp(splitResp[1]);
             }
         }

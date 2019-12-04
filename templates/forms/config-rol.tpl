@@ -41,6 +41,7 @@
 			<div style="clear:both"></div>
 			<hr />
 			<div style="clear:both"></div>
+			{include file= "{$DOC_ROOT}/templates/boxes/loader.tpl"}
 			<div class="formLine" style="text-align:center; margin-left:300px">
 				<a class="button_grey" id="saveConfig"><span>Guardar permiso</span></a>
 			</div>
