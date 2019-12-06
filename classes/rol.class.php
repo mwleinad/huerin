@@ -87,14 +87,14 @@ class Rol extends main
         $where ="";
         $where .=!$_SESSION["User"]["isRoot"] ? 
                  (int)$_SESSION["User"]["level"] != 1 ? 
-                 " and nivel >= '".$_SESSION['User']['level']."' "
+                 " and a.nivel >= '".$_SESSION['User']['level']."' "
                  :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ? 
-                 " and nivel > '".$_SESSION['User']['level']."' "
-                 : " and (nivel > '".$_SESSION['User']['level']."'  or lower(name) = 'asistente socio') "
+                 " and a.nivel > '".$_SESSION['User']['level']."' "
+                 : " and (a.nivel > '".$_SESSION['User']['level']."'  or lower(a.name) = 'asistente socio') "
                  :"";
-        $where .= (int)$_SESSION["User"]["level"] != 1? 
-                    " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
-                    : "";
+        $where .= (int)$_SESSION["User"]["level"] != 1 ?
+                   " and a.nivel <= 6 and a.departamentoId = '".$_SESSION["User"]["departamentoId"]."' "
+                   : "";
 
        $sql ="SELECT a.*,
               CASE 
@@ -106,6 +106,15 @@ class Rol extends main
        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
        return $result;
     }
+    public function EnumerateAll(){
+        $sql ="SELECT a.*,
+               CASE WHEN a.departamentoId is null THEN 'SIN DEPARTAMENTO'
+               ELSE b.departamento END AS departamento
+               FROM roles a LEFT JOIN departamentos b ON a.departamentoId=b.departamentoId WHERE a.status='activo' ".$where." ORDER BY b.departamento ASC,a.name ASC";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+        return $result;
+    }
     public function EnumeratePorcentajes(){
         $sql ="SELECT * FROM porcentajesBonos order by categoria ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
@@ -113,7 +122,7 @@ class Rol extends main
         return $result;
     }
     public function GetRolesGroupByDep(){
-       $res = $this->Enumerate();
+       $res = $this->EnumerateAll();
        $groups = array();
        $deps = array();
        foreach($res as $key => $item){
@@ -426,10 +435,13 @@ class Rol extends main
             if(stripos(strtolower($row['name']),$excep)!==false)
                 $lim--;
         }
+
         if($lim>0)
             return false;
-        else
+        else{
             return true;
+        }
+
     }
     public function DrawChildrenExcel(&$row,$sheet,$children,$styles){
         foreach($children as $var){
