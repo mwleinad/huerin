@@ -646,6 +646,8 @@ class ReporteBonos extends Main
             switch($encargado["nivel"]){
                 case 1:
                     $serviciosEncontrados[$encargadoDep]["propios"][]=$service;
+                    $serviciosEncontrados[$encargadoDep]["propios"] = $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$encargadoDep]["propios"],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$encargadoDep]['contratos']))
                         $serviciosEncontrados[$encargadoDep]['contratos'] = [];
 
@@ -677,6 +679,9 @@ class ReporteBonos extends Main
                 break;
                 case 2://gerente
                     $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['propios'] =
+                        $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['propios'],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos']))
                         $serviciosEncontrados[$socio]["subordinados"][$encargadoDep]['contratos'] = [];
 
@@ -710,6 +715,9 @@ class ReporteBonos extends Main
                 break;   
                 case 3: //subgerente                                              
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'][]=$service;
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'] =
+                        $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos']))
                         $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['contratos'] = [];
 
@@ -742,6 +750,9 @@ class ReporteBonos extends Main
                 break;
                 case 4://supervisor
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['propios'] =
+                        $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['propios'],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos']))
                         $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$encargadoDep]['contratos'] = [];
 
@@ -774,6 +785,9 @@ class ReporteBonos extends Main
                 break;
                 case 5://contador
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['propios'] =
+                        $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['propios'],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"]))
                         $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]["contratos"]=[];
 
@@ -804,6 +818,9 @@ class ReporteBonos extends Main
                 break;
                 case 6://auxiliar
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['propios'][]=$service;
+                    $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['propios']=
+                        $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]['propios'],"nombreServicio");
+
                     if(!is_array($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"]))
                         $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$contador]["subordinados"][$encargadoDep]["contratos"]=[];
 
