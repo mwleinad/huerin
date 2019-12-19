@@ -1338,8 +1338,8 @@ class Customer extends Main
           recepcion,cuentas,contador,asistente,contador,auxiliar = usar supevisor encontrado en $jefes
       */
       switch ($needle) {
-        case 'Contador':
-        case 'Auxiliar':
+        case 'contador':
+        case 'auxiliar':
           $result[$key]["supervisadoBy"] = $jefes['Supervisor'];
         break;
         default:
@@ -1372,7 +1372,6 @@ class Customer extends Main
     if ($this->active) {
       $sqlActive = " AND active = '1' ";
     }
-
     if ($customerId) {
       $add = " AND customer.customerId = '" . $customerId . "' ";
       if ($page == "report-servicio") {
@@ -1383,14 +1382,14 @@ class Customer extends Main
     if ($tipo == "Activos") {
       $addActivo = " AND active = '1' ";
     } elseif ($tipo == "Inactivos") {
-      $addActivo = " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
+      $addActivo = " AND (active = '0' OR (active = '1' AND contract.activo = 'No' )) ";
     } else {
       $addActivo = " AND active = '1' ";
     }
     if (strlen($like) > 1) {
       $addWhere = " AND (customer.nameContact LIKE '%" . $like . "%'
-				                   OR contract.name LIKE '%" . $like . "%' 
-					               OR contract.rfc LIKE '%" . $like . "%')";
+				    OR contract.name LIKE '%" . $like . "%' 
+					OR contract.rfc LIKE '%" . $like . "%') ";
     }
 
     if ($limite)
@@ -1398,18 +1397,16 @@ class Customer extends Main
     else
       $addLimite = "";
 
-    $sql = "SELECT 
-						customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name,
+    $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name,
 			customer.phone, customer.email, customer.password,customer.active 
-						FROM customer
+			FROM customer
 			LEFT JOIN contract ON contract.customerId = customer.customerId	
-						WHERE 1 " . $sqlActive . " " . $add . " " . $addActivo . " " . $addWhere . "
+			WHERE 1  $sqlActive $add $addActivo  $addWhere 
 			GROUP BY customerId 	
-						ORDER BY nameContact ASC 
-			" . $addLimite . "";
+			ORDER BY nameContact ASC 
+			 $addLimite  ";
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
-
     $count = 0;
     $filtro = new Filtro;
     $data["subordinados"] = $filtro->Subordinados($User["userId"]);
@@ -1419,7 +1416,6 @@ class Customer extends Main
       $result[$key]["doBajaTemporal"] = 0;
       $result[$key]["haveTemporal"] = 0;
       $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
-
       $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
       $allContracts = [];
       $allContracts = $this->GetRazonesSociales($val["customerId"]);
@@ -1433,14 +1429,14 @@ class Customer extends Main
         $result[$key]["showCliente"] = 0;
         foreach ($result[$key]["contracts"] as $keyContract => $value) {
           $nameEncargados = $creport->encargadosArea($value['contractId']);
+
           foreach ($nameEncargados as $var) {
             $result[$key]["contracts"][$keyContract]['resp' . ucfirst(strtolower($var['departamento']))] = $var['personalId'];
             $result[$key]["contracts"][$keyContract]['name' . ucfirst(strtolower($var['departamento']))] = $var['name'];
           }
-          //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
+
           $idResponsable = $result[$key]["contracts"][$keyContract]['respContabilidad'];
-          if (!$idResponsable)
-            $idResponsable = 0;
+          $idResponsable = !$idResponsable?0:$idResponsable;
 
           $result[$key]["contracts"][$keyContract]["responsable"] =  $result[$key]["contracts"][$keyContract]['nameContabilidad'];
           $contract = new Contract;
@@ -1457,8 +1453,8 @@ class Customer extends Main
               recepcion,cuentas,contador,asistente,auxiliar = usar supevisor encontrado en $jefes
           */
           switch ($needle) {
-            case 'Contador':
-            case 'Auxiliar':
+            case 'contador':
+            case 'auxiliar':
               $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
             break;
             default:
@@ -1496,7 +1492,6 @@ class Customer extends Main
         $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
         $result[$key]["contracts"][0]["fake"] = 1;
       }
-
       $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
     } //foreach
     return $result;
@@ -1535,18 +1530,24 @@ class Customer extends Main
       $addLimite = "";
 
     $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name, customer.phone, customer.email, customer.password,customer.active 
-				    FROM customer
-			      LEFT JOIN contract ON contract.customerId = customer.customerId	 
-				    WHERE 1 $ftrCustomer $ftrContract
-			      GROUP BY customerId 	
-				    ORDER BY nameContact ASC 
-			      $addLimite ";
+            FROM customer
+            LEFT JOIN contract ON contract.customerId = customer.customerId	 
+            WHERE 1 $ftrCustomer $ftrContract 
+            GROUP BY customerId 	
+            ORDER BY nameContact ASC 
+            $addLimite ";
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
 
     $count = 0;
     $filtro = new Filtro;
-    $data["subordinados"] = $filtro->Subordinados($User["userId"]);
+
+    /*$currentUserId = $_POST["responsableCuenta"] > 0 ?
+                     $_POST["responsableCuenta"] :
+                     $User["level"] > 1 ? $User["userId"] :
+                     0;*/
+    $currentUserId = $User["userId"];
+    $data["subordinados"] = $filtro->Subordinados($currentUserId);
 
     foreach ($result as $key => $val) {
       $result[$key]["showCliente"] = 1;
@@ -1594,8 +1595,8 @@ class Customer extends Main
               recepcion,cuentas,contador,asistente,contador,auxiliar = usar supevisor encontrado en $jefes
           */
           switch ($needle) {
-            case 'Contador':
-            case 'Auxiliar':
+            case 'contador':
+            case 'auxiliar':
               $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
             break;
             default:
@@ -1620,22 +1621,18 @@ class Customer extends Main
               continue;
             }
           }
-          //Agregar o no agregar servicio a arreglo de contratos?
           foreach ($serviciosContrato as $servicio) {
-            //$responsableId = $result[$key]["contracts"][$keyContract]['permisos'][$servicio['departamentoId']];
             $data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
-            //Si es usuario de contabilidad
             $data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
           } //foreach
-          //contratos sin servicio se eliminan no deberia eliminarlos solo poner en falso para que salf en la busqueda
           $result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
         } //foreach
       } else {
         $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
         $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
         $result[$key]["contracts"][0]["fake"] = 1;
+        //$result[$key]["showCliente"] = 0;
       }
-
       $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
     } //foreach
     return $result;
