@@ -1389,7 +1389,7 @@ class Customer extends Main
         $result[$key]["contracts"][0]["fake"] = 1;
 
         $rol->setRolId($User["roleId"]);
-        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'));
+        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'),['socio']);
       }
       $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
     } //foreach
