@@ -11,21 +11,19 @@
 	//Obtenemos los Tipos de Contrato
 	$categories = $contCat->Enumerate();
 	//si por alguna razon el usuario cliente quisiera ingresar con otro id obligar a que sea exclusivo de el.
-     if($_SESSION['User']['roleId']==4)
+     if($_SESSION['User']['level']>6)
          $_GET['id']= $_SESSION['User']['userId'];
 	
 	$val = split('-',$_GET['id']);
 	
 	$id = $val[0];
 	$status = $val[1];
-		
+
 	$resContracts = $contract->Enumerate($id, $status);
 
-	//print_r($resContracts);
 	$customer->setCustomerId($_GET["id"]);
 	$infoCustomer = $customer->Info();
-	
-	//session
+
 	$_SESSION["search"]["customer"] = $infoCustomer["customerId"];
 	$_SESSION["search"]["customerName"] = $infoCustomer["nameContact"];
 

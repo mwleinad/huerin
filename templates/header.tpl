@@ -12,7 +12,7 @@
 {if $page != "login"}
     <div class="grid_logo" id="logo" style="height:69px; padding-left:10px; font-size:20px">
     <a href="{$WEB_ROOT}">
-        <img src="http://www.braunhuerin.com.mx/imagenes/logo.png" height="60" border="0" />
+        <img src="{$WEB_ROOT}/images/logo.svg" height="60" border="0" />
     </a>
     </div>    
     <div class="grid_wlc">

@@ -621,6 +621,7 @@ class ReporteBonos extends Main
             }
             else
                 continue;
+
             $encargadoDep = $encargados[$service['departamentoId']];
             $personal->setPersonalId($encargadoDep);
             $encargado =$personal->InfoWhitRol();

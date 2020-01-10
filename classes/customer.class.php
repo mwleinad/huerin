@@ -286,129 +286,6 @@ class Customer extends Main
     }
     return $result;
   }
-  /*
-   * EnumerateOptimizado
-   * Quitar ordenamiento ASC (quita mucho tiempo)
-   * Quitar el foreach de encontrar los subordinados por cada servicio eso se hace en el foreach de contratos.
-   */
-  public function EnumerateOptimizado($type = "subordinado", $customerId = 0, $tipo = "")
-  {
-    global $User, $page, $rol;
-    if ($customerId) {
-      $add = " AND customerId = '" . $customerId . "' ";
-    }
-    if ($tipo == "Activos") {
-      $addActivo = " AND active = '1' ";
-    } elseif ($tipo == "Inactivos") {
-      $addActivo = " AND active = '0' ";
-    } else {
-      $addActivo = " AND active = '1' ";
-    }
-    $sql = "SELECT 	*  FROM customer  WHERE 1 " . $sqlActive . " " . $add . " " . $addActivo . "";
-    $this->Util()->DB()->setQuery($sql);
-    $result = $this->Util()->DB()->GetResult();
-    $count = 0;
-    $personal = new Personal;
-    $personal->setPersonalId($User["userId"]);
-    $subordinados = $personal->Subordinados();
-    foreach ($result as $key => $val) {
-      $allEmailsCliente = array();
-      $sql = "SELECT contract.* FROM contract WHERE customerId = '" . $val["customerId"] . "' AND activo = 'Si' ORDER BY contractId ASC";
-      $this->Util()->DB()->setQuery($sql);
-      $result[$key]["contracts"] = $this->Util()->DB()->GetResult();
-      $result[$key]["servicios"] = count($result[$key]["contracts"]);
-      //de todas las cuentas, revisar si al menos una esta asignada a nosotros
-      $showCliente = false;
-      $result[$key]["servicios"] = 0;
-      foreach ($result[$key]["contracts"] as $keyContract => $value) {
-        $contract = new Contract;
-        $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-        //checar servicios del contrato para saber si lo debemos mostrar o no
-        $this->Util()->DB->setQuery(
-          "SELECT 
-					servicioId, nombreServicio, departamentoId 
-				  FROM 
-					servicio 
-				  LEFT JOIN 
-					tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-				  WHERE 
-					contractId = '" . $value["contractId"] . "' AND servicio.status = 'activo' AND tipoServicio.status='1' "
-        );
-        $serviciosContrato = $this->Util()->DB()->GetResult();
-        $cUser = new User;
-        $cUser->setUserId($value["responsableCuenta"]);
-        $userInfo = $cUser->Info();
-        $result[$key]["contracts"][$keyContract]["responsable"] = $userInfo;
-        if ($type == "propio") {
-          //si es propio pero es administrador debe ver el de todos
-          if ($User['tipoPers'] == 'Admin') {
-            $subordinadosPermiso = array();
-            foreach ($subordinados as $sub) {
-              array_push($subordinadosPermiso, $sub["personalId"]);
-            }
-          } else {
-            $subordinadosPermiso = array(
-              $_SESSION['User']["userId"]
-            );
-          }
-        } else {
-          $subordinadosPermiso = array();
-          foreach ($subordinados as $sub) {
-            array_push($subordinadosPermiso, $sub["personalId"]);
-          }
-          //si no es admin se agrega al array (admin no tiene userId valido)
-          //se usa la $_SESSION por que $User se cambio al mandar a llamar esta funcion
-          if ($User['tipoPers'] != 'Admin')
-            array_push($subordinadosPermiso, $_SESSION['User']['userId']);
-        }
-        //comprobar privilegios del rol o permisos del usuario activo
-        $rol->setRolId($User['roleId']);
-        $unlimitedRol = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
-        $unlimited = false;
-        if ($unlimitedRol) {
-          $unlimited = true;
-        } else {
-          foreach ($subordinadosPermiso as $usuarioPermiso) {
-            if (in_array($usuarioPermiso, $conPermiso)) {
-              $unlimited = true;
-              break;
-            }
-          }
-        }
-        foreach ($serviciosContrato as $servicio) {
-          if ($unlimited)
-            $result[$key]["contracts"][$keyContract]['instanciasServicio'][$servicio["servicioId"]] = $servicio;
-        }
-        if (count($result[$key]["contracts"][$keyContract]['instanciasServicio']) > 0) {
-          $showCliente = true;
-          $result[$key]["servicios"]++;
-          //si el contrato se va mostrar obtener todos sus emails.
-          $razon = new Razon;
-          $razon->setContractId($value["contractId"]);
-          $emailsContract = $razon->getEmailContractByArea('all');
-          $emailTemp = array();
-          if (!is_array($emailsContract['allEmails']))
-            $emailsContract['allEmails'] = array();
-
-
-          foreach ($emailsContract['allEmails'] as $vemail) {
-            if ($this->Util()->ValidateEmail(trim($vemail)))
-              $emailTemp[trim($vemail)] = trim($value['name']);
-          }
-          $allEmailsCliente = array_merge($allEmailsCliente, $emailTemp);
-        } else {
-          unset($result[$key]["contracts"][$keyContract]);
-        }
-      }
-      $result[$key]['allEmails'] = $allEmailsCliente;
-      $rol->setRolId($User['roleId']);
-      $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'));
-      if (($showCliente === false && !$unlimited) || ($showCliente === false && $type == "propio")) {
-        unset($result[$key]);
-      }
-    } //foreach cliente
-    return $result;
-  } //EnumerateOptimizado
   public function Enumerate($type = "subordinado", $customerId = 0, $tipo = "")
   {
 
@@ -535,96 +412,6 @@ class Customer extends Main
     } //foreach
     return $result;
   } //Enumerate
-  public function EnumerateBest($type = 'subordinado', $customerId = 0, $tipo = "")
-  {
-
-    global $page;
-
-    $User = $_SESSION['User'];
-
-    if ($tipo == 'Activos')
-      $addActivo = " AND active = '1' ";
-    elseif ($tipo == 'Inactivos')
-      $addActivo = " AND active = '0' ";
-    else
-      $addActivo = " AND active = '1' ";
-
-    $sql = "SELECT * FROM customer
-				WHERE 1 " . $sqlActive . " " . $add . " " . $addActivo . "
-			  	ORDER BY nameContact ASC";
-    $this->Util()->DB()->setQuery($sql);
-    $result = $this->Util()->DB()->GetResult();
-
-    $count = 0;
-    $personal = new Personal;
-    $personal->setPersonalId($User["userId"]);
-    $subordinados = $personal->Subordinados();
-
-    $clientes = array();
-    foreach ($result as $key => $val) {
-
-      $card = $val;
-
-      $sql = "SELECT contract.*
-					FROM contract
-					WHERE customerId = '" . $val["customerId"] . "' 
-					AND activo = 'Si'
-					ORDER BY name ASC";
-      $this->Util()->DB()->setQuery($sql);
-      $resContracts = $this->Util()->DB()->GetResult();
-      $card["servicios"] = count($card["contracts"]);
-
-      //De todas las cuentas, revisar si al menos una esta asignada a nosotros
-      $showCliente = false;
-      $card["servicios"] = 0;
-
-      $contract = new Contract;
-
-      $contratos = array();
-      foreach ($resContracts as $keyContract => $value) {
-
-        $card2 = $value;
-
-        $conPermiso = $contract->UsuariosConPermiso($value['permisos'], $value["responsableCuenta"]);
-
-        //Checar servicios del contrato para saber si lo debemos mostrar o no
-        $sql = "SELECT servicioId, nombreServicio, departamentoId 
-						FROM servicio 
-						LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-						WHERE contractId = '" . $value["contractId"] . "' 
-						AND servicio.status = 'activo' 
-						ORDER BY nombreServicio ASC";
-        $this->Util()->DB->setQuery($sql);
-        $serviciosContrato = $this->Util()->DB()->GetResult();
-        $cUser = new User;
-        //Agregar o no agregar servicio al arreglo de contratos
-        $servicios = array();
-        foreach ($serviciosContrato as $servicio) {
-
-          $card3 = $servicio;
-
-          $cUser->setUserId($value["responsableCuenta"]);
-          $userInfo = $cUser->Info();
-          $card2["responsable"] = $userInfo;
-
-          $subordinadosPermiso = array($User["userId"]);
-
-          if ($type == "subordinado") {
-            foreach ($subordinados as $sub) {
-              array_push($subordinadosPermiso, $sub["personalId"]);
-            }
-          }
-          $servicios[] = $card3;
-        } //foreach
-        $card2['instanciasServicio'] = $servicios;
-        $contratos[] = $card2;
-      } //foreach
-      $card['contracts'] = $contratos;
-      $clientes[] = $card;
-    } //foreach
-
-    return $clientes;
-  } //EnumerateBest
 
   public function EnumerateNameOnly($type = "subordinado", $customerId = 0, $tipo = "")
   {
@@ -1099,7 +886,7 @@ class Customer extends Main
     $subordinados = $personal->GetIdResponsablesSubordinados($fil);
     $subs =  implode(",", $subordinados);
     $rol->setRolId($User['roleId']);
-    $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar', 'cliente'), array('Juridico RRHH', 'Subgerente'));
+    $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','subgerente','supervisor', 'contador', 'auxiliar', 'cliente'), array('Juridico RRHH'));
     if ($unlimited)
       $join =  " LEFT JOIN ";
     else
@@ -1498,7 +1285,7 @@ class Customer extends Main
   } //SuggestCustomerCatalog
   public function SuggestCustomerCatalogFiltrado($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limite = false)
   {
-    global $User, $page, $rol, $personal;
+    global $User, $page, $rol, $personal,$contract;
     $creport = new ContractRep();
     $ftrCustomer = "";
     $ftrContract = "";
@@ -1531,30 +1318,22 @@ class Customer extends Main
 
     $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name, customer.phone, customer.email, customer.password,customer.active 
             FROM customer
-            LEFT JOIN contract ON contract.customerId = customer.customerId	 
-            WHERE 1 $ftrCustomer $ftrContract 
+            LEFT JOIN contract ON contract.customerId = customer.customerId	 $ftrContract
+            WHERE 1 $ftrCustomer
             GROUP BY customerId 	
             ORDER BY nameContact ASC 
             $addLimite ";
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
-
-    $count = 0;
     $filtro = new Filtro;
+    $subordinados = $personal->GetIdResponsablesSubordinados($_POST);
 
-    /*$currentUserId = $_POST["responsableCuenta"] > 0 ?
-                     $_POST["responsableCuenta"] :
-                     $User["level"] > 1 ? $User["userId"] :
-                     0;*/
-    $currentUserId = $User["userId"];
-    $data["subordinados"] = $filtro->Subordinados($currentUserId);
-
+    $strEncargados =  implode(",",$subordinados);
     foreach ($result as $key => $val) {
-      $result[$key]["showCliente"] = 1;
+      $result[$key]["showCliente"] = 0;
       $result[$key]["doBajaTemporal"] = 0;
       $result[$key]["haveTemporal"] = 0;
       $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
-
       $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
       $allContracts = [];
       $allContracts = $this->GetRazonesSociales($val["customerId"], $like);
@@ -1562,76 +1341,55 @@ class Customer extends Main
         $allContracts = $this->GetRazonesSociales($val["customerId"], "", 1);
       }
       $result[$key]["contracts"] =  $allContracts;
-      $result[$key]["servicios"] = count($result[$key]["contracts"]);
-
       $countContracts = count($result[$key]["contracts"]);
       $result[$key]["totalContracts"] = $result[$key]["contractsActivos"] + $result[$key]["contractsInactivos"];
-      $result[$key]["servicios"] = 0;
+      $contractWhitPermiso = 0;
       if ($countContracts > 0) {
-        $result[$key]["showCliente"] = 0;
-        foreach ($result[$key]["contracts"] as $keyContract => $value) {
-          $nameEncargados = $creport->encargadosArea($value['contractId']);
-          foreach ($nameEncargados as $var) {
-            $result[$key]["contracts"][$keyContract]['resp' . ucfirst(strtolower($var['departamento']))] = $var['personalId'];
-            $result[$key]["contracts"][$keyContract]['name' . ucfirst(strtolower($var['departamento']))] = $var['name'];
+          foreach($result[$key]["contracts"] as $keyContract =>$value){
+              $jefes = [];
+              $contract->setContractId($value["contractId"]);
+              $sql = "SELECT b.personalId FROM contract a  
+                  INNER JOIN contractPermiso b ON a.contractId=b.contractId 
+                  WHERE b.personalId IN($strEncargados) 
+                  AND a.contractId = '".$value['contractId']."' 
+                  group by a.contractId ";
+              $this->Util()->DB()->setQuery($sql);
+              $whitPermiso = $this->Util()->DB()->GetSingle();
+
+              if(!$whitPermiso)
+                  continue;
+
+              $contractWhitPermiso++;
+              $encargados = $creport->encargadosCustomKey("departamento","name",$value["contractId"]);
+              $encargadosId = $creport->encargadosCustomKey("departamento","personalId",$value["contractId"]);
+              $result[$key]["contracts"][$keyContract]["responsable"] = $encargados["Contabilidad"];
+              $result[$key]["contracts"][$keyContract]["totalMensual"] = number_format($contract->getTotalIguala(),2,'.',',');
+              $personal->setPersonalId($encargadosId["Contabilidad"]);
+              $infoWhitRol = $personal->InfoWhitRol();
+              $personal->deepJefesArray($jefes,true);
+              $needle =strtolower($infoWhitRol["nameLevel"]);
+              switch ($needle) {
+                  case 'contador':
+                  case 'auxiliar':
+                      $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
+                      break;
+                  default:
+                      $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
+                      break;
+              }
+              $serviciosContrato = $this->GetServicesByContract($value["contractId"]);
+              $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
+              if (count($parciales)>0 && $value['activo'] == 'Si')
+                  $result[$key]["haveTemporal"] = 1;
           }
-          //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
-          $idResponsable = $result[$key]["contracts"][$keyContract]['respContabilidad'];
-          if (!$idResponsable)
-            $idResponsable = 0;
-
-          $result[$key]["contracts"][$keyContract]["responsable"] =  $result[$key]["contracts"][$keyContract]['nameContabilidad'];
-          $contract = new Contract;
-          $contract->setContractId($value['contractId']);
-          $result[$key]["contracts"][$keyContract]["totalMensual"] =  number_format($contract->getTotalIguala(), 2, '.', ',');
-
-          $jefes = [];
-          $personal->setPersonalId($idResponsable);
-          $infP = $personal->InfoWhitRol();
-          $personal->deepJefesArray($jefes,true);
-          $needle =strtolower($infP["nameLevel"]);
-          /*
-              socio,coordinador,gestoria,sistemas,supervisor,gerente,socio = usarse a si mismo como supervisor
-              recepcion,cuentas,contador,asistente,contador,auxiliar = usar supevisor encontrado en $jefes
-          */
-          switch ($needle) {
-            case 'contador':
-            case 'auxiliar':
-              $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
-            break;
-            default:
-                $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
-            break;
-          }
-          $data["conPermiso"] = $filtro->UsuariosConPermiso($value['permisos'], $idResponsable);
-          //obtiene servicios activos
-          $serviciosContrato = $this->GetServicesByContract($value["contractId"]);
-          //si no tiene servicios activos un contrato comprobar si tiene baja temporal en sus servicios
-
-          //evaluamos quienes tienen servicios con status baja temporal, con un contrato que exista se muestra el boton  verde
-          $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
-          if (!empty($parciales) && $value['activo'] == 'Si')
-            $result[$key]["haveTemporal"] = 1;
-
-          //si por lo menos uno de sus contratos no tiene servicios comprobar el rol si tiene privilegios de visualizarlo o no.
-          if ($result[$key]["showCliente"] == 0) {
-
-            $result[$key]["showCliente"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
-            if ($result[$key]["showCliente"] > 0) {
-              continue;
-            }
-          }
-          foreach ($serviciosContrato as $servicio) {
-            $data["subordinadosPermiso"] = $filtro->SubordinadosPermiso($type, $data["subordinados"], $User["userId"]);
-            $data["withPermission"] = $filtro->WithPermission($User["roleId"], $data["conPermiso"], $data["subordinadosPermiso"], $result, $servicio, $key, $keyContract);
-          } //foreach
-          $result[$key]["showCliente"] += $filtro->ShowByInstances($result[$key]["contracts"][$keyContract]['instanciasServicio'], $result, $key, $keyContract);
-        } //foreach
+          $result[$key]["showCliente"] = $contractWhitPermiso;
       } else {
         $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
         $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
         $result[$key]["contracts"][0]["fake"] = 1;
-        //$result[$key]["showCliente"] = 0;
+
+        $rol->setRolId($User["roleId"]);
+        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'));
       }
       $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
     } //foreach

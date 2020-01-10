@@ -132,18 +132,16 @@ function BuscarServiciosActivos() {
     var respCuenta = $("responsableCuenta").value;
     var tipo = $('type').value;
     var rfc = $('rfc').value;
-    if (deep)
-        var type = "subordinado";
-    else
-        var type = "propio";
     new Ajax.Request(WEB_ROOT + '/ajax/customer.php',
         {
             method: 'post',
-            parameters: {type: "search", valur: rfc, tipo: tipo, subor: type, responsableCuenta: respCuenta},
+            parameters: {type: "search", valur: rfc, tipo: tipo, deep: deep, responsableCuenta: respCuenta},
             onLoading: function () {
+                $("btnAddCity").hide();
                 $("loader").show();
             },
             onSuccess: function (transporta) {
+                $("btnAddCity").show();
                 $("loader").hide();
                 var respuesta = transporta.responseText;
                 $('contenido').innerHTML = respuesta
@@ -184,20 +182,20 @@ function EditCustomer() {
             method: 'post',
             parameters: $('editCustomerForm').serialize(true),
 			onLoading: function () {
-				$("loader").style.display='block';
+				$("loader").show();
 				document.getElementsByClassName("button_grey")[0].style.display = "none";
 			},
             onSuccess: function (transport) {
-				$("loader").style.display='none';
+				$("loader").hide();
 				document.getElementsByClassName("button_grey")[0].style.display = "block";
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("[#]");
                 if (splitResponse[0] == "fail") {
-                    ShowStatusPopUp(splitResponse[1])
+                    ShowStatusPopUp(splitResponse[1]);
                 } else {
-                    ShowStatusPopUp(splitResponse[1])
-                    $('contenido').innerHTML = splitResponse[2];
+                    ShowStatusPopUp(splitResponse[1]);
                     AddCustomerDiv(0);
+                    BuscarServiciosActivos();
                 }
             },
             onFailure: function () {
@@ -217,9 +215,8 @@ function DeleteCustomerPopup(id) {
             onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("[#]");
-                ShowStatus(splitResponse[1])
-                $('contenido').innerHTML = splitResponse[2];
-                AddCustomerDiv(0);
+                BuscarServiciosActivos();
+                ShowStatusPopUp(splitResponse[1]);
             },
             onFailure: function () {
                 alert('Something went wrong...')
@@ -230,6 +227,7 @@ function AddCustomerDiv(id) {
     grayOut(true);
     $('fview').show();
     if (id == 0) {
+        FViewOffSet('');
         $('fview').hide();
         grayOut(false);
         return;

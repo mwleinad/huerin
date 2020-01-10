@@ -14,14 +14,14 @@
         {/if}
         {if in_array(204,$permissions) || $User.isRoot}
             <td align="left">
-            {foreach from=$departamentos item=depto}
-                {assign var="idDepto" value="{$depto.departamentoId}"}
-
-                {if $item.responsables2.$idDepto}
-                    <b>{$depto.departamento}:</b> {$item.responsables.$idDepto}
-                    <br />
-                {/if}
-            {/foreach}
+            {if is_array($item.encargadosXdep)}
+                {foreach from=$departamentos item=depto}
+                    {assign var="idDepto" value="{$depto.departamentoId}"}
+                    {if array_key_exists($idDepto,$item.encargadosXdep)}
+                        <b>{$depto.departamento}:</b> {$item.encargadosXdep.$idDepto}<br>
+                    {/if}
+                {/foreach}
+            {/if}
             </td>
         {/if}
         {if in_array(205,$permissions) || $User.isRoot}
@@ -80,7 +80,7 @@
                 <img src="{$WEB_ROOT}/images/icons/transbetweenuser.png" class="spanAll spanTransfer" id="{$item.contractId}" title="Transferir raazon a cliente" />
             {/if}
 
-        </td>
+        </td>s
        {/if}
     </tr>
 {foreachelse}

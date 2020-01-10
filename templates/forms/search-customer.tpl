@@ -1,5 +1,5 @@
 <div align="center"  id="divForm">
-<form id="frmCustomerSearch" name="frmCustomerSearch" method="post" action="{$WEB_ROOT}/export/customer.php">
+<form id="frmCustomerSearch" name="frmCustomerSearch" method="post" action="{$WEB_ROOT}/export/customer.php" onsubmit="return false">
 <input type="hidden" id="cliente" name="cliente" value="0"/>
 <input type="hidden" id="cuenta" name="cuenta" value="0"/>
 <input type="hidden" id="type" name="type" value="{$tipo}" /> 
