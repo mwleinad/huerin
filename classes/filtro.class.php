@@ -58,7 +58,6 @@ class Filtro extends Util
 				}
 			}
 		}//else
-		
 		return $withPermission;
 	}
 	
@@ -91,20 +90,6 @@ class Filtro extends Util
 		$personal = new Personal;
 		$personal->setPersonalId($id);
 		$subordinados = $personal->Subordinados();
-
-/*		$sql = "SELECT
-					personalId
-				FROM
-					personal
-				WHERE
-					jefeSocio = '".$id."' OR
-					jefeSupervisor = '".$id."' OR
-					jefeGerente = '".$id."' OR
-					jefeContador = '".$id."'";
-		$this->Util()->DB()->setQuery($sql);
-		$subordinados = $this->Util()->DB()->GetResult();
-//		print_r($subordinados);*/
-		
 
 		if($addMe === true)
 		{
@@ -158,8 +143,7 @@ class Filtro extends Util
                 $result[$key]["doBajaTemporal"]=1;
             }
 			return 1;
-		} 
-
+		}
 		//unset($result[$key]["contracts"][$keyContract]);
 		return 0;
 	}
@@ -167,28 +151,12 @@ class Filtro extends Util
 	function RemoveClientFromView($showCliente, $roleId, $type, &$result, $key = 0)
 	{
 	    global $rol;
-	    //comprobar el rol si es de tipo limitado pasando nombre de roles que queremos limitar
         $rol->setRolId($roleId);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','Subgerente','socio'));
-		if (
-			($showCliente === 0 && 
-				(!$unlimited)//($roleId > 1 && $roleId < 4)
-			) || 
-			($showCliente === 0 && 
-				$type == "propio"
-			)
-		) 
+        $unlimited =$rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','socio'));
+		if (($showCliente === 0 && (!$unlimited)))
 		{
 			unset($result[$key]);
 		}
 	}
-	
-	function MergeContracts($data)
-	{
-		//$result = array_merge($result, $data);
-		
-		
-	}
 }
-
 ?>

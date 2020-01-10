@@ -1127,9 +1127,7 @@ function SubordinadosDetailsAddPass()
     {
         global $User;
         $idPersons = [];
-
         if ( (int)$User["level"] == 1|| $this->showAll) {
-            //Si seleccionaron TODOS
             if ($filtro['responsableCuenta'] == 0) {
                 $this->setActive(1);
                 $socios = $this->ListSocios();
