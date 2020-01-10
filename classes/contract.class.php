@@ -734,7 +734,7 @@ class Contract extends Main
             if (!$whitPermiso) {
                 $showCliente = false;
                 $rol->setRolId($User['roleId']);
-                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','subgerente','supervisor', 'contador', 'auxiliar'), array('Juridico RRHH'));
+                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','subgerente','supervisor', 'contador', 'auxiliar'), ['Juridico RRHH','socio']);
                 if (($showCliente === false && !$unlimited)) {
                     unset($result[$key]);
                     continue;
