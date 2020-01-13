@@ -691,7 +691,7 @@ class Empresa extends Main
 
            $contractRep =  new ContractRep();
 		   $contractRep->setContractId($row["userId"]);
-		   $ftr["maxLevelRol"] = [3,4,5];
+		   $ftr["maxLevelRol"] = [4,5,6];
            $ftr["departamentoId"] = [1,21];
 		   $ftr["incluirJefes"] = true;
 		   $ftr["sendBraun"] = false;
