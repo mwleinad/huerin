@@ -129,7 +129,7 @@ class Razon extends Contract
        $contractRep = new ContractRep();
        $encargadosIds = $contractRep->encargadosCustomKey('departamentoId','personalId',$compInfo['userId']);
        if(key_exists(21,$encargadosIds))
-            $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[3,4,5]);
+            $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[4,5,6]);
 
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
