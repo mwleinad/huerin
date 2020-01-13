@@ -145,6 +145,7 @@ class User extends Sucursal
 				if($row){
 					$card['userId'] = $row['customerId'];
 					$card['roleId'] = 4;
+					$card['level'] = 100;
 					$card['username'] = $row['nameContact'];
 					$card['isLogged'] = true;
 					$_SESSION['User'] = $card;
