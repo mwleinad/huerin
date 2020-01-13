@@ -740,6 +740,10 @@ class Contract extends Main
                     continue;
                 }
             }
+            $parciales = $customer->GetServicesByContract($value["contractId"],'bajaParcial');
+            if(count($parciales)>0&&$value['activo']=='Si')
+                $result[$key]["haveTemporal"] = 1;
+
             $encargados = $creport->encargadosCustomKey("departamento","name",$value["contractId"]);
             $encargadosXdep = $creport->encargadosCustomKey("departamentoId","name",$value["contractId"]);
             $user = new User;

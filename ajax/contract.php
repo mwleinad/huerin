@@ -63,25 +63,9 @@ switch($_POST["type"])
 				{
 					$resContracts = $contract->Enumerate();
 				}
-	
-				$contracts = array();
-				foreach($resContracts as $key => $val){
-					
-					$card = $val;
-					
-					$card['name'] = utf8_encode($val['name']);
-					
-					$contCat->setContCatId($val['contCatId']);
-					$card['tipo'] = $contCat->GetNameById();
-					
-					$card['status'] = ucfirst($card['status']);
-					
-					$contracts[$key] = $card;	
-					
-				}
-	
-				
-				$smarty->assign("contracts", $contracts);
+				$departamentos = $departamentos->Enumerate();
+				$smarty->assign("contracts", $resContracts);
+				$smarty->assign("departamentos", $departamentos);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			}

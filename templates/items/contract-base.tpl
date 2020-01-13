@@ -80,7 +80,7 @@
                 <img src="{$WEB_ROOT}/images/icons/transbetweenuser.png" class="spanAll spanTransfer" id="{$item.contractId}" title="Transferir raazon a cliente" />
             {/if}
 
-        </td>s
+        </td>
        {/if}
     </tr>
 {foreachelse}

@@ -1335,15 +1335,11 @@ class Customer extends Main
       $result[$key]["haveTemporal"] = 0;
       $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
       $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
-      $allContracts = [];
-      $allContracts = $this->GetRazonesSociales($val["customerId"], $like);
-      if (empty($allContracts)) {
-        $allContracts = $this->GetRazonesSociales($val["customerId"], "", 1);
-      }
-      $result[$key]["contracts"] =  $allContracts;
+      $result[$key]["contracts"] =  $this->GetRazonesSociales($val["customerId"]);
       $countContracts = count($result[$key]["contracts"]);
       $result[$key]["totalContracts"] = $result[$key]["contractsActivos"] + $result[$key]["contractsInactivos"];
       $contractWhitPermiso = 0;
+
       if ($countContracts > 0) {
           foreach($result[$key]["contracts"] as $keyContract =>$value){
               $jefes = [];
@@ -1356,8 +1352,11 @@ class Customer extends Main
               $this->Util()->DB()->setQuery($sql);
               $whitPermiso = $this->Util()->DB()->GetSingle();
 
-              if(!$whitPermiso)
+              if(!$whitPermiso){
+                  unset($result[$key]["contracts"][$keyContract]);
                   continue;
+              }
+
 
               $contractWhitPermiso++;
               $encargados = $creport->encargadosCustomKey("departamento","name",$value["contractId"]);
