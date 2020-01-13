@@ -28,45 +28,6 @@
 	$_SESSION["search"]["customerName"] = $infoCustomer["nameContact"];
 
 	$smarty->assign("infoCustomer", $infoCustomer);
-				
-	$contracts = array();
-	foreach($resContracts as $key => $val){
-		$card = $val;
-		$customer->setCustomerId($val['customerId']);
-		$card['customer'] = $customer->GetNameById();
-		
-		$contCat->setContCatId($val['contCatId']);
-		$card['tipo'] = $contCat->GetNameById();
-		
-		$personal->setPersonalId($val['responsableCuenta']);
-		$card['nomResp'] = $personal->GetNameById();
-		
-		$permisos = array();
-		$permisos2 = array();
-		$resPermisos = explode('-',$val['permisos']);
-		foreach($resPermisos as $res){
-			$value = explode(',',$res);
-			
-			$idPersonal = $value[1];
-			$idDepto = $value[0];
-			
-			$personal->setPersonalId($idPersonal);
-			$nomPers = $personal->GetNameById();
-			
-			$permisos[$idDepto] = $nomPers;
-			$permisos2[$idDepto] = $idPersonal;
-		}		
-		$card['responsables'] = $permisos;
-		$card['responsables2'] = $permisos2;
-        $parciales = $customer->GetServicesByContract($val["contractId"],'bajaParcial');
-        if(count($parciales)>0&&$card['activo']=='Si')
-            $card["haveTemporal"] = 1;
-
-		$card['status'] = ucfirst($card['status']);
-		//comprobar si esta activo y tiene parciales
-
-		$contracts[$key] = $card;
-	}//foreach
 	$departamentos = $departamentos->Enumerate();
 	$empleados = $personal->Enumerate();			
 	
@@ -74,7 +35,7 @@
 	$smarty->assign("id", $_GET["id"]);	
 	$smarty->assign("msgOk", $okMsg);	
 	$smarty->assign("categories", $categories);
-	$smarty->assign("contracts", $contracts);
+	$smarty->assign("contracts", $resContracts);
 	$smarty->assign('mainMnu','contratos');
 	$smarty->assign("empleados", $empleados);
 
