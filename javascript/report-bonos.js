@@ -79,7 +79,8 @@ function ShowContractTable(id)
 }
 
 function doSearch(){
-	new Ajax.Request(WEB_ROOT+'/ajax/report-bonos.php',
+	ExportRepServBono();
+	/*new Ajax.Request(WEB_ROOT+'/ajax/report-bonos.php',
 	{
 		method:'post',
 		parameters: $('frmSearch').serialize(true),
@@ -101,7 +102,7 @@ function doSearch(){
 			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
-	});
+	});*/
 
 }
 function showGraph(){

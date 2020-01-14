@@ -415,8 +415,10 @@
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
-			<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
-			<td  style="font-weight:bold; background: #0e76a8;color: #000000"></td>
+			{assign var=ncol value=$nombreMeses|count}
+			{for $i=1 to $ncol-1}
+				<th style="font-weight:bold; background: #0e76a8;color: #000000"></th>
+			{/for}
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000">Totales</td>
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totales.granTotalHorizontalCompletado|number_format:2:'.':','}</td>
 			<td  style="font-weight:bold; background: #0e76a8;color: #000000">{$data.totales.granTotalHorizontalDevengado|number_format:2:'.':','}</td>

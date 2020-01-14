@@ -45,6 +45,7 @@
 				</td>
 				<td align="center">
 					<select name="period" id="period"  class="largeInput"  style="width: 90%;">
+						<option value="">Todos</option>
 						<option value="efm">Ene Feb Mar</option>
 						<option value="amj">Abr May Jun</option>
 						<option value="jas">Jul Ago Sep</option>
@@ -62,7 +63,7 @@
 				<td align="center" colspan="5">
 					<div style="display:inline-block;text-align: center;">
 						<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
-						<a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
+						<a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Generar</span></a>
 					</div>
 				</td>
 			</tr>

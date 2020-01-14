@@ -49,6 +49,7 @@ switch($_POST["type"]) {
         $smarty->assign("data", $data);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
         $smarty->display(DOC_ROOT . '/templates/lists/report-servicio-bono-order-rol.tpl');
+
     break;
     case 'estadoResultado':
         switch($_POST["tipoReporte"]){
