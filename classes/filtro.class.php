@@ -152,7 +152,7 @@ class Filtro extends Util
 	{
 	    global $rol;
         $rol->setRolId($roleId);
-        $unlimited =$rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','socio'));
+        $unlimited =$rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),array('Juridico RRHH','socio'.'Gerente de administracion','Recepcion'));
 		if (($showCliente === 0 && (!$unlimited)))
 		{
 			unset($result[$key]);
