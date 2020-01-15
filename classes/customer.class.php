@@ -1353,8 +1353,11 @@ class Customer extends Main
               $whitPermiso = $this->Util()->DB()->GetSingle();
 
               if(!$whitPermiso){
-                  unset($result[$key]["contracts"][$keyContract]);
-                  continue;
+                  if(!$rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),['socio','Gerente de administracion','Recepcion'])){
+                      unset($result[$key]["contracts"][$keyContract]);
+                      continue;
+                  }
+
               }
 
 
@@ -1388,7 +1391,7 @@ class Customer extends Main
         $result[$key]["contracts"][0]["fake"] = 1;
 
         $rol->setRolId($User["roleId"]);
-        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'),['socio']);
+        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'),['socio','Gerente de administracion','Recepcion']);
       }
       $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
     } //foreach
