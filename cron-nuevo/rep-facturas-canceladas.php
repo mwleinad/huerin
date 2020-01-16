@@ -24,11 +24,11 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$month = (int) $_GET["p"];
+$month = $_GET["p"];
 if(!$month)
     $month = 1;
 
-echo $sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b.name as razon,c.nameContact as cliente,a.total as monto,a.motivoCancelacion,a.fechaPedimento FROM comprobante a 
+$sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b.name as razon,c.nameContact as cliente,a.total as monto,a.motivoCancelacion,a.fechaPedimento FROM comprobante a 
         LEFT JOIN contract b ON a.userId=b.contractId 
         LEFT JOIN customer c ON b.customerId=c.customerId
         WHERE a.empresaId=21 AND date(a.fechaPedimento)>=DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY
@@ -36,7 +36,7 @@ echo $sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b
 
 $db->setQuery($sql);
 $invoices = $db->GetResult($sql);
-$db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY from comprobante where 1 LIMIT 1');
+$db->setQuery("SELECT DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY from comprobante where 1 LIMIT 1");
 $initMonth = $db->GetSingle();
 $des = explode('-',$initMonth);
 $mes = (int)$des[1];
