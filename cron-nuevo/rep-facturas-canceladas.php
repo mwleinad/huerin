@@ -24,11 +24,11 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$month =  $_GET["p"];
+$month = (int) $_GET["p"];
 if(!$month)
     $month = 1;
 
-$sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b.name as razon,c.nameContact as cliente,a.total as monto,a.motivoCancelacion,a.fechaPedimento FROM comprobante a 
+echo $sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b.name as razon,c.nameContact as cliente,a.total as monto,a.motivoCancelacion,a.fechaPedimento FROM comprobante a 
         LEFT JOIN contract b ON a.userId=b.contractId 
         LEFT JOIN customer c ON b.customerId=c.customerId
         WHERE a.empresaId=21 AND date(a.fechaPedimento)>=DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY
