@@ -40,6 +40,7 @@ $db->setQuery("SELECT DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYO
 $initMonth = $db->GetSingle();
 $des = explode('-',$initMonth);
 $mes = (int)$des[1];
+$anio = (int)$des[0];
 
 $html = '<html>
 			<head>
@@ -90,7 +91,7 @@ $html = str_replace(',', '', $html);
 $file = 'BHSC FACTURAS-CANCELADAS-'.strtoupper($util->GetMonthByKey($mes));
 $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
 $subject= $file;
-$body   = " SE HACE LLEGAR EL REPORTE DE FACTURA CANCELADA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))." DEL AÑO ".date('Y')." 
+$body   = " SE HACE LLEGAR EL REPORTE DE FACTURA CANCELADA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))." DEL AÑO $anio
           <br><br>
           Este correo se genero automaticamente favor de no responder";
 $sendmail = new SendMail;
@@ -101,6 +102,6 @@ else
     $to = array('rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',EMAIL_DEV=>'Desarrollador');
 
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
-$sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "FACTURACION PLATAFORMA") ;
+$sendmail->PrepareMultiple($subject, utf8_encode($body), $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "FACTURACION PLATAFORMA") ;
 echo "reporte enviado correctamente".chr(13).chr(10);
 unlink($attachment);
