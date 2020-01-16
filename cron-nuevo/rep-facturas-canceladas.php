@@ -24,49 +24,23 @@ include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
+$month =  $_GET["p"];
+if(!$month)
+    $month = 1;
+
 $sql = "SELECT CONCAT('',a.serie,a.folio) as folio,date(a.fecha) as fecha,b.name as razon,c.nameContact as cliente,a.total as monto,a.motivoCancelacion,a.fechaPedimento FROM comprobante a 
         LEFT JOIN contract b ON a.userId=b.contractId 
         LEFT JOIN customer c ON b.customerId=c.customerId
-        WHERE a.empresaId=21 AND date(a.fechaPedimento)>=DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY
-        AND date(a.fechaPedimento) <= LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) AND a.status='0' AND a.tipoDeComprobante IN(1,3,4) ORDER BY  a.fecha DESC ";
+        WHERE a.empresaId=21 AND date(a.fechaPedimento)>=DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY
+        AND date(a.fechaPedimento) <= LAST_DAY(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) AND a.status='0' AND a.tipoDeComprobante IN(1,3,4) ORDER BY  a.fecha DESC ";
+
 $db->setQuery($sql);
 $invoices = $db->GetResult($sql);
-$db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -1 MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -1 MONTH)) - 1 DAY from comprobante where 1 LIMIT 1');
+$db->setQuery('SELECT DATE_ADD(CURDATE(),INTERVAL -$month MONTH) - INTERVAL DAYOFMONTH(DATE_ADD(CURDATE(),INTERVAL -$month MONTH)) - 1 DAY from comprobante where 1 LIMIT 1');
 $initMonth = $db->GetSingle();
 $des = explode('-',$initMonth);
 $mes = (int)$des[1];
 
-//crear el zip que enviara todos los xmls
-
-$zip =  new ZipArchive();
-$file_name = 'XMLS-'.strtoupper($util->GetMonthByKey($mes)).'.ZIP';
-$file_zip =DOC_ROOT.'/sendFiles/'.$file_name;
-if($zip->open($file_zip,ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)===true) {
-    echo 'Creado en' . $file_zip . '\n';
-    foreach ($payments as $kp => $vp) {
-        $archivo_xml = "SIGN_" . $vp['empresaId'] . '_' . $vp['serief'] . '_' . $vp['foliof'] . '.xml';
-        $enlace_xml = DOC_ROOT . '/empresas/' . $vp['empresaId'] . '/certificados/' . $vp['rfcId'] . '/facturas/xml/' . $archivo_xml;
-        if (file_exists($enlace_xml)) {
-            $zip->addFile($enlace_xml, 'XML-CFDI/'.$archivo_xml);
-        }
-        //comprobar si hay complementos, tambien se adjunta en el zip
-        if($vp['comprobantePagoId']>0){
-            $db->setQuery("SELECT folio,serie,empresaId,rfcId FROM comprobante WHERE comprobanteId='".$vp['comprobantePagoId']."'");
-            $complemento = $db->GetRow();
-            if(!empty($complemento)){
-                $archivo_xml_comp = "SIGN_" . $complemento['empresaId'] . '_' . $complemento['serie'] . '_' . $complemento['folio'] . '.xml';
-                $enlace_xml_comp = DOC_ROOT . '/empresas/' . $complemento['empresaId'] . '/certificados/' . $complemento['rfcId'] . '/facturas/xml/' . $archivo_xml_comp;
-                if (file_exists($enlace_xml_comp))
-                    $zip->addFile($enlace_xml_comp, 'XML-COMP/'.$archivo_xml_comp);
-            }
-
-        }
-    }
-    $zip->close();
-}
-else {
-    echo 'Error creando en'.$file_zip.'\n';
-}
 $html = '<html>
 			<head>
 				<title>Cupon</title>
