@@ -102,6 +102,6 @@ else
     $to = array('rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',EMAIL_DEV=>'Desarrollador');
 
 $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
-$sendmail->PrepareMultiple($subject, utf8_encode($body), $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "FACTURACION PLATAFORMA") ;
+$sendmail->PrepareMultiple($subject, utf8_decode($body), $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "FACTURACION PLATAFORMA") ;
 echo "reporte enviado correctamente".chr(13).chr(10);
 unlink($attachment);
