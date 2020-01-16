@@ -82,7 +82,7 @@ $html = '<html>
 			';
 $smarty->assign("registros", $invoices);
 $smarty->assign('mes',$util->GetMonthByKey($mes));
-$smarty->assign('anio',date('Y'));
+$smarty->assign('anio',$anio);
 $contents = $smarty->fetch(DOC_ROOT . '/templates/lists/rep-facturas-canceladas.tpl');
 $html .= $contents;
 //$html = str_replace('$', '', $html);
