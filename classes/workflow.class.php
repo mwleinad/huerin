@@ -457,6 +457,11 @@ class Workflow extends Servicio
                             $strFiltroStepTask .=" and UPPER(nombreTask)!='MOVIMIENTOS IMSS' ";
                     break;
                     case 'DOCUMENTACION':
+                        if($row['date']<'2019-07-01')
+                            $strFiltroStepTask .=" and UPPER(nombreTask)!='CUMPLIMIENTO OBLIGACIONES' and  UPPER(nombreTask)!='CUMPLIMIENTO DE OBLIGACIONES'";
+                        if($row['date']<'2020-01-01')
+                            $strFiltroStepTask .=" and UPPER(nombreTask)!='RELACION CFDI' and  UPPER(nombreTask)!='RELACION DE CFDI' ";
+                    break;
                     case 'REQUERIMIENTO DE INFORMACION':
                     case 'RECEPCION DE DOCUMENTACION':
                     if($row['date']<'2019-07-01')
