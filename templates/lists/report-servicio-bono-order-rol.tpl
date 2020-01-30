@@ -457,7 +457,8 @@
             <thead>
             <tr>
                 <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%">Nombre</th>
-                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Ingresos</th>
+				<th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Ingreso devengado</th>
+                <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Ingreso real</th>
                 <th class="cabeceraTabla" align="center" style="text-align: left;width: 15%"">Gastos</th>
                 <th class="cabeceraTabla" align="center" style="text-align: left">Utilidad</th>
                 <th class="cabeceraTabla" align="center" style="text-align: left">% BONO</th>
@@ -470,12 +471,13 @@
 					{math equation ='I-G' I=$enc.totalCompletado G=$enc.sueldoTotal assign=utilidad}
                     <tr>
                         <td>{$enc.name}</td>
+						<td>{$enc.totalDevengado|number_format:2:'.':','}</td>
                         <td>{$enc.totalCompletado|number_format:2:'.':','}</td>
                         <td>{$enc.sueldoTotal|number_format:2:'.':','}</td>
                         <td>{$utilidad|number_format:2:'.':','}</td>
                         <td>{$enc.porcentajeBono} %</td>
                         <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/100))|number_format:2:'.':','}{else}0.00{/if}</td>
-                        <td>{if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/100))|round:2|number_format:2:'.':','}{else}0.00{/if}</td>
+                        <td>{*if $utilidad>0}{($utilidad*({$enc.porcentajeBono}/100))|round:2|number_format:2:'.':','}{else}0.00{/if*}0.00</td>
                     </tr>
                 {/foreach}
             </tbody>
