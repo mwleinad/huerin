@@ -545,6 +545,7 @@ class ReporteBonos extends Main
 
         $fullSubordinados = $personal->GetIdResponsablesSubordinados($ftr);
         $allEncargados = [];
+
         foreach($fullSubordinados as $subId){
             $personal->setPersonalId($subId);
             $empleado=$personal->InfoWhitRol();
@@ -703,7 +704,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$socio;
+                            $cad['jefeInmediato']=$encargado["jefeInmediato"];
                             $cad['level']=2;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -739,7 +740,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$gerente;
+                            $cad['jefeInmediato']=$encargado["jefeInmediato"];;
                             $cad['level']=3;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -774,7 +775,7 @@ class ReporteBonos extends Main
                             $cad['porcentajeBono']=$encargado['porcentajeBono'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$subgerente;
+                            $cad['jefeInmediato']=$encargado["jefeInmediato"];;
                             $cad['level']=4;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -807,7 +808,7 @@ class ReporteBonos extends Main
                             $cad['name']=$encargado['name'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$supervisor;
+                            $cad['jefeInmediato']=$encargado["jefeInmediato"];;
                             $cad['level']=5;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -840,7 +841,7 @@ class ReporteBonos extends Main
                             $cad['name']=$encargado['name'];
                             $cad['totalDevengado']=$itemins['costo'];
                             $cad['totalCompletado']=$itemins['completado'];
-                            $cad['jefeInmediato']=$contador;
+                            $cad['jefeInmediato']=$encargado["jefeInmediato"];;
                             $cad['level']=6;
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
@@ -856,7 +857,6 @@ class ReporteBonos extends Main
         $data["totales"] = $totales;
         $data["totalesEncargados"] = $totalesEncargados;
         $newArray = [];
-
         $totalesEncargados = $this->Util()->orderMultiDimensionalArray($totalesEncargados,'level',true,true);
         foreach($totalesEncargados as $ke=>$enc){
             if(!array_key_exists($enc['personalId'],$newArray)){
@@ -873,7 +873,6 @@ class ReporteBonos extends Main
                 }
             }
         }
-        
         $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'level',false,true);
         $data["totalesEncargadosAcumulado"] = $ordenado;
         

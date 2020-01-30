@@ -18,7 +18,6 @@ if($period== "efm"){
 }else{
     $monthNames = array("Ene", "Feb", "Mar","Abr", "May", "Jun","Jul", "Ago", "Sep","Oct", "Nov", "Dic");
 }
-
 $html = '<html>
 			<head>
 				<title>reporte de bonos-cobranza</title>
