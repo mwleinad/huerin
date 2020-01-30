@@ -334,7 +334,7 @@
 									{/foreach}
 									<td>{$item7.totalTrabajado|number_format:2:'.':','}</td>
 									<td>{$item7.totalDevengado|number_format:2:'.':','}</td>
-									<td>{$item7.totalDevengado-$item6.totalTrabajado|number_format:2:'.':','}</td>
+									<td>{$item7.totalDevengado-$item7.totalTrabajado|number_format:2:'.':','}</td>
 								</tr>
 								{if $smarty.foreach.auxiliares.last}
 									<tr>
