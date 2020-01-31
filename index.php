@@ -23,6 +23,8 @@ include_once(DOC_ROOT.'/libraries.php');
         'impuesto',
         'obligacion',
         'departamentos',
+		'resource-office',
+		'resource-office-pdf',
 
 		//clientes y contratos
 		'customer',
