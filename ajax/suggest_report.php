@@ -15,7 +15,6 @@ else
 {
 foreach($result as $user)
 {
-	//print_r($user);
 ?>
 	<div class="suggestUserDiv" style="border:solid; border-width:1px; border-color:#000; background-color:#FFFFE6; color:#333; padding:3px; width:400px;" id="<?php echo $user["customerId"] ?>" >
 		<div class="suggestUserDiv" id="<?php echo $user["customerId"] ?>" style="float:left;width:60px; font-weight:bold; cursor:pointer"><?php echo $user["customerId"] ?></div>

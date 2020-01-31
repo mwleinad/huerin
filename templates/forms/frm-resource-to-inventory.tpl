@@ -116,6 +116,11 @@
                         <div style="width:100%;float:left">* Nombre reponsable</div>
                         <div style="width:100%;float: left;">
                             <input name="nombre_responsable"  id="nombre_responsable" type="text" class="largeInput "/>
+                            <div id="loadingDivNombreResponsable"></div>
+                            <div style="position:relative">
+                                <div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDivResponsable">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
