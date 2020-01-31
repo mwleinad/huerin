@@ -212,6 +212,21 @@ class Personal extends Main
 		$result = $this->Util()->orderMultiDimensionalArray($result,'name');
         return $result;
     }
+    public function suggestPersonal($like){
+	    $ftr = "";
+        if (strlen($like) > 1) {
+            $ftr .= " AND name LIKE '%$like%' ";
+        }
+        else return false;
+        $sql = "SELECT * 
+				FROM personal
+			    WHERE 1
+			    $ftr
+				ORDER BY name ASC LIMIT 15";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        return $result;
+    }
     public function EnumerateGerenteDepartamento($dep)
     {
         $this->Util()->DB()->setQuery("select departamentoId from departamentos where lower(departamento)='".strtolower($dep)."' ");

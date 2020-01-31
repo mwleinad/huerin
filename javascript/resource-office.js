@@ -148,6 +148,60 @@ function executeFunResource(){
         }
     });
 }
+jQ(document).on('keyup',"#nombre_responsable",function () {
+    var time_id = 1;
+    var field_value = '';
+    field_value = jQ(this).val()
+    clearTimeout(time_id);
+    time_id = setTimeout(SuggestUser,350);
+
+})
+function SuggestUser()
+{
+    new Ajax.Request(WEB_ROOT+'/ajax/suggest-personal.php',
+        {
+            parameters: {value: $('nombre_responsable').value},
+            method:'post',
+            onLoading:function(){
+                $('suggestionDivResponsable').hide();
+            },
+            onSuccess: function(transport){
+                var response = transport.responseText || "no response text";
+                var splitResponse =  response.split("[#]");
+                if(splitResponse[0]=='full'){
+                    $('suggestionDivResponsable').show();
+                    $('suggestionDivResponsable').innerHTML = splitResponse[1];
+                    SuggestListenerPersonal();
+                }else{
+                    $('suggestionDivResponsable').show();
+                    $('suggestionDivResponsable').innerHTML = splitResponse[1];
+                }
+
+            },
+            onFailure: function(){ alert('Something went wrong...') }
+        });
+}
+var SuggestListenerPersonal = function () {
+    var del = jQ(this).hasClass('suggestionResponsable');
+    var id = this.id;
+    if(del==true){
+        FillField(this, id);
+        return;
+    }
+    var del = jQ(this).hasClass('closeSuggestResponsableDiv');
+    if(del == true)
+    {
+        jQ('#suggestionDivResponsable').hide();
+        return;
+    }
+}
+function FillField(self,id){
+    jQ("#nombre_responsable").val(id);
+    jQ('#suggestionDivResponsable').html('');
+}
+jQ(document).on('click','div#suggestionDivResponsable .suggestionResponsable,div#suggestionDivResponsable .closeSuggestResponsableDiv',SuggestListenerPersonal);
+
+
 function close_popup(){
     $('fview').innerHTML='';
     $('fview').hide();
