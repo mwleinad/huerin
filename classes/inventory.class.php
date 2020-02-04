@@ -3,6 +3,24 @@
 
 class Inventory extends Articulo
 {
+    public function validateFileResponsiva(){
+        if(!isset($_FILES['responsiva']))
+            return false;
+
+        if($_FILES['responsiva']['error'] == 0){
+            if($_FILES['responsiva']['size']>2*MB){
+                $this->Util()->setError(0,"error","Archivo de responsiva excede el limite maximo permitido: 2MB");
+                return false;
+            }
+
+            if(strtoupper(end(explode('.',$_FILES["responsiva"]['name']))) !='PDF'){
+                $this->Util()->setError(0,"error","Archivo de responsiva formato invalido");
+                return false;
+            }
+
+        }
+
+    }
     public function saveResource(){
         if($this->Util()->PrintErrors())
             return false;
@@ -67,11 +85,8 @@ class Inventory extends Articulo
         $this->Util()->PrintErrors();
         return true;
     }
-
-
     public function saveResponsablesResource($resourceId)
     {
-
         if(!isset($_SESSION["responsables_resource"]) || !$resourceId)
             return false;
 
@@ -99,6 +114,7 @@ class Inventory extends Articulo
                         ";
                     $this->Util()->DB()->setQuery($sql);
                     $this->Util()->DB()->UpdateData();
+
                 }else{
                     $sql = "INSERT INTO responsables_resource_office(
                              office_resource_id,
@@ -119,11 +135,14 @@ class Inventory extends Articulo
                              )
                             ";
                     $this->Util()->DB()->setQuery($sql);
-                    $this->Util()->DB()->InsertData();
+                    $last_res_id = $this->Util()->DB()->InsertData();
+                    $this->moveToRealFolderResponsiva($res["responsiva_root"],$resourceId,$last_res_id);
+
                 }
             }
         }
     }
+
     public function addResponsablesToArray(){
 
         if($this->Util()->PrintErrors())
@@ -141,12 +160,52 @@ class Inventory extends Articulo
         $tmp['tipo_responsable'] = $this->getTipoResponsable();
         $tmp['status'] = "Activo";
         $tmp['insertUpdate'] = "true";
+        $tmp['responsiva_root'] = $this->saveResponsiva($_FILES,$key);
+
+        //guardar responsiva
+
         $_SESSION['responsables_resource'][$key] = $tmp;
 
         $this->Util()->setError(0,"complete","Has agregado correctamente un registro");
         $this->Util()->PrintErrors();
 
         return  true;
+    }
+    function saveResponsiva($FILES,$id){
+        $base_ruta = "/swap/tmp_responsiva";
+        $folder = DOC_ROOT.$base_ruta;
+        if($FILES['responsiva']['error']==0) {
+            $ext =  end(explode('.',$FILES['responsiva']['name']));
+            $name = session_id()."_$id.$ext";
+            if(!is_dir($folder))
+                mkdir($folder);
+            if(move_uploaded_file($FILES['responsiva']['tmp_name'],$folder."/$name"))
+                return $base_ruta."/$name";
+            else return false;
+        }else
+            return false;
+    }
+    function moveToRealFolderResponsiva($ruta,$resourceId,$responsableId){
+        $old_file = DOC_ROOT.$ruta;
+        $base_ruta_real = "/expedientes/responsivas";
+        $folder_real = DOC_ROOT.$base_ruta_real;
+        if(!$ruta)
+            return false;
+        $ext_real = end(explode(".",$ruta));
+        $name_real = $resourceId."_file_responsiva_".$responsableId.".".$ext_real;
+        if(is_file($old_file)){
+            if(!is_dir($folder_real))
+                mkdir($folder_real);
+
+            $ruta_real = $base_ruta_real."/".$name_real;
+            if(rename($old_file,DOC_ROOT.$ruta_real)){
+                $sql  = "update responsables_resource_office set responsiva_root = '$ruta_real' where responsable_resource_id = '$responsableId' ";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->UpdateData();
+            }
+
+        }
+
     }
     public function  deleteResponsableFromArray($id){
         $current = $_SESSION['responsables_resource'][$id];
@@ -155,6 +214,11 @@ class Inventory extends Articulo
             $current['insertUpdate'] =  true;
             $_SESSION['responsables_resource'][$id] = $current;
         }else{
+            $ruta_reponsiva =$_SESSION['responsables_resource'][$id]["responsiva_root"];
+            if($ruta_reponsiva!=""){
+                if(is_file(DOC_ROOT.$ruta_reponsiva));
+                    unlink(DOC_ROOT.$ruta_reponsiva);
+            }
             unset($_SESSION['responsables_resource'][$id]);
         }
         $this->Util()->setError(0,"complete","Has eliminado correctamente un registro");

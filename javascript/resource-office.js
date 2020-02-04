@@ -17,8 +17,6 @@ jQ(document).ready(function(){
         });
     });
 });
-
-
 jQ(document).on('click',".spanEdit",function(){
     grayOut(true);
     jQ('#fview').show();
@@ -36,7 +34,6 @@ jQ(document).on('click',".spanEdit",function(){
 
     });
 });
-
 jQ(document).on('click',".spanDeleteResponsable",function(){
    var con =  confirm("¿ Esta seguro de realizar esta accion?");
    if(!con)
@@ -77,6 +74,10 @@ jQ(document).on('click',"#btnAddResponsable",function(){
             jQ('#btnAddResponsable').show();
             var splitResp = response.split("[#]");
             if(splitResp[0]=='ok'){
+                jQ("#responsiva").val('');
+                jQ("#nombre_responsable").val('');
+                jQ("#fecha_entrega").val('');
+                jQ("#tipo_responsable").prop('selectedIndex',0);
                 ShowStatusPopUp(splitResp[1]);
                 jQ('#div_responsable_resource').html(splitResp[2]);
             }
@@ -200,8 +201,6 @@ function FillField(self,id){
     jQ('#suggestionDivResponsable').html('');
 }
 jQ(document).on('click','div#suggestionDivResponsable .suggestionResponsable,div#suggestionDivResponsable .closeSuggestResponsableDiv',SuggestListenerPersonal);
-
-
 function close_popup(){
     $('fview').innerHTML='';
     $('fview').hide();
