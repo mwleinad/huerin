@@ -18,6 +18,7 @@ switch($_POST['type']){
         $inventory->setNombreResponsable($_POST['nombre_responsable']);
         $inventory->setFechaEntregaResponsable($_POST['fecha_entrega']);
         $inventory->setTipoResponsable($_POST['tipo_responsable']);
+        $inventory->validateFileResponsiva();
         if($inventory->addResponsablesToArray()){
             $smarty->assign("responsables",$_SESSION['responsables_resource']);
             echo "ok[#]";
@@ -106,7 +107,6 @@ switch($_POST['type']){
 
         $inventory->setId($_POST["id"]);
         $info = $inventory->infoResource();
-
         if(isset($info["responsables"]))
             if(count($info["responsables"])>0){
                 $_SESSION["responsables_resource"] = $info["responsables"];

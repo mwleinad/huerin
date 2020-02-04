@@ -149,8 +149,17 @@
                         <a href="javascript:;"  id="btnAddResponsable" class="button_grey"><span>Agregar</span></a>
                     </div>
                 </div>
+                <div class="grid_16">
+                    <div class="grid_6">
+                        <div style="width:100%;float:left"> Adjuntar responsiva(PDF Max 2MB)</div>
+                        <div style="width:100%;float: left;">
+                            <input name="responsiva"  id="responsiva"   type="file" class="largeInput "/>
+                        </div>
+                    </div>
+                </div>
                 </form>
             </div>
+
             <div class="grid_16" id="div_responsable_resource">
                 {include file="{$DOC_ROOT}/templates/lists/responsables-resources.tpl"}
             </div>

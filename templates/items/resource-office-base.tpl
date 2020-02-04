@@ -4,7 +4,7 @@
     <td  style="width:10%;">{$res.fecha_compra}</td>
     <td  style="width:10%;">
         {foreach from=$res.responsables key=kr item=itemr}
-            {$itemr.nombre}<br>
+           {$kr+1}.{$itemr.nombre}<br>
         {/foreach}
     </td>
     <td  style="width:10%;">{if $res.tipo_equipo eq ""}N/A{else}{$res.tipo_equipo}{/if}</td>
@@ -14,9 +14,8 @@
         <a target="_blank" href="{$WEB_ROOT}/resource-office-pdf&id={$res.office_resource_id}&type=view">
             <img src="{$WEB_ROOT}/images/pdf_icon.png" class="" id="{$res.office_resource_id}" border="0" title="Ver reporte" width="16"/>
         </a>
-            <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" title="Editar" id="{$res.office_resource_id}"/>
+        <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" title="Editar" id="{$res.office_resource_id}"/>
 
-            <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" title="Eliminar" id="{$res.office_resource_id}"/>
-
+        <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" title="Eliminar" id="{$res.office_resource_id}"/>
     </td>
 </tr>

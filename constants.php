@@ -66,4 +66,9 @@ define("INICIO_ADEUDO", '2018-01-01');
 define("IDSUP", 201);
 define("ITER_LIMIT", 5);
 
+define('KB', 1024);
+define('MB', 1048576);
+define('GB', 1073741824);
+define('TB', 1099511627776);
+
 ?>
