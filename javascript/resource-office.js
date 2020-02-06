@@ -16,6 +16,7 @@ jQ(document).ready(function(){
             }
         });
     });
+    jQ("#btnSearch").on("click",searchResource);
 });
 jQ(document).on('click',".spanEdit",function(){
     grayOut(true);
@@ -119,6 +120,34 @@ jQ(document).on('click',".spanDelete",function(){
 
     });
 });
+
+function searchResource(){
+    var form = jQ(this).parents('form:first');
+    var fd =  new FormData(form[0]);
+    jQ.ajax({
+        url:AJAX_PATH,
+        method:'post',
+        data:fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend: function(){
+            jQ("#loading").show();
+            jQ('#btnSearch').hide();
+        },
+        success: function(response){
+            jQ('#btnSearch').show();
+            jQ("#loading").hide();
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                jQ('#contenido').html(splitResp[1]);
+            }
+            else{
+                jQ('#btnSearch').show();
+            }
+        }
+    });
+}
 function executeFunResource(){
     var form = jQ(this).parents('form:first');
     var fd =  new FormData(form[0]);
@@ -201,6 +230,7 @@ function FillField(self,id){
     jQ('#suggestionDivResponsable').html('');
 }
 jQ(document).on('click','div#suggestionDivResponsable .suggestionResponsable,div#suggestionDivResponsable .closeSuggestResponsableDiv',SuggestListenerPersonal);
+
 function close_popup(){
     $('fview').innerHTML='';
     $('fview').hide();

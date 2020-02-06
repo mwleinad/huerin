@@ -11,6 +11,7 @@
 				<div style="width:30%;float:left"> * Tipo de recurso</div>
 				<div style="width:70%;float: left;">
 					<select class="largeInput" name="tipo_recurso" id="tipo_recurso">
+                        <option value="">Seleccionar...</option>
 						<option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Dispositivo</option>
 						<option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Equipo de computo</option>
 						<option value="inmobiliaria" {if $post.tipo_recurso eq "inmobiliaria"}selected{/if}>Inmobiliaria</option>
@@ -29,7 +30,7 @@
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Descripcion</div>
 					<div style="width:70%;float: left;">
-						<textarea name="descripcion" id="descripcion" class="largeInput ">{$post.descripcion}</textarea>
+						<textarea name="descripcion" id="descripcion" class="largeInput" rows="10">{$post.descripcion}</textarea>
 					</div>
 
 				</div>
@@ -173,7 +174,7 @@
             </div>
             <div class="grid_16" style="text-align: center">
                 <div class="formLine"  style="display: inline-block">
-                    <a href="javascript:void();"  id="btnResource" class="button_grey"><span>{if $post}Actualizar{else}Guardar{/if}</span></a>
+                    <a href="javascript:;"  id="btnResource" class="button_grey"><span>{if $post}Actualizar{else}Guardar{/if}</span></a>
                 </div>
             </div>
 

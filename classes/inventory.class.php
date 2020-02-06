@@ -267,6 +267,55 @@ class Inventory extends Articulo
         return $data;
 
     }
+    public function searchResource(){
+        $filtro = "";
+
+        $like  = $_POST['name_descripcion'];
+        $responsable = $_POST['responsable'];
+        $tipoRecurso = $_POST['tipo_recurso'];
+        $finit = $_POST['fecha_alta_inicio'];
+        $fend = $_POST['fecha_alta_fin'];
+        $fcinit = $_POST['fecha_compra_inicio'];
+        $fcend = $_POST['fecha_compra_fin'];
+
+        if(strlen($like)>0)
+            $filtro .=" and (a.nombre like '%$like%' OR a.descripcion like '%$like%') ";
+
+        if(strlen($responsable)>0)
+            $filtro .=" and b.nombre like '%$responsable%' ";
+        if($tipoRecurso!="")
+            $filtro .=" and a.tipo_recurso = '$tipoRecurso' ";
+        if($this->Util()->isValidateDate($finit,"d-m-Y"))
+            $filtro .=" and a.fecha_alta >= '".$this->Util()->FormatDateMySql($finit)."' ";
+        if($this->Util()->isValidateDate($fend,"d-m-Y"))
+            $filtro .=" and a.fecha_alta <= '".$this->Util()->FormatDateMySql($fend)."' ";
+        if($this->Util()->isValidateDate($fcinit,"d-m-Y"))
+            $filtro .=" and a.fecha_compra >= '".$this->Util()->FormatDateMySql($fcinit)."' ";
+        if($this->Util()->isValidateDate($fcend,"d-m-Y"))
+            $filtro .=" and a.fecha_compra <= '".$this->Util()->FormatDateMySql($fcend)."' ";
+
+        $sql  = "SELECT count(DISTINCT(a.office_resource_id)) FROM office_resource a 
+                 LEFT JOIN responsables_resource_office b ON a.office_resource_id = b.office_resource_id
+                 WHERE a.status='Activo' and b.status='Activo' $filtro";
+
+        $this->Util()->DB()->setQuery($sql);
+        $total = $this->Util()->DB()->GetSingle();
+        $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/resource-office");
+        $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
+
+        $sql  = "SELECT a.* FROM office_resource a 
+                LEFT JOIN responsables_resource_office b ON a.office_resource_id = b.office_resource_id
+                WHERE a.status = 'Activo' and b.status='Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC ".$sql_add;
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        foreach($result as $key=>$var)
+            $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+
+        $data["items"] = $result;
+        $data["pages"] = $pages;
+
+        return $data;
+    }
     public function makeDownResource(){
         if($this->Util()->PrintErrors())
             return false;

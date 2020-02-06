@@ -1477,6 +1477,15 @@ ul.menu_arbol ul {
 .tableFull{
 	width: 100%;
 }
+.text-left{
+	text-align: left;
+}
+.text-bold{
+	font-size: bold;
+}
+.label-form{
+	display: inline;
+}
 
 
 

@@ -4,8 +4,10 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 switch($_POST['type']){
-    case 'saveResourceToInventory':
-
+    case 'search':
+        echo "ok[#]";
+        $smarty->assign("registros",$inventory->searchResource());
+        $smarty->display(DOC_ROOT."/templates/lists/resource-office.tpl");
     break;
     case "openAddResource":
         $inventory->CleanResponsables();

@@ -9,7 +9,7 @@
         {/if}
     {foreachelse}
         <tr>
-            <td colspan="" align="center">No existen responsables</td>
+            <td colspan="9" align="center">No existen responsables</td>
         </tr>
     {/foreach}
     </tbody>
