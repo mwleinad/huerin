@@ -12,11 +12,16 @@
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>
     <td  style="width: 10%">
-        <a target="_blank" href="{$WEB_ROOT}/resource-office-pdf&id={$res.office_resource_id}&type=view">
-            <img src="{$WEB_ROOT}/images/pdf_icon.png" class="" id="{$res.office_resource_id}" border="0" title="Ver reporte" width="16"/>
-        </a>
-        <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" title="Editar" id="{$res.office_resource_id}"/>
-
-        <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" title="Eliminar" id="{$res.office_resource_id}"/>
+        {if in_array(256,$permissions)|| $User.isRoot}
+            <a target="_blank" href="{$WEB_ROOT}/resource-office-pdf&id={$res.office_resource_id}&type=view">
+                <img src="{$WEB_ROOT}/images/pdf_icon.png" class="" id="{$res.office_resource_id}" border="0" title="Ver reporte" width="16"/>
+            </a>
+        {/if}
+        {if in_array(253,$permissions)|| $User.isRoot}
+            <img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" title="Editar" id="{$res.office_resource_id}"/>
+        {/if}
+        {if in_array(254,$permissions)|| $User.isRoot}
+            <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" title="Eliminar" id="{$res.office_resource_id}"/>
+        {/if}
     </td>
 </tr>

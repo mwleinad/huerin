@@ -286,9 +286,9 @@ class Inventory extends Articulo
         if($tipoRecurso!="")
             $filtro .=" and a.tipo_recurso = '$tipoRecurso' ";
         if($this->Util()->isValidateDate($finit,"d-m-Y"))
-            $filtro .=" and a.fecha_alta >= '".$this->Util()->FormatDateMySql($finit)."' ";
+            $filtro .=" and date(a.fecha_alta) >= '".$this->Util()->FormatDateMySql($finit)."' ";
         if($this->Util()->isValidateDate($fend,"d-m-Y"))
-            $filtro .=" and a.fecha_alta <= '".$this->Util()->FormatDateMySql($fend)."' ";
+            $filtro .=" and date(a.fecha_alta) <= '".$this->Util()->FormatDateMySql($fend)."' ";
         if($this->Util()->isValidateDate($fcinit,"d-m-Y"))
             $filtro .=" and a.fecha_compra >= '".$this->Util()->FormatDateMySql($fcinit)."' ";
         if($this->Util()->isValidateDate($fcend,"d-m-Y"))

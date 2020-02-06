@@ -26,16 +26,22 @@
             </div>
             <div class="grid_4">
                 <div class="grid_16 text-left "><label for="" class="label-form">Fecha  de alta</label></div>
-                <div class="grid_6" style="padding-right: 10px"><input type="text" id="fecha_alta_inicio" name="fecha_alta_inicio" class="largeInput" onclick="CalendarioSimple(this)" /></div>
-                <div class="grid_6"><input type="text" id="fecha_alta_fin" name="fecha_alta_fin" class="largeInput" onclick="CalendarioSimple(this)"  /></div>
+                <div class="grid_16" style="display: table;border-collapse: separate;position: relative">
+                    <input type="text" id="fecha_alta_inicio" name="fecha_alta_inicio" class="largeInput" onclick="CalendarioSimple(this)" style="float: left;display: table-cell!important;"/>
+                    <span class="input-addon">al</span>
+                    <input type="text" id="fecha_alta_fin" name="fecha_alta_fin" class="largeInput" onclick="CalendarioSimple(this)" style="float: left;display: table-cell!important;" />
+                </div>
             </div>
 
         </div>
         <div class="grid_16">
             <div class="grid_4">
                 <div class="grid_16 text-left "><label for="" class="label-form">Fecha  de compra</label></div>
-                <div class="grid_6" style="padding-right: 10px"><input type="text" id="fecha_compra_inicio" name="fecha_compra_inicio" class="largeInput" onclick="CalendarioSimple(this)" /></div>
-                <div class="grid_6"><input type="text" id="fecha_compra_fin" name="fecha_compra_fin" class="largeInput" onclick="CalendarioSimple(this)"  /></div>
+                <div class="grid_16" style="display: table;border-collapse: separate;position: relative">
+                    <input type="text" id="fecha_compra_inicio" name="fecha_compra_inicio" class="largeInput" onclick="CalendarioSimple(this)" style="float: left;display: table-cell!important;"/>
+                    <span class="input-addon">al</span>
+                    <input type="text" id="fecha_compra_fin" name="fecha_compra_fin" class="largeInput" onclick="CalendarioSimple(this)"  style="float: left;display: table-cell!important;" />
+                </div>
             </div>
         </div>
         <div class="grid_16">
