@@ -57,9 +57,9 @@
                     <li><a href="{$WEB_ROOT}/expediente" {if $page == "expediente"}class="current"{/if}>
                     <span>Expedientes</span></a></li>
                 {/if}
-                {if in_array(182,$permissions)|| $User.isRoot}
+                {if in_array(251,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/resource-office" {if $page == "resource-office"}class="current"{/if}>
-                            <span>Inventario de recursos</span></a></li>
+                    <span>Inventario de recursos</span></a></li>
                 {/if}
             {/if}
 
