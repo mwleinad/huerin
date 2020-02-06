@@ -2,6 +2,9 @@
 <head>
     <title>RECURSOS</title>
     <style>
+        @page {
+            margin: 80px 25px;
+        }
         *{
             font-size: 12px;
 
@@ -29,13 +32,8 @@
         table tbody tr.history>td{
             border-bottom: 1px solid #0e76a8;
         }
-        .fieldBold{
-            font-size: 10px;
-            font-weight: bold;
-            padding-left: 2px;
-        }
         .fieldBoldBackground{
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             background: #0e76a8;
             color: #ffffff;
@@ -46,12 +44,6 @@
             text-align: justify;
             padding: 0;
             padding-left: 2px;
-        }
-        .cell20{
-            width: 20%;
-        }
-        .cell10{
-            width: 10%;
         }
         .titleCenter{
             font-size: 14px;
@@ -88,68 +80,105 @@
             font-weight: normal;
             text-align: left;
         }
+        header {
+            position: fixed;
+            top: -60px;
+            left: 0px;
+            right: 0px;
+            height: auto;
+
+            /** Extra personal styles **/
+            background-color: #0e76a8;
+            text-align: center;
+        }
+        header h3 {
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+
+        }
     </style>
     <meta charset="UTF-8">
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
 </head>
 <body>
-    <table cellpadding="0" cellspacing="0" class="tableFullWidth">
-        <tr>
-            <td class="fieldBoldBackground alignJustify">Tipo de recurso</td>
-            <td class="fieldBoldBackground alignJustify">Nombre</td>
-            <td class="fieldBoldBackground alignJustify">Fecha de compra</td>
-            <td class="fieldBoldBackground alignJustify">Fecha de alta</td>
-        </tr>
-        <tr>
-            <td class="alignJustify">{$info.tipo_recurso}</td>
-            <td class="alignJustify">{$info.nombre}</td>
-            <td class="alignJustify">{$info.fecha_compra}</td>
-            <td class="alignJustify">{$info.fecha_alta}</td>
-        </tr>
-        <tr>
-            <td class="fieldBoldBackground alignJustify">No. serie</td>
-            <td class="fieldBoldBackground alignJustify">Status</td>
-            <td class="fieldBoldBackground alignJustify">No. licencia</td>
-            <td class="fieldBoldBackground alignJustify">Codigo activación</td>
-        </tr>
-        <tr>
-            <td class="alignJustify">{$info.no_serie}</td>
-            <td class="alignJustify">{$info.status}</td>
-            <td class="alignJustify">{$info.no_licencia}</td>
-            <td class="alignJustify">{$info.codigo_activacion}</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="fieldBoldBackground">Descripcion</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="alignJustify">{$info.descripcion}</td>
-        </tr>
-    </table>
-    <br><br>
-    <table class="tableHistory titleCenterHistory">
-        <thead>
-        <tr>
-            <th colspan="4" class="titleCenter titleHistory">Historico de responsables</th>
-        </tr>
-        <tr>
-            <th>Nombre</th>
-            <th>Fecha entrega</th>
-            <th>Status</th>
-            <th>Fecha baja</th>
-        </tr>
-        </thead>
-        <tbody>
-        {foreach from=$info.responsables  key=key2 item=res}
+    <header>
+        <h3>Reporte de inventario</h3>
+    </header>
+    <main>
+        <table cellpadding="0" cellspacing="0" class="tableFullWidth" style="margin-top:40px;">
             <tr>
-                <td>{$res.nombre}</td>
-                <td>{$res.fecha_entrega_responsable}</td>
-                <td>{$res.status}</td>
-                <td>{if $res.status eq "Baja"}{$res.fecha_liberacion_responsable}{/if}</td>
+                <td class="fieldBoldBackground alignJustify">Tipo de recurso</td>
+                <td class="fieldBoldBackground alignJustify">Nombre</td>
+                <td class="fieldBoldBackground alignJustify">Fecha de compra</td>
+                <td class="fieldBoldBackground alignJustify">Fecha de alta</td>
             </tr>
-            {foreachelse}
-            <tr><td colspan="4">Sin registros</td></tr>
-        {/foreach}
-        </tbody>
-    </table>
+            <tr>
+                <td class="alignJustify">{$info.tipo_recurso}</td>
+                <td class="alignJustify">{$info.nombre}</td>
+                <td class="alignJustify">{$info.fecha_compra}</td>
+                <td class="alignJustify">{$info.fecha_alta}</td>
+            </tr>
+            <tr>
+                <td class="fieldBoldBackground alignJustify">No. serie</td>
+                <td class="fieldBoldBackground alignJustify">Status</td>
+                <td class="fieldBoldBackground alignJustify">No. licencia</td>
+                <td class="fieldBoldBackground alignJustify">Codigo activación</td>
+            </tr>
+            <tr>
+                <td class="alignJustify">{$info.no_serie}</td>
+                <td class="alignJustify">{$info.status}</td>
+                <td class="alignJustify">{$info.no_licencia}</td>
+                <td class="alignJustify">{$info.codigo_activacion}</td>
+            </tr>
+            <tr>
+                <td class="fieldBoldBackground alignJustify">Fecha y hora de ultima modificación</td>
+                <td class="fieldBoldBackground alignJustify"></td>
+                <td class="fieldBoldBackground alignJustify"></td>
+                <td class="fieldBoldBackground alignJustify"></td>
+            </tr>
+            <tr>
+                <td class="alignJustify">{$info.fecha_ultima_modificacion}</td>
+                <td class="alignJustify"></td>
+                <td class="alignJustify"></td>
+                <td class="alignJustify"></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="fieldBoldBackground">Descripcion</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="alignJustify">{$info.descripcion}</td>
+            </tr>
+        </table>
+        <br><br>
+        <table class="tableHistory titleCenterHistory">
+            <thead>
+            <tr>
+                <th colspan="5" class="titleCenter titleHistory">Historico de responsables</th>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <th>Fecha entrega</th>
+                <th>Status</th>
+                <th>Fecha baja</th>
+                <th>Alta realizada por</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$info.responsables  key=key2 item=res}
+                <tr>
+                    <td>{$res.nombre}</td>
+                    <td>{$res.fecha_entrega_responsable}</td>
+                    <td>{$res.status}</td>
+                    <td>{if $res.status eq "Baja"}{$res.fecha_liberacion_responsable}{/if}</td>
+                    <td>{$res.usuario_creador}</td>
+                </tr>
+                {foreachelse}
+                <tr><td colspan="4">Sin registros</td></tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </main>
 </body>
 </html>
