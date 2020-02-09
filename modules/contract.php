@@ -29,7 +29,6 @@
 
 	$smarty->assign("infoCustomer", $infoCustomer);
 	$departamentos = $departamentos->Enumerate();
-	$empleados = $personal->Enumerate();			
 	
 	$smarty->assign("departamentos", $departamentos);	
 	$smarty->assign("id", $_GET["id"]);	
@@ -37,6 +36,6 @@
 	$smarty->assign("categories", $categories);
 	$smarty->assign("contracts", $resContracts);
 	$smarty->assign('mainMnu','contratos');
-	$smarty->assign("empleados", $empleados);
+
 
 ?>

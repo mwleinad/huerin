@@ -5,9 +5,16 @@
     <h1 class="content_edit">Servicios.</h1>
   </div>
   <div class="grid_6" id="eventbox">
-    <a href="javascript:;" title="Multiple baja temporal de servicio" class="spanAll spanMultipleOperation" data-contrato="{$id}">
-        <img src="{$WEB_ROOT}/images/icons/multiedit2.png">
-    </a>
+  {if in_array(85,$permissions)|| $User.isRoot}
+      <a href="javascript:;" title="Agregar servicio" class="spanAll spanAdd" data-contrato="{$id}">
+          <img src="{$WEB_ROOT}/images/icons/plus.png">
+      </a>
+  {/if}
+  {if in_array(87,$permissions)|| $User.isRoot}
+        <a href="javascript:;" title="Multiple baja temporal de servicio" class="spanAll spanMultipleOperation" data-contrato="{$id}">
+            <img src="{$WEB_ROOT}/images/icons/multiedit2.png">
+        </a>
+  {/if}
   </div>
   <div class="clear"></div>
   {if $msgOk}

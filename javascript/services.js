@@ -1,7 +1,7 @@
 var AJAX_PATH = WEB_ROOT+'/ajax/services.php';
 var selectedData = [];
 Event.observe(window, 'load', function() {
-	AddEditCustomerListeners = function(e) {
+	listenersServices = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('spanEdit');
 		var id = el.identify();
@@ -16,7 +16,7 @@ Event.observe(window, 'load', function() {
         }
 	}
 
-	$('contenido').observe("click", AddEditCustomerListeners);
+	$('contenido').observe("click", listenersServices);
 
 });
 function DownServicioPopUp(id){
@@ -108,6 +108,7 @@ function EditServicioPopup(id)
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			FViewOffSet(response);
+			jQ('select#tipoServicioId').find(':not(:selected)').remove();
 			Event.observe($('closePopUpDiv'), "click", function(){ EditServicioPopup(0); });
 			Event.observe($('editCustomer'), "click", function(){EditServicio();});
 		},
@@ -327,4 +328,21 @@ jQ(document).on('click','#btnSaveMultServ',function(){
         }
     });
 });
+jQ(document).on('click','.spanAdd',function (e) {
+	jQ.ajax({
+		url:WEB_ROOT+"/ajax/services.php",
+		type:"post",
+		data:{type:'addServicio',id:jQ(this).data('contrato'),fromEvent:'from-service'},
+		success:function (response) {
+			grayOut(true);
+			$('fview').show();
+			FViewOffSet(response);
+			Event.observe($('fviewclose'), "click",close_popup);
+			Event.observe($('addServiceButton'), "click", AddService);
+
+		},
+		error: function(){ alert('Something went wrong...') }
+	});
+});
+
 

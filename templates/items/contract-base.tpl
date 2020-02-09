@@ -33,13 +33,13 @@
             <td align="center">
             {if $item.activo == 'Si'}
                 {$item.noServicios}
-                {if $item.noServicios > 0}
+                {*if $item.noServicios > 0*}
                     {if in_array(86,$permissions)|| $User.isRoot}
                         <a href="{$WEB_ROOT}/services/id/{$item.contractId}" onclick="return parent.GB_show('Servicios de Razon Social', this.href,500,970) ">
                             <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Servicios"/>
                         </a>
                     {/if}
-                {/if}
+                {*/if*}
                 {if in_array(85,$permissions)|| $User.isRoot}
                     <img class="spanAddService" id="{$item.contractId}" src="{$WEB_ROOT}/images/icons/add.png" title="Agregar Servicios"/>
                 {/if}

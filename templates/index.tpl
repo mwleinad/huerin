@@ -73,6 +73,7 @@
 <script>var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/javascript/script-service.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/datetimepicker.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
