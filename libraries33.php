@@ -264,14 +264,7 @@ $firstPages = $rol->FindFirstPage();
 $smarty->assign('firstPages', $firstPages);
 
 $User['tipoPersonal'] = $infoUser['tipoPersonal'];
-
-if($User["tipoPersonal"] == "Asistente" || $User["tipoPersonal"] == "Socio" || $User["tipoPersonal"] == "Gerente")
-{
-    $smarty->assign('canEdit', true);
-}
-
 $smarty->assign('User',$User);
-
 function dd($data)
 {
     echo "<pre>";

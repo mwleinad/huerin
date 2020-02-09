@@ -3,7 +3,7 @@
         <fieldset>
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* Nombre Completo:</div>
-                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50"/>
+                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50" {if $post}readonly{/if}/>
                 <hr/>
             </div>
             {if in_array(230,$permissions)|| $User.isRoot}

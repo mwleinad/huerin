@@ -868,7 +868,8 @@ class Contract extends Main
           permisos,
           auxiliarCuenta,
           facturador,
-          claveIsn
+          claveIsn,
+          fechaAlta
         )
         VALUES
         (
@@ -919,7 +920,8 @@ class Contract extends Main
           '" . $this->permisos . "',
           '" . $this->auxiliarCuenta . "',
           '" . $this->facturador . "',
-          '" . $this->claveIsn . "')"
+          '" . $this->claveIsn . "',
+          '".date('Y-m-d H:i:s')."')"
         );
         $contractId = $this->Util()->DB()->InsertData();
         //insertar nuevos permisos en la tabla contractPermiso
@@ -1137,6 +1139,7 @@ class Contract extends Main
     public function Delete()
     {
         global $User, $log, $servicio;
+        $add = "";
         $permiso = new Permiso();
         if ($this->Util()->PrintErrors()) {
             return false;
@@ -1145,6 +1148,7 @@ class Contract extends Main
         if ($info["activo"] == 'Si') {
             $active = 'No';
             $complete = "La razon social fue dada de baja correctamente";
+            $add .= ", fechaBaja = '".date('Y-m-d H:i:s')."' ";
         } else {
             $active = 'Si';
             $complete = "La razon social fue dada de alta correctamente";
@@ -1152,6 +1156,7 @@ class Contract extends Main
         $this->Util()->DB()->setQuery(
             "UPDATE contract
                SET activo = '" . $active . "'
+               $add
                WHERE contractId = '" . $this->contractId . "'");
         $this->Util()->DB()->UpdateData();
         //insertar nuevos permisos en la tabla contractPermiso

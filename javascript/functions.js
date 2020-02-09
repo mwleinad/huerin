@@ -493,12 +493,11 @@ jQ(document).on('change','form#addNoticeForm input[type="checkbox"]#allSelected'
         });
 	}
 });
-function close_popup(){
+var close_popup = ()=>{
     $('fview').innerHTML='';
     $('fview').hide();
     grayOut(false);
-    return;
-}
+};
 
 jQ(document).on('click','.showPayment',function (e) {
 	e.preventDefault();

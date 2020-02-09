@@ -1,7 +1,8 @@
 <div id="divForm">
 	<form id="addServicioForm" name="addServicioForm" method="post" autocomplete="off">
 	<input type="hidden" id="type" name="type" value="saveMultipleServicio"/>
-	<input type="hidden" id="contractId" name="contractId" value="{$contractId}"/>
+	<input type="hidden" id="contractId" name="contractId" value="{$post.id}"/>
+	<input type="hidden" id="fromEvent" name="fromEvent" value="{$post.fromEvent}"/>
 		<fieldset>
 			<table class="tableFullWidth" id="box-table-a">
 				<thead>

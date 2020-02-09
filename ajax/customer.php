@@ -76,7 +76,6 @@ switch($_POST["type"])
 		break;
 		
 	case "editCustomer":
-	 
 			$empleados = $personal->Enumerate();			
 			$smarty->assign("empleados", $empleados);
 			$smarty->assign("valur", $_POST["valur"]);

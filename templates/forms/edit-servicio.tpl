@@ -6,7 +6,7 @@
 	<fieldset>
 		<div class="formLine" style="width:100%; text-align:left">
 		   <div style="width:30%;float:left">* Servicio:</div>
-		   <select name="tipoServicioId" id="tipoServicioId" class="smallInput medium" onchange="UpdateCosto()">
+		   <select name="tipoServicioId" id="tipoServicioId" class="smallInput medium">
 			   {foreach from=$tiposDeServicio item=item}
 				<option {if $item.tipoServicioId == $post.tipoServicioId} selected="selected"{/if}value="{$item.tipoServicioId}">{$item.nombreServicio}</option>
 			   {/foreach}

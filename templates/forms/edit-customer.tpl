@@ -43,15 +43,14 @@
 
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* Fecha de Alta:</div>
-                <input style="width:20%!important;" class="largeInput" onclick="CalendarioSimple(this)" name="fechaAlta"
-                       id="fechaAlta" type="text" value="{$post.fechaMysql}" maxlength="10"/>
+                <input style="width:20%!important;" class="largeInput"  name="fechaAlta"
+                       id="fechaAlta" type="text" value="{$post.fechaMysql}" readonly/>
                 <hr/>
             </div>
 
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* NO generar factura 13:</div>
-                <div style="width:30%;float:left"><input name="noFactura13" id="noFactura13" type="checkbox"
-                                                         value="Si" {if $post.noFactura13 == "Si"} checked="checked"{/if}/>
+                <div style="width:30%;float:left"><input name="noFactura13" id="noFactura13" type="checkbox" value="Si" {if $post.noFactura13 == "Si"} checked="checked"{/if}/>
                 </div>
                 <hr/>
             </div>
