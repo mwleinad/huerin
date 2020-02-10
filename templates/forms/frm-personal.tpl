@@ -3,10 +3,11 @@
         <fieldset>
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* Nombre Completo:</div>
-                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50" {if $post}readonly{/if}/>
+                <input class="smallInput medium" name="name" id="name" type="text" value="{$post.name}" size="50"
+                       {if $post && (!in_array(87,$permissions)|| !$User.isRoot)}readonly{/if}/>
                 <hr/>
             </div>
-            {if in_array(230,$permissions)|| $User.isRoot}
+            {if in_array(230,$permissions)|| $User.isRoot}fvaca
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Sueldo(mensual)</div>
                     <input class="smallInput medium" name="sueldo" id="sueldo" type="text" value="{$post.sueldo}"
