@@ -56,39 +56,7 @@ jQ(document).on('click',".spanDeleteResponsable",function(){
         }
     });
 });
-jQ(document).on('click',"#btnAddResponsable",function(){
-    var form = jQ(this).parents('form:first');
-    var fd =  new FormData(form[0]);
-    fd.set("type","addResponsableToArray");
-    jQ.ajax({
-        url:AJAX_PATH,
-        method:'post',
-        data:fd,
-        processData: false,
-        contentType: false,
-        type: 'POST',
-        beforeSend: function(){
-            jQ('#btnAddResponsable').hide();
 
-        },
-        success: function(response){
-            jQ('#btnAddResponsable').show();
-            var splitResp = response.split("[#]");
-            if(splitResp[0]=='ok'){
-                jQ("#responsiva").val('');
-                jQ("#nombre_responsable").val('');
-                jQ("#fecha_entrega").val('');
-                jQ("#tipo_responsable").prop('selectedIndex',0);
-                ShowStatusPopUp(splitResp[1]);
-                jQ('#div_responsable_resource').html(splitResp[2]);
-            }
-            else{
-                jQ('#btnAddResponsable').show();
-                ShowStatusPopUp(splitResp[1]);
-            }
-        }
-    });
-});
 
 jQ(document).on('change',"#tipo_recurso",function() {
        var selected = jQ(this).children('option:selected').val();

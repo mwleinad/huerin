@@ -107,65 +107,7 @@
                 </div>
                 <hr>
             </div>
-            <div class="grid_16">
-                <form id="frmResponsable" name="frmResponsable" method="post" onsubmit="return false;" action="#"  autocomplete="off">
-                <div class="grid_16" style="margin-bottom: 12px">
-                    <span style="color:#FFA500">Nota: Utilice el formulario de abajo para agregar responsables.<br></span>
-                </div>
-                <div class="grid_5">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:100%;float:left">* Nombre reponsable</div>
-                        <div style="width:100%;float: left;">
-                            <input name="nombre_responsable"  id="nombre_responsable" type="text" class="largeInput "/>
-                            <div id="loadingDivNombreResponsable"></div>
-                            <div style="position:relative">
-                                <div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDivResponsable">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_4">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:100%;float:left">* Fecha de entrega a res.</div>
-                        <div style="width:100%;float: left;">
-                            <input name="fecha_entrega"  id="fecha_entrega"  onclick="CalendarioSimple(this)" type="text" class="largeInput "/>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_5">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:100%;float:left">* Tipo responsable</div>
-                        <div style="width:100%;float: left;">
-                            <select name="tipo_responsable" id="tipo_responsable" class="largeInput">
-                                <option value="">Seleccionar..</option>
-                                <option value="Principal">Principal</option>
-                                <option value="Secundario">Secundario</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_2">
-                    <div class="formLine" style="text-align: center;vertical-align: middle">
-                        <a href="javascript:;"  id="btnAddResponsable" class="button_grey"><span>Agregar</span></a>
-                    </div>
-                </div>
-                <div class="grid_16">
-                    <div class="grid_6">
-                        <div style="width:100%;float:left"> Adjuntar responsiva(PDF Max 2MB)</div>
-                        <div style="width:100%;float: left;">
-                            <input name="responsiva"  id="responsiva"   type="file" class="largeInput "/>
-                        </div>
-                    </div>
-                </div>
-                </form>
-            </div>
-
-            <div class="grid_16" id="div_responsable_resource">
-                {include file="{$DOC_ROOT}/templates/lists/responsables-resources.tpl"}
-            </div>
             <div style="clear:both"></div>
-			<hr />
             <div class="grid_16">
                 <span style="float:left">* Campos Obligatorios</span>
             </div>

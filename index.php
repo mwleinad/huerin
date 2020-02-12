@@ -25,6 +25,8 @@ include_once(DOC_ROOT.'/libraries.php');
         'departamentos',
 		'resource-office',
 		'resource-office-pdf',
+		'responsables-resource',
+		'upkeeps-resource',
 
 		//clientes y contratos
 		'customer',

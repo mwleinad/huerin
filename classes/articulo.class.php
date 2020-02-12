@@ -111,7 +111,7 @@ class Articulo extends Main
 
     private $motivoBaja;
     public function setMotivoBaja($value){
-        $this->Util()->ValidateRequireField($value," Motivo por la que se dara de baja");
+        $this->Util()->ValidateRequireField($value," Motivo de baja");
         $this->motivoBaja = htmlspecialchars($value,ENT_QUOTES);
     }
     public function getMotivoBaja(){
@@ -121,6 +121,24 @@ class Articulo extends Main
     /*
      * set & get responsables de recurso de oficina
      */
+    private $responsableResourceId;
+    public function setResponsableResourceId($value)
+    {
+        $this->Util()->ValidateRequireField($value,"Responsable ID");
+        $this->responsableResourceId = $value;
+    }
+    public function getResponsableResourceId(){
+        return $this->responsableResourceId;
+    }
+    private $personalId;
+    public function setPersonalId($value)
+    {
+        $this->Util()->ValidateRequireField($value,"Nombre responsable");
+        $this->personalId = $value;
+    }
+    public function getPersonalId(){
+        return $this->personalId;
+    }
     private $nombreResponsable;
     public function setNombreResponsable($value)
     {
@@ -134,8 +152,8 @@ class Articulo extends Main
     private $fechaEntregaResponsable;
     public function setFechaEntregaResponsable($value)
     {
-        if($this->Util()->ValidateRequireField($value,"Fecha de entrega a res."))
-            $this->Util()->validateDateFormat($value,"Fecha de entrega a res.","d-m-Y");
+        if($this->Util()->ValidateRequireField($value,"Fecha de entrega a responsable."))
+            $this->Util()->validateDateFormat($value,"Fecha de entrega a responsable.","d-m-Y");
         $this->fechaEntregaResponsable = $this->Util()->FormatDateMySql($value);
     }
     public function getFechaEntregaResponsable(){
@@ -151,5 +169,46 @@ class Articulo extends Main
     public function getTipoResponsable(){
         return $this->tipoResponsable;
     }
+
+    /*
+     * set & get  upkeeps
+     */
+    private $upkeepId;
+    public function setUpkeepId($value){
+        $this->Util()->ValidateRequireField($value,"Upkeep ID");
+        $this->upkeepId = $value;
+    }
+    public function getUpkeepId(){
+        return $this->upkeepId;
+    }
+
+    private $upkeepResponsable;
+    public function setUpkeepResponsable($value){
+        $this->Util()->ValidateRequireField($value,"Responsable de mantenimiento");
+        $this->upkeepResponsable = $value;
+    }
+    public function getUpkeepResponsable(){
+        return $this->upkeepResponsable;
+    }
+
+    private $upkeepDate;
+    public function setUpkeepDate($value){
+        if($this->Util()->ValidateRequireField($value,"Fecha de mantenimiento."))
+            $this->Util()->validateDateFormat($value,"Fecha de mantenimiento.","d-m-Y");
+        $this->upkeepDate = $this->Util()->FormatDateMySql($value);
+    }
+    public function getUpkeepDate(){
+        return $this->upkeepDate;
+    }
+
+    private $upkeepDescription;
+    public function setUpkeepDescription($value){
+        $this->Util()->ValidateRequireField($value,"Mantenimiento realizado");
+        $this->upkeepDescription = $value;
+    }
+    public function getUpkeepDescription(){
+        return $this->upkeepDescription;
+    }
+
 
 }

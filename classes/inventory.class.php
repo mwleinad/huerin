@@ -3,7 +3,17 @@
 
 class Inventory extends Articulo
 {
-    public function validateFileResponsiva(){
+    public function validateResponsableIfExist(){
+        if($this->getResponsableResourceId())
+            $sql = "select * from responsables_resource_office WHERE office_resource_id = '".$this->getId()."' and personalId = '".$this->getPersonalId()."' and responsable_resource_id != '".$this->getResponsableResourceId()."' and status = 'Activo'";
+        else
+            $sql =  "select * from responsables_resource_office WHERE office_resource_id = '".$this->getId()."' and personalId = '".$this->getPersonalId()."' and status = 'Activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        if($row)
+            $this->Util()->setError(0,"error","El responsable seleccionado ya se encuentra relacionado con el registro actual");
+    }
+    public function validateFileResponsiva($required = true){
         if(!isset($_FILES['responsiva']))
             return false;
 
@@ -17,9 +27,12 @@ class Inventory extends Articulo
                 $this->Util()->setError(0,"error","Archivo de responsiva formato invalido");
                 return false;
             }
-
+        }elseif($required){
+            $this->Util()->setError(0,"error","Es necesario adjuntar responsiva");
+            return false;
         }
 
+        return true;
     }
     public function saveResource(){
         if($this->Util()->PrintErrors())
@@ -53,8 +66,7 @@ class Inventory extends Articulo
                               '".date("Y-m-d H:i:s")."'             
                             )";
         $this->Util()->DB()->setQuery($sql);
-        $id = $this->Util()->DB()->InsertData();
-        $this->saveResponsablesResource($id);
+        $this->Util()->DB()->InsertData();
         $this->Util()->setError(0,"complete","El registro se ha guardado correctamente.");
         $this->Util()->PrintErrors();
         return true;
@@ -80,162 +92,117 @@ class Inventory extends Articulo
                 ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
-        $this->saveResponsablesResource($this->getId());
         $this->Util()->setError(0,"complete","El registro se ha actualizado correctamente.");
         $this->Util()->PrintErrors();
         return true;
     }
-    public function saveResponsablesResource($resourceId)
+    public function saveResponsablesResource()
     {
-        if(!isset($_SESSION["responsables_resource"]) || !$resourceId)
+        $this->validateResponsableIfExist();
+        if($this->Util()->PrintErrors())
             return false;
 
-        $responsables = $_SESSION["responsables_resource"];
-        if(count($responsables)<=0)
-            return false;
-
-        foreach($responsables as $res){
-            if($res["insertUpdate"]){
-                if($res["responsable_resource_id"]){
-                    if($res["status"]=="Baja")
-                        $addUp = " fecha_liberacion_responsable = '".date("Y-m-d")."',  ";
-
-                    $sql = "UPDATE responsables_resource_office
+        if($this->getResponsableResourceId()){
+            $sql = "UPDATE responsables_resource_office
                             SET 
-                            nombre = '".$res['nombre']."',
-                            fecha_entrega_responsable = '".$res['fecha_entrega_responsable']."',
-                            tipo_responsable = '".$res['tipo_responsable']."',
-                            status = '".$res['status']."',
-                            $addUp
+                            personalId = '".$this->getPersonalId()."',
+                            fecha_entrega_responsable = '".$this->getFechaEntregaResponsable()."',
+                            tipo_responsable = '".$this->getTipoResponsable()."',
                             usuario_modificador = '".$_SESSION['User']['username']."',
                             fecha_ultima_modificacion = '".date("Y-m-d H:i:s")."'
-                            WHERE responsable_resource_id = '".$res['responsable_resource_id']."'
+                            WHERE responsable_resource_id = '".$this->getResponsableResourceId()."'
                                  
                         ";
-                    $this->Util()->DB()->setQuery($sql);
-                    $this->Util()->DB()->UpdateData();
-
-                }else{
-                    $sql = "INSERT INTO responsables_resource_office(
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->UpdateData();
+            $this->Util()->setError(0,"complete","Se ha actualizado un registro");
+        }else{
+            $sql = "INSERT INTO responsables_resource_office(
                              office_resource_id,
-                             nombre,
+                             personalId,
                              fecha_entrega_responsable,
                              tipo_responsable,
                              usuario_creador,
                              status,
                              fecha_creacion
                              )values(
-                              '$resourceId',
-                              '".$res['nombre']."',
-                              '".$res['fecha_entrega_responsable']."',
-                              '".$res['tipo_responsable']."',
+                              '".$this->getId()."',
+                              '".$this->getPersonalId()."',
+                              '".$this->getFechaEntregaResponsable()."',
+                              '".$this->getTipoResponsable()."',
                               '".$_SESSION['User']['username']."',
                               'Activo',
                               '".date("Y-m-d H:i:s")."'       
                              )
                             ";
-                    $this->Util()->DB()->setQuery($sql);
-                    $last_res_id = $this->Util()->DB()->InsertData();
-                    $this->moveToRealFolderResponsiva($res["responsiva_root"],$resourceId,$last_res_id);
-
-                }
-            }
+            $this->Util()->DB()->setQuery($sql);
+            $last_res_id = $this->Util()->DB()->InsertData();
+            $this->Util()->setError(0,"complete","Se ha guardado un registro");
+            $this->setResponsableResourceId($last_res_id);
         }
-    }
-
-    public function addResponsablesToArray(){
-
-        if($this->Util()->PrintErrors())
-            return false;
-
-        if(!isset($_SESSION['responsables_resource']))
-            $_SESSION['responsables_resource'] = [];
-
-
-        @end($_SESSION['responsables_resource']);
-        $key = @key($_SESSION['responsables_resource'])+1;
-
-        $tmp['nombre'] = $this->getNombreResponsable();
-        $tmp['fecha_entrega_responsable'] = $this->getFechaEntregaResponsable();
-        $tmp['tipo_responsable'] = $this->getTipoResponsable();
-        $tmp['status'] = "Activo";
-        $tmp['insertUpdate'] = "true";
-        $tmp['responsiva_root'] = $this->saveResponsiva($_FILES,$key);
-
-        //guardar responsiva
-
-        $_SESSION['responsables_resource'][$key] = $tmp;
-
-        $this->Util()->setError(0,"complete","Has agregado correctamente un registro");
+        if($ruta = $this->saveResponsiva($_FILES)){
+            $sql  = "update responsables_resource_office set responsiva_root = '$ruta' where responsable_resource_id = '".$this->getResponsableResourceId()."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->UpdateData();
+        }
         $this->Util()->PrintErrors();
-
-        return  true;
+        return true;
     }
-    function saveResponsiva($FILES,$id){
-        $base_ruta = "/swap/tmp_responsiva";
+    function saveResponsiva($FILES,$down=false){
+        $base_ruta = "/expedientes/".$this->getPersonalId()."/responsivas";
         $folder = DOC_ROOT.$base_ruta;
         if($FILES['responsiva']['error']==0) {
             $ext =  end(explode('.',$FILES['responsiva']['name']));
-            $name = session_id()."_$id.$ext";
+
+            $name = $down ?  $this->getId()."_file_responsiva_baja_".$this->getResponsableResourceId().".$ext" : $this->getId()."_file_responsiva_".$this->getResponsableResourceId().".$ext";
             if(!is_dir($folder))
-                mkdir($folder);
-            if(move_uploaded_file($FILES['responsiva']['tmp_name'],$folder."/$name"))
+                mkdir($folder,0777,true);
+            if(move_uploaded_file($FILES['responsiva']['tmp_name'],$folder."/$name")){
+                unset($_FILES['responsiva']);
                 return $base_ruta."/$name";
+            }
+
             else return false;
         }else
             return false;
     }
-    function moveToRealFolderResponsiva($ruta,$resourceId,$responsableId){
-        $old_file = DOC_ROOT.$ruta;
-        $base_ruta_real = "/expedientes/responsivas";
-        $folder_real = DOC_ROOT.$base_ruta_real;
-        if(!$ruta)
+    public function  saveDeleteResponsable(){
+        if($this->Util()->PrintErrors())
             return false;
-        $ext_real = end(explode(".",$ruta));
-        $name_real = $resourceId."_file_responsiva_".$responsableId.".".$ext_real;
-        if(is_file($old_file)){
-            if(!is_dir($folder_real))
-                mkdir($folder_real);
 
-            $ruta_real = $base_ruta_real."/".$name_real;
-            if(rename($old_file,DOC_ROOT.$ruta_real)){
-                $sql  = "update responsables_resource_office set responsiva_root = '$ruta_real' where responsable_resource_id = '$responsableId' ";
-                $this->Util()->DB()->setQuery($sql);
-                $this->Util()->DB()->UpdateData();
-            }
-
-        }
-
-    }
-    public function  deleteResponsableFromArray($id){
-        $current = $_SESSION['responsables_resource'][$id];
-        if($current['responsable_resource_id']){
-            $current['status'] = "Baja";
-            $current['insertUpdate'] =  true;
-            $_SESSION['responsables_resource'][$id] = $current;
+        $info = $this->infoResponsableResource();
+        $this->setPersonalId($info['personalId']);
+        if($ruta = $this->saveResponsiva($_FILES,true)){
+            $sql ="UPDATE responsables_resource_office 
+                   SET status = 'Baja',
+                   motivo_baja_responsable = '".$this->getMotivoBaja()."',    
+                   responsiva_baja_root = '$ruta',
+                   fecha_liberacion_responsable='".date('Y-m-d H:i:s')."' 
+                    WHERE responsable_resource_id = '".$this->getResponsableResourceId()."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->UpdateData();
+            $this->Util()->setError(0,"complete","Has eliminado correctamente un registro");
+            $res =  true;
         }else{
-            $ruta_reponsiva =$_SESSION['responsables_resource'][$id]["responsiva_root"];
-            if($ruta_reponsiva!=""){
-                if(is_file(DOC_ROOT.$ruta_reponsiva));
-                    unlink(DOC_ROOT.$ruta_reponsiva);
-            }
-            unset($_SESSION['responsables_resource'][$id]);
+            $this->Util()->setError(0,"error","Ocurrio un error al dar de baja, intentelo de nuevo");
+            $res =  false;
         }
-        $this->Util()->setError(0,"complete","Has eliminado correctamente un registro");
         $this->Util()->PrintErrors();
-        return true;
+        return $res;
     }
-
-    function getListResponsablesResource($id,$incluirBaja =  false){
+    function getListResponsablesResource($id,$incluirBaja=false){
 
         $filtro = "";
         if(!$incluirBaja)
-            $filtro .=" and status ='Activo' ";
+            $filtro .=" and a.status ='Activo' ";
 
-        $sql = "select * from responsables_resource_office where office_resource_id = '".$id."' $filtro order by status asc, fecha_entrega_responsable desc ";
+        $sql = "select a.*,b.name as nombre from responsables_resource_office a
+                INNER JOIN personal b ON a.personalId = b.personalId
+                WHERE a.office_resource_id = '".$id."' $filtro order by a.status asc, a.fecha_entrega_responsable desc ";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
+
     public function infoResource(){
         $sql = "select * from office_resource where office_resource_id = '".$this->getId()."'  ";
         $this->Util()->DB()->setQuery($sql);
@@ -248,6 +215,15 @@ class Inventory extends Articulo
         }
         return $info;
     }
+
+    public function infoResponsableResource(){
+        $sql = "SELECT a.*,b.name as nombre from responsables_resource_office a
+                INNER JOIN personal b ON a.personalId=b.personalId
+                WHERE a.responsable_resource_id = '".$this->getResponsableResourceId()."'  ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetRow();
+    }
+
     public function enumerateResource(){
         $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM office_resource WHERE status='Activo'");
         $total = $this->Util()->DB()->GetSingle();
@@ -265,8 +241,8 @@ class Inventory extends Articulo
         $data["pages"] = $pages;
 
         return $data;
-
     }
+
     public function searchResource(){
         $filtro = "";
 
@@ -295,8 +271,8 @@ class Inventory extends Articulo
             $filtro .=" and a.fecha_compra <= '".$this->Util()->FormatDateMySql($fcend)."' ";
 
         $sql  = "SELECT count(DISTINCT(a.office_resource_id)) FROM office_resource a 
-                 LEFT JOIN responsables_resource_office b ON a.office_resource_id = b.office_resource_id
-                 WHERE a.status='Activo' and b.status='Activo' $filtro";
+                 LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId  WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
+                 WHERE a.status='Activo' $filtro";
 
         $this->Util()->DB()->setQuery($sql);
         $total = $this->Util()->DB()->GetSingle();
@@ -304,8 +280,8 @@ class Inventory extends Articulo
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
 
         $sql  = "SELECT a.* FROM office_resource a 
-                LEFT JOIN responsables_resource_office b ON a.office_resource_id = b.office_resource_id
-                WHERE a.status = 'Activo' and b.status='Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC ".$sql_add;
+                 LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
+                 WHERE a.status = 'Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC ".$sql_add;
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         foreach($result as $key=>$var)
@@ -316,7 +292,9 @@ class Inventory extends Articulo
 
         return $data;
     }
+
     public function makeDownResource(){
+        $this->validateResponsables();
         if($this->Util()->PrintErrors())
             return false;
 
@@ -328,29 +306,92 @@ class Inventory extends Articulo
                      fecha_baja='".date('Y-m-d H:i:s')."' WHERE office_resource_id = '".$this->getId()."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
-        $this->deleteAllResponsablesResource();
         $this->Util()->setError(0,"complete","Se ha realizado la baja del registro");
         $this->Util()->PrintErrors();
 
-        return true;    }
-    function deleteAllResponsablesResource(){
-        if(!$this->getId())
+        return true;
+    }
+
+    function validateResponsables()
+    {
+        $result = $this->getListResponsablesResource($this->getId());
+        if(count($result)>0)
+            $this->Util()->setError(0,"error","El registro tiene responsables activos, es necesario eliminarlos para proceder");
+    }
+    public function enumerateUpKeeps($incluirBaja =  false){
+
+        $filtro = "";
+        if(!$incluirBaja)
+            $filtro .=" and upkeep_status ='Activo' ";
+
+        $sql = "select * from upkeeps_resource_office where office_resource_id = '".$this->getId()."' $filtro order by upkeep_date desc ";
+        $this->Util()->DB()->setQuery($sql);
+        return  $this->Util()->DB()->GetResult();
+    }
+    public function infoUpkeep(){
+        $sql = "select * from upkeeps_resource_office where upkeep_resource_office_id = '".$this->getUpkeepId()."'  ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetRow();
+    }
+
+    public function saveUpkeepResource()
+    {
+        if($this->Util()->PrintErrors())
             return false;
 
-       $sql = "UPDATE responsables_resource_office
-                SET 
-                status = 'Baja',
-                fecha_liberacion_responsable = '".date("Y-m-d")."',
-                fecha_ultima_modificacion = '".date("Y-m-d H:i:s")."', 
-                usuario_modificador = '".$_SESSION['User']['username']."'
-                WHERE office_resource_id = '".$this->getId()."' and status = 'Activo'
+        if($this->getUpkeepId()){
+            $sql = "UPDATE upkeeps_resource_office
+                            SET 
+                            upkeep_responsable = '".$this->getUpkeepResponsable()."',
+                            upkeep_date = '".$this->getUpkeepDate()."',
+                            upkeep_description = '".$this->getUpkeepDescription()."',
+                            upkeep_user_modification = '".$_SESSION['User']['username']."',
+                            upkeep_date_modification = '".date("Y-m-d H:i:s")."'
+                            WHERE upkeep_resource_office_id = '".$this->getUpkeepId()."'
                                  
-              ";
+                        ";
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->UpdateData();
+            $this->Util()->setError(0,"complete","Se ha actualizado un registro");
+        }else{
+            $sql = "INSERT INTO upkeeps_resource_office(
+                             office_resource_id,
+                             upkeep_responsable,
+                             upkeep_date,
+                             upkeep_description,
+                             upkeep_date_create,
+                             upkeep_user_create
+                             )values(
+                              '".$this->getId()."',
+                              '".$this->getUpkeepResponsable()."',
+                              '".$this->getUpkeepDate()."',
+                              '".$this->getUpkeepDescription()."',
+                              '".date("Y-m-d H:i:s")."',
+                              '".$_SESSION['User']['username']."'       
+                             )
+                            ";
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->InsertData();
+            $this->Util()->setError(0,"complete","Se ha guardado un registro");
+        }
+        $this->Util()->PrintErrors();
+        return true;
+    }
+
+    public function deleteUpkeep(){
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $sql  =" UPDATE upkeeps_resource_office 
+                 SET upkeep_status ='Baja',
+                     upkeep_user_baja='".$_SESSION['User']['username']."',
+                     upkeep_date_baja = '".date("Y-m-d H:i:s")."' 
+                     WHERE upkeep_resource_office_id = '".$this->getUpkeepId()."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
-    }
-    function CleanResponsables()
-    {
-        unset($_SESSION["responsables_resource"]);
+        $this->Util()->setError(0,"complete","Se ha realizado la baja del registro");
+        $this->Util()->PrintErrors();
+
+        return true;
     }
 }
