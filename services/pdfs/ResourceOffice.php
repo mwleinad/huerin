@@ -18,6 +18,7 @@ class ResourceOffice extends Inventory
 
        ob_clean();
        $this->smarty->assign("info",$this->infoResource());
+       $this->smarty->assign("upkeeps",$this->enumerateUpKeeps());
        $this->smarty->assign('DOC_ROOT', DOC_ROOT);
        $html = $this->smarty->fetch(DOC_ROOT.'/templates/molds/pdf-office-resource.tpl');
        $dompdf = new Dompdf();

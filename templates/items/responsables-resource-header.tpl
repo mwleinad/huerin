@@ -5,6 +5,6 @@
 		<th style="width: 20%; text-align: left">Fecha entrega</th>
 		<th style="width: 10%; text-align: left">Status</th>
 		<th style="width: 25%; text-align: left">Fecha fin de uso</th>
-		<th style="width: 10%; text-align: left"></th>
+		<th></th>
 	</tr>
 </thead>

@@ -175,7 +175,31 @@
                     <td>{$res.usuario_creador}</td>
                 </tr>
                 {foreachelse}
-                <tr><td colspan="4">Sin registros</td></tr>
+                <tr><td colspan="5">Sin registros</td></tr>
+            {/foreach}
+            </tbody>
+        </table>
+        <br><br>
+        <table class="tableHistory titleCenterHistory">
+            <thead>
+            <tr>
+                <th colspan="3" class="titleCenter titleHistory">Mantenimientos realizados</th>
+            </tr>
+            <tr>
+                <th>Realizado por</th>
+                <th>Fecha de mantenimiento</th>
+                <th>Descripcion</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$upkeeps  key=kup item=upkeep}
+                <tr>
+                    <td>{$upkeep.upkeep_responsable}</td>
+                    <td>{$upkeep.upkeep_date}</td>
+                    <td>{$upkeep.upkeep_description}</td>
+                </tr>
+                {foreachelse}
+                <tr><td colspan="3">Sin registros</td></tr>
             {/foreach}
             </tbody>
         </table>

@@ -50,7 +50,12 @@
 {/if}
 
 <style type="text/css">
-{if $page == "docs-files" || $page == "sellado-files" || $page == "services" || $page == "add-documento" || $page == "add-requerimiento" || $page == "add-archivo" || $page == "add-impuesto" || $page == "add-obligacion" || $page == "service-steps"}
+{if $page == "docs-files" || $page == "sellado-files"
+	|| $page == "services" || $page == "add-documento"
+	|| $page == "add-requerimiento" || $page == "add-archivo"
+	|| $page == "add-impuesto" || $page == "add-obligacion"
+	|| $page == "service-steps" || $page == "responsables-resource"
+	|| $page == "upkeeps-resource"}
 	body { background:; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
 {else}
 	body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
@@ -113,7 +118,11 @@ Sistema ejecutandose desde nuevo servidor
 {elseif $page == "sellado-files"}
 	{include file="templates/sellado-files.tpl"} 
 {elseif $page == "services"}
-	{include file="templates/services.tpl"} 
+	{include file="templates/services.tpl"}
+{elseif $page == "responsables-resource"}
+	{include file="templates/responsables-resource.tpl"}
+{elseif $page == "upkeeps-resource"}
+	{include file="templates/upkeeps-resource.tpl"}
 {elseif $page == "add-documento"}
 	{include file="templates/add-documento.tpl"} 
 {elseif $page == "add-requerimiento"}
