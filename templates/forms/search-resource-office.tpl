@@ -11,7 +11,14 @@
             </div>
             <div class="grid_4">
                 <div class="grid_16 text-left"><label for="" class="label-form">Responsable</label></div>
-                <div class="grid_16"><input type="text" id="responsable" name="responsable" class="largeInput" /></div>
+                <div class="grid_16">
+                    <select id="responsable" name="responsable" class="largeInput">
+                        <option value="">Seleccionar.....</option>
+                        {foreach from=$empleados key=kem item=empleado}
+                            <option value="{$empleado.name}">{$empleado.name}</option>
+                        {/foreach}
+                    </select>
+                </div>
             </div>
             <div class="grid_4">
                 <div class="grid_16 text-left"><label for="" class="label-form">Tipo de recurso</label></div>
