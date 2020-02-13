@@ -1377,9 +1377,9 @@ class Customer extends Main
                       break;
               }
               $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
-              $servicios = $this->GetServicesByContract($value["contractId"]);
+              $serviciosActivos = $this->GetServicesByContract($value["contractId"],'activo');
                if($value['activo']=='Si'){
-                   if(count($servicios)>0)
+                   if(count($serviciosActivos)>0)
                        $result[$key]["doBajaTemporal"]++;
 
                    if(count($parciales)>0)
@@ -1436,10 +1436,10 @@ class Customer extends Main
     return $result;
   } //GetListRazones()
 
-  function GetServicesByContract($id, $tipo = "activo")
+  function GetServicesByContract($id, $tipo = "activos")
   {
     //por default se debe tomarse en cuenta los de baja temporal
-    if ($tipo == 'activo')
+    if ($tipo == 'activos')
       $ftrStatus =  " AND servicio.status IN ('activo','bajaParcial','readonly') ";
     else
       $ftrStatus =  " AND servicio.status = '" . $tipo . "' ";
