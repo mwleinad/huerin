@@ -1203,7 +1203,6 @@ class Servicio extends Contract
        return true;
     }
     public function doBajaTemporalMultiple($initialState,$endState){
-        global $log,$User;
         $contratos = [];
         $listContracts = $this->getIdContracts();
         if(!is_array($listContracts))
