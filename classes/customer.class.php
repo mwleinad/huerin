@@ -1377,11 +1377,13 @@ class Customer extends Main
                       break;
               }
               $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
-
+              $servicios = $this->GetServicesByContract($value["contractId"]);
                if($value['activo']=='Si'){
-                   $result[$key]["doBajaTemporal"]++;
-                   if (count($parciales)>0)
-                    $result[$key]["haveTemporal"] = 1;
+                   if(count($servicios)>0)
+                       $result[$key]["doBajaTemporal"]++;
+
+                   if(count($parciales)>0)
+                       $result[$key]["haveTemporal"] = 1;
                }
 
           }
