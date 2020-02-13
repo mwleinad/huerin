@@ -1339,16 +1339,15 @@ class Customer extends Main
       $countContracts = count($result[$key]["contracts"]);
       $result[$key]["totalContracts"] = $result[$key]["contractsActivos"] + $result[$key]["contractsInactivos"];
       $contractWhitPermiso = 0;
-
       if ($countContracts > 0) {
           foreach($result[$key]["contracts"] as $keyContract =>$value){
               $jefes = [];
               $contract->setContractId($value["contractId"]);
               $sql = "SELECT b.personalId FROM contract a  
-                  INNER JOIN contractPermiso b ON a.contractId=b.contractId 
-                  WHERE b.personalId IN($strEncargados) 
-                  AND a.contractId = '".$value['contractId']."' 
-                  group by a.contractId ";
+                      INNER JOIN contractPermiso b ON a.contractId=b.contractId 
+                      WHERE b.personalId IN($strEncargados) 
+                      AND a.contractId = '".$value['contractId']."' 
+                      group by a.contractId ";
               $this->Util()->DB()->setQuery($sql);
               $whitPermiso = $this->Util()->DB()->GetSingle();
 
@@ -1357,9 +1356,7 @@ class Customer extends Main
                       unset($result[$key]["contracts"][$keyContract]);
                       continue;
                   }
-
               }
-
 
               $contractWhitPermiso++;
               $encargados = $creport->encargadosCustomKey("departamento","name",$value["contractId"]);
@@ -1379,10 +1376,14 @@ class Customer extends Main
                       $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
                       break;
               }
-              $serviciosContrato = $this->GetServicesByContract($value["contractId"]);
               $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
-              if (count($parciales)>0 && $value['activo'] == 'Si')
-                  $result[$key]["haveTemporal"] = 1;
+
+               if($value['activo']=='Si'){
+                   $result[$key]["doBajaTemporal"]++;
+                   if (count($parciales)>0)
+                    $result[$key]["haveTemporal"] = 1;
+               }
+
           }
           $result[$key]["showCliente"] = $contractWhitPermiso;
       } else {
