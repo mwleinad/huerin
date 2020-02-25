@@ -23,11 +23,13 @@
 		<td align="left" width="40%">* Facturador</td>
 		<td align="left">
             <select name="facturador" id="facturador" class="smallInput medium">
-                <option value="BHSC" {if $contractInfo.facturador == "BHSC"} selected="selected" {/if} >BHSC</option>
-                <option value="Huerin" {if $contractInfo.facturador == "Huerin"} selected="selected" {/if} >Braun Huerin SC</option>
-                <option value="Braun" {if $contractInfo.facturador == "Braun"} selected="selected" {/if} >Jacobo Braun</option>
+                <option value="">Seleccionar...</option>
                 <option value="Efectivo" {if $contractInfo.facturador == "Efectivo"} selected="selected" {/if} >Efectivo</option>
+                {foreach from=$emisores  item=item key=key}
+                    <option value="{$item.claveFacturador}" {if $item.claveFacturador == $contractInfo.facturador} selected="selected" {/if} >{$item.razonSocial}</option>
+                {/foreach}
             </select>
+
       </td>
 	</tr>
     <tr>

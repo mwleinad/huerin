@@ -40,7 +40,7 @@ class Main
 	function ListTiposDeComprobantesValidos()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
-			SELECT * FROM tiposComprobante 
+			SELECT * FROM tiposComprobante  
 			RIGHT JOIN serie ON serie.tiposComprobanteId = tiposComprobante.tiposComprobanteId
 			ORDER BY tiposComprobante.tiposComprobanteId");
 		
@@ -48,7 +48,14 @@ class Main
 		
 		return $result;
 	}	
-
+    function ListSerieTipoComprobantes(){
+	    $sql = "SELECT a.serieId,a.serie,a.consecutivo,c.razonSocial,b.tiposComprobanteId from serie a 
+                INNER JOIN tiposComprobante b ON a.tiposComprobanteId = b.tiposComprobanteId 
+                INNER JOIN rfc c ON a.rfcId = c.rfcId
+                WHERE b.tipoDeComprobante = 'ingreso' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
+        return $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult($sql);
+    }
 	function InfoComprobante($id)
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM tiposComprobante WHERE tiposComprobanteId = '".$id."'");

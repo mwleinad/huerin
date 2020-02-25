@@ -13,6 +13,7 @@
 	switch($_GET["section"]){
 	
 		case "nueva-factura":
+		     header('location:'.WEB_ROOT);
 		    //verificar permisos
             $user->allowAccess(5);
 		    $user->allowAccess(131);
@@ -107,6 +108,7 @@
 			
 			$tipos_comprobantes = $main->ListTiposDeComprobantes();
 			$smarty->assign('tipos_comprobantes',$tipos_comprobantes);
+            $smarty->assign('emisores',$rfc->listEmisores());
 			
 			$id_rfc = $sucursal->getRfcActive();
 			$sucursal->setRfcId($id_rfc);

@@ -13,8 +13,11 @@
 		<td align="left" width="40%">* Tipo</td>
 		<td align="left">
     	{$infoRazonSocial.type}</td>
-	</tr>    
-
+	</tr>
+	<tr>
+		<td align="left" width="40%">* Facturador</td>
+		<td align="left">{$infoRazonSocial.facturador}</td>
+	</tr>
     <tr>
 		<td align="left" width="40%">* Raz&oacute;n Social</td>
 		<td align="left">{$infoRazonSocial.name}</td>

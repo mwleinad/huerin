@@ -201,12 +201,12 @@
             {if $mainMnu == "configuracion"}
                 {if $info.version != "auto"}
                     {if in_array(140,$permissions) || $User.isRoot}
-                        <li><a href="{$WEB_ROOT}/admin-folios/actualizar-certificado" {if $includedTpl == "admin-folios_actualizar-certificado"} class="current"{/if}><span>Actualizar Certificado</span></a></li>
+                        <li><a href="{$WEB_ROOT}/admin-folios/emisores" {if $includedTpl == "admin-folios_emisores" || $includedTpl == "admin-folios_nuevos-folios"} class="current"{/if}><span>Emisores</span></a></li>
                     {/if}
                 {/if}
-                {if in_array(139,$permissions) || $User.isRoot}
+                {*if in_array(139,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/admin-folios/nuevos-folios" {if $includedTpl == "admin-folios_nuevos-folios"} class="current"{/if}><span>Lista de Folios</span></a></li>
-                {/if}
+                {/if*}
                 {if in_array(218,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/backup_system" {if $includedTpl == "backup_system"} class="current"{/if}><span>Bases de datos</span></a></li>
                 {/if}

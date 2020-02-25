@@ -1600,10 +1600,25 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		 
 		 return true;
 	}
+    function ConvertSerial($serial)
+    {
+        $arreglo = str_split($serial, 2);
+        foreach($arreglo as $key => $value)
+        {
+            $str .= $value - 30;
+        }
+        return $str;
+    }
 
+    function GetNoCertificado($ruta_dir, $nom_certificado)
+    {
+        $serial = exec('openssl x509 -noout -in '.$ruta_dir.'/'.$nom_certificado.'.cer.pem -serial');
+        $ser = explode('=',$serial);
+        $serial = $ser[1];
 
+        $noCertificado = $this->ConvertSerial($serial);
 
+        return $noCertificado;
+    }
 }
-
-
 ?>

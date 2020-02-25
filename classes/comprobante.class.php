@@ -1116,7 +1116,6 @@ class Comprobante extends Producto
 		$fp = fopen ($root."/md5.txt", "w+");
     	fwrite($fp, $md5);
 		fclose($fp);
-
 		//generate .key.pem file
 		exec('openssl pkcs8 -inform DER -in '.$root.'/'.$certificado.' -out '.$root.'/'.$certificado.'.pem -passin pass:'.$pass);
 
@@ -1132,10 +1131,11 @@ class Comprobante extends Producto
 		//verify
 		exec("openssl dgst -sha1 -verify ".$root."/publickey.txt -out ".$root."/verified.txt -signature ".$root."/md5sha1.txt ".$root."/md5.txt");
 
-		//changed 02 agosto
-		//generate merge
-		exec('openssl pkcs12 -export -out '.$root.'/'.$llave.'.pfx -inkey '.$root.'/'.$certificado.'.pem -in '.$root.'/'.$llave.'.pem -passout pass:'.$pass);
-		//changed 02 agosto
+
+        $nombreCertificado = substr($llave, 0, -4);
+        $noCertificado = $this->Util()->GetNoCertificado($root, $nombreCertificado);
+        exec('openssl pkcs12 -export -out '.$root.'/'.$noCertificado.'.pfx -inkey '.$root.'/'.$certificado.'.pem -in '.$root.'/'.$llave.'.pem -passout pass:'.$pass);
+
 
 
 	}//GenerarSelloGral
@@ -2458,10 +2458,5 @@ class PDF_ImageAlpha extends PDF{
 			fclose($f);
 			return array('w'=>$w,'h'=>$h,'cs'=>$colspace,'bpc'=>$bpc,'f'=>'FlateDecode','parms'=>$parms,'pal'=>$pal,'trns'=>$trns,'data'=>$data);
 	}
-
-
-
 }
-
-
 ?>
