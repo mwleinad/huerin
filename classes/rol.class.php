@@ -390,7 +390,7 @@ class Rol extends main
        $result = $this->Util()->DB()->GetResult();
        $firstPages = array();
        foreach($result  as $key=>$value){
-           $sql =  "SELECT namePage from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where b.parentId='".$value['permisoId']."' ".$filtro." ORDER BY b.permisoId ASC limit 1";
+           $sql =  "SELECT namePage from rolesPermisos a INNER JOIN permisos b ON a.permisoId=b.permisoId  where b.parentId='".$value['permisoId']."' and levelDeep =1  ".$filtro." ORDER BY b.permisoId ASC limit 1";
            $this->Util()->DB()->setQuery($sql);
            $single = $this->Util()->DB()->GetSingle();
            $firstPages[$value['permisoId']]=$single;

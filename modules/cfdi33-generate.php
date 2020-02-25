@@ -156,8 +156,7 @@ $retIvas = $main->ListRetIva();
 $smarty->assign("retIvas", $retIvas);
 $tiposDeMoneda = $main->ListTipoDeMoneda33();
 $smarty->assign("tiposDeMoneda", $tiposDeMoneda);
-$comprobantes = $main->ListTiposDeComprobantesValidos();
-$smarty->assign("comprobantes", $comprobantes);
+$smarty->assign("seriesTiposComprobante", $main->ListSerieTipoComprobantes());
 $sucursal->setRfcId($rfc->getRfcActive());
 $sucursal->setEmpresaId($_SESSION["empresaId"], 1);
 

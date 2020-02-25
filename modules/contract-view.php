@@ -25,6 +25,10 @@
 	$accionistas = $accionista->Enumerate();
 	$smarty->assign("accionistas", $accionistas);
 
+    //Obtenemos los facturadores
+    $emisores = $rfc->listEmisores();
+    $smarty->assign("emisores", $emisores);
+
 	//Obtenemos los sociedades
 	$sociedades = $sociedad->EnumerateAll();
 	$smarty->assign("sociedades", $sociedades);

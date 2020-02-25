@@ -34,6 +34,9 @@ class Empresa extends Main
 	private $motivoCancelacion;
 	private $folios;
 	private $telefono;
+	private $nameFileCertificado;
+	private $nameFileKeyPrivate;
+	private $claveFacturador;
 	
 	public function setNombre($value)
 	{
@@ -120,6 +123,14 @@ class Empresa extends Main
 	{
 		return $this->comprobanteId;
 	}
+    public function setClaveFacturador($value)
+    {
+        $this->Util()->ValidateRequireField($value,"Clave facturador");
+        $this->claveFacturador = $value;
+    }
+    public function getClaveFacturador(){
+	    return $this->claveFacturador;
+    }
 	
 	public function setMotivoCancelacion($value)
 	{
@@ -194,7 +205,6 @@ class Empresa extends Main
 	public function setCalle($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Calle');
-		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "Calle");
 		$this->calle = $value;
 	}
 	
@@ -206,7 +216,6 @@ class Empresa extends Main
 	public function setColonia($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Colonia');
-		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Colonia");
 		$this->colonia = $value;
 	}
 	
@@ -229,7 +238,6 @@ class Empresa extends Main
 	public function setMunicipio($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Municipio');
-		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Municipio");
 		$this->municipio = $value;
 	}
 	
@@ -394,33 +402,22 @@ class Empresa extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->productId = $value;
 	}
-	
 	public function getProductId()
 	{
 		return $this->productId;
 	}
-	
-	public function SaveTemp(){
-		
-		if($this->Util()->PrintErrors()){ 
-			return false; 
-		}
-		
-		return true;	
-	}
-	
-	public function SaveRegister2(){
-		
-		if($this->Util()->PrintErrors()){ 
-			return false; 
-		}
-		
-		$this->Util()->setError(30003, "complete", "");
-		$this->Util()->PrintErrors();
-		
-		return true;	
-	}
-	
+	public function setNameFileCertificado($value){
+	    $this->nameFileCertificado = $value;
+    }
+    public function getNameFileCertificado(){
+	    return $this->nameFileCertificado;
+    }
+    public function setNameFileKeyPrivate($value){
+        $this->nameFileKeyPrivate = $value;
+    }
+    public function getNameFileKeyPrivate(){
+        return $this->nameFileKeyPrivate;
+    }
 	function Register()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
@@ -824,8 +821,21 @@ class Empresa extends Main
 
         return $result;
     }
+    function validateFileCertificado(){
+        $nombre_archivo = $_FILES['file_certificado']['name'];
+        $file = pathinfo($nombre_archivo);
+        if($file["extension"] != "cer")
+            $this->Util()->setError(0,"error","Certificado invalido");
+
+    }
+    function validateFileKey(){
+        $nombre_archivo = $_FILES['file_llave']['name'];
+        $file = pathinfo($nombre_archivo);
+        if($file["extension"] != "key")
+            $this->Util()->setError(0,"error","LLave privada invalida");
+    }
+
 
 }//empresa
-
 
 ?>

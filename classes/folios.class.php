@@ -14,19 +14,26 @@ class Folios extends Empresa{
 	private $lugar_expedicion;
 	private $no_certificado;
 	private $email;
+	private $processLogo;
 	
 	public function setIdSerie($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Serie ID');
+        $this->Util()->ValidateInteger($value);
 		$this->id_serie = $value;
 	}
 	
 	public function setIdEmpresa($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Empresa ID');
+        $this->Util()->ValidateInteger($value);
 		$this->id_empresa = $value;
 	}
+	public function setProcessLogo($value){
+	    $this->processLogo =  $value;
+    }
+    public function getProcessLogo(){
+        return $this->processLogo;
+    }
 	
 	public function setIdRfc($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Rfc ID');
+        $this->Util()->ValidateInteger($value);
 		$this->id_rfc = $value;
 	}
 	
@@ -36,14 +43,14 @@ class Folios extends Empresa{
 	}
 	
 	public function setFolioInicial($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Folio Inicial');
-		$this->Util()->ValidateInteger($value);
+		$this->Util()->ValidateOnlyNumeric($value,"Folio inicial");
+		$this->Util()->ValidateNumericWhitRange($value,1,0,"Folio inicial");
 		$this->folio_inicial = $value;
 	}
 	
 	public function setFolioFinal($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Folio Final');
-		$this->Util()->ValidateInteger($value);
+        $this->Util()->ValidateOnlyNumeric($value,"Folio inicial");
+        $this->Util()->ValidateNumericWhitRange($value,$this->folio_inicial,0,"Folio inicial");
 		$this->folio_final = $value;
 	}
 	
@@ -60,25 +67,23 @@ class Folios extends Empresa{
 	}
 	
 	public function setComprobante($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Comprobante');
+        $this->Util()->ValidateRequireField($value,"Tip de comprobante");
 		$this->Util()->ValidateInteger($value);
 		$this->comprobante = $value;
 	}
 	
 	public function setLugarExpedicion($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Lugar de expedicion');
 		$this->Util()->ValidateInteger($value);
 		$this->lugar_expedicion = $value;
 	}
 	
 	public function setNoCertificado($value){
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'No Certificado');
+		$this->Util()->ValidateRequireField($value,"Numero de certificado");
 		$this->no_certificado = $value;
 	}
 	
 	public function setEmail($value){
 		$value = $this->Util()->DecodeVal($value);
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 1, 'Email');
 		$this->Util()->ValidateMail($value);
 		$this->email = $value;
 	}
@@ -176,13 +181,12 @@ class Folios extends Empresa{
 			);
 		
 		$id_serie = $this->Util()->DBSelect($_SESSION['empresaId'])->InsertData();
-		
+		$this->setIdSerie($id_serie);
+		$this->saveLogo();
 		$this->Util()->setError(20011, 'complete');
-		
 		$this->Util()->PrintErrors();
-		
+
 		return true;
-		
 	}//AddFolios
 	
 	function VerifyFolios(){
@@ -223,7 +227,6 @@ class Folios extends Empresa{
 			
 			$fi = $this->folio_inicial;
 			$ff = $this->folio_final;
-			
 			//Checamos si esta dentro del rango de folios ya agregados
 			if($this->inRange($fi, $folioInicial, $folioFinal) || $this->inRange($ff, $folioInicial, $folioFinal)){
 				$this->Util()->setError(20026, 'error');	
@@ -296,16 +299,15 @@ class Folios extends Empresa{
 	
 	function GetFoliosByRfc(){
 				
-		$sqlQuery = 'SELECT * FROM serie WHERE 1';
-		
+		$sqlQuery = "SELECT a.*,b.razonSocial FROM serie a
+                        INNER JOIN rfc b ON a.rfcId=b.rfcId WHERE  a.rfcId = '".$this->getIdRfc()."'  ";
 		$id_empresa = $_SESSION['empresaId'];
-		
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 		$folios = $this->Util()->DBSelect($id_empresa)->GetResult();
-
 		foreach($folios as $key => $folio)
 		{
 			$qr = "";
+			$id_empresa = $folio['empresaId'];
 			$ruta_dir = DOC_ROOT.'/empresas/'.$id_empresa.'/qrs';
 			$ruta_web_dir = WEB_ROOT.'/empresas/'.$id_empresa.'/qrs';
 			if(is_dir($ruta_dir)){
@@ -345,15 +347,10 @@ class Folios extends Empresa{
 																	 
 
 		}
-
-//		print_r($folios);
-
 		return $folios;
-		
 	}//GetFoliosByRfc
 
 	function EditFolios(){
-	
 		if($this->Util()->PrintErrors()){ 
 			return false; 
 		}
@@ -378,7 +375,7 @@ class Folios extends Empresa{
 			WHERE serieId = '".$this->getIdSerie()."'"
 			);
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-
+		$this->saveLogo();
 		$this->Util()->setError(20013, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -398,7 +395,7 @@ class Folios extends Empresa{
 	}
 	
 	function getInfoFolios(){
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE serieId ='".$this->id_serie."'");
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE serieId ='".$this->getIdSerie()."'");
 		$info = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 	
 		return $info;
@@ -412,6 +409,36 @@ class Folios extends Empresa{
 			return false;
 		
 	}
+    function validateFileLogo(){
+        if(!isset($_FILES["file_logo"]))
+            return false;
+
+        if($_FILES["file_logo"]["error"]!==0)
+            return false;
+
+        $nombre_archivo = $_FILES['file_logo']['name'];
+        $file = pathinfo($nombre_archivo);
+        if($file["extension"] != "jpg"){
+            $this->Util()->setError(0,"error","El archivo adjunto de logo es invalido.(solo se acepta jpg)");
+        }
+        $this->setProcessLogo(true);
+
+    }
+    function saveLogo(){
+	    if($this->getProcessLogo()){
+            $ruta_dir = DOC_ROOT.'/empresas/'.$this->getIdEmpresa().'/qrs';
+            $file = basename( $_FILES['file_logo']['name']);
+            if(!is_dir($ruta_dir))
+                mkdir($ruta_dir, 0755, true);
+            $ext = strtolower(substr($file, strrpos($file, '.') + 1));
+            $file = '/'.$this->getIdSerie().".".$ext;
+            if(is_file($ruta_dir.$file))
+                unlink($ruta_dir.$file);
+            move_uploaded_file($_FILES['file_logo']['tmp_name'], $ruta_dir.$file);
+
+        }
+
+    }
 	
 }//Folios
 

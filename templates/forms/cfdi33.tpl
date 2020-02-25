@@ -156,17 +156,11 @@
           <div class="titleLabel">Seleccionar Serie:</div>
           <div class="controlLg">
               <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
-                {foreach from=$comprobantes item=comprobante}
-                    {if $comprobante.serie != 'COMPAGO'}
-                        {if $comprobante.serieId != 5}
-                      <option value="{$comprobante.tiposComprobanteId}-{$comprobante.serieId}">
-                      {if $comprobante.serie == "B"}JACOBO BRAUN BRUCKMAN
-                          {elseif $comprobante.serie == "C"}BHSC CONTADORES SC
-                          {else}BRAUN HUERIN SC{/if}
-                          {$comprobante.nombre} - {$comprobante.serie}{$comprobante.consecutivo}</option>
-                        {/if}
-                    {/if}
-                {/foreach}
+                  {foreach from=$seriesTiposComprobante item=serie}
+                      <option value="{$serie.tiposComprobanteId}-{$serie.serieId}">
+                          {$serie.razonSocial} - {$serie.serie}{$serie.consecutivo}
+                      </option>
+                  {/foreach}
               </select>
           </div>
 {*

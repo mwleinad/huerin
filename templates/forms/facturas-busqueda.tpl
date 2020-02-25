@@ -53,9 +53,9 @@
                 <td align="center">
                     <select name="facturador" id="facturador"  class="largeInput" >
                       <option value="">Todos</option>
-                      <option value="30">BHSC CONTADORES SC</option>
-                      <option value="1">BRAUN HUERIN SA</option>
-                      <option value="29">JACOBO BRAUN BRUCKMAN</option>
+                        {foreach from=$emisores item=item key=key}
+                            <option value="{$item.rfcId}">{$item.razonSocial}</option>
+                        {/foreach}
                     </select>
                 </td>
               </tr>

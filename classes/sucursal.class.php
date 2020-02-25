@@ -116,7 +116,6 @@ class Sucursal extends Rfc
 			LEFT JOIN rfc ON rfc.rfcId = sucursal.rfcId
 			WHERE sucursal.rfcId ='".$this->getRfcId()."'");
 		$sucursales = $this->Util()->DBSelect($this->getEmpresaId())->GetResult();
-	
 		return $sucursales;
 	}
 	

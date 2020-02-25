@@ -74,77 +74,54 @@
 			$smarty->display(DOC_ROOT.'/templates/boxes/editar-folios-popup.tpl');
 			
 			break;
-			
-		case 'addFolios':
-			$id_empresa = $_SESSION['empresaId'];
-			$sucursal->setEmpresaId($id_empresa, 1);			
-			$id_rfc = $sucursal->getRfcActive();
-			$sucursal->setRfcId($id_rfc);
-			$resSucursales = $sucursal->GetSucursalesByRfc();
-			$sucursales = $util->DecodeUrlResult($resSucursales);
-			$listComp = $main->ListTiposDeComprobantes();
-			$ruta_dir = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc;
-			
-			if(is_dir($ruta_dir)){
-				if($gd = opendir($ruta_dir)){
-					while($archivo = readdir($gd)){
-						$info = pathinfo($ruta_dir.'/'.$archivo);
-						if($info['extension'] == 'cer'){
-							$nom_certificado = $info['filename'];							
-							break;
-						}//if
-					}//while
-					closedir($gd);
-				}//if
-			}//if
-			
-			$smarty->assign('nom_certificado', $nom_certificado);
-			$smarty->assign('comprobantes', $listComp);
+		case 'openEditModalFolio':
+			$data["form"] = "frm-folios";
+			$data['title'] =  "Editar folio";
+			$rfc->setRfcId($_POST['rfcId']);
+			$info = $rfc->InfoRfc();
+			$sucursal->setRfcId($info['rfcId']);
+			$sucursales = $sucursal->GetSucursalesByRfc();
+			$tiposComprobantes= $main->ListTiposDeComprobantes();
+			$folios->setIdSerie($_POST['id']);
+			$infoFolios = $folios->getInfoFolios();
+
+			$smarty->assign("data",$data);
+			$smarty->assign('rfc', $info);
+			$smarty->assign('post', $infoFolios);
+			$smarty->assign('tiposComprobantes', $tiposComprobantes);
 			$smarty->assign('sucursales', $sucursales);
-			$smarty->assign('DOC_ROOT', DOC_ROOT);
-			
-			$info = $user->Info();
-			$smarty->assign('info', $info);
-			$smarty->display(DOC_ROOT.'/templates/boxes/agregar-folios-popup.tpl');break;
-			
-			break;	
-			
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+
+			break;
+		case 'openModalAddFolio':
+			$data["form"] = "frm-folios";
+			$data['title'] =  "Agregar folio";
+			$rfc->setRfcId($_POST['rfcId']);
+			$info = $rfc->InfoRfc();
+			$sucursal->setRfcId($info['rfcId']);
+			$sucursales = $sucursal->GetSucursalesByRfc();
+			$tiposComprobantes= $main->ListTiposDeComprobantes();
+
+			$smarty->assign("data",$data);
+			$smarty->assign('rfc', $info);
+			$smarty->assign('tiposComprobantes', $tiposComprobantes);
+			$smarty->assign('sucursales', $sucursales);
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+		break;
 		case 'saveFolios':
-		
-			$info = $user->Info();
-			$values = explode('&', $_POST['form']);
-			foreach($values as $key => $val){
-				$values[$key] = explode('=', $values[$key]);
-			}
-			
-			$id_rfc = $rfc->getRfcActive();
-			
-			$folios->setIdRfc($id_rfc);
-			$folios->setIdEmpresa($_SESSION['empresaId']);
-			
-						
-			$folios->setSerie($values[0][1]);
-			$folios->setFolioInicial($values[1][1]);
-			$folios->setFolioFinal($values[2][1]);
-			
-			if($info["version"] == "v3" || $info["version"] == "construc")
-			{
-				$folios->setComprobante($values[3][1]);
-				$folios->setLugarExpedicion($values[4][1]);			
-				$folios->setNoCertificado($values[5][1]);
-				$folios->setEmail($values[6][1]);
-			}
-			elseif($info["version"] == "auto")
-			{
-							$fecha = $values[4][1]."/".$values[5][1]."/".$values[6][1]." ".$values[7][1].":".$values[8][1].":".$values[9][1];
-							$folios->setNoAprobacion($values[3][1]);
-							$folios->setComprobante($values[10][1]);
-							$folios->setLugarExpedicion($values[11][1]);			
-							$folios->setNoCertificado($fecha);
-							$folios->setEmail($values[12][1]);
-			}
-	
-			
+			$folios->setProcessLogo(false);
+            $rfc->setRfcId($_POST['rfcId']);
+            $rfcInfo  = $rfc->InfoRfc();
+			$folios->setIdRfc($_POST['rfcId']);
+			$folios->setIdEmpresa($rfcInfo['empresaId']);
+			$folios->setSerie($_POST['serie']);
+			$folios->setFolioInicial($_POST['folio_inicial']);
+			$folios->setFolioFinal($_POST['folio_final']);
+			$folios->setComprobante($_POST['tiposComprobanteId']);
+			$folios->setLugarExpedicion($_POST['lugar_expedicion']);
+			$folios->setNoCertificado($_POST['no_certificado']);
+			$folios->setEmail($_POST['email']);
+			$folios->validateFileLogo();
 			if(!$folios->AddFolios()){
 				echo 'fail[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
@@ -153,50 +130,28 @@
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');				
 				echo '[#]';				
 				$smarty->assign('folios', $folios->GetFoliosByRfc());
-				$smarty->assign('info', $info);
+				$smarty->assign('info', $rfcInfo);
 				$smarty->assign('DOC_ROOT', DOC_ROOT);
+				$smarty->assign('rfcInfo', $rfcInfo);
 				$smarty->display(DOC_ROOT.'/templates/lists/folios.tpl');				
 			}//else
 			break;
 			
-		case 'saveEditFolios': 
-			$info = $user->Info();
-			$values = explode('&', $_POST['form']);
-			foreach($values as $key => $val){
-				$values[$key] = explode('=', $values[$key]);
-			}
-			
-			$id_rfc = $rfc->getRfcActive();
-			//print_r($values);
-			$folios->setIdRfc($id_rfc);
-			$folios->setIdEmpresa($_SESSION['empresaId']);					
-			$folios->setSerie($values[0][1]);
-			$folios->setFolioInicial($values[1][1]);
-			$folios->setFolioFinal($values[2][1]);
-echo "jere";
-print_r($info);
-echo $info["version"];
-			if($info["version"] == "v3" || $info["version"] == "construc")
-			{
-				$folios->setComprobante($values[3][1]);
-				$folios->setLugarExpedicion($values[4][1]);			
-				$folios->setNoCertificado($values[5][1]);
-				$folios->setEmail($values[6][1]);
-				$folios->setIdSerie($values[7][1]);
-			}
-			elseif($info["version"] == "auto")
-			{
-				$folios->setNoAprobacion($values[3][1]);
-				
-				//juntar fecha
-				$fecha = $values[4][1]."/".$values[5][1]."/".$values[6][1]." ".$values[7][1].":".$values[8][1].":".$values[9][1];
-				$folios->setComprobante($values[10][1]);
-				$folios->setLugarExpedicion($values[11][1]);			
-				$folios->setNoCertificado($fecha);
-				$folios->setEmail($values[12][1]);
-				$folios->setIdSerie($values[13][1]);			
-			}
-			
+		case 'updateFolios':
+			$folios->setProcessLogo(false);
+			$rfc->setRfcId($_POST['rfcId']);
+			$rfcInfo  = $rfc->InfoRfc();
+			$folios->setIdSerie($_POST['serieId']);
+			$folios->setIdRfc($_POST['rfcId']);
+			$folios->setIdEmpresa($rfcInfo['empresaId']);
+			$folios->setSerie($_POST['serie']);
+			$folios->setFolioInicial($_POST['folio_inicial']);
+			$folios->setFolioFinal($_POST['folio_final']);
+			$folios->setComprobante($_POST['tiposComprobanteId']);
+			$folios->setLugarExpedicion($_POST['lugar_expedicion']);
+			$folios->setNoCertificado($_POST['no_certificado']);
+			$folios->setEmail($_POST['email']);
+			$folios->validateFileLogo();
 			if(!$folios->EditFolios()){
 				echo 'fail[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
@@ -207,6 +162,7 @@ echo $info["version"];
 				$smarty->assign('folios', $folios->GetFoliosByRfc());
 				$smarty->assign('DOC_ROOT', DOC_ROOT);
 				$smarty->assign('info', $info);
+				$smarty->assign('rfcInfo', $rfcInfo);
 				$smarty->display(DOC_ROOT.'/templates/lists/folios.tpl');
 			}
 			break;	

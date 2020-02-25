@@ -16,7 +16,7 @@
 		
    	 	<div class="wrapper">
             {if $nom_certificado != ''}
-								{include file="{$DOC_ROOT}/templates/forms/agregar-folios.tpl"}
+								{include file="{$DOC_ROOT}/templates/forms/frm-folios.tpl"}
             {else}            
     			<div align="center" class="txtRed">Lo sentimos, pero no se encontro un certificado valido. 
                 	<br />No podra asignar series y folios hasta subir uno.
