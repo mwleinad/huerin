@@ -52,7 +52,7 @@ class Main
 	    $sql = "SELECT a.serieId,a.serie,a.consecutivo,c.razonSocial,b.tiposComprobanteId from serie a 
                 INNER JOIN tiposComprobante b ON a.tiposComprobanteId = b.tiposComprobanteId 
                 INNER JOIN rfc c ON a.rfcId = c.rfcId
-                WHERE b.tipoDeComprobante = 'ingreso' ";
+                WHERE b.tipoDeComprobante = 'ingreso' and c.activo='si' ";
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         return $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult($sql);
     }
