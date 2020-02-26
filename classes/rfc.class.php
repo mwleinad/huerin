@@ -258,7 +258,7 @@ class Rfc extends Empresa
 
 	function DeleteRfc()
 	{
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("update rfc set activo = 'no' WHERE rfcId = '".$this->getRfcId()."' AND main='no'");
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("update rfc set activo = 'no' WHERE rfcId = '".$this->rfcId."' AND main='no'");
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
 				
 		$this->Util()->setError(20006, "complete","Se ha realizado la baja correctamente");
