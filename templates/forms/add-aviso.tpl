@@ -68,7 +68,7 @@
                                 {/if}
                             {/if}
                         {/foreach}
-						{if $User.tipoPers eq 'Socio'||$User.tipoPers eq 'Admin' ||$User.tipoPers eq 'Coordinador'}
+						{if $User.level <= 3 || $User.isRoot}
 						<tr>
 							<td style="vertical-align: top">
 								<input type="checkbox" name="sendCustomer" value="">
