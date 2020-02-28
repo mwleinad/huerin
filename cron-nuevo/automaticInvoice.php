@@ -31,7 +31,6 @@ include_once(DOC_ROOT.'/init_cron.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/constants.php');
 include_once(DOC_ROOT.'/libraries33.php');
-include_once(DOC_ROOT.'/services/invoice.class.php');
 
 if (!isset($_SESSION))
 {

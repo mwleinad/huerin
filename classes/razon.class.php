@@ -144,7 +144,10 @@ class Razon extends Contract
            $pdfService = new PdfService();
            $fileName = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio;
            $archivo = $id_empresa.'_'.$serie.'_'.$folio.'.pdf';
-           $pdf = $pdfService->generate($id_empresa, $fileName, 'email');
+           $pdf = $pdfService->generate($id_empresa, $compInfo, 'email');
+           if(!is_dir(DOC_ROOT."/empresas/$id_empresa/certificados/$id_rfc/facturas/pdf"))
+               mkdir(DOC_ROOT."/empresas/$id_empresa/certificados/$id_rfc/facturas/pdf",0777,true);
+
            $enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
            file_put_contents($enlace, $pdf);
        } else {
@@ -197,7 +200,7 @@ class Razon extends Contract
           $body .= "Anexo encontrara su factura complemento emitida por BRAUN HUERIN SC , la cual contiene informacion adicional especifica en la que se detalla la cantidad que se paga e identifica la factura que se liquida.<br><br>";
 
        }else{
-          $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.empresaId=b.empresaId where a.empresaId = '".$compInfo["empresaId"]."' ");
+          $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.rfcId=b.rfcId where a.rfcId = '".$compInfo["rfcId"]."' ");
           $bankData = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
           $body .= "<br><br>Estimado Cliente: ".$contratoEmails["name"]."<br><br>";
           $body .= "Anexo encontrara su factura emitida por ".$bankData["empresa"].", la cual se solicita sea cubierta dentro de los primeros 15 dias del mes, esto para evitar molestias de cobro.<br><br>";
@@ -230,6 +233,9 @@ class Razon extends Contract
 
        if($sendmail->PrepareMultiple(strtoupper($subject),$body,$correos,'',$attachment1,$file1,$attachment2,$file2,FROM_MAIL,$fromName,$encargados))
        {
+           if(is_file($attachment1))
+               unlink($attachment1);
+
            $this->Util()->DB()->setQuery("UPDATE comprobante SET sent = 'si' WHERE comprobanteId='".$id_comprobante."' ");
            $this->Util()->DB()->UpdateData();
            if($showErrors){

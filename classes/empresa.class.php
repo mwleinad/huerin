@@ -285,7 +285,6 @@ class Empresa extends Main
 	public function setRegimenFiscal($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'R&eacute;gimen Fiscal');
-		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, "R&eacute;gimen Fiscal");
 		$this->regimenFiscal = $value;
 	}
 	
@@ -661,7 +660,7 @@ class Empresa extends Main
                      CASE tiposComprobanteId
                      WHEN 1 THEN 'de la factura'
                      WHEN 10 THEN 'del complemento de pago'
-                     ELSE 'del documento' END AS tipoDocumento            
+                     ELSE 'del documento' END AS tipoDocumento,rfcId            
                      FROM comprobante WHERE comprobanteId = ".$id_comprobante;
 
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);		
@@ -670,6 +669,7 @@ class Empresa extends Main
 		$conceptos = unserialize(urldecode($row['conceptos']));
 		$_SESSION["conceptos"] = array();
 		$_SESSION["conceptos"] = $conceptos;
+		$comprobante->setRfcId($row['rfcId']);
 		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $motivo_cancelacion))
 			return false;
 		else{

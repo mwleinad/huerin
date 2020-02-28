@@ -26,6 +26,20 @@
                     </div>
                     <hr>
                 </div>
+                <div class="grid_16">
+                    <div class="formLine" style=" width:100%;display: inline-block;">
+                        <div style="width:30%;float:left"> * Regimen fiscal</div>
+                        <div style="width:70%;float: left;">
+                            <select type="text" name="regimenFiscal" id="regimenFiscal" value="{$post.regimenFiscal}" class="largeInput">
+                                <option value="">Seleccionar regimen</option>
+                                {foreach from=$tiposRegimen item=item key=key}
+                                    <option value="{$item.claveRegimen}" {if $post.regimenFiscal eq $item.claveRegimen}selected{/if}>{$item.nombreRegimen}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
                 <div class="grid_10">
                     <div class="formLine" style=" width:100%;display: inline-block;">
                         <div style="width:100%;float:left">* Calle</div>

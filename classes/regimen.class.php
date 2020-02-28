@@ -143,6 +143,15 @@ class Regimen extends Main
 		
 		return $nombre; 
 	}
+    function ListTiposRegimen()
+    {
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM tipoRegimen ORDER BY nombreRegimen ASC");
+
+        $result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+
+        return $result;
+    }
+
 
 }
 

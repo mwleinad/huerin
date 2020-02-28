@@ -6,7 +6,6 @@ class InvoiceService extends Cfdi{
     private $workflows= [];
     private $emisor;
     private $receptor;
-    private $idEmpresa;
     private $documentName;
     private $currentContract;
     private $initTimeExecution;
@@ -22,6 +21,9 @@ class InvoiceService extends Cfdi{
     }
     function resetWorkflows(){
         $this->workflows=[];
+    }
+    function resetEmisor(){
+        $this->emisor=[];
     }
     function resetServiciosToConceptos(){
         $this->serviciosToConceptos=[];
@@ -45,30 +47,25 @@ class InvoiceService extends Cfdi{
         $this->procesoRealizado =  $val;
     }
     function setEmisor(){
-        switch($this->currentContract["facturador"]){
-            case 'BHSC': 
-                $this->idEmpresa = 21; 
-                $this->documentName = "Factura";
-            break;
-            case 'Braun':
-                $this->idEmpresa = 20; 
-                $this->documentName = "Recibo Honorarios";
-            break;
-        }
-        $sql = "SELECT * FROM rfc
-                WHERE empresaId = '".$this->idEmpresa."' ORDER BY rfcId ASC LIMIT 1";
-        $this->Util()->DB()->setQuery($sql);
-        $row = $this->Util()->DB()->GetRow();  
-        $row["rfc"] = trim(str_replace("-", "", $row["rfc"]));
-        $row["rfc"] = str_replace(" ", "", $row["rfc"]);
-        $this->emisor =  $row;  
+        $this->setClaveFacturador(trim($this->currentContract['facturador']));
+        $currentRfc = $this->getInfoRfcByClaveFacturador();
+        if(!$currentRfc)
+            return false;
+
+        $this->setEmpresaId($currentRfc['empresaId']);
+        $this->setRfcId($currentRfc['rfcId']);
+        $this->documentName = "Factura";
+
+        $currentRfc["rfc"] = trim(str_replace("-", "", $currentRfc["rfc"]));
+        $currentRfc["rfc"] = str_replace(" ", "", $currentRfc["rfc"]);
+        $this->emisor =  $currentRfc;
     }
     function setReceptor(){
         $rfcReceptor = str_replace("-", "", trim($this->currentContract["rfc"]));
         $rfcReceptor = str_replace(" ", "",$rfcReceptor);
         $this->receptor = array(
             "userId" => $this->currentContract["contractId"],
-            "empresaId" => $this->idEmpresa,
+            "empresaId" => $this->getEmpresaId(),
             "rfcId" => $this->emisor["rfcId"],
             "rfc" => $rfcReceptor,
             "nombre" => $this->currentContract["name"],
@@ -190,9 +187,8 @@ class InvoiceService extends Cfdi{
         $this->data['tipoRelacion'] = '04';
         $this->data['usoCfdi'] = 'G03';
             
-        $sql  ="SELECT * FROM serie WHERE empresaId = '".$this->idEmpresa."'
+        $sql  ="SELECT * FROM serie WHERE rfcId = '".$this->getRfcId()."' and tiposComprobanteId=1
                 ORDER BY serieId ASC LIMIT 1";
-
         $this->Util()->DB()->setQuery($sql);
         $serie = $this->Util()->DB()->GetRow();
         $this->data["serie"] =array
@@ -218,7 +214,7 @@ class InvoiceService extends Cfdi{
         $this->data["nodoEmisor"]["rfc"] = array
         (
             "rfcId" => $this->emisor["rfcId"],
-            "empresaId" => $this->idEmpresa,
+            "empresaId" => $this->getEmpresaId(),
             "regimenFiscal" => $this->emisor["regimenFiscal"],
             "rfc" => $this->emisor["rfc"],
             "razonSocial" => $this->emisor["razonSocial"],
@@ -339,6 +335,7 @@ class InvoiceService extends Cfdi{
     function GenerateInvoices($id=0){
         $contratos =  $this->GetContracts($id);
         foreach($contratos as $contrato){
+            $this->resetEmisor();
             $this->setMonth13(false);
             $this->setProcesoRealizado(true);
             $this->resetLogString();

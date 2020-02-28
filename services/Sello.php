@@ -5,17 +5,15 @@ class Sello extends Comprobante
 
     function generar($cadenaOriginal, $md5)
     {
-        $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/";
+        $root = DOC_ROOT."/empresas/".$this->getEmpresaId()."/certificados/";
 
         if(!is_dir($root))
         {
             mkdir($root, 0777);
         }
-
-
         $data["certificado"] = $arr['noCertificado'];
-        $rfcActivo = $this->getRfcActive();
-        $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/";
+        $rfcActivo = $this->getRfcId();
+        $root = DOC_ROOT."/empresas/".$this->getEmpresaId()."/certificados/".$rfcActivo."/";
 
         if(!is_dir($root))
         {

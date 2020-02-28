@@ -17,35 +17,31 @@ class PdfService extends Producto{
         $this->qrService = new QrService();
     }
 
-    public function generate($empresaId, $fileName, $type = 'download') {
+    public function generate($empresaId, $compInfo = [], $type = 'download') {
         $xmlReaderService = new XmlReaderService;
 
         //No se envio un nombre de archivo, buscar la serie y folio del comprobante
-        if(strpos($fileName, 'UID') !== false){
-            $fileName = $this->cfdiUtil->getFilename($fileName);
+        if(empty($compInfo) || !is_array($compInfo)){
+          return false;
         }
 
-        $empresaId = explode("_", $fileName);
+        $empresaId =$compInfo['empresaId'];
+        $rfcActivo =$compInfo['rfcId'];
+        $fileName = "SIGN_".$compInfo['xml'];
 
-        if($empresaId[0] == 'SIGN'){
-            $empresaId = $empresaId[1];
-        } else {
-            $empresaId = $empresaId[0];
-        }
-
-        $_SESSION['empresaId'] = $empresaId;
+        $this->setRfcId($rfcActivo);
         $rfcActivo = $this->getRfcActive();
 
 
         $this->smarty->assign('DOC_ROOT', DOC_ROOT);
 
         $xmlPath = DOC_ROOT.'/empresas/'.$empresaId.'/certificados/'.$rfcActivo.'/facturas/xml/'.$fileName.".xml";
-        $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
+        $xmlData = $xmlReaderService->execute($xmlPath, $empresaId,$compInfo['comprobanteId']);
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
         $dompdf = new Dompdf();
-
+        $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
 

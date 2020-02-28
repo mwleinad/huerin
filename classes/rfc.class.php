@@ -38,20 +38,18 @@ class Rfc extends Empresa
 	
 	function getRfcActive(){
 		$id_empresa = $_SESSION['empresaId'];
-		$sqlQuery = "SELECT rfcId FROM rfc WHERE activo = 'si' AND empresaId = ".$_SESSION["empresaId"];
+		$sqlQuery = "SELECT rfcId FROM rfc WHERE activo = 'si' AND rfcId = ".$this->getRfcId();
 		
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 		$rfc = $this->Util()->DBSelect($id_empresa)->GetSingle();
 		return $rfc;
 	}//getRfcActive
 
-    function getCurrentRfc(){
-        $id_empresa = $_SESSION['empresaId'];
-        $sqlQuery = "SELECT rfc FROM rfc WHERE activo = 'si' AND rfcId = '".$this->getRfcId()."' ";
-        $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
-        return $this->Util()->DBSelect($id_empresa)->GetSingle();
-    }//getRfcActive
-
+    function getInfoRfcByClaveFacturador(){
+        $sqlQuery = "SELECT * FROM rfc WHERE activo = 'si' AND claveFacturador = '".$this->getClaveFacturador()."' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
+        return $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
+    }
     function InfoRfc()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM rfc WHERE rfcId ='".$this->getRfcId()."'");
@@ -161,7 +159,8 @@ class Rfc extends Empresa
 				`estado`, 
 				`activo`, 
 				`cp`,
-			    `claveFacturador`
+			    `claveFacturador`,
+			    `regimenFiscal`
 				) 
 			VALUES (
 				'".$this->getEmpresaId()."',
@@ -179,7 +178,8 @@ class Rfc extends Empresa
 				'".$this->getEstado()."',
 				'si',
 				'".$this->getCp()."',
-				'".$this->getClaveFacturador()."')"
+				'".$this->getClaveFacturador()."',
+				'".$this->getRegimenFiscal()."')"
 
 			);
 		$rfcId = $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
@@ -319,6 +319,7 @@ class Rfc extends Empresa
             $fh = fopen($myFile, 'w');
             $stringData = $this->getPassword();
             fwrite($fh, $stringData);
+            $cer_name = substr($cer_name, 0, -4);
             $certNuevo = $this->Util()->GetNoCertificado($ruta_dir, $cer_name);
             $sqlQuery = "UPDATE serie SET noCertificado = '$certNuevo' WHERE  rfcId = '".$this->getRfcId()."' ";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);

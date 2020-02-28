@@ -22,7 +22,6 @@ class CxC extends Producto
         if($values['month'])
                 $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = '.intval($values['month']);
 
-		$id_rfc = $this->getRfcActive();
 		$sql = "SELECT *, c.status AS status, c.comprobanteId AS comprobanteId,customer.nameContact AS nameContact,contract.rfc,contract.name as razon
                 FROM comprobante AS c
                 LEFT JOIN contract ON contract.contractId = c.userId

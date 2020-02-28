@@ -2,10 +2,9 @@
 
 class CfdiUtil extends Comprobante
 {
-    public function getUUID($serie, $folio) {
+    public function getUUID($id) {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM comprobante
-        WHERE serie = '".$serie."'
-        AND folio = '".$folio."'");
+        WHERE comprobanteId = '".$id."' ");
 
         $cfdiRelacionado = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
@@ -19,15 +18,13 @@ class CfdiUtil extends Comprobante
             $timbre = $this->getDataByXml($nameXml);
             return $timbre["uuid"];
         }
-
         $timbre = unserialize($cfdiRelacionado["timbreFiscal"]);
         return $timbre["UUID"];
     }
 
-    public function getInfoComprobanteRelacionado($serie, $folio) {
+    public function getInfoComprobanteRelacionado($id) {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM comprobante
-        WHERE serie = '".$serie."'
-        AND folio = '".$folio."'");
+        WHERE comprobanteId = '".$id."' ");
 
         $cfdiRelacionado = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
