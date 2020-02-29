@@ -110,6 +110,7 @@ class DB
     }
 	public function ExecuteQuery()
 	{
+        echo "<br><br>".$this->query."<br><br>";
   	if(!$this->conn_id)
    	  $this->DatabaseConnect();
 			
