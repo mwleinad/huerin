@@ -7,8 +7,6 @@ class OverrideGenerator extends Main
 		global $rfc;
 		global $comprobante;
 
- 		$_SESSION["empresaId"] = $empresa["empresaId"];
-
 		//Instanciation of inherited class
 		$pdf=new PDF('P', 'mm', "a4");
 		$pdf->SetMargins(0.5,0.1,0.5);
@@ -24,7 +22,7 @@ class OverrideGenerator extends Main
  		$pdf->SetTextColor(200, 0, 0);
   		$pdf->Cell(20,10,$data["comprobante"]["nombre"],0,0,'C');
 
-		$rootQr = DOC_ROOT.'/empresas/'.$_SESSION['empresaId'].'/qrs/';
+		$rootQr = DOC_ROOT.'/empresas/'.$empresa['empresaId'].'/qrs/';
 		$qrRfc = strtoupper($data["nodoEmisor"]["rfc"]["rfc"]);
 		$nufa = $serie["serieId"].".jpg";
 		
@@ -33,12 +31,12 @@ class OverrideGenerator extends Main
 			$pdf->Image($rootQr.$nufa,2,10, 25,25);
 		}
 
-		$nufa = $_SESSION["empresaId"]."_".$serie["serie"]."_".$data["folio"];
+		$nufa = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 		
 		$rfcActivo = $rfc->getRfcActive();
-		$root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/pdf/";
-		$rootFacturas = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/";
-		$rootQr = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
+		$root = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/pdf/";
+		$rootFacturas = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/";
+		$rootQr = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
 		
 		if(!file_exists($rootQr.nufa)){
 			$comprobante->GenerateQR($data, $totales, $nodoEmisor, $nodoReceptor, $empresa, $serie);
@@ -194,7 +192,7 @@ class OverrideGenerator extends Main
 			$infoSucursal .= "\n".utf8_decode(urldecode($data["nodoEmisor"]["sucursal"]["municipio"]." ".$data["nodoEmisor"]["sucursal"]["estado"]." ".$data["nodoEmisor"]["sucursal"]["pais"]." \nCP: ".$data["nodoEmisor"]["sucursal"]["cp"]));
 */
 
-		if($_SESSION['empresaId'] == 21)
+		if($empresa['empresaId'] == 21)
 		{
 			$infoSucursal = utf8_decode(urldecode("NAVARRA 210 PB. COL. ALAMOS"));
 			$infoSucursal .= "\n".utf8_decode(urldecode("DEL. BENITO JUAREZ"." DF"."\n"."MEXICO CP: 05300"));
@@ -644,7 +642,7 @@ class OverrideGenerator extends Main
 					
 		}//if
 
-		$nufa = $_SESSION["empresaId"]."_".$serie["serie"]."_".$data["folio"];
+		$nufa = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 		if($data["nodoEmisor"]["rfc"]["rfc"] == "BABJ701019LD7")
 		{
 			$id = 20;
@@ -658,7 +656,7 @@ class OverrideGenerator extends Main
 		{
 			$id = 15;
 		}
-		$pdf->Output(DOC_ROOT.'/temp/factura_'.$_SESSION["empresaId"].'.pdf', "F");
+		$pdf->Output(DOC_ROOT.'/temp/factura_'.$empresa["empresaId"].'.pdf', "F");
 
 	}
 }
