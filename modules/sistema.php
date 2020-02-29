@@ -109,16 +109,11 @@
 			$tipos_comprobantes = $main->ListTiposDeComprobantes();
 			$smarty->assign('tipos_comprobantes',$tipos_comprobantes);
             $smarty->assign('emisores',$rfc->listEmisores());
-			
-			$id_rfc = $sucursal->getRfcActive();
-			$sucursal->setRfcId($id_rfc);
-			$sucursales = $sucursal->GetSucursalesByRfc();
-			$smarty->assign('sucursales',$sucursales);
-		
 			break;
 		
 		case 'ver-pdf':
-            //verificar permisos
+            header('Location: '.WEB_ROOT);
+            exit;
             $user->allowAccess(5);
             $user->allowAccess(132);
             $user->allowAccess(134);
@@ -134,6 +129,8 @@
 			break;
 		
 		case 'descargar-pdf':
+            header('Location: '.WEB_ROOT);
+            exit;
             //verificar permisos
             $user->allowAccess(5);
             $user->allowAccess(132);
@@ -171,7 +168,8 @@
 			break;
 		
 		case 'enviar-pdf':
-            //verificar permisos
+            header('Location: '.WEB_ROOT);
+            exit;
             $user->allowAccess(5);
             $user->allowAccess(132);
             $user->allowAccess(137);
@@ -191,7 +189,8 @@
 			break;
 		
 		case 'demo-pdf':
-			
+            header('Location: '.WEB_ROOT);
+            exit;
 			$card["nombre"] = "Asociacion Mexicana de Contadores Publicos, Colegio Profesional en el Estado de Chiapas AC";
 			$card["calle"] = "Avenida de los Treboles";
 			$card["noExt"] = "123";
@@ -223,13 +222,13 @@
 	
 	}//switch
 	
-	$id_rfc = $rfc->getRfcActive();
-	$rfc->setRfcId($id_rfc);
+
+	$rfc->setRfcId(RFC_DEFAULT);
 	$certNuevo = $rfc->GetCertificadoByRfc();
 	$smarty->assign("certNuevo", $certNuevo);
 
 
-	$folios->setIdRfc($id_rfc);
+	$folios->setIdRfc(RFC_DEFAULT);
 	$noFolios  = count($listFolios = $folios->GetFoliosByRfc());
 	$smarty->assign('noFolios', $noFolios);	
 

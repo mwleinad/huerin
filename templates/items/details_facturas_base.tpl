@@ -10,7 +10,7 @@
                         {*descargar xml*}
                         {*if in_array(128,$permissions) || $User.isRoot*}
                             {if $fact.version == '3.3'}
-                                <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobanteId}&type=view" class="spanAll">
+                                <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$fact.comprobanteId}&type=view" class="spanAll">
                                     <img src="{$WEB_ROOT}/images/icons/pdf-18.png"  title="Ver factura"/>
                                 </a>
                             {else}

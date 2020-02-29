@@ -16,7 +16,7 @@
                    {/if}
                    {if $fact.comprobantePagoId}
                         {if in_array(128,$permissions) || $User.isRoot}
-                            <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=UID_{$fact.comprobantePagoId}&type=download">
+                            <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$fact.comprobantePagoId}&type=download">
                                 <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
                             </a>
                         {/if}

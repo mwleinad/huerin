@@ -9,12 +9,14 @@ switch($_POST["type"]){
         $data['title'] =  "Agregar emisor";
         $data["form"] = "frm-emisor";
         $smarty->assign("data",$data);
+        $smarty->assign("tiposRegimen",$regimen->ListTiposRegimen());
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
         break;
     case 'saveEmisor':
         $rfc->setEmpresaId($_SESSION["empresaId"]);
         $rfc->setRazonSocial($_POST["razonSocial"]);
         $rfc->setRfc($_POST["rfc"]);
+        $rfc->setRegimenFiscal($_POST["regimenFiscal"]);
         $rfc->setCalle($_POST["calle"]);
         $rfc->setNoExt($_POST["noExt"]);
         $rfc->setNoInt($_POST["noInt"]);
@@ -43,6 +45,7 @@ switch($_POST["type"]){
         $rfc->setRfcId($_POST["id"]);
         $info = $rfc->InfoRfc();
         $smarty->assign("post",$info);
+        $smarty->assign("tiposRegimen",$regimen->ListTiposRegimen());
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
         break;
     case 'updateEmisor':
@@ -50,6 +53,7 @@ switch($_POST["type"]){
         $rfc->setRfcId($_POST["rfcId"]);
         $rfc->setRazonSocial($_POST["razonSocial"]);
         $rfc->setRfc($_POST["rfc"]);
+        $rfc->setRegimenFiscal($_POST["regimenFiscal"]);
         $rfc->setCalle($_POST["calle"]);
         $rfc->setNoExt($_POST["noExt"]);
         $rfc->setNoInt($_POST["noInt"]);

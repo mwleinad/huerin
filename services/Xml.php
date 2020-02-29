@@ -43,7 +43,7 @@ class Xml extends Producto{
     {
         $this->cfdiUtil = new CfdiUtil();
         $this->comprobantePago = new ComprobantePago();
-
+        $this->setRfcId(   $data['nodoEmisor']['rfc']['rfcId']);
         $this->data = $data;
 
         $this->setTipoComprobante();
@@ -146,7 +146,7 @@ class Xml extends Producto{
         if($this->data['fromXml'])
             $this->uuidRelacionado = $this->data['uuid'];
         else
-        $this->uuidRelacionado = $this->cfdiUtil->getUUID($this->data['cfdiRelacionadoSerie'], $this->data['cfdiRelacionadoFolio']);
+        $this->uuidRelacionado = $this->cfdiUtil->getUUID($this->data['cfdiRelacionadoId']);
     }
 
     private function CargaAtt(&$nodo, $attr)
@@ -753,7 +753,7 @@ class Xml extends Producto{
 
         //si el pago es desde xml se realiza otro procedimiento
         if(!$this->data['fromXml']){
-            $comprobante = $this->cfdiUtil->getInfoComprobanteRelacionado($this->data['cfdiRelacionadoSerie'], $this->data['cfdiRelacionadoFolio']);
+            $comprobante = $this->cfdiUtil->getInfoComprobanteRelacionado($this->data['cfdiRelacionadoId']);
             $infoPagos = $this->comprobantePago->getPagos($comprobante, $this->data['infoPago']->amount);
             $IdDocumento =  $this->uuidRelacionado;
         }else{
@@ -812,9 +812,9 @@ class Xml extends Producto{
     private function save() {
         $nufa = $this->miEmpresa["empresaId"]."_".$this->data["serie"]["serie"]."_".$this->data["folio"];
 
-        $rfcActivo = $this->getRfcActive();
-        $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
-        $rootFacturas = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/";
+        $rfcActivo = $this->getRfcId();
+        $root = DOC_ROOT."/empresas/".$this->miEmpresa["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
+        $rootFacturas = DOC_ROOT."/empresas/".$this->miEmpresa["empresaId"]."/certificados/".$rfcActivo."/facturas/";
 
         if(!is_dir($rootFacturas))
         {

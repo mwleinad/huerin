@@ -775,24 +775,7 @@ class Comprobante extends Producto
 		$xml = $row["xml"];
 
         $rfcActivo = $this->getRfcActive();
-        if($row["empresaId"] == 15)
-        {
-            $rfcActivo = 1;
-        }
-        elseif($row["empresaId"] == 20)
-        {
-            $rfcActivo = 29;
-        }
-        elseif($row["empresaId"] == 21)
-        {
-            $rfcActivo = 30;
-        }
-        else
-        {
-            $rfcActivo = 1;
-        }
 
-		//if($row["version"] == "3.3" || $row["version"] == "construc")
 		$root = DOC_ROOT."/empresas/".$row["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/SIGN_".$xml.".xml";
 		$fh = fopen($root, 'r');
 		$theData = fread($fh, filesize($root));
@@ -1134,7 +1117,7 @@ class Comprobante extends Producto
 
         $nombreCertificado = substr($llave, 0, -4);
         $noCertificado = $this->Util()->GetNoCertificado($root, $nombreCertificado);
-        exec('openssl pkcs12 -export -out '.$root.'/'.$noCertificado.'.pfx -inkey '.$root.'/'.$certificado.'.pem -in '.$root.'/'.$llave.'.pem -passout pass:'.$pass);
+        exec('openssl pkcs12 -export -out '.$root.'/'.$noCertificado.'.cer.pfx -inkey '.$root.'/'.$certificado.'.pem -in '.$root.'/'.$llave.'.pem -passout pass:'.$pass);
 
 
 
@@ -1205,8 +1188,6 @@ class Comprobante extends Producto
 	function GetComprobantesByRfc(){
 
 		global $user;
-
-		$id_rfc = $this->getRfcActive();
 
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery('SELECT COUNT(*) FROM comprobante ORDER BY fecha DESC');
 		$total = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
@@ -1315,7 +1296,6 @@ class Comprobante extends Producto
            $innerpermisos =  "INNER JOIN contractPermiso p ON a.contractId=p.contractId";
            $wherepermisos = " AND p.personalId IN($implodePersons) ";
         }
-		$id_rfc = $this->getRfcActive();
 		switch($values['generateby']){
             case 'automatico':
                 $sqlSearch .= ' AND d.comprobanteId is not null';

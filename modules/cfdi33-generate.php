@@ -157,7 +157,7 @@ $smarty->assign("retIvas", $retIvas);
 $tiposDeMoneda = $main->ListTipoDeMoneda33();
 $smarty->assign("tiposDeMoneda", $tiposDeMoneda);
 $smarty->assign("seriesTiposComprobante", $main->ListSerieTipoComprobantes());
-$sucursal->setRfcId($rfc->getRfcActive());
+$sucursal->setRfcId(RFC_DEFAULT);
 $sucursal->setEmpresaId($_SESSION["empresaId"], 1);
 
 //nuevos catalogos
@@ -190,12 +190,11 @@ $excentoIva = $main->ListExcentoIva();
 $smarty->assign("excentoIva", $excentoIva);
 $smarty->assign("DOC_ROOT", DOC_ROOT);
 
-$id_rfc = $rfc->getRfcActive();
-$rfc->setRfcId($id_rfc);
+$rfc->setRfcId(RFC_DEFAULT);
 $certNuevo = $rfc->GetCertificadoByRfc();
 $smarty->assign("certNuevo", $certNuevo);
 
-$folios->setIdRfc($id_rfc);
+$folios->setIdRfc(RFC_DEFAULT);
 $noFolios  = count($listFolios = $folios->GetFoliosByRfc());
 $smarty->assign('noFolios', $noFolios);
 

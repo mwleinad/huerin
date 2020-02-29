@@ -2,7 +2,7 @@
 
 class XmlReaderService extends Comprobante
 {
-    function execute($pathXml, $empresaId)
+    function execute($pathXml, $empresaId,$id=0)
     {
         $xml = simplexml_load_file($pathXml);
         $ns = $xml->getNamespaces(true);
@@ -21,8 +21,8 @@ class XmlReaderService extends Comprobante
         $data["cfdi"] = $xml->xpath('//cfdi:Comprobante')[0];
 
         //Obtenemos la informacion del Comprobante, esto es solo para saber si esta cancelado. Lo demas se obtiene del xml
-        $sql = 'SELECT * FROM comprobante
-				WHERE serie = "'.$data["cfdi"]['Serie'].'" AND folio = "'. $data["cfdi"]['Folio'].'"';
+        $sql = "SELECT * FROM comprobante
+				WHERE comprobanteId ='$id' ";
         $this->Util()->DBSelect($empresaId)->setQuery($sql);
         $data["db"] = $this->Util()->DBSelect($empresaId)->GetRow();
         $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$data["db"]['comprobanteId']."'");
@@ -32,8 +32,8 @@ class XmlReaderService extends Comprobante
             $data['db']['observaciones'] = $_SESSION['observaciones'];
         }
 
-        $sql = 'SELECT * FROM serie
-				WHERE serie = "'.$data["cfdi"]['Serie'].'"';
+        $sql = "SELECT * FROM serie
+				WHERE serie = '".$data["cfdi"]['Serie']."' and rfcId='".$data['db']['rfcId']."' ";
         $this->Util()->DBSelect($empresaId)->setQuery($sql);
         $data["serie"] = $this->Util()->DBSelect($empresaId)->GetRow();
 

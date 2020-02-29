@@ -135,7 +135,6 @@ class XmlTransform extends Comprobante
 		$data['nodoEmisor']['rfc'] = $card;
 		
 		//Emisor > Expedido En
-		
 		$card = array();
 		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:ExpedidoEn') as $exp){		
 			$card['identificador'] = $data['LugarExpedicion'];
@@ -154,7 +153,6 @@ class XmlTransform extends Comprobante
 		$data['nodoEmisor']['sucursal']['sucursalActiva'] = 'no';
 		
 		//Receptor
-		
 		$card = array();
 		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Receptor') as $receptor){		
 			$card['rfc'] = $receptor['rfc'];
@@ -162,7 +160,6 @@ class XmlTransform extends Comprobante
 		}//foreach
 		
 		//Receptor > Domicilio
-		
 		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Receptor//cfdi:Domicilio') as $dom){		
 			$card['calle'] = $dom['calle'];
 			$card['noExt'] = $dom['noExterior'];
@@ -184,24 +181,16 @@ class XmlTransform extends Comprobante
 		}
 		
 		//TimbreFiscalDigital
-		
 		foreach($xml->xpath('//t:TimbreFiscalDigital') as $tfd){		
 			$data['UUID'] = $tfd['UUID'];
 			$data['FechaTimbrado'] = $tfd['FechaTimbrado'];
 			$data['sello'] = $tfd['selloCFD'];
 			$data['selloSAT'] = $tfd['selloSAT'];		
 		}//foreach
-		
-		//$sql = 'SELECT serieId FROM serie 
-		//		WHERE serie = "'.$serie['serie'].'" 
-		//		AND sucursalId = '.$fact['sucursalId'];
-		//$this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-		//$serie['serieId'] = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
-		
+
 		$infEmp['empresaId'] = $empresaId;
 		
 		//Cadena Original
-		
 		switch($emp['version'])
 		{
 			case 'auto':

@@ -18,34 +18,10 @@ class Cfdi extends Comprobante
         $data["tiposComprobanteId"] = $tipoSerie[0];
         $data["tiposSerieId"] = $tipoSerie[1];
 
-        if($data["tiposSerieId"] == "5" || $data["tiposSerieId"] == "55")
-        {
-            $empresaIdFacturador = 15;
-            $_SESSION['empresaId'] = 15;
-            $empresa['empresaId'] = 15;
-            $emisor = $emisorHuerin;
-        }
-        elseif($data["tiposSerieId"] == "51"|| $data["tiposSerieId"] == "54")
-        {
-            $empresaIdFacturador = 20;
-            $_SESSION['empresaId'] = 20;
-            $empresa['empresaId'] = 20;
-            $emisor = $emisorBraun;
-        }
-        elseif($data["tiposSerieId"] == "52"|| $data["tiposSerieId"] == "53")
-        {
-            $empresaIdFacturador = 21;
-            $_SESSION['empresaId'] = 21;
-            $empresa['empresaId'] = 21;
-            $emisor = $emisorBhsc;
-        }
-        else
-        {
-            $empresaIdFacturador = 15;
-            $_SESSION['empresaId'] = 15;
-            $empresa['empresaId'] = 15;
-            $emisor = $emisorBraun;
-        }
+        $sql ="select empresaId,rfcId from serie where tiposComprobanteId = '".$data['tiposComprobanteId']."' and serieId = '".$data['tiposSerieId']."' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $currentRfc = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
+        $empresa['empresaId'] = $currentRfc['empresaId'];
 
         $vs = new User;
 
@@ -111,7 +87,7 @@ class Cfdi extends Comprobante
         }
 
         //get active rfc
-        $activeRfc =  $vs->getRfcActive();
+        $activeRfc = $currentRfc['rfcId'];
         //get datos serie de acuerdo al tipo de comprobabte expedido.
 
         if(!$data["metodoDePago"])
@@ -135,11 +111,11 @@ class Cfdi extends Comprobante
 
         if($notaCredito)
         {
-            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = '2' AND empresaId = ".$_SESSION["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1");
+            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = '2' AND empresaId = ".$currentRfc["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1");
         }
         else
         {
-            $sql = "SELECT * FROM serie WHERE tiposComprobanteId = ".$data["tiposComprobanteId"]." AND empresaId = ".$_SESSION["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1";
+            $sql = "SELECT * FROM serie WHERE tiposComprobanteId = ".$data["tiposComprobanteId"]." AND empresaId = ".$currentRfc["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1";
 
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         }
@@ -197,8 +173,6 @@ class Cfdi extends Comprobante
 
         if($data['nodoEmisor']['rfc']['regimenFiscal'] == 'REGIMEN%20GENERAL%20DE%20LEY%20PERSONAS%20MORALES') {
             $data['nodoEmisor']['rfc']['regimenFiscal'] = '601';
-        } else {
-            $data['nodoEmisor']['rfc']['regimenFiscal'] = '612';
         }
 
         $userId = $data["userId"];
@@ -288,6 +262,7 @@ class Cfdi extends Comprobante
 
         $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
         //XML con sello
+        $this->setRfcId($currentRfc['rfcId']);
         $xmlConSello = $this->stamp($empresa, $serie, $data, $xml, $totales);
 
         if($data['format'] == 'vistaPrevia'){
@@ -477,8 +452,8 @@ class Cfdi extends Comprobante
     private function stamp($empresa, $serie, $data, $xml, $totales){
         //despues de la generacion del xml, viene el timbrado.
         $fileName = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
-        $rfcActivo = $this->getRfcActive();
-        $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
+        $rfcActivo = $this->getRfcId();
+        $root = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
 
         $xmlFile = $root.$fileName.".xml";
 
@@ -490,7 +465,9 @@ class Cfdi extends Comprobante
         $md5 = hash( 'sha256', $md5Cadena );
 
         $selloObject = new Sello;
-        $sello = $selloObject->generar($cadenaOriginal, $md5);
+        $selloObject->setRfcId($this->getRfcId());
+        $selloObject->setEmpresaId($empresa['empresaId']);
+;       $sello = $selloObject->generar($cadenaOriginal, $md5);
         $data["sello"] = $sello["sello"];
         $data["certificado"] = $sello["certificado"];
 

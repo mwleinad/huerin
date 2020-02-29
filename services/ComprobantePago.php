@@ -2,16 +2,17 @@
 class ComprobantePago extends Comprobante {
 
     private function generateSerieIfNotExists() {
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE empresaId = '".$_SESSION["empresaId"]."'");
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE rfcId = '".$this->getRfcId()."'");
         $serieExistente = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         //Create series if it doesn't exists TODO do not let this serie to be deleted or modified, also hide it from other places
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = 10 AND empresaId = '".$_SESSION["empresaId"]."'");
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = 10 AND rfcId = '".$this->getRfcId()."'");
         $serie = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         if(!$serie) {
 
             $vs = new User;
+            $vs->setRfcId($this->getRfcId());
             $activeRfc =  $vs->getRfcActive();
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 			INSERT INTO `serie` (
@@ -29,7 +30,7 @@ class ComprobantePago extends Comprobante {
 			(
 				'".$_SESSION["empresaId"]."',
 				'1',
-				'COMPAGO',
+				'".$serieExistente['serie']."_COMPAGO',
 				'1',
 				'999999999',
 				'10',
@@ -70,7 +71,7 @@ class ComprobantePago extends Comprobante {
         $cfdi = new Cfdi();
 
         $_SESSION["empresaId"] = $infoComprobante['empresaId'];
-
+        $this->setRfcId($infoComprobante['rfcId']);
         $serieId = $this->generateSerieIfNotExists();
 
         $comprobante = $cfdiRelacionado = $this->getCfdiRelacionado($infoComprobante);
@@ -88,6 +89,7 @@ class ComprobantePago extends Comprobante {
             'tiposDeMoneda' => 'XXX',
             'cfdiRelacionadoSerie' => $comprobante["serie"],
             'cfdiRelacionadoFolio' => $comprobante["folio"],
+            'cfdiRelacionadoId' => $comprobante["comprobanteId"],
             'tipoRelacion' => '04',
             'userId' => $comprobante['userId'],
             'usoCfdi' => 'P01',

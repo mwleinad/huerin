@@ -12,7 +12,7 @@
 
     {*pdf*}
     {if $comprobante.version == '3.3'}
-        <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=SIGN_{$comprobante.xml}&type=download">
+        <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$comprobante.comprobanteId}&type=download">
             <img src="{$WEB_ROOT}/images/pdf_icon.png" height="100" width="100" border="0" alt="xml" title="xml"/>
         </a>
     {else}

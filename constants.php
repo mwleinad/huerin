@@ -23,6 +23,7 @@ define("SERVICIOS_NOMINA", "5, 6, 7, 13, 14, 15");
 //start balance
 define("BALANCE_MONTH", "7");
 define("BALANCE_YEAR", "2013");
+define("RFC_DEFAULT", 30);
 
 switch($_SERVER['HTTP_HOST'])
 {
