@@ -203,8 +203,8 @@ class XmlTransform extends Comprobante
 		//Timbre
 		
 		$nufa = $infEmp["empresaId"]."_".$serie["serie"]."_".$data["folio"];
-		$rfc = new Rfc;
-		$rfcActivo = $rfc->getRfcActive();
+
+		$rfcActivo =$infoRfc['rfcId'];
 		$root = DOC_ROOT."/empresas/".$empresaId."/certificados/".$rfcActivo."/facturas/xml/";
 		$root_dos = DOC_ROOT."/empresas/".$empresaId."/certificados/".$rfcActivo."/facturas/xml/timbres/";
 	
