@@ -4,23 +4,46 @@ class XmlTransform extends Comprobante
 {
 	function Execute($ruta, $archivo, $saveTo, $empresaId)
 	{
-		$_SESSION["empresaId"] = $empresaId;
-		//echo $ruta;
-		//$ruta = DOC_ROOT."/empresas/"
+
 		$pathXml = $ruta.$archivo;
 		//Generamos el PDF.
-		
 		$xml = simplexml_load_file($pathXml);
 		
 		$ns = $xml->getNamespaces(true);
 		$xml->registerXPathNamespace('c',$ns['cfdi']);
 		$xml->registerXPathNamespace('t',$ns['tfd']);
 
+		//Emisor
+        $card = array();
+        foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor') as $emisor){
+            $card['rfc'] = $emisor['rfc'];
+            $card['razonSocial'] = $emisor['nombre'];
+        }//foreach
+        //Emisor > Domicilio Fiscal
+        foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:DomicilioFiscal') as $domFiscal){
+            $card['calle'] = $domFiscal['calle'];
+            $card['noExt'] = $domFiscal['noExterior'];
+            $card['noInt'] = $domFiscal['noInterior'];
+            $card['colonia'] = $domFiscal['colonia'];
+            $card['municipio'] = $domFiscal['municipio'];
+            $card['estado'] = $domFiscal['estado'];
+            $card['pais'] = $domFiscal['pais'];
+            $card['cp'] = $domFiscal['codigoPostal'];
+        }//foreach
+
+        //Emisor > Regimen Fiscal
+        foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:RegimenFiscal') as $regimen){
+            $card['regimenFiscal'] = $regimen['Regimen'];
+        }//foreach
+
+        $data['nodoEmisor']['rfc'] = $card;
+        $infoRfc = $this->InfoRfcByRfc2($card['rfc']);
+
 		//Comprobante
 		
 		foreach($xml->xpath('//cfdi:Comprobante') as $comp){
 			//get serie
-			$this->Util()->DB()->setQuery("SELECT * FROM serie WHERE serie = '".$comp["serie"]."'");
+			$this->Util()->DB()->setQuery("SELECT * FROM serie WHERE serie = '".$comp["serie"]."' and rfcId ='".$infoRfc['rfcId']."' ");
 			$row = $this->Util()->DB()->GetRow();
 
 			$serie['serie'] = $row['serie'];
@@ -48,7 +71,8 @@ class XmlTransform extends Comprobante
 			$totales['total'] = $comp['total'];		
 					
 		}//foreach
-		
+
+
 		//Obtenemos la informacion del Comprobante
 		if($empresaId == 185)
 		{
@@ -60,14 +84,12 @@ class XmlTransform extends Comprobante
 		else
 		{
 			$sql = 'SELECT * FROM comprobante 
-				WHERE serie = "'.$serie['serie'].'" AND folio = "'.$data['folio'].'"';
+				WHERE serie = "'.$serie['serie'].'" AND folio = "'.$data['folio'].'" and rfcId = "'.$infoRfc['rfcId'].'" ';
 		}
 		
 		$this->Util()->DBSelect($empresaId)->setQuery($sql);
 		$fact = $this->Util()->DBSelect($empresaId)->GetRow();
 
-		
-		//
 		$this->Util()->DBSelect($empresaId)->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
 		$pending_cancel= $this->Util()->DB()->GetResult();
 
@@ -102,40 +124,11 @@ class XmlTransform extends Comprobante
 				$totales['ieps'] = floatval($tras['importe']);
 				$totales['porcentajeIEPS'] = $tras['tasa'];
 			}	   
-		} 
-		
-		//Emisor
-		
-		$card = array();
-		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor') as $emisor){		
-			$card['rfc'] = $emisor['rfc'];
-			$card['razonSocial'] = $emisor['nombre'];						
-		}//foreach
-		
-		//Emisor > Domicilio Fiscal
-		
-		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:DomicilioFiscal') as $domFiscal){		
-			$card['calle'] = $domFiscal['calle'];
-			$card['noExt'] = $domFiscal['noExterior'];
-			$card['noInt'] = $domFiscal['noInterior'];
-			$card['colonia'] = $domFiscal['colonia'];
-			$card['municipio'] = $domFiscal['municipio'];
-			$card['estado'] = $domFiscal['estado'];
-			$card['pais'] = $domFiscal['pais'];
-			$card['cp'] = $domFiscal['codigoPostal'];				
-		}//foreach
-		
-		//Emisor > Regimen Fiscal
-		
-		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:RegimenFiscal') as $regimen){		
-			$card['regimenFiscal'] = $regimen['Regimen'];						
-		}//foreach
-		
-		$data['nodoEmisor']['rfc'] = $card;
-		
+		}
+
 		//Emisor > Expedido En
 		$card = array();
-		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:ExpedidoEn') as $exp){		
+		foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:ExpedidoEn') as $exp){
 			$card['identificador'] = $data['LugarExpedicion'];
 			$card['calle'] = $exp['calle'];
 			$card['noExt'] = $exp['noExterior'];
@@ -144,9 +137,9 @@ class XmlTransform extends Comprobante
 			$card['municipio'] = $exp['municipio'];
 			$card['estado'] = $exp['estado'];
 			$card['pais'] = $exp['pais'];
-			$card['cp'] = $exp['codigoPostal'];						
+			$card['cp'] = $exp['codigoPostal'];
 		}//foreach
-			
+
 		$data['nodoEmisor']['sucursal'] = $card;
 		$data['nodoEmisor']['sucursal']['nombre'] = $card['identificador'];
 		$data['nodoEmisor']['sucursal']['sucursalActiva'] = 'no';
