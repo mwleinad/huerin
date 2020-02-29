@@ -84,7 +84,7 @@ class XmlTransform extends Comprobante
 		}
 		else
 		{
-			echo $sql = "SELECT * FROM comprobante 
+			$sql = "SELECT * FROM comprobante 
 				WHERE serie = '".$serie['serie']."' AND folio = '".$data['folio']."' and rfcId = '".$infoRfc['rfcId']."' ";
 		}
 		
@@ -95,6 +95,7 @@ class XmlTransform extends Comprobante
 		$pending_cancel= $this->Util()->DB()->GetResult();
 
 		$cancelado = ($fact['status'] === 0 || count($pending_cancel)>0) ? 1 : 0;
+		echo "sesdt ".$cancelado;
 
 		$data['sucursalId'] = $fact['sucursalId'];
 		$data['tiposComprobanteId'] = $fact['tiposComprobanteId'];
