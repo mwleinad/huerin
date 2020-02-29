@@ -155,15 +155,13 @@
 			$archivo = "SIGN_".$id_empresa.'_'.$infoComp['serie'].'_'.$infoComp['folio'].'.xml';
 			
 			$enlace = WEB_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/'.$archivo; 
-			header ("Content-Disposition: attachment; filename=".$archivo."\n\n"); 
-			header ("Content-Type: application/octet-stream"); 
+			//header ("Content-Disposition: attachment; filename=".$archivo."\n\n");
+			//header ("Content-Type: application/octet-stream");
 			//header ("Content-Length: ".filesize($enlace)); 
-			readfile($enlace); 
-			
+			//readfile($enlace);
+			header("location:".WEB_ROOT."/util/download.php?file=".$enlace);
 			exit;
-		
 			break;
-		
 		case 'enviar-pdf':
             header('Location: '.WEB_ROOT);
             exit;
