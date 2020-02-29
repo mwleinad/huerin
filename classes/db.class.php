@@ -110,7 +110,7 @@ class DB
     }
 	public function ExecuteQuery()
 	{
-     
+
   	if(!$this->conn_id)
    	  $this->DatabaseConnect();
 			
