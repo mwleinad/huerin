@@ -110,6 +110,7 @@ class DB
     }
 	public function ExecuteQuery()
 	{
+        echo "<br><br>".$this->query."<br><br>";
   	if(!$this->conn_id)
    	  $this->DatabaseConnect();
 			
@@ -124,7 +125,7 @@ class DB
 		}	
 		else
 		{
-            echo "<br><br>".$this->query."<br><br>";
+
 			$this->sqlResult = mysql_query($this->query, $this->conn_id);
 		}	
 	}
