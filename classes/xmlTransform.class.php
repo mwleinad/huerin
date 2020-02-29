@@ -29,6 +29,7 @@ class XmlTransform extends Comprobante
 
 			
 			$data['folio'] = $comp['folio'];
+            $data['version'] = $comp['version'];
 			$fecha = explode('T',$comp['fecha']);
 			$data['fecha'] = $fecha[0].' '.$fecha[1];
 			$data['tipoDeComprobante'] = $comp['tipoDeComprobante'];
@@ -49,7 +50,7 @@ class XmlTransform extends Comprobante
 		}//foreach
 		
 		//Obtenemos la informacion del Comprobante
-		if($_SESSION["empresaId"] == 185)
+		if($empresaId == 185)
 		{
 			$anio = explode("-", $data["fecha"]);
 			$anio = $anio[0];
@@ -62,12 +63,12 @@ class XmlTransform extends Comprobante
 				WHERE serie = "'.$serie['serie'].'" AND folio = "'.$data['folio'].'"';
 		}
 		
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
-		$fact = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+		$this->Util()->DBSelect($empresaId)->setQuery($sql);
+		$fact = $this->Util()->DBSelect($empresaId)->GetRow();
 
 		
 		//
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
+		$this->Util()->DBSelect($empresaId)->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
 		$pending_cancel= $this->Util()->DB()->GetResult();
 
 		$cancelado = ($fact['status'] == 0 || count($pending_cancel)) ? 1 : 0;
@@ -77,9 +78,7 @@ class XmlTransform extends Comprobante
 		$data['observaciones'] = $fact['observaciones'];
 		$comprobante = new Comprobante;
 		$data["comprobante"] = $comprobante->InfoComprobante($data["tiposComprobanteId"]);
-		
-		$empresaId = $_SESSION['empresaId'];
-		
+
 		$empresa = new Empresa;
 		$empresa->setEmpresaId($empresaId);
 		$emp = $empresa->Info();
@@ -191,9 +190,11 @@ class XmlTransform extends Comprobante
 		$infEmp['empresaId'] = $empresaId;
 		
 		//Cadena Original
-		switch($emp['version'])
+		switch($data['version'])
 		{
 			case 'auto':
+            case '3.2':
+            case '3.3':
 			case 'v3':
 			case 'construc':
 				include_once(DOC_ROOT.'/classes/cadena_original_v3.class.php');break;
@@ -210,10 +211,10 @@ class XmlTransform extends Comprobante
 		$nufa = $infEmp["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 		$rfc = new Rfc;
 		$rfcActivo = $rfc->getRfcActive();
-		$root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
-		$root_dos = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/timbres/";
+		$root = DOC_ROOT."/empresas/".$empresaId."/certificados/".$rfcActivo."/facturas/xml/";
+		$root_dos = DOC_ROOT."/empresas/".$empresaId."/certificados/".$rfcActivo."/facturas/xml/timbres/";
 	
-		$nufa_dos = "SIGN_".$_SESSION["empresaId"]."_".$serie["serie"]."_".$data["folio"];
+		$nufa_dos = "SIGN_".$empresaId."_".$serie["serie"]."_".$data["folio"];
 		$timbradoFile = $root.$nufa_dos.".xml";	
 		
 		$timbreFiscal = unserialize(urldecode($fact["timbreFiscal"]));
