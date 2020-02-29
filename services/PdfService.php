@@ -22,12 +22,16 @@ class PdfService extends Producto{
 
         //No se envio un nombre de archivo, buscar la serie y folio del comprobante
         if(empty($compInfo) || !is_array($compInfo)){
-          return false;
+          echo "No se encontro informacion";
+          exit;
         }
 
         $empresaId =$compInfo['empresaId'];
         $rfcActivo =$compInfo['rfcId'];
-        $fileName = "SIGN_".$compInfo['xml'];
+        if($compInfo['comprobanteId'])
+            $fileName = "SIGN_".$compInfo['xml'];
+        else
+            $fileName = $compInfo['xml'];
 
         $this->setRfcId($rfcActivo);
         $rfcActivo = $this->getRfcActive();

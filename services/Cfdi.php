@@ -105,7 +105,7 @@ class Cfdi extends Comprobante
 
         if(!$data["tiposComprobanteId"])
         {
-            $vs->Util()->setError(10047, "error");
+            $vs->Util()->setError(10047, "error","Tipo de comprobante no seleccionado");
         }
         if($vs->Util()->PrintErrors()){ return false; }
 
@@ -124,7 +124,7 @@ class Cfdi extends Comprobante
 
         if(!$serie)
         {
-            $vs->Util()->setError(10047, "error");
+            $vs->Util()->setError(10047, "error","Serie inhabilitada");
         }
 
         if($vs->Util()->PrintErrors()){ return false; }
@@ -475,6 +475,7 @@ class Cfdi extends Comprobante
         $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
 
         $response['fileName'] = $fileName;
+        $response['fileNamePreview'] = $empresa["empresaId"]."_certificados_".$rfcActivo."_facturas_xml";
         $response['root'] = $root;
         $response['xmlFile'] = $root.$fileName.".xml";
         $response['zipFile'] = $root.$fileName.".zip";
