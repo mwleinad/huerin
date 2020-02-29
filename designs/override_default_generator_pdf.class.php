@@ -33,7 +33,7 @@ class OverrideGenerator extends Main
 
 		$nufa = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 		
-		$rfcActivo = $rfc->getRfcActive();
+		$rfcActivo =$data["nodoEmisor"]["rfc"]["rfcId"];
 		$root = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/pdf/";
 		$rootFacturas = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/";
 		$rootQr = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";

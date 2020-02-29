@@ -1387,9 +1387,9 @@ class Comprobante extends Producto
 
 		$nufa = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
 
-		$rfcActivo = $this->getRfcActive();
-		$root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
-		$rootFacturas = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/";
+		$rfcActivo = $data["nodoEmisor"]["rfc"]["rfcId"];
+		$root = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
+		$rootFacturas = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/";
 
 		if(!is_dir($rootFacturas))
 		{
