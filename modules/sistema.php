@@ -112,8 +112,7 @@
 			break;
 		
 		case 'ver-pdf':
-            header('Location: '.WEB_ROOT);
-            exit;
+
             $user->allowAccess(5);
             $user->allowAccess(132);
             $user->allowAccess(134);
@@ -129,8 +128,6 @@
 			break;
 		
 		case 'descargar-pdf':
-            header('Location: '.WEB_ROOT);
-            exit;
             //verificar permisos
             $user->allowAccess(5);
             $user->allowAccess(132);
