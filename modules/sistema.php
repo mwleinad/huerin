@@ -121,7 +121,6 @@
 			$infoComp = $comprobante->GetInfoComprobante($id_comprobante);
 			//crear pdf on the fly			
 			$enlace = $comprobante->GeneratePdfOnTheFly($infoComp["empresaId"], $infoComp["rfcId"], $infoComp['serie'], $infoComp['folio']);
-			exit;
 			header('Location: '.$enlace);
 			exit;
 		
@@ -137,7 +136,6 @@
 			//crear pdf on the fly
 			//
 			$enlace = $comprobante->GeneratePdfOnTheFly($infoComp["empresaId"], $infoComp["rfcId"], $infoComp['serie'], $infoComp['folio']);
-			exit;
 			header('Location: '.$enlace);
 			exit;
 			break;
