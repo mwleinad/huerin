@@ -98,7 +98,7 @@ class XmlTransform extends Comprobante
 		    $pending_cancel = [];
 
 		$cancelado = ($fact['status'] == 0 || count($pending_cancel)>0) ? 1 : 0;
-		
+
 		$data['sucursalId'] = $fact['sucursalId'];
 		$data['tiposComprobanteId'] = $fact['tiposComprobanteId'];
 		$data['observaciones'] = $fact['observaciones'];
