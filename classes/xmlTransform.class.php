@@ -87,19 +87,18 @@ class XmlTransform extends Comprobante
 			$sql = "SELECT * FROM comprobante 
 				WHERE serie = '".$serie['serie']."' AND folio = '".$data['folio']."' and rfcId = '".$infoRfc['rfcId']."' ";
 		}
-		
+        $this->Util()->DBSelect($empresaId)->CleanQuery();
 		$this->Util()->DBSelect($empresaId)->setQuery($sql);
 		$fact = $this->Util()->DBSelect($empresaId)->GetRow();
         $cancelado = 0;
 		$this->Util()->DBSelect($empresaId)->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
 		$pending_cancel= $this->Util()->DB()->GetResult();
-		dd($pending_cancel);
+
 		if(!is_array($pending_cancel))
 		    $pending_cancel = [];
-            echo "antes".$cancelado;
-		$cancelado = ($fact['status'] == 0 || count($pending_cancel)>0) ? 1 : 0;
-        echo "despues".$cancelado;
 
+		$cancelado = ($fact['status'] == 0 || count($pending_cancel)>0) ? 1 : 0;
+		
 		$data['sucursalId'] = $fact['sucursalId'];
 		$data['tiposComprobanteId'] = $fact['tiposComprobanteId'];
 		$data['observaciones'] = $fact['observaciones'];
