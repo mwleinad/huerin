@@ -36,8 +36,9 @@ class XmlTransform extends Comprobante
             $card['regimenFiscal'] = $regimen['Regimen'];
         }//foreach
 
-        $data['nodoEmisor']['rfc'] = $card;
         $infoRfc = $this->InfoRfcByRfc2($card['rfc']);
+        $card["rfcId"] = $infoRfc['rfcId'];
+        $data['nodoEmisor']['rfc'] = $card;
 
 		//Comprobante
 		
