@@ -124,6 +124,7 @@ class DB
 		}	
 		else
 		{
+            echo "<br><br>".$this->query."<br><br>";
 			$this->sqlResult = mysql_query($this->query, $this->conn_id);
 		}	
 	}

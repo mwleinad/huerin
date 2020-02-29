@@ -78,13 +78,13 @@ class XmlTransform extends Comprobante
 		{
 			$anio = explode("-", $data["fecha"]);
 			$anio = $anio[0];
-			$sql = 'SELECT * FROM comprobante 
-				WHERE serie = "'.$serie['serie'].'" AND folio = "'.$data['folio'].'" AND YEAR(fecha) = "'.$anio.'"';
+			$sql = "SELECT * FROM comprobante 
+				WHERE serie = '".$serie['serie']."' AND folio = '".$data['folio']."' AND YEAR(fecha) = '".$anio."' ";
 		}
 		else
 		{
-			$sql = 'SELECT * FROM comprobante 
-				WHERE serie = "'.$serie['serie'].'" AND folio = "'.$data['folio'].'" and rfcId = "'.$infoRfc['rfcId'].'" ';
+			$sql = "SELECT * FROM comprobante 
+				WHERE serie = '".$serie['serie']."' AND folio = '".$data['folio']."' and rfcId = '".$infoRfc['rfcId']."' ";
 		}
 		
 		$this->Util()->DBSelect($empresaId)->setQuery($sql);
