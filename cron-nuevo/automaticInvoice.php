@@ -41,7 +41,7 @@ $firstDay =  $util->getFirstDate($current);
 if($current==$firstDay)
 {
     if(strtotime(date('H:i:s'))<strtotime('02:30:00')){
-        echo "ejecutado antes de las 02:30:00 del dia ".$firstDay.chr(13);
+        echo "ejecutado antes de las 03:30:00 del dia ".$firstDay.chr(13);
         exit;
     }
 }
@@ -53,6 +53,6 @@ $mask = DOC_ROOT.'/temp/20_B_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));
 $entry =  " inicio ". date("Y-m-d H:i:s").chr(13).chr(10);
-$invoiceService->GenerateInvoices(31);
+$invoiceService->GenerateInvoices(1556);
 $entry  .=" fin ". date("Y-m-d H:i:s").chr(13).chr(10);
 echo $entry;
