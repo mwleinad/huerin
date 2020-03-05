@@ -114,7 +114,7 @@
 	$smarty->assign("accionistas", $accionistas);
 
     //Obtenemos los facturadores
-    $emisores = $rfc->listEmisores();
+    $emisores = $rfc->listEmisores(false);
     $smarty->assign("emisores", $emisores);
 
 	//Obtenemos los sociedades
