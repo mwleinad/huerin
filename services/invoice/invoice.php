@@ -22,8 +22,14 @@ class InvoiceService extends Cfdi{
     function resetWorkflows(){
         $this->workflows=[];
     }
+    function resetData(){
+        $this->data=[];
+    }
     function resetEmisor(){
         $this->emisor=[];
+    }
+    function resetReceptor(){
+        $this->receptor=[];
     }
     function resetServiciosToConceptos(){
         $this->serviciosToConceptos=[];
@@ -47,7 +53,7 @@ class InvoiceService extends Cfdi{
         $this->procesoRealizado =  $val;
     }
     function setEmisor(){
-        $this->setClaveFacturador(trim($this->currentContract['facturador']));
+        $this->setClaveFacturador($this->currentContract['facturador']);
         $currentRfc = $this->getInfoRfcByClaveFacturador();
         if(!$currentRfc)
             return false;
@@ -59,6 +65,7 @@ class InvoiceService extends Cfdi{
         $currentRfc["rfc"] = trim(str_replace("-", "", $currentRfc["rfc"]));
         $currentRfc["rfc"] = str_replace(" ", "", $currentRfc["rfc"]);
         $this->emisor =  $currentRfc;
+        return  true;
     }
     function setReceptor(){
         $rfcReceptor = str_replace("-", "", trim($this->currentContract["rfc"]));
@@ -279,7 +286,13 @@ class InvoiceService extends Cfdi{
 
     function CreateInvoice(){
         $_SESSION["conceptos"] = [];
-        $this->setEmisor();
+        $this->isCreatedInvoice(true);
+        if(!$this->setEmisor()){
+            $this->logString .=chr(13).chr(10)." Error al generar factura para ".$this->currentContract['name']." con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
+            $this->logString .=chr(13).chr(10)."Emisor ".$this->currentContract['facturador']." no encontrado, verifique si esta activo".chr(13).chr(10);
+            return false;
+        }
+
         $this->setReceptor();
         $this->GetFilterServicesByContract();
         if(!count($this->getServiciosToConceptos()))
@@ -289,7 +302,6 @@ class InvoiceService extends Cfdi{
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
         $result = $this->Generar($this->data);
-        $this->isCreatedInvoice(true);
         if(!$result){
             $this->setProcesoRealizado(false);
             $this->logString .=chr(13).chr(10)." Error al generar factura para ".$this->currentContract['name']." con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
@@ -336,6 +348,8 @@ class InvoiceService extends Cfdi{
         $contratos =  $this->GetContracts($id);
         foreach($contratos as $contrato){
             $this->resetEmisor();
+            $this->resetData();
+            $this->resetReceptor();
             $this->setMonth13(false);
             $this->setProcesoRealizado(true);
             $this->resetLogString();

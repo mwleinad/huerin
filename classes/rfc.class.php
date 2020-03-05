@@ -46,7 +46,7 @@ class Rfc extends Empresa
 	}//getRfcActive
 
     function getInfoRfcByClaveFacturador(){
-        $sqlQuery = "SELECT * FROM rfc WHERE activo = 'si' AND claveFacturador = '".$this->getClaveFacturador()."' ";
+        $sqlQuery = "SELECT * FROM rfc WHERE activo = 'si' AND claveFacturador = '".trim($this->getClaveFacturador())."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
         return $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
     }
@@ -61,8 +61,12 @@ class Rfc extends Empresa
 		$rfc["dataCertificate"]  = $this->getDataInfoCertificate();
 		return $rfc;
 	}
-	public function listEmisores(){
-        $this->Util()->DB()->setQuery("SELECT * FROM rfc  where activo='si' ORDER BY razonSocial ASC ");
+	public function listEmisores($onlyActive =  true ){
+	    $ftr = "";
+	    if($onlyActive)
+	        $ftr .=" and activo='si' ";
+
+        $this->Util()->DB()->setQuery("SELECT * FROM rfc  where 1 $ftr ORDER BY razonSocial ASC ");
         return $this->Util()->DB()->GetResult();
     }
     public function EnumerateRfc()
