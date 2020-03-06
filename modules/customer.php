@@ -32,9 +32,11 @@
 		</script>
 <?php
 	}
+    if($User['level']==1){
+        $result = $customer->SuggestCustomerCatalogFiltrado("","subordinados",0,$_GET["tipo"],false);
+        $smarty->assign("customers", $result);
+    }
 
-    //$result = $customer->SuggestCustomerCatalog("", $type = "subordinado", $customerId = 0, $_GET["tipo"]);
-    //$smarty->assign("customers", $result);
 	
 	if(isset($_SESSION["tipoMod"]))
 	    unset($_SESSION["tipoMod"]);
