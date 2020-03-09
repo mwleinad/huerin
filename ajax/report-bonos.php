@@ -56,8 +56,8 @@ switch($_POST["type"]) {
             case 'detallado':
                 $edoResultado->generateDetailedReport($_POST);
             break;
-            case 'simple':
-                $edoResultado->generateSimpleReport($_POST);
+            default:
+                $edoResultado->generateEdoResult($_POST);
             break;
         }
         $nameFile = $edoResultado->getNameReport();
