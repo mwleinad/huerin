@@ -1084,12 +1084,9 @@ class ReporteBonos extends Main
         $utilidades = [];
         $control = [];
         foreach($gerentes as $key=>$value){
-
-            $stackSubordinados = [];
-            $detalleSubordinados = [];
             $ftr["departamentoId"] = $value["departamentoId"];
             $ftr["responsableCuenta"] = $value["personalId"];
-            $ftr['deep'] = 1;
+            $ftr['deep'] = isset($ftr['deep']);
 
             $subordinados = $personal->GetIdResponsablesSubordinados($ftr);
             $totalSueldoIncluidoSubordinados  = $personal->getTotalSalarioByMultipleId($subordinados);
@@ -1115,8 +1112,6 @@ class ReporteBonos extends Main
                 unset($gerentes[$key]);
                 continue;
             }
-            $totalDevengadoGerente = 0;
-            $totalTrabajadoGerente = 0;
             foreach($servicios as $ks=>$serv) {
                 $temp = [];
                 $isParcial = false;
