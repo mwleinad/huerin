@@ -257,6 +257,7 @@ class InstanciaServicio extends  Servicio
         return $new;
     }
     function getBonoInstanciaWhitInvoice($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false,$monthBase=[]){
+        global $comprobante;
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
@@ -297,7 +298,6 @@ class InstanciaServicio extends  Servicio
         $data = $this->Util()->DB()->GetResult();
         $totalAcompletado = 0;
         $totalDevengado = 0;
-        //obtener costo desde concepto de factura, cadena,
         if(empty($data))
           return $newArray;
 
@@ -325,6 +325,12 @@ class InstanciaServicio extends  Servicio
                         $costo = $value['costo'];
               }
             }*/
+            $value['cobrado'] = 0;
+            if($value['factura']=='Si'){
+                $comp =  $comprobante->GetInfoComprobante($value['comprobanteId']);
+                if($comp['saldo']<=0.01)
+                    $value['cobrado'] = $value['costo'];
+            }
             $value['costo'] = $costo;
             //sumar total de lo trabajado
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
@@ -346,8 +352,9 @@ class InstanciaServicio extends  Servicio
 
         return $newArray;
     }
-    function findCostoService($mes,$year,$servicioId,$compId=0){
-        global $servicio,$comprobante;
+    function findCostoService($mes,$year,$servicioId,$compId=0)
+    {
+        global $servicio, $comprobante;
         $servicio->setServicioId($servicioId);
         $infoServicio = $servicio->Info();
         $nombreServicio = $infoServicio['nombreServicio'];
@@ -370,7 +377,7 @@ class InstanciaServicio extends  Servicio
                 $data = $comprobante->getDataByXml("SIGN_".$factura['xml']);
                 foreach($data['conceptos'] as $con){
                     $description = (string)$con['Descripcion'];
-                    if(stripos($description,$nombreServicio)!==FALSE){
+                    if(stripos($description,$nombreServicio)!==false){
                         $costo = (double)$con['ValorUnitario'];
                         break;
                     }
