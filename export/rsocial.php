@@ -101,7 +101,7 @@ foreach($clientes as $con){
 		        	<td style=\"text-align:left;mso-number-format:'@';\">".$con['email']."</td>
     			    <td style=\"text-align:center;mso-number-format:'@';\">".$con['password']."</td>
 	    		    <td style=\"text-align:center;mso-number-format:'@';\">".count($con['contracts'])."</td>
-		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d/m/Y',strtotime($con['fechaAlta']))."</td>
+		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d/m/Y',strtotime($con['dateAlta']))."</td>
 			        <td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['observacion'])."</td>
 			        <td style=\"text-align:center;mso-number-format:'@';\">".$activo."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['name'])."</td>
