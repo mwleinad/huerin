@@ -35,8 +35,7 @@ class XmlTransform extends Comprobante
         foreach($xml->xpath('//cfdi:Comprobante//cfdi:Emisor//cfdi:RegimenFiscal') as $regimen){
             $card['regimenFiscal'] = $regimen['Regimen'];
         }//foreach
-
-        $infoRfc = $this->InfoRfcByRfc2($card['rfc']);
+        $infoRfc = $this->InfoRfcByRfc2($card["rfc"]);
         $card["rfcId"] = $infoRfc['rfcId'];
         $data['nodoEmisor']['rfc'] = $card;
 
@@ -91,15 +90,14 @@ class XmlTransform extends Comprobante
 		$this->Util()->DBSelect($empresaId)->setQuery($sql);
 		$fact = $this->Util()->DBSelect($empresaId)->GetRow();
         $cancelado = 0;
-        echo $this->Util()->DBSelect($empresaId)->getQuery();
+
 		$this->Util()->DBSelect($empresaId)->setQuery("SELECT * FROM pending_cfdi_cancel WHERE cfdi_id ='".$fact['comprobanteId']."' ");
-        echo $this->Util()->DBSelect($empresaId)->getQuery();
-		$pending_cancel= $this->Util()->DB()->GetResult();
+		$pending_cancel= $this->Util()->DBSelect($empresaId)->GetResult();
 
 		if(!is_array($pending_cancel))
 		    $pending_cancel = [];
 
-		$cancelado = ($fact['status'] == 0 || count($pending_cancel)>0) ? 1 : 0;
+		$cancelado = ($fact['status'] == 0 || count($pending_cancel) > 0) ? 1 : 0;
 
 		$data['sucursalId'] = $fact['sucursalId'];
 		$data['tiposComprobanteId'] = $fact['tiposComprobanteId'];
