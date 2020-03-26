@@ -83,7 +83,7 @@ class SendMail extends Main
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
                 $mail->SMTPDebug=1;
-                $mail->Timeout=300;
+                $mail->Timeout=3600;
                 if($attachment != "")
                 {
                     $mail->AddAttachment($attachment, $fileName);
