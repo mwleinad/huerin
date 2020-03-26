@@ -82,7 +82,7 @@ class SendMail extends Main
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
-                $mail->SMTPDebug=3;
+                $mail->SMTPDebug=2;
                 $mail->Timeout=3600;
                 if($attachment != "")
                 {
