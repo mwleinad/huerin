@@ -23,7 +23,7 @@ class SendMail extends Main
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
                 $mail->Timeout=300;
-                $mail->SMTPDebug = 3;
+                $mail->SMTPDebug = 0;
                 if($attachment != "")
                 {
                     $mail->AddAttachment($attachment, $fileName);
@@ -82,7 +82,7 @@ class SendMail extends Main
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
-                $mail->SMTPDebug=2;
+                $mail->SMTPDebug=0;
                 $mail->Timeout=3600;
                 if($attachment != "")
                 {
@@ -95,10 +95,8 @@ class SendMail extends Main
                 }
                 $mail->Send();
             }catch(phpmailerException $e){
-                dd($e);
                 return false;
             }catch(Exception $e){
-                dd($e);
                 return false;
             }
 
