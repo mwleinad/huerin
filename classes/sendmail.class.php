@@ -95,8 +95,10 @@ class SendMail extends Main
                 }
                 $mail->Send();
             }catch(phpmailerException $e){
+                dd($e);
                 return false;
             }catch(Exception $e){
+                dd($e);
                 return false;
             }
 
