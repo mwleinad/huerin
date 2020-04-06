@@ -1042,6 +1042,18 @@ class Contract extends Main
         if (strlen($this->telefonoRepresentanteLegal) > 0)
             $contactos .= "telefonoRepresentanteLegal = '" . $this->telefonoRepresentanteLegal . "',";
 
+        if (isset($_POST['claveCiec']))
+            $contactos .= "claveCiec = '" . $this->claveCiec. "',";
+        if (isset($_POST['claveFiel']))
+            $contactos .= "claveFiel = '" . $this->claveFiel. "',";
+        if (isset($_POST['claveIdse']))
+            $contactos .= "claveIdse = '" . $this->claveIdse. "',";
+        if (isset($_POST['claveSip']))
+            $contactos .= "claveSip = '" . $this->claveSip. "',";
+        if (isset($_POST['claveIsn']))
+            $contactos .= "claveIsn = '" . $this->claveIsn. "',";
+
+
         //Actualizamos
         $sql = "UPDATE
 			  contract
@@ -1055,10 +1067,6 @@ class Contract extends Main
 			  `name` = '" . $this->name . "',
 			  direccionComercial = '" . $this->direccionComercial . "',
               $contactos
-			  claveCiec = '" . $this->claveCiec . "',
-			  claveFiel = '" . $this->claveFiel . "',
-			  claveIdse = '" . $this->claveIdse . "',
-			  claveSip = '" . $this->claveSip . "',
 			  noExtComercial = '" . $this->noExtComercial . "',
 			  noIntComercial = '" . $this->noIntComercial . "',
 			  coloniaComercial = '" . $this->coloniaComercial . "',
@@ -1081,8 +1089,7 @@ class Contract extends Main
 			  auxiliarCuenta = '" . $this->auxiliarCuenta . "',
 			  facturador = '" . $this->facturador . "',
 			  lastModified = '" . date("Y-m-d H:i:s") . "',
-			  modifiedBy = '" . $_SESSION["User"]["username"] . "',
-			  claveIsn = '" . $this->claveIsn . "'
+			  modifiedBy = '" . $_SESSION["User"]["username"] . "'
 			  WHERE
 			  contractId = '" . $this->contractId . "'";
         $this->Util()->DB()->setQuery($sql);
