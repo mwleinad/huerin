@@ -24,7 +24,7 @@
                     {$item.totalContracts}
                 {/if}
                 {if $item.contracts|count > 0 && (in_array(62,$permissions)|| $User.isRoot)}
-                    <a href="{$WEB_ROOT}/contract/id/{$item.customerId}">
+                    <a href="{$WEB_ROOT}/contract/id/{$item.customerId}" target="_blank">
                     <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Razones Sociales"/>
                     </a>
                 {/if}

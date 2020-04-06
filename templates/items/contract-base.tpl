@@ -60,7 +60,7 @@
                 {/if}
             {/if}
             {if (in_array(64,$permissions)|| $User.isRoot) && $item.activo == 'Si'}
-                <a href="{$WEB_ROOT}/contract-edit/contId/{$item.contractId}">
+                <a href="{$WEB_ROOT}/contract-edit/contId/{$item.contractId}" target="_blank">
                 <img src="{$WEB_ROOT}/images/icons/edit.gif" class="spanEdit" id="{$item.contractId}" title="Editar" border="0"/></a>
             {/if}
             {if (in_array(219,$permissions)|| $User.isRoot) && $item.activo == 'Si'}
