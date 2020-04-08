@@ -133,7 +133,7 @@
  <table cellpadding="0" cellspacing="0" class="tableFullWidth">
         <thead>
         <tr>
-            <th colspan="6" class="titleCenter">Servicios puestos en status de baja</th>
+            <th colspan="6" class="titleCenter">Servicios afectados</th>
         </tr>
         <tr>
             <th>Servicio</th>
@@ -157,6 +157,70 @@
             {foreachelse}
             <tr>
                 <td colspan="6" class="textCenter">Ningun servicio afectado</td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+{/if}
+{if $contractsAfectados|count>0}
+    <table cellpadding="0" cellspacing="0" class="tableFullWidth">
+        <thead>
+        <tr>
+            <th colspan="4" class="titleCenter">Contratos afectados</th>
+        </tr>
+        <tr>
+            <th>Nombre</th>
+            <th>Fecha de alta / reactivacion</th>
+            <th>Fecha de baja</th>
+            <th>Activo</th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach from=$contractsAfectados key=conKey item=con}
+            <tr>
+                <td>{$con.name}</td>
+                <td>{$con.fechaAlta}</td>
+                <td>{$con.fechaBaja}</td>
+                <td>{$con.activo}</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table cellpadding="0" cellspacing="0" class="tableFullWidth">
+                        <thead>
+                        <tr>
+                            <th colspan="6" class="titleCenter">Servicios afectados</th>
+                        </tr>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Inicio operacion</th>
+                            <th>Inicio facturacion</th>
+                            <th>Costo</th>
+                            <th>ultimo workflow</th>
+                            <th>Status actual</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach from=$con.serviciosAfectados key=keyServ item=serv}
+                            <tr>
+                                <td>{$serv.nombreServicio}</td>
+                                <td>{$serv.inicioOperaciones}</td>
+                                <td>{$serv.inicioFactura}</td>
+                                <td>{$serv.costo|number_format:2:'.':','}</td>
+                                <td>{if $serv.status eq "bajaParcial"}{$serv.lastDateWorkflow}{else}N/A{/if}</td>
+                                <td>{if $serv.status eq "readonly"}Activo/Solo lectura{elseif $serv.status eq "bajaParcial"}Baja temporal{else}{$serv.status}{/if}</td>
+                            </tr>
+                            {foreachelse}
+                            <tr>
+                                <td colspan="6" class="textCenter">Ningun servicio afectado</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {foreachelse}
+            <tr>
+                <td colspan="4" class="textCenter">Ningun contrato afectado</td>
             </tr>
         {/foreach}
         </tbody>

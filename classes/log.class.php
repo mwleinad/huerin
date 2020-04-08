@@ -10,6 +10,7 @@ class Log extends Util
 	private $oldValue;
 	private $newValue;
 	private $serviciosAfectados = [];
+	private $contractsAfectados = [];
 	
 	public function setPersonalId($value){
 		$this->Util()->ValidateInteger($value);
@@ -41,6 +42,9 @@ class Log extends Util
 	}
     public function setServiciosAfectados($value){
         $this->serviciosAfectados = $value;
+    }
+    public function setContractsAfectados($value){
+        $this->contractsAfectados = $value;
     }
 	public function SaveOnly(){
 	    global $personal;
@@ -266,6 +270,9 @@ class Log extends Util
                     $this->Util()->Smarty()->assign("changes",$changes);
                     if(count($this->serviciosAfectados)>0)
                         $this->Util()->Smarty()->assign("serviciosAfectados",$this->serviciosAfectados);
+
+                    if(count($this->contractsAfectados)>0)
+                        $this->Util()->Smarty()->assign("contractsAfectados",$this->contractsAfectados);
 
                     $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-log-general.tpl");
                     $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
@@ -748,6 +755,28 @@ class Log extends Util
             '".$currentUser['personalId']."',
             '".$currentUser['name']."'
         );");
+        $this->Util()->DB()->InsertData();
+    }
+    function saveHistoryCustomer($id,$oldData,$newData){
+        global $personal;
+        $currentUser= $personal->getCurrentUser();
+        $this->Util()->DB()->setQuery("
+			INSERT INTO	customerChanges
+			(
+				`customerId`,
+				`status`,
+				`oldData`,
+				`newData`,
+				`personalId`
+		    )
+		     VALUES
+            (
+                '" . $id. "',
+                '" . $newData["active"] . "',
+                '" . urlencode(serialize($oldData)) . "',
+                '" . urlencode(serialize($newData)) . "',
+                '" . $currentUser["personalId"] . "'
+            );");
         $this->Util()->DB()->InsertData();
     }
 }//Log

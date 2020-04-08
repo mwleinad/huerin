@@ -833,7 +833,7 @@ class Customer extends Main
   }
   public function Delete()
   {
-    global $User, $log;
+    global $User, $log, $contract;
     if ($this->Util()->PrintErrors()) {
       return false;
     }
@@ -857,40 +857,27 @@ class Customer extends Main
       WHERE
         customerId = '" . $this->customerId . "'");
     $this->Util()->DB()->UpdateData();
+    // dar de baja a los contratos.
+
 
     $sql = "SELECT * FROM customer WHERE customerId = '" . $this->customerId . "'";
     $this->Util()->DB()->setQuery($sql);
     $newData = $this->Util()->DB()->GetRow();
 
+    $contractsAfectados = $active
+       ? $contract->reactiveContractByCustomer($this->customerId)
+       : $contract->downContractByCustomer($this->customerId);
+    $log->setContractsAfectados($contractsAfectados);
     //Guardamos  y enviamos el Log
-    $log->setPersonalId($User['userId']);
     $log->setFecha(date('Y-m-d H:i:s'));
     $log->setTabla('customer');
     $log->setTablaId($this->customerId);
     $log->setAction($action);
-    $log->setOldValue('');
+    $log->setOldValue(serialize($info));
     $log->setNewValue(serialize($newData));
     $log->Save();
     //actualizar historial
-    $this->Util()->DB()->setQuery("
-			INSERT INTO
-				customerChanges
-			(
-				`customerId`,
-				`status`,
-				`oldData`,
-				`newData`,
-				`personalId`
-		)
-		VALUES
-		(
-				'" . $this->customerId . "',
-				'" . $newData["active"] . "',
-				'" . urlencode(serialize($info)) . "',
-				'" . urlencode(serialize($newData)) . "',
-				'" . $User["userId"] . "'
-		);");
-    $this->Util()->DB()->InsertData();
+    $log->saveHistoryCustomer($this->customerId, $info, $newData);
 
     $this->Util()->setError(10047, "complete", $complete);
     $this->Util()->PrintErrors();
