@@ -1176,12 +1176,11 @@ class Contract extends Main
 
         //guardar historial de baja de razon social y dar de baja los servicios con status = activo,readonly o bajaParcial
         $log->saveHistoryContract($this->contractId, $newData["activo"], $info, $newData);
-        if ($active == 'No') {
-            $serviciosAfectados = $servicio->downServicesByContract($this->contractId);
-            $log->setServiciosAfectados($serviciosAfectados);
-        }
+        $serviciosAfectados = $active == 'No'
+            ? $servicio->downServicesByContract($this->contractId)
+            : $servicio->reactiveServicesByContract($this->contractId);
+        $log->setServiciosAfectados($serviciosAfectados);
         //Guardar log y enviar por correo
-        $log->setPersonalId($User['userId']);
         $log->setFecha(date('Y-m-d H:i:s'));
         $log->setTabla('contract');
         $log->setTablaId($this->contractId);
@@ -1224,20 +1223,6 @@ class Contract extends Main
             foreach ($responsables as $responsable) {
                 $cleanedUp[] = $responsable;
             }
-
-            /*$sendmail = new SendMail();
-            foreach($responsables as $key => $value)
-            {
-                $personal->setPersonalId($value);
-                $userInfo = $personal->Info();
-                $to = $userInfo["email"];
-                //$to = "comprobantefiscal@braunhuerin.com.mx";
-                $toName = $userInfo["name"];
-                $body = $complete.".Razon social: ".$info["name"]." fue hecha por ".$_SESSION["User"]["username"];
-                $subject = $body;
-                $sendmail->Prepare($subject, $body, $to, $toName, $destino, "", "", "");
-                //	break;
-            }*/
         }
         $cleanedUp = array_unique($cleanedUp);
         return $cleanedUp;
@@ -1837,6 +1822,89 @@ class Contract extends Main
         $this->Util()->DB()->UpdateData();
         $this->Util()->setError(0, "complete", "Contrato transferido correctamente.");
         return true;
+    }
+    /*
+     * @
+     */
+    public function downContractByCustomer($id){
+        global $log, $servicio;
+        $contractsAfectados = [];
+        $sql ="select *  from contract where customerId='$id' and activo = 'Si' ";
+        $this->Util()->DB()->setQuery($sql);
+        $contracts = $this->Util()->DB()->GetResult();
+        foreach($contracts as $ky => $con){
+            $currentContract = [];
+            $fechaBaja = date('Y-m-d H:i:s');
+            $newData = $con;
+            $newData['fechaBaja'] = $fechaBaja;
+            $newData['activo'] = 'No';
+
+            $this->Util()->DB()->setQuery("
+                UPDATE contract
+                SET activo = 'No',
+                fechaBaja = '$fechaBaja'
+                WHERE contractId = '" . $con['contractId']. "'");
+            $del = $this->Util()->DB()->UpdateData();
+            if($del > 0) {
+                $log->saveHistoryContract($con['contractId'], 'No', $con, $newData);
+                //Guardar log y enviar por correo
+                $log->setFecha($fechaBaja);
+                $log->setTabla('contract');
+                $log->setTablaId($con['contractId']);
+                $log->setAction('Baja');
+                $log->setOldValue(serialize($con));
+                $log->setNewValue(serialize($newData));
+                $log->SaveOnly();
+
+                $serviciosAfectados = $servicio->downServicesByContract($con['contractId']);
+                $currentContract = $newData;
+                $currentContract['serviciosAfectados'] = $serviciosAfectados;
+                array_push($contractsAfectados,$currentContract);
+            }
+        }
+        return $contractsAfectados;
+    }
+    /*
+    * @
+    */
+    public function reactiveContractByCustomer($id){
+        global $log, $servicio;
+        $contractsAfectados = [];
+        $sql ="select *  from contract where customerId='$id' and activo = 'No' ";
+        $this->Util()->DB()->setQuery($sql);
+        $contracts = $this->Util()->DB()->GetResult();
+        foreach($contracts as $ky => $con){
+            $currentContract = [];
+            $con['fechaBaja'] = null;
+            $fechaAlta = date('Y-m-d H:i:s');
+            $newData = $con;
+            $newData['fechaAlta'] = $fechaAlta;
+            $newData['activo'] = 'Si';
+
+            $this->Util()->DB()->setQuery("
+                UPDATE contract
+                SET activo = 'Si',
+                fechaBaja = null,
+                fechaAlta ='$fechaAlta'   
+                WHERE contractId = '" . $con['contractId']. "'");
+            $del = $this->Util()->DB()->UpdateData();
+            if($del > 0) {
+                $log->saveHistoryContract($con['contractId'], 'Si', $con, $newData);
+                //Guardar log y enviar por correo
+                $log->setFecha($fechaAlta);
+                $log->setTabla('contract');
+                $log->setTablaId($con['contractId']);
+                $log->setAction('Reactivacion');
+                $log->setOldValue(serialize($con));
+                $log->setNewValue(serialize($newData));
+                $log->SaveOnly();
+                $serviciosAfectados = $servicio->reactiveServicesByContract($con['contractId']);
+                $currentContract = $newData;
+                $currentContract['serviciosAfectados'] = $serviciosAfectados;
+                array_push($contractsAfectados,$currentContract);
+            }
+        }
+        return $contractsAfectados;
     }
 }
 ?>

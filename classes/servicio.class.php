@@ -1553,4 +1553,39 @@ class Servicio extends Contract
         }
         return $serviciosAfectados;
     }
+    /*
+     * Funcion
+     * Reactivar servicios de un contrato de status baja a status readonly
+     * @conId es el identificador del contrato
+     */
+    public function reactiveServicesByContract($conId){
+        global $log;
+        $serviciosAfectados = [];
+        $sql ="select * from servicio where contractId='$conId' and status IN('baja')";
+        $this->Util()->DB()->setQuery($sql);
+        $servicios = $this->Util()->DB()->GetResult();
+        foreach ($servicios as $key=>$servicio) {
+            $this->Util()->DB()->setQuery("update servicio set status='readonly' where servicioId ='" . $servicio["servicioId"] . "' ");
+            $up = $this->Util()->DB()->UpdateData();
+            if ($up > 0) {
+                $log->saveHistoryChangesServicios($servicio["servicioId"], $servicio['inicioFactura'], "readonly", $servicio["costo"], $_SESSION["User"]["personalId"], $servicio["inicioOperaciones"], "", $this->inicioOperaciones["lastDateWorkflow"]);
+
+                $this->Util()->DB()->setQuery("select a.*,b.nombreServicio,b.periodicidad from servicio a 
+                                                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId where servicioId ='" . $servicio["servicioId"] . "' ");
+                $afterDetail = $this->Util()->DB()->GetRow();
+                $this->Util()->DB()->setQuery("select * from servicio where servicioId ='" . $servicio["servicioId"] . "' ");
+                $after = $this->Util()->DB()->GetRow();
+
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla('servicio');
+                $log->setTablaId($servicio["servicioId"]);
+                $log->setAction('readonly');
+                $log->setOldValue(serialize($servicio));
+                $log->setNewValue(serialize($after));
+                $log->SaveOnly();
+                array_push($serviciosAfectados,$afterDetail);
+            }
+        }
+        return $serviciosAfectados;
+    }
 }
