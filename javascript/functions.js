@@ -1,13 +1,13 @@
 var DOC_ROOT = "../";
-var DOC_ROOT_TRUE = "../";
-var DOC_ROOT_SECTION = "../../";
-
 Event.observe(window, 'load', function() {
 	if($('login_0'))
 		Event.observe($('login_0'), "click", LoginCheck);
 
 	if($('addNotice'))
 		Event.observe($('addNotice'), "click", AddNoticePopup);
+});
+jQ(document).ready(function () {
+	setInterval(check_session, 10000);
 });
 
 function LoginCheck()
@@ -506,3 +506,17 @@ jQ(document).on('click','.showPayment',function (e) {
    console.log('.'+clase+'-'+id);
    jQ('.'+clase+'-'+id).toggle();
 });
+function check_session()
+{
+	jQ.ajax({
+		url:WEB_ROOT+"/ajax/check_session.php",
+		method:"POST",
+		success:function(data)
+		{
+			if(data == 'fail')
+			{
+				window.location.href = WEB_ROOT+"/login";
+			}
+		}
+	})
+}

@@ -3,24 +3,20 @@
 //language
 if(!isset($_SESSION['lang']))
 {
-//	include_once(DOC_ROOT.'/properties/language.es.php');
 	include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 elseif($_SESSION['lang'] == 'es')
 {
-//	include_once(DOC_ROOT.'/properties/language.es.php');
 	include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 else
 {
-//	include_once(DOC_ROOT.'/properties/language.en.php');
 	include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 
 
 require 'vendor/autoload.php';
 
-//include_once(DOC_ROOT.'/properties/config.php');
 require(DOC_ROOT.'/libs/Smarty.class.php');
 require(DOC_ROOT.'/libs/nusoap.php');
 include_once(DOC_ROOT."/libs/qr/qrlib.php");

@@ -2,7 +2,7 @@
 <thead>
     <tr rowspan="10">
 		<th colspan="5" class="divInside" align="center">
-               REPORTE DE  FACTURAS CANCELADAS DE BHSC CONTADORES SC CORRESPONDIENTE AL MES DE {$mes|upper} DEL {$anio|upper}
+               REPORTE DE  FACTURAS CANCELADAS DE {$razon|upper} CORRESPONDIENTE AL MES DE {$mes|upper} DEL {$anio|upper}
 		</th>
 	</tr>
 	<tr>
