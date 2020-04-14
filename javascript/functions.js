@@ -7,7 +7,7 @@ Event.observe(window, 'load', function() {
 		Event.observe($('addNotice'), "click", AddNoticePopup);
 });
 jQ(document).ready(function () {
-	setInterval(check_session, 10000);
+	setInterval(check_session, 60000);
 });
 
 function LoginCheck()
