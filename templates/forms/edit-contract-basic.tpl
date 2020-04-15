@@ -192,13 +192,13 @@
 
 {foreach from=$departamentos item=depto}
   {assign var="deps" value=[]}
-  {if $depto.departamento eq 'Administracion'}
+  {if $depto.departamentoId eq 21}
     {append var="deps"  value=22 index=$depto.departamentoId}
   {else}
-    {if $depto.departamento eq 'IMSS'}
+    {if $depto.departamentoId eq 24}
        {append var="deps"  value=8 index=8}
     {/if}    
-    {if $depto.departamento eq 'Nominas'}
+    {if $depto.departamentoId eq 8}
         {append var="deps"  value=24 index=24}
     {/if}  
     {append var="deps"  value=$depto.departamentoId index=$depto.departamentoId}  
