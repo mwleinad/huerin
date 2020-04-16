@@ -177,7 +177,7 @@
         </td>
 	</tr>
     <tr>
-		<td align="left" width="40%" class="tdPad">* Responsable contabilidad:</td>
+		<td align="left" width="40%" class="tdPad">* Responsable contabilidad e impuestos:</td>
 		<td align="left" class="tdPad">
           <select name="responsableCuenta" id="responsableCuenta" class="smallInput medium">
           <option value="">Seleccionar.......</option>
@@ -192,18 +192,7 @@
 
 {foreach from=$departamentos item=depto}
   {assign var="deps" value=[]}
-  {if $depto.departamentoId eq 21}
-    {append var="deps"  value=22 index=$depto.departamentoId}
-  {else}
-    {if $depto.departamentoId eq 24}
-       {append var="deps"  value=8 index=8}
-    {/if}    
-    {if $depto.departamentoId eq 8}
-        {append var="deps"  value=24 index=24}
-    {/if}  
-    {append var="deps"  value=$depto.departamentoId index=$depto.departamentoId}  
-  {/if}
-  
+  {append var="deps"  value=$depto.departamentoId index=$depto.departamentoId}
   {if $depto.departamentoId!=1}
   <tr>
     <td align="left" width="40%" class="tdPad">* Responsable {$depto.departamento}:</td>

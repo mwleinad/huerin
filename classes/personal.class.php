@@ -243,18 +243,6 @@ class Personal extends Main
         $result = $this->SubordinadosDetailsAddPass();
         return $result;
     }
-	
-	function EnumerateById($ids)
-	{
-		$sql = "SELECT
-						*
-					FROM
-						personal WHERE personalId IN (".$ids.")";
-		$this->Util()->DB()->setQuery($sql);				
-		$result = $this->Util()->DB()->GetResult();
-		return $result;		
-	}
-
 	public function EnumerateAll()
 	{
 		$sql = "SELECT
