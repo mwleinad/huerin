@@ -1217,7 +1217,7 @@ class Customer extends Main
                    INNER JOIN personal ON contractPermiso.personalId = personal.personalId
                    INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
                    INNER JOIN regimen ON contract.regimenId = regimen.regimenId
-                   INNER JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                   LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
                    WHERE 1 $ftrSubquery  GROUP BY contract.contractId 
              ) a 
              INNER JOIN  customer b ON a.customerId = b.customerId
