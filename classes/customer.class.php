@@ -1147,78 +1147,101 @@ class Customer extends Main
   }
   public function SuggestCustomerRazon($filter = [])
   {
-    global $User, $rol, $personal, $filtro;
-    $fltSearch = "";
-    $fltContract = "";
+    global $User, $personal, $filtro, $departamentos;
+    $ftrCustomer = "";
+    $ftrContract = "";
+    $ftrSubquery = "";
+
     switch ($filter['tipos']) {
       case 'temporal':
       case 'activos':
-        $fltSearch .= " and a.active='1'  and b.activo='Si' ";
-        $fltContract .= " and ax.activo='Si' ";
+        $ftrCustomer .= " and b.active = '1' ";
+        $ftrContract .= " and a.activo = 'Si' ";
         break;
       case 'inactivos':
-        $fltSearch .= " and a.active='0' and b.activo='No' ";
-        $fltContract .= " and ax.activo='No' ";
-        break;
-      default:
-        $fltSearch .= "";
-        $fltContract .= "";
+          $ftrCustomer .= " and b.active = '0' ";
+          $ftrContract .= " and a.activo = 'No' ";
         break;
     }
-    if ($filter['cliente'] > 0)
-      $fltSearch .= " and a.customerId='" . $filter['cliente'] . "' ";
-    switch ($filter['factura13']) {
-      case 'si':
-        $fltSearch .= " and a.noFactura13='No' ";
-        break;
-      case 'no':
-        $fltSearch .= " and a.noFactura13='Si' ";
-        break;
-      default:
-        break;
-    }
+    $ftrCustomer .= $filter['cliente'] ? " and b.customerId = '". $filter['cliente'] ."' " : "";
+    $ftrCustomer .= $filter['factura13'] === 'si'
+                    ? " and b.noFactura13 = 'No' "
+                    : $filter['noFactura13'] === 'no' ? " and b.noFactura13 = 'Si' " : "";
 
-    //comprobar rol si es limitado se usa query diferente
-    $rol->setRolId($User['roleId']);
-    $ilimitado = $rol->ValidatePrivilegiosRol(array('supervisor', 'contador', 'auxiliar'), array('Juridico RRHH','Subgerente'));
+     $allowAccessAnyContract = $this->accessAnyContract();
+     if($allowAccessAnyContract === false)
+         return [];
 
-    if (!$ilimitado) {
-      $str = "select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta as dateAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
-               inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(" . implode(',', $filter['encargados']) . ") group by ax.contractId) as b
-               on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
-              ";
-    } else {
-      //si el rol es ilimitado  comprobar que en el array de encargados no este su id, si esta se usa el query que obtiene todos los contratos, si no esta entonces esta buscando de otra persona
-      if ($filter["selectedResp"]) {
-       $str = "select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta as dateAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
-               inner join (select ax.* from contract ax inner join contractPermiso bx on ax.contractId=bx.contractId  $fltContract where bx.personalId in(" . implode(',', $filter['encargados']) . ") group by ax.contractId) as b
-               on a.customerId=b.customerId where 1 $fltSearch   order by a.nameContact asc, b.name asc 
-              ";
-      } else {
-          $str = "select a.customerId as clienteId,a.nameContact,a.active,a.observacion,a.fechaAlta as dateAlta,a.email,a.phone,a.password,a.noFactura13,b.* from customer a 
-               left join (select ax.* from contract ax left join contractPermiso bx on ax.contractId=bx.contractId and bx.personalId in(" . implode(',', $filter['encargados']) . ")  where 1 $fltContract group by ax.contractId) as b
-               on a.customerId=b.customerId where 1 $fltSearch  order by a.nameContact asc, b.name asc  
-              ";
-      }
-    }
-    $this->Util()->DB()->setQuery($str);
+     $idImplode =  implode(',',  $filter['encargados']);
+     $ftrSubquery .= $allowAccessAnyContract === '0' || $filter['selectedResp']
+         ? " and contractPermiso.personalId IN ($idImplode) "
+         : "";
+
+     $sql = "SELECT  b.customerId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
+             b.fechaAlta as fechaAltaCustomer,b.observacion,b.active, a.*
+             FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
+                  contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,
+                  contract.address, contract.noExtAddress, contract.coloniaAddress, contract.municipioAddress, 
+                  contract.estadoAddress, contract.paisAddress, contract.cpAddress, contract.nameContactoAdministrativo,
+                  contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.nameContactoContabilidad,
+                  contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
+                  contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
+                  contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
+                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,
+                   CONCAT(
+                       '[',
+                        GROUP_CONCAT(
+                            CONCAT(
+                                '{\"departamentoId',
+                                '\":\"',
+                                contractPermiso.departamentoId,
+                                '\",\"',
+                                'personalId',
+                                '\":\"',
+                                contractPermiso.personalId,
+                                '\",\"',
+                                'departamento',
+                                '\":\"',
+                                departamentos.departamento,
+                                '\",\"',
+                                'name',
+                                '\":\"',
+                                personal.name,
+                                '\"}'
+                            )
+                        ),
+                      ']'      
+                   )  as encargados
+                   FROM contract 
+                   INNER JOIN contractPermiso ON contract.contractId = contractPermiso.contractId
+                   INNER JOIN personal ON contractPermiso.personalId = personal.personalId
+                   INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
+                   INNER JOIN regimen ON contract.regimenId = regimen.regimenId
+                   INNER JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                   WHERE 1 $ftrSubquery  GROUP BY contract.contractId 
+             ) a 
+             INNER JOIN  customer b ON a.customerId = b.customerId
+             WHERE 1 $ftrCustomer $ftrContract order by b.nameContact ASC, a.name ASC";
+
+    $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
-    //$result ya viene filtrado por encargados y por los roles que son ilimitados
-    $creport = new ContractRep();
-    foreach ($result as $key => $val) {
-      $allContracts = $this->GetRazonesSociales($val["customerId"]);
-      $result[$key]["contracts"] =  $allContracts;
-      $nameEncargados = $creport->encargadosArea($val['contractId']);
-      foreach ($nameEncargados as $var) {
-        $result[$key]['resp' . ucfirst(strtolower(str_replace(" ", "", $var['departamento'])))] = $var['personalId'];
-        $result[$key]['name' . ucfirst(strtolower(str_replace(" ", "", $var['departamento'])))] = $var['name'];
-      }
-      //el responsable de contabilidad siempre sera el responsable de cuenta.(viene desde dar de alta el contrato)
-      $idResponsable = $result[$key]['respContabilidad'];
-      if (!$idResponsable)
-        $idResponsable = 0;
+    $listDepartamentos = $departamentos->GetListDepartamentos();
 
-      $result[$key]["responsable"] =  $result[$key]['nameContabilidad'];
+    foreach ($result as $key => $val) {
+      $idResponsable = 0;
+      $result[$key]["numActiveContracts"] =  $this->HowManyRazonesSociales($val["customerId"]);
+      $encargados = json_decode($val['encargados'], true);
+      foreach($listDepartamentos as $dep){
+          $key_exist = array_search($dep['departamentoId'],array_column($encargados, 'departamentoId'));
+
+          $currentEncargado = $key_exist !== false ? $encargados[$key_exist] : [];
+          $result[$key]['resp' . ucfirst(strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['personalId'];
+          $result[$key]['name' . ucfirst(strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['name'];
+          if($dep['departamentoId'] == 1){
+              $idResponsable = $currentEncargado['personalId'];
+              $result[$key]["responsable"] =  $currentEncargado['name'];
+          }
+      }
       $contract = new Contract;
       $contract->setContractId($val['contractId']);
       $result[$key]["totalMensual"] =  number_format($contract->getTotalIguala(), 2, '.', ',');
@@ -1253,11 +1276,6 @@ class Customer extends Main
           continue;
         }
       }
-      //obtener los servicios del contrato
-      $serviciosContrato = $this->GetServicesByContract($val["contractId"]);
-      $result[$key]["showContract"] = $showCliente = $filtro->ShowByDefault($serviciosContrato, $User["roleId"]);
-      if ($result[$key]["showContract"] < 0) //si un contrato no tiene servicio se comprueba si se visualiza o no segun el tipo de rol.
-        unset($result[$key]);
     }
     return $result;
   }
@@ -1569,8 +1587,7 @@ class Customer extends Main
     $sql = "SELECT COUNT(*)
               		FROM contract
               		WHERE customerId = '" . $customerId . "'
-					AND activo = '" . $activo . "'
-              		ORDER BY name ASC";
+					AND activo = '" . $activo . "' ";
     $this->Util()->DB()->setQuery($sql);
     return $this->Util()->DB()->GetSingle();
   }

@@ -16,18 +16,6 @@ class Main
 		return $this->page;
 	}
 
-	function ListProductos()
-	{
-		$this->Util()->DB()->setQuery("SELECT * FROM product ORDER BY productId ASC");
-		
-		$result = $this->Util()->DB()->GetResult();
-		
-		foreach($result as $key => $periodo)
-		{
-		}
-		return $result;
-	}
-	
 	function ListTiposDeComprobantes()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM tiposComprobante ORDER BY tiposComprobanteId");
@@ -120,7 +108,6 @@ class Main
 
 			}
 		}
-//		print_r($monedas);
 		return $monedas;
 	}
 
@@ -130,13 +117,6 @@ class Main
 		
 		return $result;
 	}
-	function SuggestProveedores($value)
-	{
-		$this->Util()->DB()->setQuery("SELECT * FROM usuario WHERE email LIKE '%".$value."%'ORDER BY email");
-		$result = $this->Util()->DB()->GetResult();
-		return $result;
-	}
-
 	public function Util() 
 	{
 		if($this->Util == null ) 
@@ -145,6 +125,16 @@ class Main
 		}
 		return $this->Util;
 	}
+
+    public function accessAnyContract() {
+        if(!$_SESSION['User']['roleId'])
+            return false;
+
+        $sql = "SELECT allow_visualize_any_contract FROM roles WHERE rolId='".$_SESSION['User']['roleId']."' AND status='activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        return $row ? $row['allow_visualize_any_contract'] : false;
+    }
 }
 
 

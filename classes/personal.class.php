@@ -1183,6 +1183,9 @@ function SubordinadosDetailsAddPass()
         return $idPersons;
     }
     public function getCurrentUser(){
+        if (!$_SESSION['User']['userId'])
+            return false;
+
         $this->Util()->DB()->setQuery('SELECT * FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
         $row= $this->Util()->DB()->GetRow();
         if($_SESSION['User']['tipoPers']=='Admin'){

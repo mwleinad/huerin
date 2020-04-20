@@ -1,5 +1,4 @@
 <?php
-
 if(!isset($_SESSION)){
     session_start();
 }
@@ -8,16 +7,6 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 ini_set('memory_limit','3G');
 $user->allowAccess(167);
-$rfc = '';
-$tipo = 'Activos';
-
-if($_POST['deep'])
-    $subor = 'subordinado';
-else
-    $subor = 'propio';
-
-
-
 $encargados = $personal->GetIdResponsablesSubordinados($_POST);
 $post = $_POST;
 $post["encargados"] = $encargados;
@@ -25,6 +14,8 @@ if($_POST['responsableCuenta']>0)
     $post["selectedResp"] = true;
 else
     $post["selectedResp"] = false;
+
+$listDepartamentos =  $departamentos->GetListDepartamentos();
 $clientes =  $customer->SuggestCustomerRazon($post);
 $x .=
 "<table border=\"1\">
@@ -75,15 +66,11 @@ $x .=
             <th style=\"background:#D7EBFF;text-align:center;\"><b>METODO DE PAGO</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>NUMERO DE CUENTA</b></th>
             <th style=\"background:#D7EBFF;text-align:center;\"><b>RESPONSABLE</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>SUPERVISOR</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. CONTABILIDAD</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. NOMINA</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. ADMIN</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. JURIDICO</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. IMSS</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. AUDITORIA</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>RESP. DH</b></th>
-            <th style=\"background:#D7EBFF;text-align:center;\"><b>GENERAR FACTURA DE MES 13</b></th>
+            <th style=\"background:#D7EBFF;text-align:center;\"><b>SUPERVISOR</b></th>";
+            foreach($listDepartamentos as $var)
+                $x .= "<th style=\"background:#D7EBFF;text-align:center;\"><b>RESP .".strtoupper($var['departamento'])."</b></th>";
+
+            $x .="<th style=\"background:#D7EBFF;text-align:center;\"><b>GENERAR FACTURA DE MES 13</b></th>
         </tr>
 	</thead>
 	<tbody>";
@@ -94,14 +81,14 @@ foreach($clientes as $con){
             $activo = ($con['active'] == 1) ? 'Activo' : 'Inactivo';
             $x .= "
 				<tr> 
-    				<td style=\"text-align:center;mso-number-format:'@';\">".$con['clienteId']."</td>
+    				<td style=\"text-align:center;mso-number-format:'@';\">".$con['customerId']."</td>
     				<td style=\"text-align:center;mso-number-format:'@';\">".$con['contractId']."</td>
         			<td style=\"text-align:left;mso-number-format:'@';\">".utf8_decode($con['nameContact'])."</td>
 	        		<td style=\"text-align:center;mso-number-format:'@';\">".$con['phone']."</td>
 		        	<td style=\"text-align:left;mso-number-format:'@';\">".$con['email']."</td>
     			    <td style=\"text-align:center;mso-number-format:'@';\">".$con['password']."</td>
-	    		    <td style=\"text-align:center;mso-number-format:'@';\">".count($con['contracts'])."</td>
-		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d/m/Y',strtotime($con['dateAlta']))."</td>
+	    		    <td style=\"text-align:center;mso-number-format:'@';\">".$con['numActiveContracts']."</td>
+		    	    <td style=\"text-align:center;mso-number-format:'@';\">".date('d/m/Y',strtotime($con['fechaAltaCustomer']))."</td>
 			        <td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['observacion'])."</td>
 			        <td style=\"text-align:center;mso-number-format:'@';\">".$activo."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".utf8_decode($con['name'])."</td>
@@ -139,15 +126,13 @@ foreach($clientes as $con){
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['metodoDePago']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['noCuenta']."</td>
 					<td style=\"text-align:center;mso-number-format:'@';\">".$con['responsable']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['supervisadoBy']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameContabilidad']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameNominas']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAdministracion']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameJuridico']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameImss']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameAuditoria']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['nameDesarrollohumano']."</td>
-					<td style=\"text-align:center;mso-number-format:'@';\">".$con['generaFactura13']."</td>
+					<td style=\"text-align:center;mso-number-format:'@';\">".$con['supervisadoBy']."</td>";
+                    foreach($listDepartamentos as $dep){
+                        $llave = "name".ucfirst(strtolower(str_replace(" ", "", $dep['departamento'])));
+                        $x .="<td style=\"text-align:center;mso-number-format:'@';\">".$con[$llave]."</td>";
+                    }
+
+					$x .=" <td style=\"text-align:center;mso-number-format:'@';\">".$con['generaFactura13']."</td>
 				</tr>";
 
         }//foreach

@@ -1,6 +1,6 @@
 <div align="center">
-    <form name="frmSearchRazon" id="frmSearchRazon" action="{$WEB_ROOT}/export/rsocial.php" method="post">
-        <input type="hidden" name="type" id="type" value="getRazonSocial">
+    <form name="frmSearchRazon" id="frmSearchRazon" method="post" onsubmit="return false">
+        <input type="hidden" name="type" id="type" value="generate_report_razon_social">
         <input type="hidden" name="cliente" id="cliente" value="0" />
         <table width="80%" align="center">
             <tr style="background-color:#CCC">
@@ -50,7 +50,6 @@
                     <div style="display:inline-block;text-align: center;">
                         <img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
                         <input type="submit" class="button_grey"  id="btnSearch" value="Buscar">
-                        {*<submit class="button_grey" id="btnSearch"><span>Buscar</span></submit>*}
                     </div>
 
                 </td>

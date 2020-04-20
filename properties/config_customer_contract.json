@@ -1,0 +1,488 @@
+[
+  {
+    "name": "ID Cliente",
+    "required": true,
+    "match_db": true,
+    "table": "customer",
+    "field_comparison": "customerId",
+    "comment": "",
+    "field_excel": "customerId",
+    "field_bd": "customerId",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "ID Contrato",
+    "required": true,
+    "match_db": true,
+    "table": "contract",
+    "field_comparison": "contractId",
+    "comment": "",
+    "field_excel": "contractId",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "Nombre cliente",
+    "required": true,
+    "match_db": false,
+    "table": "customer",
+    "field_comparison": "",
+    "comment": "Ingresar el nombre del cliente, evitar el uso de caracteres especiales tales comas(,), comilla simple(') comillas dobles(\"\")..etc.",
+    "field_excel": "nameContact",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Telefono contacto",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Ingrese numero de contacto",
+    "field_excel": "phone",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Email contacto",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Ingrese email de contacto",
+    "field_excel": "email",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Contraseña",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Ingrese contraseña",
+    "field_excel": "password"
+  },
+  {
+    "name": "No. de contratos",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "numActiveContracts"
+  },
+  {
+    "name": "Fecha de alta cliente",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Ingresar fecha en formato 1969-01-01",
+    "field_excel": "fechaAltaCustomer"
+  },
+  {
+    "name": "Observaciones",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "observacion"
+  },
+  {
+    "name": "Status cliente",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Seleccionar\n1 = Cliente activo\n0 = Cliente inactivo",
+    "field_excel": "active"
+  },
+  {
+    "name": "Nombre / Razon social",
+    "required": true,
+    "match_db": true,
+    "table": "customer",
+    "field_comparison": "customerId",
+    "comment": "Ingresar el nombre o razon social, evitar el uso de caracteres especiales tales comas(,), comilla simple(') comillas dobles(\"\")..etc.",
+    "field_excel": "name"
+  },
+  {
+    "name": "Total de iguala",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Dejar en blanco al importar nuevos registros, este campo es calculado por el sistema.",
+    "field_excel": "totalMensual",
+    "fillable": false
+  },
+  {
+    "name": "Tipo",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Escriba uno de los dos tipos.\n- Persona Moral\n- Persona Fisica",
+    "field_excel": "type",
+    "fillable": true
+  },
+  {
+    "name": "RFC",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Ingrese un rfc valido",
+    "field_excel": "rfc",
+    "fillable": true
+  },
+  {
+    "name": "Regimen fiscal",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Seleccione un regimen fiscal de la lista.",
+    "field_excel": "nombreRegimen",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "tipoRegimen",
+    "field_comparison_foreign": "nombreRegimen",
+    "field_return_foreign": "tipoRegimenId",
+    "foreign_key": "regimenId"
+
+  },
+  {
+    "name": "Tipo de sociedad",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Seleccionar un tipo de sociedad de la lista.",
+    "field_excel": "nombreSociedad",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "sociedad",
+    "field_comparison_foreign": "nombreSociedad",
+    "field_return_foreign": "sociedadId",
+    "foreign_key": "sociedadId"
+  },
+  {
+    "name": "Status contrato",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Escriba una de las dos opciones:\nSi = Contrato activo\nNo = Contrato no activo",
+    "field_excel": "activo",
+    "constraint": false
+  },
+  {
+    "name": "Actividad comercial",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "nombreComercial",
+    "constraint": false
+  },
+  {
+    "name": "Direccion comercial",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "direccionComercial",
+    "constraint": false
+  },
+  {
+    "name": "Calle",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "address",
+    "constraint": false
+  },
+  {
+    "name": "No. Ext",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "noExtAddress",
+    "constraint": false
+  },
+  {
+    "name": "No. Int",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "noIntAddress",
+    "constraint": false
+  },
+  {
+    "name": "Colonia",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "coloniaAddress",
+    "constraint": true
+  },
+  {
+    "name": "Municipio",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "municipioAddress",
+    "constraint": true
+  },
+  {
+    "name": "Estado",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "estadoAddress",
+    "constraint": false
+  },
+  {
+    "name": "Pais",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "paisAddress",
+    "constraint": false
+  },
+  {
+    "name": "Codigo postal",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "cpAddress",
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto administrativo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "nameContactoAdministrativo",
+    "constraint": false
+  },
+  {
+    "name": "Email contacto administrativo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "emailContactoAdministrativo",
+    "constraint": false
+  },
+  {
+    "name": "Tel. contacto administrativo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "telefonoContactoAdministrativo",
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto contabilidad",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "nameContactoContabilidad",
+    "constraint": false
+  },
+  {
+    "name": "Email contacto contabilidad",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "emailContactoContabilidad",
+    "constraint": false
+  },
+  {
+    "name": "Telefono contacto contabilidad",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "telefonoContactoContabilidad",
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto directivo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "nameContactoDirectivo",
+    "constraint": false
+  },
+  {
+    "name": "Email contacto directivo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "emailContactoDirectivo",
+    "constraint": false
+  },
+  {
+    "name": "Tel. contacto directivo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "telefonoContactoDirectivo",
+    "constraint": false
+  },
+  {
+    "name": "Tel. celular directivo",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "telefonoCelularDirectivo",
+    "constraint": false
+  },
+  {
+    "name": "Representante legal",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "nameRepresentanteLegal",
+    "constraint": false
+  },
+  {
+    "name": "Clave CIEC",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "claveCiec",
+    "constraint": false
+  },
+  {
+    "name": "Clave FIEL",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "claveFiel",
+    "constraint": false
+  },
+  {
+    "name": "Clave IDSE",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "claveIdse",
+    "constraint": false
+  },
+  {
+    "name": "Clave ISN",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "claveIsn",
+    "constraint": false
+  },
+  {
+    "name": "Facturador",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Seleccione un facturador de  la lista",
+    "field_excel": "facturador",
+    "constraint": false
+  },
+  {
+    "name": "Metodo de pago",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "",
+    "field_excel": "metodoDePago",
+    "constraint": false
+  },
+  {
+    "name": "Numero de cuenta",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Opcional",
+    "field_excel": "noCuenta",
+    "constraint": false
+  },
+  {
+    "name": "Supervisor",
+    "required": false,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Valor calculado por sistema.",
+    "field_excel": "supervisadoBy",
+    "constraint": false
+  },
+  {
+    "name": "No factura de mes 13",
+    "required": true,
+    "match_db": false,
+    "table": "",
+    "field_comparison": "",
+    "comment": "Valores permitidos:\nSi =  No generara factura de mes 13.\nNo = Si generara factura del mes 13.",
+    "validate_value": true,
+    "accepted_values" : [
+      "Si",
+      "No"
+    ],
+    "field_excel": "noFactura13",
+    "constraint": false
+  }
+]

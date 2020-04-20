@@ -8,69 +8,71 @@ include(DOC_ROOT.'/libs/excel/PHPExcel.php');
 switch($_POST['type']){
     case 'layout-razon':
         $book =  new PHPExcel();
+        $string = file_get_contents(DOC_ROOT."/properties/config_customer_contract.json");
+        $headers = json_decode($string, true);
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
-        $sheet->setTitle('layoutRazon');
-        $sheet->setCellValueByColumnAndRow(0,1,'NOMBRE CLIENTE');
-        $sheet->setCellValueByColumnAndRow(1,1,'NOMBRE RAZON SOCIAL');
-        $sheet->setCellValueByColumnAndRow(2,1,'TIPO DE PERSONA');
-        $sheet->setCellValueByColumnAndRow(3,1,'FACTURADOR');
-        $sheet->setCellValueByColumnAndRow(4,1,'RFC');
-        $sheet->setCellValueByColumnAndRow(5,1,'NOMBRE COMERCIAL');
-        $sheet->setCellValueByColumnAndRow(6,1,'CALLE');
-        $sheet->setCellValueByColumnAndRow(7,1,'No. EXT');
-        $sheet->setCellValueByColumnAndRow(8,1,'No. INT');
-        $sheet->setCellValueByColumnAndRow(9,1,'COLONIA');
-        $sheet->setCellValueByColumnAndRow(10,1,'MUNICIPIO');
-        $sheet->setCellValueByColumnAndRow(11,1,'ESTADO');
-        $sheet->setCellValueByColumnAndRow(12,1,'PAIS');
-        $sheet->setCellValueByColumnAndRow(13,1,'C.P');
-        $sheet->setCellValueByColumnAndRow(14,1,'METODO DE PAGO');
-        $sheet->setCellValueByColumnAndRow(15,1,'No. CUENTA');
-        $sheet->setCellValueByColumnAndRow(16,1,'CLAVE SIPARE');
-        $sheet->setCellValueByColumnAndRow(17,1,'DIRECCION COMERCIAL');
-        $sheet->setCellValueByColumnAndRow(18,1,'CONTACTO ADMINISTRATIVO');
-        $sheet->setCellValueByColumnAndRow(19,1,'EMAIL ADMINISTRATIVO');
-        $sheet->setCellValueByColumnAndRow(20,1,'TEL. ADMINISTRATIVO');
-        $sheet->setCellValueByColumnAndRow(21,1,'CONTACTO CONTABILIDAD');
-        $sheet->setCellValueByColumnAndRow(22,1,'EMAIL CONTABILIDAD');
-        $sheet->setCellValueByColumnAndRow(23,1,'TEL. CONTABILIDAD');
-        $sheet->setCellValueByColumnAndRow(24,1,'CONTACTO DIRECTIVO');
-        $sheet->setCellValueByColumnAndRow(25,1,'EMAIL DIRECTIVO');
-        $sheet->setCellValueByColumnAndRow(26,1,'TEL. DIRECTIVO');
-        $sheet->setCellValueByColumnAndRow(27,1,'CELULAR DIRECTIVO');
-        $sheet->setCellValueByColumnAndRow(28,1,'CLAVE FIEL');
-        $sheet->setCellValueByColumnAndRow(29,1,'CLAVE CIEC');
-        $sheet->setCellValueByColumnAndRow(30,1,'CLAVE IDSE');
-        $sheet->setCellValueByColumnAndRow(31,1,'CLAVE ISN');
-        $sheet->setCellValueByColumnAndRow(32,1,'RESP. CONTABILIDAD');
-        $sheet->setCellValueByColumnAndRow(33,1,'RESP. NOMINA');
-        $sheet->setCellValueByColumnAndRow(34,1,'RESP. ADMINISTRACION');
-        $sheet->setCellValueByColumnAndRow(35,1,'RESP. JURIDICO ');
-        $sheet->setCellValueByColumnAndRow(36,1,'RESP. IMSS');
-        $sheet->setCellValueByColumnAndRow(37,1,'RESP. MENSAJERIA');
-        $sheet->setCellValueByColumnAndRow(38,1,'RESP. AUDITORIA');
-        $sheet->setCellValueByColumnAndRow(39,1,'TIPO DE REGIMEN');
-        $sheet->setCellValueByColumnAndRow(40,1,'TIPO DE SOCIEDAD');
+        $catalogue = $book->createSheet(1);
+        $catalogue->setTitle("Responsables");
+        $sheet->setTitle('layout');
+        $listDepartamentos = $departamentos->GetListDepartamentos();
+        $lastCol = 0;
+        foreach($headers as $head){
+            $sheet->setCellValueByColumnAndRow($lastCol,1, $head['name'])
+                ->getCommentByColumnAndRow($lastCol,1)->getText()->createText($head['comment']);
+            $lastCol++;
 
+        }
+        $current_col_catalogue = 0;
+        foreach ($listDepartamentos as $dep) {
+            $sheet->setCellValueByColumnAndRow($lastCol,1,'RESP.'.strtoupper($dep['departamento']));
+            $personal->setDepartamentoId($dep['departamentoId']);
+            $responsables = $personal->getListPersonalByDepartamento();
 
+            $current_row_catalogue = 2;
+            $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue).$current_row_catalogue;
+            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "RESPONSABLES DEP." . strtoupper($dep['departamento']));
+            foreach ( $responsables as $item) {
+                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $item['name']);
+                $current_row_catalogue++;
+            }
+            $current_end_range =  PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue).$current_row_catalogue--;
+            $name_range = "dep_".$dep['departamentoId'];
+            $book->addNamedRange(
+                new PHPExcel_NamedRange(
+                    $name_range,
+                    $catalogue,
+                    "$current_init_range:$current_end_range"
+                )
+            );
 
+            $objList = $sheet->getCell(PHPExcel_Cell::stringFromColumnIndex($lastCol)."2")->getDataValidation();
+            $objList->setType( PHPExcel_Cell_DataValidation::TYPE_LIST );
+            $objList->setErrorStyle( PHPExcel_Cell_DataValidation::STYLE_INFORMATION );
+            $objList->setAllowBlank(false);
+            $objList->setShowInputMessage(true);
+            $objList->setShowErrorMessage(true);
+            $objList->setShowDropDown(true);
+            $objList->setErrorTitle('Error!!');
+            $objList->setError('El responsable no se encuentra en la lista.');
+            $objList->setPromptTitle('Seleccione un responsable de la lista');
+            $objList->setPrompt('Seleccione un responsable de la lista.');
+            $objList->setFormula1("=$name_range"); //note this!
+
+            $current_col_catalogue++;
+            $lastCol++;
+        }
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
-
-        $writer= PHPExcel_IOFactory::createWriter($book, 'CSV');
+        $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
         foreach ($book->getAllSheets() as $sheet1) {
-            // Iterating through all the columns //
-            // The after Z column problem is solved by using numeric columns; thanks to the columnIndexFromString method
             for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
             {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
         }
-
-
-        $nameFile= $_POST['type'].".csv";
+        $nameFile= $_POST['type'].".xlsx";
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
         break;
