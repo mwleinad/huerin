@@ -1,0 +1,362 @@
+[
+  {
+    "name": "ID",
+    "required": true,
+    "check_in_db": true,
+    "check_table": "contract",
+    "check_field": "contractId",
+    "comment": "ID proporcionado por el sistema, es requerido para la actualización de datos.",
+    "field_excel": "contractId",
+    "field_bd": "contractId",
+    "fillable": false,
+    "constraint": false,
+    "is_primary_key": true
+  },
+  {
+    "name": "Nombre cliente principal",
+    "required": true,
+    "comment": "Campo informativo, no se tomara en cuenta para la actualización",
+    "field_excel": "nameContact",
+    "field_bd": "",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "Nombre / Razon social",
+    "required": true,
+    "comment": "Ingresar el nombre o razon social, evitar el uso de los siguientes caracteres especiales comas(,), comilla simple('), comillas dobles(\"\").",
+    "field_excel": "name",
+    "field_bd": "name",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Total de iguala",
+    "required": false,
+    "comment": "Dejar en blanco, este campo es calculado por el sistema.",
+    "field_excel": "totalMensual",
+    "field_bd": "",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "Tipo de persona",
+    "required": true,
+    "comment": "Seleccionar el tipo de persona de la lista que se muestra en las filas",
+    "field_excel": "type",
+    "field_bd": "type",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "RFC",
+    "required": true,
+    "comment": "Ingresar RFC como se muestra en la constancia de situacion fiscal(CSF).",
+    "field_excel": "rfc",
+    "field_bd": "rfc",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Regimen fiscal",
+    "required": true,
+    "comment": "Seleccionar el regimen fiscal de la lista que se muestra en las filas.",
+    "field_excel": "nombreRegimen",
+    "field_bd": "regimenId",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "regimen",
+    "field_comparison_foreign": "nombreRegimen",
+    "field_return_foreign": "regimenId",
+    "foreign_key": "regimenId"
+
+  },
+  {
+    "name": "Tipo de sociedad",
+    "required": false,
+    "comment": "Seleccionar el tipo de sociedad de la lista que se muestra en las filas.",
+    "field_excel": "nombreSociedad",
+    "field_bd": "sociedadId",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "sociedad",
+    "field_comparison_foreign": "nombreSociedad",
+    "field_return_foreign": "sociedadId",
+    "foreign_key": "sociedadId"
+  },
+  {
+    "name": "Status contrato",
+    "required": true,
+    "comment": "Este campo es informativo, para activar o desactivar el registro utilice las funciones del sistema.",
+    "field_excel": "activo",
+    "field_bd": "activo",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "Actividad economica",
+    "required": false,
+    "comment": "Ingresar el dato correspondiente de acuerdo al Check List.",
+    "field_excel": "nombreComercial",
+    "field_bd": "nombreComercial",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Direccion comercial",
+    "required": false,
+    "comment": "Ingresar la dirección donde se recolectará documentación  o información fisica de la cuenta o razón social.\nEn caso de ser la misma que la dirección fiscal, solo mencionar: Misma dirección fiscal.\nExceptuando cuando es la dirección de las oficinas de BH.",
+    "field_excel": "direccionComercial",
+    "field_bd": "direccionComercial",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Calle",
+    "required": true,
+    "comment": "Ingresar la Calle como se muestra en la constancia de situación fiscal (CSF)",
+    "field_excel": "address",
+    "field_bd": "address",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "No. Ext",
+    "required": false,
+    "comment": "Ingresar el número exterior como se muestra en la constancia de situación fiscal (CSF).\nDejar en blanco en caso de que tampoco exista en la CSF.",
+    "field_excel": "noExtAddress",
+    "field_bd": "noExtAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "No. Int",
+    "required": false,
+    "comment": "Ingresar el número interior como se muestra en la constancia de situación fiscal (CSF),\nDejar en blanco en caso de que tampoco exista en la CSF.",
+    "field_excel": "noIntAddress",
+    "field_bd": "noIntAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Colonia",
+    "required": true,
+    "comment": "Ingresar la colonia como se muestra en la constancia de situación fiscal (CSF).",
+    "field_excel": "coloniaAddress",
+    "field_bd": "coloniaAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Municipio",
+    "required": true,
+    "comment": "Ingresar el municipio como se muestra en la constancia de situación fiscal (CSF).",
+    "field_excel": "municipioAddress",
+    "field_bd": "municipioAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Estado",
+    "required": true,
+    "comment": "Ingresar el estado como se muestra en la constancia de situación fiscal (CSF).",
+    "field_excel": "estadoAddress",
+    "field_bd": "estadoAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Pais",
+    "required": false,
+    "comment": "Ingresar el pais como se muestra en la constancia de situación fiscal (CSF).",
+    "field_excel": "paisAddress",
+    "field_bd": "paisAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Codigo postal",
+    "required": true,
+    "comment": "Ingresar el codigo postal como se muestra en la constancia de situación fiscal (CSF).",
+    "field_excel": "cpAddress",
+    "field_bd": "cpAddress",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto administrativo",
+    "required": false,
+    "comment": "Ingresar el contacto mencionado en el Check List.",
+    "field_excel": "nameContactoAdministrativo",
+    "field_bd": "nameContactoAdministrativo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Email contacto administrativo",
+    "required": false,
+    "comment": "Ingresar el correo del contacto mencionado en el Check List.",
+    "field_excel": "emailContactoAdministrativo",
+    "field_bd": "emailContactoAdministrativo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Tel. contacto administrativo",
+    "required": false,
+    "comment": "Ingresar el telefono de contacto mencionado en el Check List.",
+    "field_excel": "telefonoContactoAdministrativo",
+    "field_bd": "telefonoContactoAdministrativo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto contabilidad",
+    "required": false,
+    "comment": "Ingresar el contacto mencionado en el Check List.",
+    "field_excel": "nameContactoContabilidad",
+    "field_bd": "nameContactoContabilidad",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Email contacto contabilidad",
+    "required": false,
+    "comment": "Ingresar el correo de contacto mencionado en el Check List.",
+    "field_excel": "emailContactoContabilidad",
+    "field_bd": "emailContactoContabilidad",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Telefono contacto contabilidad",
+    "required": false,
+    "comment": "Ingresar el telefono de contacto mencionado en el Check List.",
+    "field_excel": "telefonoContactoContabilidad",
+    "field_bd": "telefonoContactoContabilidad",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Nombre contacto directivo",
+    "required": false,
+    "comment": "Ingresar el contacto mencionado en el Check List.",
+    "field_excel": "nameContactoDirectivo",
+    "field_bd": "nameContactoDirectivo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Email contacto directivo",
+    "required": false,
+    "comment": "Ingresar el correo de contacto mencionado en el Check List.",
+    "field_excel": "emailContactoDirectivo",
+    "field_bd": "emailContactoDirectivo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Tel. contacto directivo",
+    "required": false,
+    "comment": "Ingresar el telefono de contacto mencionado en el Check List.",
+    "field_excel": "telefonoContactoDirectivo",
+    "field_bd": "telefonoContactoDirectivo",
+    "fillable": true,
+    "constraint": false
+
+  },
+  {
+    "name": "Tel. celular directivo",
+    "required": false,
+    "comment": "Ingresar el telefono celular del contacto mencionado en el Check List.",
+    "field_excel": "telefonoCelularDirectivo",
+    "field_bd": "telefonoCelularDirectivo",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Representante legal",
+    "required": false,
+    "comment": "Ingresarán el representante legal una vez confirmado por el área de jurídico.",
+    "field_excel": "nameRepresentanteLegal",
+    "field_bd": "nameRepresentanteLegal",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Clave CIEC",
+    "required": false,
+    "comment": "Ingresarán la clave CIEC una vez confirmado por el área de jurídico.",
+    "field_excel": "claveCiec",
+    "field_bd": "claveCiec",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Clave FIEL",
+    "required": false,
+    "comment": "Ingresarán la clave FIEL una vez confirmado por el área de jurídico.",
+    "field_excel": "claveFiel",
+    "field_bd": "claveFiel",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Clave IDSE",
+    "required": false,
+    "comment": "Ingresarán la clave IDSE una vez confirmado por el área de jurídico.",
+    "field_excel": "claveIdse",
+    "field_bd": "claveIdse",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Clave ISN",
+    "required": false,
+    "comment": "Ingresarán la clave ISN una vez confirmado por el área de jurídico.",
+    "field_excel": "claveIsn",
+    "field_bd": "claveIsn",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Facturador",
+    "required": true,
+    "comment": "Seleccione un facturador de la lista que se muestra en las filas.",
+    "field_excel": "facturador",
+    "field_bd": "facturador",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Metodo de pago",
+    "required": false,
+    "comment": "Seleccione un metodo de pago de la lista que se muestra en las filas.",
+    "field_excel": "metodoDePago",
+    "field_bd": "metodoDePago",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "c_FormaPago",
+    "field_comparison_foreign": "descripcion",
+    "field_return_foreign": "c_FormaPago",
+    "foreign_key": "metodoDePago"
+  },
+  {
+    "name": "Numero de cuenta",
+    "required": false,
+    "comment": "Campo opcional",
+    "field_excel": "noCuenta",
+    "field_bd": "noCuenta",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Supervisor",
+    "required": false,
+    "comment": "Campo informativo, no se toma en cuenta para la actualización.",
+    "field_excel": "supervisadoBy",
+    "field_bd": "",
+    "fillable": false,
+    "constraint": false
+  }
+]

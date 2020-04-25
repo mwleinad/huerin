@@ -23,223 +23,83 @@ if($util->PrintErrors()){
     exit;
 }
 $opermiso =  new Permiso();
-//tratar el archivo
-
-switch($_POST['type']){
-    case 'update-customer-contract':
-        $cad = "";
-        $isValid = $valida->ValidateLayoutCustomerRazon($_FILES);
-        if(!$isValid){
+$opcion =  explode("#",$_POST['type']);
+switch($opcion[0]){
+    case 'update':
+        $validates = $valida->validateLayout($_FILES, $opcion[1], "update");
+        $db_connection = new DB(false);
+        $actualizados = 0;
+        $ignorados = 0;
+        if(!$validates){
             echo "fail[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
             echo"[#]";
             echo $cad;
             exit;
         }
-        $contCustomerUpdate=0;
-        $contCustomerNoUpdate=0;
-        $contActualizado=0;
-        $contNoActualizado=0;
-        $contratoNoEncontrado=0;
-        $sqlCustomer ="UPDATE customer SET";
-        $strNameContact="";$strTelContact="";$strEmailContact="";$strPassContact="";$strAltaCustomer="";
-        $file_temp = $_FILES['file']['tmp_name'];
-        $fp = fopen($file_temp,'r');
-        $fila=1;
-        $idsCustomer=array();
-        $generalCustomerLog="";
-        $generalContractLog="";
-        while(($row=fgetcsv($fp,4096,","))==true){
-           $strCust ="";
-           $strContract="";
-           $logCustLocal ="";
-           $logContractLocal ="";
-            if($fila==1)
-            {
-                $fila++;
-                continue;
-            }
-            $total =count($row);
-            //dejar esto por si se actualizara masivo
-            /*$strNameContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[2]);
-            $strTelContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[3]);
-            $strEmailContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[4]);
-            $strPassContact .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$row[5]);
-            $strAltaCustomer .=sprintf(" WHEN %d  THEN '%s' ",$row[0],$util->FormatDateMySqlSlash($row[7]));
-            $idsCustomer[] =$row[0];*/
-            $generaFactura13 = $row[53]=='Si'?'No':$row[53]=='No'?'Si':'No';
-            $customer->setCustomerId($row[0]);
-            $beforeCustomer = $customer->Info();
-            $strCust ="UPDATE customer SET nameContact ='".trim($row[2])."', phone='".trim($row[3])."',email='".trim($row[4])."', 
-                       password='".trim($row[5])."',fechaAlta='".$util->FormatDateMySqlSlash($row[7])."',observacion='".trim($row[8])."',
-                       noFactura13='$generaFactura13'
-                       where customerId ='".$row[0]."'";
-            $db->setQuery($strCust);
-            $upCustomer =  $db->UpdateData();
-            if($upCustomer>0){
-                $customer->setCustomerId($row[0]);
-                $afterCustomer = $customer->Info();
-                //guardar en log
-                $log->setPersonalId($_SESSION['User']['userId']);
-                $log->setFecha(date('Y-m-d H:i:s'));
-                $log->setTabla('customer');
-                $log->setTablaId($row[0]);
-                $log->setAction('Update');
-                $log->setOldValue(serialize($beforeCustomer));
-                $log->setNewValue(serialize($afterCustomer));
-                $log->SaveOnly();
+        foreach($validates as $key => $var) {
+            $changes = [];
+            $table = $var['table'];
+            $primary_key =  $var['primary_key'];
+            $value_primary_key =  $var['value_primary_key'];
+            $before_data = $log->GetCurrentData($table, $primary_key, $value_primary_key);
+            $sql = "update $table set ";
 
-                $changes = $log->FindOnlyChanges(serialize($beforeCustomer),serialize($afterCustomer));
-                if(!empty($changes['after'])){
-                    $logCustLocal ="<p>El cliente ".$beforeCustomer['nameContact']." ha sido modificado</p>";
-                    $logCustLocal .=$log->PrintInFormatText($changes);
+            foreach ($var['fields_update'] as $field) {
+                $name_field = $field['field'];
+                $value_field = $field['value'];
+                $sql .= " $name_field = '$value_field',";
+            }
+            $sql = substr($sql, 0,-1);
+
+            if($var['table'] === 'contract'){
+                $resp_string =  "";
+                foreach($var['responsables'] as $resp) {
+                    $dep_id =  $resp['dep_id'];
+                    $personal_id = $resp['personal_id'];
+                    $resp_string .="$dep_id,$personal_id-";
                 }
-                $contCustomerUpdate++;
+                $resp_string = substr($resp_string, 0,-1);
+                if($resp_string !== "")
+                $sql .= ", permisos = '$resp_string' ";
             }
-            //concatenar log de updates de clientes
-            $generalCustomerLog .=$logCustLocal;
-            //comprobar si se actualizara los datos del contrato.
-            //encontrar cambios en encargados
-            $contract->setContractId($row[1]);
-            $encargados = array();
-            $encargados = array($row[1],$row[46],$row[47],$row[48],$row[49],$row[50],$row[51],$row[52]);
-            $permisos= $contract->ValidateEncargados($encargados);
-            if($permisos===false)
-            {
-                $contratoNoEncontrado++;
-                $fila++;
-                continue;
-            }
-            //contrato antes de actualizar
-            $changes=array();
-            $contract->setContractId($row[1]);
-            $beforeContract = $contract->Info();
-            //encontrar regimen
-            $db->setQuery("SELECT regimenId FROM  regimen WHERE lower(replace(nombreRegimen,' ',''))='".strtolower(str_replace(' ','',$row[14]))."' and lower(replace(tipoDePersona,' ',''))='".strtolower(str_replace(' ','',$row[12]))."' ");
-            $regimenId=$db->GetSingle();
-            $nameRazon  = str_replace("'","\'",trim($row[10]));
-            $actividadEco = str_replace("'","\'",trim($row[16]));
 
-            $strContract ="UPDATE contract SET 
-                            permisos='".$permisos."',
-                            type='".$row[12]."',
-                            regimenId='".$regimenId."',
-                            name='$nameRazon',
-                            nombreComercial='$actividadEco',
-                            direccionComercial='".$row[17]."',
-                            address='".trim($row[18])."',
-                            noExtAddress='".trim($row[19])."',
-                            noIntAddress='".trim($row[20])."',
-                            coloniaAddress='".trim($row[21])."',
-                            municipioAddress='".trim($row[22])."',
-                            estadoAddress='".trim($row[23])."',
-                            paisAddress='".trim($row[24])."',
-                            cpAddress='".trim($row[25])."',
-                            nameContactoAdministrativo='".$row[26]."',
-                            emailContactoAdministrativo='".$row[27]."',
-                            telefonoContactoAdministrativo='".$row[28]."',
-                            nameContactoContabilidad='".$row[29]."',
-                            emailContactoContabilidad='".$row[30]."',
-                            telefonoContactoContabilidad='".$row[31]."',
-                            nameContactoDirectivo='".$row[32]."',
-                            emailContactoDirectivo='".$row[33]."',
-                            telefonoContactoDirectivo='".$row[34]."',
-                            telefonoCelularDirectivo='".$row[35]."',
-                            nameRepresentanteLegal='".$row[36]."',
-                            claveCiec='".$row[37]."',
-                            claveFiel='".$row[38]."',
-                            claveIdse='".$row[39]."',
-                            claveIsn='".$row[40]."',
-                            rfc='".$row[13]."',
-                            facturador='".$row[41]."',
-                            metodoDePago='".$row[42]."',
-                            noCuenta='".$row[43]."'
-                            WHERE contractId='".$row[1]."' ";
-            $db->setQuery($strContract);
-            $upContract =  $db->UpdateData();
-            if($upContract>0){
-                //si se actualizo la razon se debe actualizar los permisos en la tabla
-                $opermiso->setContractId($row[1]);
-                $opermiso->doPermiso();
-
-                $contract->setContractId($row[1]);
-                $afterContract = $contract->Info();
-                //guardar en log
-                $log->setPersonalId($_SESSION['User']['userId']);
-                $log->setFecha(date('Y-m-d H:i:s'));
-                $log->setTabla('contract');
-                $log->setTablaId($row[1]);
-                $log->setAction('Update');
-                $log->setOldValue(serialize($beforeContract));
-                $log->setNewValue(serialize($afterContract));
-                $log->SaveOnly();
-                $changes = $log->FindOnlyChanges(serialize($beforeContract),serialize($afterContract));
-                if(!empty($changes['after'])){
-                    $logContractLocal ="<p>La razon social ".$beforeContract['name']." del cliente ".$beforeContract['nameContact']." ha sido modificado</p>";
-                    $logContractLocal .=$log->PrintInFormatText($changes);
+            $sql .= " where $primary_key = '$value_primary_key' ";
+            $db_connection->setQuery($sql);
+            $actualizado = $db_connection->UpdateData();
+            if($actualizado > 0) {
+                if($table === "contract") {
+                 $permiso->setContractId($value_primary_key);
+                 $permiso->doPermiso();
                 }
-                $contActualizado++;
+                $after_data = $log->GetCurrentData($table, $primary_key, $value_primary_key);
+                $log->setFecha(date('Y-m-d H:i:s'));
+                $log->setTabla($table);
+                $log->setTablaId($value_primary_key);
+                $log->setAction('Update');
+                $log->setOldValue(serialize($before_data));
+                $log->setNewValue(serialize($after_data));
+                $log->SaveOnly();
+                $changes = $log->FindOnlyChanges(serialize($before_data),serialize($after_data));
+                if(!empty($changes['after'])) {
+                    $logContractLocal .= "<p>Cambios realizados del registro con ID $value_primary_key de la tabla $table</p>";
+                    $logContractLocal .= $log->PrintInFormatText($changes);
+                    $actualizados++;
+                }else {
+                    $ignorados++;
+                }
             }else{
-                $contNoActualizado++;
-            }
-            $generalContractLog .=$logContractLocal;
-            $fila++;
-        }
-        //concatenar sql para cliente para una sola consulta
-        /* $sqlCustomer."  nameContact=CASE customerId ".$strNameContact." END,
-                             phone=CASE customerId ".$strTelContact." END, 
-                             email=CASE customerId ".$strEmailContact." END,
-                             password=CASE customerId ".$strPassContact." END,
-                             fechaAlta=CASE customerId ".$strAltaCustomer." END WHERE customerId IN(".implode(',',array_unique($idsCustomer)).")";*/
-        $file1="";
-        $nameFile1="";
-        if($generalCustomerLog!="") {
-            $nameFile1 = "BITACORA CLIENTES.html";
-            $file1 = DOC_ROOT . "/sendFiles/".$nameFile1;
-            $open = fopen($file1, "w");
-            if ($open) {
-                fwrite($open, $generalCustomerLog);
-                fclose($open);
+                $ignorados++;
             }
         }
-        $file2="";
-        $nameFile2="";
-        if($generalContractLog!="") {
-            $nameFile2 = "BITACORA RAZONESSOCIALES.html";
-            $file2 = DOC_ROOT."/sendFiles/".$nameFile2;
-            $open = fopen($file2,"w");
-            if ( $open ) {
-                fwrite($open, $generalContractLog);
-                fclose($open);
-            }
-        }
-
-        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $db->setQuery('SELECT name FROM personal WHERE personalId="'.$_SESSION['User']['userId'].'" ');
-        $who = $db->GetSingle();
-        if($_SESSION['User']['tipoPers']=='Admin')
-            $who="Administrador de sistema(desarrollador)";
-
-        $body ="<p>Se han realizado cambios en informacion de cliente y razones sociales por el colaborador ".$who.". </p>";
-        $body .="<p>En los archivos adjuntos encontrara de manera detallada los cambios realizados por el usuario, favor de descargar el documento y abrir en su navegador predeterminado. </p>";
-        $encargadosEmail=array();
-        $sendmail = new SendMail();
-
-        if($generalContractLog!=""||$generalCustomerLog!="")
-            $sendmail->PrepareMultipleNotice($subject,$body,$encargadosEmail,"",$file1,$nameFile1,$file2,$nameFile2,'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
-
-        if(is_file($file1))
-            unlink($file1);
-        if(is_file($file2))
-            unlink($file2);
-        fclose($fp);
-        $util->setError(0,'complete',$contCustomerUpdate." clientes principales actualizados");
-        $util->setError(0,'complete',$contActualizado." contratos actualizados y ".$contNoActualizado." contratos no actualizados por tener informacion correcta");
-        $util->setError(0,'complete',$contratoNoEncontrado." registros no encontrados en el sistema");
+        if($actualizados > 0)
+            $log->sendPdfLogFromHtml($logContractLocal);
+        $util->setError(0,"complete", "$actualizados registros actualizados.");
+        $util->setError(0,"complete", "$ignorados registros ignorados por no tener modificaciones.");
         $util->PrintErrors();
+
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-
     break;
     case 'imp-new-contract':
         $isValid = $valida->ValidateLayoutNewContract($_FILES);

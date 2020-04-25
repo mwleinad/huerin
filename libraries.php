@@ -210,6 +210,7 @@ $catalogue = new Catalogue();
 $change = new ChangePlatform();
 $utileriaInvoice = new UtileriaInvoice();
 $inventory =  new Inventory;
+$permiso = new Permiso;
 
 //cron
 $cronServicio = new CronServicio();

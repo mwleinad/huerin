@@ -34,11 +34,11 @@ class Log extends Util
 	}
 	
 	public function setOldValue($value){
-		$this->oldValue = $value;		
+		$this->oldValue = $value;
 	}
 	
 	public function setNewValue($value){
-		$this->newValue = $value;		
+		$this->newValue = $value;
 	}
     public function setServiciosAfectados($value){
         $this->serviciosAfectados = $value;
@@ -46,13 +46,18 @@ class Log extends Util
     public function setContractsAfectados($value){
         $this->contractsAfectados = $value;
     }
+    public function GetCurrentData($table, $field, $id){
+	    $sql  = "select * from $table where $field = '$id' ";
+	    $this->Util()->DB()->setQuery($sql);
+	    return $this->Util()->DB()->GetRow();
+    }
 	public function SaveOnly(){
 	    global $personal;
 
 	    $currentUser = $personal->getCurrentUser();
         $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
+				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
         return true;
@@ -62,7 +67,7 @@ class Log extends Util
         $currentUser = $personal->getCurrentUser();
 		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
+				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
@@ -323,7 +328,7 @@ class Log extends Util
         }
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $mail->PrepareMultipleNotice($subject,$body,$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+        $mail->PrepareMultipleNotice($subject,utf8_decode($body),$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
         if(file_exists( $file)){
            unlink($file);
         }
@@ -365,8 +370,8 @@ class Log extends Util
          return $result;
     }
     function FindOnlyChanges($before,$after){
-	     $beforeUnserialize = unserialize($before);
-	     $afterUnserialize = unserialize($after);
+	     $beforeUnserialize = is_array(unserialize($before)) ? unserialize($before) : [];
+	     $afterUnserialize = is_array(unserialize($after)) ? unserialize($after) : [];
 	     $news=array();
          $olds=array();
 	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
@@ -400,7 +405,7 @@ class Log extends Util
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
                      case 'permisos':
-                         $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC ");
+                         $this->Util()->DB()->setQuery("SELECT departamentoId, departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC ");
                          $arrayDeps = $this->Util()->DB()->GetResult();
                          $valorBefore="";
                          $valorAfter="";
@@ -427,22 +432,24 @@ class Log extends Util
                              $arrayDeps = array();
 
                          foreach($arrayDeps as $kad=>$vad){
-                             if($depsBefore[$vad['departamentoId']]==$depsAfter[$vad['departamentoId']])
+                             if(trim($depsBefore[$vad['departamentoId']]) == trim($depsAfter[$vad['departamentoId']]))
                                  continue;
 
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$vad['departamentoId']]."' ");
-                             $persBefore = $this->Util()->DB()->GetSingle() ;
+                             $row = $this->Util()->DB()->GetRow() ;
+                             $persBefore = $row['name'];
 
                              $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsAfter[$vad['departamentoId']]."' ");
-                             $persAfter = $this->Util()->DB()->GetSingle();
+                             $row = $this->Util()->DB()->GetRow();
+                             $persAfter =  $row['name'];
 
                              if($persBefore=="")
                                  $persBefore ="Sin encargado";
                              if($persAfter=="")
                                  $persAfter ="Sin encargado";
 
-                             $valorBefore .="Encargado de ".$vad['departamento']." : ".utf8_decode($persBefore)."<br>";
-                             $valorAfter  .="Encargado de ".$vad['departamento']." : ".utf8_decode($persAfter)."<br>";
+                             $valorBefore .="Encargado de ".$vad['departamento']." : ".($persBefore)."<br>";
+                             $valorAfter  .="Encargado de ".$vad['departamento']." : ".($persAfter)."<br>";
                          }
                      break;
                      default:
@@ -450,15 +457,14 @@ class Log extends Util
                          $valorAfter = $afterUnserialize[$key];
                      break;
                  }
-                 $cad2['valor'] = $valorBefore;
-                 $cad2['campo'] = $field;
-                 $olds[] = $cad2;
                  if($valorAfter!=""){
+                     $cad2['valor'] = $valorBefore;
+                     $cad2['campo'] = $field;
+                     $olds[] = $cad2;
                      $cad['valor'] =$valorAfter;
                      $cad['campo'] = $field;
                      $news[] =  $cad;
                  }
-
              }
 	     }
       $data['before']=$olds;
@@ -536,52 +542,54 @@ class Log extends Util
 	    $html="";
 	    switch($tipo){
             case 'complete':
-                $html .="Cambios realizados<br>";
-                $html .="<table>
+                $html .="<table class='full-width'>
                         <thead>
                           <tr>
-                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion anterior</th>
-                            <th colspan='2' style='text-align: center;font-size: 16px;font-weight: bold'>Informacion nueva</th>
+                            <th colspan='4' style='text-align: center;font-size: 10px;font-weight: bold'>Cambios realizados</th>
                           </tr>
                           <tr>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-right:1px solid;border-bottom:1px solid;font-size:14px;font-weight: bold'>Valor</th>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-bottom:1px solid;font-size: 14px;font-weight: bold'>Valor</th>
+                            <th colspan='2' style='text-align: center;font-size: 10px;font-weight: bold'>Informacion anterior</th>
+                            <th colspan='2' style='text-align: center;font-size: 10px;font-weight: bold'>Informacion nueva</th>
+                          </tr>
+                          <tr>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 10px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-right:1px solid;border-bottom:1px solid;font-size:10px;font-weight: bold'>Valor</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 10px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom:1px solid;font-size: 10px;font-weight: bold'>Valor</th>
                           </tr>
                         </thead><tbody>";
                 foreach($changes['after'] as $ck=>$vc){
                     $html .="<tr>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid;'>".$changes['before'][$ck]['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".utf8_decode($changes['before'][$ck]['valor'])."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom:1px solid'>".($changes['before'][$ck]['valor'])."</td>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".$vc['campo'].": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".utf8_decode($vc['valor'])."</td>
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom:1px solid'>".($vc['valor'])."</td>
                                 </tr>";
                 }
                 $html .="</tbody></table><br>";
             break;
             case 'simple':
                 if(!empty($changes)) {
-                    $html .="Informacion detallada del registro<br>";
-                    $html .="<table>
+                    $html .="<table  class='full-width'>
                         <thead>
                           <tr>
-                            <th style='text-align: left;border-right:1px solid;border-bottom: 1px solid;font-size: 14px;font-weight: bold'>Campo</th>
-                            <th style='text-align: left;border-bottom: 1px solid;font-size:14px;font-weight: bold'>Valor</th>            
+                            <th colspan='2' style='text-align: center;font-size: 10px;font-weight: bold'>Informacion detallada del registro</th>
+                          </tr>
+                          <tr>
+                            <th style='text-align: left;border-right:1px solid;border-bottom: 1px solid;font-size: 10px;font-weight: bold'>Campo</th>
+                            <th style='text-align: left;border-bottom: 1px solid;font-size:10px;font-weight: bold'>Valor</th>            
                           </tr>
                         </thead><tbody>";
                     foreach ($changes as $ck => $vc) {
                         $html .= "<tr>
                                     <td style='padding:0px 8px 4px 0px;text-align: left;border-right:1px solid;border-bottom: 1px solid'>" . $changes[$ck]['campo'] . ": </td>
-                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . utf8_decode($changes[$ck]['valor']) . "</td>                                 
+                                    <td style='padding:0px 8px 4px 0px;text-align: left;border-bottom: 1px solid'>" . ($changes[$ck]['valor']) . "</td>                                 
                                 </tr>";
                     }
                     $html .= "</tbody></table>";
                 }
             break;
-
         }
-
         return $html;
     }
     public function saveHistoryChangesServicios($servicioId,$initFactura='0000-00-00',$status,$costo,$personalId,$initOperaciones='0000-00-00',$nombrePersonal='Usuario interno',$lastDateWorkflow='0000-00-00'){
@@ -778,5 +786,44 @@ class Log extends Util
                 '" . $currentUser["personalId"] . "'
             );");
         $this->Util()->DB()->InsertData();
+    }
+    function sendPdfLogFromHtml($html = "") {
+        global $personal;
+        $html_complete = "<html>
+                <head>
+                <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+                     <style type='text/css\'>
+                        body {
+                                font-family: helvetica, Sans-Serif;
+                                font-size: 10px;
+                                line-height: 1;
+                            }
+                        .full-width {
+                            width: 100%;
+                        }    
+                     </style>
+                </head>
+            <body>";
+        $html_complete .= $html;
+        $html_complete .= "</body></html>";
+        $current_user =  $personal->getCurrentUser();
+        $dompdf =  new Dompdf();
+        $html_complete = mb_convert_encoding($html_complete, 'HTML-ENTITIES', 'UTF-8');
+        $dompdf->loadHtml($html_complete);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $fileName  = $_SESSION['User']['userId']."_log_masive_update.pdf";
+        $output =  $dompdf->output();
+        $file1 = DOC_ROOT."/sendFiles/$fileName";
+        file_put_contents($file1, $output);
+
+        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $body ="<p>Se han realizado cambios masivos por el colaborador ".$current_user['name'].". </p>";
+        $body .="<p>En el archivo adjunto encontrara la informacion detallada. </p>";
+        if(is_file($file1)) {
+            $sendmail = new SendMail();
+            $sendmail->PrepareMultipleNotice($subject,$body,[],"",$file1,$fileName, "", "",'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
+            //unlink($file1);
+        }
     }
 }//Log

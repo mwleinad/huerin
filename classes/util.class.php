@@ -3,11 +3,11 @@
 class Util extends Error
 {
 
-	public function DB()
+	public function DB($change_collate = true)
 	{
 		if($this->DB == null )
 		{
-			$this->DB = new DB();
+			$this->DB = new DB($change_collate);
 		}
 		return $this->DB;
 	}

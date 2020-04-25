@@ -1145,12 +1145,15 @@ class Customer extends Main
     }
     return $result;
   }
-  public function SuggestCustomerRazon($filter = [])
+  public function SuggestCustomerRazon($filter = [], $group ='contractId')
   {
     global $User, $personal, $filtro, $departamentos;
+    $catalogo = new Catalogo;
     $ftrCustomer = "";
     $ftrContract = "";
     $ftrSubquery = "";
+
+    $str_group = " group by a.".$group;
 
     switch ($filter['tipos']) {
       case 'temporal':
@@ -1181,7 +1184,7 @@ class Customer extends Main
              b.fechaAlta as fechaAltaCustomer,b.observacion,b.active, a.*
              FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
                   contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,
-                  contract.address, contract.noExtAddress, contract.coloniaAddress, contract.municipioAddress, 
+                  contract.address, contract.noExtAddress, contract.noIntAddress, contract.coloniaAddress, contract.municipioAddress, 
                   contract.estadoAddress, contract.paisAddress, contract.cpAddress, contract.nameContactoAdministrativo,
                   contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.nameContactoContabilidad,
                   contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
@@ -1221,7 +1224,7 @@ class Customer extends Main
                    WHERE 1 $ftrSubquery  GROUP BY contract.contractId 
              ) a 
              INNER JOIN  customer b ON a.customerId = b.customerId
-             WHERE 1 $ftrCustomer $ftrContract order by b.nameContact ASC, a.name ASC";
+             WHERE 1 $ftrCustomer $ftrContract $str_group order by b.nameContact ASC, a.name ASC";
 
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
@@ -1229,14 +1232,17 @@ class Customer extends Main
 
     foreach ($result as $key => $val) {
       $idResponsable = 0;
+      $val['metodoDePago'] = strlen($val['metodoDePago']) > 1 ? $val['metodoDePago'] : "0".$val['metodoDePago'];
+      $metodoDePago = $catalogo->getFormaPagoByClave($val['metodoDePago']);
+      $result[$key]['metodoDePago'] = $metodoDePago['descripcion'];
       $result[$key]["numActiveContracts"] =  $this->HowManyRazonesSociales($val["customerId"]);
       $encargados = json_decode($val['encargados'], true);
       foreach($listDepartamentos as $dep){
           $key_exist = array_search($dep['departamentoId'],array_column($encargados, 'departamentoId'));
 
           $currentEncargado = $key_exist !== false ? $encargados[$key_exist] : [];
-          $result[$key]['resp' . ucfirst(strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['personalId'];
-          $result[$key]['name' . ucfirst(strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['name'];
+          $result[$key]['resp' . ucfirst(mb_strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['personalId'];
+          $result[$key]['name' . ucfirst(mb_strtolower(str_replace(" ", "", $dep['departamento'])))] = $currentEncargado['name'];
           if($dep['departamentoId'] == 1){
               $idResponsable = $currentEncargado['personalId'];
               $result[$key]["responsable"] =  $currentEncargado['name'];

@@ -1,0 +1,103 @@
+[
+  {
+    "name": "ID",
+    "required": true,
+    "check_in_db": true,
+    "check_table": "customer",
+    "check_field": "customerId",
+    "comment": "ID proporcionado por el sistema, es requerido para la actualización de datos.",
+    "field_excel": "customerId",
+    "field_bd": "customerId",
+    "fillable": false,
+    "constraint": false,
+    "is_primary_key": true
+  },
+  {
+    "name": "Nombre cliente principal",
+    "required": true,
+    "comment": "Ingresar el nombre del cliente, evitar el uso de los siguientes caracteres especiales comas(,), comilla simple('), comillas dobles(\"\").",
+    "field_excel": "nameContact",
+    "field_bd": "nameContact",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Telefono de contacto",
+    "required": true,
+    "comment": "Ingresar el telefono de contacto mencionado en el Check List.",
+    "field_excel": "phone",
+    "field_bd": "phone",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Email contacto",
+    "required": true,
+    "comment": "Ingresar el email de contacto mencionado en el Check List.",
+    "field_excel": "email",
+    "field_bd": "email",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Contraseña",
+    "required": false,
+    "comment": "Ingrese contraseña",
+    "field_excel": "password",
+    "field_bd": "password",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "No. de contratos",
+    "required": false,
+    "comment": "Este valor es calculado por el sistema.",
+    "field_excel": "numActiveContracts",
+    "field_bd": "",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "Fecha de alta cliente",
+    "required": true,
+    "comment": "Ingresar fecha en formato Año-Mes-Dia\nAño = 4 digitos\nMes = 2 digitos\nDia = 2 digitos",
+    "validate_date_format": true,
+    "date_format": "Y-m-d",
+    "field_excel": "fechaAltaCustomer",
+    "field_bd": "fechaAlta",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Observaciones",
+    "required": false,
+    "comment": "Campo opcional",
+    "field_excel": "observacion",
+    "field_bd": "observacion",
+    "fillable": true,
+    "constraint": false
+  },
+  {
+    "name": "Status cliente",
+    "required": false,
+    "comment": "Este campo es informativo, para activar o desactivar el registro utilice las funciones del sistema.\nquivalencias:\n1 = Activo\n0 = Inactivo",
+    "field_excel": "active",
+    "field_bd": "active",
+    "fillable": false,
+    "constraint": false
+  },
+  {
+    "name": "No factura de mes 13",
+    "required": true,
+    "comment": "Selecciona un valor presente en la lista de cada fila.",
+    "input_validate": true,
+    "accepted_values" : [
+      "Si",
+      "No"
+    ],
+    "field_excel": "noFactura13",
+    "field_bd": "noFactura13",
+    "fillable": true,
+    "constraint": false
+  }
+]
