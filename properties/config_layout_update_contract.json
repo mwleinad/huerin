@@ -1,6 +1,6 @@
 [
   {
-    "name": "ID Contrato",
+    "name": "ID",
     "required": true,
     "check_in_db": true,
     "check_table": "contract",

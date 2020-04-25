@@ -23,7 +23,7 @@
   },
   {
     "name": "Telefono de contacto",
-    "required": false,
+    "required": true,
     "comment": "Ingresar el telefono de contacto mencionado en el Check List.",
     "field_excel": "phone",
     "field_bd": "phone",
@@ -89,7 +89,7 @@
   {
     "name": "No factura de mes 13",
     "required": true,
-    "comment": "",
+    "comment": "Selecciona un valor presente en la lista de cada fila.",
     "input_validate": true,
     "accepted_values" : [
       "Si",

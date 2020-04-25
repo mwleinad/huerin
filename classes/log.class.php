@@ -34,11 +34,11 @@ class Log extends Util
 	}
 	
 	public function setOldValue($value){
-		$this->oldValue = $value;		
+		$this->oldValue = $value;
 	}
 	
 	public function setNewValue($value){
-		$this->newValue = $value;		
+		$this->newValue = $value;
 	}
     public function setServiciosAfectados($value){
         $this->serviciosAfectados = $value;
@@ -57,7 +57,7 @@ class Log extends Util
 	    $currentUser = $personal->getCurrentUser();
         $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
+				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
         return true;
@@ -67,7 +67,7 @@ class Log extends Util
         $currentUser = $personal->getCurrentUser();
 		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".$this->oldValue."', '".$this->newValue."','".$currentUser["name"]."')";
+				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
@@ -370,8 +370,8 @@ class Log extends Util
          return $result;
     }
     function FindOnlyChanges($before,$after){
-	     $beforeUnserialize = unserialize($before);
-	     $afterUnserialize = unserialize($after);
+	     $beforeUnserialize = is_array(unserialize($before)) ? unserialize($before) : [];
+	     $afterUnserialize = is_array(unserialize($after)) ? unserialize($after) : [];
 	     $news=array();
          $olds=array();
 	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
@@ -789,9 +789,9 @@ class Log extends Util
     }
     function sendPdfLogFromHtml($html = "") {
         global $personal;
-        $html_complete = "
-            <html>
+        $html_complete = "<html>
                 <head>
+                <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
                      <style type='text/css\'>
                         body {
                                 font-family: helvetica, Sans-Serif;
@@ -808,6 +808,7 @@ class Log extends Util
         $html_complete .= "</body></html>";
         $current_user =  $personal->getCurrentUser();
         $dompdf =  new Dompdf();
+        $html_complete = mb_convert_encoding($html_complete, 'HTML-ENTITIES', 'UTF-8');
         $dompdf->loadHtml($html_complete);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();

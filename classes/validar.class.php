@@ -107,7 +107,8 @@ class Validar extends Main
                     continue;
 
                 $card['field'] =  $columna['field_bd'];
-                $card['value'] =  $columna['constraint'] ? $find[$columna['field_return_foreign']] : $row[$col];
+                $card['value'] =  $columna['constraint'] ?
+                                  isset($find[$columna['field_return_foreign']]) ?  $find[$columna['field_return_foreign']] : '0' : mysql_real_escape_string($row[$col]);
                 array_push($fields, $card);
             }
             $card_main['primary_key'] = $columnas[$col_primary_key]['field_bd'];

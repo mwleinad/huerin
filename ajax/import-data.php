@@ -27,7 +27,6 @@ $opcion =  explode("#",$_POST['type']);
 switch($opcion[0]){
     case 'update':
         $validates = $valida->validateLayout($_FILES, $opcion[1], "update");
-        dd($validates);
         $db_connection = new DB(false);
         $actualizados = 0;
         $ignorados = 0;
@@ -66,7 +65,6 @@ switch($opcion[0]){
             }
 
             $sql .= " where $primary_key = '$value_primary_key' ";
-
             $db_connection->setQuery($sql);
             $actualizado = $db_connection->UpdateData();
             if($actualizado > 0) {

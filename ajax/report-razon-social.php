@@ -151,15 +151,14 @@ switch ($_POST['type']) {
         $currentRow = 2;
         foreach ($items as $keyItem => $item) {
             foreach ($headers as $keyHead => $header) {
-                $sheet->setCellValueByColumnAndRow($keyHead, $currentRow, $item[$header['field_excel']]);
-                if($header['validate_date_format'] === true)
+                if($header['validate_date_format'] === true) {
+                    $sheet->setCellValueByColumnAndRow($keyHead, $currentRow, $item[$header['field_excel']]);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2);
-                else
-                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-
+                } else {
+                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($item[$header['field_excel']], PHPExcel_Cell_DataType::TYPE_STRING );
+                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode('@');
+                }
             }
-
-
             $currentRow++;
         }
         if($_POST['type_report'] !== 'update_customer') {
