@@ -1,0 +1,273 @@
+[
+  {
+    "name": "Nombre cliente principal",
+    "comment": "Cliente principal",
+    "field_excel": "nameContact",
+    "field_bd": "nameContact"
+  },
+  {
+    "name": "Telefono contacto",
+    "comment": "",
+    "field_excel": "phone",
+    "field_bd": "phone"
+  },
+  {
+    "name": "Email contacto",
+    "comment": "",
+    "field_excel": "email",
+    "field_bd": "email"
+  },
+  {
+    "name": "Contraseña",
+    "comment": "",
+    "field_excel": "password",
+    "field_bd": "password"
+  },
+  {
+    "name": "No. de contratos",
+    "comment": "",
+    "field_excel": "numActiveContracts",
+    "field_bd": ""
+  },
+  {
+    "name": "Fecha de alta cliente",
+    "comment": "",
+    "field_excel": "fechaAltaCustomer",
+    "field_bd": "fechaAlta"
+  },
+  {
+    "name": "Observaciones",
+    "comment": "",
+    "field_excel": "observacion",
+    "field_bd": "observacion"
+  },
+  {
+    "name": "Status cliente",
+    "comment": "Equivalencias:\n1 = Activo\n0 = Inactivo",
+    "field_excel": "active",
+    "field_bd": "active"
+  },
+  {
+    "name": "Nombre / Razon social",
+    "comment": "",
+    "field_excel": "name",
+    "field_bd": "name"
+  },
+  {
+    "name": "Total de iguala",
+    "comment": "",
+    "field_excel": "totalMensual",
+    "field_bd": ""
+  },
+  {
+    "name": "Tipo",
+    "comment": "",
+    "field_excel": "type",
+    "field_bd": "type"
+  },
+  {
+    "name": "RFC",
+    "comment": "",
+    "field_excel": "rfc",
+    "field_bd": "rfc"
+  },
+  {
+    "name": "Regimen fiscal",
+    "comment": "",
+    "field_excel": "nombreRegimen",
+    "field_bd": "regimenId"
+  },
+  {
+    "name": "Tipo de sociedad",
+    "comment": "",
+    "field_excel": "nombreSociedad",
+    "field_bd": "sociedadId"
+  },
+  {
+    "name": "Status contrato",
+    "comment": "Equivalencias:\nSi = Activo\nNo = Inactivo",
+    "field_excel": "activo",
+    "field_bd": "activo"
+  },
+  {
+    "name": "Actividad comercial",
+    "comment": "",
+    "field_excel": "nombreComercial",
+    "field_bd": "nombreComercial"
+  },
+  {
+    "name": "Direccion comercial",
+    "comment": "",
+    "field_excel": "direccionComercial",
+    "field_bd": "direccionComercial"
+  },
+  {
+    "name": "Calle",
+    "comment": "",
+    "field_excel": "address",
+    "field_bd": "address"
+  },
+  {
+    "name": "No. Ext",
+    "comment": "",
+    "field_excel": "noExtAddress",
+    "field_bd": "noExtAddress"
+  },
+  {
+    "name": "No. Int",
+    "comment": "",
+    "field_excel": "noIntAddress",
+    "field_bd": "noIntAddress"
+  },
+  {
+    "name": "Colonia",
+    "field_excel": "coloniaAddress",
+    "comment": "",
+    "field_bd": "coloniaAddress"
+  },
+  {
+    "name": "Municipio",
+    "comment": "",
+    "field_excel": "municipioAddress",
+    "field_bd": "municipioAddress"
+  },
+  {
+    "name": "Estado",
+    "comment": "",
+    "field_excel": "estadoAddress",
+    "field_bd": "estadoAddress"
+  },
+  {
+    "name": "Pais",
+    "comment": "",
+    "field_excel": "paisAddress",
+    "field_bd": "paisAddress"
+  },
+  {
+    "name": "Codigo postal",
+    "comment": "",
+    "field_excel": "cpAddress",
+    "field_bd": "cpAddress"
+  },
+  {
+    "name": "Nombre contacto administrativo",
+    "comment": "",
+    "field_excel": "nameContactoAdministrativo",
+    "field_bd": "nameContactoAdministrativo"
+  },
+  {
+    "name": "Email contacto administrativo",
+    "comment": "",
+    "field_excel": "emailContactoAdministrativo",
+    "field_bd": "emailContactoAdministrativo"
+  },
+  {
+    "name": "Tel. contacto administrativo",
+    "comment": "",
+    "field_excel": "telefonoContactoAdministrativo",
+    "field_bd": "telefonoContactoAdministrativo"
+  },
+  {
+    "name": "Nombre contacto contabilidad",
+    "comment": "",
+    "field_excel": "nameContactoContabilidad",
+    "field_bd": "nameContactoContabilidad"
+  },
+  {
+    "name": "Email contacto contabilidad",
+    "comment": "",
+    "field_excel": "emailContactoContabilidad",
+    "field_bd": "emailContactoContabilidad"
+  },
+  {
+    "name": "Telefono contacto contabilidad",
+    "comment": "",
+    "field_excel": "telefonoContactoContabilidad",
+    "field_bd": "telefonoContactoContabilidad"
+  },
+  {
+    "name": "Nombre contacto directivo",
+    "comment": "",
+    "field_excel": "nameContactoDirectivo",
+    "field_bd": "nameContactoDirectivo"
+  },
+  {
+    "name": "Email contacto directivo",
+    "comment": "",
+    "field_excel": "emailContactoDirectivo",
+    "field_bd": "emailContactoDirectivo"
+  },
+  {
+    "name": "Tel. contacto directivo",
+    "comment": "",
+    "field_excel": "telefonoContactoDirectivo",
+    "field_bd": "telefonoContactoDirectivo"
+
+  },
+  {
+    "name": "Tel. celular directivo",
+    "comment": "",
+    "field_excel": "telefonoCelularDirectivo",
+    "field_bd": "telefonoCelularDirectivo"
+  },
+  {
+    "name": "Representante legal",
+    "comment": "",
+    "field_excel": "nameRepresentanteLegal",
+    "field_bd": "nameRepresentanteLegal"
+  },
+  {
+    "name": "Clave CIEC",
+    "comment": "",
+    "field_excel": "claveCiec",
+    "field_bd": "claveCiec"
+  },
+  {
+    "name": "Clave FIEL",
+    "comment": "",
+    "field_excel": "claveFiel",
+    "field_bd": "claveFiel"
+  },
+  {
+    "name": "Clave IDSE",
+    "comment": "",
+    "field_excel": "claveIdse",
+    "field_bd": "claveIdse"
+  },
+  {
+    "name": "Clave ISN",
+    "comment": "",
+    "field_excel": "claveIsn",
+    "field_bd": "claveIsn"
+  },
+  {
+    "name": "Facturador",
+    "comment": "",
+    "field_excel": "facturador",
+    "field_bd": "facturador"
+  },
+  {
+    "name": "Metodo de pago",
+    "comment": "",
+    "field_excel": "metodoDePago",
+    "field_bd": "metodoDePago"
+  },
+  {
+    "name": "Numero de cuenta",
+    "comment": "",
+    "field_excel": "noCuenta",
+    "field_bd": "noCuenta"
+  },
+  {
+    "name": "Supervisor",
+    "comment": "",
+    "field_excel": "supervisadoBy",
+    "field_bd": ""
+  },
+  {
+    "name": "No factura de mes 13",
+    "comment": "",
+    "field_excel": "noFactura13",
+    "field_bd": "noFactura13"
+  }
+]

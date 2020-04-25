@@ -9,6 +9,7 @@ class DB
 	
 	private $conn_id = false;
 	private $pdo =NULL;
+	private $change_collate;
 
 	private $sqlHost;
 	private $sqlDatabase;
@@ -77,27 +78,36 @@ class DB
 		return $this->projectStatus;
 	}
 
-	function __construct()
+	public function setChangeCollate($value) {
+	    $this->change_collate = $value;
+    }
+
+    function  getChangeCollate() {
+	    return $this->change_collate;
+    }
+	function __construct($change_collate = true)
 	{
 		$this->sqlHost = SQL_HOST;
 		$this->sqlDatabase = SQL_DATABASE;
 		$this->sqlUser = SQL_USER;
 		$this->sqlPassword = SQL_PASSWORD;
+        $this->change_collate = $change_collate;
 	}
 
     public function DatabaseConnect()
     {
         $this->conn_id = mysql_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, 1);
+        if($this->getChangeCollate())
+            mysql_set_charset("utf8",$this->conn_id);
+
         mysql_select_db($this->sqlDatabase, $this->conn_id) or die("<br/>".mysql_error()."<br/>");
-            mysql_query("SET NAMES utf8;");
-            mysql_query("SET CHARACTER SET utf8;");
     }
     public function ExistPdo(){
         $this->pdo = new PDO("mysql:host=$this->sqlHost;dbname=$this->sqlDatabase",$this->sqlUser,$this->sqlPassword);
     }
     public function ExecuteQueryPdo(){
 
-	        $this->ExistPdo();
+	    $this->ExistPdo();
 
 	    $this->sqlResult = $this->pdo->query($this->query);
         $this->sqlResult->setFetchMode(PDO::FETCH_ASSOC);
@@ -110,22 +120,15 @@ class DB
     }
 	public function ExecuteQuery()
 	{
-
-  	if(!$this->conn_id)
-   	  $this->DatabaseConnect();
-			
+	    //if the connection no exist or the change collate is false, create connection again.
+  	    if(!$this->conn_id)
+   	        $this->DatabaseConnect();
 
 		//TODO we might want to add some security in the queries here, but that can be done later, this is the place
-
-		if($this->projectStatus == "test")
-		{
-				//echo "<br><br>".$this->query."<br><br>";
-//				print_r(debug_backtrace());
+		if($this->projectStatus == "test") {
 	    	$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (trigger_error(mysql_error()));
 		}	
-		else
-		{
-
+		else {
 			$this->sqlResult = mysql_query($this->query, $this->conn_id);
 		}	
 	}

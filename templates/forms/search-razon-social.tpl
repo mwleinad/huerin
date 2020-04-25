@@ -2,19 +2,20 @@
     <form name="frmSearchRazon" id="frmSearchRazon" method="post" onsubmit="return false">
         <input type="hidden" name="type" id="type" value="generate_report_razon_social">
         <input type="hidden" name="cliente" id="cliente" value="0" />
-        <table width="80%" align="center">
+        <table width="100%" align="center">
             <tr style="background-color:#CCC">
-                <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
+                <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
             </tr>
             <tr>
-                <td style="text-align: center;width: 30%">Cliente</td>
-                <td style="text-align: center;width: 30%">Encargado</td>
+                <td style="text-align: center;width: 20%">Cliente</td>
+                <td style="text-align: center;width: 20%">Encargado</td>
                 <td style="text-align: center;width: 10 %">Incluir subordinados</td>
                 <td style="text-align: center;width: 10%">Status</td>
                 <td style="text-align: center;width: 10%">Generan factura del mes 13</td>
+                <td style="text-align: center;width: 20%">Tipo de reporte</td>
             </tr>
             <tr>
-                <td style="text-align: center;width: 30%; padding:0px 4px 4px 8px;">
+                <td style="text-align: center;width: 20%; padding:0px 4px 4px 8px;">
                     <input type="text" size="25" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
                     <div id="loadingDivDatosFactura"></div>
                     <div style="position:relative">
@@ -22,7 +23,7 @@
                         </div>
                     </div>
                 </td>
-                <td style="width: 30%; padding:0px 4px 4px 8px;" align="center">
+                <td style="width: 20%; padding:0px 4px 4px 8px;" align="center">
                     {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
                 </td>
                 <td style="width: 10%; padding:0px 4px 4px 8px;" align="center">
@@ -41,6 +42,13 @@
                         <option value="">Todos</option>
                         <option value="si">Si</option>
                         <option value="no">No</option>
+                    </select>
+                </td>
+                <td style="width: 20%; padding:0px 4px 4px 8px;" align="center">
+                    <select class="largeInput" name="type_report" id="type_report">
+                        <option value="complete_report_cc">Consolidado de clientes principales y sus contratos</option>
+                        <option value="update_contract">Reporte para la actualización de contratos</option>
+                        <option value="update_customer">Reporte para la actualización de clientes principales</option>
                     </select>
                 </td>
 
