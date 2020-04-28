@@ -14,6 +14,8 @@
                         <option value="">Seleccionar..</option>
                         <option value="update#contract">Actualizar razones sociales / contratos</option>
                         <option value="update#customer">Actualizar clientes principales</option>
+                        <option value="add#contract">Importar nuevas razones sociales / contratos</option>
+                        <option value="add#customer">Importar nuevos clientes principales</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>

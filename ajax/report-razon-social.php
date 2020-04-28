@@ -7,7 +7,6 @@ session_start();
 include(DOC_ROOT . '/libs/excel/PHPExcel.php');
 switch ($_POST['type']) {
     case 'generate_report_razon_social':
-
         $file  = DOC_ROOT . "/properties/config_layout_".$_POST['type_report'].".json";
         $string = file_get_contents($file);
         $headers = json_decode($string, true);
@@ -130,7 +129,6 @@ switch ($_POST['type']) {
             }
         }
         // decisiones
-        $current_col_catalogue++;
         $decisiones = ['Si', 'No'];
         $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "DECISIONES");
         $current_row_catalogue = 2;
@@ -163,6 +161,7 @@ switch ($_POST['type']) {
         }
         if($_POST['type_report'] !== 'update_customer') {
             //range regimenes
+            $current_col_catalogue++;
             $regimenes = $regimen->EnumerateAll();
             $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "REGIMENES");
             $current_row_catalogue = 2;
@@ -238,7 +237,6 @@ switch ($_POST['type']) {
                 )
             );
             //end metodos pago
-            //
             // tipos persona
             $current_col_catalogue++;
             $tipos_persona = ['Persona Fisica', 'Persona Moral'];
@@ -276,7 +274,7 @@ switch ($_POST['type']) {
                 $sheet->setDataValidation("$init:$end", $objList);
                 unset($objList);
             }
-            if($colRegimen!=""){
+            if($colRegimen!="") {
                 $init = PHPExcel_Cell::stringFromColumnIndex($colRegimen) . "2";
                 $end = PHPExcel_Cell::stringFromColumnIndex($colRegimen) . $currentRow;
                 $objList = $sheet->getCell($init)->getDataValidation();

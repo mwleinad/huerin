@@ -37,11 +37,18 @@ jQ(document).ready(function(){
         jQ('#formato').change(function(){
             if(this.value=="")
                 return;
+           var url =  this.value === 'update_contract' || this.value === 'update_customer'
+               ? WEB_ROOT +"/ajax/report-razon-social.php"
+               : WEB_ROOT +"/ajax/exp-imp-layout.php";
+           var type =  this.value === 'update_contract' || this.value === 'update_customer'
+            ? "generate_report_razon_social"
+            : "generate_layout";
             var tipo = this.value;
+
            jQ.ajax({
               method:'post',
-              url:WEB_ROOT+'/ajax/exp-imp-layout.php',
-              data:{type:tipo} ,
+              url: url,
+              data:{ type: type, tipo: tipo , type_report: tipo, tipos: 'activos'},
               success:function(response){
                   window.location=response;
               } ,
