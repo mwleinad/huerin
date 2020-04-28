@@ -1,18 +1,5 @@
 [
   {
-    "name": "ID",
-    "required": true,
-    "check_in_db": true,
-    "check_table": "customer",
-    "check_field": "customerId",
-    "comment": "ID proporcionado por el sistema, es requerido para la actualización de datos.",
-    "field_excel": "customerId",
-    "field_bd": "customerId",
-    "fillable": false,
-    "constraint": false,
-    "is_primary_key": true
-  },
-  {
     "name": "Nombre cliente principal",
     "required": true,
     "comment": "Ingresar el nombre del cliente, evitar el uso de los siguientes caracteres especiales comas(,), comilla simple('), comillas dobles(\"\").",
@@ -68,7 +55,6 @@
     "fillable": true,
     "constraint": false
   },
-
   {
     "name": "No factura de mes 13",
     "required": true,
@@ -81,6 +67,9 @@
     "field_excel": "noFactura13",
     "field_bd": "noFactura13",
     "fillable": true,
-    "constraint": false
+    "constraint": false,
+    "field_comparison_foreign": "name",
+    "generate_range": true,
+    "name_range": "decisiones"
   }
 ]

@@ -5,13 +5,13 @@
     </div>
     <div class="grid_6"  id="eventbox">
 
-            <label>Descargar layout</label>
+            <label>Descarga layout</label>
             <select  class="smallInput " name="formato" id="formato">
                 <option value="">Seleccionar</option>
-                <option value="layout-razon">Layout de nueva razon social</option>
-                <option value="layout-update-encargado">Layout actualizar encargados de area</option>
-                <option value="layout-customer">Layout importar clientes nuevos</option>
-                <option value="layout-update-servicios">Layout actualizar servicios de clientes</option>
+                <option value="add_contract">Importar nuevas razones sociales/ contratos </option>
+                <option value="add_customer">Importar nuevos clientes principales</option>
+                <option value="update_contract">Actualizar razones sociales existentes</option>
+                <option value="update_customer">Actualizar clientes principales existentes</option>
             </select>
     </div>
     <div class="clear">

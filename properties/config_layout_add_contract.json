@@ -1,25 +1,16 @@
 [
   {
-    "name": "ID",
-    "required": true,
-    "check_in_db": true,
-    "check_table": "contract",
-    "check_field": "contractId",
-    "comment": "ID proporcionado por el sistema, es requerido para la actualización de datos.",
-    "field_excel": "contractId",
-    "field_bd": "contractId",
-    "fillable": false,
-    "constraint": false,
-    "is_primary_key": true
-  },
-  {
     "name": "Nombre cliente principal",
     "required": true,
-    "comment": "Campo informativo, no se tomara en cuenta para la actualización",
+    "comment": "Ingresar el nombre  del cliente principal tal como aparece en el catalogo de plataforma.\n, .",
     "field_excel": "nameContact",
-    "field_bd": "",
-    "fillable": false,
-    "constraint": false
+    "field_bd": "customerId",
+    "fillable": true,
+    "constraint": true,
+    "reference_table": "customer",
+    "field_comparison_foreign": "nameContact",
+    "field_return_foreign": "customerId",
+    "foreign_key": "customerId"
   },
   {
     "name": "Nombre / Razon social",
@@ -34,10 +25,18 @@
     "name": "Tipo de persona",
     "required": true,
     "comment": "Seleccionar el tipo de persona de la lista que se muestra en las filas",
+    "input_validate": true,
+    "accepted_values" : [
+      "Persona Fisica",
+      "Persona Moral"
+    ],
     "field_excel": "type",
     "field_bd": "type",
     "fillable": true,
-    "constraint": false
+    "constraint": false,
+    "field_comparison_foreign": "name",
+    "generate_range": true,
+    "name_range": "tipos_persona"
   },
   {
     "name": "RFC",
@@ -59,8 +58,9 @@
     "reference_table": "regimen",
     "field_comparison_foreign": "nombreRegimen",
     "field_return_foreign": "regimenId",
-    "foreign_key": "regimenId"
-
+    "foreign_key": "regimenId",
+    "generate_range": true,
+    "name_range": "regimenes"
   },
   {
     "name": "Tipo de sociedad",
@@ -73,7 +73,9 @@
     "reference_table": "sociedad",
     "field_comparison_foreign": "nombreSociedad",
     "field_return_foreign": "sociedadId",
-    "foreign_key": "sociedadId"
+    "foreign_key": "sociedadId",
+    "generate_range": true,
+    "name_range": "sociedades"
   },
   {
     "name": "Actividad economica",
@@ -308,7 +310,13 @@
     "field_excel": "facturador",
     "field_bd": "facturador",
     "fillable": true,
-    "constraint": false
+    "constraint": false,
+    "reference_table": "rfc",
+    "field_comparison_foreign": "claveFacturador",
+    "field_return_foreign": "claveFacturador",
+    "foreign_key": "facturador",
+    "generate_range": true,
+    "name_range": "facturadores"
   },
   {
     "name": "Metodo de pago",
@@ -321,7 +329,9 @@
     "reference_table": "c_FormaPago",
     "field_comparison_foreign": "descripcion",
     "field_return_foreign": "c_FormaPago",
-    "foreign_key": "metodoDePago"
+    "foreign_key": "metodoDePago",
+    "generate_range": true,
+    "name_range": "formas_pago"
   },
   {
     "name": "Numero de cuenta",
@@ -330,15 +340,6 @@
     "field_excel": "noCuenta",
     "field_bd": "noCuenta",
     "fillable": true,
-    "constraint": false
-  },
-  {
-    "name": "Supervisor",
-    "required": false,
-    "comment": "Campo informativo, no se toma en cuenta para la actualización.",
-    "field_excel": "supervisadoBy",
-    "field_bd": "",
-    "fillable": false,
     "constraint": false
   }
 ]

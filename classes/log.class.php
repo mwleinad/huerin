@@ -53,11 +53,12 @@ class Log extends Util
     }
 	public function SaveOnly(){
 	    global $personal;
-
+	    $newValue =  strlen($this->newValue) > 0 ? mysql_real_escape_string($this->newValue) : '';
+        $oldValue =  strlen($this->oldValue) > 0 ? mysql_real_escape_string($this->oldValue) : '';
 	    $currentUser = $personal->getCurrentUser();
         $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
+				 '".$this->action."', '".$oldValue."', '".$newValue."','".$currentUser["name"]."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
         return true;
@@ -523,10 +524,12 @@ class Log extends Util
                     $valorBefore =$allElements[$key];
                 break;
             }
+               if($valorBefore !== ""){
+                   $cad['valor'] =$valorBefore;
+                   $cad['campo'] = $field;
+                   $news[] =  $cad;
+               }
 
-                $cad['valor'] =$valorBefore;
-                $cad['campo'] = $field;
-                $news[] =  $cad;
         }
         return $news;
     }
