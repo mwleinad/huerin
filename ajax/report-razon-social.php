@@ -385,6 +385,21 @@ switch ($_POST['type']) {
             $sheet->setDataValidation("$init:$end", $objList);
             unset($objList);
         }
+        if( $_POST['type_report'] === 'update_customer' ||  $_POST['type_report'] === 'update_contract') {
+            $sheet->getCommentByColumnAndRow(0, 2)
+                ->setVisible(true)
+                ->setMarginTop('300pt')
+                ->setHeight('350pt')
+                ->setWidth('300pt')
+                ->setMarginLeft('0pt')
+                ->getText()->createText("Reglas a tener en cuenta para el correcto llenado del archivo:\n
+            - Utilice las listas desplegadas en las columnas donde esten presentes.\n
+            - Una vez actualizado la informacion, vaya a archivo > Guardar como > Elegir directorio donde alojara el archivo > Seleccione el tipo   CSV (delimitado por comas)(*.csv) > Guardar\n
+            - Se recomienda mantener abierto el archivo, para futuras correcciones en caso de haber cometido algun error en el llenado.\n\n
+            Nota: Puede ocultar los comentarios de la siguiente manera: En la parte superior  de la ventana de excel, ubiquese en la pestaña Revisar , vaya a la seccion comentarios y de click
+            en la opcion Mostrar todos los comentarios. 
+            ");
+        }
 
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
