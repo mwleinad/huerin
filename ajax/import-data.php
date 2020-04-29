@@ -341,9 +341,11 @@ switch ($opcion[0]) {
         echo $logCancel;
         break;
     case 'doPermiso':
-        $opermiso->doPermisos(false);
+        $opermiso->doPermisos(true);
+        $util->setError(0, "complete", "Permisos actualizados.");
+        $util->PrintErrors();
         echo "ok[#]";
-        echo "Permisos actualizados";
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
         break;
     case 'killnotuse':
 

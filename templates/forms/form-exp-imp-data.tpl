@@ -22,8 +22,8 @@
                         <option value="importar_servicios_nuevos">Importar nuevos servicios a clientes</option>
                         <option value="update-servicios">Actualizar servicios de clientes</option>-->
                         {if $User.isRoot}
-                            <!--option value="doPermiso">Reconstruir permisos</option>
-                            <option value="importar_customer_rebuild">Importar clientes rebuild</option>
+                            <option value="doPermiso">Reconstruir permisos</option>
+                            <!--option value="importar_customer_rebuild">Importar clientes rebuild</option>
                             <option value="importar_contrato_rebuild">Importar contratos rebuild</option>
                             <option value="importar_empleados_rebuild">Importar empleados rebuild</option>
                             <option value="importar_servicios_rebuild">Importar servicios a contratos rebuild</option>

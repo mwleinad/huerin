@@ -12,7 +12,7 @@ class Permiso extends Main
         $this->contractId=$value;
     }
     public function doPermiso(){
-        $sql =  "select contractId,permisos from contract where activo='Si'  and contractId='".$this->contractId."' ";
+        $sql =  "select contractId,permisos from contract where contractId='".$this->contractId."' ";
         $this->Util()->DB()->setQuery($sql);
         $contrato = $this->Util()->DB()->getRow();
 
