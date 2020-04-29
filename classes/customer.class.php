@@ -1162,8 +1162,7 @@ class Customer extends Main
         $ftrContract .= " and a.activo = 'Si' ";
         break;
       case 'inactivos':
-          $ftrCustomer .= " and ((b.active = '0' and a.activo = 'Si') or (b.active = '1' and a.activo = 'No') or (b.active = '0' and a.activo = 'No') ) ";
-          //$ftrContract .= " and a.activo = 'No' ";
+          $ftrCustomer = $group === 'contractId' ? " and a.activo = 'No' " :  " and b.active = '0' ";
         break;
     }
     $ftrCustomer .= $filter['cliente'] ? " and b.customerId = '". $filter['cliente'] ."' " : "";
