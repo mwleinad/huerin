@@ -288,7 +288,7 @@
   {
     "name": "Clave IDSE",
     "required": false,
-    "comment": "Ingresarán la clave IDSE una vez confirmado por el área de jurídico.",
+    "comment": "Ingresarán la clave IDSE una vez confirmado por el área de IMSS.",
     "field_excel": "claveIdse",
     "field_bd": "claveIdse",
     "fillable": true,
@@ -297,7 +297,7 @@
   {
     "name": "Clave ISN",
     "required": false,
-    "comment": "Ingresarán la clave ISN una vez confirmado por el área de jurídico.",
+    "comment": "Ingresarán la clave ISN una vez confirmado por el área de IMSS.",
     "field_excel": "claveIsn",
     "field_bd": "claveIsn",
     "fillable": true,

@@ -1147,7 +1147,7 @@ class Customer extends Main
   }
   public function SuggestCustomerRazon($filter = [], $group ='contractId')
   {
-    global $User, $personal, $filtro, $departamentos;
+    global $personal, $departamentos;
     $catalogo = new Catalogo;
     $ftrCustomer = "";
     $ftrContract = "";
@@ -1162,8 +1162,8 @@ class Customer extends Main
         $ftrContract .= " and a.activo = 'Si' ";
         break;
       case 'inactivos':
-          $ftrCustomer .= " and b.active = '0' ";
-          $ftrContract .= " and a.activo = 'No' ";
+          $ftrCustomer .= " and ((b.active = '0' and a.activo = 'Si') or (b.active = '1' and a.activo = 'No') or (b.active = '0' and a.activo = 'No') ) ";
+          //$ftrContract .= " and a.activo = 'No' ";
         break;
     }
     $ftrCustomer .= $filter['cliente'] ? " and b.customerId = '". $filter['cliente'] ."' " : "";
@@ -1180,7 +1180,7 @@ class Customer extends Main
          ? " and contractPermiso.personalId IN ($idImplode) "
          : "";
 
-     $sql = "SELECT  b.customerId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
+    $sql = "SELECT  b.customerId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
              b.fechaAlta as fechaAltaCustomer,b.observacion,b.active, a.*
              FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
                   contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,
@@ -1216,9 +1216,9 @@ class Customer extends Main
                       ']'      
                    )  as encargados
                    FROM contract 
-                   INNER JOIN contractPermiso ON contract.contractId = contractPermiso.contractId
-                   INNER JOIN personal ON contractPermiso.personalId = personal.personalId
-                   INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
+                   LEFT JOIN contractPermiso ON contract.contractId = contractPermiso.contractId
+                   LEFT JOIN personal ON contractPermiso.personalId = personal.personalId
+                   LEFT JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
                    INNER JOIN regimen ON contract.regimenId = regimen.regimenId
                    LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
                    WHERE 1 $ftrSubquery  GROUP BY contract.contractId 
@@ -1236,7 +1236,7 @@ class Customer extends Main
       $metodoDePago = $catalogo->getFormaPagoByClave($val['metodoDePago']);
       $result[$key]['metodoDePago'] = $metodoDePago['descripcion'];
       $result[$key]["numActiveContracts"] =  $this->HowManyRazonesSociales($val["customerId"]);
-      $encargados = json_decode($val['encargados'], true);
+      $encargados = $val['encargados'] !== null ? json_decode($val['encargados'], true) : [];
       foreach($listDepartamentos as $dep){
           $key_exist = array_search($dep['departamentoId'],array_column($encargados, 'departamentoId'));
 

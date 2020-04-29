@@ -409,7 +409,7 @@ switch ($_POST['type']) {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
         }
-        $nameFile = "report_razon_social_" . $_SESSION['User']['userId'] . ".xlsx";
+        $nameFile = "report_razon_social_".$_POST['tipos']."_" . $_SESSION['User']['userId'] . ".xlsx";
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
     break;

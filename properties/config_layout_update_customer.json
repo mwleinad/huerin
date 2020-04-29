@@ -42,7 +42,7 @@
   {
     "name": "Contraseña",
     "required": false,
-    "comment": "Ingrese contraseña",
+    "comment": "Ingrese contraseña, conformado por el primer nombre y primer apellido del cliente principal en MAYUSCULAS sin espacios.",
     "field_excel": "password",
     "field_bd": "password",
     "fillable": true,
@@ -62,7 +62,7 @@
   {
     "name": "Observaciones",
     "required": false,
-    "comment": "Campo opcional",
+    "comment": "En caso de que el cliente principal sea recomendado por alguien, deberás anotar a la persona.",
     "field_excel": "observacion",
     "field_bd": "observacion",
     "fillable": true,
