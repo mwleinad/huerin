@@ -33,23 +33,25 @@ jQ(document).ready(function(){
             }
         });
     });
-    if(jQ('#formato').length>0){
-        jQ('#formato').change(function(){
-            if(this.value=="")
+    if(jQ('#formato').length > 0) {
+        jQ('#formato').change(function() {
+            if(this.value === "")
                 return;
-           var url =  this.value === 'update_contract' || this.value === 'update_customer'
+           var value_split = this.value.split('#');
+           var tipo = value_split[0];
+           var status = value_split[1] !== "" ? value_split[1] : "activos";
+           var url =  tipo === 'update_contract' || tipo === 'update_customer'
                ? WEB_ROOT +"/ajax/report-razon-social.php"
                : WEB_ROOT +"/ajax/exp-imp-layout.php";
-           var type =  this.value === 'update_contract' || this.value === 'update_customer'
+           var type =  tipo === 'update_contract' || tipo === 'update_customer'
             ? "generate_report_razon_social"
             : "generate_layout";
-            var tipo = this.value;
 
            jQ.ajax({
               method:'post',
               url: url,
-              data:{ type: type, tipo: tipo , type_report: tipo, tipos: 'activos'},
-              success:function(response){
+              data:{ type: type, tipo: tipo , type_report: tipo, tipos: status},
+              success:function(response) {
                   window.location=response;
               } ,
               error:function () {
