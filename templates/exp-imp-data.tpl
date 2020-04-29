@@ -23,10 +23,9 @@
         <div class="clear"></div>
         {include file="forms/form-exp-imp-data.tpl"}
         <div class="portlet">
-            <div class="portlet-content nopadding borderGray" id="contenido">s
+            <div class="portlet-content nopadding borderGray" id="contenido">
             </div>
         </div>
     </div>
     <div class="clear"></div>
-
 </div>
