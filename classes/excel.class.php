@@ -215,9 +215,10 @@ class Excel
                                 {$bodyrows[$r]['bgcolor'][] = 'FFFF99';}
                                 else if(preg_match("/stPorIniciar/i",$tds->item($x)->getAttribute('class')))
                                 {$bodyrows[$r]['bgcolor'][] = 'F00F00';}
+                                else if(preg_match("/stParcial/i",$tds->item($x)->getAttribute('class')))
+                                {$bodyrows[$r]['bgcolor'][] = '768389';}
                                 else
                                 {$bodyrows[$r]['bgcolor'][] = 'FFFFFF';}
-
                             }
                             else
                             {

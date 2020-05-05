@@ -70,17 +70,21 @@
 			<td align="center" class="" title="{$item.supervisadoBy}">{$item.supervisadoBy}</td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio name=instancias}
 					<td align="center"
-					  class="{if $instanciaServicio.status neq 'inactiva'}
-							{if $instanciaServicio.class eq 'CompletoTardio'}
+					  class="
+						 {if $instanciaServicio.status neq 'inactiva'}
+							{if $instanciaServicio.class eq 'CompletoTardio' and !($item.isParcial and $instanciaServicio.finstancia > $item.dateLastWorkflow)}
 							  st{'Completo'} txtSt{'Completo'}
 							{else}
-							  {if $instanciaServicio.class eq 'Iniciado'}
+							  {if $instanciaServicio.class eq 'Iniciado'  and !($item.isParcial and $instanciaServicio.finstancia > $item.dateLastWorkflow)}
 			 					st{'PorCompletar'} txtSt{'PorCompletar'}
+							  {elseif $item.isParcial and ($instanciaServicio.finstancia > $item.dateLastWorkflow or !$instanciaServicio.finstancia)}
+								st{'Parcial'} txtSt{'Parcial'}
 							  {else}
-								st{$instanciaServicio.class} txtSt{$instanciaServicio.class}
+							  	st{$instanciaServicio.class} txtSt{$instanciaServicio.class}
 							  {/if}
 							{/if}
-						  {/if}"
+						  {/if}
+						"
 					  title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
 					<div style="cursor:pointer" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
 					{$item.nombreServicio|truncate:5:""}
