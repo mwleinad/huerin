@@ -87,15 +87,21 @@ switch($_POST["type"])
 						if($serv['servicioStatus']=='bajaParcial')
 							$isParcial = true;
 
+						$serv['isParcial'] = $isParcial;
+						$serv['dateLastWorkflow'] = $isParcial ? $util->getFirstDate($serv['lastDateWorkflow']) : '0000-00-00';
+                        $serv['monthLastWorkflow'] = date('Y', $serv['lastDateWorkflow']);
+
                         $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         if(!$serv['instancias'])
                             continue;
+
                         $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         $noCompletados = count($atrasados);
 
 						$tipoServicio->setTipoServicioId($infServ['tipoServicioId']);
 						$deptoId = $tipoServicio->GetField('departamentoId');
-						
+
+
 						$serv['responsable'] = $permisos[$deptoId];
 						$serv['supervisadoBy'] = $personal->findSupervisor($permisos2[$deptoId]);
 						if($formValues['atrasados'])
@@ -132,6 +138,9 @@ switch($_POST["type"])
 							$card["responsable"] = $servicio["responsable"]["name"];
                             $card["supervisadoBy"] = $servicio["supervisadoBy"];
 							$card["name"] = $contract["name"];
+                            $card["isParcial"] = $servicio["isParcial"];
+                            $card['dateLastWorkflow'] =  $servicio['dateLastWorkflow'];
+                            $card['finstancia'] =  $servicio['finstancia'];
                             $card["contractId"] = $contract["contractId"];
                             $card["anio"] = $year;
 							$card["instanciasServicio"] = $servicio["instancias"];;

@@ -1097,6 +1097,9 @@ table.setting {
 .stPorIniciar{
 	background-color:#F00 !important;
 }
+.stParcial{
+	background-color: #768389 !important;
+}
 
 .txtStCompleto,
 .txtStPorIniciar,
@@ -1106,6 +1109,9 @@ table.setting {
 }
 .txtIniciado{
 	color:#000000 !important;
+}
+.txtStParcial{
+	color: #ffffff !important;
 }
 
 /*#box-table-a tr.stCompleto:hover td { color: #000 !important;  }
