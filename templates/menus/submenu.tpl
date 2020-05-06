@@ -83,14 +83,17 @@
             {/if}
             {if $mainMnu == "contratos"}
                 {if in_array(91,$permissions)|| $User.isRoot}
-                <li><a href="{$WEB_ROOT}/customer/tipo/Activos" {if ($page == "customer" && $tipo == "Activos")}class="current"{/if} target="_blank">
-                <span>Listado Activos</span></a></li>
+                    <li><a href="{$WEB_ROOT}/customer/tipo/Activos" {if ($page == "customer" && $tipo == "Activos")}class="current"{/if} target="_blank">
+                    <span>Listado Activos</span></a></li>
                 {/if}
                 {if in_array(92,$permissions)|| $User.isRoot}
-                {*if $User.roleId == 1 || $infoUser.tipoPersonal == "Gerente" || $User.userId == "149"  || ($User.tipoPers == "Supervisor" && $User.departamentoId == 25)*}
-				<li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if ($page == "customer" && $tipo == "Inactivos")}class="current"{/if} target="_blank">
-                <span>Listado Inactivos</span></a></li>
+                    <li><a href="{$WEB_ROOT}/customer/tipo/Inactivos" {if ($page == "customer" && $tipo == "Inactivos")}class="current"{/if} target="_blank">
+                    <span>Listado Inactivos</span></a></li>
 				{/if}
+                {if in_array(270,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/customer/tipo/Temporal" {if ($page == "customer" && $tipo == "Temporal")}class="current"{/if} target="_blank">
+                    <span>Listado Temporal</span></a></li>
+                {/if}
                 {if in_array(181,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/exp-imp-data" {if ($page == "exp-imp-data")}class="current"{/if} target="_blank">
                     <span>Importar desde archivo</span></a></li>

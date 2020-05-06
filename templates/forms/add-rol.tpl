@@ -38,6 +38,13 @@
 				</div>
 				<hr>
 			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left"> Acceso ilimitado a clientes y/o contratos</div>
+				<div style="width:70%;float: left;">
+					<input type="checkbox" name="allow_visualize_any_contract" id="allow_visualize_any_contract" {if $post.allow_visualize_any_contract eq '1'}checked{/if} class="largeInput "/>
+				</div>
+				<hr>
+			</div>
 			<div style="clear:both"></div>
 			<hr />
 			<div class="formLine" style="text-align:center">

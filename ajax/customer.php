@@ -6,13 +6,13 @@ session_start();
 switch($_POST["type"])
 {
 	case "search":
-		if(!$_POST["responsableCuenta"])
-		{
-			$page = "report-servicio";
-		}
-
-		$_POST["subor"] = isset($_POST["deep"]) ? "subordinado" : "";
-		$result = $customer->SuggestCustomerCatalogFiltrado($_POST["valur"], $_POST["subor"], $customerId = 0, $_POST["tipo"]);
+		$_POST['deep'] = $_POST['deep']==='true' ? true : false ;
+		$encargados = $personal->GetIdResponsablesSubordinados($_POST);
+		$filter = $_POST;
+		$filter['like'] = $_POST['valur'];
+		$filter['tipos'] = $_POST['tipo'];
+		$filter['encargados'] = $encargados;
+		$result = $customer->EnumerateAllCustomer($filter);
 		$smarty->assign("DOC_ROOT", DOC_ROOT);
 		$smarty->assign("customers", $result);
 		$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');

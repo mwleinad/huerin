@@ -210,6 +210,6 @@
 		</td>
 		</tr>
 	{/if}
- {/foreach}s
+ {/foreach}
 </tbody>
 </table>

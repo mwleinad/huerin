@@ -236,7 +236,7 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
     foreach ($result as $key => $val) {
-      //$result[$key]["nameContact"] = utf8_encode($result[$key]["nameContact"]);      
+      //$result[$key]["nameContact"] = utf8_encode($result[$key]["nameContact"]);
       $sql = "SELECT 
               * 
              FROM 
@@ -1227,6 +1227,7 @@ class Customer extends Main
 
     $this->Util()->DB()->setQuery($sql);
     $result = $this->Util()->DB()->GetResult();
+
     $listDepartamentos = $departamentos->GetListDepartamentos();
 
     foreach ($result as $key => $val) {
@@ -1251,7 +1252,7 @@ class Customer extends Main
       $contract->setContractId($val['contractId']);
       $result[$key]["totalMensual"] =  number_format($contract->getTotalIguala(), 2, '.', ',');
       $result[$key]["generaFactura13"] =  $val['noFactura13'] == 'Si' ? 'No' : 'Si';
-     
+
       $jefes = [];
       $personal->setPersonalId($idResponsable);
       $infP = $personal->InfoWhitRol();
@@ -1532,6 +1533,109 @@ class Customer extends Main
     } //foreach
     return $result;
   } //SuggestCustomerCatalog
+
+  public function SuggestCustomerFilter($filter = [], $limit = false){
+      $sfSubquery = $sfQueryPermiso = $sfQuery =  $sfLimit = "";
+      $tipo =  strtolower($filter['tipos']);
+      switch ($tipo) {
+          case 'activos':
+              $sfQuery .= " and (a.active = '1' and  b.activo = 'Si') ";
+          break;
+          case 'inactivos':
+              $sfQuery .= " and (a.active = '0') ";
+          break;
+          case 'temporal':
+              $sfQuery .= "";
+              break;
+          default:
+              $sfQuery .= " and (a.active = '1' and  b.activo = 'Si') ";
+          break;
+      }
+      $allowAccessAnyContract = $this->accessAnyContract();
+      if($allowAccessAnyContract === false)
+          return [];
+
+      $sfQuery .= $filter['clienteId'] ? " and a.customerId = '".$filter['clienteId']."' ": "";
+
+      $idImplode =  implode(',',  $filter['encargados']);
+      $sfQueryPermiso .= $allowAccessAnyContract === '0' || $filter['responsableCuenta'] > 0
+          ? " and contractPermiso.personalId IN ($idImplode) "
+          : "";
+
+      $sfSubquery .= $filter['like'] !== '' ? " or contract.name like '%".$filter['like']."%' " : "";
+      $sfQuery .= $filter['like'] !== '' ? " and (a.nameContact like '%".$filter['like']."%' or b.name like '%".$filter['like']."%' or b.rfc like '%".$filter['like']."%') " : "";
+      $sfLimit .= $limit ? " LIMIT 15 " : "";
+
+      $sQuery = "SELECT  a.customerId as clienteId, a.nameContact, a.phone, a.email, a.password,a.noFactura13,
+                 a.fechaAlta,a.observacion,a.active, b.*
+                 FROM customer a 
+                 LEFT JOIN (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
+                 contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,
+                 contract.address, contract.noExtAddress, contract.noIntAddress, contract.coloniaAddress, contract.municipioAddress, 
+                 contract.estadoAddress, contract.paisAddress, contract.cpAddress, contract.nameContactoAdministrativo,
+                 contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.nameContactoContabilidad,
+                 contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
+                 contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
+                 contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
+                 contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad
+                 FROM contract
+                 INNER JOIN regimen ON contract.regimenId = regimen.regimenId
+                 LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                 WHERE 1  $sfSubquery
+             ) b
+             ON a.customerId = b.customerId   
+             WHERE 1 $sfQuery  order by a.nameContact ASC, b.name ASC $sfLimit";
+
+      $this->Util()->DB()->setQuery($sQuery);
+      $result = $this->Util()->DB()->GetResult();
+      $contract = new Contract;
+      $newArray = [];
+      foreach ($result as $key => $value) {
+        $allow = $allowAccessAnyContract === '1' &&  $filter['responsableCuenta'] <=0 ? true : false;
+        if (!$allow && $value['contractId'] !== null) {
+            $contract->setContractId($value['contractId']);
+            $allow =  count($contract->getPermisosByContract($sfQueryPermiso));
+        }
+        if(!$allow)
+            continue;
+
+        $cad =  $value;
+        $cad["doBajaTemporal"] = 0;
+        $cad["haveTemporal"] = 0;
+        $cad["contractsActivos"] = $this->HowManyRazonesSociales($value["clienteId"],  'Si');
+        $cad["contractsInactivos"] = $this->HowManyRazonesSociales($value["clienteId"],  'No');
+        $cad["contracts"] =  $cad['contractsActivos'] + $cad['contractsInactivos'];
+
+        $parciales = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"], 'bajaParcial'): [];
+
+        if($tipo === 'temporal') {
+            if(count($parciales) <= 0)
+                continue;
+        }
+        array_push($newArray, $cad);
+      }
+      return $newArray;
+  }
+  public function EnumerateAllCustomer($filter) {
+        $result = $this->SuggestCustomerFilter($filter);
+        $clientes = [];
+        foreach($result as $key => $value) {
+            $parciales = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"], 'bajaParcial'): [];
+            $serviciosActivos = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"],'activo') : [];
+            $allowBajaTemp = $value['activo'] === 'Si' && count($serviciosActivos) > 0 ? count($serviciosActivos) : 0;
+            $countTemporal=  $value['activo'] === 'Si' && count($parciales) > 0 ? count($parciales) : 0;
+            if(!key_exists($value['customerId'],  $clientes)){
+                $cad = $value;
+                $cad['doBajaTemporal'] = $allowBajaTemp;
+                $cad['haveTemporal'] =  $countTemporal;
+                $clientes[$value['customerId']] = $cad;
+            } else {
+                $clientes[$value['customerId']]['doBajaTemporal'] += $allowBajaTemp;
+                $clientes[$value['customerId']]['haveTemporal'] += $countTemporal;
+            }
+        }
+       return $clientes;
+  }
   public function GetListRazones($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limite = false)
   {
     $creport = new ContractRep();
@@ -1617,27 +1721,6 @@ class Customer extends Main
     return $result;
   }
 
-  public function DeleteInactivos()
-  {
-
-    $sql = "DELETE 
-            FROM 
-              customer 
-            WHERE 
-              active = '0'";
-    $this->Util()->DB()->setQuery($sql);
-
-    $result = $this->Util()->DB()->DeleteData();
-
-    $sql = "DELETE 
-            FROM 
-              contract 
-            WHERE 
-              activo = 'No'";
-    $this->Util()->DB()->setQuery($sql);
-
-    $result = $this->Util()->DB()->DeleteData();
-  }
   public function HistorialAll()
   {
     $this->Util()->DB()->setQuery("
