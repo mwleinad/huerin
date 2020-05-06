@@ -1145,7 +1145,7 @@ function SubordinadosDetailsAddPass()
                     $idPersons = array_merge($idPersons, $subsLine);
                     unset($subsLine);
                     unset($subordinados);
-                } //foreac
+                }
                 $idPersons = array_unique($idPersons);
             } else {
                 $idPersons = array();

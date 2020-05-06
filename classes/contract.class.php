@@ -1451,7 +1451,16 @@ class Contract extends Main
         return $misPermisos;
 
     }
-
+    public function getPermisosByContract($sfQueryPermiso =  "") {
+        $sQuery =  "SELECT contractPermiso.contractId,contractPermiso.departamentoId, contractPermiso.personalId, 
+                    departamentos.departamento,personal.name 
+                    FROM contractPermiso 
+                    LEFT JOIN departamentos ON contractPermiso.departamentoId =  departamentos.departamentoId
+                    INNER JOIN personal ON contractPermiso.personalId =  personal.personalId 
+                    WHERE contractPermiso.contractId = '".$this->contractId."' $sfQueryPermiso ";
+        $this->Util()->DB()->setQuery($sQuery);
+        return $this->Util()->DB()->GetResult();
+    }
     public function UpdateComentario($comentario)
     {
         global $User;

@@ -62,6 +62,7 @@ switch($_POST['type']){
     case 'saveRol':
          $rol->setDepartamentoId($_POST['depId']);
          $rol->setCategoria($_POST['nivel']);
+         $rol->setAllowAnyContract(isset($_POST['allow_visualize_any_contract']) ? '1' : '0');
          $rol->setName($_POST['name']);
          if($rol->Save())
          {
@@ -101,6 +102,7 @@ switch($_POST['type']){
         $rol->setRolId($_POST['rolId']);
         $rol->setDepartamentoId($_POST['depId']);
         $rol->setCategoria($_POST['nivel']);
+        $rol->setAllowAnyContract(isset($_POST['allow_visualize_any_contract']) ? '1' : '0');
         $rol->setName($_POST['name']);
         if($rol->Update())
         {

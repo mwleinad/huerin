@@ -50,10 +50,15 @@ class Rol extends main
         $this->categoria=$value;
     }
     private $porcentaje;
-    public function setPorcentaje($value){
+    public function setPorcentaje($value) {
         $this->Util()->ValidateRequireField($value,'Porcentaje');
         $this->Util()->ValidateNumericWhitRange($value,0,100,'Porcentaje');
-        $this->porcentaje=$value;
+        $this->porcentaje = $value;
+    }
+
+    private $allowAnyContract;
+    public function setAllowAnyContract($value) {
+      $this->allowAnyContract = $value;
     }
     public function Info(){
         $sql = "SELECT * FROM roles WHERE status='activo' AND rolId='".$this->rolId."' ";
@@ -153,7 +158,8 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO roles(name,status,departamentoId,nivel) VALUES('".$this->name."','activo','".$this->depId."','".$this->categoria."') ";
+
+        $sql = "INSERT INTO roles(name,status,departamentoId,nivel,allow_visualize_any_contract) VALUES('".$this->name."','activo','".$this->depId."','".$this->categoria."','".$this->allowAnyContract."') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -191,7 +197,7 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."',nivel='".$this->categoria."' WHERE rolId='".$this->rolId."' ";
+        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."',nivel='".$this->categoria."', allow_visualize_any_contract='".$this->allowAnyContract."' WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 
