@@ -146,7 +146,7 @@
 	$smarty->assign("calO", $calO);
 	$smarty->assign('mainMnu','contratos');
 	
-	$empleados = $personal->Enumerate();			
+	$empleados = $personal->EnumerateAll();
 	$smarty->assign("empleados", $empleados);
     $filtros['depExcluidos'] ='mensajeria';
     $departamentos = $departamentos->Enumerate($filtros);

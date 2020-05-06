@@ -73,7 +73,7 @@
 	$permisos = $contract->UsuariosConPermiso($infoRazonSocial['permisos'],$infoRazonSocial['responsableCuenta']);			
 	$smarty->assign("permisos", $permisos);
 	
-	$empleados = $personal->Enumerate();			
+	$empleados = $personal->EnumerateAll();
 	$smarty->assign("empleados", $empleados);
 	
 	//Checamos los permisos para eliminar DOCs y Archivos
