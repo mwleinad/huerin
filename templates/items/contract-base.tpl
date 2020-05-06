@@ -72,7 +72,7 @@
                     <img src="{$WEB_ROOT}/images/icons/backup_16x16.png" class="spanAll spanUpdatePermisos" data-id="{$item.contractId}"  border="0"/></a>
             {/if}
             {if in_array(66,$permissions) || $User.isRoot}
-               <a href="{$WEB_ROOT}/contract-view/contId/{$item.contractId}">
+               <a href="{$WEB_ROOT}/contract-view/contId/{$item.contractId}" target="_blank">
                 <img src="{$WEB_ROOT}/images/icons/view.png" title="Ver Detalles" />
                </a>
             {/if}
