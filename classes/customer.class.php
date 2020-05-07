@@ -1618,20 +1618,21 @@ class Customer extends Main
   }
   public function EnumerateAllCustomer($filter) {
         $result = $this->SuggestCustomerFilter($filter);
+
         $clientes = [];
         foreach($result as $key => $value) {
             $parciales = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"], 'bajaParcial'): [];
             $serviciosActivos = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"],'activo') : [];
             $allowBajaTemp = $value['activo'] === 'Si' && count($serviciosActivos) > 0 ? count($serviciosActivos) : 0;
             $countTemporal=  $value['activo'] === 'Si' && count($parciales) > 0 ? count($parciales) : 0;
-            if(!key_exists($value['customerId'],  $clientes)){
+            if(!key_exists($value['clienteId'],  $clientes)){
                 $cad = $value;
                 $cad['doBajaTemporal'] = $allowBajaTemp;
                 $cad['haveTemporal'] =  $countTemporal;
-                $clientes[$value['customerId']] = $cad;
+                $clientes[$value['clienteId']] = $cad;
             } else {
-                $clientes[$value['customerId']]['doBajaTemporal'] += $allowBajaTemp;
-                $clientes[$value['customerId']]['haveTemporal'] += $countTemporal;
+                $clientes[$value['clienteId']]['doBajaTemporal'] += $allowBajaTemp;
+                $clientes[$value['clienteId']]['haveTemporal'] += $countTemporal;
             }
         }
        return $clientes;
