@@ -1539,7 +1539,7 @@ class Customer extends Main
       $tipo =  strtolower($filter['tipos']);
       switch ($tipo) {
           case 'activos':
-              $sfQuery .= " and (a.active = '1' and  b.activo = 'Si') ";
+              $sfQuery .= " and (a.active = '1') ";
           break;
           case 'inactivos':
               $sfQuery .= " and (a.active = '0') ";
@@ -1548,7 +1548,7 @@ class Customer extends Main
               $sfQuery .= "";
               break;
           default:
-              $sfQuery .= " and (a.active = '1' and  b.activo = 'Si') ";
+              $sfQuery .= " and (a.active = '1') ";
           break;
       }
       $allowAccessAnyContract = $this->accessAnyContract();
