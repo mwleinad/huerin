@@ -1538,15 +1538,13 @@ class Customer extends Main
       $sfSubquery = $sfQueryPermiso = $sfQuery =  $sfLimit = "";
       $tipo =  strtolower($filter['tipos']);
       switch ($tipo) {
+          case 'temporal':
           case 'activos':
               $sfQuery .= " and (a.active = '1') ";
           break;
           case 'inactivos':
               $sfQuery .= " and (a.active = '0') ";
           break;
-          case 'temporal':
-              $sfQuery .= "";
-              break;
           default:
               $sfQuery .= " and (a.active = '1') ";
           break;
@@ -1618,7 +1616,6 @@ class Customer extends Main
   }
   public function EnumerateAllCustomer($filter) {
         $result = $this->SuggestCustomerFilter($filter);
-
         $clientes = [];
         foreach($result as $key => $value) {
             $parciales = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"], 'bajaParcial'): [];
