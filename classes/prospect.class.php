@@ -301,7 +301,7 @@ class Prospect extends Main
 
     public function info() {
         $sQuery = "select a.*, b.nombreRegimen from prospect a 
-                   inner join tiporegimen b on a.regimen_id = b.tipoRegimenId 
+                   inner join tipoRegimen b on a.regimen_id = b.tipoRegimenId 
                    where a.id = '".$this->id."' ";
         $this->Util()->DB()->setQuery($sQuery);
         return $this->Util()->DB()->GetRow();
@@ -314,7 +314,7 @@ class Prospect extends Main
 
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
         $sQuery = "select a.*, b.nombreRegimen from prospect a 
-                   inner join tiporegimen b on a.regimen_id = b.tipoRegimenId 
+                   inner join tipoRegimen b on a.regimen_id = b.tipoRegimenId 
                    where 1 order by create_at desc ". $sql_add;
         $this->Util()->DB()->setQuery($sQuery);
         $result = $this->Util()->DB()->GetResult();
