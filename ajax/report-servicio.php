@@ -79,7 +79,7 @@ switch($_POST["type"])
 						$permisos2[$idDepto] = $idPersonal;
 					}
 					$servicios = array();
-					foreach($con['servicios'] as $serv){
+					foreach($con['servicios'] as $serv) {
 						$isParcial =  false;
 						$servicio->setServicioId($serv['servicioId']);
 						$infServ = $servicio->Info();
@@ -87,13 +87,24 @@ switch($_POST["type"])
 						if($serv['servicioStatus']=='bajaParcial')
 							$isParcial = true;
 
-						$serv['isParcial'] = $isParcial;
 						$serv['dateLastWorkflow'] = $isParcial ? $util->getFirstDate($serv['lastDateWorkflow']) : '0000-00-00';
-                        $serv['monthLastWorkflow'] = date('Y', $serv['lastDateWorkflow']);
 
                         $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         if(!$serv['instancias'])
                             continue;
+
+						$yearLastWorkflow = (int)date('Y',strtotime($serv['lastDateWorkflow']));
+                        if($isParcial and ((int)$year >= $yearLastWorkflow)) {
+							$monthLastWorkflow =  (int) date('m', strtotime($serv['lastDateWorkflow']));
+                        	foreach($serv['instancias'] as $ki => $inst) {
+								if((int)$year === $yearLastWorkflow) {
+									$serv['instancias'][$ki]['class'] = $ki > $monthLastWorkflow ? 'Parcial' : $inst['class'];
+								}
+								else
+									$serv['instancias'][$ki]['class'] = 'Parcial';
+
+							}
+						}
 
                         $atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
                         $noCompletados = count($atrasados);
@@ -138,9 +149,6 @@ switch($_POST["type"])
 							$card["responsable"] = $servicio["responsable"]["name"];
                             $card["supervisadoBy"] = $servicio["supervisadoBy"];
 							$card["name"] = $contract["name"];
-                            $card["isParcial"] = $servicio["isParcial"];
-                            $card['dateLastWorkflow'] =  $servicio['dateLastWorkflow'];
-                            $card['finstancia'] =  $servicio['finstancia'];
                             $card["contractId"] = $contract["contractId"];
                             $card["anio"] = $year;
 							$card["instanciasServicio"] = $servicio["instancias"];;

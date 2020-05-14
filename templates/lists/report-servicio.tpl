@@ -72,12 +72,12 @@
 					<td align="center"
 					  class="
 						 {if $instanciaServicio.status neq 'inactiva'}
-							{if $instanciaServicio.class eq 'CompletoTardio' and !($item.isParcial and $instanciaServicio.finstancia > $item.dateLastWorkflow)}
+							{if $instanciaServicio.class eq 'CompletoTardio'}
 							  st{'Completo'} txtSt{'Completo'}
 							{else}
-							  {if $instanciaServicio.class eq 'Iniciado'  and !($item.isParcial and $instanciaServicio.finstancia > $item.dateLastWorkflow)}
+							  {if $instanciaServicio.class eq 'Iniciado'}
 			 					st{'PorCompletar'} txtSt{'PorCompletar'}
-							  {elseif $item.isParcial and ($instanciaServicio.finstancia > $item.dateLastWorkflow or !$instanciaServicio.finstancia)}
+							  {elseif $instanciaServicio.class eq 'Parcial'}
 								st{'Parcial'} txtSt{'Parcial'}
 							  {else}
 							  	st{$instanciaServicio.class} txtSt{$instanciaServicio.class}
