@@ -1,25 +1,15 @@
 <?php
 
-//language
-if(!isset($_SESSION['lang']))
-{
-//	include_once(DOC_ROOT.'/properties/language.es.php');
+if(!isset($_SESSION['lang'])) {
     include_once(DOC_ROOT.'/properties/errors.es.php');
-}
-elseif($_SESSION['lang'] == 'es')
-{
-//	include_once(DOC_ROOT.'/properties/language.es.php');
+} elseif($_SESSION['lang'] == 'es') {
     include_once(DOC_ROOT.'/properties/errors.es.php');
-}
-else
-{
-//	include_once(DOC_ROOT.'/properties/language.en.php');
+} else {
     include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 
-
-//include_once(DOC_ROOT.'/properties/config.php');
 require(DOC_ROOT.'/libs/Smarty.class.php');
+$smarty = new Smarty;
 require(DOC_ROOT.'/libs/nusoap.php');
 include_once(DOC_ROOT."/libs/qr/qrlib.php");
 
@@ -108,14 +98,11 @@ include_once(DOC_ROOT."/classes/catalogue.class.php");
 
 include_once(DOC_ROOT."/classes/archivos.class.php");
 include_once(DOC_ROOT."/classes/razon.class.php");
-
 include_once(DOC_ROOT."/classes/rol.class.php");
+
 $rol = new Rol;
-
-
 $db = new DB;
 $dbRemote = new DBRemote;
-
 $error = new Error;
 $util = new Util;
 $main = new Main;
@@ -182,97 +169,61 @@ $xmlTransform = new XmlTransform;
 
 $archivos = new Archivos();
 
-//echo $page;exit;
+//services
 include_once(DOC_ROOT."/services/Cfdi.php");
-include_once(DOC_ROOT."/services/Catalogo.php");
-include_once(DOC_ROOT."/services/Sello.php");
-include_once(DOC_ROOT."/services/Totales.php");
-include_once(DOC_ROOT."/services/ComprobantePago.php");
-include_once(DOC_ROOT."/services/CfdiUtil.php");
-include_once(DOC_ROOT."/services/PdfService.php");
-include_once(DOC_ROOT."/services/XmlReaderService.php");
-include_once(DOC_ROOT."/services/QrService.php");
-include_once(DOC_ROOT."/services/invoice/invoice.php");
-
-
 $cfdi = new Cfdi;
+include_once(DOC_ROOT."/services/Catalogo.php");
 $catalogo = new Catalogo;
+include_once(DOC_ROOT."/services/Sello.php");
 $sello = new Sello;
+include_once(DOC_ROOT."/services/Totales.php");
 $totales = new Totales;
+include_once(DOC_ROOT."/services/ComprobantePago.php");
 $comprobantePago = new ComprobantePago;
+include_once(DOC_ROOT."/services/CfdiUtil.php");
 $cfdiUtil = new CfdiUtil;
-$pdfService = new PdfService;
-$xmlReaderService = new XmlReaderService;
+include_once(DOC_ROOT."/services/QrService.php");
 $qrService = new QrService;
+include_once(DOC_ROOT."/services/PdfService.php");
+$pdfService = new PdfService;
+include_once(DOC_ROOT."/services/XmlReaderService.php");
+$xmlReaderService = new XmlReaderService;
+include_once(DOC_ROOT."/services/invoice/invoice.php");
 $invoiceService = new InvoiceService;
 
-
-$smarty = new Smarty;
-$smarty->assign('DOC_ROOT',DOC_ROOT);
-$smarty->assign('WEB_ROOT',WEB_ROOT);
-
-$smarty->assign('property', $property);
-
 $lang = $util->ReturnLang();
-
 $User = $_SESSION['User'];
-
 $infoUser = $user->Info();
-$smarty->assign('infoUser', $infoUser);
+$User['tipoPersonal'] =  $infoUser['tipoPersonal'];
+$User['tipoPers'] = $infoUser['tipoPersonal'];
 
-$User = $_SESSION['User'];
-
-$infoUser = $user->Info();
-$smarty->assign('infoUser', $infoUser);
-
-if($_SESSION['User']['tipoPers']=='Admin')	{
+if($User['isRoot']) {
     $rol->setAdmin(1);
-    $User['roleId'] = 1;
-}else{
-    //primero buscar por nombre el rol
-    $rol->setTitulo($infoUser['tipoPersonal']);
-    $roleId = $rol->GetIdByName();
-    if($roleId<=0){
-        //si por nombre de rol no se encuentra entonces usar el rolId que tiene en la tabla personal
-        //ese nunca debe fallar aun que se cambie de nombre de nombre de el rol. cuando se haya asignado los roles a todos
-        // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
-        $rol->setRolId($infoUser['roleId']);
-        $row = $rol->Info();
-        $infoUser['tipoPersonal'] = $row['name'];
-        $roleId=$row['rolId'];
-        $User['tipoPers'] = $row['name'];
-    }
-    $User['roleId'] = $roleId;
-    //find departamento user active
-    if($infoUser['departamentoId']>0)
-        $User['departamentoId']=$infoUser['departamentoId'];
-    else{
-        $rol->setRolId($User['roleId']);
-        $dep = $rol->Info();
-        $User['departamentoId']=$dep['departamentoId'];
-    }
+} else {
+    $rol->setRolId($infoUser['roleId']);
+    $row = $rol->Info();
+    $User['departamentoId'] = $infoUser['departamentoId'] > 0 ? $infoUser['departamentoId'] : $row['departamentoId'];
 }
-
 
 $rol->setRolId($User['roleId']);
 $permissions = $rol->GetPermisosByRol();
-$smarty->assign('permissions', $permissions);
-
-
 $rol->setRolId($User['roleId']);
 $firstPages = $rol->FindFirstPage();
-$smarty->assign('firstPages', $firstPages);
+$firstDep = $departamentos->GetFirstDep();
 
-$User['tipoPersonal'] = $infoUser['tipoPersonal'];
+$smarty->assign('DOC_ROOT',DOC_ROOT);
+$smarty->assign('WEB_ROOT',WEB_ROOT);
+$smarty->assign('property', $property);
+$smarty->assign('infoUser', $infoUser);
+$smarty->assign('permissions', $permissions);
+$smarty->assign('firstPages', $firstPages);
 $smarty->assign('User',$User);
-function dd($data)
-{
+$smarty->assign("firstDep", $firstDep);
+
+function dd($data) {
     echo "<pre>";
     print_r($data);
     echo "</pre>";
 }
-
 require 'vendor/autoload.php';
-
-
 ?>

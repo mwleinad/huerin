@@ -6,7 +6,7 @@ if (!isset($_SESSION))
     session_start();
 }
 
-if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] == 'vp_menu' || $_GET['page'] == 'resource-office-pdf')) {
+if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] == 'vp_menu' || $_GET['page'] == 'resource-office-pdf' || $_GET['page'] == 'prospect-offer-pdf')) {
   ini_set("display_errors", "ON");
   error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
 

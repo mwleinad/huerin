@@ -1,6 +1,4 @@
 <?php
-
-//language
 if(!isset($_SESSION['lang']))
 {
 	include_once(DOC_ROOT.'/properties/errors.es.php');
@@ -13,18 +11,16 @@ else
 {
 	include_once(DOC_ROOT.'/properties/errors.es.php');
 }
-
-
 require 'vendor/autoload.php';
 
 require(DOC_ROOT.'/libs/Smarty.class.php');
+$smarty = new Smarty;
+
 require(DOC_ROOT.'/libs/nusoap.php');
 include_once(DOC_ROOT."/libs/qr/qrlib.php");
 include_once(DOC_ROOT."/libs/arrayColumn.php");
 
-
 include_once(DOC_ROOT."/constants.php");
-
 
 include_once(DOC_ROOT.'/classes/db.class.php');
 include_once(DOC_ROOT.'/classes/db-remote.class.php');
@@ -47,7 +43,6 @@ include_once(DOC_ROOT."/classes/CNumeroaLetra.class.php");
 include_once(DOC_ROOT."/classes/pac.class.php");
 include_once(DOC_ROOT.'/classes/automatic-invoice.class.php');
 include_once(DOC_ROOT.'/classes/automatic-invoice-rif.class.php');
-//include_once(DOC_ROOT.'/classes/month13.class.php');
 include_once(DOC_ROOT.'/classes/automatic-invoice-braun.class.php');
 
 include_once(DOC_ROOT.'/classes/excel.class.php');
@@ -124,11 +119,15 @@ include_once(DOC_ROOT."/classes/changePlatform.class.php");
 include_once(DOC_ROOT."/classes/utileriaInvoice.class.php");
 include_once(DOC_ROOT."/classes/articulo.class.php");
 include_once(DOC_ROOT."/classes/inventory.class.php");
-
+include_once(DOC_ROOT."/classes/prospect.class.php");
+include_once(DOC_ROOT."/classes/prospectOffer.class.php");
+$prospect = new Prospect;
 
 //cron
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
+$cronServicio = new CronServicio();
 include_once(DOC_ROOT."/classes/backup.class.php");
+$backup = new Backup();
 
 $db = new DB;
 $dbRemote = new DBRemote;
@@ -212,84 +211,52 @@ $utileriaInvoice = new UtileriaInvoice();
 $inventory =  new Inventory;
 $permiso = new Permiso;
 
-//cron
-$cronServicio = new CronServicio();
-$backup = new Backup();
-//echo $page;exit;
+//services
 include_once(DOC_ROOT."/services/Catalogo.php");
-include_once(DOC_ROOT."/services/Sello.php");
-include_once(DOC_ROOT."/services/Totales.php");
-include_once(DOC_ROOT."/services/ComprobantePago.php");
-include_once(DOC_ROOT."/services/CfdiUtil.php");
-include_once(DOC_ROOT."/services/Cancelation.php");
-include_once(DOC_ROOT."/services/ControlFromXml.php");
-
 $catalogo = new Catalogo;
+include_once(DOC_ROOT."/services/Sello.php");
 $sello = new Sello;
+include_once(DOC_ROOT."/services/Totales.php");
 $totales = new Totales;
+include_once(DOC_ROOT."/services/ComprobantePago.php");
 $comprobantePago = new ComprobantePago;
+include_once(DOC_ROOT."/services/CfdiUtil.php");
 $cfdiUtil = new CfdiUtil;
+include_once(DOC_ROOT."/services/Cancelation.php");
 $cancelation = new Cancelation;
+include_once(DOC_ROOT."/services/ControlFromXml.php");
 $controlFromXml = new ControlFromXml;
 
-$smarty = new Smarty;
-$smarty->assign('DOC_ROOT',DOC_ROOT);
-$smarty->assign('WEB_ROOT',WEB_ROOT);
-
-$smarty->assign('property', $property);
-
 $lang = $util->ReturnLang();
-
 $User = $_SESSION['User'];
-
 $infoUser = $user->Info();
-$smarty->assign('infoUser', $infoUser);
+$User['tipoPersonal'] =  $infoUser['tipoPersonal'];
+$User['tipoPers'] = $infoUser['tipoPersonal'];
 
-if($_SESSION['User']['tipoPers']=='Admin')	{
+if($User['isRoot']) {
     $rol->setAdmin(1);
-    $User['roleId'] = 1;
-}else{
-    //primero buscar por nombre el rol
-    $rol->setTitulo($infoUser['tipoPersonal']);
-    $roleId = $rol->GetIdByName();
-     if($roleId<=0){
-         //si por nombre de rol no se encuentra entonces usar el rolId que tiene en la tabla personal
-         //ese nunca debe fallar aun que se cambie de nombre de nombre de el rol. cuando se haya asignado los roles a todos
-         // se dejara de usar tipoPersonal salvo en unos casos que se necesite usar el tipoPers
-         $rol->setRolId($infoUser['roleId']);
-         $row = $rol->Info();
-         $infoUser['tipoPersonal'] = $row['name'];
-         $roleId=$row['rolId'];
-         $User['tipoPers'] = $row['name'];
-     }
-    $User['roleId'] = $roleId;
-     //find departamento user active
-     if($infoUser['departamentoId']>0)
-         $User['departamentoId']=$infoUser['departamentoId'];
-     else{
-         $rol->setRolId($User['roleId']);
-         $dep = $rol->Info();
-         $User['departamentoId']=$dep['departamentoId'];
-     }
+} else {
+    $rol->setRolId($infoUser['roleId']);
+    $row = $rol->Info();
+    $User['departamentoId'] = $infoUser['departamentoId'] > 0 ? $infoUser['departamentoId'] : $row['departamentoId'];
 }
-
 
 $rol->setRolId($User['roleId']);
 $permissions = $rol->GetPermisosByRol();
-$smarty->assign('permissions', $permissions);
-
-
 $rol->setRolId($User['roleId']);
 $firstPages = $rol->FindFirstPage();
-$smarty->assign('firstPages', $firstPages);
-
-$User['tipoPersonal'] = $infoUser['tipoPersonal'];
-
-$smarty->assign('User',$User);
 $firstDep = $departamentos->GetFirstDep();
+
+$smarty->assign('DOC_ROOT',DOC_ROOT);
+$smarty->assign('WEB_ROOT',WEB_ROOT);
+$smarty->assign('property', $property);
+$smarty->assign('infoUser', $infoUser);
+$smarty->assign('permissions', $permissions);
+$smarty->assign('firstPages', $firstPages);
+$smarty->assign('User',$User);
 $smarty->assign("firstDep", $firstDep);
-function dd($data)
-{
+
+function dd($data) {
 	echo "<pre>";
 	print_r($data);
 	echo "</pre>";

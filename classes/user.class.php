@@ -38,7 +38,7 @@ class User extends Sucursal
             $row["roleId"] =4;
 			$row["name"] = $row["nameContact"];
 		}
-		elseif($_SESSION["User"]["tipoPers"] == 'Admin' &&!$isRep)
+		elseif($_SESSION["User"]["isRoot"]&&!$isRep)
 		{
 		    $sql = "SELECT * FROM user WHERE userId = '1'";
 			$this->Util()->DB()->setQuery($sql);
@@ -100,7 +100,7 @@ class User extends Sucursal
 		$row = $this->Util()->DB()->GetRow();
 		if($row){
 			$card['userId'] = 999990000;
-			$card['roleId'] = $row['type'];
+			$card['roleId'] = 1;
             $card['level'] = 1;
 			$card['username'] = $row['name'];
 			$card['isLogged'] = true;

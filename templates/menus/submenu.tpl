@@ -94,6 +94,10 @@
                     <li><a href="{$WEB_ROOT}/customer/tipo/Temporal" {if ($page == "customer" && $tipo == "Temporal")}class="current"{/if} target="_blank">
                     <span>Listado Temporal</span></a></li>
                 {/if}
+                {if in_array(271,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/prospect" {if $page == "prospect"}class="current"{/if} target="_blank">
+                    <span>Prospectos</span></a></li>
+                {/if}
                 {if in_array(181,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/exp-imp-data" {if ($page == "exp-imp-data")}class="current"{/if} target="_blank">
                     <span>Importar desde archivo</span></a></li>
