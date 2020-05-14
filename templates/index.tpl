@@ -136,13 +136,11 @@ Sistema ejecutandose desde nuevo servidor
 {elseif $page == "service-steps"}
 	{include file="templates/service-steps.tpl"} 
 {else}
-<div {if $page == "costeo-prvw" || $page == "costeo-html"}style="width:800px"{else}class="container_16"{/if} {if $page != "login" && $page != "product-add" && $page != "obs-add" && $page != "costeo-prvw" && $page != "costeo-html" && $page != "costeo-add"}id="wrapper"{/if}>	
-	{include file="header.tpl"}
-	{include file="main.tpl"}    
-	<div class="clear"></div>
-    		
-</div>
-
+	<div {if $page == "costeo-prvw" || $page == "costeo-html"}style="width:800px"{else}class="container_16"{/if} {if $page != "login" && $page != "product-add" && $page != "obs-add" && $page != "costeo-prvw" && $page != "costeo-html" && $page != "costeo-add"}id="wrapper"{/if}>
+		{include file="header.tpl"}
+		{include file="main.tpl"}
+		<div class="clear"></div>
+	</div>
 {include file="footer.tpl"}
 {/if}
 </body>

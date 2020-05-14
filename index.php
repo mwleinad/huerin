@@ -42,6 +42,8 @@ include_once(DOC_ROOT.'/libraries.php');
 		'contract-edit',
 		'contract-view',
 		'contract-docs',
+        'prospect',
+        'prospect-offer-pdf',
 
         //Servicios
         'servicios',
