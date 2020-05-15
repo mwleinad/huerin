@@ -56,7 +56,7 @@ class Log extends Util
 	    $newValue =  strlen($this->newValue) > 0 ? mysql_real_escape_string($this->newValue) : '';
         $oldValue =  strlen($this->oldValue) > 0 ? mysql_real_escape_string($this->oldValue) : '';
 	    $currentUser = $personal->getCurrentUser();
-        $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
+        echo $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
 				 '".$this->action."', '".$oldValue."', '".$newValue."','".$currentUser["name"]."')";
         $this->Util()->DB()->setQuery($sql);
@@ -486,18 +486,22 @@ class Log extends Util
             switch($key){
                 case 'sociedadId':
                     $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$allElements[$key]."' ");
+                    echo $this->Util()->DB()->getQuery()."<br>";
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
                 case 'regimenId':
                     $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$allElements[$key]."' ");
+                    echo $this->Util()->DB()->getQuery()."<br>";
                     $valorBefore = $this->Util()->DB()->GetSingle();
                 break;
                 case 'tipoServicioId':
                     $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
+                    echo $this->Util()->DB()->getQuery()."<br>";
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
                 case 'permisos':
                     $this->Util()->DB()->setQuery("SELECT departamentoId,departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC");
+                    echo $this->Util()->DB()->getQuery()."<br>";
                     $arrayDeps = $this->Util()->DB()->GetResult();
                     $valorBefore="";
                     //encontrar los encargados
@@ -513,6 +517,7 @@ class Log extends Util
 
                     foreach($arrayDeps as $ak=>$av){
                         $this->Util()->DB()->setQuery("SELECT name FROM personal WHERE personalId='".$depsBefore[$av['departamentoId']]."' ");
+                        echo $this->Util()->DB()->getQuery()."<br>";
                         $persBefore = $this->Util()->DB()->GetSingle() ;
                         if($persBefore=="")
                             $persBefore ="Sin encargado";
@@ -535,6 +540,7 @@ class Log extends Util
     }
     function FindNameField($key){
 	    $this->Util()->DB()->setQuery('SELECT name FROM nameFields WHERE clave="'.$key.'" ');
+        echo $this->Util()->DB()->getQuery()."<br>";
 	    $field =$this->Util()->DB()->GetSingle();
 	    if(!$field)
 	        $field ="Campo indefinido";

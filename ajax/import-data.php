@@ -149,7 +149,7 @@ switch ($opcion[0]) {
 
             }
 
-            echo $sql = "insert into $table ($fields_string) VALUES ($values_string)";
+            $sql = "insert into $table ($fields_string) VALUES ($values_string)";
             $db_connection->setQuery($sql);
             $id = $db_connection->InsertData();
 
