@@ -124,10 +124,15 @@ switch ($opcion[0]) {
             $table = $var['table'];
             $primary_key = $var['primary_key'];
             $value_primary_key = $var['value_primary_key'];
-            $sql = "update $table set ";
             $fields = array_column($var['fields_update'], 'field');
             $values = array_column($var['fields_update'], 'value');
+            if(count($values) !== count($fields)) {
+                $ignorados++;
+                continue;
+            }
+
             $fields_string = implode(',', $fields);
+            $values_string = "";
 
             foreach ($values as $value)
                 $values_string .= " '$value',";
@@ -150,6 +155,7 @@ switch ($opcion[0]) {
             }
 
             echo $sql = "insert into $table ($fields_string) VALUES ($values_string)";
+            continue;
             $db_connection->setQuery($sql);
             $id = $db_connection->InsertData();
 
@@ -175,7 +181,6 @@ switch ($opcion[0]) {
             } else {
                 $ignorados++;
             }
-            echo $logContractLocal;
         }
 
         if ($agregados > 0)
