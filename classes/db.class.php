@@ -126,7 +126,7 @@ class DB
 
 		//TODO we might want to add some security in the queries here, but that can be done later, this is the place
 		if($this->projectStatus == "test") {
-	    	$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (trigger_error(mysql_error()));
+	    	$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (mysql_error());
 		}	
 		else {
 			$this->sqlResult = mysql_query($this->query, $this->conn_id);
