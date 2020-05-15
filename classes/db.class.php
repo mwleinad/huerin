@@ -129,7 +129,7 @@ class DB
 	    	$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (mysql_error());
 		}	
 		else {
-			$this->sqlResult = mysql_query($this->query, $this->conn_id);
+			$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (mysql_error());
 		}	
 	}
 	
