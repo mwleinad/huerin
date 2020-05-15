@@ -149,7 +149,7 @@ switch ($opcion[0]) {
 
             }
 
-            $sql = "insert into $table ($fields_string) VALUES ($values_string)";
+            echo $sql = "insert into $table ($fields_string) VALUES ($values_string)";
             $db_connection->setQuery($sql);
             $id = $db_connection->InsertData();
 
@@ -175,6 +175,7 @@ switch ($opcion[0]) {
             } else {
                 $ignorados++;
             }
+            echo $logContractLocal;
         }
 
         if ($agregados > 0)
