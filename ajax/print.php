@@ -10,14 +10,13 @@ $html = $_POST["contenido"];
 $html = str_replace('$','', $html);
 $html = str_replace(',','', $html);
 
-$excel->ConvertToExcel($html, $_POST["type"],false,'exportar',true,45);
+$wrap = $_POST['type'] === 'pdf' ?  false : true;
+$excel->ConvertToExcel($html, $_POST["type"],false,'exportar',$wrap,45);
 
-if(!$_POST["type"])
-{
+if(!$_POST["type"]) {
 	$_POST["type"] = "xlsx";
 }
-
+echo "ok[#]";
 echo WEB_ROOT."/download.php?file=".WEB_ROOT."/exportar.".$_POST["type"];
-
 
 ?>

@@ -104,6 +104,7 @@ class Log extends Util
                 $accion="ha sido  dado de baja temporalmente ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
+                $sendBraun = true;
                 break;
             case 'Reactivacion':
                 $accion="ha sido reactivado ";
@@ -119,6 +120,7 @@ class Log extends Util
                 $accion="ha sido eliminado ";
                 array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
+                $sendBraun = true;
              break;
         }
         //encontrar tabla que se modifico
@@ -174,6 +176,9 @@ class Log extends Util
                 $body .=$accion."  por el colaborador ".$who."<br>";
                 break;
             case 'servicio':
+                if($sendBraun)
+                    array_push($defaultId,IDBRAUN);
+
                 $sql  ="SELECT c.nombreServicio,b.name as razon,b.permisos FROM servicio a 
                                   INNER JOIN contract b ON a.contractId=b.contractId 
                                   INNER JOIN tipoServicio c ON a.tipoServicioId=c.tipoServicioId WHERE a.servicioId='".$this->tablaId."' ";
@@ -635,7 +640,7 @@ class Log extends Util
         $encargados = $contractRep->encargadosArea($contractId);
 
         $ftr['incluirJefes'] = true;
-        $ftr['sendBraun']=false;
+        $ftr['sendBraun']= true;
         $ftr['sendHuerin']=true;
         //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
         $ftr['level'] = 3;
