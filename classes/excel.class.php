@@ -9,8 +9,8 @@ class Excel
             $debug = false;
         }else{
             $debug = true;
-            //  $handle = fopen("Auditlog/exportlog.txt", "w");
-            //  fwrite($handle, "\nDebugging On...");
+            $file_log = DOC_ROOT."/sendFiles/debug_phpexcel.txt";
+            $handle = fopen($file_log,"w");
         }
 
         if(strlen($htmltable) == strlen(strip_tags($htmltable)) ) {
@@ -172,7 +172,7 @@ class Excel
                         $nodes = $tds->length - 1;
                         for($x=0;$x<=$nodes;$x++) {
                             $thistxt = $tds->item($x)->nodeValue;
-                            $bodyrows[$r]['td'][] = trim($thistxt);
+                            $bodyrows[$r]['td'][] = preg_replace('/[\s\t\n]{2,}/', ' ', $thistxt);
                             $bodyrows[$r]['bold'][] = findBoldText(innerHTML($tds->item($x)));
                             if($tds->item($x)->hasAttribute('style')) {
                                 $style = $tds->item($x)->getAttribute('style');
@@ -342,7 +342,7 @@ class Excel
             $xrow = $usedhdrows;
             for($b=0;$b<count($bodyrows);$b++) {
                 $td = $bodyrows[$b]['td'];
-                $colcnt = $bodyrows[$b]['colcnt'];
+                $colcnt = preg_replace('/[\s\t\n]{2,}/', ' ', $bodyrows[$b]['colcnt']);
                 $colspans = $bodyrows[$b]['colspan'];
                 $aligns = $bodyrows[$b]['align'];
                 $valigns = $bodyrows[$b]['valign'];
@@ -351,7 +351,7 @@ class Excel
                 $bolds = $bodyrows[$b]['bold'];
                 for($t=0;$t<count($td);$t++) {
                     if($xcol == '') {$xcol = 'A';}else{$xcol++;}
-                    $thistext = $td[$t];
+                    $thistext = trim($td[$t]);
                     $thisalign = $aligns[$t];
                     $thisvalign = $valigns[$t];
                     $thiscolspan = $colspans[$t];
@@ -432,30 +432,17 @@ class Excel
         if($debug) {
             fclose($handle);
         }
-//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-//header("Content-Disposition: attachment;filename=$fname");
-//header('Cache-Control: max-age=0');
-//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-//$objWriter->save($fname);
 
-//$objWriter->save(DOC_ROOT."/excel.xlsx");
-//$objWriter->save('php://output');
         if($type == "pdf")
         {
-//$rendererName = PHPExcel_Settings::PDF_RENDERER_TCPDF;
-//	$rendererName = PHPExcel_Settings::PDF_RENDERER_MPDF;
             $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
-            //$rendererLibrary = 'tcPDF5.9';
-            //$rendererLibrary = 'mPDF';
             $rendererLibrary = '';
             $rendererLibraryPath = DOC_ROOT.'/pdf/' . $rendererLibrary;
             PHPExcel_Settings::setPdfRenderer(
                 $rendererName,
                 $rendererLibraryPath);
-
             $objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
             $objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_LEGAL);
-
             $objWriter = new PHPExcel_Writer_PDF($objPHPExcel);
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'PDF');
             $objWriter->save(DOC_ROOT."/exportar.pdf");
@@ -468,7 +455,6 @@ class Excel
             else
                 $objWriter->save(DOC_ROOT."/sendFiles/".$fileName.".xlsx");
         }
-
     }
 
 }

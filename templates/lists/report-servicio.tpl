@@ -1,7 +1,6 @@
-<table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
+<table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px;">
 <thead>
 	<tr>
-		<!--<th align="center" width="60">Comentario</th>-->
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Razon Social</th>
 		<th align="center" width="60">C. Asignado</th>
@@ -23,13 +22,14 @@
 		{/if}
 	</tr>
 </thead>
+<tbody>
 		{foreach from=$cleanedArray item=item key=key}
 		{if $item.isRowCobranza && (in_array(210,$permissions) ||$User.isRoot)}
 			<tr>
 				<td colspan="4" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
                     {if $instanciaServicio.class == '#000000'}
-                        <td style="text-align: center">
+                        <td style="text-align: center;">
                             No se emitieron facturas
                         </td>
                     {else}
@@ -42,7 +42,7 @@
 								color: #000000; {else}
 								color: #ffffff;
 								{/if}
-								font-weight: bold
+								font-weight: bold;
 								">
 						{if $instanciaServicio.class != '#000000'}
 							$ {$instanciaServicio.total|number_format:2:".":","}
@@ -86,12 +86,12 @@
 						  {/if}
 						"
 					  title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
-					<div style="cursor:pointer" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
+					<div style="cursor:pointer;" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
 					{$item.nombreServicio|truncate:5:""}
-					{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696">(Inactivo)</span>{/if}
+					{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696;">(Inactivo)</span>{/if}
 					</div>
 						{if in_array(99,$permissions)||$User.isRoot}
-							<a href="javascript:;" class="spanDownloadFiles spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$item.anio}" style="color:#FFF;font-weight:700" title="Descargar archivos del mes">Archivos</a>
+							<a href="javascript:;" class="spanDownloadFiles spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$item.anio}" style="color:#FFF;font-weight:700;" title="Descargar archivos del mes">Archivos</a>
 						{/if}
 					</td>
 				{/foreach}
@@ -106,7 +106,7 @@
 		{/if}
 		{foreachelse}
 		<tr>
-			<td colspan="{if in_array(248,$permissions)||$User.isRoot}17{else}16{/if}" align="center">Ning&uacute;n registro encontrado.</td>
+			<td colspan="{if in_array(248,$permissions)||$User.isRoot}17{else}16{/if}">Ning&uacuten registro encontrado</td>
 		</tr>
 		{/foreach}
 </tbody>

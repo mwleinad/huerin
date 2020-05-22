@@ -239,7 +239,7 @@ class Notice extends Main
                 $this->Util()->DB()->setQuery($sqlOwn);
                 $this->Util()->DB()->ExecuteQuery();
                 $this->Util()->DB()->CleanQuery();
-                $sqlQuery = "SELECT * FROM personal WHERE active='1'  AND personalId != '" . IDBRAUN . "' ";
+                $sqlQuery = "SELECT * FROM personal WHERE active='1' ";
                 //$sqlQuery = "SELECT * FROM personal WHERE active='1' ";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();

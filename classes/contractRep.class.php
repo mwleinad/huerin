@@ -72,7 +72,7 @@ class ContractRep extends Main
         $skip=false;
         //si el usuario que busca es cliente(roleId =4) debe ingresar por default dentro del array de contratos solo los de el.
         //rol cliente excluirles servicios en statua readonly.
-        if($_SESSION['User']['level']>10)
+        if($_SESSION['User']['level']>50)
         {
             $ftrServicio = " AND a.status IN('activo','bajaParcial') ";
             $skip=true;
