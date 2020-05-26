@@ -190,6 +190,57 @@ switch ($opcion[0]) {
         echo "ok[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
         break;
+    case 'update_comercial_activity':
+        $db_connection = new DB(false);
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila = 1;
+        $insertados = 0;
+        $ignorados = 0;
+        while(($row = fgetcsv($fp, 4096, ',' )) == true) {
+            if($fila === 1) {
+                $fila++;
+                continue;
+            }
+            $sector_name = $row[0];
+            $subsector_name = $row[1];
+            $actividad_name =  $row[2];
+
+            $db_connection->setQuery("select id from sector where name = '$sector_name' ");
+            $row = $db_connection->GetRow();
+            if(!$row) {
+                $db_connection->setQuery("insert into sector(name) values ('$sector_name') ");
+                $sector_id = $db_connection->InsertData();
+            } else {
+                $sector_id = $row['id'];
+            }
+
+            $db_connection->setQuery("select id from subsector where name = '$subsector_name' ");
+            $row = $db_connection->GetRow();
+            if(!$row) {
+                $db_connection->setQuery("insert into subsector(name, sector_id) values ('$subsector_name', $sector_id) ");
+                $subsector_id = $db_connection->InsertData();
+            } else {
+                $subsector_id = $row['id'];
+            }
+
+            $db_connection->setQuery("select id from actividad_comercial where name = '$actividad_name' ");
+            $row = $db_connection->GetRow();
+            if(!$row) {
+                $db_connection->setQuery("insert into actividad_comercial(name, subsector_id) values ('$actividad_name', $subsector_id) ");
+                $db_connection->InsertData();
+                $insertados++;
+            } else {
+                $ignorados++;
+            }
+            $fila++;
+        }
+        $util->setError(0, "complete", "$insertados registros nuevos guardados.");
+        $util->setError(0, "complete", "$ignorados registros ignorados.");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+    break;
     case 'update-only-encargado':
         $isValid = $valida->ValidateLayoutOnlyEncargado($_FILES);
         if (!$isValid) {
