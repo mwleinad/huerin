@@ -88,7 +88,9 @@
     "reference_table": "actividad_comercial",
     "field_comparison_foreign": "name",
     "field_return_foreign": "id",
-    "foreign_key": "actividadComercialId"
+    "foreign_key": "actividadComercialId",
+    "generate_range": true,
+    "name_range": "sociedades"
   },
   {
     "name": "Direccion comercial",

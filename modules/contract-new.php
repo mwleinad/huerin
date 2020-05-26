@@ -132,7 +132,7 @@
 
 	$regimenesMoral = $regimen->EnumerateAll("moral");
 	$smarty->assign("regimenesMoral", $regimenesMoral);
-	
+
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
 
