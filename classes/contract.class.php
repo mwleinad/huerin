@@ -155,7 +155,12 @@ class Contract extends Main
         $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 1, 'Telefono');
         $this->telefono = $value;
     }
-
+    private $actividadComercialId;
+    public function setActividadComercialId($value)
+    {
+        $this->Util()->ValidateRequireField($value,  'Actividad economica');
+        $this->actividadComercialId = $value;
+    }
     private $nombreComercial;
     public function setNombreComercial($value)
     {
@@ -791,7 +796,8 @@ class Contract extends Main
           contract.encargadoCuenta AS encargadoCuenta,
           contract.responsableCuenta AS responsableCuenta,
           contract.auxiliarCuenta AS auxiliarCuenta,
-          customer.email as email
+          customer.email as email,
+          ac.*  
         FROM
           contract
         LEFT JOIN
@@ -800,9 +806,16 @@ class Contract extends Main
           regimen ON regimen.regimenId = contract.regimenId
         LEFT JOIN
           sociedad ON sociedad.sociedadId = contract.sociedadId
+        LEFT JOIN(
+          select actividad_comercial.id as ac_id, actividad_comercial.name as ac_name,
+                 sector.id as sector_id, subsector.id as subsector_id from actividad_comercial
+          inner join subsector on actividad_comercial.subsector_id = subsector.id
+          inner join sector on subsector.sector_id = sector.id 
+        ) as ac  on contract.actividadComercialId = ac.ac_id 
         WHERE
           contractId = '" . $this->contractId . "'"
         );
+        //echo $this->Util()->DB()->getQuery();
         $row = $this->Util()->DB()->GetRow();
         return $row;
     }
@@ -829,6 +842,7 @@ class Contract extends Main
           regimenId,
           telefono,
           nombreComercial,
+          actividadComercialId,
           direccionComercial,
           nameContactoAdministrativo,
           emailContactoAdministrativo,
@@ -881,6 +895,7 @@ class Contract extends Main
           '" . $this->regimenId . "',
           '" . $this->telefono . "',
           '" . $this->nombreComercial . "',
+          '" . $this->actividadComercialId . "',
           '" . $this->direccionComercial . "',
           '" . $this->nameContactoAdministrativo . "',
           '" . $this->emailContactoAdministrativo . "',
@@ -1013,7 +1028,9 @@ class Contract extends Main
         //Cuando se edita solo se actualiza los contactos modificados.
         $contactos = "";
         if (strlen($this->nombreComercial) > 0)
-            $contactos .= "nombreComercial = '" . $this->nombreComercial . "',";
+            $contactos .= "$this->nombreComercial = '" . $this->nombreComercial . "',";
+        if (strlen($this->actividadComercialId) > 0)
+            $contactos .= "actividadComercialId = '" . $this->actividadComercialId . "',";
         if (strlen($this->nameContactoAdministrativo) > 0)
             $contactos .= "nameContactoAdministrativo = '" . $this->nameContactoAdministrativo . "',";
         if (strlen($this->emailContactoAdministrativo) > 0)

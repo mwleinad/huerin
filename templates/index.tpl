@@ -22,7 +22,7 @@
 	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/plugins.min.css" />
 	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/styles/custom.css" />
 {/if}
-<link href="{$WEB_ROOT}/libs/bootstrap-select/css/bootstrap-select.min.css"  />
+<link href="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.css" rel="stylesheet" />
 <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 <link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
@@ -44,9 +44,9 @@
 <link type="text/css" rel="stylesheet" href="{$WEB_ROOT}/calendar/css/jscal2.css" />
 <link type="text/css" rel="stylesheet" href="{$WEB_ROOT}/calendar/css/border-radius.css" />
 <link id="skinhelper-compact" type="text/css" rel="alternate stylesheet" href="{$WEB_ROOT}/calendar/css/reduce-spacing.css" />
-<script src="{$WEB_ROOT}/calendar/js/jscal2.js"></script>
-<script src="{$WEB_ROOT}/calendar/js/unicode-letter.js"></script>
-<script src="{$WEB_ROOT}/calendar/js/es.js"></script>
+<script src="{$WEB_ROOT}/calendar/js/jscal2.js" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/calendar/js/unicode-letter.js" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/calendar/js/es.js"  type="text/javascript"></script>
 {/if}
 
 <style type="text/css">
@@ -75,7 +75,8 @@
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-ui.js?{$timestamp}"></script>
-<script>var jQ = jQuery.noConflict()</script>
+<script type="text/javascript">var jQ = jQuery.noConflict()</script>
+<script src="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.js" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/script-service.js?{$timestamp}" type="text/javascript"></script>
@@ -86,9 +87,6 @@
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jstree/dist/jstree.min.js?{$timestamp}"></script>
-
-
-
 {/if}
 {if $section == 'consultar-facturas'}
 <script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>

@@ -21,8 +21,8 @@ switch($_POST["action"])
 			$contract->setRfc($_POST['rfc']);
 			$contract->setSociedadId($_POST['sociedadId']);
 			$contract->setRegimenId($_POST['regimenId']);
-			if(isset($_POST['nombreComercial']))
-				$contract->setNombreComercial($_POST['nombreComercial']);
+			if(isset($_POST['actividad_comercial']))
+				$contract->setActividadComercialId($_POST['actividad_comercial']);
 			//direccion fiscal
 			$contract->setAddress($_POST['address']);
 			$contract->setNoExtAddress($_POST['noExtAddress']);

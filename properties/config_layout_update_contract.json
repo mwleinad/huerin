@@ -76,13 +76,17 @@
     "foreign_key": "sociedadId"
   },
   {
-    "name": "Actividad economica",
-    "required": false,
-    "comment": "Ingresar el dato correspondiente de acuerdo al Check List.",
-    "field_excel": "nombreComercial",
-    "field_bd": "nombreComercial",
+    "name": "Actividad economica / comercial",
+    "required": true,
+    "comment": "Seleccionar el tipo de actividad economica de la lista que se muestra en las filas.",
+    "field_excel": "ac_name",
+    "field_bd": "actividadComercialId",
     "fillable": true,
-    "constraint": false
+    "constraint": true,
+    "reference_table": "actividad_comercial",
+    "field_comparison_foreign": "name",
+    "field_return_foreign": "id",
+    "foreign_key": "actividadComercialId"
   },
   {
     "name": "Direccion comercial",
