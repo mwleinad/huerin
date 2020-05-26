@@ -23,8 +23,8 @@
 		$contract->setRfc($_POST['rfc']);
 		$contract->setSociedadId($_POST['sociedadId']);
 		$contract->setRegimenId($_POST['regimenId']);
-        if(isset($_POST['nombreComercial']))
-            $contract->setNombreComercial($_POST['nombreComercial']);
+        if(isset($_POST['actividad_comercial']))
+            $contract->setActividadComercialId($_POST['actividad_comercial']);
         //direccion fiscal
         $contract->setAddress($_POST['address']);
         $contract->setNoExtAddress($_POST['noExtAddress']);
@@ -167,6 +167,15 @@
 	$filtros['depExcluidos'] ='mensajeria';
 	$departamentos = $departamentos->Enumerate($filtros);
 	$smarty->assign("departamentos", $departamentos);
+
+    $sectores = $catalogue->ListSectores();
+    $smarty->assign("sectores", $sectores);
+
+    $subsectores = $catalogue->ListSubsectores($contractInfo['sector_id']);
+    $smarty->assign("subsectores", $subsectores);
+
+    $actividades_comerciales = $catalogue->ListActividadesComerciales($contractInfo['subsector_id']);
+    $smarty->assign("actividades_comerciales", $actividades_comerciales);
 
 	//Checamos los permisos para eliminar DOCs y Archivos
 

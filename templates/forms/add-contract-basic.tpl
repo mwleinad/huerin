@@ -84,7 +84,39 @@
 	{if in_array(222,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">* Actividad Económica</td>
-			<td align="left"><input name="nombreComercial" id="nombreComercial" type="text" value="" class="smallInput medium" size="50"/></td>
+			<td align="left">
+				<div class="container_12">
+					<div class="grid_12">
+						<label>Sector</label>
+						<select class="smallInput select2" name="sector" id="sector">
+							<option value="">Seleccionar..</option>
+							{foreach from=$sectores  item=sector key=key}
+								<option value="{$sector.id}" {if $contractInfo.sector_id eq $sector.id}selected{/if}>{$sector.name}</option>
+							{/foreach}
+						</select>
+					</div>
+					<div class="grid_12">
+						<label>Subsector</label>
+						<select class="smallInput select2" name="subsector" id="subsector">
+							<option value="">Seleccionar..</option>
+							{foreach from=$subsectores  item=subsector key=key}
+								<option value="{$subsector.id}" {if $contractInfo.subsector_id eq $subsector.id}selected{/if}>{$subsector.name}</option>
+							{/foreach}
+						</select>
+
+					</div>
+					<div class="grid_12">
+						<label>Rubro</label>
+						<select class="smallInput select2" name="actividad_comercial" id="actividad_comercial">
+							<option value="">Seleccionar..</option>
+							{foreach from=$actividades_comerciales  item=actividad key=key}
+								<option value="{$actividad.id}" {if $contractInfo.ac_id eq $actividad.id}selected{/if}>{$actividad.name}</option>
+							{/foreach}
+						</select>
+					</div>
+				</div>
+
+			</td>
 		</tr>
 	{/if}
 

@@ -6,10 +6,47 @@ Event.observe(window, 'load', function() {
 	if($('addNotice'))
 		Event.observe($('addNotice'), "click", AddNoticePopup);
 });
+var Select2Cascade = ( function(window, jQ) {
+
+	function Select2Cascade(parent, child, url, select2Options) {
+		var afterActions = [];
+		var options = select2Options || {};
+
+		// Register functions to be called after cascading data loading done
+		this.then = function(callback) {
+			afterActions.push(callback);
+			return this;
+		};
+		parent.select2(select2Options).on("change", function (e) {
+			child.prop("disabled", true);
+			jQ.post(url, {type: child.prop('name'), id: e.val }, function (items) {
+				var newOptions = '<option value="">-- Select --</option>';
+				jQ.each(items, function (key, value) {
+					newOptions += '<option value="'+ value.id+'">'+ value.name +'</option>';
+				})
+				child.select2('destroy').html(newOptions).prop("disabled", false)
+					.select2(options);
+
+				afterActions.forEach(function (callback) {
+					callback(parent, child, items);
+				});
+			}, 'json');
+		});
+	}
+	return Select2Cascade;
+})( window, jQ);
 jQ(document).ready(function () {
 	setInterval(check_session, 60000);
-});
+	var ops = {
+		placeholder: "Seleccionar un sector.",
+		minimumResultsForSearch: -1,
+		formatSearching: 'Buscando opciones',
+	};
+	jQ('.select2').select2(ops);
+	new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT+"/ajax/load_items_select.php", ops);
+	new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT+"/ajax/load_items_select.php", ops);
 
+});
 function LoginCheck()
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/login.php',
@@ -19,8 +56,7 @@ function LoginCheck()
     onSuccess: function(transport){
       		var response = transport.responseText || "no response text";
 			var splitResponse = response.split("|");
-			if(splitResponse[0] == "fail")
-			{
+			if(splitResponse[0] == "fail") {
 				$('divStatus').innerHTML = splitResponse[1];
 				$('centeredDiv').show();
 				grayOut(true);
@@ -493,7 +529,7 @@ jQ(document).on('change','form#addNoticeForm input[type="checkbox"]#allSelected'
         });
 	}
 });
-var close_popup = ()=>{
+var close_popup = () => {
     $('fview').innerHTML='';
     $('fview').hide();
     grayOut(false);

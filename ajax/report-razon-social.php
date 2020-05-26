@@ -30,6 +30,7 @@ switch ($_POST['type']) {
         $colFacturador = "";
         $colTipoPersona = "";
         $colNoFactura = "";
+        $colAcName ="";
         $lastCol = 0;
         $margin_left_comment = 100;
         foreach ($headers as $keyHead => $head) {
@@ -64,6 +65,9 @@ switch ($_POST['type']) {
                break;
                case "noFactura13":
                 $colNoFactura = $lastCol;
+               break;
+               case "ac_name":
+                $colAcName = $lastCol;
                break;
             }
             $margin_left_comment +=150;
@@ -255,6 +259,25 @@ switch ($_POST['type']) {
                     "$current_init_range:$current_end_range"
                 )
             );
+            // actividades economicas
+            $current_col_catalogue++;
+            $cat =new Catalogue();
+            $actividades = $cat->ListActividadesComerciales(0, true);
+            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "ACTIVIDADES COMERCIALES");
+            $current_row_catalogue = 2;
+            $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+            foreach($actividades as $act) {
+                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $act['name']);
+                $current_row_catalogue++;
+            }
+            $current_end_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+            $book->addNamedRange(
+                new PHPExcel_NamedRange(
+                    "actividades_comerciales",
+                    $catalogue,
+                    "$current_init_range:$current_end_range"
+                )
+            );
             foreach ($data_range_resp as $data_resp) {
                 $init = $data_resp['col_string'] . "2";
                 $end = $data_resp['col_string'] . $currentRow;
@@ -362,6 +385,24 @@ switch ($_POST['type']) {
                 $objList->setPromptTitle('Seleccione un tipo de persona de la lista');
                 $objList->setPrompt('Seleccione un tipo de persona de la lista.');
                 $objList->setFormula1("=tipos_persona"); //note this!
+                $sheet->setDataValidation("$init:$end", $objList);
+                unset($objList);
+            }
+            if($colAcName!=""){
+                $init = PHPExcel_Cell::stringFromColumnIndex($colAcName) . "2";
+                $end = PHPExcel_Cell::stringFromColumnIndex($colAcName) . $currentRow;
+                $objList = $sheet->getCell($init)->getDataValidation();
+                $objList->setType(PHPExcel_Cell_DataValidation::TYPE_LIST);
+                $objList->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION);
+                $objList->setAllowBlank(false);
+                $objList->setShowInputMessage(true);
+                $objList->setShowErrorMessage(true);
+                $objList->setShowDropDown(true);
+                $objList->setErrorTitle('Error!!');
+                $objList->setError('Tipo de actividad seleccionado no se encuentra en la lista.');
+                $objList->setPromptTitle('Seleccione un tipo de actividad de la lista');
+                $objList->setPrompt('Seleccione un tipo de actividad de la lista.');
+                $objList->setFormula1("=actividades_comerciales"); //note this!
                 $sheet->setDataValidation("$init:$end", $objList);
                 unset($objList);
             }

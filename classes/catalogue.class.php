@@ -22,5 +22,22 @@ class Catalogue extends Main
         }
         return $new_source;
     }
+    function ListSectores() {
+        $this->Util()->DB()->setQuery("select * from sector where 1 order by name asc ");
+        return $this->Util()->DB()->GetResult();
+    }
+    function ListSubsectores($sectorId = 0) {
+        $where = "";
+        $where .= " and sector_id = '$sectorId' ";
+        $this->Util()->DB()->setQuery("select * from subsector where 1 $where order by name asc ");
+        return $this->Util()->DB()->GetResult();
+    }
+    function ListActividadesComerciales($subsectorId = 0, $all = false) {
+        $where = "";
+        if(!$all)
+            $where .= " and subsector_id = '$subsectorId' ";
+        $this->Util()->DB()->setQuery("select * from actividad_comercial where 1 $where order by name asc ");
+        return $this->Util()->DB()->GetResult();
+    }
 
 }

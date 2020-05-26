@@ -1189,7 +1189,7 @@ class Customer extends Main
                   contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
                   contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
                   contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
-                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,
+                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,ac.*,
                    CONCAT(
                        '[',
                         GROUP_CONCAT(
@@ -1220,6 +1220,11 @@ class Customer extends Main
                    LEFT JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
                    INNER JOIN regimen ON contract.regimenId = regimen.regimenId
                    LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                   LEFT JOIN(select actividad_comercial.id as ac_id, actividad_comercial.name as ac_name,
+                            sector.id as sector_id, subsector.id as subsector_id from actividad_comercial
+                            inner join subsector on actividad_comercial.subsector_id = subsector.id
+                            inner join sector on subsector.sector_id = sector.id 
+                            ) as ac  on contract.actividadComercialId = ac.ac_id 
                    WHERE 1 $ftrSubquery  GROUP BY contract.contractId 
              ) a 
              INNER JOIN  customer b ON a.customerId = b.customerId

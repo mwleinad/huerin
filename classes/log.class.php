@@ -381,7 +381,7 @@ class Log extends Util
 	     $news=array();
          $olds=array();
 	     $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice','fechaBaja','fechaAlta');
+             'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','nombreComercial','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice','fechaBaja','fechaAlta');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -408,6 +408,12 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
                          $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         break;
+                     case 'actividadComercialId':
+                         $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
                      case 'permisos':
@@ -481,7 +487,7 @@ class Log extends Util
         $allElements = unserialize($elements);
         $news=array();
         $llavesExcluidas =array('cxcSaldoFavor','lastUpdate','inicioFacturaMysql','inicioOperacionesMysql','lastModified','modifiedBy','lastUpdated','fechaMysql','customerId','contractId','active','encargadoCuenta','responsableCuenta','customerId',
-            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice','fechaBaja','fechaAlta');
+            'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','nombreComercial','tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice','fechaBaja','fechaAlta');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
@@ -495,6 +501,10 @@ class Log extends Util
                     break;
                 case 'regimenId':
                     $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                break;
+                case 'actividadComercialId':
+                    $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                 break;
                 case 'tipoServicioId':
