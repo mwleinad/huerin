@@ -584,7 +584,7 @@ class ReporteBonos extends Main
                 continue;
 
             $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$service['contractId']);
-            if(!in_array($encargados[$service['departamentoId']],$fullSubordinados))
+            if(!in_array($encargados[$service['departamentoId']],$fullSubordinados) && $this->accessAnyContract() !=='1')
                 continue;
 
             //encontrar instancias de servicios
