@@ -6,8 +6,8 @@ Event.observe(window, 'load', function() {
 	if($('addNotice'))
 		Event.observe($('addNotice'), "click", AddNoticePopup);
 });
-var Select2Cascade = ( function(window, jQ) {
 
+var Select2Cascade = ( function(window, jQ) {
 	function Select2Cascade(parent, child, url, select2Options) {
 		var afterActions = [];
 		var options = select2Options || {};
@@ -348,20 +348,6 @@ function Logout() {
     onFailure: function(){ alert('Something went wrong...') }
   });
 }
-function CambiarRfcActivo()
-{
-	new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
-	{
-  	parameters: {rfcId: $('rfcId').value, type: "cambiarRfcActivo"},
-		method:'post',
-    onSuccess: function(transport){
-      var response = transport.responseText || "no response text";
-			window.location.reload();
-		},
-    onFailure: function(){ alert('Something went wrong...') }
-  });
-
-}
 function printExcel(id, type)
 {
 	new Ajax.Request(WEB_ROOT+'/ajax/print.php',
@@ -371,7 +357,8 @@ function printExcel(id, type)
 		onLoading: function(){
 				$('loadPrint').innerHTML = "Sea paciente mientras carga el archivo...";
 		},
-    	onSuccess: function(transport){
+    	onSuccess: function(transport) {
+  			console.log(transport);
       		var response = transport.responseText || "no response text";
       		var splitResponse = response.split("[#]");
 			$('loadPrint').innerHTML = "";

@@ -17,7 +17,7 @@
 </tr>
 <tr>	
     <td align="center" style="padding-left: 5px; padding-right: 5px">
-    	<input type="text" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%;" />
+    	<input type="text" name="like_customer_name" id="like_customer_name" class="largeInput" autocomplete="off" value="{$search.like_customer_name}" style="width: 90%;" />
           <div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
          		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
@@ -25,7 +25,7 @@
          	</div>
 		</td>
 		    <td align="center" style="padding-left: 5px; padding-right: 5px">
-    	<input type="text" name="rfc2" id="rfc2" class="largeInput" autoscomplete="off" value="{$search.rfc}" style="width: 90%;" />
+    	<input type="text" name="like_contract_name" id="like_contract_name" class="largeInput" autoscomplete="off" value="{$search.like_contract_name}" style="width: 90%;" />
           <div id="loadingDivDatosFactura2"></div>
 					<div style="position:relative">
          		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv2">
@@ -36,7 +36,7 @@
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
 		</td>    
 		<td align="center" style="padding-left: 5px; padding-right: 5px">
-			<input name="subordinados" id="subordinados" type="checkbox" value="1" style="width: 90%;"/>
+			<input name="deep" id="deep" type="checkbox" value="1" style="width: 90%;"/>
 		</td>     	
 		<td align="center" style="padding-left: 5px; padding-right: 5px">
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}

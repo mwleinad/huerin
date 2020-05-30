@@ -9,7 +9,6 @@ switch($_POST["type"])
 		$userId = $_POST["value"];
 		$contract->setContractId($userId, 1);
 		$result = $contract->Info();
-//		print_r($result);
 		if(!$result)
 		{
 			exit();

@@ -105,6 +105,7 @@ class User extends Sucursal
 			$card['username'] = $row['name'];
 			$card['isLogged'] = true;
             $card['isRoot'] = true;
+			$card['allow_visualize_any_contract'] = true;
 
 			if($row['type'] == 1)
 				$card['tipoPers'] = 'Admin';
@@ -115,7 +116,7 @@ class User extends Sucursal
 			return true;
 
 		}else{
-            $sql = "SELECT a.*,b.nivel
+            $sql = "SELECT a.*,b.nivel, b.allow_visualize_any_contract
 		   			 FROM personal a
 		   			 LEFT JOIN roles b ON a.roleId=b.rolId
 					 WHERE a.username = '".$this->username."'
@@ -125,6 +126,7 @@ class User extends Sucursal
 			$row = $this->Util()->DB()->GetRow();
 			if($row){
 				$card['userId'] = $row['personalId'];
+				$card['allow_visualize_any_contract'] = $row['allow_visualize_any_contract'] === '1' ?  true : false;
 				$card['roleId'] = $row["roleId"];
                 $card['level'] = $row["nivel"];
 				$card['username'] = $row['username'];

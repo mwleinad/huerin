@@ -68,8 +68,6 @@ include_once(DOC_ROOT.'/libraries.php');
         'archivos',
 
 		//Reportes
-		'report-obligaciones',
-		'report-basica',
 		'report-cliente',
 		'report-cobranza-new',
 		'report-servicio-mensual',
@@ -78,9 +76,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-documentacion-permanente',
 		'report-archivos-permanente',
 		'report-bonos',
-		'report-cobranza-ejercicio-new',
 		'report-cobranza-mensual',
-		'report-cobranza-ejercicio',
 		'report-invoice',
 		'log',
 		'report-servicio-bono',
@@ -93,7 +89,6 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-cobranza',
 		'docs-files',
 		'sellado-files',
-		'walmart',
 		'view-services',
 		'report-razon-social',
 		'report-up-down',
