@@ -1402,37 +1402,118 @@ class Contract extends Main
      *
      * @return devuelve una lista de resultados de busqueda
      */
-    public function Suggest($value, $active = false)
+    public function Suggest($filter = [], $limit = false, $whitService = false)
     {
-        $activos = '';
-        if ($active)
-            $activos = "  AND contract.activo='Si'  ";
+        $sfSubquery = $sfQueryPermiso = $sfQuery =  $sfLimit = $sfQueryService = "";
+        $tipo =  strtolower($filter['tipos']);
+        switch ($tipo) {
+            case 'temporal':
+            case 'activos':
+              $sfQuery .= " and (b.active = '1') ";
+            break;
+            case 'inactivos':
+              $sfQuery .= " and (b.active = '0') ";
+            break;
+        }
+        $allowAccessAnyContract = $this->accessAnyContract();
+        if($allowAccessAnyContract === false)
+            return [];
 
-        $this->Util()->DB()->setQuery(
-            "SELECT
-          contract.*, customer.nameContact
-        FROM
-          contract
-        LEFT JOIN
-          customer
-        ON
-          customer.customerId = contract.customerId
-        WHERE
-          (contract.name LIKE '%" . $value . "%' OR
-          contract.rfc LIKE '%" . $value . "%' OR
-          customer.nameContact LIKE '%" . $value . "%')
-					AND customer.active = '1'
-					AND contract.customerId > 0
-					$activos
-        ORDER BY
-          customer.nameContact ASC, contract.name ASC
-        LIMIT
-          10"
-        );
-        $this->Util()->DB()->query;
-        $row = $this->Util()->DB()->GetResult();
+        $sfQuery .= $filter['clienteId'] ? " and b.customerId = '".$filter['clienteId']."' ": "";
 
-        return $row;
+        $idImplode =  implode(',',  $filter['subordinados']);
+        $sfQueryPermiso .= $allowAccessAnyContract === '0' || $filter['responsableCuenta'] > 0
+            ? " and contractPermiso.personalId IN ($idImplode) "
+            : "";
+        $sfSubquery .= isset($filter['like']) && $filter['like'] !== '' ? " or contract.name like '%".$filter['like']."%' " : "";
+        $sfQuery .= isset($filter['like']) && $filter['like'] !== '' ? " and (b.nameContact like '%".$filter['like']."%' or a.name like '%".$filter['like']."%' or a.rfc like '%".$filter['like']."%') " : "";
+        $sfLimit .= $limit ? " LIMIT 15 " : "";
+
+        $sfSubquery .= isset($filter['like_contract_name'])  && $filter['like_contract_name'] !== '' ? " or  contract.name like '%".$filter['like_contract_name']."%' " : "";
+        $strCustomerName =  isset($filter['like_customer_name']) && $filter['like_customer_name'] !== '' ? " and (b.nameContact like '%".$filter['like_customer_name']."%'  " : "";
+
+        $strContractName =  isset($filter['like_contract_name']) && $filter['like_contract_name'] !=='' && $strCustomerName !== '' ?" or a.name like '%".$filter['like_contract_name']."%' or a.rfc like '%".$filter['like_contract_name']."%')" :
+            (isset($filter['like_contract_name']) && $filter['like_contract_name'] !== '' ? " and (a.name like '%".$filter['like_contract_name']."%' or a.rfc like '%".$filter['like_contract_name']."%') " :
+            (isset($filter['like_customer_name']) && $strCustomerName !== '' ? " ) ": ""));
+        $sfQuery .= $strCustomerName.$strContractName;
+
+        // service filter
+        if($_SESSION['User']['level'] > 50) {
+            $sfQueryService .= " AND a.status IN('activo', 'bajaParcial')";
+            $skip =  true;
+        } else {
+            if(isset($filter["statusSearch"]))
+            {
+                switch($filter["statusSearch"]){
+                    case 'activo':
+                        $sfQueryService = " AND a.status IN('activo','readonly') ";
+                        break;
+                    case 'baja':
+                        $sfQueryService = " AND a.status IN('baja','bajaParcial') ";
+                        break;
+                    default:
+                        $sfQueryService = " AND a.status IN('activo','bajaParcial','readonly','baja') ";
+                        break;
+                }
+            }else
+                $sfQueryService .= " AND a.status IN('activo','bajaParcial','readonly') ";
+        }
+        if($filter['departamentoId'])
+            $sfQueryService .= " AND b.departamentoId='".$filter['departamentoId']."'";
+
+       $sQuery = "SELECT   a.*, b.customerId as clienteId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
+                 b.fechaAlta,b.observacion,b.active
+                 FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
+                 contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,
+                 contract.address, contract.noExtAddress, contract.noIntAddress, contract.coloniaAddress, contract.municipioAddress, 
+                 contract.estadoAddress, contract.paisAddress, contract.cpAddress, contract.nameContactoAdministrativo,
+                 contract.emailContactoAdministrativo, contract.telefonoContactoAdministrativo, contract.nameContactoContabilidad,
+                 contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
+                 contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
+                 contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
+                 contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad
+                 FROM contract
+                 INNER JOIN regimen ON contract.regimenId = regimen.regimenId
+                 LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                 WHERE 1  $sfSubquery
+             ) as a 
+             INNER JOIN customer b
+             ON a.customerId = b.customerId   
+             WHERE 1 $sfQuery  order by  b.nameContact asc, a.name ASC $sfLimit";
+        $this->Util()->DB()->setQuery($sQuery);
+        $result = $this->Util()->DB()->GetResult();
+        $contracts = [];
+        $contractDim = [2507,2508];
+        foreach($result as $key => $value) {
+            $allow = $allowAccessAnyContract === '1' &&  $filter['responsableCuenta'] <=0 ? true : false;
+            $this->setContractId($value['contractId']);
+            $responsables = $this->getPermisosByContract($sfQueryPermiso);
+            if (!$allow) {
+                $allow =  count($responsables);
+            }
+            if(!$allow)
+                continue;
+
+            $value['responsables'] = count($responsables) > 0 ? $responsables : [];
+            $noInclude = (isset($ilter['year']) && $filter['year'] >= 2018) && !in_array($value['contractId'], $contractDim) ?
+                "AND lower(b.nombreServicio) NOT LIKE '%dim%'" : "";
+            if($whitService) {
+                $sql = "SELECT a.status as servicioStatus, a.servicioId, a.contractId, a.tipoServicioId, a.costo, a.status,
+                        a.inicioOperaciones, a.inicioFactura, a.fechaBaja, a.lastDateWorkflow, b.nombreServicio, b.periodicidad, 
+                        b.costoVisual, b.departamentoId,b.nombreServicio
+                        FROM servicio a
+                        LEFT JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId
+                        WHERE a.contractId = '".$value["contractId"]."' $sfQueryService
+                        AND b.status='1' $noInclude
+                        ORDER BY b.nombreServicio ASC,a.servicioid ASC";
+                $this->Util()->DB()->setQuery($sql);
+                $value["servicios"] = $this->Util()->DB()->GetResult();
+              if(count($value['servicios']) <=0 )
+                  continue;
+            }
+            array_push($contracts, $value);
+        }
+        return $contracts;
     }
 
     /**
@@ -1469,7 +1550,7 @@ class Contract extends Main
 
     }
     public function getPermisosByContract($sfQueryPermiso =  "") {
-        $sQuery =  "SELECT contractPermiso.contractId,contractPermiso.departamentoId, contractPermiso.personalId, 
+       $sQuery =  "SELECT contractPermiso.contractId,contractPermiso.departamentoId, contractPermiso.personalId, 
                     departamentos.departamento,personal.name 
                     FROM contractPermiso 
                     LEFT JOIN departamentos ON contractPermiso.departamentoId =  departamentos.departamentoId

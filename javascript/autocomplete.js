@@ -1,10 +1,10 @@
 Event.observe(window, 'load', function()
 {
-    if($('rfc'))
+    if($('like_customer_name'))
     {
         var time_id = 1;
         var field_value = '';
-        Event.observe($('rfc'), "keyup", function(){
+        Event.observe($('like_customer_name'), "keyup", function(){
             field_value = this.value
             clearTimeout(time_id);
             if(field_value.length>=3){
@@ -12,11 +12,11 @@ Event.observe(window, 'load', function()
             }
         });
     }
-    if($('rfc2'))
+    if($('like_contract_name'))
     {
         var time_id = 1;
         var field_value = '';
-        Event.observe($('rfc2'), "keyup", function(){
+        Event.observe($('like_contract_name'), "keyup", function(){
             field_value = this.value
             clearTimeout(time_id);
             if(field_value.length>=3){
@@ -86,7 +86,7 @@ function FillDatos(id)
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
-                $('rfc').value = splitResponse[0];
+                $('like_customer_name').value = splitResponse[0];
                 if($('cliente'))
                     $('cliente').value = id;
                 $('loadingDivDatosFactura').innerHTML = '';
@@ -105,7 +105,7 @@ function FillDatos2(id)
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
-                $('rfc2').value = splitResponse[0];
+                $('like_contract_name').value = splitResponse[0];
                 if($('contrato'))
                     $('contrato').value = id;
                 $('loadingDivDatosFactura2').innerHTML = '';
@@ -118,7 +118,7 @@ function SuggestUser()
 {
     new Ajax.Request(WEB_ROOT+'/ajax/suggest_report.php',
         {
-            parameters: {value: $('rfc').value},
+            parameters: {value: $('like_customer_name').value},
             method:'post',
             onLoading:function(){
                 if($('cliente'))
@@ -138,7 +138,7 @@ function SuggestUser2()
 {
     new Ajax.Request(WEB_ROOT+'/ajax/suggest_customer.php',
         {
-            parameters: {value: $('rfc2').value},
+            parameters: {value: $('like_contract_name').value},
             method:'post',
             onLoading:function(){
                 if($('contrato'))

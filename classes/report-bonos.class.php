@@ -515,10 +515,10 @@ class ReporteBonos extends Main
     function generateReportBonosWhitLevel($ftr=[]){
         global $personal,$contractRep,$instanciaServicio;
         $strFilter = "";
-        if(strlen($_POST["rfc2"])>0||strlen($_POST["rfc"])>0)
+        if(strlen($_POST["like_contract_name"])>0||strlen($_POST["like_customer_name"])>0)
         {
-            $like = $_POST["rfc"];
-            $like2 = $_POST["rfc2"];
+            $like = $_POST["like_customer_name"];
+            $like2 = $_POST["like_contract_name"];
             $subStr ="";
             if(strlen($like)>0){
                 $subStr .= " and (b.nameContact like '%$like%' ";
@@ -535,7 +535,7 @@ class ReporteBonos extends Main
                         $subStr .=" )";
                 }
             }
-            $strFilter .=" and contractId in(select a.contractId from contract a inner join customer b on a.customerId = b.customerId where b.active='1' and a.activo='Si' $subStr )";
+            $strFilter .=" and a.contractId in(select a.contractId from contract a inner join customer b on a.customerId = b.customerId where b.active='1' and a.activo='Si' $subStr )";
         }
         //filtro departamento
         if($ftr["departamentoId"])
@@ -560,9 +560,13 @@ class ReporteBonos extends Main
             $sub['personalId']=$subId;
             $allEncargados[$subId] = $sub;
         }
-        $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones
+        $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones,
+                    c.name, c.nameContact
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
+                    inner join (select contract.contractId, contract.name, customer.nameContact from contract
+                                inner join  customer on contract.customerId = customer.customerId
+                                where contract.activo = 'Si' and customer.active = '1') as c on a.contractId = c.contractId                                
                     where b.status='1' and a.status IN ('activo','bajaParcial')  $strFilter";
         $this->Util()->DB()->setQuery($sqlServ);
         $services = $this->Util()->DB()->GetResult();
@@ -576,17 +580,11 @@ class ReporteBonos extends Main
             $cad = [];
             $data = [];
             $servId =$service['servicioId'];
-            $conId= $service["contractId"];
-            $sql ="select a.name,b.nameContact,a.contractId from contract a inner join customer b on a.customerId=b.customerId where contractId='$conId' and a.activo='Si' and b.active='1' ";
-            $this->Util()->DB()->setQuery($sql);
-            $contrato = $this->Util()->DB()->GetRow();
-            if(!$contrato)
-                continue;
-
+            $contrato['contractId'] = $service["contractId"];
             $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$service['contractId']);
-            if(!in_array($encargados[$service['departamentoId']],$fullSubordinados) && $this->accessAnyContract() !=='1')
+            if(!in_array($encargados[$service['departamentoId']],$fullSubordinados) && $this->accessAnyContract() !=='1'){
                 continue;
-
+            }
             //encontrar instancias de servicios
             $isParcial = false;
             if ($service['status']=="bajaParcial")
@@ -622,15 +620,14 @@ class ReporteBonos extends Main
             }
             else
                 continue;
-
-            $encargadoDep = $encargados[$service['departamentoId']];
+            $encargadoDep = $encargados[$service['departamentoId']] ? $encargados[$service['departamentoId']] : 0;
             $personal->setPersonalId($encargadoDep);
             $encargado =$personal->InfoWhitRol();
-            $service["encargado"]=$encargado['name'];
+            $service["encargado"]= $encargado['name'] ? $encargado['name'] : 'Sin encargado' ;
             $service["encargadoId"]=$encargadoDep;
 
-            $service["cliente"]=$contrato['nameContact'];
-            $service["contrato"]=$contrato['name'];
+            $service["cliente"]=$service['nameContact'];
+            $service["contrato"]=$service['name'];
 
             $cad['porcentajeBono']=$encargado['porcentajeBono'];
             $cad['sueldoTotal']=$encargado['sueldo']*3;
@@ -875,7 +872,6 @@ class ReporteBonos extends Main
         }
         $ordenado = $this->Util()->orderMultiDimensionalArray($newArray,'level',false,true);
         $data["totalesEncargadosAcumulado"] = $ordenado;
-        
         return $data;
     }
     function recursiveTotalEncargado($allEncargados,&$newArray,$value,$acumDevengado,$acumCompletado,$sueldo){

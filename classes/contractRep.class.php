@@ -191,16 +191,6 @@ class ContractRep extends Main
 
         return $contratos;
     }
-    public function FilesWhitoutDate($id){
-
-        $sql = 'SELECT a.date,b.descripcion FROM archivo a LEFT JOIN tipoArchivo b ON a.tipoArchivoId=b.tipoArchivoId 
-                WHERE a.date="0000-00-00" AND a.contractId='.$id.' GROUP BY a.tipoArchivoId ORDER BY a.date DESC';
-        $this->Util()->DB()->setQuery($sql);
-        $result = $this->Util()->DB()->GetResult();
-
-        return $result;
-    }
-
     public function CheckExpirationFiel($item,$dep){
         $result2 = array();
         $nowAdd = strtotime('+1 month', strtotime(date('Y-m-d')));

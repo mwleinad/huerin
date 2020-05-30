@@ -19,7 +19,7 @@
 			</tr>
 			<tr>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
-					<input type="text" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%"  />
+					<input type="text" name="like_customer_name" id="like_customer_name" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%"  />
 					<div id="loadingDivDatosFactura"></div>
 					<div style="position:relative">
 						<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
@@ -27,7 +27,7 @@
 					</div>
 				</td>
 				<td align="center"style="padding-left: 5px;padding-right: 5px">
-					<input type="text" name="rfc2" id="rfc2" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%" />
+					<input type="text" name="like_contract_name" id="like_contract_name" class="largeInput" autocomplete="off" value="{$search.rfc}" style="width: 90%" />
 					<div id="loadingDivDatosFactura2"></div>
 					<div style="position:relative">
 						<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv2">

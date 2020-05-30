@@ -964,58 +964,6 @@ class Customer extends Main
     }
     return $result;
   }
-  public function SuggestCustomer($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limit = 20)
-  {
-    global $User, $page, $rol, $personal;
-    $ftrCustomer = "";
-    $ftrContract = "";
-
-    if ($this->active) {
-      $ftrCustomer .= " AND a.active = '1' ";
-    }
-
-    if ($customerId) {
-      $ftrCustomer .= " AND a.customerId = '" . $customerId . "' ";
-      if ($page == "report-servicio") {
-        $User["roleId"] = 1;
-      }
-    }
-    switch ($tipo) {
-      case 'Inactivos':
-        $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
-        break;
-      default:
-        $ftrCustomer .= " AND a.active = '1' ";
-        $ftrContract .= " AND b.activo = 'Si' ";
-        break;
-    }
-    if (strlen($like) > 1) {
-      $ftrCustomer .= " AND (a.nameContact LIKE '%$like%' OR (b.name LIKE '%$like%' OR b.rfc LIKE '%$like%'))";
-    }
-    $fil['deep'] = 'On';
-    $subordinados = $personal->GetIdResponsablesSubordinados($fil);
-    $subs =  implode(",", $subordinados);
-    $rol->setRolId($User['roleId']);
-    $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','subgerente','supervisor', 'contador', 'auxiliar', 'cliente'), array('Juridico RRHH'));
-    if ($unlimited)
-      $join =  " LEFT JOIN ";
-    else
-      $join =  "  INNER JOIN ";
-
-    $sql = "SELECT a.customerId,a.nameContact,b.contractId,b.name FROM customer a 
-              $join contract b ON  a.customerId= b.customerId  
-              $join contractPermiso c ON b.contractId=c.contractId AND c.personalId IN($subs)
-              WHERE 1 $ftrCustomer GROUP BY b.contractId LIMIT $limit
-               ";
-    $this->Util()->DB()->setQuery($sql);
-    $result = $this->Util()->DB()->GetResult();
-    $noDuplicados = array();
-    foreach ($result as $key => $value) {
-      $noDuplicados[$value["customerId"]] = $value;
-    }
-    $result = $noDuplicados;
-    return $result;
-  }
   public function SuggestCustomerContract($like = "", $type = "subordinado", $customerId = 0, $tipo = "")
   {
     global $User, $page, $rol;
@@ -1421,124 +1369,6 @@ class Customer extends Main
     } //foreach
     return $result;
   } //SuggestCustomerCatalog
-  public function SuggestCustomerCatalogFiltrado($like = "", $type = "subordinado", $customerId = 0, $tipo = "", $limite = false)
-  {
-    global $User, $page, $rol, $personal,$contract;
-    $creport = new ContractRep();
-    $ftrCustomer = "";
-    $ftrContract = "";
-    if ($this->active) {
-      $ftrCustomer .= " AND active = '1' ";
-    }
-    if ($customerId) {
-      $ftrCustomer .= " AND customer.customerId = '" . $customerId . "' ";
-      if ($page == "report-servicio") {
-        $User["roleId"] = 1;
-      }
-    }
-    switch ($tipo) {
-      case 'Inactivos':
-        $ftrCustomer .= " AND (active = '0' OR (active = '1' AND contract.activo = 'No' ))";
-        break;
-      default:
-        $ftrCustomer .= " AND active = '1' ";
-        $ftrContract .= " AND contract.activo='Si' ";
-        break;
-    }
-    if (strlen($like) > 1) {
-      $ftrCustomer .= " AND (customer.nameContact LIKE '%$like%' OR (contract.name LIKE '%$like%' OR contract.rfc LIKE '%$like%'))";
-    }
-
-    if ($limite)
-      $addLimite = " LIMIT 15";
-    else
-      $addLimite = "";
-
-    $sql = "SELECT customer.customerId,customer.fechaAlta, customer.nameContact, contract.contractId, contract.name, customer.phone, customer.email, customer.password,customer.active 
-            FROM customer
-            LEFT JOIN contract ON contract.customerId = customer.customerId	 $ftrContract
-            WHERE 1 $ftrCustomer
-            GROUP BY customerId 	
-            ORDER BY nameContact ASC 
-            $addLimite ";
-    $this->Util()->DB()->setQuery($sql);
-    $result = $this->Util()->DB()->GetResult();
-    $filtro = new Filtro;
-    $subordinados = $personal->GetIdResponsablesSubordinados($_POST);
-
-    $strEncargados =  implode(",",$subordinados);
-    foreach ($result as $key => $val) {
-      $result[$key]["showCliente"] = 0;
-      $result[$key]["doBajaTemporal"] = 0;
-      $result[$key]["haveTemporal"] = 0;
-      $result[$key]["contractsActivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'Si');
-      $result[$key]["contractsInactivos"] = $this->HowManyRazonesSociales($val["customerId"], $activo = 'No');
-      $result[$key]["contracts"] =  $this->GetRazonesSociales($val["customerId"]);
-      $countContracts = count($result[$key]["contracts"]);
-      $result[$key]["totalContracts"] = $result[$key]["contractsActivos"] + $result[$key]["contractsInactivos"];
-      $contractWhitPermiso = 0;
-      if ($countContracts > 0) {
-          foreach($result[$key]["contracts"] as $keyContract =>$value){
-              $jefes = [];
-              $contract->setContractId($value["contractId"]);
-              $sql = "SELECT b.personalId FROM contract a  
-                      INNER JOIN contractPermiso b ON a.contractId=b.contractId 
-                      WHERE b.personalId IN($strEncargados) 
-                      AND a.contractId = '".$value['contractId']."' 
-                      group by a.contractId ";
-              $this->Util()->DB()->setQuery($sql);
-              $whitPermiso = $this->Util()->DB()->GetSingle();
-
-              if(!$whitPermiso){
-                  if(!$rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','asistente','sistema'),['socio','Gerente de administracion','Recepcion'])){
-                      unset($result[$key]["contracts"][$keyContract]);
-                      continue;
-                  }
-              }
-
-              $contractWhitPermiso++;
-              $encargados = $creport->encargadosCustomKey("departamento","name",$value["contractId"]);
-              $encargadosId = $creport->encargadosCustomKey("departamento","personalId",$value["contractId"]);
-              $result[$key]["contracts"][$keyContract]["responsable"] = $encargados["Contabilidad"];
-              $result[$key]["contracts"][$keyContract]["totalMensual"] = number_format($contract->getTotalIguala(),2,'.',',');
-              $personal->setPersonalId($encargadosId["Contabilidad"]);
-              $infoWhitRol = $personal->InfoWhitRol();
-              $personal->deepJefesArray($jefes,true);
-              $needle =strtolower($infoWhitRol["nameLevel"]);
-              switch ($needle) {
-                  case 'contador':
-                  case 'auxiliar':
-                      $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['Supervisor'];
-                      break;
-                  default:
-                      $result[$key]["contracts"][$keyContract]["supervisadoBy"] = $jefes['me'];
-                      break;
-              }
-              $parciales = $this->GetServicesByContract($value["contractId"], 'bajaParcial');
-              $serviciosActivos = $this->GetServicesByContract($value["contractId"],'activo');
-               if($value['activo']=='Si'){
-                   if(count($serviciosActivos)>0)
-                       $result[$key]["doBajaTemporal"]++;
-
-                   if(count($parciales)>0)
-                       $result[$key]["haveTemporal"] = 1;
-               }
-
-          }
-          $result[$key]["showCliente"] = $contractWhitPermiso;
-      } else {
-        $result[$key]["contracts"][0]["customerId"] = $val["customerId"];
-        $result[$key]["contracts"][0]["nameContact"] = $val["nameContact"];
-        $result[$key]["contracts"][0]["fake"] = 1;
-
-        $rol->setRolId($User["roleId"]);
-        $result[$key]["showCliente"] = $rol->ValidatePrivilegiosRol(array('supervisor','contador','auxiliar','asistente','sistema'),['socio','Gerente de administracion','Recepcion']);
-      }
-      $filtro->RemoveClientFromView($result[$key]["showCliente"], $User["roleId"], $type, $result, $key);
-    } //foreach
-    return $result;
-  } //SuggestCustomerCatalog
-
   public function SuggestCustomerFilter($filter = [], $limit = false){
       $sfSubquery = $sfQueryPermiso = $sfQuery =  $sfLimit = "";
       $tipo =  strtolower($filter['tipos']);
@@ -1619,22 +1449,28 @@ class Customer extends Main
       }
       return $newArray;
   }
-  public function EnumerateAllCustomer($filter) {
+  public function EnumerateAllCustomer($filter, $limit = 0) {
         $result = $this->SuggestCustomerFilter($filter);
         $clientes = [];
+        $items = 0;
         foreach($result as $key => $value) {
             $parciales = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"], 'bajaParcial'): [];
             $serviciosActivos = $value['contractId'] !== null ? $this->GetServicesByContract($value["contractId"],'activo') : [];
             $allowBajaTemp = $value['activo'] === 'Si' && count($serviciosActivos) > 0 ? count($serviciosActivos) : 0;
             $countTemporal=  $value['activo'] === 'Si' && count($parciales) > 0 ? count($parciales) : 0;
-            if(!key_exists($value['clienteId'],  $clientes)){
+            if(!key_exists($value['clienteId'],  $clientes)) {
                 $cad = $value;
                 $cad['doBajaTemporal'] = $allowBajaTemp;
                 $cad['haveTemporal'] =  $countTemporal;
                 $clientes[$value['clienteId']] = $cad;
+                $items++;
             } else {
                 $clientes[$value['clienteId']]['doBajaTemporal'] += $allowBajaTemp;
                 $clientes[$value['clienteId']]['haveTemporal'] += $countTemporal;
+            }
+            if($limit){
+                if($items >= $limit)
+                    break;
             }
         }
        return $clientes;
@@ -1674,7 +1510,6 @@ class Customer extends Main
     } //foreach
     return $result;
   } //GetListRazones()
-
   function GetServicesByContract($id, $tipo = "activos")
   {
     //por default se debe tomarse en cuenta los de baja temporal
@@ -1693,7 +1528,6 @@ class Customer extends Main
     $serviciosContrato = $this->Util()->DB()->GetResult();
     return $serviciosContrato;
   }
-
   function HowManyRazonesSociales($customerId, $activo = 'Si')
   {
     $sql = "SELECT COUNT(*)
@@ -1703,7 +1537,6 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     return $this->Util()->DB()->GetSingle();
   }
-
   function GetRazonesSociales($customerId, $like = "", $limit = 0)
   {
     $strLike = "";
@@ -1723,7 +1556,6 @@ class Customer extends Main
 
     return $result;
   }
-
   public function HistorialAll()
   {
     $this->Util()->DB()->setQuery("

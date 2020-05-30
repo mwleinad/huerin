@@ -19,27 +19,25 @@
 	</tr>
 </thead>
 <tbody>
-{foreach from=$clientes item=cliente key=key}
-	{foreach from=$cliente.contracts item=contract key=keyContract}
-    	{foreach from=$contract.instanciasServicio item=servicio key=keyServicio}
-        <tr>
-            <td align="center">{$cliente.nameContact}</td>
-            <td align="center">{$contract.name}</td>
-            <td align="center">{$servicio.nombreServicio}</td>
-            <td align="center">{$servicio.periodicidad}</td>
-            <td align="center">{$servicio.inicioFactura}</td>
-            <td align="center">{$servicio.inicioOperaciones}</td>
-            <td align="center">{$servicio.nameStatusComplete}</td>
-            <td align="center">{if $servicio.servicioStatus eq 'bajaParcial'}{$servicio.lastDateWorkflow}{else}N/A{/if}</td>
-            <td align="center">${$servicio.costo|number_format:2}</td>
-            <td align="center">${$servicio.costoVisual}</td>
-            <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
-            <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
-            <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
-            <td align="center">{if $servicio.subgerente eq ''}--{else}{$servicio.subgerente}{/if}</td>
-            <td align="center">{if $servicio.gerente eq ''}--{else}{$servicio.gerente}{/if}</td>
-        </tr> 
-        {/foreach}
+{foreach from=$contracts item=contract key=keyContract}
+    {foreach from=$contract.servicios item=servicio key=keyServicio}
+    <tr>
+        <td align="center">{$contract.nameContact}</td>
+        <td align="center">{$contract.name}</td>
+        <td align="center">{$servicio.nombreServicio}</td>
+        <td align="center">{$servicio.periodicidad}</td>
+        <td align="center">{$servicio.inicioFactura}</td>
+        <td align="center">{$servicio.inicioOperaciones}</td>
+        <td align="center">{$servicio.nameStatusComplete}</td>
+        <td align="center">{if $servicio.servicioStatus eq 'bajaParcial'}{$servicio.lastDateWorkflow}{else}N/A{/if}</td>
+        <td align="center">${$servicio.costo|number_format:2}</td>
+        <td align="center">${$servicio.costoVisual}</td>
+        <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
+        <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
+        <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
+        <td align="center">{if $servicio.subgerente eq ''}--{else}{$servicio.subgerente}{/if}</td>
+        <td align="center">{if $servicio.gerente eq ''}--{else}{$servicio.gerente}{/if}</td>
+    </tr>
     {/foreach}
 {foreachelse}
 <tr>
@@ -47,7 +45,7 @@
 </tr>
 {/foreach}
 
-{if $clientes|count > 0}
+{if $contracts|count > 0}
 <tr>
     <td align="center"></td>
     <td align="center"></td>

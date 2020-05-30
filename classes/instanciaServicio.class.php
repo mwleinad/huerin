@@ -308,23 +308,6 @@ class InstanciaServicio extends  Servicio
                 $costo = $value['costo'];
             }
 
-           /* $fecha = $year."-0".$value['mes']."-01";
-            //para febrero de 2019 hacia atras hacer busqueda en facturas emitidas no importa que fecha de facturacion sea invalido
-            if($fecha<="2019-02-01"){
-                $costo =  $this->findCostoInstanciaMonth($value['mes'],$year,$servicioId);
-            }
-            else{
-                //si la instancia es
-                if($value['factura']=='Si'){
-                    $costo =  $this->findCostoService($value['mes'],$year,$servicioId,$value['comprobanteId']);
-                    //en caso de no encontrar costo en factura se usa el costo del workflow si lo tiene
-                    if($costo<=0)
-                        $costo = $value['costoWorkflow'];
-                    //como ultima opcion se usa el costo asignado al servicio, esto pasa si en las dos anteriores no hay exito.
-                    if($costo<=0)
-                        $costo = $value['costo'];
-              }
-            }*/
             $value['cobrado'] = 0;
             if($value['factura']=='Si'){
                 $comp =  $comprobante->GetInfoComprobante($value['comprobanteId']);
@@ -343,9 +326,6 @@ class InstanciaServicio extends  Servicio
             $monthBase[$value['mes']] =  $value;
         }
 
-        /* if($tipoServicio==RIF||$tipoServicio==RIFAUDITADO){
-                 $this->comprobarRif($monthBase,$year,$servicioId);
-        }*/
         $newArray['instancias']= $monthBase;
         $newArray['totalComplete'] = $totalAcompletado;
         $newArray['totalDevengado'] = $totalDevengado;

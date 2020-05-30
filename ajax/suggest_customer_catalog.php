@@ -14,8 +14,8 @@ $result = $customer->SuggestCustomerFilter($filter, true);
 if(!$result)
 {
 ?>
-	<div class="suggestUserDiv" style="border:solid; border-width:1px; border-color:#000; background-color:#FFFFE6; color:#333; padding:3px; width:680px;" id="<?php echo $test["rfc"] ?>" >
-		<div class="suggestUserDiv" id="<?php echo $test["contractId"] ?>" style="float:left;width:60px; font-weight:bold; cursor:pointer"><?php echo $test["contractId"] ?>No hay clientes</div>
+	<div class="suggestUserDiv" style="border:solid; border-width:1px; border-color:#000; background-color:#FFFFE6; color:#333; padding:3px; width:680px;" id="" >
+		<div class="suggestUserDiv" id="" style="float:left;width:60px; font-weight:bold; cursor:pointer">No hay clientes</div>
 		<div class="closeSuggestUserDiv" style="float:left;width:20px; cursor:pointer">X</div>
         <div style="clear:both"></div>
   </div>
