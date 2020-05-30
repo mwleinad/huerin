@@ -1130,7 +1130,7 @@ function SubordinadosDetailsAddPass()
     {
         global $User;
         $idPersons = [];
-        if ( (int)$User["level"] == 1|| $this->showAll) {
+        if ( (int)$User["level"] == 1|| $this->showAll || $this->accessAnyContract() === '1') {
             if ($filtro['responsableCuenta'] == 0) {
                 $this->setActive(1);
                 $socios = $this->ListSocios();
