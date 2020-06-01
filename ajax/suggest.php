@@ -3,7 +3,14 @@ include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-$result = $contract->Suggest($_POST["value"],$_POST['activos']);
+$_POST["deep"] = true;
+$personal->isShowAll();
+$encargados = $personal->GetIdResponsablesSubordinados($_POST);
+$filter['deep'] = $_POST['deep'];
+$filter['like'] = $_POST['value'];
+$filter['tipos'] = 'activos';
+$filter['subordinados'] = $encargados;
+$result = $contract->Suggest($filter, true);
 if(!$result)
 {
 ?>
