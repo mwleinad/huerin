@@ -1,6 +1,7 @@
 {
     "require": {
         "dompdf/dompdf": "^0.8.0",
-        "mikehaertl/phpwkhtmltopdf": "^2.3"
+        "mikehaertl/phpwkhtmltopdf": "^2.3",
+        "phpoffice/phpword": "v0.17.*"
     }
 }

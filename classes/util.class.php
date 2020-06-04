@@ -1340,8 +1340,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 	function setFormatDate($fecha){
 
 		$mesEnt = $this->GetMonthByKey(date('n',strtotime($fecha)));
-		$mesEnt = substr($mesEnt,0,3);
-
+		//$mesEnt = substr($mesEnt,0,3);
 		$fecha = date('d',strtotime($fecha)).' '.strtoupper($mesEnt).' '.date('Y',strtotime($fecha));
 
 		return $fecha;
