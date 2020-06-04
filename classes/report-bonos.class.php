@@ -512,7 +512,7 @@ class ReporteBonos extends Main
         $data['totalesCobranzaXdepartamento'] = $totalesCobranzaXdep;
         return $data;
     }
-    function generateReportBonosWhitLevel($ftr=[]){
+    function generateReportBonosWhitLevel($ftr=[]) {
         global $personal,$contractRep,$instanciaServicio;
         $strFilter = "";
         if(strlen($_POST["like_contract_name"])>0||strlen($_POST["like_customer_name"])>0)
@@ -581,10 +581,15 @@ class ReporteBonos extends Main
             $data = [];
             $servId =$service['servicioId'];
             $contrato['contractId'] = $service["contractId"];
+            $allow = $this->accessAnyContract() === '1' && $ftr['responsableCuenta'] <= 0 ? true : false;
             $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$service['contractId']);
-            if(!in_array($encargados[$service['departamentoId']],$fullSubordinados) && $this->accessAnyContract() !=='1'){
-                continue;
+            if(!$allow) {
+                if(in_array($encargados[$service['departamentoId']],$fullSubordinados))
+                    $allow = true;
             }
+
+            if(!$allow)
+                continue;
             //encontrar instancias de servicios
             $isParcial = false;
             if ($service['status']=="bajaParcial")
