@@ -42,14 +42,15 @@ class Notice extends Main
     }
 	public function Enumerate()
 	{
+	    $filter =  " and fecha >= (date_add(curdate(), interval -1 month) - interval dayofmonth(date_add(curdate(), interval -1 month))-1 day) and fecha <= curdate() ";
 	    global $User,$rol;
-	    $this->Util()->DB()->setQuery('SELECT COUNT(*) FROM notice WHERE status="vigente" ');
+	    $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM notice WHERE status='vigente' $filter ");
 		$total = $this->Util()->DB()->GetSingle();
 
 		$pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/homepage");
 
 		$sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-		$this->Util()->DB()->setQuery('SELECT * FROM notice WHERE status="vigente" ORDER BY noticeId DESC '.$sql_add);
+		$this->Util()->DB()->setQuery("SELECT * FROM notice WHERE status='vigente' $filter ORDER BY noticeId DESC ".$sql_add);
 		$result = $this->Util()->DB()->GetResult();
 
 		//comprobar si el usuario esta permitido que ve el aviso

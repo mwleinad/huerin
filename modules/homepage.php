@@ -22,19 +22,16 @@
 	  }
 
 	$notice->SetPage($_GET["p"]);
-	$resArchivo = $notice->Enumerate();
-	foreach($resArchivo["items"] as $key =>$value)
+	$notices = $notice->Enumerate();
+	foreach($notices["items"] as $key =>$value)
 	{
 	  $card = $value;
 	  $card["fecha"] = $util->ChangeDateFormat($value["fecha"]);
 	  $card["description"] = nl2br($value["description"]);
-	  $resArchivo["items"][$key] = $card;
+	  $notices["items"][$key] = $card;
 	}
-	/*echo "<pre>";
-	print_r($resArchivo);
-	exit;*/
-	$smarty->assign("notices", $resArchivo);
 
+	$smarty->assign("notices", $notices);
 	$pendiente->SetPage($_GET["p"]);
 	$resArchivo = $pendiente->Enumerate();
 	foreach($resArchivo["items"] as $key =>$value)
