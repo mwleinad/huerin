@@ -76,6 +76,10 @@ switch($_POST["action"])
 				$contract->setClaveIsn($_POST['claveIsn']);
 			if(isset($_POST['claveSip']))
 				$contract->setClaveSip($_POST['claveSip']);
+			if($_POST['use_alternative_rz_for_invoice'] === '1') {
+				$contract->setUseAlternativeRzForInvoice(1);
+				$contract->setAlterntiveRzId($_POST['alternative_rz_id']);
+			}
 
     		$validation = $contract->Validate();
 			if($validation)

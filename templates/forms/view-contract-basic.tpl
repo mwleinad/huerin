@@ -40,12 +40,20 @@
 		<td align="left" width="40%">* Regimen Fiscal</td>
 		<td align="left">{$infoRazonSocial.nombreRegimen}</td>
 	</tr>
+	<tr>
+		<td align="left" width="40%">Clasificacion</td>
+		<td align="left">{$infoRazonSocial.qualification}</td>
+	</tr>
 	{if in_array(223,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">Nombre representante legal</td>
 			<td align="left">{$infoRazonSocial.nameRepresentanteLegal}</td>
 		</tr>
 	{/if}
+	<tr>
+		<td align="left" width="40%">Factura con datos alternativos</td>
+		<td align="left">{if $infoRazonSocial.useAlternativeRzForInvoice eq '1'}Si{else}No{/if}</td>
+	</tr>
 	{if in_array(222,$permissions) || $User.isRoot}
     <tr>
 		<td align="left" width="40%">Actividad Económica</td>

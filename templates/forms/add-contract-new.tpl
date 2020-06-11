@@ -1,5 +1,6 @@
 <form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post" autocomplete="off">
 <input type="hidden" name="action" value="save" />
+<input type="hidden" name="customerId" id="customerId" value="{$infoCustomer.customerId}" />
 {include file="{$DOC_ROOT}/templates/forms/add-contract-basic.tpl"}
 <div id="infoCompraVenta2" style="display:block">
 	{include file="{$DOC_ROOT}/templates/forms/datos-contacto.tpl"}
