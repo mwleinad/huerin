@@ -121,8 +121,9 @@ include_once(DOC_ROOT."/classes/inventory.class.php");
 include_once(DOC_ROOT."/classes/prospect.class.php");
 include_once(DOC_ROOT."/classes/prospectOffer.class.php");
 $prospect = new Prospect;
-
-//cron
+include_once(DOC_ROOT."/classes/activity.class.php");
+$activity = new Activity;
+//crons
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
 $cronServicio = new CronServicio();
 include_once(DOC_ROOT."/classes/backup.class.php");

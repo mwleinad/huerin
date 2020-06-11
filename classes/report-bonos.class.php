@@ -313,205 +313,6 @@ class ReporteBonos extends Main
 	        $mesesBase[$mes]=[];
 	    return $mesesBase;
     }
-	function generateReportBonos($ftr=[]){
-	    global $contractRep,$instanciaServicio,$customer,$personal;
-        //encargados del filtro
-        $fullSubordinados = $personal->GetIdResponsablesSubordinados($ftr);
-	    $year = $_POST['year'];
-	    $totalContratos =  $customer->getTotalContratosInPlatform();
-
-        $mesesBase =  $this->createMonthBase($ftr['period']);
-	    $contratos = $contractRep->getContracts($ftr,true);
-
-       if(isset($ftr['deep']) || isset($ftr['subordinados']))
-            $data['subordinados'] = 1;//sirve para controlar texto en el reporte resultado.
-       if($ftr['responsableCuenta'])
-       {
-           $personal->setPersonalId($ftr['responsableCuenta']);
-           $responsable = $personal->Info();
-           $data['responsable'] = $responsable['name'];
-       }
-	    $totalContratosAsignados = count($contratos);
-        $granTotalContabilidad = 0;
-        $granTotalCobranza = 0;
-        $idDepsGeneral = [];
-        $totalXdepartamento= [];
-        $totalXencargados = [];
-        $idEncargados = [];
-        $idDepsCobranza = [];
-        $totalesCobranzaXdep = [];
-	    foreach($contratos as $key => $value){
-            if(!isset($value['servicios']))
-            {
-                unset($contratos[$key]);
-                continue;
-            }
-            if(count($value['servicios'])<=0){
-                unset($contratos[$key]);
-                continue;
-            }
-            $serviciosFiltrados = [];
-            $encargados = $contractRep->encargadosCustomKey('departamentoId','name',$value['contractId']);
-            $encargados2 = $contractRep->encargadosCustomKey('departamentoId','personalId',$value['contractId']);
-            $rowCobranza = [];
-            $sumTotalCobranza = 0;
-            foreach($value['servicios'] as $ks=>$serv) {
-               $sumaTotalDevengado=0;
-               $sumaTotalTrabajado=0;
-               $serv['instancias'] = [];
-               $isParcial = false;
-               if ($serv['status']=="bajaParcial")
-                   $isParcial = true;
-
-               $serv['responsable'] = $encargados[$serv['departamentoId']];
-                switch ($ftr['period']) {
-                   case 'efm':
-                       $meses = array(1, 2, 3);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                       //obtengamos por cada servicio  su total cobranza por trimestre
-                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
-                   break;
-                   case 'amj':
-                       $meses = array(4, 5, 6);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
-                   break;
-                   case 'jas':
-                       $meses = array(7, 8, 9);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
-                   break;
-                   case 'ond':
-                       $meses = array(10, 11, 12);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
-                   break;
-                   default:
-                       $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                       $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
-                       $cobranza = $instanciaServicio->getCobranzaByServicio($serv['servicioId'], $year, $meses,$mesesBase);
-                   break;
-               }
-                if(isset($temp['instancias'])){
-                    if(!empty($temp['instancias']))
-                        $serv['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
-
-                 $sumaTotalDevengado=$temp['totalDevengado'];
-                 $sumaTotalTrabajado= $temp['totalComplete'];
-                }else{
-                    if(!$ftr["whitoutWorkflow"])
-                        continue;
-                    else
-                        $serv['instancias'] = $mesesBase;
-                }
-                //totalizar por encargados de area
-                if(!in_array($encargados2[$serv['departamentoId']],$idEncargados)){
-                    if(!$encargados2[$serv['departamentoId']])
-                    {
-                        $keyEncargado = 000000;
-                        array_push($idEncargados,000000);
-                        $nameEncargado = 'SIN ENCARGADO ASIGNADO';
-                    }
-                    else
-                    {
-                        array_push($idEncargados,$encargados2[$serv['departamentoId']]);
-                        $nameEncargado = $encargados[$serv['departamentoId']];
-                        $keyEncargado = $encargados2[$serv['departamentoId']];
-                    }
-                    $tXe['name'] =  $nameEncargado;
-                    $tXe['total'] = 0;
-                    $tXe['total'] = (double)$sumaTotalTrabajado;
-                    $totalXencargados[$keyEncargado] = $tXe;
-                 }else{
-                    if(!$encargados2[$serv['departamentoId']])
-                        $keyEncargado = 000000;
-                    else
-                        $keyEncargado = $encargados2[$serv['departamentoId']];
-
-                    $totalXencargados[$keyEncargado]['total'] += (double)$sumaTotalTrabajado;
-                }
-                //sumar el total al jefe del encargado actual, si lo tiene.
-                $personal->setPersonalId($keyEncargado);
-                $jefe = $personal->jefeInmediato();
-                if($jefe['personalId']>0 && in_array($jefe["personalId"],$fullSubordinados)){
-                    if(!in_array($jefe['personalId'],$idEncargados)){
-                        array_push($idEncargados,$jefe['personalId']);
-                        $nameJefe = $jefe["name"];
-                        $keyJefe =$jefe["personalId"];
-                        $totJefe['name'] =  $nameJefe;
-                        $totJefe['total'] = 0;
-                        $totJefe['total'] = (double)$sumaTotalTrabajado;
-                        $totalXencargados[$keyJefe] = $totJefe;
-                    }else{
-                        $keyJefe =$jefe["personalId"];
-                        $totalXencargados[$keyJefe]['total'] += (double)$sumaTotalTrabajado;
-                    }
-
-                }
-                Departamentos::setDepartamentoId($serv['departamentoId']);
-                $nameDepartamento =Departamentos::Info()['departamento'];
-
-               if(!in_array($serv['departamentoId'],$idDepsGeneral)){
-                   array_push($idDepsGeneral,$serv['departamentoId']);
-                   $tXd['departamento'] =$nameDepartamento;
-                   $tXd['total'] = 0;
-                   $tXd['total'] = (double)$sumaTotalTrabajado;
-                   $totalXdepartamento[$serv['departamentoId']] = $tXd;
-               }else{
-                   $totalXdepartamento[$serv['departamentoId']]['total'] += (double)$sumaTotalTrabajado;
-               }
-               $serv['sumatotal'] = $sumaTotalTrabajado;
-               $serviciosFiltrados[]= $serv;
-               $granTotalContabilidad +=(double)$sumaTotalDevengado;
-               //recorrer los tres meses de cobranza por servicio si existen.
-                $totalLocalDep = 0;
-                foreach($cobranza as $ck=>$cob){
-                    $rowCobranza[$ck]["total"]+=$cob["total"];
-                    $rowCobranza[$ck]["class"]=$cob["class"];
-                    $rowCobranza[$ck]["status"]=1;
-                    $rowCobranza[$ck]["mes"]=$ck;
-                    $rowCobranza[$ck]["anio"]=$year;
-                    $sumTotalCobranza +=$cob["total"];
-                    $totalLocalDep +=$cob["total"];
-                }
-                //obtener totales cobranza por departamento
-                if(!in_array($serv['departamentoId'],$idDepsCobranza)){
-                    array_push($idDepsCobranza,$serv['departamentoId']);
-                    $tXdc['name'] =$nameDepartamento;
-                    $tXdc['total'] =  $totalLocalDep;
-                    $totalesCobranzaXdep[$serv['departamentoId']] = $tXdc;
-                }else{
-                    $totalesCobranzaXdep[$serv['departamentoId']]['total'] += $totalLocalDep;
-                }
-           }//end foreach servicios.
-           if(count($serviciosFiltrados)<=0){
-                unset($contratos[$key]);
-                continue;
-           }
-            $card2 = [];
-            $card2["instancias"] = $rowCobranza;
-            $card2["sumatotal"]=$sumTotalCobranza;
-            $card2["isRowCobranza"] =  true;
-            $card2["description"] = "Total cobranza proporcional";
-            $card2["isDevengado"] = false;
-            $granTotalCobranza +=$sumTotalCobranza;
-            array_push( $serviciosFiltrados,$card2);
-
-            $contratos[$key]['servicios'] = $serviciosFiltrados;
-        }//end foreach contratos
-
-        $data['totalContratos'] = $totalContratos;
-	    $data['contratosAsignados'] = $totalContratosAsignados;
-	    $data['porcentajeAsignado'] = ($totalContratosAsignados*100)/$totalContratos;
-        $data['contratos'] = $contratos;
-
-        $data['granTotalContabilidad'] =$granTotalContabilidad;
-        $data['granTotalCobranza'] =$granTotalCobranza;
-        $data['totalesXdepartamentos'] = $totalXdepartamento;
-        $data['totalesXencargados'] = $totalXencargados;
-        $data['totalesCobranzaXdepartamento'] = $totalesCobranzaXdep;
-        return $data;
-    }
     function generateReportBonosWhitLevel($ftr=[]) {
         global $personal,$contractRep,$instanciaServicio;
         $strFilter = "";
@@ -1061,7 +862,7 @@ class ReporteBonos extends Main
         return $gerentes;
     }
     function edoResult(array $ftr){
-        global $contractRep, $instanciaServicio, $personal, $monthsInt;
+        global $contractRep, $instanciaServicio, $personal, $monthsInt, $contract;
         $strFilter ="";
         if($ftr["responsableCuenta"])
             $strFilter .= " and a.personalId = '".$ftr['responsableCuenta']."' ";
@@ -1091,7 +892,9 @@ class ReporteBonos extends Main
 
             $subordinados = $personal->GetIdResponsablesSubordinados($ftr);
             $totalSueldoIncluidoSubordinados  = $personal->getTotalSalarioByMultipleId($subordinados);
-            $contratos = $contractRep->getContracts($ftr,false);
+            $ftr['subordinados'] = $subordinados;
+            $ftr['tipos'] = 'activos';
+            $contratos = $contract->Suggest($ftr);
             if(count($contratos)<=0){
                 unset($gerentes[$key]);
                 continue;
