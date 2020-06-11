@@ -47,6 +47,56 @@ jQ(document).ready(function () {
 		new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT+"/ajax/load_items_select.php", ops);
 		new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT+"/ajax/load_items_select.php", ops);
 	}
+	if(jQ('#use_alternative_rz_for_invoice').length > 0) {
+		jQ('#use_alternative_rz_for_invoice').on('change', function () {
+			if (this.value === '1') {
+				jQ('#alternative_rz_id').select2({
+					placeholder: 'Seleccione una razon..',
+					minimumResultsForSearch: -1,
+					formatSearching: 'Buscando opciones',
+					ajax: {
+						type: 'post',
+						url: WEB_ROOT + "/ajax/load_items_select.php",
+						data: function () {
+							return {
+								type: 'contract',
+								id: jQ('#customerId').val(),
+								contractId: jQ('#contractId').val(),
+							}
+						},
+						processResults: function (data) {
+							return {
+								results: jQ.map(data, function (item) {
+									return {
+										text: item.name,
+										id: item.contractId
+									}
+								})
+							}
+						}
+					},
+					initSelection: function (element, callback) {
+						var id = jQ(element).val();
+						if (id !== '') {
+							jQ.post(WEB_ROOT + "/ajax/load_items_select.php", {
+								type: 'defaultContract',
+								id: id
+							}, function (response) {
+								response ? callback({ id: response.contractId,text: response.name}) :
+									callback({ id: '',text: "--seleccionar--"});
+							}, 'json');
+						}
+					}
+				});
+			} else {
+				jQ('#alternative_rz_id').select2('destroy');
+				jQ('#alternative_rz_id').val('')
+
+			}
+		});
+		if(jQ('#use_alternative_rz_for_invoice').val() === '1')
+			jQ('#use_alternative_rz_for_invoice').trigger('change');
+	}
 });
 function LoginCheck()
 {

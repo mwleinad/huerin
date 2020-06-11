@@ -398,6 +398,14 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                      break;
+                     case 'alternativeRzId':
+                         $this->Util()->DB()->setQuery("SELECT name FROM contract WHERE contractId='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $valorBefore = $valorBefore === '0' ? '' : $valorBefore;
+                         $this->Util()->DB()->setQuery("SELECT name FROM contract WHERE contractId='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         $valorAfter = $valorAfter === '0' ? '' : $valorAfter;
+                     break;
                      case 'regimenId':
                          $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
@@ -469,7 +477,7 @@ class Log extends Util
                          $valorAfter = $afterUnserialize[$key];
                      break;
                  }
-                 if($valorAfter!=""){
+                 if($valorAfter!='' || $valorBefore != ''){
                      $cad2['valor'] = $valorBefore;
                      $cad2['campo'] = $field;
                      $olds[] = $cad2;
@@ -498,6 +506,11 @@ class Log extends Util
                 case 'sociedadId':
                     $this->Util()->DB()->setQuery("SELECT nombreSociedad FROM sociedad WHERE sociedadId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
+                    break;
+                case 'alternativeRzId':
+                    $this->Util()->DB()->setQuery("SELECT name FROM contract WHERE contractId='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    $valorBefore = isset($allElements[$key]) ? $valorBefore : '';
                     break;
                 case 'regimenId':
                     $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$allElements[$key]."' ");

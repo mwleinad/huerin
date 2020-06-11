@@ -1537,7 +1537,7 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     return $this->Util()->DB()->GetSingle();
   }
-  function GetRazonesSociales($customerId, $like = "", $limit = 0)
+  function GetRazonesSociales($customerId, $like = "",  $limit = 0, $activos = '')
   {
     $strLike = "";
     $strLimit = "";
@@ -1547,6 +1547,9 @@ class Customer extends Main
     if ($limit) {
       $strLimit = " LIMIT 1";
     }
+    if($activos !== '')
+        $strLike .= " and activo = '$activos' ";
+
     $sql = "SELECT contract.*
               		FROM contract
               		WHERE customerId = '" . $customerId . "' $strLike

@@ -75,12 +75,40 @@
             </select>
 		</td>
 	</tr>
+	<tr>
+		<td align="left" width="40%"> Clasificacion</td>
+		<td align="left">
+			<select name="qualification" id="qualification" class="smallInput">
+				<option value="">Seleccione....</option>
+				<option value="AAA" {if $contractInfo.qualification eq 'AAA'}selected{/if}>Buena</option>
+				<option value="AA"  {if $contractInfo.qualification eq 'AA'}selected{/if}>Regular</option>
+				<option value="A"   {if $contractInfo.qualification eq 'A'}selected{/if}>Mala</option>
+			</select>
+		</td>
+	</tr>
 	{if in_array(223,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">Nombre representante legal</td>
 			<td align="left"><input name="nameRepresentanteLegal" id="nameRepresentanteLegal" type="text" value="{$bse.nameRepresentanteLegal}" class="smallInput medium" size="50"/></td>
 		</tr>
 	{/if}
+	<tr>
+		<td align="left" width="40%"> Facturar con datos alternativos</td>
+		<td align="left">
+			<div class="container_12">
+				<div class="grid_12">
+					<select class="smallInput" name="use_alternative_rz_for_invoice" id="use_alternative_rz_for_invoice">
+						<option value="0" {if $contractInfo.useAlternativeRzForInvoice eq '0'}selected{/if}>No</option>
+						<option value="1" {if $contractInfo.useAlternativeRzForInvoice eq '1'}selected{/if}>Si</option>
+					</select>
+				</div>
+				<div class="grid_12">
+					<label>&nbsp;</label>
+					<input type="hidden" class="smallInput" name="alternative_rz_id" id="alternative_rz_id" />
+				</div>
+			</div>
+		</td>
+	</tr>
 	{if in_array(222,$permissions) || $User.isRoot}
 		<tr>
 			<td align="left" width="40%">* Actividad Económica</td>

@@ -332,6 +332,25 @@ class Contract extends Main
         $this->claveSip = $value;
     }
 
+    private $useAlternativeRzForInvoice;
+    public function setUseAlternativeRzForInvoice($value)
+    {
+        $this->useAlternativeRzForInvoice = $value;
+    }
+
+    private $alternativeRzId;
+    public function setAlterntiveRzId($value)
+    {
+        $this->Util()->ValidateRequireField($value, 'Razon social alternativa para facturacion');
+        $this->alternativeRzId = $value;
+    }
+
+    private $qualification;
+    public function setQualification($value)
+    {
+        $this->qualification = $value;
+    }
+
     private $contractId;
     private $customerId;
     private $personalId;
@@ -883,7 +902,10 @@ class Contract extends Main
           auxiliarCuenta,
           facturador,
           claveIsn,
-          fechaAlta
+          fechaAlta,
+          useAlternativeRzForInvoice,
+          alternativeRzId,
+          qualification
         )
         VALUES
         (
@@ -936,7 +958,12 @@ class Contract extends Main
           '" . $this->auxiliarCuenta . "',
           '" . $this->facturador . "',
           '" . $this->claveIsn . "',
-          '".date('Y-m-d H:i:s')."')"
+          '".date('Y-m-d H:i:s')."',
+          '" . $this->useAlternativeRzForInvoice . "',
+          '" . $this->alternativeRzId . "',
+          '" . $this->qualification . "'
+          
+          )"
         );
         $contractId = $this->Util()->DB()->InsertData();
         //insertar nuevos permisos en la tabla contractPermiso
@@ -1106,7 +1133,10 @@ class Contract extends Main
 			  auxiliarCuenta = '" . $this->auxiliarCuenta . "',
 			  facturador = '" . $this->facturador . "',
 			  lastModified = '" . date("Y-m-d H:i:s") . "',
-			  modifiedBy = '" . $_SESSION["User"]["username"] . "'
+			  modifiedBy = '" . $_SESSION["User"]["username"] . "',
+			  useAlternativeRzForInvoice = '" .$this->useAlternativeRzForInvoice. "',
+			  alternativeRzId = '".$this->alternativeRzId."',
+			  qualification = '".$this->qualification."'
 			  WHERE
 			  contractId = '" . $this->contractId . "'";
         $this->Util()->DB()->setQuery($sql);
@@ -1410,6 +1440,7 @@ class Contract extends Main
             case 'temporal':
             case 'activos':
               $sfQuery .= " and (b.active = '1') ";
+              $sfSubquery .= " and contract.activo = 'Si' ";
             break;
             case 'inactivos':
               $sfQuery .= " and (b.active = '0') ";
@@ -1461,7 +1492,7 @@ class Contract extends Main
         if($filter['departamentoId'])
             $sfQueryService .= " AND b.departamentoId='".$filter['departamentoId']."'";
 
-       $sQuery = "SELECT   a.*, b.customerId as clienteId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
+        $sQuery = "SELECT   a.*, b.customerId as clienteId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
                  b.fechaAlta,b.observacion,b.active
                  FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
                  contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,

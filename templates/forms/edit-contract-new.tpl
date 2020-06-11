@@ -1,5 +1,6 @@
 <form name="frmContract" id="frmContract" enctype="multipart/form-data" method="post" autocomplete="off">
-<input type="hidden" name="contractId" value="{$contractInfo.contractId}" />
+<input type="hidden" name="contractId" id="contractId" value="{$contractInfo.contractId}" />
+<input type="hidden" name="customerId"  id="customerId" value="{$contractInfo.customerId}" />
 <input type="hidden" name="action" value="edit" />
 
 {include file="{$DOC_ROOT}/templates/forms/edit-contract-basic.tpl"}
