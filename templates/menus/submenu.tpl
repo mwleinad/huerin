@@ -29,6 +29,10 @@
                 <li><a href="{$WEB_ROOT}/regimen" {if $page == "regimen" || $page == "contract-subcategory"}class="current"{/if} target="_blank">
                 <span>Regimenes</span></a></li>
                 {/if}
+                {if in_array(272,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/activity" {if $page == "activity"}class="current"{/if} target="_blank">
+                    <span>Actividades comerciales</span></a></li>
+                {/if}
                 {if in_array(19,$permissions)|| $User.isRoot}
                 <li><a href="{$WEB_ROOT}/sociedad" {if $page == "sociedad"}class="current"{/if} target="_blank">
                 <span>Tipos de Sociedad</span></a></li>

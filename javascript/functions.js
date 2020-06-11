@@ -1,4 +1,9 @@
 var DOC_ROOT = "../";
+var ops = {
+	placeholder: "Seleccionar un sector.",
+	minimumResultsForSearch: -1,
+	formatSearching: 'Buscando opciones',
+};
 Event.observe(window, 'load', function() {
 	if($('login_0'))
 		Event.observe($('login_0'), "click", LoginCheck);
@@ -37,15 +42,11 @@ var Select2Cascade = ( function(window, jQ) {
 })( window, jQ);
 jQ(document).ready(function () {
 	setInterval(check_session, 60000);
-	var ops = {
-		placeholder: "Seleccionar un sector.",
-		minimumResultsForSearch: -1,
-		formatSearching: 'Buscando opciones',
-	};
-	jQ('.select2').select2(ops);
-	new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT+"/ajax/load_items_select.php", ops);
-	new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT+"/ajax/load_items_select.php", ops);
-
+	if(jQ('.select2').length > 0) {
+		jQ('.select2').select2(ops);
+		new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT+"/ajax/load_items_select.php", ops);
+		new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT+"/ajax/load_items_select.php", ops);
+	}
 });
 function LoginCheck()
 {
