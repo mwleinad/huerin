@@ -60,6 +60,22 @@ class Rol extends main
     public function setAllowAnyContract($value) {
       $this->allowAnyContract = $value;
     }
+    var $allowAnyDepartament;
+    public function setAllowAnyDepartament($value)
+    {
+        $this->allowAnyDepartament = $value;
+    }
+    var $allowAnyEmployee;
+    public function setAllowAnyEmployee($value)
+    {
+        $this->allowAnyEmployee = $value;
+    }
+    var $allowAnyRol;
+    public function setAllowAnyRol($value)
+    {
+        $this->allowAnyRol = $value;
+    }
+
     public function Info(){
         $sql = "SELECT * FROM roles WHERE status='activo' AND rolId='".$this->rolId."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
@@ -158,8 +174,27 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-
-        $sql = "INSERT INTO roles(name,status,departamentoId,nivel,allow_visualize_any_contract) VALUES('".$this->name."','activo','".$this->depId."','".$this->categoria."','".$this->allowAnyContract."') ";
+        $sql = "INSERT INTO roles
+                (
+                    name,
+                    status,
+                    departamentoId,
+                    nivel,
+                    allow_visualize_any_contract,
+                    allow_any_departament,
+                    allow_any_employee,
+                    allow_visualize_any_rol
+                ) VALUES 
+                (
+                    '".$this->name."',
+                    'activo',
+                    '".$this->depId."',
+                    '".$this->categoria."',
+                    '".$this->allowAnyContract."',
+                    '".$this->allowAnyDepartament."',
+                    '".$this->allowAnyEmployee."',
+                    '".$this->allowAnyRol."'
+                )";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -197,7 +232,15 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "UPDATE roles SET name='".$this->name."',departamentoId='".$this->depId."',nivel='".$this->categoria."', allow_visualize_any_contract='".$this->allowAnyContract."' WHERE rolId='".$this->rolId."' ";
+        $sql = "UPDATE roles SET 
+                 name='".$this->name."',
+                 departamentoId='".$this->depId."',
+                 nivel='".$this->categoria."',
+                 allow_visualize_any_contract='".$this->allowAnyContract."', 
+                 allow_any_departament = '".$this->allowAnyDepartament."',
+                 allow_any_employee = '".$this->allowAnyEmployee."',
+                 allow_visualize_any_rol = '".$this->allowAnyRol."'
+                 WHERE rolId='".$this->rolId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 
@@ -406,17 +449,17 @@ class Rol extends main
     public function GetListRoles(){
 
         $filtro ="";
-        $filtro .=!$_SESSION["User"]["isRoot"] ? 
-                   (int)$_SESSION["User"]["level"] != 1 ? 
-                   " and nivel >= '".$_SESSION['User']['level']."' "
-                   :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ? 
-                   " and nivel > '".$_SESSION['User']['level']."' "
-                   : " and (nivel > '".$_SESSION['User']['level']."'  or lower(name) = 'asistente socio') "
-                   :"";
-        $filtro .= (int)$_SESSION["User"]["level"] != 1? 
-                    " and nivel <= 6 and departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
-                    : "";
-
+        if(!$_SESSION['User']['isRoot']) {
+            if($this->accessAnyRol()) {
+                $filtro .= " and nivel >  or lower(name) = 'asistente socio' ";
+            }else {
+                $filtro .= $_SESSION['User']['level'] !== '1' ?
+                            " and nivel >= '".$_SESSION['User']['level']."' "
+                            : " and nivel > '".$_SESSION['User']['level']."' or lower(name) = 'asistente socio' ";
+            }
+            $filtro .= "and nivel <= 6 ";
+            $filtro .= !$this->accessAnyDepartament() ? " and departamentoId = '".$_SESSION['User']['departamentoId']."' " : "";
+        }
         $sql ="SELECT * FROM roles WHERE status='activo' ".$filtro." ORDER BY name ASC";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();

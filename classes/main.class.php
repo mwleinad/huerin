@@ -135,6 +135,36 @@ class Main
         $row = $this->Util()->DB()->GetRow();
         return $row ? $row['allow_visualize_any_contract'] : false;
     }
+
+    public function accessAnyRol() {
+        if(!$_SESSION['User']['roleId'])
+            return false;
+
+        $sql = "SELECT allow_visualize_any_rol FROM roles WHERE rolId='".$_SESSION['User']['roleId']."' AND status='activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        return $row ? $row['allow_visualize_any_rol'] : false;
+    }
+
+    public function accessAnyDepartament() {
+        if(!$_SESSION['User']['roleId'])
+            return false;
+
+        $sql = "SELECT allow_any_departament FROM roles WHERE rolId='".$_SESSION['User']['roleId']."' AND status='activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        return $row ? $row['allow_any_departament'] : false;
+    }
+
+    public function accessAnyEmployee() {
+        if(!$_SESSION['User']['roleId'])
+            return false;
+
+        $sql = "SELECT allow_any_employee FROM roles WHERE rolId='".$_SESSION['User']['roleId']."' AND status='activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $row = $this->Util()->DB()->GetRow();
+        return $row ? $row['allow_any_employee'] : false;
+    }
 }
 
 

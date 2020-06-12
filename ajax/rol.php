@@ -63,6 +63,9 @@ switch($_POST['type']){
          $rol->setDepartamentoId($_POST['depId']);
          $rol->setCategoria($_POST['nivel']);
          $rol->setAllowAnyContract(isset($_POST['allow_visualize_any_contract']) ? '1' : '0');
+         $rol->setAllowAnyDepartament(isset($_POST['allow_any_departament']) ? '1' : '0');
+         $rol->setAllowAnyEmployee(isset($_POST['allow_any_employee']) ? '1' : '0');
+         $rol->setAllowAnyRol(isset($_POST['allow_visualize_any_rol']) ? '1' : '0');
          $rol->setName($_POST['name']);
          if($rol->Save())
          {
@@ -103,6 +106,9 @@ switch($_POST['type']){
         $rol->setDepartamentoId($_POST['depId']);
         $rol->setCategoria($_POST['nivel']);
         $rol->setAllowAnyContract(isset($_POST['allow_visualize_any_contract']) ? '1' : '0');
+        $rol->setAllowAnyDepartament(isset($_POST['allow_any_departament']) ? '1' : '0');
+        $rol->setAllowAnyEmployee(isset($_POST['allow_any_employee']) ? '1' : '0');
+        $rol->setAllowAnyRol(isset($_POST['allow_visualize_any_rol']) ? '1' : '0');
         $rol->setName($_POST['name']);
         if($rol->Update())
         {

@@ -106,6 +106,9 @@ class User extends Sucursal
 			$card['isLogged'] = true;
             $card['isRoot'] = true;
 			$card['allow_visualize_any_contract'] = true;
+			$card['allow_any_employee'] = true;
+			$card['allow_any_departament'] = true;
+            $card['allow_visualize_any_rol'] = true;
 
 			if($row['type'] == 1)
 				$card['tipoPers'] = 'Admin';
@@ -116,7 +119,7 @@ class User extends Sucursal
 			return true;
 
 		}else{
-            $sql = "SELECT a.*,b.nivel, b.allow_visualize_any_contract
+            $sql = "SELECT a.*,b.nivel, b.allow_visualize_any_contract, b.allow_any_employee, b.allow_any_departament
 		   			 FROM personal a
 		   			 LEFT JOIN roles b ON a.roleId=b.rolId
 					 WHERE a.username = '".$this->username."'
@@ -127,6 +130,9 @@ class User extends Sucursal
 			if($row){
 				$card['userId'] = $row['personalId'];
 				$card['allow_visualize_any_contract'] = $row['allow_visualize_any_contract'] === '1' ?  true : false;
+				$card['allow_any_employee'] = $row['allow_any_employee'] === '1' ?  true : false;
+				$card['allow_any_departament'] = $row['allow_any_departament'] === '1' ?  true : false;
+                $card['allow_visualize_any_rol'] = $row['allow_visualize_any_rol'] === '1' ?  true : false;
 				$card['roleId'] = $row["roleId"];
                 $card['level'] = $row["nivel"];
 				$card['username'] = $row['username'];

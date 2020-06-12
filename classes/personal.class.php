@@ -167,13 +167,6 @@ class Personal extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->jefeGerente = $value;
 	}
-
-	var $jefeSocio;
-	public function setJefeSocio($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->jefeSocio = $value;
-	}
 	public function setFechaIngreso($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, '');
@@ -188,7 +181,8 @@ class Personal extends Main
         if ($this->levelRol && $this->showAll)
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
         
-        if ((int)$User['level'] == 1 || stripos($User['tipoPersonal'], 'DH') !== false || $this->showAll || stripos($User['tipoPersonal'], 'Sistema') !== false) {
+        if ((int)$User['level'] == 1 || $this->showAll || $this->accessAnyEmployee()) {
+           $sqlFilter .= $User['level'] !== '1' ? " and d.nivel > 1" : "";
            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
@@ -261,7 +255,7 @@ class Personal extends Main
 	public function ListDepartamentos()
 	{
 		$filtro = "";
-		$filtro .= (int)$_SESSION["User"]["level"] != 1 ? 
+		$filtro .= (int)$_SESSION["User"]["level"] != 1 && !$this->accessAnyDepartament()?
                     " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
                     : "";
 		$sql = "SELECT
@@ -596,26 +590,6 @@ class Personal extends Main
 		}
 	}
 
-	function SubordinadosOld()
-	{
-		$info = $this->Info();
-
-		$subordinados = array();
-		$sql = "SELECT
-					personalId
-				FROM
-					personal
-				WHERE
-					jefeSocio = '".$this->personalId."' OR
-					jefeSupervisor = '".$this->personalId."' OR
-					jefeGerente = '".$this->personalId."' OR
-					jefeContador = '".$this->personalId."'";
-		$this->Util()->DB()->setQuery($sql);
-		$subordinados = $this->Util()->DB()->GetResult();
-
-		return $subordinados;
-	}
-	
 function Subordinados($whitDpto=false)
 {   
 	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
@@ -802,27 +776,6 @@ function SubordinadosDetailsAddPass()
 		}
 		
 	}
-	function SubordinadosOrder()
-	{
-		$info = $this->Info();
-
-		$subordinados = array();
-		$sql = "SELECT
-					personalId, name, tipoPersonal
-				FROM
-					personal
-				WHERE
-					jefeSocio = '".$this->personalId."' OR
-					jefeSupervisor = '".$this->personalId."' OR
-					jefeGerente = '".$this->personalId."' OR
-					jefeContador = '".$this->personalId."'
-				ORDER BY FIELD(tipoPersonal, 'Socio', 'Asistente', 'Gerente', 'Supervisor', 'Contador', 'Nomina','Auxiliar',  'Recepcion'), name ASC";
-		$this->Util()->DB()->setQuery($sql);
-		$subordinados = $this->Util()->DB()->GetResult();
-
-		return $subordinados;
-	}
-
 	function jefes($inputId = 0, $idList=array())
 	{   
 			$db = new DB();    

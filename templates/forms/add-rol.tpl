@@ -24,6 +24,7 @@
 						{/foreach}
 					</select>
 				</div>
+				<hr>
 			</div>
 			<div class="formLine" style="width:100%;  display: inline-block;">
 				<div style="width:30%;float:left">* Categoria</div>
@@ -39,14 +40,34 @@
 				<hr>
 			</div>
 			<div class="formLine" style="width:100%;  display: inline-block;">
-				<div style="width:30%;float:left"> Acceso ilimitado a clientes y/o contratos</div>
+				<div style="width:30%;float:left"> Acceso a todos los clientes y/o contratos</div>
 				<div style="width:70%;float: left;">
 					<input type="checkbox" name="allow_visualize_any_contract" id="allow_visualize_any_contract" {if $post.allow_visualize_any_contract eq '1'}checked{/if} class="largeInput "/>
 				</div>
 				<hr>
 			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left"> Visualizar todos los departamentos</div>
+				<div style="width:70%;float: left;">
+					<input type="checkbox" name="allow_any_departament" id="allow_any_departament" {if $post.allow_any_departament eq '1'}checked{/if} class="largeInput "/>
+				</div>
+				<hr>
+			</div>
+            <div class="formLine" style="width:100%;  display: inline-block;">
+                <div style="width:30%;float:left"> Visualizar todos los empleados</div>
+                <div style="width:70%;float: left;">
+                    <input type="checkbox" name="allow_any_employee" id="allow_any_employee" {if $post.allow_any_employee eq '1'}checked{/if} class="largeInput "/>
+                </div>
+                <hr>
+            </div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left"> Visualizar todos los roles</div>
+				<div style="width:70%;float: left;">
+					<input type="checkbox" name="allow_visualize_any_rol" id="allow_visualize_any_rol" {if $post.allow_visualize_any_rol eq '1'}checked{/if} class="largeInput "/>
+				</div>
+				<hr>
+			</div>
 			<div style="clear:both"></div>
-			<hr />
 			<div class="formLine" style="text-align:center">
 				<span style="float:left">* Campos Obligatorios</span>
 				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
