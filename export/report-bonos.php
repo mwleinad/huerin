@@ -5,6 +5,7 @@ if(!isset($_SESSION)){
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
+date_default_timezone_set('America/Mexico_City');
 $data = $reportebonos->generateReportBonosWhitLevel($_POST);
 $period = $_POST['period'];
 if($period== "efm"){
