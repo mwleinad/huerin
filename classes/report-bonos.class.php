@@ -418,7 +418,7 @@ class ReporteBonos extends Main
                     $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
                     break;
             }
-            if(!empty($temp['instancias'])){
+            if(!empty($temp['instancias']) || $isParcial){
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
                 $yearLastWorkflow = $isParcial ? (int)date('Y',strtotime($service['lastDateWorkflow'])) : null ;
                 if($isParcial and ((int)$year >= $yearLastWorkflow)) {
@@ -438,6 +438,7 @@ class ReporteBonos extends Main
             }
             else
                 continue;
+
             $encargadoDep = $encargados[$service['departamentoId']] ? $encargados[$service['departamentoId']] : 0;
             $personal->setPersonalId($encargadoDep);
             $encargado =$personal->InfoWhitRol();
