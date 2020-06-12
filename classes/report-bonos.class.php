@@ -380,6 +380,7 @@ class ReporteBonos extends Main
         foreach($services as $key=>$service){
             $cad = [];
             $data = [];
+            $temp = [];
             $servId =$service['servicioId'];
             $contrato['contractId'] = $service["contractId"];
             $allow = $this->accessAnyContract() === '1' && $ftr['responsableCuenta'] <= 0 ? true : false;
