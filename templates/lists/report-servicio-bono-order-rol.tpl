@@ -27,10 +27,10 @@
 							{else}
 								{if $instancia2.class eq 'Iniciado' || $instancia2.class eq 'PorCompletar'}
 									background-color:#FC0 !important;color:#FFF;
-								{else}
-									{if $instancia2.class == "PorIniciar"}
-										background-color:#F00 !important;color:#FFF
-									{/if}
+								{elseif $instancia2.class eq 'Parcial'}
+									background-color:#768389 !important;color:#FFF
+								{elseif $instancia2.class == 'PorIniciar'}
+									background-color:#F00 !important;color:#FFF
 								{/if}
 							 {/if}">
 					<div style="cursor:pointer" >
@@ -85,10 +85,10 @@
 							{else}
 								{if $instancia3.class eq 'Iniciado' || $instancia3.class eq 'PorCompletar'}
 									background-color:#FC0 !important;color:#FFF;
-								{else}
-									{if $instancia3.class == "PorIniciar"}
-										background-color:#F00 !important;color:#FFF
-									{/if}
+								{elseif $instancia2.class eq 'Parcial'}
+									background-color:#768389 !important;color:#FFF
+								{elseif $instancia2.class == 'PorIniciar'}
+									background-color:#F00 !important;color:#FFF
 								{/if}
 							 {/if}">
 							<div style="cursor:pointer" >
@@ -143,10 +143,10 @@
 									    {else}
 											{if $instancia4.class eq 'Iniciado' || $instancia4.class eq 'PorCompletar'}
 												background-color:#FC0 !important;color:#FFF;
-											{else}
-												{if $instancia4.class == "PorIniciar"}
-													background-color:#F00 !important;color:#FFF
-												{/if}
+											{elseif $instancia2.class eq 'Parcial'}
+												background-color:#768389 !important;color:#FFF
+											{elseif $instancia2.class == 'PorIniciar'}
+												background-color:#F00 !important;color:#FFF
 											{/if}
 										{/if}">
 								<div style="cursor:pointer" >
@@ -202,10 +202,10 @@
 										   {else}
 												{if $instancia5.class eq 'Iniciado' || $instancia5.class eq 'PorCompletar'}
 													background-color:#FC0 !important;color:#FFF;
-												{else}
-													{if $instancia5.class == "PorIniciar"}
-														background-color:#F00 !important;color:#FFF
-													{/if}
+																{elseif $instancia2.class eq 'Parcial'}
+													background-color:#768389 !important;color:#FFF
+												{elseif $instancia2.class == 'PorIniciar'}
+													background-color:#F00 !important;color:#FFF
 												{/if}
 										   {/if}">
 									<div style="cursor:pointer" >
@@ -260,10 +260,10 @@
 										   {else}
 												{if $instancia6.class eq 'Iniciado' || $instancia6.class eq 'PorCompletar'}
 													background-color:#FC0 !important;color:#FFF;
-												{else}
-													{if $instancia6.class == "PorIniciar"}
-														background-color:#F00 !important;color:#FFF
-													{/if}
+												{elseif $instancia2.class eq 'Parcial'}
+													background-color:#768389 !important;color:#FFF
+												{elseif $instancia2.class == 'PorIniciar'}
+													background-color:#F00 !important;color:#FFF
 												{/if}
 										   {/if}">
 										<div style="cursor:pointer" >
@@ -318,10 +318,10 @@
 											{else}
 													{if $instancia7.class eq 'Iniciado' || $instancia7.class eq 'PorCompletar'}
 														background-color:#FC0 !important;color:#FFF;
-													{else}
-														{if $instancia7.class == "PorIniciar"}
-															background-color:#F00 !important;color:#FFF
-														{/if}
+													{elseif $instancia2.class eq 'Parcial'}
+														background-color:#768389 !important;color:#FFF
+													{elseif $instancia2.class == 'PorIniciar'}
+														background-color:#F00 !important;color:#FFF
 													{/if}
 											{/if}">
 											<div style="cursor:pointer" >
