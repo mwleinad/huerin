@@ -362,7 +362,7 @@ class ReporteBonos extends Main
             $allEncargados[$subId] = $sub;
         }
         $sqlServ = "select a.servicioId,a.contractId,a.status,b.nombreServicio,b.departamentoId ,a.inicioFactura,a.inicioOperaciones,
-                    c.name, c.nameContact
+                    c.name, c.nameContact,a.lastDateWorkflow
                     from servicio a 
                     inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId 
                     inner join (select contract.contractId, contract.name, customer.nameContact from contract
@@ -417,8 +417,19 @@ class ReporteBonos extends Main
                     $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
                     break;
             }
-            if(!empty($temp['instancias'])){
-                $service['instancias'] = array_replace_recursive($mesesBase, $temp['instancias']);
+            if(!empty($temp['instancias']) || $isParcial){
+                $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
+                $yearLastWorkflow = (int)date('Y',strtotime($service['lastDateWorkflow']));
+                if($isParcial and ((int)$year >= $yearLastWorkflow)) {
+                    $monthLastWorkflow =  (int) date('m', strtotime($service['lastDateWorkflow']));
+                    foreach($service['instancias'] as $ki => $inst) {
+                        if((int)$year === $yearLastWorkflow) {
+                            $service['instancias'][$ki]['class'] = $ki > $monthLastWorkflow ? 'Parcial' : $inst['class'];
+                        } else {
+                            $service['instancias'][$ki]['class'] = 'Parcial';
+                        }
+                    }
+                }
                 $service['totalTrabajado'] = $temp['totalComplete'];
                 $service['totalDevengado'] = $temp['totalDevengado'];
                 $totales["granTotalHorizontalCompletado"] += $temp['totalComplete'];
