@@ -286,7 +286,7 @@ class InstanciaServicio extends  Servicio
         if($year==$fecha[0])
             $sinceMonth = " and MONTH(instanciaServicio.date)>=".(int)$fecha[1];
 
-        $sql = "SELECT class,servicio.costo,YEAR(instanciaServicio.date) as anio,MONTH(instanciaServicio.date) as mes,instanciaServicioId, 
+        $sql = "SELECT class,servicio.costo,date_format(instanciaServicio.date, '%Y') as anio,date_format(instanciaServicio.date, '%m') as mes,instanciaServicioId, 
                 instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId,instanciaServicio.costoWorkflow,servicio.inicioFactura,instanciaServicio.factura
 				FROM instanciaServicio 
 				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
@@ -304,23 +304,24 @@ class InstanciaServicio extends  Servicio
         foreach($data as $key => $value)
         {
             $costo = 0;
+            $costoCobrado = 0;
+            $dateWorkflow =  $value['anio']."-".(int)$value['mes']."-01";
             if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
                 $costo = $value['costo'];
+                $costo = $dateWorkflow >= '2019-03-01' ?  $value['costoWorkflow'] : $costo;
             }
-
-            $value['cobrado'] = 0;
-            if($value['factura']=='Si'){
-                $comp =  $comprobante->GetInfoComprobante($value['comprobanteId']);
-                if($comp['saldo']<=0.01)
-                    $value['cobrado'] = $value['costo'];
+            $comp = $value['comprobanteId'] ?  $comprobante->GetInfoComprobante($value['comprobanteId']) : false;
+            $costo = $value['factura'] === 'Si' ? $value['costoWorkflow'] : $costo;
+            if(!$comp) {
+                $costoCobrado = $comp['saldo'] <= 0.01 ? $costo : 0;
             }
             $value['costo'] = $costo;
+            $value['cobrado'] = $costoCobrado;
             //sumar total de lo trabajado
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
                 $totalAcompletado += $value['costo'];
                 $value['completado'] = $value['costo'];
             }
-
 
             $totalDevengado += $value['costo'];
             $monthBase[$value['mes']] =  $value;
