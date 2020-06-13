@@ -161,7 +161,7 @@ class Personal extends Main
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
         
         if ((int)$User['level'] == 1 || $this->showAll || $this->accessAnyEmployee()) {
-           $sqlFilter .= $User['level'] != 1 ? " and d.nivel > 1" : "";
+           //$sqlFilter .= $User['level'] != 1 ? " and d.nivel > 1" : "";
            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
