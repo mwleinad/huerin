@@ -451,7 +451,7 @@ class Rol extends main
         $filtro ="";
         if(!$_SESSION['User']['isRoot']) {
             if($this->accessAnyRol()) {
-                $filtro .= " and nivel >  or lower(name) = 'asistente socio' ";
+                $filtro .= " and nivel > 1  or lower(name) = 'asistente socio' ";
             }else {
                 $filtro .= $_SESSION['User']['level'] !== '1' ?
                             " and nivel >= '".$_SESSION['User']['level']."' "
