@@ -133,18 +133,11 @@ class Personal extends Main
 		$this->tipoPersonal = $value;
 	}
 
-		var $departamentoId;
+	var $departamentoId;
 	public function setDepartamentoId($value)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->departamentoId = $value;
-	}
-
-	var $jefeContador;
-	public function setJefeContador($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->jefeContador = $value;
 	}
 
 	var $jefeInmediato;
@@ -152,20 +145,6 @@ class Personal extends Main
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->jefeInmediato = $value;
-	}
-
-	var $jefeSupervisor;
-	public function setJefeSupervisor($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->jefeSupervisor = $value;
-	}
-
-	var $jefeGerente;
-	public function setJefeGerente($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->jefeGerente = $value;
 	}
 	public function setFechaIngreso($value)
 	{
@@ -182,7 +161,7 @@ class Personal extends Main
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
         
         if ((int)$User['level'] == 1 || $this->showAll || $this->accessAnyEmployee()) {
-           $sqlFilter .= $User['level'] !== '1' ? " and d.nivel > 1" : "";
+           $sqlFilter .= $User['level'] != 1 ? " and d.nivel > 1" : "";
            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
 					FROM personal a 
 					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
