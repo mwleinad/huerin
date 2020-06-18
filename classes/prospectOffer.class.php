@@ -2,6 +2,7 @@
 
 class prospectOffer extends Prospect
 {
+    protected $data;
     public function generateArrayOffer() {
         $file  = DOC_ROOT . "/properties/config_offer_prospect.json";
         $string = file_get_contents($file);
@@ -71,5 +72,26 @@ class prospectOffer extends Prospect
             }
         }
         return $data;
+    }
+    function generateData() {
+        $info = $this->info();
+        if($info['sale_amount_per_month'] > 0) {
+              $sql  = "select a.nombreServicio, b.* 
+                       from tipoServicio a 
+                       inner join activity_service b on a.tipoServicioId =  b.service_id where a.tipoServicioId = '2' ";
+              $this->Util()->DB()->setQuery($sql);
+              $row =  $this->Util()->DB()->GetRow();
+              if($row)
+                  array_push($this->data, $row);
+        }
+        if($info['have_payroll'] > 0) {
+            $sql  = "select a.nombreServicio, b.* 
+                       from tipoServicio a 
+                       inner join activity_service b on a.tipoServicioId =  b.service_id where a.tipoServicioId = '7' ";
+            $this->Util()->DB()->setQuery($sql);
+            $row =  $this->Util()->DB()->GetRow();
+            if($row)
+                array_push($this->data, $row);
+        }
     }
 }
