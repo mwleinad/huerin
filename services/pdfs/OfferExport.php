@@ -32,6 +32,7 @@ class OfferExport extends prospectOffer {
      */
     protected $defaultConfigPages;
     protected $settingsDefaultTextBox;
+    protected $footerDefaultSettingsFontStyle;
 
    /*
     * @var
@@ -72,16 +73,16 @@ class OfferExport extends prospectOffer {
 
         $this->settingsDefaultTextBox = array(
             'width' => Converter::cmToPoint(18.16),
-            'height' => Converter::cmToPoint(23.24),
+            'height' => Converter::cmToPoint(23),
             'borderColor' => 'none',
             'wrappingStyle' => 'infront',
             'positioning' => Image::POSITION_ABSOLUTE,
             'posVertical' => Image::POSITION_ABSOLUTE,
             'posHorizontal' => Image::POSITION_ABSOLUTE,
-            'posVerticalRel' => Image::POSITION_RELATIVE_TO_TEXT,
-            'posHorizontalRel' => Image::POSITION_RELATIVE_TO_COLUMN,
-            'marginTop' => Converter::cmToPoint(0.11),
-            'marginLeft' => Converter::cmToPoint(0.93),
+            'posVerticalRel' => Image::POSITION_RELATIVE_TO_MARGIN,
+            'posHorizontalRel' => Image::POSITION_RELATIVE_TO_MARGIN,
+            'marginTop' => Converter::cmToPoint(0.01),
+            'marginLeft' => Converter::cmToPoint(0.58),
         );
 
         $this->pDefaultSettingsFontStyle = array(
@@ -93,6 +94,13 @@ class OfferExport extends prospectOffer {
             'size' => 14,
             'name' => 'Arial',
             'color' => '#FFFFFF'
+        );
+        $this->footerDefaultSettingsFontStyle = array(
+            'size' => 8,
+            'name' => 'Arial',
+            'color' => '#595959',
+            'bold' => true,
+            'allCaps' => true,
         );
         $this->title1FontStyle = array(
             'size' => 16,
@@ -184,17 +192,80 @@ class OfferExport extends prospectOffer {
     function genericSection($drawTextbox = false) {
         $page = new stdClass();
         $page->section = $this->object->addSection($this->defaultConfigPages);
-        $styles =  array(
-            'width' => Converter::cmToPoint(4.97),
-            'height' => Converter::cmToPoint(24.75),
+        $textFooter = " propuesta de servicios de ";
+        $totalServices = is_array($this->data) ? count($this->data) : 0;
+        if($totalServices) {
+            if($totalServices === 1) {
+                $textFooter .= $this->data[0]['nombreServicio'];
+            }
+            else {
+                $lastKey = end(array_keys($this->data));
+                $services = [];
+                $lastService = "";
+                foreach ($this->data as $key => $serv) {
+                    if($key === $lastKey)
+                        $lastService = $serv['nombreServicio'];
+                    else
+                       array_push($services, $serv['nombreServicio']);
+                }
+                $textFooter .= implode(',', $services). " y ". $lastService;
+            }
+        }
+
+        $footer = $page->section->addFooter();
+        $stylesTextBoxFooter = array(
+            'width' => Converter::cmToPoint(14.7),
+            'height' => Converter::cmToPoint(1.73),
+            'borderColor' => 'none',
+            'wrappingStyle' => 'infront',
+            'positioning' => Image::POSITION_ABSOLUTE,
+            'posVertical' => Image::POSITION_ABSOLUTE,
+            'posHorizontal' => Image::POSITION_ABSOLUTE,
+            'posVerticalRel' => Image::POSITION_RELATIVE_TO_LINE,
+            'posHorizontalRel' => Image::POSITION_RELATIVE_TO_COLUMN,
+            'marginTop' => Converter::cmToPoint(0),
+            'marginLeft' => Converter::cmToPoint(4.24),
+        );
+        $stylesLogoFooter =  array(
+            'width' => Converter::cmToPoint(3.3),
+            'height' => Converter::cmToPoint(1.63),
             'wrappingStyle' => 'behind',
             'positioning' => Image::POSITION_ABSOLUTE,
             'posHorizontal'    => Image::POSITION_HORIZONTAL_LEFT,
         );
+        $footer->addImage(DOC_ROOT."/images/word/logo.jpg", $stylesLogoFooter);
+        $textBoxFooter = $footer->addTextBox($stylesTextBoxFooter);
+        $textBoxFooter->addText($textFooter, $this->footerDefaultSettingsFontStyle,
+                                array(
+                                'align' => Jc::BOTH,
+                                'spacing' => Converter::pointToTwip(4),
+                                'spacingLineRule' => LineSpacingRule::AUTO,));
+
+        $styles =  array(
+            'width' => Converter::cmToPoint(4.97),
+            'height' => Converter::cmToPoint(22),
+            'wrappingStyle' => 'behind',
+            'positioning' => Image::POSITION_ABSOLUTE,
+            'posHorizontal'    => Image::POSITION_HORIZONTAL_LEFT,
+        );
+        $styles2 =  array(
+            'width' => Converter::cmToPoint(1.35),
+            'height' => Converter::cmToPoint(2.44),
+            'wrappingStyle' => 'behind',
+            'positioning' => Image::POSITION_ABSOLUTE,
+            'posHorizontal'    => Image::POSITION_ABSOLUTE,
+            'posVertical' => Image::POSITION_ABSOLUTE,
+            'posVerticalRel' => Image::POSITION_RELATIVE_TO_LINE,
+            'posHorizontalRel' => Image::POSITION_RELATIVE_TO_MARGIN,
+            'marginTop' => Converter::cmToPoint(22.5),
+            'marginLeft' => Converter::cmToPoint(17.65),
+        );
         $page->section->addImage(DOC_ROOT."/images/word/side.jpg", $styles);
+        $page->section->addImage(DOC_ROOT."/images/word/side_footer.jpg", $styles2);
         if(!$drawTextbox)
             return $page;
         $page->textbox =  $page->section->addTextBox($this->settingsDefaultTextBox);
+
         return $page;
     }
     function presentationPage() {
@@ -202,8 +273,8 @@ class OfferExport extends prospectOffer {
         $page->textbox->addText('CDMX, a '.$this->Util()->setFormatDate(date('Y-m-d')), '+Cuerpo',
             array('align' => Jc::END, 'spaceAfter' => Converter::cmToTwip(1.2), 'spacingLineRule' => LineSpacingRule::AUTO));
         $dear = $page->textbox->addTextRun(array('align' => Jc::START, 'spaceAfter' => Converter::cmToTwip(.85), 'spacingLineRule' => LineSpacingRule::AUTO));
-        $dear->addText('Estimado Sr. ', array('bold' => true, 'name'=> 'Arial', 'size'=>12));
-        $dear->addText($this->info()['name'], '+Cuerp');
+        $dear->addText('Estimado C. ', '+Cuerpo');
+        $dear->addText($this->info()['name'], array('bold' => true, 'name'=> 'Arial', 'size'=>12));
         $page->textbox->addText('Por medio del presente convenio les describimos los alcances de los servicios solicitados por ustedes. ',
             '+Cuerpo', $this->defaultSettingsParagraph);
         $page->textbox->addText('De manera general todos los servicios que brindamos siguen los procesos más estrictos de calidad, además de cumplir cabalmente con las normas de información financiera y las diferentes leyes fiscales según correspondan. ',
@@ -440,7 +511,6 @@ class OfferExport extends prospectOffer {
         $this->reportPage();
         $this->honorario();
         $this->aceptacion();
-
 
         //$this->object->addSection()->addTable()->addRow()
         /*
