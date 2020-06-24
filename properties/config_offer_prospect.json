@@ -1,5 +1,5 @@
 {
-  "income_per_month": [
+  "sale_amount_per_month": [
     {
       "min": 0,
       "max": 500,
@@ -112,7 +112,7 @@
       "price": 3000.00
     }
   ],
-  "num_employee": [
+  "number_employee": [
     {
       "min": 1,
       "max": 50,

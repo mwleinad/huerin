@@ -446,9 +446,22 @@ class OfferExport extends prospectOffer {
             '+Cuerpo', $this->defaultSettingsParagraph);
     }
     function honorario() {
+
+        $total = 0;
+        foreach($this->data as $var) {
+            $total +=$var['price'];
+        }
+        $temp = new CNumeroaLetra ();
+        $temp->setMayusculas(1);
+        $temp->setGenero(1);
+        $temp->setDinero(1);
+        $temp->setPrefijo('');
+        $temp->setSufijo('');
+        $temp->setNumero($total);
+        $totalLetra = trim($temp->letra());
         $page = $this->genericSection(true);
         $page->textbox->addText('honorarios profesionales', 'title1', $this->paragraphTitle1Style);
-        $page->textbox->addText('Nuestros honorarios profesionales, por los servicios anteriormente mencionados, están calculados en atención al nivel de experiencia y al tiempo por invertir de nuestro personal, ascenderán a la cantidad de $2,000.00 (dos mil pesos 00/100 MN). ',
+        $page->textbox->addText('Nuestros honorarios profesionales, por los servicios anteriormente mencionados, están calculados en atención al nivel de experiencia y al tiempo por invertir de nuestro personal, ascenderán a la cantidad de '.number_format($total,2,'.',',')."($totalLetra)",
             '+Cuerpo', $this->defaultSettingsParagraph);
         $page->textbox->addText('Al monto de nuestros honorarios profesionales se deberá adicionar el correspondiente Impuesto al Valor Agregado.',
             '+Cuerpo', $this->defaultSettingsParagraph);
@@ -470,7 +483,6 @@ class OfferExport extends prospectOffer {
         $page->textbox->addListItem('La entrega puntual y completa de la documentación', 0, '+Cuerpo', $this->defaultSettingsParagraph);
         $page->textbox->addListItem('El pago puntual de los impuestos y demás contribuciones a su cargo.', 0, '+Cuerpo', $this->defaultSettingsParagraph);
         $page->textbox->addListItem('El pago puntual de los honorarios pactados.', 0, '+Cuerpo', $this->defaultSettingsParagraph);
-
     }
     function aceptacion() {
         $page = $this->genericSection(true);
