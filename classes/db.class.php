@@ -82,6 +82,10 @@ class DB
 	    $this->change_collate = $value;
     }
 
+    public function getConnect() {
+        return $this->conn_id;
+    }
+
     function  getChangeCollate() {
 	    return $this->change_collate;
     }

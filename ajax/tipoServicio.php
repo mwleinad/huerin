@@ -1,5 +1,4 @@
 <?php
-
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
@@ -9,7 +8,6 @@ switch($_POST["type"])
 	case "addTipoServicio": 
 			$departamentos = $personal->ListDepartamentos();			
 			$smarty->assign("departamentos", $departamentos);
-			
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-tipoServicio-popup.tpl');
 		break;	
@@ -94,5 +92,35 @@ switch($_POST["type"])
 				$smarty->display(DOC_ROOT.'/templates/lists/tipoServicio.tpl');
 			}
 		break;
+	case "openConfigTextToReport":
+		$data['title'] = 'Cofiguracion de textos';
+		$data['form'] = 'frm-config-text-service';
+
+		$tipoServicio->setTipoServicioId($_POST['id']);
+		$post = $tipoServicio->GetTextReportByServicio();
+		if(!$post)
+			$post['service_id'] = $_POST['id'];
+		$smarty->assign('data', $data);
+		$smarty->assign('post', $post);
+		$smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
+	break;
+	case 'saveTextReport':
+	    if(isset($_POST['id']))
+		    $tipoServicio->setActivityServiceId($_POST['id']);
+
+		$tipoServicio->setTipoServicioId($_POST['service_id']);
+		$tipoServicio->setLargeDescription($_POST['large_description']);
+		$tipoServicio->setShortDescription($_POST['short_description']);
+		$tipoServicio->setExpectation($_POST['expectation']);
+		$tipoServicio->setRequestInformation($_POST['request_information']);
+		$tipoServicio->setWorkSchedule($_POST['work_schedule']);
+		$tipoServicio->setReports($_POST['reports']);
+		if(!$tipoServicio->SaveTextReport()) {
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		} else {
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+	break;
 }
-?>

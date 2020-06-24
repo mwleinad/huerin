@@ -13,6 +13,9 @@
         {if in_array(28,$permissions) || $User.isRoot}
       		<a href="{$WEB_ROOT}/service-steps/id/{$item.tipoServicioId}" onclick="return parent.GB_show('Pasos del Servicio', this.href,500,970) "><img src="{$WEB_ROOT}/images/icons/config.gif" title="Configurar Servicio"/></a>
 		{/if}
+		{if $User.isRoot}
+			<img src="{$WEB_ROOT}/images/icons/add_1.png" class="spanTextToReport" id="{$item.tipoServicioId}"  title="Configurar textos para reporte"/>
+		{/if}
 		</td>
 	</tr>
 {/foreach}

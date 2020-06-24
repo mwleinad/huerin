@@ -11,6 +11,15 @@ class TipoServicio extends Main
 	private $mostrarCostoVisual;
 	private $claveSat;
 
+	// config text to report
+    private $activityServiceId;
+    private $largeDescription;
+    private $shortDescription;
+    private $expectation;
+    private $requestInformation;
+    private $workSchedule;
+    private $reports;
+
 	public function setperiodicidad($value)
 	{
 		$this->Util()->ValidateString($value, 10000, 1, 'Periodicidad');
@@ -79,27 +88,34 @@ class TipoServicio extends Main
 		$this->mostrarCostoVisual = $value;
 	}
 
-	public function ListDepartamentos()
-	{
-						
-		$sql = "SELECT 
-					* 
-				FROM 
-					departamentos
-				ORDER BY 
-					departamento ASC";
-		
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
-		
-		foreach($result as $key => $res)
-		{
-			$result[$key]["departamento"] = $result[$key]["departamento"];
-		}
-				
-		return $result;
-	}
-	
+    public function setActivityServiceId($value)
+    {
+        $this->Util()->ValidateInteger($value);
+        $this->activityServiceId = $value;
+    }
+	public function setLargeDescription($value) {
+	    $this->Util()->ValidateRequireField($value,'Descripcion detallada de actividades');
+	    $this->largeDescription = $value;
+    }
+
+    public function setShortDescription($value) {
+	    $this->Util()->ValidateRequireField($value, 'Descripcion corta de actividades');
+	    $this->shortDescription = $value;
+    }
+
+    public function setExpectation($value) {
+	    $this->expectation = $value;
+    }
+    public function setRequestInformation($value) {
+        $this->requestInformation = $value;
+    }
+    public function setWorkSchedule($value) {
+        $this->Util()->ValidateRequireField($value, 'Programacion de trabajo');
+        $this->workSchedule = $value;
+    }
+    public function setReports($value) {
+	    $this->reports = $value;
+    }
 	public function Enumerate()
 	{
 		global $User;
@@ -259,6 +275,53 @@ class TipoServicio extends Main
 		
 		return $value;
 	}
+
+	public function SaveTextReport() {
+
+	    if($this->Util()->PrintErrors())
+	        return false;
+
+	    $this->Util()->DB()->DatabaseConnect();
+        $activityId =  $this->activityServiceId ? $this->activityServiceId : null;
+	    $query = "replace into activity_service 
+                  (
+                    id,
+                    service_id,
+                    large_description,
+                    short_description,
+                    expectation,
+                    request_information,
+                    work_schedule,
+                    reports
+              ) values
+              (
+                '$activityId',
+                ".$this->tipoServicioId.",
+                '".($this->largeDescription)."',
+                '".mysql_real_escape_string($this->shortDescription)."',
+                '".mysql_real_escape_string($this->expectation)."',
+                '".mysql_real_escape_string($this->requestInformation)."',
+                '".mysql_real_escape_string($this->workSchedule)."',
+                '".mysql_real_escape_string($this->reports)."'
+              )";
+	    $this->Util()->DB()->setQuery($query);
+	    $last = $this->Util()->DB()->InsertData();
+	    if(!$last) {
+            $this->Util()->setError(0,'error', 'Error al guardar');
+            $this->Util()->PrintErrors();
+            return false;
+        }
+
+	    $this->Util()->setError(0,'complete', 'Informacion guardada');
+	    $this->Util()->PrintErrors();
+	    return true;
+    }
+
+	public function GetTextReportByServicio() {
+	    $query = "select * from activity_service where service_id = '".$this->tipoServicioId."' ";
+	    $this->Util()->DB()->setQuery($query);
+	    return $this->Util()->DB()->GetRow();
+    }
 
 }
 
