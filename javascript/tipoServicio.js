@@ -16,10 +16,14 @@ Event.observe(window, 'load', function() {
 		{
 			EditTipoServicioPopup(id);
 		}
+
+		del = el.hasClassName('spanTextToReport');
+		if(del == true)
+		{
+			OpenConfigTextToReport(id);
+		}
 	}
-
 	$('contenido').observe("click", AddEditTipoServicioListeners);
-
 });
 
 function EditTipoServicioPopup(id)
@@ -139,6 +143,58 @@ function AddTipoServicio()
 			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
+	});
+}
+
+function OpenConfigTextToReport(id)
+{
+	grayOut(true);
+	$('fview').show();
+	if(id == 0)
+	{
+		$('fview').hide();
+		grayOut(false);
+		return;
+	}
+	new Ajax.Request(WEB_ROOT+'/ajax/tipoServicio.php',
+		{
+			method:'post',
+			parameters: {type: "openConfigTextToReport", id:id},
+			onSuccess: function(transport){
+				var response = transport.responseText || "no response text";
+				FViewOffSet(response);
+				Event.observe($('closePopUpDiv'), "click", close_popup);
+				jQ('#btnText').on("click", SaveTextReport)
+			},
+			onFailure: function(){ alert('Something went wrong...') }
+		});
+}
+function SaveTextReport() {
+	var form = jQ(this).parents('form:first');
+	var fd =  new FormData(form[0]);
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/tipoServicio.php',
+		method:'post',
+		data:fd,
+		processData: false,
+		contentType: false,
+		type: 'POST',
+		beforeSend: function(){
+			jQ("#loading-img").show();
+			jQ('#btnText').hide();
+		},
+		success: function(response){
+			var splitResp = response.split("[#]");
+			if(splitResp[0]=='ok'){
+				close_popup();
+				ShowStatusPopUp(splitResp[1]);
+			}
+			else{
+				jQ("#loading-img").hide();
+				jQ('#btnText').show();
+				ShowStatusPopUp(splitResp[1]);
+			}
+		}
 	});
 }
 
