@@ -33,6 +33,7 @@ switch($_POST["type"])
                         $personal->deepJefesArray($jefes,true);
                         $serv["contador"] = $jefes['Contador'];
                         $serv['supervisor'] = $jefes['Supervisor'];
+                        $serv['subgerente'] = $jefes['Subgerente'];
                         $serv['gerente'] = $jefes['Gerente'];
                         $serv['jefeMax'] = $jefes['Socio'];
                         $serv[strtolower($rolRes["nameLevel"])] = $jefes['me'];
@@ -40,6 +41,7 @@ switch($_POST["type"])
                         $serv['auxiliar'] = 'N/E';
                         $serv['contador'] = 'N/E';
                         $serv['supervisor'] = 'N/E';
+                        $serv['subgerente'] = 'N/E';
                         $serv['gerente'] = 'N/E';
                     }
                     $serv['responsable'] = $responsable['name'];
