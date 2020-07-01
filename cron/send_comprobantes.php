@@ -21,6 +21,7 @@ if (!isset($_SESSION)) {
   session_start();
 }
 $db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE sent = 'no' and date(fecha) >= (CURDATE() - INTERVAL DAYOFMONTH(CURDATE()) - 1 DAY) limit 1 ");
+echo $db->getQuery();
 $comprobantes = $db->GetResult();
 $razon = new Razon();
 $totalEnviar = count($comprobantes);
