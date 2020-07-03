@@ -10,6 +10,7 @@ if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
 else
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
+    session_save_path("/tmp");
 }
 define('DOC_ROOT', $docRoot);
 
@@ -21,8 +22,7 @@ include_once(DOC_ROOT.'/libraries33.php');
 if (!isset($_SESSION)) {
   session_start();
 }
-$db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE comprobanteId = 68566");
-echo $db->getQuery();
+$db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE comprobanteId = 68567");
 $comprobantes = $db->GetResult();
 $razon = new Razon();
 $totalEnviar = count($comprobantes);
@@ -30,7 +30,6 @@ $enviado = 0;
 foreach($comprobantes as $Key => $factura) {
     if($razon->sendComprobante33($factura["comprobanteId"], false, true)) {
         $enviado++;
-        echo "Enviado Comprobante con id :".$factura["comprobanteId"]. "y folio ".$factura['serie'].$factura['folio'].chr(10).chr(13);
     }
 }
 echo "$enviado de $totalEnviar  facturas enviadas.".chr(10).chr(13);
