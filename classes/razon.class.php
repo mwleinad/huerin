@@ -108,7 +108,7 @@ class Razon extends Contract
        $row['allEmails'] = $emails;
        return $row;
    }
-   public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false){
+   public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false, $reenvio = false){
        global $comprobante,$sendmail,$personal;
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        if(SEND_FACT_CUSTOMER=='SI'){
@@ -165,12 +165,13 @@ class Razon extends Contract
            $fromName = "COBRANZA B&H";
            $subject  = "COMPLEMENTO DE PAGO CON FOLIO No.".$serie.$folio;
 
+
        }
        else{
            $fromName = "FACTURACION B&H";
            $subject  = 'Envio de Factura con Folio No. '.$serie.$folio;
        }
-
+       $subject = $reenvio ? 'REENVIO_'.$subject : $subject;
 
        if (file_exists($enlace)) {
            $attachment1 = $enlace;
@@ -210,7 +211,7 @@ class Razon extends Contract
           $body .= "Cuenta    :".$bankData["account"]."<br>";
           $body .= "Clabe     :".$bankData["clabe"]."<br>";
           $body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-       } 
+       }
        if($compInfo['tiposComprobanteId']==10){
            $body .= "Quedo de usted. Saludos cordiales! Gracias.<br><br><br>";
            $body .= "Favor de revisar el archivo adjunto para ver comprobante.\r\n";
