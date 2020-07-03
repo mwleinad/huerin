@@ -30,7 +30,7 @@ $razon = new Razon();
 $totalEnviar = count($comprobantes);
 $enviado = 0;
 foreach($comprobantes as $Key => $factura) {
-    if($razon->sendComprobante33($factura["comprobanteId"], false, true)) {
+    if($razon->sendComprobante33($factura["comprobanteId"], false, true, true)) {
         $enviado++;
     }
 }
