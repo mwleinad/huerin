@@ -22,6 +22,7 @@ include_once(DOC_ROOT.'/libraries33.php');
 if (!isset($_SESSION)) {
   session_start();
 }
+$_SESSION['empresaId'] = IDEMPRESA;
 $db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE comprobanteId = 68567");
 $comprobantes = $db->GetResult();
 $razon = new Razon();
