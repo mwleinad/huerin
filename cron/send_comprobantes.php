@@ -13,14 +13,15 @@ else
 }
 define('DOC_ROOT', $docRoot);
 
-include_once(DOC_ROOT.'/init.php');
+include_once(DOC_ROOT.'/init_cron.php');
 include_once(DOC_ROOT.'/config.php');
+include_once(DOC_ROOT.'/constants.php');
 include_once(DOC_ROOT.'/libraries33.php');
 
 if (!isset($_SESSION)) {
   session_start();
 }
-$db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE sent = 'no' and date(fecha) >= (CURDATE() - INTERVAL DAYOFMONTH(CURDATE()) - 1 DAY)");
+$db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE comprobanteId = 68566");
 echo $db->getQuery();
 $comprobantes = $db->GetResult();
 $razon = new Razon();
@@ -31,7 +32,6 @@ foreach($comprobantes as $Key => $factura) {
         $enviado++;
         echo "Enviado Comprobante con id :".$factura["comprobanteId"]. "y folio ".$factura['serie'].$factura['folio'].chr(10).chr(13);
     }
-
 }
 echo "$enviado de $totalEnviar  facturas enviadas.".chr(10).chr(13);
 echo "Cron Completado Satisfactoriamente";
