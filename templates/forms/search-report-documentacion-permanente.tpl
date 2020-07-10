@@ -4,9 +4,10 @@
 <input type="hidden" name="correo" id="correo" value="" />
 <input type="hidden" name="texto" id="texto" value="" />
 <input type="hidden" name="cliente" id="cliente" value="0" />
+<input type="hidden" name="departamentoId" id="departamentoId"  value="">
 <table width="80%" align="center">
 <tr style="background-color:#CCC">
-    <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
+    <td colspan="4" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 </tr>
 <tr>
     <td align="center">Cliente:</td>
@@ -16,9 +17,8 @@
     {*}
     <td align="center">Facturador:</td>
     {*}
-    <td align="center">Departamento:</td>
 </tr>
-<tr>	
+<tr>
     <td style="width:30%; padding:0px 4px 4px 8px;" align="center">
     	<input type="text" size="25" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
           <div id="loadingDivDatosFactura"></div>
@@ -37,16 +37,13 @@
 		</td>
         <td style="width: 15%; padding:0px 4px 4px 8px;" align="center">
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
-		</td>    
+		</td>
 		<td style="width: 5%; padding:0px 4px 4px 8px;" align="center">
 			<input name="subordinados" id="subordinados" type="checkbox" value="1"/>
 		</td>
-		<td style="width: 20%; padding:0px 4px 4px 8px;" align="center">
-            {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
-		</td>
-</tr>        
+</tr>
 <tr>
-    <td align="center" colspan="5">
+    <td align="center" colspan="4">
         <div style="margin-left:320px">
         <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
         </div>
