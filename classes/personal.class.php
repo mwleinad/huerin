@@ -154,12 +154,12 @@ class Personal extends Main
     public function Enumerate()
     {
 		global $User;
-		
+
         if ($this->active)
             $sqlActive = " AND a.active = '1'";
         if ($this->levelRol && $this->showAll)
             $sqlFilter = " and d.nivel='" . $this->levelRol . "' ";
-        
+
         if ((int)$User['level'] == 1 || $this->showAll || $this->accessAnyEmployee()) {
            //$sqlFilter .= $User['level'] != 1 ? " and d.nivel > 1" : "";
            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
@@ -174,7 +174,7 @@ class Personal extends Main
             return $result;
 
 		}
-	
+
         $this->setPersonalId($User['userId']);
 		$result = $this->SubordinadosDetails();
 		foreach($result as $key => $var){
@@ -235,7 +235,7 @@ class Personal extends Main
 	{
 		$filtro = "";
 		$filtro .= (int)$_SESSION["User"]["level"] != 1 && !$this->accessAnyDepartament()?
-                    " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' " 
+                    " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' "
                     : "";
 		$sql = "SELECT
 					*
@@ -570,20 +570,20 @@ class Personal extends Main
 	}
 
 function Subordinados($whitDpto=false)
-{   
+{
 	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
 		LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
 	$this->Util()->DB()->setQuery($sql);
 	$result = $this->Util()->DB()->GetResult($sql);
-	
+
 	$jerarquia = $this->Jerarquia($result, $this->personalId);
-	
+
 	$_SESSION["lineal"] = array();
 	if($whitDpto)
         $this->JerarquiaLinealWhitDpto($jerarquia);
 	else
 	    $this->JerarquiaLinealJustId($jerarquia);
-	
+
 	return $_SESSION["lineal"];
 }
 
@@ -607,19 +607,19 @@ function AddPassToArray()
 }
 
 function SubordinadosDetails()
-{   
+{
 	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
 		   LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
 	$this->Util()->DB()->setQuery($sql);
 	$result = $this->Util()->DB()->GetResult($sql);
-	
+
 	$jerarquia = $this->Jerarquia($result, $this->personalId);
-	
+
 	$_SESSION["lineal"] = array();
 	$this->JerarquiaLineal($jerarquia);
 
 	$this->AddMeToArray();
-	
+
 	return $_SESSION["lineal"];
 }
 function SubordinadosDetailsAddPass()
@@ -658,10 +658,10 @@ function SubordinadosDetailsAddPass()
 
 	  return $roleId;
 	}
-	
+
 	function Jerarquia(array $elements, $parentId = 0) {
 			$branch = array();
-	
+
 			foreach ($elements as $element) {
 					if ($element['jefeInmediato'] == $parentId) {
 							$children = $this->Jerarquia($elements, $element['personalId']);
@@ -671,14 +671,14 @@ function SubordinadosDetailsAddPass()
 							$branch[] = $element;
 					}
 			}
-	
+
 			return $branch;
 	}
-	
-	
+
+
 	function JerarquiaLineal($tree)
 	{
-		
+
 		foreach($tree as $key => $value)
 		{
 		    $_SESSION["lineal"][] = $value;
@@ -688,14 +688,14 @@ function SubordinadosDetailsAddPass()
 			}
 		}
 	}
-	
+
 	function JerarquiaLinealJustId($tree)
 	{
 		foreach($tree as $key => $value)
 		{
 			$card["personalId"] = $value["personalId"];
 			$_SESSION["lineal"][] = $card;
-		
+
 			if(count($value["children"]) > 0)
 			{
 				$this->JerarquiaLinealJustId($value["children"]);
@@ -716,17 +716,17 @@ function SubordinadosDetailsAddPass()
             }
         }
     }
-	
-	
+
+
 	function ArrayOrdenadoPersonal()
 	{
 		$sql ="SELECT personal.personalId, personal.name, personal.tipoPersonal, personal.jefeInmediato, jefes.name AS jefeName FROM personal
 			LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult($sql);
-		
+
 		$jerarquia = $this->Jerarquia($result);
-		
+
 		$_SESSION["lineal"] = array();
 		$this->JerarquiaLineal($jerarquia);
 
@@ -734,163 +734,25 @@ function SubordinadosDetailsAddPass()
 		return $lineal;
 
 	}
-	
-	function printTree($tree)
-	{
-		foreach($tree as $key => $value)
-		{
-			?>
-			<tr>
-				<td><?php echo $value["tipoPersonal"];?></td>
-				<td><?php echo $value["name"];?></td>
-				<td><?php echo $value["jefeName"];?></td>
-			</tr>
-			<?php 
-			
-			if(count($value["children"]) > 0)
-			{
-				$this->printTree($value["children"]);
-			}
-			
-		}
-		
-	}
 	function jefes($inputId = 0, $idList=array())
-	{   
-			$db = new DB();    
+	{
+			$db = new DB();
 			$sql ="SELECT * FROM personal where personalId='".$inputId."'";
 			$db->setQuery($sql);
 			$result = $db->GetResult($sql);
-	
+
 			if($result){
 					$currentId = $result[0]["personalId"];
 					$parentId = $result[0]["jefeInmediato"];
-	
+
 					$idList[] = $currentId;
-	
+
 					if ($parentId !=0){
 						 return $this->jefes($parentId, $idList);
 					}
 			}
 			return $idList;
 	}
-	function findTreeSubordinate($id){
-	    global $personal,$rol;
-	    $cad = array();
-        $this->Util()->DB()->setQuery('SELECT name,personalId,jefeInmediato,puesto,tipoPersonal FROM  personal WHERE personalId='.$id);
-        $row = $this->Util()->DB()->GetRow();
-        $role = $rol->getInfoByData($row);
-        $rolArray = explode(' ',$role['name']);
-        $needle = trim($rolArray[0]);
-	    switch ($needle){
-            case 'Coordinador':
-            case 'Socio':
-                $cad=$row;
-             break;
-            case 'Gerente':
-                $cad=$row;
-                $personal->setPersonalId($row['jefeInmediato']);
-                $cad['jefeMax'] = $personal->GetNameById();
-                break;
-            case 'Sistemas':
-            case 'Gestoria':
-            case 'Supervisor':
-                $cad = $row;
-                $gerenteId = $row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
-                $personal->setPersonalId($gerenteId);
-                $jGer = $personal->Info();
-                $role = $rol->getInfoByData($jGer);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                if($needle=='Gerente'){
-                    $personal->setPersonalId($jGer['personalId']);
-                    $cad['gerente'] = $personal->GetNameById();
-                }else
-                    $jGer['jefeInmediato']=$gerenteId;
-
-                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                $personal->setPersonalId($jefeId);
-                $cad['jefeMax'] = $personal->GetNameById();
-            break;
-            case 'Asistente':
-            case 'Cuentas':
-            case 'Contador':
-                $cad = $row;
-                $supervisorId = $row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
-                $personal->setPersonalId($supervisorId);
-                $jSup = $personal->Info();
-                $role = $rol->getInfoByData($jSup);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-            //cuentas por cobrar puede tener jefe inmediato del mismom rol
-                if($needle=='Supervisor' ||$needle=='Gestoria'||$needle=='Sistemas'||$needle=='Cuentas'){
-                    $personal->setPersonalId($jSup['personalId']);
-                    $cad['supervisor'] = $personal->GetNameById();
-                }else
-                    $jSup['jefeInmediato']=$supervisorId;
-
-                $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
-                $personal->setPersonalId($gerenteId);
-                $jGer = $personal->Info();
-                $role = $rol->getInfoByData($jGer);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                if($needle=='Gerente'){//|| $needle=='Asistente'
-                    $personal->setPersonalId($jGer['personalId']);
-                    $cad['gerente'] = $personal->GetNameById();
-                }else
-                    $jGer['jefeInmediato']=$gerenteId;
-
-                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                $personal->setPersonalId($jefeId);
-                $cad['jefeMax'] = $personal->GetNameById();
-                break;
-            case 'Recepcion':
-            case 'Auxiliar':
-                $cad = $row;
-                $contadorId =$row['jefeInmediato'] == 0 ? $row['personalId'] : $row['jefeInmediato'];
-                $personal->setPersonalId($contadorId);
-                $jCont = $personal->Info();
-                $role = $rol->getInfoByData($jCont);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                if($needle=='Contador'||$needle=='Asistente'||$needle=='Cuentas'){// || $needle=='Auxiliar'
-                    $personal->setPersonalId($jCont['personalId']);
-                    $cad['contador'] = $personal->GetNameById();
-                }else
-                    $jCont['jefeInmediato']=$contadorId;
-
-                $supervisorId = $jCont['jefeInmediato'] == 0 ? $jCont['personalId'] : $jCont['jefeInmediato'];
-                $personal->setPersonalId($supervisorId);
-                $jSup = $personal->Info();
-                $role = $rol->getInfoByData($jSup);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                if($needle=='Supervisor'||$needle=='Gestoria'||$needle=='Sistemas'){
-                    $personal->setPersonalId($jSup['personalId']);
-                    $cad['supervisor'] = $personal->GetNameById();
-                }else
-                    $jSup['jefeInmediato']=$supervisorId;
-
-                $gerenteId = $jSup['jefeInmediato'] == 0 ? $jSup['personalId'] : $jSup['jefeInmediato'];
-                $personal->setPersonalId($gerenteId);
-                $jGer = $personal->Info();
-                $role = $rol->getInfoByData($jGer);
-                $rolArray = explode(' ',$role['name']);
-                $needle = trim($rolArray[0]);
-                if($needle=='Gerente'){// || $needle=='Asistente'
-                    $personal->setPersonalId($jGer['personalId']);
-                    $cad['gerente'] = $personal->GetNameById();
-                }else
-                    $jGer['jefeInmediato']=$gerenteId;
-
-                $jefeId = $jGer['jefeInmediato'] == 0 ? $jGer['personalId'] : $jGer['jefeInmediato'];
-                $personal->setPersonalId($jefeId);
-                $cad['jefeMax'] = $personal->GetNameById();
-                break;
-        }
-        return $cad;
-    }
     public function GetExpedientes(){
 	    $sql ="SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='".$this->personalId."' and b.status='activo' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);

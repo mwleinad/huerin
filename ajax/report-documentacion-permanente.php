@@ -3,9 +3,9 @@
 	include_once('../init.php');
 	include_once('../config.php');
 	include_once(DOC_ROOT.'/libraries.php');
-	
-	session_start();	
-	
+
+	session_start();
+
 	switch($_POST["type"])
 	{
 		case "search":
@@ -23,11 +23,11 @@
 
 				if($totalDocumentos%2 != 0)
 					{$totalDocumentos+=1;}
-				
+
 				$totalDocumentos=($totalDocumentos/2);
-				$smarty->assign('totalDocumentos',$totalDocumentos);			
+				$smarty->assign('totalDocumentos',$totalDocumentos);
 				$smarty->assign('mainMnu','reportes');
-				
+
 				$documentos = $documento->EnumerateAll();
 				$contracts = array();
 
@@ -56,8 +56,8 @@
 				$smarty->assign('contracts', $contracts);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/report-documentacion-permanente.tpl');
-				
-			break;				
+
+			break;
 	}
-	
+
 ?>
