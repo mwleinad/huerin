@@ -530,8 +530,8 @@ class ReporteBonos extends Main
                         }
 
                     }
-                break;   
-                case 3: //subgerente                                              
+                break;
+                case 3: //subgerente
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'][]=$service;
                     $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'] =
                         $this->Util()->orderMultiDimensionalArray($serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$encargadoDep]['propios'],"contrato");
@@ -666,7 +666,7 @@ class ReporteBonos extends Main
                             $totalesEncargados[$encargadoDep]['totalCompletado']+=$itemins['completado'];
                         }
                     }
-                break;    
+                break;
             }
         }
         $data["serviciosEncontrados"] = $serviciosEncontrados;
@@ -956,7 +956,7 @@ class ReporteBonos extends Main
                     $devengados[$value['personalId']]['meses'][$i]['total'] +=$inst['costo'];
                     $trabajados[$value['personalId']]['meses'][$i]['total'] +=$inst['completado'];
                     $cobrados[$value['personalId']]['meses'][$i]['total'] +=$inst['cobrado'];
-                    $nominas[$value['personalId']]['meses'][$i]['total'] +=$totalSueldoIncluidoSubordinados;
+                    $nominas[$value['personalId']]['meses'][$i]['total'] = $totalSueldoIncluidoSubordinados;
                     $utilidades[$value['personalId']]['meses'][$i] = [];
                 }
             }
