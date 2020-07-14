@@ -174,11 +174,11 @@ class EdoResultado extends ReporteBonos
         $col = 0;
         $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
         $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'INGRESOS');
+        $sheet->setCellValueByColumnAndRow($col, $row,'EGRESOS');
         $col++;
         $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
         $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL EMPLEADOS');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL NOMINAS');
         $col++;
         foreach($totalNominas as $ke => $item) {
             $start =  $item[0];

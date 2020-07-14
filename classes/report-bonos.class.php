@@ -352,7 +352,7 @@ class ReporteBonos extends Main
             $empleado=$personal->InfoWhitRol();
             $sub['name']=$empleado['name'];
             $sub['porcentajeBono']=$empleado['porcentajeBono'];
-            $sub['sueldo']=$empleado['sueldo']*3;
+            $sub['sueldo']=$empleado['sueldo']*count($mesesBase);
             $sub['totalDevengado']=0;
             $sub['totalCompletado']=0;
             $sub['level']=$empleado["nivel"];
