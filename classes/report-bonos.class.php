@@ -922,7 +922,7 @@ class ReporteBonos extends Main
             $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a 
                     INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
                     INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
-                    WHERE a.status IN ('activo','bajaParcial') AND d.status='1' and a.inicioFactura!='0000-00-00' $strFilter group by a.servicioId";
+                    WHERE a.status IN ('activo','bajaParcial') AND d.status='1' $strFilter group by a.servicioId";
             $this->Util()->DB()->setQuery($sql);
             $servicios = $this->Util()->DB()->GetResult();
             if(count($servicios)<=0){
