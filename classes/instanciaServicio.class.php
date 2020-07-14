@@ -256,7 +256,7 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
-    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses=array(),$foperaciones,$isParcial=false,$monthBase=[]){
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[]){
         global $comprobante;
         $ftrTemporal = "";
         $new = [];
