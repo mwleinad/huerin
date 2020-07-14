@@ -449,7 +449,7 @@ class ReporteBonos extends Main
             $service["contrato"]=$service['name'];
 
             $cad['porcentajeBono']=$encargado['porcentajeBono'];
-            $cad['sueldoTotal']=$encargado['sueldo']*3;
+            $cad['sueldoTotal']=$encargado['sueldo']*count($mesesBase);
             //deep jefes
             $jefesAsc = [];
             $personal->setPersonalId($encargadoDep);
