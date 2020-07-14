@@ -38,6 +38,14 @@
                       </a>
                   </td>
               </tr>
+              <tr>
+                  <td style="width: 20%">Herramienta para obtener el salario de un empleado</td>
+                  <td style="width: 2%;text-align: left">
+                      <a href="javascript:;" class="spanAll spanOpenGetSalario" title="Obtener salario" data-type="openGetSalario">
+                          <img src="{$WEB_ROOT}/images/icons/action_check.gif">
+                      </a>
+                  </td>
+              </tr>
               </tbody>
           </table>
       </div>

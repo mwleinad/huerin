@@ -313,7 +313,7 @@ class InstanciaServicio extends  Servicio
             $comp = $value['comprobanteId'] ?  $comprobante->GetInfoComprobante($value['comprobanteId']) : false;
             $costo = $value['factura'] === 'Si' ? $value['costoWorkflow'] : $costo;
             if(!$comp) {
-                $costoCobrado = $comp['saldo'] <= 0.01 ? $costo : 0;
+                $costoCobrado = number_format($comp['saldo'],2,'.','') <= 0.01 ? $costo : 0;
             }
             $value['costo'] = $costo;
             $value['cobrado'] = $costoCobrado;

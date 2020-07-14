@@ -37,4 +37,23 @@ switch($_POST["type"]){
          echo "ok[#]";
          $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
+    case 'openGetSalario':
+        $smarty->assign('empleados', $personal->EnumerateAll());
+        $smarty->display(DOC_ROOT.'/templates/boxes/get-salario-popup.tpl');
+        break;
+    case 'getSalario':
+        $subs = [];
+        if(isset($_POST['deep'])) {
+            $personal->setPersonalId($_POST['personalId']);
+            $subs = $personal->Subordinados();
+        }
+        $subs = count($subs)>0 ? array_column($subs, 'personalId') : [];
+        array_push($subs, $_POST['personalId']);
+        $total = $personal->getTotalSalarioByMultipleId($subs);
+        $total = number_format($total, 2, '.', "," );
+        $util->setError(0, 'complete', "salario total mensual  = $total ");
+        $util->PrintErrors();
+        echo "ok[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        break;
 }
