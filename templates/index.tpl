@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head> 
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Braun Huerin{if $titlePage neq ''} ::. {$titlePage}{/if}
 </title>
@@ -25,7 +25,13 @@
 <link href="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.css" rel="stylesheet" />
 <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
-<link rel="icon" href="{$WEB_ROOT}/css/animated_favicon.gif" type="image/gif" />
+
+<link rel="icon" type="image/svg+xml" href="{$WEB_ROOT}/images/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="{$WEB_ROOT}/images/icons/favicon.png">
+<link rel="mask-icon" href="{$WEB_ROOT}/images/icons/-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/css/lista.css" />
 {if $page == "login"}
 	<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
@@ -111,9 +117,9 @@ Sistema ejecutandose desde nuevo servidor
 {/if}
 
 {if $page == "docs-files"}
-	{include file="templates/docs-files.tpl"} 
+	{include file="templates/docs-files.tpl"}
 {elseif $page == "sellado-files"}
-	{include file="templates/sellado-files.tpl"} 
+	{include file="templates/sellado-files.tpl"}
 {elseif $page == "services"}
 	{include file="templates/services.tpl"}
 {elseif $page == "responsables-resource"}
@@ -121,17 +127,17 @@ Sistema ejecutandose desde nuevo servidor
 {elseif $page == "upkeeps-resource"}
 	{include file="templates/upkeeps-resource.tpl"}
 {elseif $page == "add-documento"}
-	{include file="templates/add-documento.tpl"} 
+	{include file="templates/add-documento.tpl"}
 {elseif $page == "add-requerimiento"}
-	{include file="templates/add-requerimiento.tpl"} 
+	{include file="templates/add-requerimiento.tpl"}
 {elseif $page == "add-archivo"}
-	{include file="templates/add-archivo.tpl"} 
+	{include file="templates/add-archivo.tpl"}
 {elseif $page == "add-impuesto"}
-	{include file="templates/add-impuesto.tpl"} 
+	{include file="templates/add-impuesto.tpl"}
 {elseif $page == "add-obligacion"}
-	{include file="templates/add-obligacion.tpl"} 
+	{include file="templates/add-obligacion.tpl"}
 {elseif $page == "service-steps"}
-	{include file="templates/service-steps.tpl"} 
+	{include file="templates/service-steps.tpl"}
 {else}
 	<div {if $page == "costeo-prvw" || $page == "costeo-html"}style="width:800px"{else}class="container_16"{/if} {if $page != "login" && $page != "product-add" && $page != "obs-add" && $page != "costeo-prvw" && $page != "costeo-html" && $page != "costeo-add"}id="wrapper"{/if}>
 		{include file="header.tpl"}

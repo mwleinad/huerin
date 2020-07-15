@@ -314,6 +314,7 @@ class InstanciaServicio extends  Servicio
             $costo = $value['factura'] === 'Si' ? $value['costoWorkflow'] : $costo;
             if(!$comp) {
                 $costoCobrado = number_format($comp['saldo'],2,'.','') <= 0.01 ? $costo : 0;
+                $costoCobrado = $comp['cancelado'];
             }
             $value['costo'] = $costo;
             $value['cobrado'] = $costoCobrado;
