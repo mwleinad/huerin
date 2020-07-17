@@ -13,8 +13,8 @@
                 <li><a href="#" onclick="NuevoArchivo({$id})">
                 <span>Nuevo Archivo</span></a></li>
                 {/if}
-           {/if}     
-     	</ul>     
+           {/if}
+     	</ul>
         <ul>
         	{if $mainMnu == "catalogos"}
                 {if in_array(8,$permissions) || $User.isRoot}
@@ -145,51 +145,55 @@
                     <li><a href="{$WEB_ROOT}/edo-result" {if $includedTpl == "edo-result"} class="current"{/if} target="_blank"><span>Estado de resultado</span></a></li>
                 {/if}
                 {if in_array(165,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/report-cobranza-new" {if $page == "report-cobranza-new"}class="current"{/if} target="_blank">
                     <span>Cobranza anual</span></a></li>
                 {/if}
+                {if in_array(276,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-account-manager" {if $page == "report-account-manager"}class="current"{/if} target="_blank">
+                            <span>Cuentas por gerente</span></a></li>
+                {/if}
                 {if in_array(208,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if} target="_blank">
                     <span>Cobranza mensual</span></a></li>
                 {/if}
                 {if in_array(167,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-razon-social" title="Exportar razones sociales" {if $page == "report-razon-social"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/report-razon-social" title="Exportar razones sociales" {if $page == "report-razon-social"}class="current"{/if} target="_blank">
                     <span>Razones Sociales</span></a></li>
                 {/if}
                 {if in_array(168,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if} target="_blank">
                     <span>Bitacoras</span></a></li>
                 {/if}
                 {if in_array(178,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if} title="Reporte de Organigrama" target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if} title="Reporte de Organigrama" target="_blank">
                     <span>Reporte Organigrama</span></a></li>
                 {/if}
                 {if in_array(249,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/report-exp-employe" {if $page == "report-exp-employe"}class="current"{/if} title="Reporte de Expedientes de Colaboradores" target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/report-exp-employe" {if $page == "report-exp-employe"}class="current"{/if} title="Reporte de Expedientes de Colaboradores" target="_blank">
                      <span>Reporte de Expedientes</span></a></li>
                 {/if}
             {/if}
 
             {if $mainMnu == "cxc"}
                 {if in_array(120,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/cxc" {if $page == "cxc"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/cxc" {if $page == "cxc"}class="current"{/if} target="_blank">
                     <span>Cuentas por Cobrar</span></a></li>
                 {/if}
                 {if in_array(121,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/balance" {if $page == "balance"}class="current"{/if} target="_blank" target="_blank">
+                    <li><a href="{$WEB_ROOT}/balance" {if $page == "balance"}class="current"{/if} target="_blank">
                     <span>Estado de cuenta saldos pendientes</span></a></li>
                 {/if}
             {/if}
             {if $page == "sistema" || $page == "reporte-sat" || $page == "cfdi33-generate" || $page == "comp-from-xml"}
             <ul>
               {if in_array(131,$permissions) || $User.isRoot}
-                <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if} target="_blank" target="_blank"><span>Nuevo CFDi 3.3</span></a></li>
+                <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if} target="_blank"><span>Nuevo CFDi 3.3</span></a></li>
               {/if}
               {if in_array(132,$permissions) || $User.isRoot}
-                <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if} target="_blank" target="_blank"><span>Consultar Comprobantes</span></a></li>
+                <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if} target="_blank"><span>Consultar Comprobantes</span></a></li>
               {/if}
               {if in_array(120,$permissions) || $User.isRoot}
-              <li><a href="{$WEB_ROOT}/comp-from-xml" {if $page == "comp-from-xml"}class="current"{/if} target="_blank" target="_blank">
+              <li><a href="{$WEB_ROOT}/comp-from-xml" {if $page == "comp-from-xml"}class="current"{/if} target="_blank">
                     <span>Complemento de pago desde xml</span></a></li>
               {/if}
             </ul>

@@ -96,6 +96,7 @@ include_once(DOC_ROOT.'/libraries.php');
         'report-pending',
 		'edo-result',
 		'report-exp-employe',
+		'report-account-manager',
 
 		//cafeteria
         'coffe',
