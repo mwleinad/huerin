@@ -123,6 +123,8 @@ include_once(DOC_ROOT."/classes/prospectOffer.class.php");
 $prospect = new Prospect;
 include_once(DOC_ROOT."/classes/activity.class.php");
 $activity = new Activity;
+include_once(DOC_ROOT."/classes/accountReport.class.php");
+$accountReport = new AccountReport();
 //crons
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
 $cronServicio = new CronServicio();

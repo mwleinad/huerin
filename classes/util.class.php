@@ -11,7 +11,7 @@ class Util extends Error
 		}
 		return $this->DB;
 	}
-	
+
 	public function DBRemote($id = "pascacio_general")
 	{
 		//$this->DBRemote = null;
@@ -22,7 +22,7 @@ class Util extends Error
 		$this->DBRemote->setSqlDatabase($id);
 		return $this->DBRemote;
 	}
-	
+
 
 	public function DBSelect($empresaId = 1)
 	{
@@ -1596,7 +1596,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
           return false;
         if(strlen($var) < 12)
 		 return false;
-		 
+
 		 return true;
 	}
     function ConvertSerial($serial)
@@ -1618,6 +1618,16 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
         $noCertificado = $this->ConvertSerial($serial);
 
         return $noCertificado;
+    }
+    function changeKeyArray(array $elements, $key) {
+	    $data = [];
+	    if(!is_array($elements) || count($elements)<=0)
+	        return $data;
+
+	    foreach ($elements as $var)
+	        $data[$var[$key]] = $var;
+
+	    return $data;
     }
 }
 ?>

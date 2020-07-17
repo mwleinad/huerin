@@ -31,6 +31,7 @@
 				</td>
 				<td style="width: auto; padding:0px 4px 4px 8px;" align="center">
 					<select name="periodo" id="periodo"  class="largeInput"  style="width: 90%;">
+						<option value="">Todos</option>
 						<option value="efm">Ene Feb Mar</option>
 						<option value="amj">Abr May Jun</option>
 						<option value="jas">Jul Ago Sep</option>

@@ -1,31 +1,31 @@
 <?php
 class Personal extends Main
 {
-	private $personalId;
-	private $name;
-	private $phone;
-	private $email;
-	private $username;
-	private $passwd;
-	private $active;
-	private $ext;
-	private $fechaIngreso;
-	private $showAll =  false;
-	public function setExt($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Extension");
-		$this->ext = $value;
-	}
+    private $personalId;
+    private $name;
+    private $phone;
+    private $email;
+    private $username;
+    private $passwd;
+    private $active;
+    private $ext;
+    private $fechaIngreso;
+    private $showAll =  false;
+    public function setExt($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Extension");
+        $this->ext = $value;
+    }
     public function isShowAll()
     {
         $this->showAll =  true;
     }
-	private $celphone;
-	public function setCelphone($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Celular");
-		$this->celphone = $value;
-	}
+    private $celphone;
+    public function setCelphone($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Celular");
+        $this->celphone = $value;
+    }
     private $roleId;
     public function setRole($value)
     {
@@ -37,123 +37,123 @@ class Personal extends Main
     {
             $this->levelRol = $value;
     }
-	private $skype;
-	public function setSkype($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Skype");
-		$this->skype = $value;
-	}
+    private $skype;
+    public function setSkype($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Skype");
+        $this->skype = $value;
+    }
 
-	private $puesto;
-	public function setPuesto($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Puesto");
-		$this->puesto = $value;
-	}
+    private $puesto;
+    public function setPuesto($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Puesto");
+        $this->puesto = $value;
+    }
 
-	private $aspel;
-	public function setAspel($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Aspel");
-		$this->aspel = $value;
-	}
+    private $aspel;
+    public function setAspel($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Aspel");
+        $this->aspel = $value;
+    }
 
-	private $horario;
-	public function setHorario($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Horario");
-		$this->horario = $value;
-	}
+    private $horario;
+    public function setHorario($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Horario");
+        $this->horario = $value;
+    }
 
-	private $sueldo;
-	public function setSueldo($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Sueldo");
-		$this->sueldo = $value;
-	}
+    private $sueldo;
+    public function setSueldo($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Sueldo");
+        $this->sueldo = $value;
+    }
 
-	private $grupo;
-	public function setGrupo($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Grupo");
-		$this->grupo = $value;
-	}
+    private $grupo;
+    public function setGrupo($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Grupo");
+        $this->grupo = $value;
+    }
 
-	private $computadora;
-	public function setComputadora($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Computadora");
-		$this->computadora = $value;
-	}
+    private $computadora;
+    public function setComputadora($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Computadora");
+        $this->computadora = $value;
+    }
 
 
-	public function setPersonalId($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->personalId = $value;
-	}
+    public function setPersonalId($value)
+    {
+        $this->Util()->ValidateInteger($value);
+        $this->personalId = $value;
+    }
 
-	public function setName($value)
-	{
-		if($this->Util()->ValidateRequireField($value, "Nombre"))
-			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Nombre");
-		$this->name = $value;
-	}
+    public function setName($value)
+    {
+        if($this->Util()->ValidateRequireField($value, "Nombre"))
+            $this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Nombre");
+        $this->name = $value;
+    }
 
-	public function setPhone($value)
-	{
-		$this->phone = $value;
-	}
+    public function setPhone($value)
+    {
+        $this->phone = $value;
+    }
 
-	public function setEmail($value)
-	{
-	    if(strlen($value)>0)
-	        $this->Util()->ValidateMail($value,"Correo Electrónico");
-		$this->email = $value;
-	}
+    public function setEmail($value)
+    {
+        if(strlen($value)>0)
+            $this->Util()->ValidateMail($value,"Correo Electrónico");
+        $this->email = $value;
+    }
 
-	public function setUsername($value)
-	{
-		$this->username = $value;
-	}
-	public function setPasswd($value)
-	{
+    public function setUsername($value)
+    {
+        $this->username = $value;
+    }
+    public function setPasswd($value)
+    {
         //$this->Util()->ValidateRequireField($value, "Contraseña");
-		$this->passwd = $value;
-	}
+        $this->passwd = $value;
+    }
 
-	public function setActive($value)
-	{
-		$this->active = $value;
-	}
-	var $tipoPersonal;
-	public function setTipoPersonal($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Tipo Personal");
-		$this->tipoPersonal = $value;
-	}
+    public function setActive($value)
+    {
+        $this->active = $value;
+    }
+    var $tipoPersonal;
+    public function setTipoPersonal($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Tipo Personal");
+        $this->tipoPersonal = $value;
+    }
 
-	var $departamentoId;
-	public function setDepartamentoId($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->departamentoId = $value;
-	}
+    var $departamentoId;
+    public function setDepartamentoId($value)
+    {
+        $this->Util()->ValidateInteger($value);
+        $this->departamentoId = $value;
+    }
 
-	var $jefeInmediato;
-	public function setJefeInmediato($value)
-	{
-		$this->Util()->ValidateInteger($value);
-		$this->jefeInmediato = $value;
-	}
-	public function setFechaIngreso($value)
-	{
-		$this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, '');
-		$this->fechaIngreso = $value;
-	}
+    var $jefeInmediato;
+    public function setJefeInmediato($value)
+    {
+        $this->Util()->ValidateInteger($value);
+        $this->jefeInmediato = $value;
+    }
+    public function setFechaIngreso($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, '');
+        $this->fechaIngreso = $value;
+    }
     public function Enumerate()
     {
-		global $User;
+        global $User;
 
         if ($this->active)
             $sqlActive = " AND a.active = '1'";
@@ -163,39 +163,39 @@ class Personal extends Main
         if ((int)$User['level'] == 1 || $this->showAll || $this->accessAnyEmployee()) {
            //$sqlFilter .= $User['level'] != 1 ? " and d.nivel > 1" : "";
            $sql = "SELECT a.*,b.name as nombreJefe,c.departamento
-					FROM personal a 
-					LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
-					LEFT JOIN roles d on a.roleId=d.rolId
-					LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
-					$sqlFilter $sqlActive 
-					ORDER BY a.name ASC";
+                    FROM personal a 
+                    LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
+                    LEFT JOIN roles d on a.roleId=d.rolId
+                    LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
+                    $sqlFilter $sqlActive 
+                    ORDER BY a.name ASC";
             $this->Util()->DB()->setQuery($sql);
             $result = $this->Util()->DB()->GetResult();
             return $result;
 
-		}
+        }
 
         $this->setPersonalId($User['userId']);
-		$result = $this->SubordinadosDetails();
-		foreach($result as $key => $var){
-			$this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$var["departamentoId"]."' ");
-			$result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
-			$result[$key]["nombreJefe"] = $var["jefeName"];
-		}
-		$result = $this->Util()->orderMultiDimensionalArray($result,'name');
+        $result = $this->SubordinadosDetails();
+        foreach($result as $key => $var){
+            $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$var["departamentoId"]."' ");
+            $result[$key]["departamento"] = $this->Util()->DB()->GetSingle()?$this->Util()->DB()->GetSingle():"";
+            $result[$key]["nombreJefe"] = $var["jefeName"];
+        }
+        $result = $this->Util()->orderMultiDimensionalArray($result,'name');
         return $result;
     }
     public function suggestPersonal($like){
-	    $ftr = "";
+        $ftr = "";
         if (strlen($like) > 1) {
             $ftr .= " AND name LIKE '%$like%' ";
         }
         else return false;
         $sql = "SELECT * 
-				FROM personal
-			    WHERE 1
-			    $ftr
-				ORDER BY name ASC LIMIT 15";
+                FROM personal
+                WHERE 1
+                $ftr
+                ORDER BY name ASC LIMIT 15";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         return $result;
@@ -216,93 +216,93 @@ class Personal extends Main
         $result = $this->SubordinadosDetailsAddPass();
         return $result;
     }
-	public function EnumerateAll()
-	{
-		$sql = "SELECT
-					*
-				FROM
-					personal WHERE 1
-				".$sqlFilter.$sqlActive."
-				ORDER BY
-					name ASC";
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
+    public function EnumerateAll()
+    {
+        $sql = "SELECT
+                    *
+                FROM
+                    personal WHERE 1
+                ".$sqlFilter.$sqlActive."
+                ORDER BY
+                    name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function ListDepartamentos()
-	{
-		$filtro = "";
-		$filtro .= (int)$_SESSION["User"]["level"] != 1 && !$this->accessAnyDepartament()?
+    public function ListDepartamentos()
+    {
+        $filtro = "";
+        $filtro .= (int)$_SESSION["User"]["level"] != 1 && !$this->accessAnyDepartament()?
                     " where departamentoId = '".$_SESSION["User"]["departamentoId"]."' "
                     : "";
-		$sql = "SELECT
-					*
-				FROM
-					departamentos
-					$filtro
-				ORDER BY
-					departamento
-				ASC ";
+        $sql = "SELECT
+                    *
+                FROM
+                    departamentos
+                    $filtro
+                ORDER BY
+                    departamento
+                ASC ";
 
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function ListAll()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
+    public function ListAll()
+    {
+        if($this->active)
+            $sqlActive = " AND active = '1'";
 
-		$sql = "SELECT
-					*
-				FROM
-					personal
-				WHERE 1 
-				".$sqlActive."
-				ORDER BY name ASC";
+        $sql = "SELECT
+                    *
+                FROM
+                    personal
+                WHERE 1 
+                ".$sqlActive."
+                ORDER BY name ASC";
 
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
 
-		return $result;
-	}
-	public function ListSupervisoresAutoComplete($name)
-	{
-		$sql = "
-			SELECT
-				*
-			FROM
-				personal
-			WHERE
-				tipoPersonal = 'Supervisor' AND
-				name like '%".$name."%' AND
-				active = '1'
-			ORDER BY name ASC
-		";
+        return $result;
+    }
+    public function ListSupervisoresAutoComplete($name)
+    {
+        $sql = "
+            SELECT
+                *
+            FROM
+                personal
+            WHERE
+                tipoPersonal = 'Supervisor' AND
+                name like '%".$name."%' AND
+                active = '1'
+            ORDER BY name ASC
+        ";
 
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
 
-		return $result;
-	}
-	public function Info()
-	{
-		$this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = '".$this->personalId."'");
-		$row = $this->Util()->DB()->GetRow();
-		$row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
-		return $row;
-	}
+        return $result;
+    }
+    public function Info()
+    {
+        $this->Util()->DB()->setQuery("SELECT * FROM personal WHERE personalId = '".$this->personalId."'");
+        $row = $this->Util()->DB()->GetRow();
+        $row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
+        return $row;
+    }
     public function InfoWhitRol()
     {
         $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.sueldo,a.jefeInmediato, 
                                              CASE b.nivel
                                              WHEN 1 THEN 'Socio'
                                              WHEN 2 THEN 'Gerente'
-											 WHEN 3 THEN 'Subgerente'
+                                             WHEN 3 THEN 'Subgerente'
                                              WHEN 4 THEN 'Supervisor'
                                              WHEN 5 THEN 'Contador'
                                              WHEN 6 THEN 'Auxiliar'
@@ -315,7 +315,7 @@ class Personal extends Main
         $row["porcentajeBono"] = $this->Util()->DB()->GetSingle();
         return $row;
     }
-	public function jefeInmediato(){
+    public function jefeInmediato(){
         $this->Util()->DB()->setQuery("SELECT j.* FROM personal a INNER JOIN personal j ON a.jefeInmediato=j.personalId WHERE a.personalId = '".$this->personalId."'");
         $row = $this->Util()->DB()->GetRow();
         $row['fechaIngresoMysql'] = $this->Util()->FormatDateMySql($row['fechaIngreso']);
@@ -324,11 +324,11 @@ class Personal extends Main
         return $row;
     }
 
-	public function Edit()
-	{
-		if($this->Util()->PrintErrors()){ return false; }
-		$strUpdate ="";
-		if(strlen($this->sueldo)>0)
+    public function Edit()
+    {
+        if($this->Util()->PrintErrors()){ return false; }
+        $strUpdate ="";
+        if(strlen($this->sueldo)>0)
         {
             if(!is_numeric($this->sueldo))
                 $this->sueldo=0;
@@ -367,15 +367,15 @@ class Personal extends Main
         if(strlen($this->jefeInmediato)>0)
             $strUpdate .=" jefeInmediato='".$this->jefeInmediato."', ";
 
-		$this->Util()->DB()->setQuery("
-			UPDATE
-				personal
-			SET
-				`name` = '".$this->name."',
-				$strUpdate
-				active = '".$this->active."'
-			WHERE personalId = '".$this->personalId."'");
-		$this->Util()->DB()->UpdateData();
+        $this->Util()->DB()->setQuery("
+            UPDATE
+                personal
+            SET
+                `name` = '".$this->name."',
+                $strUpdate
+                active = '".$this->active."'
+            WHERE personalId = '".$this->personalId."'");
+        $this->Util()->DB()->UpdateData();
         //actualizar los expedientes.
         if(isset($_POST["expe"])){
             if(!empty($_POST['expe'])){
@@ -413,70 +413,70 @@ class Personal extends Main
                 }
             }
         }
-		$this->Util()->setError(10049, "complete");
-		$this->Util()->PrintErrors();
-		return true;
-	}
+        $this->Util()->setError(10049, "complete");
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
-	public function Save()
-	{
-		if($this->Util()->PrintErrors()){ return false; }
+    public function Save()
+    {
+        if($this->Util()->PrintErrors()){ return false; }
 
         if(!is_numeric($this->sueldo))
             $this->sueldo=0;
 
-		$this->Util()->DB()->setQuery("
-			INSERT INTO
-				personal
-			(
-				`name`,
-				phone,
-				email,
-				username,
-				passwd,
-				ext,
-				celphone,
-				skype,
-				aspel,
-				puesto,
-				horario,
-				sueldo,
-				grupo,
-				jefeInmediato,
-				computadora,
-				tipoPersonal,
-				roleId,
-				departamentoId,
-				fechaIngreso,
-				lastChangePassword,
-				active
-		)
-		VALUES
-		(
-				'".$this->name."',
-				'".$this->phone."',
-				'".$this->email."',
-				'".$this->username."',
-				'".$this->passwd."',
-				'".$this->ext."',
-				'".$this->celphone."',
-				'".$this->skype."',
-				'".$this->aspel."',
-				'".$this->puesto."',
-				'".$this->horario."',
-				'".$this->sueldo."',
-				'".$this->grupo."',
-				'".$this->jefeInmediato."',
-				'".$this->computadora."',
-				'".trim($this->tipoPersonal)."',
-				'".trim($this->roleId)."',
-				'".$this->departamentoId."',
-				'".$this->fechaIngreso."',
-				'".$this->fechaIngreso."',
-				'".$this->active."'
-		);");
-		$id = $this->Util()->DB()->InsertData();
-		if(isset($_POST["expe"])){
+        $this->Util()->DB()->setQuery("
+            INSERT INTO
+                personal
+            (
+                `name`,
+                phone,
+                email,
+                username,
+                passwd,
+                ext,
+                celphone,
+                skype,
+                aspel,
+                puesto,
+                horario,
+                sueldo,
+                grupo,
+                jefeInmediato,
+                computadora,
+                tipoPersonal,
+                roleId,
+                departamentoId,
+                fechaIngreso,
+                lastChangePassword,
+                active
+        )
+        VALUES
+        (
+                '".$this->name."',
+                '".$this->phone."',
+                '".$this->email."',
+                '".$this->username."',
+                '".$this->passwd."',
+                '".$this->ext."',
+                '".$this->celphone."',
+                '".$this->skype."',
+                '".$this->aspel."',
+                '".$this->puesto."',
+                '".$this->horario."',
+                '".$this->sueldo."',
+                '".$this->grupo."',
+                '".$this->jefeInmediato."',
+                '".$this->computadora."',
+                '".trim($this->tipoPersonal)."',
+                '".trim($this->roleId)."',
+                '".$this->departamentoId."',
+                '".$this->fechaIngreso."',
+                '".$this->fechaIngreso."',
+                '".$this->active."'
+        );");
+        $id = $this->Util()->DB()->InsertData();
+        if(isset($_POST["expe"])){
             if(!empty($_POST['expe'])){
                 $sql = 'REPLACE INTO personalExpedientes(personalId,expedienteId) VALUES';
                 foreach($_POST['expe'] as $exp){
@@ -490,140 +490,150 @@ class Personal extends Main
             }
         }
 
-		$this->Util()->setError(10048, "complete");
-		$this->Util()->PrintErrors();
-		return true;
-	}
+        $this->Util()->setError(10048, "complete");
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
-	public function Delete()
-	{
-		if($this->Util()->PrintErrors()){ return false; }
+    public function Delete()
+    {
+        if($this->Util()->PrintErrors()){ return false; }
 
-		$this->Util()->DB()->setQuery("
-			DELETE FROM
-				personal
-			WHERE
-				personalId = '".$this->personalId."'");
-		$this->Util()->DB()->DeleteData();
+        $this->Util()->DB()->setQuery("
+            DELETE FROM
+                personal
+            WHERE
+                personalId = '".$this->personalId."'");
+        $this->Util()->DB()->DeleteData();
 
-		$this->Util()->setError(10050, "complete", "Has eliminado al Contador satisfactoriamente");
-		$this->Util()->PrintErrors();
-		return true;
-	}
+        $this->Util()->setError(10050, "complete", "Has eliminado al Contador satisfactoriamente");
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
-	public function GetDataReport(){
+    public function GetDataReport(){
 
-		$sql = 'SELECT
-					name,
-					tipoPersonal
-				FROM
-					personal
-				WHERE
-					personalId = '.$this->personalId;
+        $sql = 'SELECT
+                    name,
+                    tipoPersonal
+                FROM
+                    personal
+                WHERE
+                    personalId = '.$this->personalId;
 
-		$this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->setQuery($sql);
 
-		return $this->Util()->DB()->GetRow();
+        return $this->Util()->DB()->GetRow();
 
-	}
+    }
 
-	public function GetNameById(){
+    public function GetNameById(){
 
-		$sql = 'SELECT
-					name
-				FROM
-					personal
-				WHERE
-					personalId = '.$this->personalId;
+        $sql = 'SELECT
+                    name
+                FROM
+                    personal
+                WHERE
+                    personalId = '.$this->personalId;
 
-		$this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->setQuery($sql);
 
-		return $this->Util()->DB()->GetSingle();
-	}
+        return $this->Util()->DB()->GetSingle();
+    }
 
-	function Restrict()
-	{
-		global $infoUser, $page;
+    function Restrict()
+    {
+        global $infoUser, $page;
 
-		$restricted = array();
+        $restricted = array();
 
-		switch($infoUser["tipoPersonal"])
-		{
-			case "Recepcion":
-				$restricted  = array(
-					"personal",
-					"regimen",
-					"sociedad",
-					"tipoServicio",
-					"tipoDocumento",
-					"tipoArchivo",
-					"impuesto",
-					"obligacion",
-				);
-				break;
-		}
+        switch($infoUser["tipoPersonal"])
+        {
+            case "Recepcion":
+                $restricted  = array(
+                    "personal",
+                    "regimen",
+                    "sociedad",
+                    "tipoServicio",
+                    "tipoDocumento",
+                    "tipoArchivo",
+                    "impuesto",
+                    "obligacion",
+                );
+                break;
+        }
 
-		if(in_array($page, $restricted))
-		{
-			header("Location:".WEB_ROOT);
-		}
-	}
+        if(in_array($page, $restricted))
+        {
+            header("Location:".WEB_ROOT);
+        }
+    }
+    function GetCascadeSubordinates() {
+        $sql ="SELECT personal.*, jefes.name AS jefeName, roles.name as nameRol, roles.nivel FROM personal
+               LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato 
+               INNER JOIN roles on personal.roleId = roles.rolId ORDER BY personal.name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult($sql);
+        $jerarquia = $this->Jerarquia($result, $this->personalId);
+        $new = [];
+        $this->JerarquiaLinealReferencia($new, $jerarquia);
+        return $new;
+    }
+    function Subordinados($whitDpto=false)
+    {
+    $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
+        LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+    $this->Util()->DB()->setQuery($sql);
+    $result = $this->Util()->DB()->GetResult($sql);
 
-function Subordinados($whitDpto=false)
-{
-	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
-		LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
-	$this->Util()->DB()->setQuery($sql);
-	$result = $this->Util()->DB()->GetResult($sql);
+    $jerarquia = $this->Jerarquia($result, $this->personalId);
 
-	$jerarquia = $this->Jerarquia($result, $this->personalId);
-
-	$_SESSION["lineal"] = array();
-	if($whitDpto)
+    $_SESSION["lineal"] = array();
+    if($whitDpto)
         $this->JerarquiaLinealWhitDpto($jerarquia);
-	else
-	    $this->JerarquiaLinealJustId($jerarquia);
+    else
+        $this->JerarquiaLinealJustId($jerarquia);
 
-	return $_SESSION["lineal"];
-}
+    return $_SESSION["lineal"];
+    }
 
-function AddMeToArray()
-{
-	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
-		LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato WHERE personal.personalId = '".$_SESSION["User"]["userId"]."'ORDER BY name ASC";
-	$this->Util()->DB()->setQuery($sql);
-	$row = $this->Util()->DB()->GetRow($sql);
+    function AddMeToArray()
+    {
+    $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
+        LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato WHERE personal.personalId = '".$_SESSION["User"]["userId"]."'ORDER BY name ASC";
+    $this->Util()->DB()->setQuery($sql);
+    $row = $this->Util()->DB()->GetRow($sql);
 
-	array_unshift($_SESSION["lineal"], $row);
-}
-function AddPassToArray()
-{
+    array_unshift($_SESSION["lineal"], $row);
+    }
+    function AddPassToArray()
+    {
     $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
     LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato WHERE personal.personalId = '".$this->personalId."'ORDER BY name ASC";
     $this->Util()->DB()->setQuery($sql);
     $row = $this->Util()->DB()->GetRow($sql);
 
     array_unshift($_SESSION["lineal"], $row);
-}
+    }
 
-function SubordinadosDetails()
-{
-	$sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
-		   LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
-	$this->Util()->DB()->setQuery($sql);
-	$result = $this->Util()->DB()->GetResult($sql);
+    function SubordinadosDetails()
+    {
+    $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
+           LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+    $this->Util()->DB()->setQuery($sql);
+    $result = $this->Util()->DB()->GetResult($sql);
 
-	$jerarquia = $this->Jerarquia($result, $this->personalId);
+    $jerarquia = $this->Jerarquia($result, $this->personalId);
 
-	$_SESSION["lineal"] = array();
-	$this->JerarquiaLineal($jerarquia);
+    $_SESSION["lineal"] = array();
+    $this->JerarquiaLineal($jerarquia);
 
-	$this->AddMeToArray();
+    $this->AddMeToArray();
 
-	return $_SESSION["lineal"];
-}
-function SubordinadosDetailsAddPass()
-{
+    return $_SESSION["lineal"];
+    }
+    function SubordinadosDetailsAddPass()
+    {
     $sql ="SELECT personal.*, jefes.name AS jefeName FROM personal
        LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
     $this->Util()->DB()->setQuery($sql);
@@ -636,72 +646,90 @@ function SubordinadosDetailsAddPass()
     $this->AddPassToArray();
 
     return $_SESSION["lineal"];
-}
+    }
 
     function GetRoleId($tipoPersonal)
-	{
-	  switch($tipoPersonal)
-	  {
-		  case "Socio": $roleId = 1; break;
-		  case "Gerente": $roleId = 2; break;
-		  case "Supervisor": $roleId = 3; break;
-		  case "Contador": $roleId = 3; break;
-		  case "Auxiliar": $roleId = 3; break;
-		  case "Asistente": $roleId = 1; break;
-		  case "Recepcion": $roleId = 1; break;
-		  case "Cliente":$roleId = 4; break;
-		  case "Nomina":
-			  $roleId = 1;
-			  //$User['subRoleId'] = "Nomina";
-		  break;
-	  }
+    {
+      switch($tipoPersonal)
+      {
+          case "Socio": $roleId = 1; break;
+          case "Gerente": $roleId = 2; break;
+          case "Supervisor": $roleId = 3; break;
+          case "Contador": $roleId = 3; break;
+          case "Auxiliar": $roleId = 3; break;
+          case "Asistente": $roleId = 1; break;
+          case "Recepcion": $roleId = 1; break;
+          case "Cliente":$roleId = 4; break;
+          case "Nomina":
+              $roleId = 1;
+              //$User['subRoleId'] = "Nomina";
+          break;
+      }
 
-	  return $roleId;
-	}
+      return $roleId;
+    }
 
-	function Jerarquia(array $elements, $parentId = 0) {
-			$branch = array();
+    function Jerarquia(array $elements, $parentId = 0) {
+            $branch = array();
 
-			foreach ($elements as $element) {
-					if ($element['jefeInmediato'] == $parentId) {
-							$children = $this->Jerarquia($elements, $element['personalId']);
-							if ($children) {
-									$element['children'] = $children;
-							}
-							$branch[] = $element;
-					}
-			}
+            foreach ($elements as $element) {
+                    if ($element['jefeInmediato'] == $parentId) {
+                            $children = $this->Jerarquia($elements, $element['personalId']);
+                            if ($children) {
+                                    $element['children'] = $children;
+                            }
+                            $branch[] = $element;
+                    }
+            }
 
-			return $branch;
-	}
+            return $branch;
+    }
+    function JerarquiaLinealReferencia(array &$new, $tree) {
+        foreach($tree as $key => $value)
+        {
+            $new[] = $value;
+            if(count($value["children"]) > 0)
+            {
+                $this->JerarquiaLinealReferencia($new, $value["children"]);
+            }
+        }
+    }
+    function JerarquiaJustIdByReference(array &$lineal, $tree) {
+        foreach($tree as $key => $value)
+        {
+            array_push($lineal, $value['personalId']);
+            if(count($value["children"]) > 0)
+            {
+                $this->JerarquiaJustIdByReference($lineal, $value["children"]);
+            }
+        }
+    }
+    function JerarquiaLineal($tree)
+    {
 
+        foreach($tree as $key => $value)
+        {
+            $_SESSION["lineal"][] = $value;
+            if(count($value["children"]) > 0)
+            {
+                $this->JerarquiaLineal($value["children"]);
+            }
+        }
+    }
 
-	function JerarquiaLineal($tree)
-	{
+    function JerarquiaLinealJustId($tree)
+    {
+        foreach($tree as $key => $value)
+        {
+            $card["personalId"] = $value["personalId"];
+            $_SESSION["lineal"][] = $card;
 
-		foreach($tree as $key => $value)
-		{
-		    $_SESSION["lineal"][] = $value;
-			if(count($value["children"]) > 0)
-			{
-				$this->JerarquiaLineal($value["children"]);
-			}
-		}
-	}
-
-	function JerarquiaLinealJustId($tree)
-	{
-		foreach($tree as $key => $value)
-		{
-			$card["personalId"] = $value["personalId"];
-			$_SESSION["lineal"][] = $card;
-
-			if(count($value["children"]) > 0)
-			{
-				$this->JerarquiaLinealJustId($value["children"]);
-			}
-		}
-	}
+            if(count($value["children"]) > 0)
+            {
+                $this->JerarquiaLinealJustId($value["children"]);
+            }
+        }
+    }
     function JerarquiaLinealWhitDpto($tree)
     {
         foreach($tree as $key => $value)
@@ -716,45 +744,43 @@ function SubordinadosDetailsAddPass()
             }
         }
     }
+    function ArrayOrdenadoPersonal()
+    {
+        $sql ="SELECT personal.personalId, personal.name, personal.tipoPersonal, personal.jefeInmediato, jefes.name AS jefeName FROM personal
+            LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult($sql);
 
+        $jerarquia = $this->Jerarquia($result);
 
-	function ArrayOrdenadoPersonal()
-	{
-		$sql ="SELECT personal.personalId, personal.name, personal.tipoPersonal, personal.jefeInmediato, jefes.name AS jefeName FROM personal
-			LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult($sql);
+        $_SESSION["lineal"] = array();
+        $this->JerarquiaLineal($jerarquia);
 
-		$jerarquia = $this->Jerarquia($result);
+        $lineal = $_SESSION["lineal"];
+        return $lineal;
 
-		$_SESSION["lineal"] = array();
-		$this->JerarquiaLineal($jerarquia);
+    }
+    function jefes($inputId = 0, $idList=array())
+    {
+            $db = new DB();
+            $sql ="SELECT * FROM personal where personalId='".$inputId."'";
+            $db->setQuery($sql);
+            $result = $db->GetResult($sql);
 
-		$lineal = $_SESSION["lineal"];
-		return $lineal;
+            if($result){
+                    $currentId = $result[0]["personalId"];
+                    $parentId = $result[0]["jefeInmediato"];
 
-	}
-	function jefes($inputId = 0, $idList=array())
-	{
-			$db = new DB();
-			$sql ="SELECT * FROM personal where personalId='".$inputId."'";
-			$db->setQuery($sql);
-			$result = $db->GetResult($sql);
+                    $idList[] = $currentId;
 
-			if($result){
-					$currentId = $result[0]["personalId"];
-					$parentId = $result[0]["jefeInmediato"];
-
-					$idList[] = $currentId;
-
-					if ($parentId !=0){
-						 return $this->jefes($parentId, $idList);
-					}
-			}
-			return $idList;
-	}
+                    if ($parentId !=0){
+                         return $this->jefes($parentId, $idList);
+                    }
+            }
+            return $idList;
+    }
     public function GetExpedientes(){
-	    $sql ="SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='".$this->personalId."' and b.status='activo' ";
+        $sql ="SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='".$this->personalId."' and b.status='activo' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         foreach($result as $key=>$value){
@@ -784,8 +810,8 @@ function SubordinadosDetailsAddPass()
             $this->setPersonalId($inmediato["personalId"]);
             $this->deepJefesArray($jefes);
         }
-	}
-	function deepJefesAssoc(&$jefes = [], $me = false)
+    }
+    function deepJefesAssoc(&$jefes = [], $me = false)
     {
         global $rol;
         $employe = $this->InfoWhitRol();
@@ -875,10 +901,10 @@ function SubordinadosDetailsAddPass()
             case 'Contador':
             case 'Auxiliar':
                 $supervisor = $jefes['Supervisor'];
-			break;
-			default:
-				$supervisor = $jefes['me'];
-			break;
+            break;
+            default:
+                $supervisor = $jefes['me'];
+            break;
         }
         return $supervisor;
     }
@@ -907,19 +933,19 @@ function SubordinadosDetailsAddPass()
         return $ordenJefes;
     }
     public function ListSocios()
-	{
-		if($this->active)
-			$sqlActive = " AND active = '1'";
+    {
+        if($this->active)
+            $sqlActive = " AND active = '1'";
 
-		$sql = "SELECT * FROM personal
-				WHERE tipoPersonal = 'Socio' OR roleId in(1,5)
-				".$sqlActive."
-				ORDER BY name ASC";
-		$this->Util()->DB()->setQuery($sql);
-		$result = $this->Util()->DB()->GetResult();
+        $sql = "SELECT * FROM personal
+                WHERE tipoPersonal = 'Socio' OR roleId in(1,5)
+                ".$sqlActive."
+                ORDER BY name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
 
-		return $result;
-	}
+        return $result;
+    }
     public function GetIdResponsablesSubordinados($filtro = [])
     {
         global $User;
