@@ -337,12 +337,21 @@
     "constraint": false
   },
   {
-    "name": "Supervisor",
+    "name": "Clasificacion",
     "required": false,
-    "comment": "Campo informativo, no se toma en cuenta para la actualización.",
-    "field_excel": "supervisadoBy",
-    "field_bd": "",
-    "fillable": false,
-    "constraint": false
+    "comment": "Selecciona un valor presente en la lista de cada fila.",
+    "input_validate": true,
+    "accepted_values" : [
+      "A",
+      "AA",
+      "AAA"
+    ],
+    "field_excel": "qualification",
+    "field_bd": "qualification",
+    "fillable": true,
+    "constraint": false,
+    "generate_range": true,
+    "field_comparison_foreign": "name",
+    "name_range": "clasificacion"
   }
 ]

@@ -69,6 +69,9 @@ switch ($_POST['type']) {
                case "ac_name":
                 $colAcName = $lastCol;
                break;
+               case "qualification":
+                $colQualification = $lastCol;
+               break;
             }
             $margin_left_comment +=150;
             $lastCol++;
@@ -278,6 +281,25 @@ switch ($_POST['type']) {
                     "$current_init_range:$current_end_range"
                 )
             );
+            // calificaciones
+            $calificaciones = ['AAA', 'AA', 'A'];
+            $current_col_catalogue++;
+            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "CALIFICACIONES");
+            $current_row_catalogue = 2;
+            $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+            foreach($calificaciones as $calificacion) {
+                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $calificacion);
+                $current_row_catalogue++;
+            }
+            $current_end_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+            $book->addNamedRange(
+                new PHPExcel_NamedRange(
+                    "calificaciones",
+                    $catalogue,
+                    "$current_init_range:$current_end_range"
+                )
+            );
+            //end calificaciones
             foreach ($data_range_resp as $data_resp) {
                 $init = $data_resp['col_string'] . "2";
                 $end = $data_resp['col_string'] . $currentRow;
@@ -423,6 +445,24 @@ switch ($_POST['type']) {
             $objList->setPromptTitle('Seleccione un valor de la lista');
             $objList->setPrompt('Seleccione un valor de la lista.');
             $objList->setFormula1("=decisiones"); //note this!
+            $sheet->setDataValidation("$init:$end", $objList);
+            unset($objList);
+        }
+        if($colQualification!=""){
+            $init = PHPExcel_Cell::stringFromColumnIndex($colQualification) . "2";
+            $end = PHPExcel_Cell::stringFromColumnIndex($colQualification) . $currentRow;
+            $objList = $sheet->getCell($init)->getDataValidation();
+            $objList->setType(PHPExcel_Cell_DataValidation::TYPE_LIST);
+            $objList->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION);
+            $objList->setAllowBlank(false);
+            $objList->setShowInputMessage(true);
+            $objList->setShowErrorMessage(true);
+            $objList->setShowDropDown(true);
+            $objList->setErrorTitle('Error!!');
+            $objList->setError('Valor seleccionado no se encuentra en la lista.');
+            $objList->setPromptTitle('Seleccione un valor de la lista');
+            $objList->setPrompt('Seleccione un valor de la lista.');
+            $objList->setFormula1("=calificaciones"); //note this!
             $sheet->setDataValidation("$init:$end", $objList);
             unset($objList);
         }
