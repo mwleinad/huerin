@@ -40,6 +40,7 @@ switch($_POST['type']){
                switch($head['field_excel']) {
                    case 'facturador': $items_range  = $rfc->listEmisores(); break;
                    case 'noFactura13':
+                   case 'qualification':
                    case 'type': $items_range = $cat->EnumerateFromArrayLineal($head['accepted_values']); break;
                    default: $items_range = $cat->EnumerateCatalogue($head['reference_table']); break;
                }

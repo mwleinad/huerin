@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * customer.class.php
  *
  * PHP version 5
@@ -1137,7 +1137,7 @@ class Customer extends Main
                   contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
                   contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
                   contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
-                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,ac.*,
+                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad, contract.qualification, ac.*,
                    CONCAT(
                        '[',
                         GROUP_CONCAT(
