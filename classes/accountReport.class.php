@@ -22,7 +22,14 @@ class AccountReport extends Personal
       }
       return $new;
     }
-    public function generateArray() {
+    public function generateArray(array $filters) {
+        $strFilter = "";
+        if($filters['responsableCuenta'])
+            $strFilter .=" and a.personalId = '".$filters['responsableCuenta']."' ";
+
+        if($filters['departamentoId'])
+            $strFilter .=" and c.departamentoId = '".$filters['departamentoId']."' ";
+
         $sql = "select a.*, b.nivel,c.departamento,b.name as nameRol from personal a 
                 inner join roles b on a.roleId = b.rolId 
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
@@ -94,8 +101,8 @@ class AccountReport extends Personal
         }
         return $gerentes;
     }
-    public function generateReport() {
-        $gerentes = $this->generateArray();
+    public function generateReport(array $filters) {
+        $gerentes = $this->generateArray($filters);
         $book = new PHPExcel();
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
