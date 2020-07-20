@@ -65,7 +65,7 @@ switch($_POST["type"]) {
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
 	break;
     case 'accountByManager':
-        $accountReport->generateReport();
+        $accountReport->generateReport($_POST);
         $nameFile = $accountReport->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
