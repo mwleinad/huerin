@@ -52,7 +52,7 @@ class EdoResultado extends ReporteBonos
                     $sheet->setCellValueByColumnAndRow($col, $row, $var['name']);
                     $col++;
                     foreach ($var['meses'] as $keyMes => $mes) {
-                        $sheet->setCellValueByColumnAndRow($col, $row, $mes['total'])
+                        $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                         $col++;
                     }
