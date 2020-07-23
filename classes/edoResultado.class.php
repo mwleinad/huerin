@@ -70,6 +70,7 @@ class EdoResultado extends ReporteBonos
                 }
                 $row +=2;
             }
+            $hoja++;
         }
 
         $book->setActiveSheetIndex(0);
