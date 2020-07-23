@@ -7,230 +7,71 @@ class EdoResultado extends ReporteBonos
         return $this->nameReport;
     }
     function generateEdoResult($ftr){
-        $result = $this->edoResult($ftr);
+        $gerentes = $this->generateArrayEdoResult($ftr);
         $book = new PHPExcel();
         PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
-        $sheet = $book->createSheet(0);
-        $sheet->setTitle('EDO. RESULTADO');
+        $hoja = 0;
+        $sheet = $book->createSheet($hoja);
+        foreach ($gerentes as $key => $gerente) {
+            if ($hoja != 0)
+                $sheet = $book->createSheet($hoja);
+            $row = 1;
+            $col = 0;
+            $sheet->setTitle(strtoupper(substr($gerente["name"], 0, 6)));
+            $sheet->setCellValueByColumnAndRow($col, $row, "Area")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, "Encargado")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+            $col++;
+            foreach($gerente['headerMeses'] as $head) {
+                $sheet->setCellValueByColumnAndRow($col, $row, ucfirst(strtolower($head['name'])))
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+                $col++;
+            }
+            $styles = array(
+                'numberformat' => [
+                    'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+                    ]
+            );
+            $stylesTotal = array(
+                'font' => [
+                     'bold' => true,
+                    ],
+                'numberformat' => [
+                    'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+                    ]
+            );
+            $row++;
+            foreach ($gerente['totales'] as $ky => $total) {
+                $initRow = $row;
+                foreach ($total as $var) {
+                    $col= 0;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $var['nameRol']);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $var['name']);
+                    $col++;
+                    foreach ($var['meses'] as $keyMes => $mes) {
+                        $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                        $col++;
+                    }
+                    $row++;
+                }
+                $endRow =  $row-1;
+                $sheet->setCellValueByColumnAndRow(1, $row, 'Total ingresos ' . $ky)
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
 
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex(0);
-        $sheet->getStyle($currentLetter . "1")->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(0, 1, "AREA");
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex(1);
-        $sheet->getStyle($currentLetter . "1")->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(1, 1, "ENCARGADO");
-        $col = 2;
-        foreach($result['headers'] as $head){
-            $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-            $sheet->getStyle($currentLetter . "1")->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow($col, 1, $head['name']);
-            $col++;
+                for($colTotal = 2; $colTotal<=count($gerente['headerMeses']) + 1; $colTotal++) {
+                    $initSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$initRow;
+                    $endSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$endRow;
+                    $sheet->setCellValueByColumnAndRow($colTotal, $row, "= SUM($initSuma : $endSuma)")
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
+                }
+                $row +=2;
+            }
         }
-        $utilidades = $result['utilidades'];
-        //devengados
-        $row = 2;
-        $totalDevengados = [];
-        foreach ($result['devengados'] as  $devengado){
-            $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $devengado['departamento']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $devengado['name']);
-            $col++;
-            foreach ($devengado['meses'] as $mdevengado){
-                $letterName = PHPExcel_Cell::stringFromColumnIndex($col);
-                $coordenada = $letterName.$row;
-                if(!is_array($totalDevengados[$col]))
-                    $totalDevengados[$col] = [];
 
-                array_push($totalDevengados[$col],$coordenada);
-                $sheet->getStyle($coordenada)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValueByColumnAndRow($col, $row, $mdevengado['total']);
-                $col++;
-            }
-            $row++;
-        }
-        $col = 0;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'INGRESOS');
-        $col++;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL INGRESOS DEVENGADOS');
-        $col++;
-        foreach($totalDevengados as $ke => $item) {
-           $start =  $item[0];
-           $end = end($item);
-           $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-           $sheet->getStyle($currentLetter.$row)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-           $sheet->getStyle($currentLetter.$row)->getFont()->setBold(true);
-           $sheet->setCellValueByColumnAndRow($col, $row, "=SUM($start:$end)");
-           $col++;
-        }
-        // trabajados
-        $row +=2;
-        $totalTrabajados = [];
-        foreach ($result['trabajados'] as  $trabajado){
-            $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $trabajado['departamento']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $trabajado['name']);
-            $col++;
-            foreach ($trabajado['meses'] as $mtrabajado){
-                $letterName = PHPExcel_Cell::stringFromColumnIndex($col);
-                $coordenada = $letterName.$row;
-                if(!is_array($totalTrabajados[$col]))
-                    $totalTrabajados[$col] = [];
-
-                array_push($totalTrabajados[$col],$coordenada);
-                $sheet->getStyle($coordenada)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValueByColumnAndRow($col, $row, $mtrabajado['total']);
-                $col++;
-            }
-            $row++;
-        }
-        $col = 0;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'INGRESOS');
-        $col++;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL INGRESOS TRABAJADOS ');
-        $col++;
-        foreach($totalTrabajados as $ke => $item) {
-            $start =  $item[0];
-            $end = end($item);
-            $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-            $sheet->getStyle($currentLetter.$row)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->getStyle($currentLetter.$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM($start:$end)");
-            $col++;
-        }
-        // cobrados
-        $row +=2;
-        $totalCobrados = [];
-        foreach ($result['cobrados'] as $kc => $cobrado){
-            $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $cobrado['departamento']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $cobrado['name']);
-            $col++;
-            foreach ($cobrado['meses'] as $kmc => $mcobrado){
-                $letterName = PHPExcel_Cell::stringFromColumnIndex($col);
-                $coordenada = $letterName.$row;
-                if(!is_array($totalCobrados[$col]))
-                    $totalCobrados[$col] = [];
-
-                $utilidades[$kc]['meses'][$kmc]['ccobrado'] = $coordenada;
-                array_push($totalCobrados[$col],$coordenada);
-                $sheet->getStyle($coordenada)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValueByColumnAndRow($col, $row, $mcobrado['total']);
-                $col++;
-            }
-            $row++;
-        }
-        $col = 0;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'INGRESOS');
-        $col++;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL INGRESOS COBRADOS ');
-        $col++;
-        foreach($totalCobrados as $ke => $item) {
-            $start =  $item[0];
-            $end = end($item);
-            $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-            $sheet->getStyle($currentLetter.$row)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->getStyle($currentLetter.$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM($start:$end)");
-            $col++;
-        }
-        // nominas
-        $row +=2;
-        $totalNominas = [];
-        foreach ($result['nominas'] as $kn => $nomina){
-            $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $nomina['departamento']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $nomina['name']);
-            $col++;
-            foreach ($nomina['meses'] as $kmn => $mnomina){
-                $letterName = PHPExcel_Cell::stringFromColumnIndex($col);
-                $coordenada = $letterName.$row;
-                if(!is_array($totalNominas[$col]))
-                    $totalNominas[$col] = [];
-                $utilidades[$kn]['meses'][$kmn]['cnomina'] = $coordenada;
-                array_push($totalNominas[$col],$coordenada);
-                $sheet->getStyle($coordenada)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValueByColumnAndRow($col, $row, $mnomina['total']);
-                $col++;
-            }
-            $row++;
-        }
-        $col = 0;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'EGRESOS');
-        $col++;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL NOMINAS');
-        $col++;
-        foreach($totalNominas as $ke => $item) {
-            $start =  $item[0];
-            $end = end($item);
-            $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-            $sheet->getStyle($currentLetter.$row)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->getStyle($currentLetter.$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM($start:$end)");
-            $col++;
-        }
-        // utilidades
-        $row +=2;
-        $totalUtilidades = [];
-        foreach ($utilidades as $ku => $utilidad){
-            $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $utilidad['departamento']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $utilidad['name']);
-            $col++;
-            foreach ($utilidad['meses'] as $mutilidad){
-                $letterName = PHPExcel_Cell::stringFromColumnIndex($col);
-                $coordenada = $letterName.$row;
-                if(!is_array($totalUtilidades[$col]))
-                    $totalUtilidades[$col] = [];
-                array_push($totalUtilidades[$col],$coordenada);
-                $ccobrado = $mutilidad['ccobrado'];
-                $cnomina = $mutilidad['cnomina'];
-                $sheet->getStyle($coordenada)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $sheet->setCellValueByColumnAndRow($col, $row, "=$ccobrado-$cnomina");
-                $col++;
-            }
-            $row++;
-        }
-        $col = 0;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row,'INGRESOS');
-        $col++;
-        $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-        $sheet->getStyle($currentLetter . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL UTILIDADES');
-        $col++;
-        foreach($totalUtilidades as $ke => $item) {
-            $start =  $item[0];
-            $end = end($item);
-            $currentLetter = PHPExcel_Cell::stringFromColumnIndex($col);
-            $sheet->getStyle($currentLetter.$row)->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-            $sheet->getStyle($currentLetter.$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM($start:$end)");
-            $col++;
-        }
-        // formatear salida
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');

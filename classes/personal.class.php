@@ -687,9 +687,12 @@ class Personal extends Main
     function JerarquiaLinealReferencia(array &$new, $tree) {
         foreach($tree as $key => $value)
         {
+            $subs = [];
+            $value['children'] = !is_array($value['children']) ? [] : $value['children'];
+            $this->JerarquiaJustIdByReference($subs, $value['children']);
+            $value['subordinadosId'] = $subs;
             $new[] = $value;
-            if(count($value["children"]) > 0)
-            {
+            if(count($value["children"]) > 0){
                 $this->JerarquiaLinealReferencia($new, $value["children"]);
             }
         }

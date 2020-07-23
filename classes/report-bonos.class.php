@@ -874,6 +874,127 @@ class ReporteBonos extends Main
 
         return $gerentes;
     }
+    function generateArrayEdoResult(array $ftr) {
+	    global $personal, $monthsInt;
+	    $strFilter ="";
+
+        $meses = $this->generarMesesAconsultar($_POST["tipoPeriodo"], $_POST["period"]);
+        $mesesBase =  $this->createMonthBasesFromArray($meses);
+        $headerMeses = [];
+        foreach($mesesBase as $km=>$month)
+            $headerMeses[$km]['name'] = $monthsInt[$km] ;
+
+        if($ftr["responsableCuenta"])
+            $strFilter .= " and a.personalId = '".$ftr['responsableCuenta']."' ";
+
+        $sql = "select a.*, b.nivel,c.departamento, b.name as nameRol from personal a 
+                inner join roles b on a.roleId = b.rolId 
+                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $gerentes = $this->Util()->DB()->GetResult();
+
+        // string query
+        $subqueryFormat = "select contract.contractId from contract 
+                               inner join customer on contract.customerId=customer.customerId 
+                               inner join contractPermiso on contract.contractId = contractPermiso.contractId
+                               where contractPermiso.personalId in(%s) and contract.activo = 'Si' and customer.active ='1' ";
+        $queryFormat = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a 
+                        INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
+                        INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
+                        WHERE a.status IN ('activo','bajaParcial') and a.contractId in(%s) and d.departamentoId in(%s)  and d.status ='1' ";
+        $year = $ftr["year"];
+        $new = [];
+        foreach($gerentes as $key => $value) {
+            $departamentos = [(int)$value['departamentoId']];
+            $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
+            $cad['name'] = $value['name'];
+            $cad['personalId'] = $value['personalId'];
+            $cad['headerMeses'] =  $headerMeses;
+            $cad['totales']['devengados'] = [];
+            $cad['totales']['trabajados'] = [];
+            $cad['totales']['cobrados'] = [];
+            $cad['totales']['nominas'] = [];
+            $cad['totales']['utilidades'] = [];
+
+            $personal->setPersonalId($value['personalId']);
+            $subordinados = isset($ftr['deep']) ? $personal->GetCascadeSubordinates() : [];
+            $subordinadosId = count($subordinados) > 0 ? array_column($subordinados, 'personalId') : [];
+            array_push($subordinadosId, $value['personalId']);
+            $subString = count($subordinadosId) > 0 ? implode(',', $subordinadosId):  "0";
+
+            $subquery = sprintf($subqueryFormat, $subString);
+            $query = sprintf($queryFormat, $subquery, $dep);
+            $this->Util()->DB()->setQuery($query);
+            $servicios = $this->Util()->DB()->GetResult();
+
+
+            $totalNominas  = $personal->getTotalSalarioByMultipleId($subordinadosId);
+            $totales =  $this->getTotales($servicios, $year, $meses, $mesesBase, $totalNominas);
+
+            foreach($totales as $ks => $var) {
+                $cad2['name'] = $value['name'];
+                $cad2['nameRol'] = $value['nameRol'];
+                $cad2['meses'] = $totales[$ks];
+                array_push($cad['totales'][$ks], $cad2);
+            }
+            //iterar sobre servicios
+            foreach($subordinados as $keySub => $sub) {
+                $childrenSubId = !is_array($value['subordinadosId']) ? [] : $value['subordinadosId'];
+                array_push($childrenSubId, $sub['personalId']);
+                $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
+                $subQueryChild = sprintf($subqueryFormat, $subStringChild);
+                $queryChild = sprintf($queryFormat, $subQueryChild, $dep);
+                $this->Util()->DB()->setQuery($queryChild);
+                $serviciosChild = $this->Util()->DB()->GetResult();
+                $totalNominas  = $personal->getTotalSalarioByMultipleId($childrenSubId);
+                $totalesChild =  $this->getTotales($serviciosChild, $year, $meses, $mesesBase, $totalNominas);
+
+                foreach($totalesChild as $keyChild => $varChild) {
+                    $cadChild['name'] = $sub['name'];
+                    $cadChild['nameRol'] = $sub['nameRol'];
+                    $cadChild['meses'] = $totalesChild[$keyChild];
+                    array_push($cad['totales'][$keyChild], $cadChild);
+                }
+            }
+            $new[] = $cad;
+        }
+        return $new;
+    }
+
+    function getTotales(array $servicios,$year, $meses, $mesesBase, $totalNominas = 0) {
+        global $instanciaServicio;
+        $data['devengados'] = $mesesBase;
+        $data['trabajados'] = $mesesBase;
+        $data['cobrados'] = $mesesBase;
+        $data['nominas'] = $mesesBase;
+        $data['utilidades'] = $mesesBase;
+
+        foreach($servicios as $ks=>$serv) {
+            $temp = [];
+            $isParcial = false;
+            if ($serv['status'] == "bajaParcial")
+                $isParcial = true;
+
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+
+            if(empty($temp)||empty($temp["instancias"]))
+                continue;
+
+            foreach ($temp['instancias'] as $i => $inst){
+                $data['devengados'][$i]['total'] +=$inst['costo'];
+                $data['trabajados'][$i]['total'] +=$inst['completado'];
+                $data['cobrados'][$i]['total'] +=$inst['cobrado'];
+                $data['nominas'][$i]['total'] = $totalNominas;
+                $data['utilidades'][$i] = [];
+            }
+        }
+
+        foreach ($data['devengados'] as $keyMes => $mes) {
+            $data['utilidades'][$keyMes]['total'] = $data['devengados'][$keyMes]['total'] - $data['nominas'][$keyMes]['total'];
+        }
+        return $data;
+    }
+
     function edoResult(array $ftr){
         global $contractRep, $instanciaServicio, $personal, $monthsInt, $contract;
         $strFilter ="";
@@ -936,7 +1057,7 @@ class ReporteBonos extends Main
                     $isParcial = true;
 
                 $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$serv['contractId']);
-                if(!in_array($encargados[$serv['departamentoId']],$subordinados))
+                if(!in_array($encargados[$serv['departamentoId']], $subordinados))
                     continue;
 
                 $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
