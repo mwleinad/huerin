@@ -303,7 +303,6 @@ class InstanciaServicio extends  Servicio
         foreach($data as $key => $value)
         {
             $costo = 0;
-            $costoCobrado = 0;
             $dateWorkflow =  $value['anio']."-".$value['mes']."-01";
             if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
                 $costo = $value['costo'];
@@ -313,7 +312,7 @@ class InstanciaServicio extends  Servicio
             $numero = $cobrado ? $this->getTotalCobrosMensual($year, $value['mes'], $servicioId) : 0;
 
             $value['costo'] = $costo;
-            $value['cobrado'] = $costoCobrado * $numero;
+            $value['cobrado'] = $costo * $numero;
 
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
                 $totalAcompletado += $value['costo'];
