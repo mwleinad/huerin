@@ -29,6 +29,9 @@ class EdoResultado extends ReporteBonos
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
                 $col++;
             }
+            $sheet->setCellValueByColumnAndRow($col, $row, "Acumulados")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+
             $styles = array(
                 'numberformat' => [
                     'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
@@ -44,6 +47,9 @@ class EdoResultado extends ReporteBonos
             );
             $row++;
             foreach ($gerente['totales'] as $ky => $total) {
+                $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('Ingresos ' . $ky))
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+                $row++;
                 $initRow = $row;
                 foreach ($total as $var) {
                     $col= 0;
@@ -51,11 +57,15 @@ class EdoResultado extends ReporteBonos
                     $col++;
                     $sheet->setCellValueByColumnAndRow($col, $row, $var['name']);
                     $col++;
+                    $initAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
                     foreach ($var['meses'] as $keyMes => $mes) {
                         $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                         $col++;
                     }
+                    $endAcum = PHPExcel_Cell::stringFromColumnIndex($col-1).$row;
+                    $sheet->setCellValueByColumnAndRow($col, $row, "= sum($initAcum : $endAcum)" )
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                     $row++;
                 }
                 $endRow =  $row-1;

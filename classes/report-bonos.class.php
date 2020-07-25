@@ -923,7 +923,12 @@ class ReporteBonos extends Main
             $subString = count($subordinadosId) > 0 ? implode(',', $subordinadosId):  "0";
 
             $subquery = sprintf($subqueryFormat, $subString);
-            $query = sprintf($queryFormat, $subquery, $dep);
+            $this->Util()->DB()->setQuery($subquery);
+            $contratos = $this->Util()->DB()->GetResult();
+            $idContratos =  count($contratos) > 0 ? array_column($contratos, 'contractId') : [];
+            $contratosString = count($idContratos) > 0 ? implode(',', $idContratos) : '0';
+
+            $query = sprintf($queryFormat, $contratosString, $dep);
             $this->Util()->DB()->setQuery($query);
             $servicios = $this->Util()->DB()->GetResult();
 
@@ -943,7 +948,13 @@ class ReporteBonos extends Main
                 array_push($childrenSubId, $sub['personalId']);
                 $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
                 $subQueryChild = sprintf($subqueryFormat, $subStringChild);
-                $queryChild = sprintf($queryFormat, $subQueryChild, $dep);
+
+                $this->Util()->DB()->setQuery($subQueryChild);
+                $contratos = $this->Util()->DB()->GetResult();
+                $idContratos =  count($contratos) > 0 ? array_column($contratos, 'contractId') : [];
+                $contratosString = count($idContratos) > 0 ? implode(',', $idContratos) : '0';
+
+                $queryChild = sprintf($queryFormat, $contratosString, $dep);
                 $this->Util()->DB()->setQuery($queryChild);
                 $serviciosChild = $this->Util()->DB()->GetResult();
                 $totalNominas  = $personal->getTotalSalarioByMultipleId($childrenSubId);
@@ -975,7 +986,7 @@ class ReporteBonos extends Main
             if ($serv['status'] == "bajaParcial")
                 $isParcial = true;
 
-            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase);
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true);
 
             if(empty($temp)||empty($temp["instancias"]))
                 continue;

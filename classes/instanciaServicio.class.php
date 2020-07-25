@@ -256,8 +256,7 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
-    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[]){
-        global $comprobante;
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false){
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
@@ -310,15 +309,12 @@ class InstanciaServicio extends  Servicio
                 $costo = $value['costo'];
                 $costo = $dateWorkflow >= '2019-03-01' ?  $value['costoWorkflow'] : $costo;
             }
-            $comp = $value['comprobanteId'] ?  $comprobante->GetInfoComprobante($value['comprobanteId']) : false;
-            $costo = $value['factura'] === 'Si' ? $value['costoWorkflow'] : $costo;
-            if(!$comp) {
-                $costoCobrado = number_format($comp['saldo'],2,'.','') <= 0.01 ? $costo : 0;
-                $costoCobrado = $comp['cancelado'];
-            }
+
+            $numero = $cobrado ? $this->getTotalCobrosMensual($year, $value['mes'], $servicioId) : 0;
+
             $value['costo'] = $costo;
-            $value['cobrado'] = $costoCobrado;
-            //sumar total de lo trabajado
+            $value['cobrado'] = $costoCobrado * $numero;
+
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
                 $totalAcompletado += $value['costo'];
                 $value['completado'] = $value['costo'];
@@ -333,5 +329,30 @@ class InstanciaServicio extends  Servicio
         $newArray['totalDevengado'] = $totalDevengado;
 
         return $newArray;
+    }
+    function getTotalCobrosMensual($year, $month, $id = 0) {
+
+        $sql = "select comprobanteId from instanciaServicio where servicioId = '$id' and comprobanteId > 0 ";
+        $this->Util()->DB()->setQuery($sql);
+        $comprobantes  = $this->Util()->DB()->GetResult();
+        $comprobantesId = count($comprobantes) > 0 ? array_column($comprobantes, 'comprobanteId') : [];
+        $ids = count($comprobantesId) > 0 ? implode(',', $comprobantesId) : '0';
+
+        $query =  "select sum(payment.amount), count(payment.comprobanteId) as numero from payment
+                       inner join comprobante on payment.comprobanteId = comprobante.comprobanteId
+                       where payment.comprobanteId in ($ids)
+                       and date_format(payment.paymentDate, '%Y') = $year
+                       and date_format(payment.paymentDate, '%m') = '$month'
+                       and comprobante.status = '1' and payment.paymentStatus = 'activo'
+                       group by payment.comprobanteId
+                        ";
+        $this->Util()->DB()->setQuery($query);
+        $result = $this->Util()->DB()->GetResult();
+        $numero = 0;
+
+        foreach($result as $var)
+            $numero +=$var['numero'];
+
+        return $numero;
     }
 }

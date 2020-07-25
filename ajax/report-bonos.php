@@ -60,6 +60,7 @@ switch($_POST["type"]) {
                 $edoResultado->generateEdoResult($_POST);
             break;
         }
+
         $nameFile = $edoResultado->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
