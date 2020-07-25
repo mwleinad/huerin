@@ -47,7 +47,7 @@ class AccountReport extends Personal
             $gerentes[$key]['headers'] = $base;
             $this->setPersonalId($value['personalId']);
             $subordinados = $this->GetCascadeSubordinates();
-            $subordinadosId = count($subordinados) > 0 ? array_column($subordinados, 'personalId') : [];
+            $subordinadosId = [];
             array_push($subordinadosId, $value['personalId']);
 
             $subString = count($subordinadosId) > 0 ? implode(',', $subordinadosId):  "0";
@@ -61,14 +61,17 @@ class AccountReport extends Personal
             $subquery = sprintf($subqueryFormat, $subString);
 
             $this->Util()->DB()->setQuery($subquery);
-            $gerentes[$key]['totalCuentas'] = count($this->Util()->DB()->GetResult());
+            $contratos = $this->Util()->DB()->GetResult();
+            $gerentes[$key]['totalCuentas'] = count($contratos);
+
+            $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
 
             $queryFormat = "select count(servicioId) as total, a.tipoServicioId, b.name from servicio a
                             inner join (select tipoServicio.tipoServicioId, tipoServicio.departamentoId, tipoServicio.nombreServicio as name, tipoServicio.status from tipoServicio
                                   inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
                                   ) b on a.tipoServicioId = b.tipoServicioId
                             where a.status in ('activo', 'bajaParcial') and a.contractId in(%s) and b.departamentoId in (%s) and b.status = '1' group by a.tipoServicioId order by b.name ASC";
-            $query = sprintf($queryFormat, $subquery, $dep);
+            $query = sprintf($queryFormat, $stringContratos, $dep);
 
             $this->Util()->DB()->setQuery($query);
             $result = $this->Util()->DB()->GetResult();
@@ -78,17 +81,14 @@ class AccountReport extends Personal
             $childs = [];
             foreach($subordinados as $sub) {
                 $childrenSubId = [];
-                if (isset($sub['children']))
-                    $this->JerarquiaJustIdByReference($childrenSubId, $sub['children']);
                 array_push($childrenSubId, $sub['personalId']);
-
                 $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
                 $subQueryChild = sprintf($subqueryFormat, $subStringChild);
-
                 $this->Util()->DB()->setQuery($subQueryChild);
-                $sub['totalCuentas'] = count($this->Util()->DB()->GetResult());
-
-                $queryChild = sprintf($queryFormat, $subQueryChild, $dep);
+                $contratos = $this->Util()->DB()->GetResult();
+                $sub['totalCuentas'] = count($contratos);
+                $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
+                $queryChild = sprintf($queryFormat, $stringContratos, $dep);
                 $this->Util()->DB()->setQuery($queryChild);
                 $resultChild = $this->Util()->DB()->GetResult();
                 $resultChild =  $this->Util()->changeKeyArray($resultChild, 'tipoServicioId');
