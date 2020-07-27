@@ -19,6 +19,7 @@ define('ITEMS_PER_PAGE', '15');
 
 //instancias
 define("SERVICIOS_NOMINA", "5, 6, 7, 13, 14, 15");
+define("CONTRACTS_EXECPTION", "2507, 2508, 2782, 2767, 2768");
 
 //start balance
 define("BALANCE_MONTH", "7");
