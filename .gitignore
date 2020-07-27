@@ -56,4 +56,5 @@ excel.xlsx
 exportar.xlsx
 exportar3.pdf
 exportar3.xlsx
-/prospect
+/sysprospect
+cron/*.log
