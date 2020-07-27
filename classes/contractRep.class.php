@@ -110,7 +110,7 @@ class ContractRep extends Main
             if($encontrado == false &&!$skip) {
                 continue;
             }
-            if($res["contractId"]==2507 || $res["contractId"]==2508)
+            if(in_array($res["contractId"], explode(',', CONTRACTS_EXECPTION)))
                 $noInclude="";
             //Checamos Servicios
             $sql = "SELECT a.status as servicioStatus,a.servicioId,a.contractId,a.tipoServicioId,a.costo,a.status,a.inicioOperaciones,a.inicioFactura,a.fechaBaja,a.lastDateWorkflow, 
