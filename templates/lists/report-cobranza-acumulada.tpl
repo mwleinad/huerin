@@ -18,7 +18,7 @@
 		<tr>
 			<td align="justify">{$contrato.customer}</td>
 			<td align="justify">{$contrato.razon}</td>
-			<td align="justify">{$item.name}</td>
+			<td align="justify">{$item.name}</td>s
 				{foreach from=$contrato.facturas item=factura}
 					{if $pago.isColTotal}
 						<td style="text-align: center">$ {$factura.total|number_format:2:'.':','}</td>
@@ -28,10 +28,10 @@
 										background-color:#009900 !important;color:#FFF;
 								{else}
 									{if $factura.class eq 'pendiente'}
-											background-color:#FC0 !important;color:#FFF;
+											background-color:#FFCC00 !important;color:#FFFFFF;
 									{else}
 										{if $factura.class == "sinabonos"}
-												background-color:#F00 !important;color:#FFF
+												background-color:#FF0000 !important;color:#FFFFFF
 										{/if}
 									{/if}
 								{/if}">
