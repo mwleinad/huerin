@@ -1170,7 +1170,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 	}
 
-	function orderMultiDimensionalArray ($toOrderArray, $field, $inverse = false,$sameKey=false) {
+	function orderMultiDimensionalArray (array $toOrderArray, $field, $inverse = false,$sameKey=false) {
 
 		$position = array();
 		$newRow = array();
@@ -1438,7 +1438,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
       if(is_file(DOC_ROOT."/tasks".$item["ruta"])&&file_exists(DOC_ROOT."/tasks".$item["ruta"])){
          $attachment =  DOC_ROOT."/tasks".$item["ruta"];
-         $name = end(explode("/",$item["ruta"]));
+         $name = end(explode("/", $item["ruta"]));
       }
       else{
           $name = $item["servicioId"]."_".$item["stepId"]."_".$item["taskId"]."_".$item["control"]."_".$item["version"].".".$item["ext"];

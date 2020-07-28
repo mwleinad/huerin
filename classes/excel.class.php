@@ -137,7 +137,7 @@ class Excel
                             }
                             if($ths->item($x)->hasAttribute('bgcolor')) {
                                 $headrows[$h]['bgcolor'][] = str_replace("#", "", $ths->item($x)->getAttribute('bgcolor'));
-                            }else if($ths->item($x)->hasAttribute('class')&& $wrap){
+                            }else if($ths->item($x)->hasAttribute('class') && $wrap){
 
                                 if(preg_match("/cabeceraTabla/i",$ths->item($x)->getAttribute('class')))
                                 {$headrows[$h]['bgcolor'][] = '6b6b6b';}
@@ -171,6 +171,7 @@ class Excel
                         }
                         $nodes = $tds->length - 1;
                         for($x=0;$x<=$nodes;$x++) {
+                            $isBg = false;
                             $thistxt = $tds->item($x)->nodeValue;
                             $bodyrows[$r]['td'][] = preg_replace('/[\s\t\n]{2,}/', ' ', $thistxt);
                             $bodyrows[$r]['bold'][] = findBoldText(innerHTML($tds->item($x)));
@@ -181,6 +182,11 @@ class Excel
                                     $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
                                 }else{
                                     $bodyrows[$r]['color'][] = $stylecolor;
+                                }
+                                $bgColor = findStyleColor($style, 'background');
+                                if($bgColor != '') {
+                                    $bodyrows[$r]['bgcolor'][] = $bgColor;
+                                    $isBg = true;
                                 }
                             }else{
                                 $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
@@ -201,31 +207,30 @@ class Excel
                                 $bodyrows[$r]['valign'][] = 'center';
                             }
 
-                            if($tds->item($x)->hasAttribute('bgcolor')) {
-                                $bodyrows[$r]['bgcolor'][] = str_replace("#", "", $tds->item($x)->getAttribute('bgcolor'));
-                            }else if($tds->item($x)->hasAttribute('class')){
+                            if(!$isBg) {
+                                if ($tds->item($x)->hasAttribute('class')) {
+                                    if (preg_match("/stCompletoTardio/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = '01FFFF';
+                                    } elseif (preg_match("/stCompleto/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = '009900';
+                                    } else if (preg_match("/stPorCompletar/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = 'FFCC00';
+                                    } else if (preg_match("/stIniciado/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = 'FFFF99';
+                                    } else if (preg_match("/stPorIniciar/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = 'F00F00';
+                                    } else if (preg_match("/stParcial/i", $tds->item($x)->getAttribute('class'))) {
+                                        $bodyrows[$r]['bgcolor'][] = '768389';
+                                    } else {
+                                        $bodyrows[$r]['bgcolor'][] = 'FFFFFF';
+                                    }
+                                } else
+                                    $bodyrows[$r]['bgcolor'][] = 'FFFFFF';
+                            }
 
-                                if(preg_match("/stCompletoTardio/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = '01FFFF';}
-                                elseif(preg_match("/stCompleto/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = '009900';}
-                                else if(preg_match("/stPorCompletar/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = 'FFCC00';}
-                                else if(preg_match("/stIniciado/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = 'FFFF99';}
-                                else if(preg_match("/stPorIniciar/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = 'F00F00';}
-                                else if(preg_match("/stParcial/i",$tds->item($x)->getAttribute('class')))
-                                {$bodyrows[$r]['bgcolor'][] = '768389';}
-                                else
-                                {$bodyrows[$r]['bgcolor'][] = 'FFFFFF';}
-                            }
-                            else
-                            {
-                                $bodyrows[$r]['bgcolor'][] = 'FFFFFF';
-                            }
                         }
                         $r++;
+
                     }
                 }
             }
@@ -482,8 +487,8 @@ function findSpanColor($node) {
     $len = stripos($node,$end,$ini) - $ini; // grab substr between start and end positions
     return substr($node,$ini,$len);        // return the RGB color without # sign
 }
-function findStyleColor($style) {
-    $pos = stripos($style, "color:");      // ie: looking for style='color: #FF0000;'
+function findStyleColor($style, $needle = "color:") {
+    $pos = stripos($style, $needle);      // ie: looking for style='color: #FF0000;'
     if ($pos === false) {                  //                        12345678911111
         return '';                           //                                 01234
     }
@@ -497,6 +502,7 @@ function findStyleColor($style) {
     $len = stripos($style,$end,$ini) - $ini; // grab substr between start and end positions
     return substr($style,$ini,$len);        // return the RGB color without # sign
 }
+
 function findBoldText($node) {
     $pos = stripos($node, "<b>");          // ie: looking for bolded text
     if ($pos === false) {                  //                        12345678911111

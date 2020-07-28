@@ -36,16 +36,16 @@
 					<td align="center"
 						style="	{if $instanciaServicio.class == '#000000'}
 								{else}
-										background-color:{$instanciaServicio.class};
+										background:{$instanciaServicio.class};
 								{/if}
 								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0' || $instanciaServicio.class == '#EFEFEF'}
-								color: #000000; {else}
-								color: #ffffff;
+								color:#000000; {else}
+								color:#ffffff;
 								{/if}
 								font-weight: bold;
 								">
 						{if $instanciaServicio.class != '#000000'}
-							$ {$instanciaServicio.total|number_format:2:".":","}
+							<b>$ {$instanciaServicio.total|number_format:2:".":","}</b>
 							<br>
 								<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
 								<img src="{$WEB_ROOT}/images/icons/search-plus-green-18.png" border="0" />
@@ -88,7 +88,7 @@
 					  title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
 					<div style="cursor:pointer;" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
 					{$item.nombreServicio|truncate:5:""}
-					{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696;">(Inactivo)</span>{/if}
+						{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696;"><b>(Inactivo)</b></span>{/if}
 					</div>
 						{if in_array(99,$permissions)||$User.isRoot}
 							<a href="javascript:;" class="spanDownloadFiles spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$item.anio}" style="color:#FFF;font-weight:700;" title="Descargar archivos del mes">Archivos</a>

@@ -1430,7 +1430,7 @@ class Contract extends Main
      *
      * @param string $value contiene el valor de la busqueda
      *
-     * @return devuelve una lista de resultados de busqueda
+     * @return array una lista de resultados de busqueda
      */
     public function Suggest($filter = [], $limit = false, $whitService = false)
     {

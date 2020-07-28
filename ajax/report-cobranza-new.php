@@ -18,100 +18,36 @@ switch($_POST["type"])
 			$_SESSION["search"]["atrasados"] = $_POST["atrasados"];
 			echo "ok";
 		break;
-		
+
 	case "search":
 	case "sendEmail":
 	case "graph":
 			$year = $_POST['year'];
-			$formValues['subordinados'] = $_POST['deep'];			
-			$formValues['respCuenta'] = $_POST['responsableCuenta'];
-			$formValues['departamentoId'] = $_POST["departamentoId"];
-			$formValues['cliente'] = $_POST["rfc"];
-			$formValues['atrasados'] = $_POST["atrasados"];
-			
-			//Actualizamos la clase del workflow, porque al generar los workflows la clase esta vacia (campo Class)	
-								
 			$sql = "UPDATE instanciaServicio SET class = 'PorIniciar' 
-					WHERE class = ''";
+							WHERE class = ''";
 			$db->setQuery($sql);
 			$db->UpdateData();
-						
+
 			$contracts = array();
-			if($User['tipoPersonal'] == 'Coordinador' || $User['tipoPersonal'] == 'Socio'|| $User['tipoPersonal'] == 'Admin'){
-				//Si seleccionaron TODOS
-				if($formValues['respCuenta'] == 0){
-				
-					$personal->setActive(1);
-					$socios = $personal->ListSocios();
-					$idPersons= array();
-					foreach($socios as $res){
-                        array_push($idPersons,$res['personalId']);
-                        $personal->setPersonalId($res['personalId']);
-                        $subordinados = $personal->Subordinados();
-                        if(empty($subordinados))
-                        	continue;
+			$subordinados = $personal->GetIdResponsablesSubordinados($_POST);
+			$filter = $_POST;
+			$filter['subordinados'] =  $subordinados;
+			$filter['tipos'] = 'activos';
+			$filter['like'] = $_POST['rfc'];
+			$contracts = $contract->Suggest($filter, false, true);
 
-                        $subsLine = $util->ConvertToLineal($subordinados,'personalId');
-                        $idPersons=array_merge($idPersons,$subsLine);
-                        unset($subsLine);
-                        unset($subordinados);
-					}//foreac
-					$idPersons = array_unique($idPersons);
-					$formValues['respCuenta'] =  $idPersons;
-                    $contracts = $contractRep->BuscarContract($formValues, true);
-				}else{
-                    $idPersons = array();
-                    $respCuenta = $formValues['respCuenta'];
-                    array_push($idPersons,$respCuenta);
-                    if($formValues['subordinados']){
-                        $personal->setPersonalId($respCuenta);
-                        $subordinados = $personal->Subordinados();
-                        if(!empty($subordinados)){
-                            $subsLine = $util->ConvertToLineal($subordinados,'personalId');
-                            $idPersons=array_merge($idPersons,$subsLine);
-                            unset($subsLine);
-                            unset($subordinados);
-                        }
-					}
-
-                    $formValues['respCuenta'] = $idPersons;
-					$contracts = $contractRep->BuscarContract($formValues, true);
-				}
-			
-			}else{
-				$idPersons = array();
-                if($formValues['respCuenta']==0)
-                	$respCuenta = $User['userId'];
-				else
-					$respCuenta = $formValues['respCuenta'];
-				array_push($idPersons,$respCuenta);
-                if($formValues['subordinados']){
-					$personal->setPersonalId($respCuenta);
-					$subordinados = $personal->Subordinados();
-					if(!empty($subordinados)){
-						$subsLine = $util->ConvertToLineal($subordinados,'personalId');
-						$idPersons=array_merge($idPersons,$subsLine);
-						unset($subsLine);
-						unset($subordinados);
-					}
-                }
-				$formValues['respCuenta'] = $idPersons;
-				$contracts = $contractRep->BuscarContract($formValues, true);
-			}//else
-			//echo count($contracts);exit;
-			//print_r($contracts);
 			$idClientes = array();
 			$idContracts = array();
 			$contratosClte = array();
 			foreach($contracts as $res){
 				$contractId = $res['contractId'];
 				$customerId = $res['customerId'];
-				
+
 				if(!in_array($customerId,$idClientes))
 					$idClientes[] = $customerId;
-				
+
 				if(!in_array($contractId,$idContracts)){
-					$idContracts[] = $contractId;				
+					$idContracts[] = $contractId;
 					$contratosClte[$customerId][] = $res;
 				}
 			}//foreach
@@ -136,24 +72,17 @@ switch($_POST["type"])
 			$resClientes = array();
 			foreach($clientes as $clte){
 				$contratos = array();
-				foreach($clte['contracts'] as $con){
-					$encargados = $contractRep->encargadosArea($con['contractId']);
-                    foreach($encargados as $encargado ){
-                        if($encargado['departamento']=="Contabilidad")
-						{
-                            $con['responsable'] = $encargado["name"];
-                            break;
-						}
-                    }
+				foreach($clte['contracts'] as $con) {
+					$con['responsable'] = $con['responsables'][array_search(1, array_column($con['responsables'], 'departamentoId'))]['name'];
 					$serv = array();
                     $statusColor =  $workflow->getRowCobranzaBono($con['contractId'], $year,'I',$meses,$withIva);
 					$con['instanciasServicio'] =$statusColor['serv'];
 
-					if($formValues['atrasados'] && $statusColor['noComplete'] > 0)
+					if($_POST['atrasados'] && $statusColor['noComplete'] > 0)
 					{
 						$contratos[] = $con;
 					}
-					elseif(!$formValues['atrasados'])
+					elseif(!$_POST['atrasados'])
 					{
 						$contratos[] = $con;
 					}
@@ -201,7 +130,7 @@ switch($_POST["type"])
             $smarty->assign("mesesComplete", $mesesComplete);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-new.tpl');
-			
+
 	break;
 	case "deletePayment":
 		$payment = $cxc->PaymentInfo($_POST["id"]);
@@ -265,71 +194,71 @@ switch($_POST["type"])
 		$smarty->display(DOC_ROOT.'/templates/lists/cxc.tpl');*/
 		break;
 	case 'doSendEmail':
-			
+
 			$email = $_POST['email'];
 			$message = utf8_decode($_POST['msg']);
 			$mensaje = utf8_decode($_POST['msj']);
-									
+
 			//Iniciando la clase mail
 			$mail = new PHPMailer(true);
-					
+
 			$html = nl2br($mensaje);
-						
+
 			$msgHtml = '<h2 align="center">REPORTE DE OBLIGACIONES</h2>';
 			$msgHtml .= '<p>&nbsp;</p>';
 			$msgHtml .=  $message;
-			
+
 			//Adjuntamos el archivo PDF
 			$dompdf = new DOMPDF();
 			$dompdf->set_paper('letter');
 			$dompdf->load_html($msgHtml);
 			$dompdf->render();
-			
+
 			//Guardamos el archivo temporalmente
-			$pdfoutput = $dompdf->output(); 
-			$filename = DOC_ROOT.'/temp/reporte_obligaciones.pdf'; 
-			$fp = fopen($filename, "a"); 
-			fwrite($fp, $pdfoutput); 
+			$pdfoutput = $dompdf->output();
+			$filename = DOC_ROOT.'/temp/reporte_obligaciones.pdf';
+			$fp = fopen($filename, "a");
+			fwrite($fp, $pdfoutput);
 			fclose($fp);
-			
-			try {		
-			 	
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth = true; 
-				$mail->Host = SMTP_HOST;  
-				$mail->Username = SMTP_USER;  
-				$mail->Password = SMTP_PASS; 
+
+			try {
+
+				$mail->IsSMTP();
+				$mail->SMTPAuth = true;
+				$mail->Host = SMTP_HOST;
+				$mail->Username = SMTP_USER;
+				$mail->Password = SMTP_PASS;
 				$mail->Port = SMTP_PORT;
-				
+
 			 	$mail->AddAddress($email, '');
 		 	  	$mail->SetFrom('no-reply@gmail.com', 'ROQUENI');
 				$mail->Subject = 'Reporte de Obligaciones';
-			  	$mail->MsgHTML($html);		  
+			  	$mail->MsgHTML($html);
 			  	$mail->AddAttachment(DOC_ROOT.'/temp/reporte_obligaciones.pdf');      // attachment
-			  	$mail->Send();				
-				
+			  	$mail->Send();
+
 				$util->setError(10040, "complete");
-				
-			} catch (phpmailerException $e) {				
+
+			} catch (phpmailerException $e) {
 				$util->setError(10018, "error");
-			} catch (Exception $e) {				
+			} catch (Exception $e) {
 				$util->setError(10018, "error");
 			}
-				
+
 			echo 'ok[#]';
-			
-					  
+
+
 			$util->PrintErrors();
-			
+
 			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-			
+
 		break;
-	
+
 	case 'getEmail':
-			
+
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-email-popup.tpl');
-			
+
 		break;
 	case "editComentario":
 		$smarty->assign("DOC_ROOT", DOC_ROOT);
