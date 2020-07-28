@@ -1147,6 +1147,7 @@ class ReporteBonos extends Main
         $idsEncargados = [];
         $totDevVerXEncargado= [];
         $totCompVerXEncargado = [];
+        $totalesAcumuladosEncargados = [];
         foreach($contracts as $key => $contrato) {
             $this->Util()->erase_val($base);
             $base2 = $base;

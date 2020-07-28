@@ -1,4 +1,5 @@
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-b" style="font-size:10px">
+{assign var="totalColspan" value=($meses|count)}
 <thead>
 	<tr>
 		<th style="width:20%;font-size:12px;font-weight: bold;">Cliente</th>
@@ -62,18 +63,18 @@
 		</tr>
 	{foreachelse}
 		<tr>
-			<td colspan="9" align="center">Ning&uacute;n registro encontrado.</td>
+			<td colspan="{$totalColspan+6}" align="center">Ning&uacute;n registro encontrado.</td>
 		</tr>
 	{/foreach}
 	<tr>
-		<td colspan="5"></td>
+		<td colspan="{$totalColspan+2}"></td>
 		<td><b>Grantotal cobrado</b></td>
 		<td>{$granTotalDevengado|number_format:2:'.':','}</td>
 		<td>{$granTotalCompletado|number_format:2:'.':','}</td>
 		<td>{$granTotalDevengado-$granTotalCompletado|number_format:2:'.':','}</td>
 	</tr>
 	<tr>
-		<td rowspan="9" colspan="9"></td>
+		<td rowspan="9" colspan="{$totalColspan+6}"></td>
 	</tr>
 </tbody>
 </table>

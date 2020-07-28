@@ -21,7 +21,7 @@
 						No se emitieron facturas
 					</td>
 				{else}
-					<td align="center" style="background-color:{$instanciaServicio.class}; {if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0' || $instanciaServicio.class == '#EFEFEF'} color: #000; {else} color: #fff; {/if} font-weight: bold">
+					<td align="center" style="background: {$instanciaServicio.class};color: #{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0' || $instanciaServicio.class == '#EFEFEF'}000000{else}ffffff{/if}; font-weight: bold">
 						${$instanciaServicio.total|number_format:2:".":","}
 						<br>
 							<a href="javascript:;"  title="Ver detalles" class="spanAll detailCobranza" data-datos='{ "contractId":{$item.contractId},"mes":{$instanciaServicio.mes},"year":{$instanciaServicio.anio} }'>
