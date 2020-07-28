@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 class Workflow extends Servicio
 {
 	private $instanciaServicioId;
-	
+
 
 	public function setInstanciaServicioId($value)
 	{
@@ -51,7 +51,7 @@ class Workflow extends Servicio
 
 			$totalPorcentajeContracts = 0;
 			$totalPorcentajeContractsCompleted = 0;
-			
+
 			if($_POST["responsableCuenta"])
 			{
 				$responsable = false;
@@ -60,7 +60,7 @@ class Workflow extends Servicio
 			{
 				$responsable = true;
 			}
-			
+
 			foreach($cliente["contracts"] as $keyContract => $contract)
 			{
 				//ver si tengo permiso de verlo
@@ -76,16 +76,16 @@ class Workflow extends Servicio
 				$user = new User;
 				$user->setUserId($contract["responsableCuenta"]);
 				$userInfo = $user->Info();
-				
+
 				if($contract["responsableCuenta"] == $_POST["responsableCuenta"])
 				{
 					$responsable = true;
 				}
-				
+
 				if($tipo == "propio")
 				{
 					if(
-						$User["userId"] == $contract["responsableCuenta"] 
+						$User["userId"] == $contract["responsableCuenta"]
 					)
 					{
 						$showContract = true;
@@ -94,13 +94,13 @@ class Workflow extends Servicio
 				else
 				{
 					if(
-						$User["userId"] == $contract["responsableCuenta"] || 
-						$userInfo["jefeContador"] == $User["userId"] || 
-						$userInfo["jefeSupervisor"] == $User["userId"] || 
-						$userInfo["jefeGerente"] == $User["userId"] || 
+						$User["userId"] == $contract["responsableCuenta"] ||
+						$userInfo["jefeContador"] == $User["userId"] ||
+						$userInfo["jefeSupervisor"] == $User["userId"] ||
+						$userInfo["jefeGerente"] == $User["userId"] ||
 						$userInfo["jefeSocio"] == $User["userId"] ||
 						$User["roleId"] == 1
-				
+
 					)
 					{
 						$showContract = true;
@@ -111,23 +111,23 @@ class Workflow extends Servicio
 				{
 					$showContract = false;
 				}
-				
+
 				if($showContract === false)
 				{
 					unset($clientes[$keyCliente]["contracts"][$keyContract]);
 					continue;
 				}
 				$clientes[$keyCliente]["totalContracts"]++;
-				
+
 				$user = new User;
 				$clientes[$keyCliente]["contracts"][$keyContract]["responsable"] = $userInfo;
 				$clientes[$keyCliente]["contracts"][$keyContract]["responsable"]["name"] = utf8_encode($clientes[$keyCliente]["contracts"][$keyContract]["responsable"]["name"]);
-				
+
 				if($User["subRoleId"] == "Nomina")
 				{
 					$addNomina = " AND servicio.tipoServicioId IN (".SERVICIOS_NOMINA.")";
 				}
-				
+
 				$this->Util()->DB()->setQuery("SELECT instanciaServicioId  FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
@@ -147,10 +147,10 @@ class Workflow extends Servicio
 					unset($clientes[$keyCliente]);
 					continue;
 				}
--->*/				
+-->*/
 				$clientes[$keyCliente]["contracts"][$keyContract]["totalInstancias"] = count($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"]);
 				$clientes[$keyCliente]["contracts"][$keyContract]["totalInstanciasCompletadas"] = 0;
-				
+
 				$totalPorcentajeSteps = 0;
 				$totalPorcentajeStepsCompleted = 0;
 				if(count($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"]) == 0)
@@ -163,7 +163,7 @@ class Workflow extends Servicio
 				{
 					$clientes[$keyCliente]["totalServicios"]++;
 					$this->setInstanciaServicioId($row["instanciaServicioId"]);
-					$clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia] = $this->Info();				
+					$clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia] = $this->Info();
 					$fechaCompletoServicio = strtotime($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["fechaCompleta"]);
 					if($fechaCompletoServicio  > $clientes[$keyCliente]["maxCompleted"])
 					{
@@ -174,14 +174,14 @@ class Workflow extends Servicio
 					{
 						$clientes[$keyCliente]["maxDay"] = $clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["maxDay"];
 					}
-					
+
 					$clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["status"];
 					if($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["status"] == "completa")
 					{
 						$clientes[$keyCliente]["totalServiciosCompletados"]++;
 						$clientes[$keyCliente]["contracts"][$keyContract]["totalInstanciasCompletadas"]++;
 					}
-					
+
 					$totalPorcentajeSteps += 100;
 					if($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["totalSteps"] > 0)
 					{
@@ -192,7 +192,7 @@ class Workflow extends Servicio
 						$clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["porcentajeSteps"] = 100;
 					}
 					$totalPorcentajeStepsCompleted += $clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["porcentajeSteps"];
-					
+
 					if($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["porcentajeSteps"] == 0)
 						$clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["class"] = "PorIniciar";
 					elseif($clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["porcentajeSteps"] > 0 && $clientes[$keyCliente]["contracts"][$keyContract]["instanciaServicio"][$keyInstancia]["porcentajeSteps"] < 70)
@@ -208,7 +208,7 @@ class Workflow extends Servicio
 				//echo $totalPorcentajeStepsCompleted;
 
 				$clientes[$keyCliente]["contracts"][$keyContract]["totalInstanciasPendientes"] = $clientes[$keyCliente]["contracts"][$keyContract]["totalInstancias"] - $clientes[$keyCliente]["contracts"][$keyContract]["totalInstanciasCompletadas"];
-				
+
 				if($totalPorcentajeSteps <= 0)
 				{
 					$totalPorcentajeSteps = 1;
@@ -226,13 +226,13 @@ class Workflow extends Servicio
 					$clientes[$keyCliente]["contracts"][$keyContract]["class"] = "PorCompletar";
 				else
 					$clientes[$keyCliente]["contracts"][$keyContract]["class"] = "Completo";
-				
+
 
 
 				$clientes[$keyCliente]["totalServiciosPendientes"] = $clientes[$keyCliente]["totalServicios"] - $clientes[$keyCliente]["totalServiciosCompletados"];
-				
+
 				$clientes[$keyCliente]["totalServiciosPorcentaje"] = $totalPorcentajeContractsCompleted / $totalPorcentajeContracts * 100;
-				
+
 				if($clientes[$keyCliente]["totalServiciosPorcentaje"] == 0)
 				{
 					$clientes[$keyCliente]["class"] = "PorIniciar";
@@ -258,7 +258,7 @@ class Workflow extends Servicio
 						$clientes[$keyCliente]["class"] = "Completo";
 					}
 				}
-				
+
 				if($_POST["status"])
 				{
 					if($clientes[$keyCliente]["class"] != $_POST["status"])
@@ -267,26 +267,26 @@ class Workflow extends Servicio
 						continue;
 					}
 				}
-				
+
 				if($responsable === false)
 				{
 					unset($clientes[$keyCliente]);
 					continue;
 				}
-				
+
 			}
 			if($clientes[$keyCliente]["totalContracts"] == 0 || !$clientes[$keyCliente]["totalContracts"])
 			{
 				unset($clientes[$keyCliente]);
 				continue;
 			}
-			
+
 		}
 		//print_r($clientes);
 		//$clientes = $this->Util()->orderMultiDimensionalArray($clientes,'totalServiciosPorcentaje', false);
 
-		//$clientes = $this->Util()->orderMultiDimensionalArray($clientes,'nameContact', false);		
-		
+		//$clientes = $this->Util()->orderMultiDimensionalArray($clientes,'nameContact', false);
+
 		//print_r($_POST);
 		foreach($clientes as $keyCliente => $cliente)
 		{
@@ -298,12 +298,12 @@ class Workflow extends Servicio
 				case "Completo": $_SESSION["Completo"]++; break;
 				case "CompletoTardio": $_SESSION["CompletoTardio"]++; break;
 			}
-			
+
 			if($reorder === true)
 			{
 				$clientes[$keyCliente]["contracts"] = $this->Util()->orderMultiDimensionalArray($clientes[$keyCliente]["contracts"],'totalInstanciasPorcentaje', false);
 			}
-			
+
 			foreach($clientes[$keyCliente]["contracts"] as $keyContract => $contract)
 			{
 				if($reorder === true)
@@ -331,7 +331,7 @@ class Workflow extends Servicio
 						case "Completo": $_SESSION["CompletoServicio"]++; break;
 						case "CompletoTardio": $_SESSION["CompletoTardioServicio"]++; break;
 					}
-					
+
 					foreach($instancia["steps"] as $step)
 					{
 						switch($step["class"])
@@ -344,11 +344,11 @@ class Workflow extends Servicio
 						}
 					}
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		return $clientes;
 	}
 	public function getTasks(){
@@ -412,12 +412,12 @@ class Workflow extends Servicio
 		$row = $this->Util()->DB()->GetRow();
 		$date = explode("-", $row["date"]);
 		$contabilidad2015 = false;
-		if($row["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016) 
+		if($row["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016)
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
 		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
 		}
-		elseif($row["tipoServicioId"] == 3 && $date["0"] < 2016) 
+		elseif($row["tipoServicioId"] == 3 && $date["0"] < 2016)
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
 		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
@@ -474,7 +474,7 @@ class Workflow extends Servicio
 			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask");
 			$row["steps"][$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$row["steps"][$key]["totalTasks"] = count($row["steps"][$key]["tasks"]);
-			$row["steps"][$key]["completedTasks"] = 0;			
+			$row["steps"][$key]["completedTasks"] = 0;
 			if(count($row["steps"][$key]["tasks"]) == 0){
 				unset($row["steps"][$key]);
 				continue;
@@ -500,11 +500,11 @@ class Workflow extends Servicio
 				}//else
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile2"] = 1;
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile3"] = 1;
-				$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 0; 
+				$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 0;
 				if($row["steps"][$key]["tasks"][$keyTask]["controlFile"] + $row["steps"][$key]["tasks"][$keyTask]["controlFile2"] + $row["steps"][$key]["tasks"][$keyTask]["controlFile3"] == 3){
-				
-					$porcentajeDone += 100; 
-					$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 1; 
+
+					$porcentajeDone += 100;
+					$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 1;
 					$row["steps"][$key]["completedTasks"]++;
 				}//if
 			}//foreach
@@ -531,11 +531,11 @@ class Workflow extends Servicio
 			$row["steps"][$key]["prevStep"]["completed"] = $row["steps"][$key - 1]["stepCompleted"];
 			$ii++;
 		}//foreach
-		
+
 		$row["totalSteps"] = count($row["steps"]);
 		$completo = explode("-", $row["fechaCompleta"]);
 		$fechaInstancia = explode("-", $row["date"]);
-		
+
 		//Si se completo en un anio mayor es completo tardio
 		$row["completoTardio"] = 'No';
 		if($completo[0] < 2014 || ($completo[0] == 2014 && $completo[1] < 2))
@@ -548,7 +548,7 @@ class Workflow extends Servicio
 		//Si el dia es mayor al dia de entrega
 		elseif($completo[2] > $row["maxDay"])
 			$row["completoTardio"] = "Si";
-		
+
 		if($row["completedSteps"] == $row["totalSteps"]){
       		if($row['status'] != "baja") {
 				$this->Util()->DB()->setQuery("
@@ -558,7 +558,7 @@ class Workflow extends Servicio
 				  WHERE
 					instanciaServicioId = '".$row["instanciaServicioId"]."'");
 				$this->Util()->DB()->UpdateData();
-        
+
         		$this->Util()->DB()->setQuery("
 				  UPDATE
 					instanciaServicio
@@ -567,9 +567,9 @@ class Workflow extends Servicio
 					instanciaServicioId = '".$row["instanciaServicioId"]."' AND fechaCompleta = '0000-00-00'");
 				$this->Util()->DB()->UpdateData();
       		}//if
-			
+
 		}else{
-		
+
       		if($row['status'] != "baja") {
         		$this->Util()->DB()->setQuery("
           		UPDATE instanciaServicio
@@ -577,13 +577,13 @@ class Workflow extends Servicio
           		WHERE instanciaServicioId = '".$row["instanciaServicioId"]."'");
         		$this->Util()->DB()->UpdateData();
       		}//if
-			
+
 		}//else
 
 		return $row;
-		
+
 	}//Info
-	
+
 	function UploadControl()
 	{
 		global $User,$personal;
@@ -597,7 +597,7 @@ class Workflow extends Servicio
 					control = '".$_POST["control"]."'");
 		$version = $this->Util()->DB()->GetSingle()+ 1;
 		$target_path = $folder ."/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext;
-		$target_path_path = basename( $_FILES["file"]['name']); 
+		$target_path_path = basename( $_FILES["file"]['name']);
 		if(move_uploaded_file($_FILES["file"]['tmp_name'], $target_path)) {
 				$this->Util()->DB()->setQuery("
 					INSERT INTO `taskFile` 
@@ -623,7 +623,7 @@ class Workflow extends Servicio
 					'".$_FILES["file"]["type"]."'
 				);");
 				$this->Util()->DB()->InsertData();
-        
+
 				$result = $this->StatusById($this->instanciaServicioId);
                 $this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
                                                       WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
@@ -647,7 +647,7 @@ class Workflow extends Servicio
 					$body = "El archivo anterior y nuevo va adjunto en este correo.";
 					$sendmail = new SendMail;
 					$versionAnt = $version - 1;
-					
+
 					$attachment = DOC_ROOT."/tasks/".$_POST["servicioId"]."_".$_POST["stepId"]."_".$_POST["taskId"]."_".$_POST["control"]."_".$version.".".$ext;
 					$fileName = "ArchivoActualizado.".$ext;
 
@@ -668,10 +668,10 @@ class Workflow extends Servicio
             $this->Util()->PrintErrors();
 			return false;
 		}
-		
+
 	}
 	function DeleteControl($id)
-	{	
+	{
 		$this->Util()->DB()->setQuery("SELECT * FROM `taskFile` WHERE taskFileId = '".$id."'");
 		$file = $this->Util()->DB()->GetRow();
 
@@ -683,17 +683,17 @@ class Workflow extends Servicio
         $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$conId);
         $razon = new Razon();
         $correos = [];
-		
+
 		$this->Util()->DB()->setQuery("DELETE FROM `taskFile` WHERE taskFileId = '".$id."'");
 		$this->Util()->DB()->DeleteData();
 		$result = $this->StatusById($this->instanciaServicioId);
-				
+
         $this->Util()->DB()->setQuery("UPDATE instanciaServicio SET class = '".$result["class"]."' 
         WHERE instanciaServicioId = '".$this->instanciaServicioId."'");
         $this->Util()->DB()->UpdateData();
-				
+
 		$nomFile = $file['servicioId'].'_'.$file['stepId'].'_'.$file['taskId'].'_'.$file['control'].'_'.$file['version'].'.'.$file['ext'];
-		
+
 		@unlink(DOC_ROOT.'/tasks/'.$nomFile);
         $this->Util()->setError(0,'complete','Archivo eliminado correctamente');
         $this->Util()->PrintErrors();
@@ -736,7 +736,7 @@ class Workflow extends Servicio
                 $value['saldo'] =  $value['total']-$value['payment'];
                 if($value["saldo"] > 1)
                 {
-                    $value["class"] = $value['payment']>0 ? "#FC0":"#ff0000";
+                    $value["class"] = $value['payment']>0 ? "#FFCC00":"#ff0000";
                     $noComplete++;
                 }
                 else{
@@ -823,8 +823,8 @@ class Workflow extends Servicio
 		$instancia = $this->Util()->DB()->GetRow();
 
 		$this->setInstanciaServicioId($instancia["instanciaServicioId"]);
-		$instancia = $this->Info();				
-		
+		$instancia = $this->Info();
+
 		$fechaCompletoServicio = strtotime($instancia["fechaCompleta"]);
 		if($instancia["totalSteps"] > 0)
 		{
@@ -851,11 +851,11 @@ class Workflow extends Servicio
 		}
 		else
 			$class = "PorIniciar";
-			
-		
+
+
 		$data["instanciaServicioId"] = $instancia["instanciaServicioId"];
 		$data["class"] = $class;
-		
+
 		return $data;
 	}
 	public function infoWorkflow(){
@@ -968,7 +968,7 @@ class Workflow extends Servicio
                 $totalCobrado +=$pago;
                 if($value["saldo"] >0.1)//margen de .1 de rror en saldo
                 {
-                    $value["class"] = $pago>0 ? "#FC0":"#ff0000";
+                    $value["class"] = $pago>0 ? "#FFCC00":"#ff0000";
                     $noComplete++;
                 }
                 else{

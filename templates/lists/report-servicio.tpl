@@ -38,7 +38,7 @@
 								{else}
 										background:{$instanciaServicio.class};
 								{/if}
-								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FC0' || $instanciaServicio.class == '#EFEFEF'}
+								{if $instanciaServicio.class == '#00ff00' || $instanciaServicio.class == '#FFCC00' || $instanciaServicio.class == '#EFEFEF'}
 								color:#000000; {else}
 								color:#ffffff;
 								{/if}
