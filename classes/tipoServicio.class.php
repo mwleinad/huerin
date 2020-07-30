@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class TipoServicio extends Main
 {
@@ -36,7 +36,7 @@ class TipoServicio extends Main
 	{
 		return $this->tipoServicioId;
 	}
-	
+
 	public function setDepartamentoId($value)
 	{
 		$this->Util()->ValidateInteger($value);
@@ -78,12 +78,12 @@ class TipoServicio extends Main
 		$this->Util()->ValidateFloat($value, 6);
 		$this->costoUnico = $value;
 	}
-	
+
 	public function setCostoVisual($value){
 		$this->Util()->ValidateFloat($value, 6);
 		$this->costoVisual = $value;
 	}
-	
+
 	public function setMostrarCostoVisual($value){
 		$this->mostrarCostoVisual = $value;
 	}
@@ -116,14 +116,15 @@ class TipoServicio extends Main
     public function setReports($value) {
 	    $this->reports = $value;
     }
+
 	public function Enumerate()
 	{
 		global $User;
-		
+
 		//filtro departamento
 		if($User['departamentoId']!="1" && $User["roleId"]!=1)
 		$filtroDep="WHERE departamentoId=".$User['departamentoId'];
-		
+
 		$this->Util()->DB()->setQuery('SELECT COUNT(*) FROM tipoServicio');
 		$total = $this->Util()->DB()->GetSingle();
 
@@ -163,6 +164,7 @@ class TipoServicio extends Main
 
         return $data;
     }
+
 	public function EnumerateAll()
 	{
 		$this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" ORDER BY tipoServicioId ASC');
@@ -170,16 +172,39 @@ class TipoServicio extends Main
 
 		return $result;
 	}
+	public function getSteps() {
+		$this->Util()->DB()->setQuery("SELECT step.* FROM step 
+            INNER JOIN tipoServicio ON step.servicioId = tipoServicio.tipoServicioId
+            WHERE step.servicioId = '".$this->getTipoServicioId()."'					
+            ORDER BY step.stepId ASC");
+		$result = $this->Util()->DB()->GetResult();
+		foreach($result as $key => $value)
+		{
+			//get tasks
+			$this->Util()->DB()->setQuery("SELECT * FROM task
+            WHERE stepId = '".$value["stepId"]."'					
+            ORDER BY taskId ASC");
+			$result[$key]["tasks"] = $this->Util()->DB()->GetResult();
+			$result[$key]["countTasks"] = count($result[$key]["tasks"]);
 
-	public function Info()
+		}
+		return $result;
+	}
+	public function Info($whitTask = false)
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM tipoServicio WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$row = $this->Util()->DB()->GetRow();
+		if($row && $whitTask) {
+			$this->Util()->DB()->setQuery("SELECT * FROM step
+            WHERE servicioId = '".$this->tipoServicioId."' ");
+			$tasks = $this->Util()->DB()->GetResult();
+			$row["tasks"] = is_array($tasks) ? $tasks : [];
+		}
 		return $row;
 	}
-	
+
 	function Suggest($value)
-	{      
+	{
 		$this->Util()->DB()->setQuery("SELECT * 
 		FROM tipoServicio
 		WHERE tipoServicioId LIKE '%".$value."%'  ORDER BY tipoServicioId");
@@ -206,17 +231,18 @@ class TipoServicio extends Main
 				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."'
 			WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
-		
+		if(isset($_POST['steps'])) {
+			$this->saveSteps($this->tipoServicioId);
+		}
 		$this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
-		
+
 		return true;
 	}
 
 	public function Save()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
 				tipoServicio
@@ -243,14 +269,48 @@ class TipoServicio extends Main
 				'".$this->costoVisual."',
 				'".$this->mostrarCostoVisual."'
 		);");
-		
-		$this->Util()->DB()->InsertData();
+		$id = $this->Util()->DB()->InsertData();
+		if(isset($_POST['steps'])) {
+			$this->saveSteps($id);
+		}
+
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
-		
 		return true;
 	}
-
+	function saveSteps($id) {
+		$steps = is_array($_POST['steps']) ? $_POST['steps'] : [];
+		foreach ($steps as $key => $step) {
+			if($this->Util()->isJson($step)) {
+				$stepObj = json_decode($step);
+				$sql = " insert into step(servicioId, nombreStep, descripcion) values('".$id."', '".$stepObj->nombreStep."', '".$stepObj->descripcion."')";
+				$this->Util()->DB()->setQuery($sql);
+				$idStep = $this->Util()->DB()->InsertData();
+				$stpId =  $stepObj->stepId;
+				$tasks = is_array($_POST["tasks$stpId"]) ? $_POST["tasks$stpId"] : [];
+				$query = "insert into task(stepId, nombreTask, diaVencimiento, prorroga, control, extensiones) VALUES";
+				$strComp ="";
+				foreach ($tasks as $keyTask => $task) {
+					if($this->Util()->isJson($task) && $idStep) {
+						$taskObj = json_decode($task);
+						$strComp .= "($idStep, 
+											'".$taskObj->nombreTask."', 
+											'".$taskObj->diaVencimiento."', 
+											'".$taskObj->prorroga."', 
+											'".$taskObj->control."', 
+											'".$taskObj->extensiones."'
+										),";
+					}
+				}
+				if($strComp!=="") {
+					$strComp = substr($strComp,0,strlen($strComp)-1);
+					$sql = $query.$strComp;
+					$this->Util()->DB()->setQuery($sql);
+					$this->Util()->DB()->InsertData();
+				}
+			}
+		}
+	}
 	public function Delete()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
@@ -265,14 +325,14 @@ class TipoServicio extends Main
 		$this->Util()->PrintErrors();
 		return true;
 	}
-	
+
 	public function GetField($field)
 	{
 		$sql = 'SELECT '.$field.' FROM tipoServicio 
 				WHERE tipoServicioId = "'.$this->tipoServicioId.'"';
 		$this->Util()->DB()->setQuery($sql);
 		$value = $this->Util()->DB()->GetSingle();
-		
+
 		return $value;
 	}
 
