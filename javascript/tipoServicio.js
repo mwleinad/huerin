@@ -107,7 +107,6 @@ function AddTipoServicioDiv(id)
 		grayOut(false);
 		return;
 	}
-
 	new Ajax.Request(WEB_ROOT+'/ajax/tipoServicio.php',
 	{
 		method:'post',
@@ -197,4 +196,37 @@ function SaveTextReport() {
 		}
 	});
 }
+jQ(document).on('change','#inheritanceId',function(){
+	var id  =  jQ(this).find(":selected").val();
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/tipoServicio.php',
+		method:'post',
+		data:{ id, type:'inheritanceFrom'},
+		success:function (response) {
+			jQ('#stepTask').html(response);
+			TogglePermisos();
+		}
+
+	});
+});
+function TogglePermisos(){
+	jQ('.deepList').on('click',function(){
+		if(jQ("ul#"+this.id).is(':visible')){
+			jQ("#"+this.id).html('[+]-');
+			jQ("ul#"+this.id).removeClass('siShow');
+		}
+		else
+		{
+			jQ('#'+this.id).html('[-]-');
+			jQ("ul#"+this.id).addClass('siShow');
+		}
+
+	});
+}
+jQ(document).on('click','div#stepTask input[type="checkbox"]',function(){
+    jQ(this).next().find('input[type=checkbox]').prop('checked',this.checked);
+    jQ(this).parents('ul').prev('input[type=checkbox]').prop('checked',function(){
+        return jQ(this).next().find(':checked').length;
+    });
+});
 

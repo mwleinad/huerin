@@ -1629,5 +1629,9 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 
 	    return $data;
     }
+    function isJson($str) {
+		$json = json_decode($str);
+		return $json && $str != $json;
+	}
 }
 ?>

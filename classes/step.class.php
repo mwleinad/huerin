@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Step extends Servicio
 {
@@ -8,12 +8,12 @@ class Step extends Servicio
 		$this->Util()->ValidateInteger($value);
 		$this->stepId = $value;
 	}
-	
+
 	public function getStepId()
 	{
 		return $this->stepId;
 	}
-	
+
 	private $nombreStep;
 	public function setNombreStep($value)
 	{
@@ -35,8 +35,6 @@ class Step extends Servicio
 
 	public function Enumerate()
 	{
-		global $months;
-		
 		$this->Util()->DB()->setQuery("SELECT * FROM step 
 			LEFT JOIN servicio ON step.servicioId = servicio.servicioId
 				WHERE step.servicioId = '".$this->getServicioId()."'					
@@ -50,17 +48,16 @@ class Step extends Servicio
 				ORDER BY taskId ASC");
 			$result[$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$result[$key]["countTasks"] = count($result[$key]["tasks"]);
-			
+
 		}
-		
+
 		return $result;
 	}
-
 	public function Info()
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM step WHERE stepId = '".$this->stepId."'");
 		$row = $this->Util()->DB()->GetRow();
-		
+
 		return $row;
 	}
 
@@ -110,9 +107,9 @@ class Step extends Servicio
 	public function Delete()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-		
+
 		$info = $this->Info();
-		
+
 		$this->Util()->DB()->setQuery("
 			DELETE FROM 
 				step
