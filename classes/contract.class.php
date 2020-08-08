@@ -344,7 +344,29 @@ class Contract extends Main
         $this->Util()->ValidateRequireField($value, 'Razon social alternativa para facturacion');
         $this->alternativeRzId = $value;
     }
-
+    private $alternativeRz;
+    public function setAlternativeRz($value) {
+        $this->Util()->ValidateRequireField($value, 'Nombre o razon social alternativa');
+        $this->alternativeRz =  $value;
+    }
+    private $alternativeRfc;
+    public function setAlternativeRfc($value) {
+        $value = str_replace(" ", "", $value);
+        $value = str_replace("-", "", $value);
+        $value = strtoupper($value);
+        if ($this->Util()->ValidateRequireField($value, 'RFC alternativo')) {
+            $this->Util()->ValidateString($value, $max_chars = 13, $minChars = 11, 'RFC alternativo');
+        }
+        $value = str_replace("&amp;", "&", $value);
+        $this->alternativeRfc = $value;
+    }
+    private $alternativeCp;
+    public function setAlternativeCp($value) {
+        if($this->Util()->ValidateRequireField($value, 'Codigo postal alternativa'))
+            if($this->Util()->ValidateOnlyNumeric($value, 'Codigo postal alternativa'))
+                $this->Util()->ValidateString($value, $max_chars = 5, $minChars = 5, 'Codigo postal alternativa');
+        $this->alternativeCp =  $value;
+    }
     private $qualification;
     public function setQualification($value)
     {
@@ -848,7 +870,8 @@ class Contract extends Main
     {
         global $User, $log;
         $permiso = new Permiso();
-        /** if ($this->Util()->PrintErrors()){ return 0; } */
+
+        $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
         $this->Util()->DB()->setQuery(
             "INSERT INTO
           contract
@@ -905,6 +928,9 @@ class Contract extends Main
           fechaAlta,
           useAlternativeRzForInvoice,
           alternativeRzId,
+          alternativeRz,
+          alternativeRfc,
+          alternativeCp,
           qualification
         )
         VALUES
@@ -960,7 +986,10 @@ class Contract extends Main
           '" . $this->claveIsn . "',
           '".date('Y-m-d H:i:s')."',
           '" . $this->useAlternativeRzForInvoice . "',
-          '" . $this->alternativeRzId . "',
+          $valueRzid,
+          '" . $this->alternativeRz . "',
+          '" . $this->alternativeRfc . "',
+          '" . $this->alternativeCp . "',
           '" . $this->qualification . "'
           
           )"
@@ -1051,7 +1080,7 @@ class Contract extends Main
         $sql = "SELECT * FROM contract WHERE contractId = '" . $this->contractId . "'";
         $this->Util()->DB()->setQuery($sql);
         $oldData = $this->Util()->DB()->GetRow();
-
+        $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
         //Cuando se edita solo se actualiza los contactos modificados.
         $contactos = "";
         if (strlen($this->nombreComercial) > 0)
@@ -1135,7 +1164,10 @@ class Contract extends Main
 			  lastModified = '" . date("Y-m-d H:i:s") . "',
 			  modifiedBy = '" . $_SESSION["User"]["username"] . "',
 			  useAlternativeRzForInvoice = '" .$this->useAlternativeRzForInvoice. "',
-			  alternativeRzId = '".$this->alternativeRzId."',
+			  alternativeRzId = $valueRzid,
+			  alternativeRz = '".$this->alternativeRz."',
+			  alternativeRfc = '".$this->alternativeRfc."',
+			  alternativeCp = '".$this->alternativeCp."',
 			  qualification = '".$this->qualification."'
 			  WHERE
 			  contractId = '" . $this->contractId . "'";

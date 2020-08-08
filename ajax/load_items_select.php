@@ -22,11 +22,36 @@ switch ($_POST['type']) {
             $key = array_search($_POST['contractId'], array_column($result, 'contractId'));
             unset($result[$key]);
         }
-        echo json_encode($result);
+        $data = [
+          [
+              'id' =>0,
+              'text' => "Otros datos"
+          ]
+        ];
+        foreach($result as $var) {
+          $cad['id'] = $var['contractId'];
+          $cad['text'] = $var['name'];
+          array_push($data, $cad);
+        }
+        echo json_encode($data);
         break;
      case 'defaultContract':
          $contract->setContractId($_POST['id']);
          $row = $contract->Info();
-         echo json_encode($row);
+         if($row){
+             $data = [
+                     'id' => $row['contractId'],
+                     'text' => $row['name']
+             ];
+         } else {
+             if((int)$_POST['id'] ===0) {
+                 $data = [
+                     'id' => 0,
+                     'text' => 'Otros datos'
+                 ];
+             }
+
+         }
+         echo json_encode($data);
          break;
 }
