@@ -65,14 +65,7 @@ jQ(document).ready(function () {
 							}
 						},
 						processResults: function (data) {
-							return {
-								results: jQ.map(data, function (item) {
-									return {
-										text: item.name,
-										id: item.contractId
-									}
-								})
-							}
+							return { results: data }
 						}
 					},
 					initSelection: function (element, callback) {
@@ -82,16 +75,21 @@ jQ(document).ready(function () {
 								type: 'defaultContract',
 								id: id
 							}, function (response) {
-								response ? callback({ id: response.contractId,text: response.name}) :
-									callback({ id: '',text: "--seleccionar--"});
+								callback(response);
 							}, 'json');
+							if(id === '0')
+								jQ('#div_other_data').show()
 						}
 					}
+				}).on('change', function(e) {
+					e.val === '0'
+					? jQ('#div_other_data').show()
+					: jQ('#div_other_data').hide();
+
 				});
 			} else {
 				jQ('#alternative_rz_id').select2('destroy');
-				jQ('#alternative_rz_id').val('')
-
+				jQ('#div_other_data').hide();
 			}
 		});
 		if(jQ('#use_alternative_rz_for_invoice').val() === '1')

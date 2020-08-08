@@ -17,7 +17,7 @@
       <option id="PF" value="Persona Fisica">Persona Fisica</option>
       <option id="PM" value="Persona Moral">Persona Moral</option>
       </select></td>
-	</tr>    
+	</tr>
 
    <tr>
 		<td align="left" width="40%">* Facturador</td>
@@ -29,12 +29,12 @@
 				<option value="{$item.claveFacturador}" {if $item.claveFacturador == $contractInfo.facturador} selected="selected" {/if} >{$item.razonSocial}</option>
 			{/foreach}
       </select></td>
-	</tr>      
+	</tr>
 
     <tr>
 		<td align="left" width="40%">* Raz&oacute;n Social</td>
 		<td align="left"><input name="name" id="name" type="text" value="" class="smallInput medium" size="50"/></td>
-	</tr>    
+	</tr>
 
     <tr>
 		<td align="left" width="40%">* RFC</td>
@@ -105,6 +105,22 @@
 				<div class="grid_12">
 					<label>&nbsp;</label>
 					<input type="hidden" class="smallInput" name="alternative_rz_id" id="alternative_rz_id" />
+				</div>
+				<div class="grid_12" id ="div_other_data" style="display: none">
+					<div class="container_12">
+						<div class="grid_12">
+							<label>* Nombre o razon social alternativa</label>
+							<input type="text"  name="alternativeRz" id="alternativeRz" class="smallInput">
+						</div>
+						<div class="grid_12">
+							<label>* Rfc alternativo</label>
+							<input type="text" name="alternativeRfc" id="alternativeRfc" class="smallInput">
+						</div>
+						<div class="grid_12">
+							<label>* Codigo postal alternativo</label>
+							<input type="text" name="alternativeCp" id="alternativeCp" class="smallInput">
+						</div>
+					</div>
 				</div>
 			</div>
 		</td>
@@ -234,7 +250,7 @@
 	<tr>
 		<td align="left" width="40%" class="tdPad">* Direccion de Recoleccion de Papeleria</td>
 		<td align="left" class="tdPad">
-        
+
         <textarea name="direccionComercial" id="direccionComercial" class="smallInput" style="width:350px" rows="5">{$contractInfo.direccionComercial}</textarea>
     </td>
 	</tr>
@@ -247,11 +263,11 @@
            {if $item.name neq '.' && $item.departamentoId eq 1}
           	<option value="{$item.personalId}" {if $allPerm[1] eq $item.personalId}selected{/if}>{$item.name}</option>
 		   {/if}
-          {/foreach}  
+          {/foreach}
           </select>
     </td>
-	</tr> 
-	
+	</tr>
+
   {foreach from=$departamentos item=depto}
    {assign var="deps" value=[]}
    {append var="deps"  value=$depto.departamentoId index=$depto.departamentoId}

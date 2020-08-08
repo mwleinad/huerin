@@ -1,5 +1,5 @@
 <?php
-	
+
 	/* Start Session Control - Don't Remove This */
     $user->allowAccess(2);
     $user->allowAccess(62);
@@ -8,7 +8,7 @@
     if($_SESSION['User']['roleId']==4){
           header('Location: '.WEB_ROOT.'/customer-only');
     }
-	
+
 	if($_POST)
 	{
 		if($_POST["type"] == "Persona Moral")
@@ -91,6 +91,11 @@
         if($_POST['use_alternative_rz_for_invoice'] === '1') {
             $contract->setUseAlternativeRzForInvoice(1);
             $contract->setAlterntiveRzId($_POST['alternative_rz_id']);
+            if($_POST['alternative_rz_id'] === '0') {
+                $contract->setAlternativeRz($_POST['alternativeRz']);
+                $contract->setAlternativeRfc($_POST['alternativeRfc']);
+                $contract->setAlternativeCp($_POST['alternativeCp']);
+            }
         }
         $contract->setQualification($_POST['qualification']);
 
@@ -118,7 +123,7 @@
 	$customer->setCustomerId($_GET["id"]);
 	$infoCustomer = $customer->Info();
 	$smarty->assign("infoCustomer", $infoCustomer);
-	
+
 	//Obtenemos los accionistas
 	$accionista->setContractId($_GET["id"]);
 	$accionistas = $accionista->Enumerate();
@@ -142,19 +147,19 @@
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
 
-	
-	//Obtenemos la fecha actual para habilitar el calendario 
+
+	//Obtenemos la fecha actual para habilitar el calendario
 	$cal['min'] = date('Ymd',strtotime('-5 years'));
 	$cal['max'] = date('Ymd');
-	
-	//Obtenemos la fecha actual para habilitar el calendario 
+
+	//Obtenemos la fecha actual para habilitar el calendario
 	$calO['min'] = date('Ymd');
 	$calO['max'] = date('Ymd',strtotime('+5 years'));
-					
+
 	$smarty->assign("cal", $cal);
 	$smarty->assign("calO", $calO);
 	$smarty->assign('mainMnu','contratos');
-	
+
 	$empleados = $personal->EnumerateAll();
 	$smarty->assign("empleados", $empleados);
     $filtros['depExcluidos'] ='mensajeria';

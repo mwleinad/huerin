@@ -105,7 +105,23 @@
                 </div>
                 <div class="grid_12">
                     <label>&nbsp;</label>
-                    <input type="hidden" class="smallInput" name="alternative_rz_id" id="alternative_rz_id" value="{if $contractInfo.alternativeRzId}{$contractInfo.alternativeRzId}{/if}" />
+                    <input type="hidden" class="smallInput" name="alternative_rz_id" id="alternative_rz_id" value="{if $contractInfo.alternativeRzId neq null}{$contractInfo.alternativeRzId}{/if}" />
+                </div>
+                <div class="grid_12" id ="div_other_data" style="display: {if $contractInfo.alternativeRzId === '0' && $contractInfo.useAlternativeRzForInvoice eq '1'}block{else}none{/if}">
+                    <div class="container_12">
+                        <div class="grid_12">
+                            <label>* Nombre o razon social alternativa</label>
+                            <input type="text"  name="alternativeRz" id="alternativeRz" class="smallInput" value="{$contractInfo.alternativeRz}">
+                        </div>
+                        <div class="grid_12">
+                            <label>* Rfc alternativo</label>
+                            <input type="text" name="alternativeRfc" id="alternativeRfc" class="smallInput" value="{$contractInfo.alternativeRfc}">
+                        </div>
+                        <div class="grid_12">
+                            <label>* Codigo postal alternativo</label>
+                            <input type="text" name="alternativeCp" id="alternativeCp" class="smallInput" value="{$contractInfo.alternativeCp}">
+                        </div>
+                    </div>
                 </div>
             </div>
         </td>

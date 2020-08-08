@@ -11,32 +11,32 @@ class Log extends Util
 	private $newValue;
 	private $serviciosAfectados = [];
 	private $contractsAfectados = [];
-	
+
 	public function setPersonalId($value){
 		$this->Util()->ValidateInteger($value);
 		$this->personalId = $value;
 	}
-	
+
 	public function setFecha($value){
-		$this->fecha = $value;		
+		$this->fecha = $value;
 	}
-	
+
 	public function setTabla($value){
-		$this->tabla = $value;		
+		$this->tabla = $value;
 	}
-	
+
 	public function setTablaId($value){
-		$this->tablaId = $value;		
+		$this->tablaId = $value;
 	}
-	
+
 	public function setAction($value){
-		$this->action = $value;		
+		$this->action = $value;
 	}
-	
+
 	public function setOldValue($value){
 		$this->oldValue = $value;
 	}
-	
+
 	public function setNewValue($value){
 		$this->newValue = $value;
 	}
@@ -340,7 +340,7 @@ class Log extends Util
         }
         return true;
 	}
-	
+
   	function GetLog(){
     	$this->Util()->DB()->setQuery(
         "SELECT
@@ -357,7 +357,7 @@ class Log extends Util
           0 , 1000"
     	);
     	$idsUsers = $this->Util()->DB()->GetResult();
-		
+
     	return $idsUsers;
   	}
   	function SearchLog($values){
@@ -401,10 +401,13 @@ class Log extends Util
                      case 'alternativeRzId':
                          $this->Util()->DB()->setQuery("SELECT name FROM contract WHERE contractId='".$beforeUnserialize[$key]."' ");
                          $valorBefore = $this->Util()->DB()->GetSingle();
-                         $valorBefore = $valorBefore === '0' ? '' : $valorBefore;
+                         $valorBefore = $beforeUnserialize[$key] === '0' ? 'Otros datos' : $valorBefore;
+                         $valorBefore = $valorBefore == '0' ? '' : $valorBefore;
+
                          $this->Util()->DB()->setQuery("SELECT name FROM contract WHERE contractId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
-                         $valorAfter = $valorAfter === '0' ? '' : $valorAfter;
+                         $valorAfter = $afterUnserialize[$key] === '0' ? 'Otros datos' : $valorAfter;
+                         $valorAfter = $valorAfter == '0' ? '' : $valorAfter;
                      break;
                      case 'regimenId':
                          $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$beforeUnserialize[$key]."' ");
