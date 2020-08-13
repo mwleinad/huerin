@@ -49,7 +49,6 @@ class UtileriaInvoice extends Comprobante
             return false;
         }
         $response = $this->findStatusInvoiceByDocument($row);
-        dd($response);
         switch($response["getCFDiStatusReturn"]["status"]){
             case 'Vigente';
                  $mensaje = "La factura con folio $serie$folio se encuentra activa en el SAT";
