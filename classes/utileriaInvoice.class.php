@@ -24,7 +24,7 @@ class UtileriaInvoice extends Comprobante
         return true;
     }
     function cancelInvoiceInSatByFolio($serie,$folio){
-        $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
+        $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
                 where a.serie='$serie' and a.folio='$folio' ";
         $this->Util()->DB()->setQuery($sql);
@@ -73,11 +73,7 @@ class UtileriaInvoice extends Comprobante
     }
     function findStatusInvoiceByDocument($datos){
         global $rfc;
-        switch($datos["empresaId"]){
-            case 15: $rfcActivo = 1; break;
-            case 21: $rfcActivo = 30; break;
-            default: $rfcActivo = 1; break;
-        }
+        $rfcActivo =  $datos['rfcId'];
         $sql = "select noCertificado from serie where rfcId = '".$datos['rfcId']."' limit 1";
         $this->Util()->DB()->setQuery($sql);
         $datos['noCertificado'] = $this->Util()->DB()->GetSingle();
@@ -162,7 +158,6 @@ class UtileriaInvoice extends Comprobante
         $pac = new Pac();
         foreach($invoices as $key=>$value){
             $response = $pac->CancelaCfdi2018(USER_PAC,PW_PAC,$value["rfcEmisor"],$value["rfc"],$value["uuid"],$value["total"],$value["path"],$value["password"]);
-            dd($response);
             if($response['cancelado'])
             {
                 $motivo_cancelacion = "Se solicita nuevamente la cancelacion, documento aun vigente en el SAT y en plataforma interna ya se encuentra cancelada";

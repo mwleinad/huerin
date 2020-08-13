@@ -31,7 +31,6 @@ switch($_POST["type"]){
             break;
             case 'cancel':
                 $utileriaInvoice->cancelInvoiceInSatByFolio($_POST["serie"],$_POST["folio"]);
-
             break;
         }
          echo "ok[#]";
