@@ -89,9 +89,9 @@ class UtileriaInvoice extends Comprobante
             $timbreUnserialize = [];
 
         if($timbreUnserialize["UUID"]!=""){
-            $uuid = $timbreUnserialize["UUID"];
+           echo  $uuid = $timbreUnserialize["UUID"];
         }else{
-            $root = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/facturas/xml/SIGN_$xml.xml";
+           echo $root = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/facturas/xml/SIGN_$xml.xml";
             if(!file_exists($root))
                 return false;
 
@@ -108,7 +108,7 @@ class UtileriaInvoice extends Comprobante
             $uuid = str_replace("\"", "", $data);
             $uuid = str_replace("=", "", $uuid);
             $uuid = str_replace(" ", "", $uuid);
-            $uuid = substr($uuid, 0, 36);
+           echo  $uuid = substr($uuid, 0, 36);
         }
         if($uuid=="")
             return false;
