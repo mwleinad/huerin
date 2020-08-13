@@ -38,7 +38,7 @@ class UtileriaInvoice extends Comprobante
        $this->handleCancelationInvoiceActiveInSat();
     }
     function checkStatusInSat($serie,$folio){
-        $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
+        $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio, a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
                 where a.serie='$serie' and a.folio='$folio' ";
         $this->Util()->DB()->setQuery($sql);
@@ -79,6 +79,10 @@ class UtileriaInvoice extends Comprobante
             case 21: $rfcActivo = 30; break;
             default: $rfcActivo = 1; break;
         }
+        $sql = "select noCertificado from serie where rfcId = '".$datos['rfcId']."' limit 1";
+        $this->Util()->DB()->setQuery($sql);
+        $datos['noCertificado'] = $this->Util()->DB()->GetSingle();
+
         $rfc->setRfcId($rfcActivo);
         $rfcEmisor = $rfc->InfoRfc();
         $uuid = "";
@@ -89,7 +93,7 @@ class UtileriaInvoice extends Comprobante
             $timbreUnserialize = [];
 
         if($timbreUnserialize["UUID"]!=""){
-           echo  $uuid = $timbreUnserialize["UUID"];
+           $uuid = $timbreUnserialize["UUID"];
         }else{
            echo $root = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/facturas/xml/SIGN_$xml.xml";
             if(!file_exists($root))
@@ -108,16 +112,16 @@ class UtileriaInvoice extends Comprobante
             $uuid = str_replace("\"", "", $data);
             $uuid = str_replace("=", "", $uuid);
             $uuid = str_replace(" ", "", $uuid);
-           echo  $uuid = substr($uuid, 0, 36);
+            $uuid = substr($uuid, 0, 36);
         }
         if($uuid=="")
             return false;
         //certificados
-        echo $path = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/".$datos["noCertificado"].".cer.pfx";
+        $path = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/".$datos["noCertificado"].".cer.pfx";
         if(!file_exists($path))
             return false;
         //get password
-        echo $root_password = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/password.txt";
+        $root_password = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/password.txt";
         if(!file_exists($root_password))
             return false;
         $fh = fopen($root_password, 'r');
