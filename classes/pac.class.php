@@ -9,11 +9,11 @@ class Pac extends Util
 		$theData = fread($fh, filesize($pfx));
 		$zipFileEncoded = base64_encode($theData);
 		fclose($fh);
-		
+
 		require_once(DOC_ROOT.'/libs/nusoap.php');
 		$client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
 		$client->useHTTPPersistentConnection();
-		
+
 		$params = array(
 			'user' => $user,
 			'password' => $pw,
@@ -71,8 +71,9 @@ class Pac extends Util
             'pfxPassword'=>$pfxPassword,
             'test'=>$isTest
         );
+        dd($params);
         $response = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-
+        dd($response);
         return $response;
     }
     function CancelaCfdi2018($user, $pw,$rfcE,$rfcR, $uuid,$total,$pfx, $pfxPassword)
@@ -161,11 +162,11 @@ class Pac extends Util
 		$theData = fread($fh, filesize($zipFile));
 		$zipFileEncoded = base64_encode($theData);
 		fclose($fh);
-		
+
 		require_once(DOC_ROOT.'/libs/nusoap.php');
 		$client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
 		$client->useHTTPPersistentConnection();
-		
+
 		$params = array(
 			'user' => $user,
 			'password' => $pw,
@@ -193,12 +194,12 @@ class Pac extends Util
 			}
 			$data = base64_decode($response["getCfdiReturn"]);
 		}
-		
+
 		$fh = fopen($newFile, 'w') or die("can't open file");
 		$fh = fwrite($fh, $data);
 
 		$this->Unzip($path, $newFile);
-		
+
 		return $response;
 	}
 
@@ -209,17 +210,17 @@ class Pac extends Util
 		$theData = fread($fh, filesize($zipFile));
 		$zipFileEncoded = base64_encode($theData);
 		fclose($fh);
-		
+
 		require_once(DOC_ROOT.'/libs/nusoap.php');
 		$client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
 		$client->useHTTPPersistentConnection();
-		
+
 		$params = array(
 			'user' => $user,
 			'password' => $pw,
 			'file' => "$zipFileEncoded"
 		);
-		
+
 		if(PROJECT_STATUS == "test")
 		{
 			$response = $client->call('getTimbreCfdiTest', $params, 'http://cfdi.service.ediwinws.edicom.com/');
@@ -238,7 +239,7 @@ class Pac extends Util
 
 		return $newFile;
 	}
-	
+
 	function ParseTimbre($file)
 	{
 		$fh = fopen($file, 'r');
@@ -258,7 +259,7 @@ class Pac extends Util
 		}
 		return $data;
 	}
-	
+
 	function GenerateCadenaOriginalTimbre($data)
 	{
 		$cadenaOriginal = "||";

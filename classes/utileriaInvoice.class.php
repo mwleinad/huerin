@@ -113,11 +113,11 @@ class UtileriaInvoice extends Comprobante
         if($uuid=="")
             return false;
         //certificados
-        $path = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/".$datos["noCertificado"].".cer.pfx";
+        echo $path = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/".$datos["noCertificado"].".cer.pfx";
         if(!file_exists($path))
             return false;
         //get password
-        $root_password = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/password.txt";
+        echo $root_password = DOC_ROOT."/empresas/$empresaId/certificados/$rfcActivo/password.txt";
         if(!file_exists($root_password))
             return false;
         $fh = fopen($root_password, 'r');
