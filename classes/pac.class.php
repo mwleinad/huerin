@@ -71,9 +71,7 @@ class Pac extends Util
             'pfxPassword'=>$pfxPassword,
             'test'=>$isTest
         );
-        dd($params);
         $response = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        dd($response);
         return $response;
     }
     function CancelaCfdi2018($user, $pw,$rfcE,$rfcR, $uuid,$total,$pfx, $pfxPassword)
