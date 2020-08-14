@@ -698,7 +698,7 @@ class Empresa extends Main
 		   if(!SEND_LOG_MOD){
                $correos = [];
            }
-		   //$send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
+		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
 		   return true;
         }
 
