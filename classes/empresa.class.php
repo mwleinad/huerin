@@ -8,7 +8,7 @@ class Empresa extends Main
 	private $celular;
 	private $telPersonal;
 	private $socioComercial;
-	
+
 	private $rfc;
 	private $razonSocial;
 	private $pais;
@@ -37,14 +37,14 @@ class Empresa extends Main
 	private $nameFileCertificado;
 	private $nameFileKeyPrivate;
 	private $claveFacturador;
-	
+
 	public function setNombre($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Nombre Completo');
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 0, 'Nombre Completo');
 		$this->nombre = $value;
 	}
-	
+
 	public function setEmailPersonal($value)
 	{
 		if($this->Util()->ValidateRequireField($value, 'Email')){
@@ -55,46 +55,46 @@ class Empresa extends Main
 				{
 					$this->Util()->setError(30002, "error", "");
 				}
-				*/				
+				*/
 				$this->emailPersonal = $value;
 			}
 		}
 	}
-	
+
 	public function setSocioComercial($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'N&uacute;mero de Socio');
 		$this->socioComercial = $value;
 	}
-	
+
 	public function setTelefono($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Tel&eacute;fono de la Empresa');
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 10, "El telefono de la empresa debe de tener Al menos 10 digitos");
 		$this->telefono = $value;
 	}
-	
+
 	public function setTelPersonal($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Tel&eacute;fono');
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 0, "Tel&eacute;fono");
 		$this->telPersonal = $value;
 	}
-	
+
 	public function setCelular($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 0, "Celular");
 		$this->celular = $value;
 	}
-	
+
 	public function setCondicionPersonal($value)
 	{
 		if($value == 0)
 		{
-			$this->Util()->setError(30001, "error", "");			
+			$this->Util()->setError(30001, "error", "");
 		}
 	}
-	
+
 	public function getTelefono()
 	{
 		return $this->telefono;
@@ -106,7 +106,7 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 0, "Folios");
 		$this->folios = $value;
 	}
-	
+
 	public function getFolios()
 	{
 		return $this->folios;
@@ -118,7 +118,7 @@ class Empresa extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->comprobanteId = $value;
 	}
-	
+
 	public function getComprobanteId()
 	{
 		return $this->comprobanteId;
@@ -131,24 +131,24 @@ class Empresa extends Main
     public function getClaveFacturador(){
 	    return $this->claveFacturador;
     }
-	
+
 	public function setMotivoCancelacion($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 1, "Motivo de Cancelacion");
 		$this->motivoCancelacion = $value;
 	}
-	
+
 	public function getMotivoCancelacion()
 	{
 		return $this->motivoCancelacion;
 	}
-	
+
 	public function setProveedorId($value)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->proveedorId = $value;
 	}
-	
+
 	public function getProveedorId()
 	{
 		return $this->proveedorId;
@@ -160,7 +160,7 @@ class Empresa extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->socioId = $value;
 	}
-	
+
 	public function getSocioId()
 	{
 		return $this->socioId;
@@ -190,13 +190,13 @@ class Empresa extends Main
 	{
 		return $this->razonSocial;
 	}
-	
+
 	public function setSucursalId($value)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->sucursalId = $value;
 	}
-	
+
 	public function getSucursalId()
 	{
 		return $this->sucursalId;
@@ -207,7 +207,7 @@ class Empresa extends Main
 		$this->Util()->ValidateRequireField($value, 'Calle');
 		$this->calle = $value;
 	}
-	
+
 	public function getCalle()
 	{
 		return $this->calle;
@@ -218,7 +218,7 @@ class Empresa extends Main
 		$this->Util()->ValidateRequireField($value, 'Colonia');
 		$this->colonia = $value;
 	}
-	
+
 	public function getColonia()
 	{
 		return $this->colonia;
@@ -229,7 +229,7 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Referencia");
 		$this->referencia = $value;
 	}
-	
+
 	public function getReferencia()
 	{
 		return $this->referencia;
@@ -240,23 +240,23 @@ class Empresa extends Main
 		$this->Util()->ValidateRequireField($value, 'Municipio');
 		$this->municipio = $value;
 	}
-	
+
 	public function getMunicipio()
 	{
 		return $this->municipio;
 	}
-	
+
 	public function setCiudad($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'Ciudad');
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Ciudad");
 		$this->ciudad = $value;
 	}
-	
+
 	public function getCiudad()
 	{
 		return $this->ciudad;
-	}	
+	}
 
 	public function setEstado($value)
 	{
@@ -264,11 +264,11 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Estado");
 		$this->estado = $value;
 	}
-	
+
 	public function getEstado()
 	{
 		return $this->estado;
-	}	
+	}
 
 	public function setPais($value)
 	{
@@ -280,29 +280,29 @@ class Empresa extends Main
 	public function getRegimenFiscal()
 	{
 		return $this->regimenFiscal;
-	}	
+	}
 
 	public function setRegimenFiscal($value)
 	{
 		$this->Util()->ValidateRequireField($value, 'R&eacute;gimen Fiscal');
 		$this->regimenFiscal = $value;
 	}
-	
+
 	public function getPais()
 	{
 		return $this->pais;
-	}	
+	}
 
 	public function setNoInt($value)
 	{
 		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, "No. Int.");
 		$this->noInt = $value;
 	}
-	
+
 	public function getNoInt()
 	{
 		return $this->noInt;
-	}	
+	}
 
 	public function setNoExt($value)
 	{
@@ -310,11 +310,11 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=255, $minChars = 0, "No. Ext.");
 		$this->noExt = $value;
 	}
-	
+
 	public function getNoExt()
 	{
 		return $this->noExt;
-	}	
+	}
 
 	public function setLocalidad($value)
 	{
@@ -322,12 +322,12 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Localidad");
 		$this->localidad = $value;
 	}
-	
+
 	public function getLocalidad()
 	{
 		return $this->localidad;
-	}	
-	
+	}
+
 	public function setRfc($value)
 	{
 		$value = strtoupper($value);
@@ -335,33 +335,33 @@ class Empresa extends Main
 		$this->Util()->ValidateString($value, $max_chars=13, $minChars = 0, "RFC");
 		$this->rfc = $value;
 	}
-	
+
 	public function getRfc()
 	{
 		return $this->rfc;
 	}
-	
+
 	public function setPassword($value)
 	{
 		$this->Util()->ValidateRequireField($value, "Contrase&ntilde;a");
 		$this->Util()->ValidateString($value, $max_chars=50, $minChars = 0, "Contrase&ntilde;a");
 		$this->password = $value;
 	}
-	
+
 	public function getPassword()
 	{
 		return $this->password;
-	}	
-	
+	}
+
 	public function setEmail($value)
 	{
 		if($this->Util()->ValidateRequireField($value, 'Correo de Acceso')){
-			if($this->Util()->ValidateEmail($value)){				
+			if($this->Util()->ValidateEmail($value)){
 				$this->Util()->DB()->setQuery("SELECT COUNT(*) FROM usuario WHERE email ='".$value."'");
 				if($this->Util()->DB()->GetSingle() > 0)
 				{
 					$this->Util()->setError(30002, "error", "");
-				}				
+				}
 				$this->email = $value;
 			}
 		}
@@ -389,7 +389,7 @@ class Empresa extends Main
 		$this->Util()->ValidateInteger($value);
 		$this->cp = $value;
 	}
-	
+
 	public function getCp()
 	{
 		return $this->cp;
@@ -420,21 +420,21 @@ class Empresa extends Main
 	function Register()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
-		
+
 		//connect to general database
 		$generalDb = new DB;
 		$generalDb->setSqlDatabase("facturas_general");
-		
+
 		$year = date("Y");
 		$month = date("m");
-		
+
 		$month = $month + 1;
 		if($month == 13)
 		{
 			$month = 1;
 			$year = $year + 1;
 		}
-		
+
 		$limite = 10;
 		switch($_POST["productId"])
 		{
@@ -443,7 +443,7 @@ class Empresa extends Main
 			case "construc": $producto = "construc";break;
 			case "pro": $producto = "auto"; $this->folios = 50;break;
 		}
-		
+
 		$vencimiento = $year."-".$month."-".date("d");
 		//inserto la empresa, esta es la principal
 		$generalDb->setQuery("
@@ -500,7 +500,7 @@ class Empresa extends Main
 					'noPagado')");
 			$generalDb->InsertData();
 		}
-		
+
 			$generalDb->setQuery("
 				INSERT INTO `orden` (
 				`fecha` ,
@@ -542,7 +542,7 @@ class Empresa extends Main
 
 		//creamos las tablas necesarioas en la nueva base de datos
 		include_once(DOC_ROOT."/classes/db_script.php");
-		
+
 		//insertamos el rfc principal
 		$newDb->SetQuery("
 			INSERT INTO `rfc` ( 
@@ -606,7 +606,7 @@ class Empresa extends Main
 		//echo $empresaId;
 		@mkdir(DOC_ROOT."/empresas/".$empresaId, 0777);
 		@mkdir(DOC_ROOT."/empresas/".$empresaId, 0777);
-		
+
 		$this->Util()->setError(30003, "complete", "");
 		$this->Util()->PrintErrors();
 		return true;
@@ -625,8 +625,8 @@ class Empresa extends Main
 		$rows = $generalDb->GetSingle();
 		if($rows == 0)
 		{
-			unset($_SESSION["loginKey"]);	
-			unset($_SESSION["empresaId"]);	
+			unset($_SESSION["loginKey"]);
+			unset($_SESSION["empresaId"]);
 			$this->Util()->setError(10006, "error");
 			if($this->Util()->PrintErrors())
 			{
@@ -635,18 +635,18 @@ class Empresa extends Main
 		}
 		$generalDb->setQuery("SELECT usuario.empresaId, empresa.version, empresa.socioId FROM usuario
 			LEFT JOIN empresa ON usuario.empresaId = empresa.empresaId WHERE email = '".$this->email."' AND password = '".$this->password."'");
-		
+
 		$login = $generalDb->GetRow();
 		$empresaId = $login["empresaId"];
-		
-		$_SESSION["loginKey"] = $this->email;	
-		$_SESSION["empresaId"] = $empresaId;	
-		$_SESSION["version"] =  $login["version"];	
-		$_SESSION["socioId"] =  $login["socioId"];	
-		
+
+		$_SESSION["loginKey"] = $this->email;
+		$_SESSION["empresaId"] = $empresaId;
+		$_SESSION["version"] =  $login["version"];
+		$_SESSION["socioId"] =  $login["socioId"];
+
 		return true;
 	}
-	
+
 	function CancelarComprobante()
 	{
 		global $comprobante,$personal;
@@ -663,7 +663,7 @@ class Empresa extends Main
                      ELSE 'del documento' END AS tipoDocumento,rfcId            
                      FROM comprobante WHERE comprobanteId = ".$id_comprobante;
 
-		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);		
+		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		$data = unserialize(urldecode($row['data']));
 		$conceptos = unserialize(urldecode($row['conceptos']));
@@ -698,7 +698,7 @@ class Empresa extends Main
 		   if(!SEND_LOG_MOD){
                $correos = [];
            }
-		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
+		   //$send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
 		   return true;
         }
 
@@ -706,7 +706,7 @@ class Empresa extends Main
 
 	function DoLogout()
 	{
-		unset($_SESSION["loginKey"]);	
+		unset($_SESSION["loginKey"]);
 		unset($_SESSION["empresaId"]);
 	}
 
@@ -719,7 +719,7 @@ class Empresa extends Main
 		}
 		return false;
 	}
-	
+
 	function Info($userId = 0)
 	{
 		$user["empresaId"] = $_SESSION['empresaId'];
@@ -730,12 +730,12 @@ class Empresa extends Main
 			return;
 		}
 
-		$this->Util()->DBSelect($user["empresaId"])->setQuery("SELECT COUNT(*) FROM comprobante LIMIT 1");			
+		$this->Util()->DBSelect($user["empresaId"])->setQuery("SELECT COUNT(*) FROM comprobante LIMIT 1");
 		$user["expedidos"] = $this->Util()->DBSelect($user["empresaId"])->GetSingle();
 
 		return $user;
 	}
-	
+
 	function AuthUser()
 	{
 		if(!$this->IsLoggedIn())
@@ -743,16 +743,16 @@ class Empresa extends Main
 			$this->Util()->LoadPage('login');
 			return;
 		}
-		
+
 		$empresa = $this->GetEmpresaGeneralInfo($_SESSION["empresaId"]);
 		if($empresa["activo"] == 0)
 		{
 			$this->Util()->LoadPage('activar');
 		}
-		
+
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT COUNT(*) FROM comprobante WHERE empresaId =".$_SESSION["empresaId"]);
 		$facturas = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
-		
+
 		if($facturas > $empresa["limite"] && $empresa["limite"] > 0)
 		{
 			$this->Util()->LoadPage('activar');
@@ -765,21 +765,21 @@ class Empresa extends Main
 		{
 			$this->Util()->LoadPage('homepage');
 		}
-		
+
 		$info = $this->Info();
 		if($info["type"] != "admin" && $info["type"] != "moderador")
 		{
 			$this->Util()->LoadPage('sistema');
 		}
 	}
-	
+
 	function ListSucursales()
 	{
-	
+
 		$this->Util()->DB()->setQuery("SELECT * FROM sucursal WHERE empresaId = ".$this->empresaId." ORDER BY identificador");
-		
+
 		$result = $this->Util()->DB()->GetResult();
-		
+
 		foreach($result as $key => $periodo)
 		{
 		}
@@ -790,9 +790,9 @@ class Empresa extends Main
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM sucursal WHERE empresaId = ".$this->empresaId." AND sucursalId = ".$this->sucursalId);
 		$this->Util()->DBSelect($_SESSION["empresaId"])->query;
-		
+
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-		
+
 		return $result;
 	}
 
@@ -800,17 +800,17 @@ class Empresa extends Main
 	{
 		$generalDb = new DB;
 		$generalDb->setQuery("SELECT * FROM empresa WHERE empresaId = '".$empresaId."'");
-		$row = $generalDb->GetRow();	
+		$row = $generalDb->GetRow();
 
 		return $row;
-	}	
+	}
 
 	function GetPublicEmpresaInfo()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM rfc LIMIT 1");
-		
+
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-		
+
 		return $result;
 	}
     function GetListEmpresas()
