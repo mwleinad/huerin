@@ -23,6 +23,14 @@
                   </td>
               </tr>
               <tr>
+                  <td style="width: 20%">Herramienta para cancelar factura desde pendientes(reenviar solicitud de cancelacion)</td>
+                  <td style="width: 2%;text-align: left">
+                      <a href="javascript:;" class="spanAll spanDoAction" title="Cancelar facturas" data-type="resend_cancel_from_pending">
+                          <img src="{$WEB_ROOT}/images/icons/action_check.gif">
+                      </a>
+                  </td>
+              </tr>
+              <tr>
                   <td style="width: 20%">Herramienta para comprobar el status de una factura en el SAT, dado una serie y folio</td>
                   <td style="width: 2%;text-align: left">
                       <a href="javascript:;" class="spanAll spanOpenModalCheck" title="Cancelar facturas" data-type="openFormCheckStatusInvoice">

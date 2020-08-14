@@ -138,9 +138,15 @@ class UtileriaInvoice extends Comprobante
         return $response;
     }
     function findInvoicesActiveInSat(){
-        $invoices = $this->getListGeneralComprobantes(0,1,2020, 6);
+        $invoices = $this->getListGeneralComprobantes(0,1,0, 0);
         foreach($invoices as $key=>$value){
            $response = $this->findStatusInvoiceByDocument($value);
+        }
+    }
+    function resendCancelFromPending(){
+        $invoices = $this->getListComprobanteFromPending();
+        foreach($invoices as $key=>$value){
+           $this->findStatusInvoiceByDocument($value);
         }
     }
     function handleCancelationInvoiceActiveInSat(){
