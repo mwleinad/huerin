@@ -1915,10 +1915,12 @@ class Comprobante extends Producto
         }
       return $facturas;
     }
-    function getListGeneralComprobantes($status=1,$tipoComp=1,$year=0){
+    function getListGeneralComprobantes($status=1,$tipoComp=1,$year=0, $month = 1){
 	    $strFilter = "";
 	    if($year)
 	        $strFilter .=" and year(a.fecha)=$year ";
+		if($month)
+			$strFilter .=" and month(a.fecha)>= $month ";
 
 	    $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio, a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
