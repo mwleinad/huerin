@@ -767,12 +767,16 @@ class Comprobante extends Producto
 	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $motivo_cancelacion)
 	{
 		global $cancelation;
-	    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
+	    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
 			LEFT JOIN contract ON contract.contractId = comprobante.userId
 			WHERE comprobanteId = ".$id_comprobante);
-	   // echo $this->Util()->DBSelect($_SESSION["empresaId"])->getQuery();
+
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 		$xml = $row["xml"];
+
+        $sql = "select noCertificado from serie where rfcId = '".$row['rfcId']."' limit 1";
+        $this->Util()->DB()->setQuery($sql);
+        $row['noCertificado'] = $this->Util()->DB()->GetSingle();
 
         $rfcActivo = $this->getRfcActive();
 
