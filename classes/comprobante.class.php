@@ -1920,7 +1920,7 @@ class Comprobante extends Producto
 	    if($year)
 	        $strFilter .=" and year(a.fecha)=$year ";
 
-	    $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio,a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
+	    $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio, a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
                 where a.status='$status' and a.tiposComprobanteId='$tipoComp' $strFilter ";
 	    $this->Util()->DB()->setQuery($sql);
