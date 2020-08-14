@@ -101,8 +101,7 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        dd($response);
-        if($response['cancelCFDiAsyncReturn']['status']==201){ // remove $response['detail']['fault']['cod']==201
+        if($response['cancelCFDiAsyncReturn']['status']==201 || $response['cancelCFDiAsyncReturn']['status']==202){ // remove $response['detail']['fault']['cod']==201
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $data['cancelado'] = true;
             switch ($cancelado['getCFDiStatusReturn']['status']){
