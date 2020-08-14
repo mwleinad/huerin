@@ -101,13 +101,7 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        dd($response);
-        /*if($rfcR=='XAXX010101000'){
-            dd($response);
-            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-            dd($cancelado);
-        }*/
-        if($response['cancelCFDiAsyncReturn']['status']==201||$response['detail']['fault']['cod']==201){
+        if($response['cancelCFDiAsyncReturn']['status']==201){ // remove $response['detail']['fault']['cod']==201
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $data['cancelado'] = true;
             switch ($cancelado['getCFDiStatusReturn']['status']){
@@ -126,7 +120,7 @@ class Pac extends Util
             }
         }else{
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-            if($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']!='No Encontrado'){
+            if(isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']) && $response['cancelCFDiAsyncReturn']['cancelQueryData']['status']!='No Encontrado'){
                 switch($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']){
                     case 'Cancelado':
                         $data['cancelado'] =  true;
@@ -141,7 +135,7 @@ class Pac extends Util
                     break;
                 }
             }else{
-                if(strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'],'Cancelado')!==false){
+                if(isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus']) && strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'],'Cancelado')!==false){
                     $data['cancelado'] =  true;
                     $data['message'] =  "Documento cancelado correctamente.";
                 }else{
