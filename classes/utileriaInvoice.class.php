@@ -138,7 +138,7 @@ class UtileriaInvoice extends Comprobante
         return $response;
     }
     function findInvoicesActiveInSat(){
-        $invoices = $this->getListGeneralComprobantes(0,1,2020);
+        $invoices = $this->getListGeneralComprobantes(0,1,2020, 6);
         foreach($invoices as $key=>$value){
            $response = $this->findStatusInvoiceByDocument($value);
         }
