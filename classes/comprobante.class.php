@@ -1932,6 +1932,18 @@ class Comprobante extends Producto
 
 	    return $result;
     }
+	function getListComprobanteFromPending(){
+
+		$sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio, a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
+                inner join contract b on a.userId=b.contractId
+                where a.comprobanteId in (select cfdi_id from pending_cfdi_cancel)";
+		$this->Util()->DB()->setQuery($sql);
+		$result = $this->Util()->DB()->GetResult();
+		if(!is_array($result))
+			$result = [];
+
+		return $result;
+	}
 
 }//Comprobante
 

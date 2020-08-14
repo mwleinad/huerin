@@ -21,6 +21,15 @@ switch($_POST["type"]){
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
     break;
+    case 'resend_cancel_from_pending':
+        $utileriaInvoice->resendCancelFromPending();
+        if($utileriaInvoice->handleCancelationInvoiceActiveInSat()){
+            echo "ok[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }else{
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        }
     case 'openFormCheckStatusInvoice':
         $smarty->display(DOC_ROOT.'/templates/boxes/check-status-invoice-popup.tpl');
     break;
