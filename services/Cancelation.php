@@ -4,7 +4,11 @@ class Cancelation extends Main
 {
     const REJECTED = 'Solicitud rechazada';
     const CANCELLED = 'Cancelado';
-    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotive) {
+    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotive){
+        $sql = "delete from pending_cfdi_cancel where cfdi_id = '".$cfdiId."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->DeleteData();
+
         $this->Util()->DB()->setQuery("
 			INSERT INTO
 				pending_cfdi_cancel
@@ -17,11 +21,11 @@ class Cancelation extends Main
 				`uuid`,
 				`total`,
 				`cancelation_motive`
-				
+
 		)
 		VALUES
 		(
-				
+
 				'".$userId."',
 				'".date("Y-m-d H:i:s")."',
 				'".$cfdiId."',
@@ -30,7 +34,7 @@ class Cancelation extends Main
 				'".$uuid."',
 				'".$total."',
 				'".$cancelationMotive."'
-			
+
 		);");
         return $this->Util()->DB()->InsertData();
     }
