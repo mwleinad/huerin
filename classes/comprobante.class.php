@@ -459,7 +459,7 @@ class Comprobante extends Producto
 
 		//build informacion nodo emisor
 		$myEmpresa = new Empresa;
-		
+
 		if($serie["empresaId"] == 15)
 		{
 			$data["sucursalId"] = 1;
@@ -468,7 +468,7 @@ class Comprobante extends Producto
 		{
 			$data["sucursalId"] = 27;
 		}
-		
+
 		$myEmpresa->setEmpresaId($_SESSION["empresaId"], 1);
 		$myEmpresa->setSucursalId($data["sucursalId"]);
 		$nodoEmisor = $myEmpresa->GetSucursalInfo();
@@ -786,7 +786,7 @@ class Comprobante extends Producto
 			$theData = $theData[2];
 		else
 			$theData = $theData[1];
-			
+
 		$theData = explode("FechaTimbrado", $theData);
 		$theData = $theData[0];
 		$uuid = str_replace("\"", "", $theData);
@@ -816,6 +816,7 @@ class Comprobante extends Producto
 		$this->setRfcId($rfcActivo);
 		$nodoEmisorRfc = $this->InfoRfc();
 		$response = $pac->CancelaCfdi2018($user, $pw, $nodoEmisorRfc["rfc"],$row['rfc'], $uuid,$row['total'], $path, $password);
+		dd($response);
 
 		if($response['cancelado'])
 		{
@@ -1214,7 +1215,7 @@ class Comprobante extends Producto
 			$card['fecha'] = date('d-m-Y',strtotime($val['fecha']));
 			$card['subTotal'] = $val["subTotal"];
 			$card['total'] = $val["total"];
-			
+
 			$card['total_formato'] = number_format($card['total'],2,'.',',');
 			$card['subtotal_formato'] = number_format($card['subTotal'],2,'.',',');
 			$card['iva_formato'] = number_format($val['ivaTotal'],2,'.',',');
@@ -1484,7 +1485,7 @@ class Comprobante extends Producto
 		$body .= "<br><br>";
 		$body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
 
-	
+
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("select a.*,b.razonSocial as empresa from bankAccount a inner join rfc b ON a.empresaId=b.empresaId where a.empresaId = '".$compInfo["empresaId"]."' ");
         $bankData = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
@@ -1631,7 +1632,7 @@ class Comprobante extends Producto
 		$body .= "Cuenta    ".$bankData["account"]."<br>";
 		$body .= "Clabe     ".$bankData["clabe"]."<br>";
 		$body .= "REALIZADO EL DEPÓSITO FAVOR DE ENVIAR EL COMPROBANTE, PARA PODER APLICARLO A SU CUENTA.<br><br>Quedo de usted.<br><br>Saludos cordiales!<br><br>FAVOR DE CONFIRMA LA RECEPCIÓN DE ESTE CORREO.<br><br>";
-	
+
 		$body .= "Gracias.<br>";
 		$mail->Body = $body;
 
@@ -1674,10 +1675,10 @@ class Comprobante extends Producto
 
 		$this->Util()->PrintErrors();
 	}//SendComprobante
-	
+
 	function GeneratePdfOnTheFly($id_empresa, $id_rfc, $serie, $folio)
 	{
-		@unlink(DOC_ROOT.'/temp/factura_'.$id_empresa.'.pdf'); 
+		@unlink(DOC_ROOT.'/temp/factura_'.$id_empresa.'.pdf');
 		//exit;
 		$path = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/xml/';
 		$archivo = 'SIGN_'.$id_empresa.'_'.$serie.'_'.$folio.'.xml';
@@ -1695,7 +1696,7 @@ class Comprobante extends Producto
 		//delete files
 		//$mask = DOC_ROOT.'/temp/15_A_*.*';
 		//array_map('unlink', glob($mask));
-		
+
 		return $enlace;
 	}
     function getDataByXml($file_xml,$upToTable=false){

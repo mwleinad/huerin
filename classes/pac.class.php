@@ -101,6 +101,7 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+        dd($response);
         /*if($rfcR=='XAXX010101000'){
             dd($response);
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
