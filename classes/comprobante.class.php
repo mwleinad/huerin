@@ -820,8 +820,6 @@ class Comprobante extends Producto
 		$this->setRfcId($rfcActivo);
 		$nodoEmisorRfc = $this->InfoRfc();
 		$response = $pac->CancelaCfdi2018($user, $pw, $nodoEmisorRfc["rfc"],$row['rfc'], $uuid,$row['total'], $path, $password);
-		dd($response);
-
 		if($response['cancelado'])
 		{
 			if($response['conAceptacion']){
