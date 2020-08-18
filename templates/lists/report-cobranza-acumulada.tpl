@@ -18,7 +18,7 @@
 		<tr>
 			<td align="justify">{$contrato.customer}</td>
 			<td align="justify">{$contrato.razon}</td>
-			<td align="justify">{$item.name}</td>s
+			<td align="justify">{$item.name}</td>
 				{foreach from=$contrato.facturas item=factura}
 					{if $pago.isColTotal}
 						<td style="text-align: center">$ {$factura.total|number_format:2:'.':','}</td>
