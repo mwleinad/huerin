@@ -333,7 +333,7 @@ class ContractRep extends Main
             if($filter['activos'])
             {
                 $fcustomer .= " AND c.active = '1'";
-                $sqlFilter .= ' AND a.activo = "Si"';
+                $sqlFilter .= " AND a.activo = 'Si'";
             }else{
                 $sqlFilter .= " AND (c.active = '0' OR (c.active = '1' AND a.activo = 'No' ))";
             }

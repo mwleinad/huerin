@@ -2,7 +2,7 @@
   {
     "name": "Nombre cliente principal",
     "required": true,
-    "comment": "Ingresar el nombre  del cliente principal tal como aparece en el catalogo de plataforma.\n, .",
+    "comment": "Ingresar el nombre  del cliente principal tal como aparece en el catalogo de plataforma.\n",
     "field_excel": "nameContact",
     "field_bd": "customerId",
     "fillable": true,

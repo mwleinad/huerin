@@ -125,6 +125,7 @@ include_once(DOC_ROOT."/classes/activity.class.php");
 $activity = new Activity;
 include_once(DOC_ROOT."/classes/accountReport.class.php");
 $accountReport = new AccountReport();
+include_once(DOC_ROOT."/classes/layout.class.php");
 //crons
 include_once(DOC_ROOT."/classes/cronServicio.class.php");
 $cronServicio = new CronServicio();

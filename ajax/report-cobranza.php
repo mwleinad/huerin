@@ -8,7 +8,7 @@ switch($_POST["type"])
 {
 	case 'doSearch':
 			$sql = '';
-			
+
 			if($_POST['name'])
 				$sql .= ' AND name LIKE "%'.$_POST['name'].'%"';
 			if($_POST['folio'])
@@ -22,41 +22,41 @@ switch($_POST["type"])
 			$resContracts = $contract->Search($sql);
 			$contracts = array();
 			foreach($resContracts as $key => $val){
-				
+
 				$card = $val;
-				
+
 				$card['name'] = utf8_encode($val['name']);
-				
+
 				$contCat->setContCatId($val['contCatId']);
 				$card['tipo'] = $contCat->GetNameById();
-				
+
 				$contract->setContractId($val['contractId']);
 				$card['stOblig'] = $contract->GetStatusOblig();
-								
+
 				$card['status'] = ucfirst($card['status']);
-				
+
 				if($stOblig){
-					
+
 					if($stOblig == $card['stOblig'])
-						$contracts[$key] = $card;	
-						
+						$contracts[$key] = $card;
+
 				}else
 					$contracts[$key] = $card;
-				
+
 			}
-			
+
 			$totalRegs = count($contracts);
-			
+
 			echo 'ok[#]';
-			
+
 			$smarty->assign("contracts", $contracts);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-cobranza.tpl');
-			
+
 			echo '[#]';
-			
+
 			echo 'Total de Registros: <b>'.$totalRegs.'</b>';
-			
+
 	break;
 	case 'searchCobranzaMensual':
 		$mes = (int)$_POST['mes'];
@@ -179,6 +179,6 @@ switch($_POST["type"])
         $smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-acumulada.tpl');
 
     break;
-		
+
 }
 ?>
