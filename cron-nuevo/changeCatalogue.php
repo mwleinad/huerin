@@ -40,8 +40,6 @@ if(file_exists($file)) {
     foreach($result as $var) {
         $emails[$var['email']] = $var['name'];
     }
-    $emails = [];
-    $emails['isc061990@outlook.com'] =  'hector';
     $subject =  "Actualizacion de layout razones sociales";
     $body = "Se envia layout actualizado para importar nuevas razones sociales";
     $send->PrepareMultipleNotice($subject, $body, $emails, '', $file, 'layout_razones_sociales.xlsx', '','','sistema@braunhuerin.com.mx','Admnistrador de sistema', true);
