@@ -562,7 +562,6 @@ class Personal extends Main
                 );
                 break;
         }
-
         if(in_array($page, $restricted))
         {
             header("Location:".WEB_ROOT);

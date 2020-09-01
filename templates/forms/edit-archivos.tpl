@@ -18,8 +18,13 @@
 			</div>
 			<div style="clear:both"></div>
 			<hr />
-			<div class="formLine" style="text-align:center">
-				<input type="submit" id="btnArchivoDep" class="buttonForm" value="{if $post.departamentosArchivosId}Actualizar{else}Guardar{/if}" />
+			<div class="grid_16" style="text-align: center">
+				<img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
+			</div>
+			<div class="grid_16" style="text-align: center">
+				<div class="formLine"  style="display: inline-block">
+					<input type="submit" id="btnArchivoDep" class="buttonForm" value="{if $post.departamentosArchivosId}Actualizar{else}Guardar{/if}" />
+				</div>
 			</div>
 		</fieldset>
 	</form>

@@ -28,7 +28,7 @@
 
 <link rel="icon" type="image/svg+xml" href="{$WEB_ROOT}/images/icons/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="{$WEB_ROOT}/images/icons/favicon.png">
-<link rel="mask-icon" href="{$WEB_ROOT}/images/icons/-pinned-tab.svg" color="#5bbad5">
+<link rel="mask-icon" href="{$WEB_ROOT}/images/icons/safari-pinned-tab.svg" color="#5bbad5">
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="theme-color" content="#ffffff">
 
@@ -67,16 +67,6 @@
 	body { background:url({$WEB_ROOT}/images/bg.gif) repeat-x left top #e3e3e3; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-size: 13px; color: #333; }
 {/if}
 </style>
-<!--[if IE]>
-<script language="javascript" type="text/javascript" src="js/flot/excanvas.pack.js"></script>
-<![endif]-->
-<!--[if IE 6]>
-<link rel="stylesheet" type="text/css" href="css/iefix.css" />
-<script src="js/pngfix.js"></script>
-<script>
-    DD_belatedPNG.fix('#menu ul li a span span');
-</script>
-<![endif]-->
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 <script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
