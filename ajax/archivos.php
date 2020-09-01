@@ -7,11 +7,11 @@ session_start();
 
 switch($_POST["type"])
 {
-	case "addArchivo": 
+	case "addArchivo":
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->assign("post", $_POST);
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-archivos-popup.tpl');
-		break;	
+		break;
 	case "saveArchivoDepartamento":
         $departamentos->setNameArchivo($_POST['name']);
         $departamentos->setDepartamentoId($_POST['depId']);
@@ -25,6 +25,7 @@ switch($_POST["type"])
         {
             $departamentos->setDepartamentoId($_POST['depId']);
             $archivos = $departamentos->Archivos();
+			$smarty->assign("isSameDepartament", $departamentos->isSameDepartament());
             echo "ok[#]";
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
             echo "[#]";
@@ -42,13 +43,14 @@ switch($_POST["type"])
 				echo "[#]";
 				$departamentos->setDepartamentoId($_POST["depa"]);
 				$archivos = $departamentos->Archivos();
+				$smarty->assign("isSameDepartament", $departamentos->isSameDepartament());
                 $smarty->assign("id", $_POST["depa"]);
 				$smarty->assign("archivos", $archivos);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/archivosDepartamento.tpl');
 			}
 	break;
-	case "editArchivo": 
+	case "editArchivo":
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$id = $_POST['archivoId'];
 			$myArchivo = $departamentos->InfoArchivo($id);
@@ -68,6 +70,7 @@ switch($_POST["type"])
 			{
                 $departamentos->setDepartamentoId($_POST['depId']);
                 $archivos = $departamentos->Archivos();
+				$smarty->assign("isSameDepartament", $departamentos->isSameDepartament());
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo "[#]";

@@ -26,6 +26,10 @@ function SaveUpdateArchivo() {
 		type:'POST',
 		url:WEB_ROOT+"/ajax/archivos.php",
 		data:jQ('#frmArchivoDep').serialize(),
+		beforeSend: function() {
+			jQ('#loading-img').show();
+			jQ('#btnArchivoDep').hide();
+		},
 		success:function(response){
             var respSplit = response.split("[#]");
             if(respSplit[0]=='ok'){
@@ -34,6 +38,8 @@ function SaveUpdateArchivo() {
                 close_popup();
             }else
             {
+				jQ('#loading-img').hide();
+				jQ('#btnArchivoDep').show();
                 ShowStatusPopUp(respSplit[1]);
             }
 		},

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Departamentos extends Main
 {
@@ -115,6 +115,16 @@ class Departamentos extends Main
 		$row = $this->Util()->DB()->GetResult();
 		return $row;
 	}
+
+	public function isSameDepartament() {
+	    if($_SESSION['User']['isRoot'] || (int)$_SESSION['User']['level'] == 1){
+	        return true;
+        }
+	    if((int)$_SESSION['User']['departamentoId'] === (int)$this->departamentoId)
+	        return true;
+
+	    return false;
+    }
 
 	public function Edit()
 	{

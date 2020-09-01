@@ -8,6 +8,8 @@
 
 	$departamentos->setDepartamentoId($_GET["id"]);
 	$departamento = $departamentos->Info();
+    $smarty->assign("archivos", $archivos);
+    $smarty->assign("isSameDepartament", $departamentos->isSameDepartament());
 
     //comprobar si el departamento pasado tiene permiso el rol
     $permisoId = $rol->GetPermisoByTitulo($departamento['departamento']);
@@ -20,5 +22,5 @@
 
 	$archivos = $departamentos->Archivos();
 	$smarty->assign("archivos", $archivos);
-	
+
 	$smarty->assign('mainMnu','archivos');
