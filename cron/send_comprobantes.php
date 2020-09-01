@@ -24,13 +24,13 @@ if (!isset($_SESSION)) {
 }
 $_SESSION['empresaId'] = IDEMPRESA;
 $db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE date(fecha) = (CURDATE() - INTERVAL DAYOFMONTH(CURDATE()) - 1 DAY)
-    and (date_format(fecha, '%H:%i:%s') > '02:41:22')");
+    and (date_format(fecha, '%H:%i:%s') > '01:41:22') and sent='no' ");
 $comprobantes = $db->GetResult();
 $razon = new Razon();
 $totalEnviar = count($comprobantes);
 $enviado = 0;
 foreach($comprobantes as $Key => $factura) {
-    if($razon->sendComprobante33($factura["comprobanteId"], false, true, true)) {
+    if($razon->sendComprobante33($factura["comprobanteId"], false, true,false)) {
         $enviado++;
     }
 }
