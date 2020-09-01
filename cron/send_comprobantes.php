@@ -24,7 +24,7 @@ if (!isset($_SESSION)) {
 }
 $_SESSION['empresaId'] = IDEMPRESA;
 $db->setQuery("SELECT comprobanteId,serie,folio FROM comprobante WHERE date(fecha) = (CURDATE() - INTERVAL DAYOFMONTH(CURDATE()) - 1 DAY)
-    and (date_format(fecha, '%H:%i:%s') > '01:41:22')");
+    and (date_format(fecha, '%H:%i:%s') > '01:41:22') and sent='no' ");
 $comprobantes = $db->GetResult();
 $razon = new Razon();
 $totalEnviar = count($comprobantes);
