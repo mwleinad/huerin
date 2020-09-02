@@ -826,7 +826,7 @@ class Contract extends Main
     /**
      * Info
      *
-     * @return devuelve la informacion de un contrato con respecto a su id
+     * @return $row la informacion de un contrato con respecto a su id
      */
     public function Info()
     {
@@ -856,8 +856,29 @@ class Contract extends Main
         WHERE
           contractId = '" . $this->contractId . "'"
         );
-        //echo $this->Util()->DB()->getQuery();
         $row = $this->Util()->DB()->GetRow();
+        if($row) {
+            $row['rfcFacturacion'] = $row['rfc'];
+            $row['nameFacturacion'] = $row['name'];
+            $row['cpFacturacion'] = $row['cp'];
+            $row['idFacturacion'] = $row['contractId'];
+            if ((int)$row['useAlternativeRzForInvoice'] === 1) {
+                if ((int)$row['alternativeRzId'] > 0) {
+                    $alternativeRzId = $row['alternativeRzId'];
+                    $this->Util()->DB()->setQuery("select contractId,rfc, name, cpAddress from contract where contractId = '$alternativeRzId' ");
+                    $alternativeData = $this->Util()->DB()->GetRow();
+                    $row['rfcFacturacion'] = $alternativeData['rfc'];
+                    $row['nameFacturacion'] = $alternativeData['name'];
+                    $row['cpFacturacion'] = $alternativeData['cp'];
+                    $row['idFacturacion'] = $alternativeData['contractId'];
+                } elseif ((int)$row['alternativeRzId'] === 0) {
+                    $row['rfcFacturacion'] = $row['alternativeRfc'];
+                    $row['nameFacturacion'] = $row['alternativeRz'];
+                    $row['cpFacturacion'] = $row['alternativeCp'];
+                }
+            }
+        }
+
         return $row;
     }
 

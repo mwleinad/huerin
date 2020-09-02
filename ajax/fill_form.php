@@ -38,7 +38,6 @@ switch($_POST["type"])
 		$userId = $_POST["value"];
 		$contract->setContractId($userId, 1);
 		$result = $contract->Info();
-		print_r($result);
 		if(!$result)
 		{
 			echo "{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}{#}";
@@ -47,7 +46,7 @@ switch($_POST["type"])
 		echo "{#}";
 		echo "{#}";
 		echo "{#}";
-		echo $result["name"];
+		echo $result["nameFacturacion"];
 		echo "{#}";
 		echo $result["address"];
 		echo "{#}";
@@ -59,7 +58,7 @@ switch($_POST["type"])
 		echo "{#}";
 		echo $result["municipioAddress"];
 		echo "{#}";
-		echo $result["cpAddress"];
+		echo $result["cpFacturacion"];
 		echo "{#}";
 		echo $result["estadoAddress"];
 		echo "{#}";
@@ -72,9 +71,9 @@ switch($_POST["type"])
 		// echo $result["emailContactoAdministrativo"];
 		echo $result["email"];
 		echo "{#}";
-		echo $result["rfc"];
+		echo $result["rfcFacturacion"];
 		echo "{#}";
-		echo $result["contractId"];
+		echo $result["idFacturacion"];
 		echo "{#}";
 
 	break;

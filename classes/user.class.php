@@ -190,16 +190,42 @@ class User extends Sucursal
 		$result["noInt"] = $data["noIntAddress"];
 		$result["colonia"] = $data["coloniaAddress"];
 		$result["municipio"] = $data["municipioAddress"];
-		$result["cp"] = $data["cpAddress"];
+		$result["cp"] = $data["cp"]; // cp dinamico
 		$result["estado"] = $data["estadoAddress"];
-		$result["localidad"] = $data["name"];
-		$result["referencia"] = $data["name"];
+		$result["localidad"] = $data["nameFacturacion"];
+		$result["referencia"] = $data["nameFacturacion"];
 		$result["pais"] = $data["paisAddress"];
 		$result["email"] = $data["emailContactoAdministrativo"];
 		$result["email2"] = $data["email"];
-		$result["rfc"] = $data["rfc"];
+		$result["rfc"] = $data["rfcFacturacion"];
 		$result["cxcSaldoFavor"] = $data["cxcSaldoFavor"];
-		$result["userId"] = $this->userId;
+		$result["userId"] = $data['contractId'];
+		$result["customerId"] = $data["customerId"];
+
+		return $result;
+	}
+	function GetUserForInvoice()
+	{
+		$myContract = new Contract;
+		$myContract->setContractId($this->userId);
+		$data = $myContract->Info();
+
+		$result["nombre"] = $data["nameFacturacion"];// nombre dinamico
+		$result["calle"] = $data["address"];;
+		$result["noExt"] = $data["noExtAddress"];
+		$result["noInt"] = $data["noIntAddress"];
+		$result["colonia"] = $data["coloniaAddress"];
+		$result["municipio"] = $data["municipioAddress"];
+		$result["cp"] = $data["cpFacturacion"]; // cp dinamico
+		$result["estado"] = $data["estadoAddress"];
+		$result["localidad"] = $data["nameFacturacion"];
+		$result["referencia"] = $data["nameFacturacion"];
+		$result["pais"] = $data["paisAddress"];
+		$result["email"] = $data["emailContactoAdministrativo"];
+		$result["email2"] = $data["email"];
+		$result["rfc"] = $data["rfcFacturacion"]; // rfcDinamico;
+		$result["cxcSaldoFavor"] = $data["cxcSaldoFavor"];
+		$result["userId"] = $data['idFacturacion']; // id dinamico
 		$result["customerId"] = $data["customerId"];
 
 		return $result;

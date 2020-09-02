@@ -148,7 +148,7 @@ $monthsInt = array(
     11 => "Nov",
     12 => "Dic"
 );
-					
+
 $mime_types = array("323" => "text/h323",
 "acx" => "application/internet-property-stream",
 "ai" => "application/postscript",
@@ -392,7 +392,7 @@ $titlesPages = [
 
     //facturacion
     'sistema_consultar-facturas'=>'Consulta de Comprobantes',
-    'cfdi33-generate'=>'Nuenva factura',//cfdi 3.3
+    'cfdi33-generate'=>'Nueva factura',//cfdi 3.3
     'cfdi33-generate-pdf'=>'Pdf de factura',//cfdi 3.3
     'comp-from-xml'=>'Comprobantes desde xml',//cfdi 3.3
 
