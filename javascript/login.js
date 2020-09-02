@@ -1,10 +1,10 @@
 Event.observe(window, 'load', function() {
 	Event.observe($('doLogin'), "click", DoLogin);
-	Event.observe($('username'), 'keypress', function(event){ 
+	Event.observe($('username'), 'keypress', function(event){
 		var key = event.which || event.keyCode;
 		if(key == 13) DoLogin();
 	});
-	Event.observe($('passwd'), 'keypress', function(event){ 
+	Event.observe($('passwd'), 'keypress', function(event){
 		var key = event.which || event.keyCode;
 		if(key == 13) DoLogin();
 	});
@@ -12,8 +12,8 @@ Event.observe(window, 'load', function() {
 });
 
 function DoLogin()
-{	
-	new Ajax.Request(WEB_ROOT+'/ajax/usuario.php', 
+{
+	new Ajax.Request(WEB_ROOT+'/ajax/usuario.php',
 	{
 		method:'post',
 		parameters: $('frmLogin').serialize(true),
@@ -37,8 +37,8 @@ function DoLogin()
 }
 
 function ClosePopUp(){
-	
+
 	$('fview').hide();
 	grayOut(false);
-		
+
 }

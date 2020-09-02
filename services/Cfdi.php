@@ -193,7 +193,7 @@ class Cfdi extends Comprobante
         //TODO might move to constructor
         if(!$xml->isNomina()){
             $vs->setUserId($userId, 1);
-            $nodoReceptor = $vs->GetUserInfo($userId);
+            $nodoReceptor = $vs->GetUserForInvoice($userId);
             $nodoReceptor["rfc"] = str_replace("&AMP;", "&", $nodoReceptor["rfc"]);
         } else {
             $usuario = new Usuario;
@@ -404,7 +404,7 @@ class Cfdi extends Comprobante
         $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT comprobanteId FROM comprobante ORDER BY comprobanteId DESC LIMIT 1");
         $comprobanteId = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
-        
+
         //finally we update the 'consecutivo
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE serie SET consecutivo = consecutivo + 1 WHERE serieId = ".$serie["serieId"]);
         $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
