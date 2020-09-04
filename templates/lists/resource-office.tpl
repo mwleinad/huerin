@@ -14,3 +14,8 @@
     {/foreach}
     </tbody>
 </table>
+<div class="pagination" style="text-align: right">
+    {if count($registros.pages)}
+        {include file="{$DOC_ROOT}/templates/lists/pages_new.tpl" pages=$registros.pages}
+    {/if}
+</div>
