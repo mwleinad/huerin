@@ -226,6 +226,7 @@ class Inventory extends Articulo
 
     public function enumerateResource(){
         $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM office_resource WHERE status='Activo'");
+
         $total = $this->Util()->DB()->GetSingle();
         $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/resource-office");
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
@@ -235,7 +236,6 @@ class Inventory extends Articulo
 
         foreach($result as $key=>$var)
             $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
-
 
         $data["items"] = $result;
         $data["pages"] = $pages;
@@ -274,11 +274,12 @@ class Inventory extends Articulo
                  LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId  WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
                  WHERE a.status='Activo' $filtro";
 
-        $this->Util()->DB()->setQuery($sql);
-        $total = $this->Util()->DB()->GetSingle();
-        $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/resource-office");
-        $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-
+        if(!isset($_POST['showAll'])) {
+            $this->Util()->DB()->setQuery($sql);
+            $total = $this->Util()->DB()->GetSingle();
+            $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/resource-office");
+            $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
+        }
         $sql  = "SELECT a.* FROM office_resource a 
                  LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
                  WHERE a.status = 'Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC ".$sql_add;

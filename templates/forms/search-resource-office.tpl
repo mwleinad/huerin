@@ -50,6 +50,12 @@
                     <input type="text" id="fecha_compra_fin" name="fecha_compra_fin" class="largeInput" onclick="CalendarioSimple(this)"  style="float: left;display: table-cell!important;" />
                 </div>
             </div>
+            <div class="grid_4">
+                <div class="grid_16 text-left "><label for="" class="label-form">Mostrar todas las filas</label></div>
+                <div class="grid_16" style="display: table;border-collapse: separate;position: relative">
+                    <input type="checkbox" id="showAll" name="showAll" class="largeInput" />
+                </div>
+            </div>
         </div>
         <div class="grid_16">
             <img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading"/>

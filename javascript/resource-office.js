@@ -198,7 +198,8 @@ function FillField(self,id){
     jQ('#suggestionDivResponsable').html('');
 }
 jQ(document).on('click','div#suggestionDivResponsable .suggestionResponsable,div#suggestionDivResponsable .closeSuggestResponsableDiv',SuggestListenerPersonal);
-
+jQ(document).on('change', '#showAll', searchResource)
+;
 function close_popup(){
     $('fview').innerHTML='';
     $('fview').hide();
