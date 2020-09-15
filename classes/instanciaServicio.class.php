@@ -302,7 +302,9 @@ class InstanciaServicio extends  Servicio
 
         foreach($data as $key => $value)
         {
-            $costo = 0;
+
+
+            $costo = $value['factura'] == 'Si' ?  $value['costoWorkflow'] : 0;
             $dateWorkflow =  $value['anio']."-".$value['mes']."-01";
             if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
                 $costo = $value['costo'];
