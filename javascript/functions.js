@@ -82,10 +82,13 @@ jQ(document).ready(function () {
 						}
 					}
 				}).on('change', function(e) {
-					e.val === '0'
-					? jQ('#div_other_data').show()
-					: jQ('#div_other_data').hide();
-
+					if(e.val === '0') {
+						jQ('#div_other_data').show()
+						jQ('#div_separate_invoice').hide();
+					} else {
+						jQ('#div_other_data').hide();
+						jQ('#div_separate_invoice').show();
+					}
 				});
 			} else {
 				jQ('#alternative_rz_id').select2('destroy');

@@ -121,7 +121,7 @@ class InvoiceService extends Cfdi{
             $ins["isRifNoInstance"] =  true;
             return $ins;
         }
-         return false;   
+         return false;
     }
     function GetCurrentWorkflow($id,$date){
         $mes =  date('m',strtotime($date));
@@ -132,16 +132,27 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetRow();
     }
-    function GetFilterServicesByContract(){
+    function GetFilterServicesByContract() {
         $this->resetServiciosToConceptos();
         $id =  $this->currentContract["contractId"];
+        //revisar empresa si presta datos para facturacion
+        $sqlRev = "select contractId from contract where alternativeRzId = '$id' 
+                   and createSeparateInvoice = 0 and useAlternativeRzForInvoice = 1 ";
+        $this->Util()->DB()->setQuery($sqlRev);
+        $res = $this->Util()->DB()->GetResult();
+
+        $childs = $res ? array_column($res, 'contractId') : [];
+        array_push($childs, $id);
+        $strId =  implode(',', $childs);
         $sql = "select a.*,b.claveSat,b.nombreServicio from servicio a
                 inner join tipoServicio b on a.tipoServicioId = b.tipoServicioId 
-                where a.contractId='$id' and b.status='1' 
-                and a.status in('activo','bajaParcial')
+                where a.contractId in($strId) and b.status='1' 
+                and a.status in('activo','bajaParcial') and week(inicioFactura) is not null
                 and a.costo>0 ";
        $this->Util()->DB()->setQuery($sql);
        $results =  $this->Util()->DB()->GetResult();
+       $servicesIn = [];
+       $services = [];
        foreach($results as $item){
            if(!$this->Util()->isValidateDate($item["inicioFactura"],'Y-m-d'))
                 continue;
@@ -151,14 +162,14 @@ class InvoiceService extends Cfdi{
            if($firstDayInicioFactura>$firstDayCurrentDate)
                 continue;
 
-                
+
            $instancia = $this->GetCurrentWorkflow($item["servicioId"],date('Y-m-d'));
            $instancia =  !$instancia?$this->ProcessIfIsRif($item,date('Y-m-d')):$instancia;
            if(!$instancia)
                 continue;
-           
+
            if($instancia["comprobanteId"])
-                continue; 
+                continue;
 
            if($item["status"]=="bajaParcial"){
                if(!$this->Util()->isValidateDate($item["lastDateWorkflow"],'Y-m-d'))
@@ -167,12 +178,20 @@ class InvoiceService extends Cfdi{
                $firstDayLastDateWorkflow = $this->Util()->getFirstDate($item["lastDateWorkflow"]);
                if($firstDayCurrentDate>$firstDayLastDateWorkflow)
                 continue;
-            } 
+           }
+           //$idTypeService =  $item['tipoServicioId'];
+           //if (!in_array($idTypeService, $servicesIn)) {
+               //array_push($servicesIn, $idTypeService);
            $item["workflowId"] = $instancia["instanciaServicioId"];
            $item["date"] = $instancia["date"];
            $item["isRifNoInstance"] = $instancia["isRifNoInstance"];
            $this->serviciosToConceptos[] = $item;
-       }    
+              // $services[$idTypeService] =  $item;
+           /*} else {
+               $services[$idTypeService]['costo'] += $item['costo'];
+           }*/
+       }
+
     }
     function GenerateArrayData(){
         $this->data["condicionesDePago"] = "";
@@ -185,7 +204,7 @@ class InvoiceService extends Cfdi{
         $this->data["porcentajeIEPS"] = 0 ;
         $this->data["formaDePago"] = '99';
         $this->data["NumCtaPago"] = $this->currentContrato["noCuenta"];
-        
+
         $this->data['userId'] = $this->currentContract["contractId"];
         $this->data['format'] = 'generar';
         $this->data['metodoDePago'] = 'PPD';
@@ -193,7 +212,7 @@ class InvoiceService extends Cfdi{
         $this->data['cfdiRelacionadoFolio'] = null;
         $this->data['tipoRelacion'] = '04';
         $this->data['usoCfdi'] = 'G03';
-            
+
         $sql  ="SELECT * FROM serie WHERE rfcId = '".$this->getRfcId()."' and tiposComprobanteId=1
                 ORDER BY serieId ASC LIMIT 1";
         $this->Util()->DB()->setQuery($sql);
@@ -347,6 +366,11 @@ class InvoiceService extends Cfdi{
     function GenerateInvoices($id=0){
         $contratos =  $this->GetContracts($id);
         foreach($contratos as $contrato){
+            //si el contrato tiene createSeparateInvoice  == 0 se ignora
+            //por que sera procesado por otra empresa
+            if($contrato['createSeparateInvoice'] == '0')
+                continue;
+
             $this->resetEmisor();
             $this->resetData();
             $this->resetReceptor();
@@ -366,7 +390,7 @@ class InvoiceService extends Cfdi{
                 $this->CreateInvoice13();
             }
 
-    
+
             $this->ChangeLastProcessInvoice();
             $this->GenerateSendLog();
         }

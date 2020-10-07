@@ -106,6 +106,10 @@
 					<label>&nbsp;</label>
 					<input type="hidden" class="smallInput" name="alternative_rz_id" id="alternative_rz_id" />
 				</div>
+				<div class="grid_12" id="div_separate_invoice" style="display: {if $contractInfo.alternativeRzId > 0 && $contractInfo.useAlternativeRzForInvoice eq '1'}block{else}none{/if}">
+					<input type="checkbox" name="createSeparateInvoice" id="createSeparateInvoice" {if $contractInfo.createSeparateInvoice}checked{/if} />
+					Crear factura independiente
+				</div>
 				<div class="grid_12" id ="div_other_data" style="display: none">
 					<div class="container_12">
 						<div class="grid_12">
