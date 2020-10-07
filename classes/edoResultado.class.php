@@ -37,6 +37,11 @@ class EdoResultado extends ReporteBonos
                     'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
                     ]
             );
+            $stylesPorcent = array(
+                'numberformat' => [
+                    'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00,
+                ]
+            );
             $stylesTotal = array(
                 'font' => [
                      'bold' => true,
@@ -68,12 +73,17 @@ class EdoResultado extends ReporteBonos
                     foreach ($var['meses'] as $keyMes => $mes) {
                         $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                        $tmp = $row + 1;
+
+                        $porcent = !$gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'] ? 0 : $mes['total'] / $gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'];
+                        $sheet->setCellValueByColumnAndRow($col, $tmp, $porcent)
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$tmp)->applyFromArray($stylesPorcent);
                         $col++;
                     }
                     $endAcum = PHPExcel_Cell::stringFromColumnIndex($col-1).$row;
                     $sheet->setCellValueByColumnAndRow($col, $row, "= sum($initAcum : $endAcum)" )
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
-                    $row++;
+                    $row +=2;
                 }
                 $endRow =  $row-1;
                 $sheet->setCellValueByColumnAndRow(1, $row, "Total $prefix " . $ky)
