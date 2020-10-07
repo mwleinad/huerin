@@ -373,6 +373,12 @@ class Contract extends Main
         $this->qualification = $value;
     }
 
+    private $separateInvoice;
+    public function setSeparateInvoice($value)
+    {
+        $this->separateInvoice = $value;
+    }
+
     private $contractId;
     private $customerId;
     private $personalId;
@@ -952,6 +958,7 @@ class Contract extends Main
           alternativeRz,
           alternativeRfc,
           alternativeCp,
+          createSeparateInvoice,
           qualification
         )
         VALUES
@@ -1011,6 +1018,7 @@ class Contract extends Main
           '" . $this->alternativeRz . "',
           '" . $this->alternativeRfc . "',
           '" . $this->alternativeCp . "',
+          '" . $this->separateInvoice . "',
           '" . $this->qualification . "'
           
           )"
@@ -1147,7 +1155,6 @@ class Contract extends Main
         if (isset($_POST['claveIsn']))
             $contactos .= "claveIsn = '" . $this->claveIsn. "',";
 
-
         //Actualizamos
         $sql = "UPDATE
 			  contract
@@ -1161,6 +1168,7 @@ class Contract extends Main
 			  `name` = '" . $this->name . "',
 			  direccionComercial = '" . $this->direccionComercial . "',
               $contactos
+              createSeparateInvoice = '".$this->separateInvoice."',
 			  noExtComercial = '" . $this->noExtComercial . "',
 			  noIntComercial = '" . $this->noIntComercial . "',
 			  coloniaComercial = '" . $this->coloniaComercial . "',
