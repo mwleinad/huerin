@@ -906,6 +906,12 @@ class ReporteBonos extends Main
         $new = [];
         foreach($gerentes as $key => $value) {
             $departamentos = [(int)$value['departamentoId']];
+            if((int)$value['departamentoId'] === 8)
+                array_push($departamentos, 24);
+
+            if((int)$value['departamentoId'] === 24)
+                array_push($departamentos, 8);
+
             $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
             $cad['name'] = $value['name'];
             $cad['personalId'] = $value['personalId'];
@@ -944,7 +950,7 @@ class ReporteBonos extends Main
             }
             //iterar sobre servicios
             foreach($subordinados as $keySub => $sub) {
-                $childrenSubId = !is_array($value['subordinadosId']) ? [] : $value['subordinadosId'];
+                $childrenSubId = !is_array($sub['subordinadosId']) ? [] : $sub['subordinadosId'];
                 array_push($childrenSubId, $sub['personalId']);
                 $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
                 $subQueryChild = sprintf($subqueryFormat, $subStringChild);

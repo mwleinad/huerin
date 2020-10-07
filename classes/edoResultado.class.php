@@ -47,11 +47,18 @@ class EdoResultado extends ReporteBonos
             );
             $row++;
             foreach ($gerente['totales'] as $ky => $total) {
-                $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('Ingresos ' . $ky))
+                $prefix = $ky == 'nominas' ?  'Gastos ' : 'Ingresos ';
+                $sheet->setCellValueByColumnAndRow(1, $row, strtoupper($prefix . $ky))
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
                 $row++;
                 $initRow = $row;
-                foreach ($total as $var) {
+                $firstFlag =  true;
+                $first = [];
+                foreach ($total as $kt => $var) {
+                    if($firstFlag) {
+                        $firstFlag = false;
+                        $first = $total[$kt];
+                    }
                     $col= 0;
                     $sheet->setCellValueByColumnAndRow($col, $row, $var['nameRol']);
                     $col++;
@@ -69,15 +76,20 @@ class EdoResultado extends ReporteBonos
                     $row++;
                 }
                 $endRow =  $row-1;
-                $sheet->setCellValueByColumnAndRow(1, $row, 'Total ingresos ' . $ky)
+                $sheet->setCellValueByColumnAndRow(1, $row, "Total $prefix " . $ky)
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
-
-                for($colTotal = 2; $colTotal<=count($gerente['headerMeses']) + 1; $colTotal++) {
+                $colTotal = 2;
+                foreach ($first['meses'] as $keyMesTotal => $mesTotal) {
+                    $sheet->setCellValueByColumnAndRow($colTotal, $row, isset($mesTotal['total']) ? $mesTotal['total'] : 0)
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
+                    $colTotal++;
+                }
+                /*for($colTotal = 2; $colTotal<=count($gerente['headerMeses']) + 1; $colTotal++) {
                     $initSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$initRow;
                     $endSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$endRow;
                     $sheet->setCellValueByColumnAndRow($colTotal, $row, "= SUM($initSuma : $endSuma)")
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
-                }
+                }*/
                 $row +=2;
             }
             $hoja++;
