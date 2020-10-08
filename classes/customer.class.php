@@ -1169,7 +1169,7 @@ class Customer extends Main
                    INNER JOIN regimen ON contract.regimenId = regimen.regimenId
                    LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
                    LEFT JOIN(select actividad_comercial.id as ac_id, actividad_comercial.name as ac_name,
-                            sector.id as sector_id, subsector.id as subsector_id from actividad_comercial
+                            sector.id as sector_id, subsector.id as subsector_id, sector.name as sec_name, subsector.name as subsec_name from actividad_comercial
                             inner join subsector on actividad_comercial.subsector_id = subsector.id
                             inner join sector on subsector.sector_id = sector.id 
                             ) as ac  on contract.actividadComercialId = ac.ac_id 
