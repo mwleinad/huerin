@@ -90,6 +90,18 @@
     "field_bd": "activo"
   },
   {
+    "name": "Sector",
+    "comment": "",
+    "field_excel": "sec_name",
+    "field_bd": ""
+  },
+  {
+    "name": "Subsector",
+    "comment": "",
+    "field_excel": "subsec_name",
+    "field_bd": ""
+  },
+  {
     "name": "Actividad economica / comercial",
     "comment": "",
     "field_excel": "ac_name",
