@@ -174,6 +174,7 @@ class EdoResultado extends ReporteBonos
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
 
                 $row++;
+                $devAcumulados = [];
                 foreach ($gerente['totales'] as $ky => $total) {
                     switch($ky) {
                         case 'nominas':
@@ -189,10 +190,9 @@ class EdoResultado extends ReporteBonos
                     $sheet->setCellValueByColumnAndRow(1, $row, strtoupper($prefix))
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->getFont()->setBold(true);
                     $row++;
-                    $initRow = $row;
                     $firstFlag = true;
                     $first = [];
-                    $devAcumulados = [];
+
                     foreach ($total as $kt => $var) {
                         if ($firstFlag) {
                             $firstFlag = false;
@@ -214,11 +214,11 @@ class EdoResultado extends ReporteBonos
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
                             $col++;
                         }
-                        $endAcum = PHPExcel_Cell::stringFromColumnIndex($col - 1) . $row;
                         $strSumColumns = implode('+', $sumColumns);
                         $sheet->setCellValueByColumnAndRow($col, $row, "=$strSumColumns")
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                         $currentDevAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        
                         if($ky === 'devengados')
                             $devAcumulados[$kt] = $currentDevAcum;
 
