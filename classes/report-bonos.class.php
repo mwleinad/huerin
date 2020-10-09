@@ -948,32 +948,39 @@ class ReporteBonos extends Main
                 $cad2['meses'] = $totales[$ks];
                 array_push($cad['totales'][$ks], $cad2);
             }
-            //iterar sobre servicios
-            foreach($subordinados as $keySub => $sub) {
-                $childrenSubId = !is_array($sub['subordinadosId']) ? [] : $sub['subordinadosId'];
-                array_push($childrenSubId, $sub['personalId']);
-                $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
-                $subQueryChild = sprintf($subqueryFormat, $subStringChild);
+            // si tiene seleccionado un responsable debe buscar la de sus subordinados
+            if($ftr["responsableCuenta"]) {
+                foreach ($subordinados as $keySub => $sub) {
+                    $childrenSubId = !is_array($sub['subordinadosId']) ? [] : $sub['subordinadosId'];
+                    array_push($childrenSubId, $sub['personalId']);
+                    $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
+                    $subQueryChild = sprintf($subqueryFormat, $subStringChild);
 
-                $this->Util()->DB()->setQuery($subQueryChild);
-                $contratos = $this->Util()->DB()->GetResult();
-                $idContratos =  count($contratos) > 0 ? array_column($contratos, 'contractId') : [];
-                $contratosString = count($idContratos) > 0 ? implode(',', $idContratos) : '0';
+                    $this->Util()->DB()->setQuery($subQueryChild);
+                    $contratos = $this->Util()->DB()->GetResult();
+                    $idContratos = count($contratos) > 0 ? array_column($contratos, 'contractId') : [];
+                    $contratosString = count($idContratos) > 0 ? implode(',', $idContratos) : '0';
 
-                $queryChild = sprintf($queryFormat, $contratosString, $dep);
-                $this->Util()->DB()->setQuery($queryChild);
-                $serviciosChild = $this->Util()->DB()->GetResult();
-                $totalNominas  = $personal->getTotalSalarioByMultipleId($childrenSubId);
-                $totalesChild =  $this->getTotales($serviciosChild, $year, $meses, $mesesBase, $totalNominas);
+                    $queryChild = sprintf($queryFormat, $contratosString, $dep);
+                    $this->Util()->DB()->setQuery($queryChild);
+                    $serviciosChild = $this->Util()->DB()->GetResult();
+                    $totalNominas = $personal->getTotalSalarioByMultipleId($childrenSubId);
+                    $totalesChild = $this->getTotales($serviciosChild, $year, $meses, $mesesBase, $totalNominas);
 
-                foreach($totalesChild as $keyChild => $varChild) {
-                    $cadChild['name'] = $sub['name'];
-                    $cadChild['nameRol'] = $sub['nameRol'];
-                    $cadChild['meses'] = $totalesChild[$keyChild];
-                    array_push($cad['totales'][$keyChild], $cadChild);
+                    foreach ($totalesChild as $keyChild => $varChild) {
+                        $cadChild['name'] = $sub['name'];
+                        $cadChild['nameRol'] = $sub['nameRol'];
+                        $cadChild['meses'] = $totalesChild[$keyChild];
+                        array_push($cad['totales'][$keyChild], $cadChild);
+                    }
                 }
             }
             $new[] = $cad;
+        }
+        if (!$ftr['responsableCuenta']) {
+            $data['items'] = $new;
+            $data['headers'] = $headerMeses;
+            return $data;
         }
         return $new;
     }
