@@ -13,96 +13,232 @@ class EdoResultado extends ReporteBonos
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
-        foreach ($gerentes as $key => $gerente) {
-            if ($hoja != 0)
-                $sheet = $book->createSheet($hoja);
+        // styles
+        $styles = array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+            ]
+        );
+        $stylesPorcent = array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00,
+            ],
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '45BB2B')
+            ),
+        );
+        $stylesTotal = array(
+            'font' => [
+                'bold' => true,
+            ],
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+            ]
+        );
+        //
+        if (!$ftr['responsableCuenta']) {
+            $sheet = $book->createSheet($hoja);
             $row = 1;
             $col = 0;
-            $sheet->setTitle(strtoupper(substr($gerente["name"], 0, 6)));
+            $sheet->setTitle('consolidado');
             $sheet->setCellValueByColumnAndRow($col, $row, "Area")
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
             $sheet->setCellValueByColumnAndRow(++$col, $row, "Encargado")
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
             $col++;
-            foreach($gerente['headerMeses'] as $head) {
+            foreach($gerentes['headers'] as $head) {
                 $sheet->setCellValueByColumnAndRow($col, $row, ucfirst(strtolower($head['name'])))
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+                $sheet->setCellValueByColumnAndRow(++$col, $row, '%')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
                 $col++;
             }
             $sheet->setCellValueByColumnAndRow($col, $row, "Acumulados")
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
-
-            $styles = array(
-                'numberformat' => [
-                    'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
-                    ]
-            );
-            $stylesPorcent = array(
-                'numberformat' => [
-                    'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00,
-                ]
-            );
-            $stylesTotal = array(
-                'font' => [
-                     'bold' => true,
-                    ],
-                'numberformat' => [
-                    'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
-                    ]
-            );
             $row++;
-            foreach ($gerente['totales'] as $ky => $total) {
-                $prefix = $ky == 'nominas' ?  'Gastos ' : 'Ingresos ';
-                $sheet->setCellValueByColumnAndRow(1, $row, strtoupper($prefix . $ky))
+
+            $items = $gerentes['items'];
+            $totales = [];
+            foreach($items as $key => $gerente) {
+                foreach ($gerente['totales'] as $ky => $total) {
+                    $totales[$ky][$gerente['personalId']] = $total[0];
+                }
+            }
+            $granTotal = [];
+            $devAcumulados = [];
+            foreach($totales as $key => $total) {
+                switch($key) {
+                    case 'nominas':
+                        $prefix = 'Gastos nominas';
+                    break;
+                    case 'utilidades':
+                        $prefix = 'Utilidades';
+                    break;
+                    default:
+                        $prefix = 'Ingresos '.$key;
+                    break;
+                }
+                $sheet->setCellValueByColumnAndRow(1, $row, strtoupper($prefix))
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
                 $row++;
                 $initRow = $row;
-                $firstFlag =  true;
-                $first = [];
-                foreach ($total as $kt => $var) {
-                    if($firstFlag) {
-                        $firstFlag = false;
-                        $first = $total[$kt];
-                    }
+                foreach($total as $kt => $var) {
                     $col= 0;
                     $sheet->setCellValueByColumnAndRow($col, $row, $var['nameRol']);
                     $col++;
                     $sheet->setCellValueByColumnAndRow($col, $row, $var['name']);
                     $col++;
-                    $initAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                    $sumColumns = [];
                     foreach ($var['meses'] as $keyMes => $mes) {
+                        $sumCom = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        array_push($sumColumns, $sumCom);
                         $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
-                        $tmp = $row + 1;
-
-                        $porcent = !$gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'] ? 0 : $mes['total'] / $gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'];
-                        $sheet->setCellValueByColumnAndRow($col, $tmp, $porcent)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$tmp)->applyFromArray($stylesPorcent);
+                        $porcent = !$totales['devengados'][$kt]['meses'][$keyMes]['total'] ? 0 : $mes['total'] / $totales['devengados'][$kt]['meses'][$keyMes]['total'];
+                        $sheet->setCellValueByColumnAndRow(++$col, $row, $porcent)
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
                         $col++;
                     }
-                    $endAcum = PHPExcel_Cell::stringFromColumnIndex($col-1).$row;
-                    $sheet->setCellValueByColumnAndRow($col, $row, "= sum($initAcum : $endAcum)" )
+
+                    $strSumColumns = implode('+', $sumColumns);
+                    $sheet->setCellValueByColumnAndRow($col, $row, "=$strSumColumns")
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
-                    $row +=2;
+                    $currentDevAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                    if($key === 'devengados')
+                        $devAcumulados[$kt] = $currentDevAcum;
+
+                    $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror($currentDevAcum/$devAcumulados[$kt], 0)")
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
+                    $row +=1;
+
                 }
-                $endRow =  $row-1;
-                $sheet->setCellValueByColumnAndRow(1, $row, "Total $prefix " . $ky)
-                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+                $endRow = $row - 1;
                 $colTotal = 2;
-                foreach ($first['meses'] as $keyMesTotal => $mesTotal) {
-                    $sheet->setCellValueByColumnAndRow($colTotal, $row, isset($mesTotal['total']) ? $mesTotal['total'] : 0)
-                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
-                    $colTotal++;
+                foreach($gerentes['headers'] as $kh => $hd) {
+                   $initSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$initRow;
+                   $endSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$endRow;
+                   $sheet->setCellValueByColumnAndRow($colTotal, $row, "= SUM($initSuma : $endSuma)")
+                       ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
+                   $colTotal +=2;
+                   $granTotal[$key]['totales'][] = "= SUM($initSuma : $endSuma)";
                 }
-                /*for($colTotal = 2; $colTotal<=count($gerente['headerMeses']) + 1; $colTotal++) {
-                    $initSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$initRow;
-                    $endSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$endRow;
-                    $sheet->setCellValueByColumnAndRow($colTotal, $row, "= SUM($initSuma : $endSuma)")
-                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
-                }*/
                 $row +=2;
             }
-            $hoja++;
+            $row += 3;
+
+            $colsGranDevengados = [];
+            foreach($granTotal as $gk => $gran) {
+                $col = 1;
+                $sheet->setCellValueByColumnAndRow($col, $row, "Gran total ". $gk);
+                $col++;
+                foreach($gran['totales'] as $kgt => $gt) {
+                    $sheet->setCellValueByColumnAndRow($col, $row, $gt)
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesTotal);
+                    if($gk === 'devengados') {
+                        $colDev = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        $colsGranDevengados[$kgt] = $colDev;
+                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($colDev) / $colDev,0)")
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
+                    } else {
+                        $currentCol = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($currentCol) / $colsGranDevengados[$kgt],0)")
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
+                    }
+                    $col++;
+                }
+                $row++;
+            }
+
+
+        } else {
+            foreach ($gerentes as $key => $gerente) {
+                if ($hoja != 0)
+                    $sheet = $book->createSheet($hoja);
+                $row = 1;
+                $col = 0;
+                $sheet->setTitle(strtoupper(substr($gerente["name"], 0, 6)));
+                $sheet->setCellValueByColumnAndRow($col, $row, "Area")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+                $sheet->setCellValueByColumnAndRow(++$col, $row, "Encargado")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+                $col++;
+                foreach ($gerente['headerMeses'] as $head) {
+                    $sheet->setCellValueByColumnAndRow($col, $row, ucfirst(strtolower($head['name'])))
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+                    $sheet->setCellValueByColumnAndRow(++$col, $row, '%')
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+                    $col++;
+                }
+                $sheet->setCellValueByColumnAndRow($col, $row, "Acumulados")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+                $row++;
+                foreach ($gerente['totales'] as $ky => $total) {
+                    switch($ky) {
+                        case 'nominas':
+                            $prefix = 'Gastos nominas';
+                            break;
+                        case 'utilidades':
+                            $prefix = 'Utilidades';
+                            break;
+                        default:
+                            $prefix = 'Ingresos '.$ky;
+                            break;
+                    }
+                    $sheet->setCellValueByColumnAndRow(1, $row, strtoupper($prefix))
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->getFont()->setBold(true);
+                    $row++;
+                    $initRow = $row;
+                    $firstFlag = true;
+                    $first = [];
+                    $devAcumulados = [];
+                    foreach ($total as $kt => $var) {
+                        if ($firstFlag) {
+                            $firstFlag = false;
+                            $first = $total[$kt];
+                        }
+                        $col = 0;
+                        $sheet->setCellValueByColumnAndRow($col, $row, $var['nameRol']);
+                        $col++;
+                        $sheet->setCellValueByColumnAndRow($col, $row, $var['name']);
+                        $col++;
+                        $sumColumns = [];
+                        foreach ($var['meses'] as $keyMes => $mes) {
+                            $sumCom = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                            array_push($sumColumns, $sumCom);
+                            $sheet->setCellValueByColumnAndRow($col, $row, isset($mes['total']) ? $mes['total'] : 0)
+                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styles);
+                            $porcent = !$gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'] ? 0 : $mes['total'] / $gerente['totales']['devengados'][$kt]['meses'][$keyMes]['total'];
+                            $sheet->setCellValueByColumnAndRow(++$col, $row, $porcent)
+                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
+                            $col++;
+                        }
+                        $endAcum = PHPExcel_Cell::stringFromColumnIndex($col - 1) . $row;
+                        $strSumColumns = implode('+', $sumColumns);
+                        $sheet->setCellValueByColumnAndRow($col, $row, "=$strSumColumns")
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                        $currentDevAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        if($ky === 'devengados')
+                            $devAcumulados[$kt] = $currentDevAcum;
+
+                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror($currentDevAcum/$devAcumulados[$kt], 0)")
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
+                        $row += 1;
+                    }
+                    $sheet->setCellValueByColumnAndRow(1, $row, "Total $prefix")
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->getFont()->setBold(true);
+                    // repetir primera fila de cada seccion, es una suma acumulativa.
+                    $colTotal = 2;
+                    foreach ($first['meses'] as $keyMesTotal => $mesTotal) {
+                        $sheet->setCellValueByColumnAndRow($colTotal, $row, isset($mesTotal['total']) ? $mesTotal['total'] : 0)
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal) . $row)->applyFromArray($stylesTotal);
+                        $colTotal +=2;
+                    }
+                    $row += 2;
+                }
+                $hoja++;
+            }
         }
 
         $book->setActiveSheetIndex(0);
