@@ -192,7 +192,7 @@ class EdoResultado extends ReporteBonos
                     $row++;
                     $firstFlag = true;
                     $first = [];
-
+                    $initRow = $row;
                     foreach ($total as $kt => $var) {
                         if ($firstFlag) {
                             $firstFlag = false;
@@ -218,7 +218,7 @@ class EdoResultado extends ReporteBonos
                         $sheet->setCellValueByColumnAndRow($col, $row, "=$strSumColumns")
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                         $currentDevAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
-                        
+
                         if($ky === 'devengados')
                             $devAcumulados[$kt] = $currentDevAcum;
 
@@ -226,15 +226,24 @@ class EdoResultado extends ReporteBonos
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
                         $row += 1;
                     }
-                    $sheet->setCellValueByColumnAndRow(1, $row, "Total $prefix")
-                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->getFont()->setBold(true);
-                    // repetir primera fila de cada seccion, es una suma acumulativa.
+                    $endRow =  $row-1;
+                    $sheet->setCellValueByColumnAndRow(1, $row, 'Total ' . $prefix)
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+                    $colTotal = 2;
+                    foreach ($first['meses'] as $var) {
+                        $initSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$initRow;
+                        $endSuma = PHPExcel_Cell::stringFromColumnIndex($colTotal).$endRow;
+                        $sheet->setCellValueByColumnAndRow($colTotal, $row, "= SUM($initSuma : $endSuma)")
+                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal).$row)->applyFromArray($stylesTotal);
+                        $colTotal +=2;
+                    }
+                    /* repetir primera fila de cada seccion, es una suma acumulativa.
                     $colTotal = 2;
                     foreach ($first['meses'] as $keyMesTotal => $mesTotal) {
                         $sheet->setCellValueByColumnAndRow($colTotal, $row, isset($mesTotal['total']) ? $mesTotal['total'] : 0)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal) . $row)->applyFromArray($stylesTotal);
                         $colTotal +=2;
-                    }
+                    }*/
                     $row += 2;
                 }
                 $hoja++;
