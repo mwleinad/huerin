@@ -923,10 +923,15 @@ class ReporteBonos extends Main
             $cad['totales']['utilidades'] = [];
 
             $personal->setPersonalId($value['personalId']);
-            $subordinados = isset($ftr['deep']) ? $personal->GetCascadeSubordinates() : [];
+            $subordinados = $personal->GetCascadeSubordinates();
             $subordinadosId = count($subordinados) > 0 ? array_column($subordinados, 'personalId') : [];
-            array_push($subordinadosId, $value['personalId']);
-            $subString = count($subordinadosId) > 0 ? implode(',', $subordinadosId):  "0";
+            if($ftr['responsableCuenta']) {
+                $subordinadosId  = [];
+                array_push($subordinadosId, $value['personalId']);
+            } else {
+                array_push($subordinadosId, $value['personalId']);
+            }
+            $subString = implode(',', $subordinadosId);
 
             $subquery = sprintf($subqueryFormat, $subString);
             $this->Util()->DB()->setQuery($subquery);
@@ -951,9 +956,9 @@ class ReporteBonos extends Main
             // si tiene seleccionado un responsable debe buscar la de sus subordinados
             if($ftr["responsableCuenta"]) {
                 foreach ($subordinados as $keySub => $sub) {
-                    $childrenSubId = !is_array($sub['subordinadosId']) ? [] : $sub['subordinadosId'];
+                    $childrenSubId = [];
                     array_push($childrenSubId, $sub['personalId']);
-                    $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
+                    $subStringChild =implode(',', $childrenSubId);
                     $subQueryChild = sprintf($subqueryFormat, $subStringChild);
 
                     $this->Util()->DB()->setQuery($subQueryChild);
