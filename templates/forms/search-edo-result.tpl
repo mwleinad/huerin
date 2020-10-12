@@ -8,6 +8,7 @@
 			<tr>
 				<td align="center">Responsable:</td>
 				<td align="center">Incluir Subordinados:</td>
+				<td align="center">Departamento:</td>
 				<td align="center">Tipo periodo</td>
 				<td align="center">Periodo:</td>
 				<td align="center">Año:</td>
@@ -18,6 +19,9 @@
 				</td>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
 					<input name="deep" id="deep" type="checkbox" value="1" style="width: auto"/>
+				</td>
+				<td align="center" style="padding-left: 5px;padding-right: 5px">
+					{include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
 				</td>
 				<td align="center">
 					<select name="tipoPeriodo" id="tipoPeriodo"  class="largeInput"  style="width: 90%;">
