@@ -884,21 +884,30 @@ class ReporteBonos extends Main
         foreach($mesesBase as $km=>$month)
             $headerMeses[$km]['name'] = $monthsInt[$km] ;
 
+        if($ftr["departamentoId"]) {
+            switch($ftr['departamentoId']) {
+                case 24: $deps = "24,8"; break;
+                case 8: $deps = "8,24"; break;
+                default: $deps = $ftr['departamentoId']; break;
+            }
+            $strFilter .= " and a.departamentoId in ($deps)";
+        }
+
         if($ftr["responsableCuenta"])
             $strFilter .= " and a.personalId = '".$ftr['responsableCuenta']."' ";
 
-        $sql = "select a.*, b.nivel,c.departamento, b.name as nameRol from personal a 
-                inner join roles b on a.roleId = b.rolId 
+        $sql = "select a.*, b.nivel,c.departamento, b.name as nameRol from personal a
+                inner join roles b on a.roleId = b.rolId
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
 
         // string query
-        $subqueryFormat = "select contract.contractId from contract 
-                               inner join customer on contract.customerId=customer.customerId 
+        $subqueryFormat = "select contract.contractId from contract
+                               inner join customer on contract.customerId=customer.customerId
                                inner join contractPermiso on contract.contractId = contractPermiso.contractId
                                where contractPermiso.personalId in(%s) and contract.activo = 'Si' and customer.active ='1' ";
-        $queryFormat = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a 
+        $queryFormat = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a
                         INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
                         INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
                         WHERE a.status IN ('activo','bajaParcial') and a.contractId in(%s) and d.departamentoId in(%s)  and d.status ='1' ";
@@ -1030,8 +1039,8 @@ class ReporteBonos extends Main
         if($ftr["responsableCuenta"])
             $strFilter .= " and a.personalId = '".$ftr['responsableCuenta']."' ";
 
-        $sql = "select a.*, b.nivel,c.departamento from personal a 
-                inner join roles b on a.roleId = b.rolId 
+        $sql = "select a.*, b.nivel,c.departamento from personal a
+                inner join roles b on a.roleId = b.rolId
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
@@ -1069,7 +1078,7 @@ class ReporteBonos extends Main
 
             $strFilter .= " AND a.contractId IN(".implode(',',$contratos).") ";
 
-            $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a 
+            $sql = "SELECT a.servicioId,a.status,a.inicioFactura,a.inicioOperaciones,a.lastDateWorkflow,b.contractId,b.name,d.nombreServicio,d.departamentoId FROM servicio a
                     INNER JOIN (SELECT contract.contractId,contract.name,contract.activo,customer.active from  contract INNER JOIN customer ON contract.customerId=customer.customerId WHERE customer.active='1' AND contract.activo='Si') b ON a.contractId=b.contractId
                     INNER JOIN tipoServicio d ON a.tipoServicioId=d.tipoServicioId
                     WHERE a.status IN ('activo','bajaParcial') AND d.status='1' $strFilter group by a.servicioId";
@@ -1203,11 +1212,11 @@ class ReporteBonos extends Main
                 }
             }
             $sql ="select sum(a.total) as total,sum(b.amount) as amount,month(a.fecha) as mes
-                   from comprobante a 
+                   from comprobante a
                    left join (select comprobanteId,sum(amount) as amount from payment where paymentStatus='activo' group by comprobanteId ) b on a.comprobanteId=b.comprobanteId
                    inner join contract c on a.userId=c.contractId and c.activo='Si'
-                   where month(a.fecha) >='$inicio' and month(a.fecha)<='$fin' and year(a.fecha)='$year' 
-                   and a.userId='".$contrato['contractId']."' and a.tiposComprobanteId in(1)  and a.status ='1' 
+                   where month(a.fecha) >='$inicio' and month(a.fecha)<='$fin' and year(a.fecha)='$year'
+                   and a.userId='".$contrato['contractId']."' and a.tiposComprobanteId in(1)  and a.status ='1'
                    group by month(a.fecha) order by month(a.fecha) desc";
 
             $this->Util()->DB()->setQuery($sql);
