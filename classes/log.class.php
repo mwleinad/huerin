@@ -96,19 +96,19 @@ class Log extends Util
             break;
             case 'Baja':
                 $accion="ha sido  dado de baja ";
-                array_push($defaultId,IDHUERIN);
+                //array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
                 $sendBraun = true;
             break;
             case 'bajaParcial':
                 $accion="ha sido  dado de baja temporalmente ";
-                array_push($defaultId,IDHUERIN);
+                //array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
                 $sendBraun = true;
                 break;
             case 'Reactivacion':
                 $accion="ha sido reactivado ";
-                array_push($defaultId,IDHUERIN);
+                //array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
                 $sendBraun = true;
             break;
@@ -118,7 +118,7 @@ class Log extends Util
             break;
             case 'Delete':
                 $accion="ha sido eliminado ";
-                array_push($defaultId,IDHUERIN);
+                //array_push($defaultId,IDHUERIN);
                 array_push($defaultId,319);
                 $sendBraun = true;
              break;
@@ -335,7 +335,7 @@ class Log extends Util
         $mail = new SendMail();
         $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,utf8_decode($body),$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
-        if(file_exists( $file)){
+        if(file_exists( $file)) {
            unlink($file);
         }
         return true;
@@ -666,8 +666,8 @@ class Log extends Util
         $encargados = $contractRep->encargadosArea($contractId);
 
         $ftr['incluirJefes'] = true;
-        $ftr['sendBraun']= true;
-        $ftr['sendHuerin']=true;
+        $ftr['sendBraun']= false;
+        $ftr['sendHuerin']=false;
         //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
         $ftr['level'] = 3;
         $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
