@@ -192,7 +192,7 @@ class EdoResultado extends ReporteBonos
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal+1).$row)->applyFromArray($stylesTotalPorcent);
                 } else {
                     $cellGranTotalAcum = PHPExcel_Cell::stringFromColumnIndex($colTotal).$row;
-                    $sheet->setCellValueByColumnAndRow($colTotal+1, $row, "=iferror($cellGranTotalAcumDev/$cellGranTotalAcum, 0)")
+                    $sheet->setCellValueByColumnAndRow($colTotal+1, $row, "=iferror($cellGranTotalAcum/$cellGranTotalAcumDev, 0)")
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($colTotal+1).$row)->applyFromArray($stylesTotalPorcent);
                 }
                 $row +=2;
