@@ -888,6 +888,8 @@ class ReporteBonos extends Main
             switch($ftr['departamentoId']) {
                 case 24: $deps = "24,8"; break;
                 case 8: $deps = "8,24"; break;
+                case 22: $deps = "22,21"; break;
+                case 21: $deps = "21,22"; break;
                 default: $deps = $ftr['departamentoId']; break;
             }
             $strFilter .= " and a.departamentoId in ($deps)";
@@ -920,6 +922,12 @@ class ReporteBonos extends Main
 
             if((int)$value['departamentoId'] === 24)
                 array_push($departamentos, 8);
+
+            if((int)$value['departamentoId'] === 22)
+                array_push($departamentos, 21);
+
+            if((int)$value['departamentoId'] === 21)
+                array_push($departamentos, 22);
 
             $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
             $cad['name'] = $value['name'];
