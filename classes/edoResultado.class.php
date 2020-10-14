@@ -199,26 +199,30 @@ class EdoResultado extends ReporteBonos
             }
             $row += 3;
 
-            $colsGranDevengados = [];
+            $colsGran = [];
+            $rowDev =  $row;
             foreach($granTotal as $gk => $gran) {
                 $col = 1;
                 $sheet->setCellValueByColumnAndRow($col, $row, "Gran total ". $gk);
                 $col++;
                 foreach($gran['totales'] as $kgt => $gt) {
+                    $currentCol = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                    $colsGran[$gk][$kgt] = $currentCol;
                     $sheet->setCellValueByColumnAndRow($col, $row, "=$gt")
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesTotal);
-                    if($gk === 'devengados') {
-                        $colDev = PHPExcel_Cell::stringFromColumnIndex($col).$row;
-                        $colsGranDevengados[$kgt] = $colDev;
-                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($colDev) / $colDev,0)")
+                    $calculate = $gk === 'devengados' ? $currentCol."/".$currentCol : $currentCol."/".$colsGran['devengados'][$kgt];
+                    $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror($calculate, 0)")
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
-                    } else {
-                        $currentCol = PHPExcel_Cell::stringFromColumnIndex($col).$row;
-                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($currentCol) / $colsGranDevengados[$kgt],0)")
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
-                    }
                     $col++;
                 }
+                $total = implode('+', $colsGran[$gk]);
+                $sheet->setCellValueByColumnAndRow($col, $row, "=iferror($total,0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                $currentColAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                $currentColAcumDev = $gk === 'devengados' ? $currentColAcum : PHPExcel_Cell::stringFromColumnIndex($col).$rowDev;
+                $calculatePorcent = $currentColAcum."/".$currentColAcumDev;
+                $sheet->setCellValueByColumnAndRow($col + 1, $row, "=iferror($calculatePorcent,0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col + 1).$row)->applyFromArray($stylesTotalPorcent);
                 $row++;
             }
         } else {
@@ -362,27 +366,31 @@ class EdoResultado extends ReporteBonos
                     }
                     $row += 2;
                 }
-                $colsGranDevengados = [];
+                $colsGran= [];
+                $rowDev = $row;
                 foreach($granTotal as $gk => $gran) {
                     $col = 1;
                     $sheet->setCellValueByColumnAndRow($col, $row, "Gran total ". $gk)
                         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesBold);
                     $col++;
                     foreach($gran['totales'] as $kgt => $gt) {
+                        $currentCol = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                        $colsGran[$gk][$kgt] = $currentCol;
                         $sheet->setCellValueByColumnAndRow($col, $row, "=$gt")
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styles);
-                        if($gk === 'devengados') {
-                            $colDev = PHPExcel_Cell::stringFromColumnIndex($col).$row;
-                            $colsGranDevengados[$kgt] = $colDev;
-                            $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($colDev) / $colDev,0)")
-                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
-                        } else {
-                            $currentCol = PHPExcel_Cell::stringFromColumnIndex($col).$row;
-                            $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror(($currentCol) / $colsGranDevengados[$kgt],0)")
-                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
-                        }
+                              ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styles);
+                        $calculate = $gk === 'devengados' ? $currentCol."/".$currentCol : ($currentCol)."/".$colsGran['devengados'][$kgt];
+                        $sheet->setCellValueByColumnAndRow(++$col, $row, "=iferror($calculate,0)")
+                              ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesPorcent);
                         $col++;
                     }
+                    $total = implode('+', $colsGran[$gk]);
+                    $sheet->setCellValueByColumnAndRow($col, $row, "=iferror($total,0)")
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                    $currentColAcum = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                    $currentColAcumDev = $gk === 'devengados' ? $currentColAcum : PHPExcel_Cell::stringFromColumnIndex($col).$rowDev;
+                    $calculatePorcent = $currentColAcum."/".$currentColAcumDev;
+                    $sheet->setCellValueByColumnAndRow($col + 1, $row, "=iferror($calculatePorcent,0)")
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col + 1).$row)->applyFromArray($stylesTotalPorcent);
                     $row++;
                 }
                 $hoja++;
