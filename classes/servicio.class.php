@@ -711,53 +711,6 @@ class Servicio extends Contract
 		return true;
 	}
 
-	public function EnumerateActiveOnlyNames($contract = 0)
-	{
-		global $months, $User;
-
-		if($contract != 0)
-		{
-			$sqlContract = " AND contract.contractId = '".$contract."'";
-		}
-
-		$this->Util()->DB()->setQuery("SELECT servicioId,  customer.nameContact AS clienteName, contract.name AS razonSocialName, nombreServicio, servicio.costo, inicioOperaciones, periodicidad, servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName, customer.customerId, customer.nameContact FROM servicio 
-			LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-			LEFT JOIN contract ON contract.contractId = servicio.contractId
-			LEFT JOIN customer ON customer.customerId = contract.customerId
-			LEFT JOIN personal AS responsableCuenta ON responsableCuenta.personalId = contract.responsableCuenta
-			WHERE servicio.status = 'activo' AND customer.active = '1'
-			".$sqlCustomer.$sqlContract.$addNomina."					
-			ORDER BY nombreServicio ASC");
-		//$this->Util()->DB()->query;
-		$result = $this->Util()->DB()->GetResult();
-		foreach($result as $key => $value)
-		{
-			$user = new User;
-			$user->setUserId($value["responsableCuenta"]);
-			$userInfo = $user->Info();
-			if(
-				(in_array($User['roleId'],explode(',',ROLES_LIMITADOS))) &&
-				($User["userId"] != $value["responsableCuenta"] &&
-				$userInfo["jefeContador"] != $User["userId"] &&
-				$userInfo["jefeSupervisor"] != $User["userId"] &&
-				$userInfo["jefeGerente"] != $User["userId"] &&
-				$userInfo["jefeSocio"] != $User["userId"])
-			)
-			{
-				unset($result[$key]);
-				continue;
-			}
-
-			$result[$key]["responsableCuentaName"] = $result[$key]["responsableCuentaName"];
-//			echo $value["responsableCuenta"];
-			$fecha = explode("-", $value["inicioOperaciones"]);
-			$result[$key]["formattedInicioOperaciones"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
-
-		}
-
-		return $result;
-	}
-
 	public function UpdateComentario($comentario)
 	{
 		global $User;

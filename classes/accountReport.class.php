@@ -23,6 +23,7 @@ class AccountReport extends Personal
       return $new;
     }
     public function generateArray(array $filters) {
+        global $customer;
         $strFilter = "";
         if($filters['responsableCuenta'])
             $strFilter .=" and a.personalId = '".$filters['responsableCuenta']."' ";
@@ -62,6 +63,11 @@ class AccountReport extends Personal
 
             $this->Util()->DB()->setQuery($subquery);
             $contratos = $this->Util()->DB()->GetResult();
+            // remove contratos que no tienen servicios
+            foreach ($contratos as $kc => $var) {
+                if(count($customer->GetServicesByContract($var['contractId'])) <= 0)
+                    unset($contratos[$kc]);
+            }
             $gerentes[$key]['totalCuentas'] = count($contratos);
 
             $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
@@ -86,6 +92,12 @@ class AccountReport extends Personal
                 $subQueryChild = sprintf($subqueryFormat, $subStringChild);
                 $this->Util()->DB()->setQuery($subQueryChild);
                 $contratos = $this->Util()->DB()->GetResult();
+
+                foreach ($contratos as $kcs => $var) {
+                    if(count($customer->GetServicesByContract($var['contractId'])) <= 0)
+                        unset($contratos[$kcs]);
+                }
+
                 $sub['totalCuentas'] = count($contratos);
                 $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
                 $queryChild = sprintf($queryFormat, $stringContratos, $dep);
