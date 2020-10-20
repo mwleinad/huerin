@@ -4,13 +4,15 @@ require_once (DOC_ROOT.'/libs/graph/src/jpgraph_pie.php');
 require_once (DOC_ROOT.'/libs/graph/src/jpgraph_pie3d.php');
 
 // Some data
+//
+$responsables = $personal->GetIdResponsablesSubordinados();
+$totalActivos = count($customer->SuggestCustomerFilter([ 'tipos'=> 'activos', 'encargados'=> $responsables ]));
 
-if($_SESSION["CompletoContract"] + $_SESSION["CompletoTardioContract"] + $_SESSION["PorIniciarContract"] + $_SESSION["PorCompletarContract"] + $_SESSION["IniciadoContract"] == 0)
-{
-	$_SESSION["CompletoContract"] = 1;
-}
+$totalTemporal = count($customer->SuggestCustomerFilter([ 'tipos'=> 'temporal', 'encargados'=> $responsables ]));
 
-$data = array($_SESSION["CompletoContract"],$_SESSION["CompletoTardioContract"],$_SESSION["PorCompletarContract"],$_SESSION["IniciadoContract"],$_SESSION["PorIniciarContract"]);
+$totalInactivos = count($customer->SuggestCustomerFilter([ 'tipos'=> 'inactivos', 'encargados'=> $responsables ]));
+
+$data = array($totalActivos, $totalTemporal, $totalInactivos);
 
 // Create the Pie Graph.
 $graph = new PieGraph(450,300);
@@ -20,7 +22,7 @@ $graph->SetFrame(false);
 
 // Set A title for the plot
 $graph->title->Set("Grafica de Razones Sociales");
-$graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14); 
+$graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
 $graph->title->SetColor("brown");
 
 // Create pie plot
@@ -56,15 +58,16 @@ $p1->value->Show();
 $p1->SetSize(0.3);
 
 // Legends
-$p1->SetLegends(array("Completas (%d)","Completo Tardio (%d)","Por Completar (%d)","Iniciadas (%d)","No Iniciadas (%d)"));
+$p1->SetLegends(array("Activas (%d)","Temporal (%d)","Inactivas (%d)"));
 $graph->legend->Pos(0.05,0.2);
 
 $graph->Add($p1);
 $graph->Stroke(_IMG_HANDLER);
 
 // Default is PNG so use ".png" as suffix
-$fileName = DOC_ROOT."/imagefile_contract.png";
-$graph->img->Stream($fileName);
+$fileName = "imagefile_contract.png";
+$fileNameComplete = DOC_ROOT."/sendFiles/charts/$fileName";
+$graph->img->Stream($fileNameComplete);
 
 //$graph->img->Headers();
 //$graph->img->Stream();

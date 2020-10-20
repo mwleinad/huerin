@@ -97,6 +97,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'edo-result',
 		'report-exp-employe',
 		'report-account-manager',
+		'chart',
 
 		//cafeteria
         'coffe',
