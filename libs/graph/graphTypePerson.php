@@ -4,13 +4,17 @@ require_once (DOC_ROOT.'/libs/graph/src/jpgraph_pie.php');
 require_once (DOC_ROOT.'/libs/graph/src/jpgraph_pie3d.php');
 
 // Some data
+//
+$sql = "select count(*) from contract where type = 'Persona Moral' and activo ='Si' ";
+$db->setQuery($sql);
+$morales = $db->GetSingle();
 
-if($_SESSION["CompletoServicio"] + $_SESSION["CompletoTardioServicio"] + $_SESSION["PorCompletarServicio"] + $_SESSION["IniciadoServicio"] + $_SESSION["PorIniciarServicio"] == 0)
-{
-	$_SESSION["CompletoServicio"] = 1;
-}
+$sql = "select count(*) from contract where type = 'Persona Fisica' and activo ='Si' ";
+$db->setQuery($sql);
+$fisica = $db->GetSingle();
 
-$data = array($_SESSION["CompletoServicio"],$_SESSION["CompletoTardioServicio"],$_SESSION["PorCompletarServicio"],$_SESSION["IniciadoServicio"],$_SESSION["PorIniciarServicio"]);
+
+$data = array($morales, $fisica);
 
 // Create the Pie Graph.
 $graph = new PieGraph(450,300);
@@ -19,7 +23,7 @@ $graph->SetFrame(false);
 //$graph->SetShadow();
 
 // Set A title for the plot
-$graph->title->Set("Grafica de Servicios");
+$graph->title->Set("Grafica tipo de personas");
 $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
 $graph->title->SetColor("brown");
 
@@ -56,13 +60,14 @@ $p1->value->Show();
 $p1->SetSize(0.3);
 
 // Legends
-$p1->SetLegends(array("Completas (%d)","Completo Tardio (%d)","Por Completar (%d)","Iniciadas (%d)","No Iniciadas (%d)"));
+$p1->SetLegends(array("Personas Morales (%d)","Personas Fisicas (%d)"));
 $graph->legend->Pos(0.05,0.2);
 
 $graph->Add($p1);
 $graph->Stroke(_IMG_HANDLER);
 
-$fileName = "imagefile_services.png";
+// Default is PNG so use ".png" as suffix
+$fileName = "imagefile_typeperson.png";
 $fileNameComplete = DOC_ROOT."/sendFiles/charts/$fileName";
 $graph->img->Stream($fileNameComplete);
 
