@@ -16,6 +16,9 @@ class HuerinGraph {
             case 'Pie':
                 $this->generateGraphPie();
                 break;
+            case 'BarGroup':
+                $this->generateGraphBarGroup();
+                break;
             case 'Bar':
                 $this->generateGraphBar();
                 break;
@@ -69,10 +72,12 @@ class HuerinGraph {
         $graph->img->Stream($fileNameComplete);
     }
 
-    function generateGraphBar () {
-        $graph =  new Graph(500, 350, 'auto');
+    function generateGraphBarGroup () {
+        $graph =  new Graph(450, 300);
+        $graph->ClearTheme();
+        $graph->SetFrame(false);
         $graph->SetScale('textlin');
-        $graph->SetShadow();
+        $graph->SetShadow(false);
         $graph->img->SetMargin(40,30,50,90);
 
 
@@ -83,25 +88,30 @@ class HuerinGraph {
         $b1plot = new BarPlot($data1y);
         $b1plot->SetFillColor("red");
         $b1plot->SetLegend('Bajas');
-        $b1plot->SetShadow();
+        $b1plot->value->SetFormat("%d");
+        $b1plot->value->HideZero();
+        $b1plot->value->Show();
         $b2plot = new BarPlot($data2y);
         $b2plot->SetFillColor("darkgreen");
-        $b2plot->SetShadow();
         $b2plot->SetLegend('Altas');
+        $b2plot->value->SetFormat("%d");
+        $b2plot->value->HideZero();
+        $b2plot->value->Show();
 
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot,$b2plot));
         // Setup legend
-        $graph->legend->SetAbsPos(10,330,'left','bottom');
+        $graph->legend->SetAbsPos(10,270,'left','bottom');
         $graph->legend->SetColumns(3);
         $graph->legend->SetFont(FF_FONT1,FS_NORMAL,16);
 
         $graph->title->Set($this->data['title']);
+        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
+        $graph->title->SetColor("brown");
         $graph->xaxis->SetTickLabels($this->data['xAxis']);
         $graph->xaxis->title->Set($this->data['xTitle']);
         $graph->yaxis->title->Set($this->data['yTitle']);
 
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
         $graph->yaxis->title->SetFont(FF_FONT1,FS_BOLD);
         $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
 
@@ -113,5 +123,40 @@ class HuerinGraph {
         $graph->Stroke(_IMG_HANDLER);
         $graph->img->Stream($fileNameComplete);
 
+    }
+    function generateGraphBar () {
+        $graph =  new Graph(450, 300);
+        $graph->ClearTheme();
+        $graph->SetFrame(false);
+        $graph->SetScale('textlin');
+        $graph->SetShadow(false);
+        $graph->img->SetMargin(40,30,50,90);
+
+        $data1y=  $this->data['data1y'];
+
+        // Create the bar plots
+        $b1plot = new BarPlot($data1y);
+        $b1plot->SetFillColor("blue");
+        $b1plot->value->SetFormat("%d");
+        $b1plot->value->HideZero();
+        $b1plot->value->Show();
+        $b1plot->SetWidth(0.1);
+
+        $graph->title->Set($this->data['title']);
+        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
+        $graph->title->SetColor("brown");
+        $graph->xaxis->SetTickLabels($this->data['xAxis']);
+        $graph->xaxis->title->Set($this->data['xTitle']);
+        $graph->yaxis->title->Set($this->data['yTitle']);
+
+        $graph->yaxis->title->SetFont(FF_FONT1,FS_BOLD);
+        $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
+
+        $graph->Add($b1plot);
+
+        $fileName = $this->data['graphName'];
+        $fileNameComplete = DOC_ROOT."/sendFiles/charts/$fileName";
+        $graph->Stroke(_IMG_HANDLER);
+        $graph->img->Stream($fileNameComplete);
     }
 }

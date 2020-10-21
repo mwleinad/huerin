@@ -1,34 +1,13 @@
 <?php
-$items = [];
-include_once(DOC_ROOT.'/libs/graph/graphAltasBajas.php');
-$item = [
-    'url'=>$fileName,
-    'name' => 'graph1'
-];
 
-array_push($items, $item);
+$user->allowAccess(7);  //level 1
+$user->allowAccess(277);//level 2
 
+$dataGraph->chartAltasBajas();
+$dataGraph->chartTypePerson();
+$dataGraph->chartMonth13();
+$dataGraph->chartContracts();
 
-include_once (DOC_ROOT.'/libs/graph/graphTypePerson.php');
-$item = [
-    'url'=>$fileName,
-    'name' => 'graph2'
-];
-array_push($items, $item);
-
-include_once (DOC_ROOT.'/libs/graph/graphTypeRegimen.php');
-$item = [
-    'url'=>$fileName,
-    'name' => 'graph2'
-];
-array_push($items, $item);
-
-include_once (DOC_ROOT.'/libs/graph/graphMonth13.php');
-$item = [
-    'url'=>$fileName,
-    'name' => 'graph2'
-];
-array_push($items, $item);
-$smarty->assign('charts', $items);
+$smarty->assign('charts', $dataGraph->getData());
 $smarty->assign('mainMnu', 'reportes');
 
