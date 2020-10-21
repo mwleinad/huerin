@@ -133,6 +133,9 @@ include_once(DOC_ROOT."/classes/backup.class.php");
 $backup = new Backup();
 include_once(DOC_ROOT."/classes/huerinGraph.class.php");
 
+include_once(DOC_ROOT."/classes/dataGraph.class.php");
+$dataGraph = new DataGraph();
+
 $db = new DB;
 $dbRemote = new DBRemote;
 $error = new Error;

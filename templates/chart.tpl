@@ -4,10 +4,9 @@
     </div>
     <div class="grid_6" id="eventbox">
     </div>
-    <div class="clear">
-    </div>
+    <div class="clear"></div>
+    {include file="forms/search-chart.tpl"}
     <div id="portlets">
-        <div class="clear"></div>
         <div class="portlet">
             <div class="portlet-title"></div>
             <div class="portlet-content nopadding borderGray" id="contenido">

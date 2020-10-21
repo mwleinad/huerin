@@ -172,9 +172,10 @@
                     <li><a href="{$WEB_ROOT}/report-exp-employe" {if $page == "report-exp-employe"}class="current"{/if} title="Reporte de Expedientes de Colaboradores" target="_blank">
                      <span>Reporte de Expedientes</span></a></li>
                 {/if}
-
+                {if in_array(277,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/chart" {if $page == "chart"}class="current"{/if} title="Graficas" target="_blank">
-                            <span>Graficas</span></a></li>
+                    <span>Graficas</span></a></li>
+                {/if}
 
             {/if}
 
