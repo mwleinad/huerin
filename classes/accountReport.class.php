@@ -120,7 +120,9 @@ class AccountReport extends Personal
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
+
         foreach ($gerentes as $key => $gerente) {
+            $totalCol = [];
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
             $row = 1;
@@ -158,6 +160,8 @@ class AccountReport extends Personal
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);;
             $col++;
             foreach ($gerente['services'] as $serv) {
+                $currentCol = PHPExcel_Cell::stringFromColumnIndex($col);
+                $totalCol[$currentCol] +=$serv['total'];
                 $sheet->setCellValueByColumnAndRow($col, $row, $serv['total']);
                 $col++;
             }
@@ -186,10 +190,18 @@ class AccountReport extends Personal
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
                 $col++;
                 foreach ($child['services'] as $servChild) {
+                    $currentCol = PHPExcel_Cell::stringFromColumnIndex($col);
+                    $totalCol[$currentCol] +=$servChild['total'];
                     $sheet->setCellValueByColumnAndRow($col, $row, $servChild['total']);
                     $col++;
                 }
                 $row++;
+            }
+            $newCol  = array_reverse($totalCol, true);
+            foreach ($newCol as $kt => $tot) {
+                if((int) $tot === 0) {
+                    $book->getSheet($hoja)->removeColumn($kt);
+                }
             }
             $hoja++;
         }
@@ -197,8 +209,7 @@ class AccountReport extends Personal
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
         foreach ($book->getAllSheets() as $sheet1) {
-            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
-            {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++) {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
         }
