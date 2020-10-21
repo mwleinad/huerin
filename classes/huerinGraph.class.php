@@ -70,38 +70,48 @@ class HuerinGraph {
     }
 
     function generateGraphBar () {
-        $graph =  new Graph(500, 350);
+        $graph =  new Graph(500, 350, 'auto');
         $graph->SetScale('textlin');
         $graph->SetShadow();
-        $graph->img->SetMargin(40,30,20,40);
-        $graph->title->Set($this->data['title']);
-        $graph->xaxis->SetTickLabels($this->data['xAxis']);
-        $graph->xaxis->title->Set($this->data['xTitle']);
-        $graph->yaxis->title->Set($this->data['xTitle']);
+        $graph->img->SetMargin(40,30,50,90);
 
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->yaxis->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
 
         $data1y=  $this->data['data1y'];
         $data2y = $this->data['data2y'];
 
         // Create the bar plots
         $b1plot = new BarPlot($data1y);
-        $b1plot->SetFillColor("orange");
-        $b2plot = new BarPlot($data2y);
-        $b2plot->SetFillColor("blue");
+        $b1plot->SetFillColor("red");
+        $b1plot->SetLegend('Bajas');
         $b1plot->SetShadow();
+        $b2plot = new BarPlot($data2y);
+        $b2plot->SetFillColor("darkgreen");
         $b2plot->SetShadow();
+        $b2plot->SetLegend('Altas');
 
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot,$b2plot));
+        // Setup legend
+        $graph->legend->SetAbsPos(10,330,'left','bottom');
+        $graph->legend->SetColumns(3);
+        $graph->legend->SetFont(FF_FONT1,FS_NORMAL,16);
+
+        $graph->title->Set($this->data['title']);
+        $graph->xaxis->SetTickLabels($this->data['xAxis']);
+        $graph->xaxis->title->Set($this->data['xTitle']);
+        $graph->yaxis->title->Set($this->data['yTitle']);
+
+        $graph->title->SetFont(FF_FONT1,FS_BOLD);
+        $graph->yaxis->title->SetFont(FF_FONT1,FS_BOLD);
+        $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
+
         $gbplot->SetWidth(0.6);
         $graph->Add($gbplot);
 
         $fileName = $this->data['graphName'];
         $fileNameComplete = DOC_ROOT."/sendFiles/charts/$fileName";
-        $graph->Stroke($fileNameComplete);
+        $graph->Stroke(_IMG_HANDLER);
+        $graph->img->Stream($fileNameComplete);
 
     }
 }

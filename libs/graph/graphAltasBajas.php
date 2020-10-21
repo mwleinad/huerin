@@ -29,7 +29,7 @@ $db->setQuery($sql);
 $altas =  $db->GetResult();
 foreach($altas as $var) {
     $keyA = (int)$var['mes'];
-    $altas[$keyA]['total'] = $var['total'];
+    $baseAltas[$keyA]['total'] = $var['total'];
 }
 $data['type'] = 'Bar';
 $data['title'] = 'Altas y bajas por mes';
