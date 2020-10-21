@@ -103,10 +103,10 @@ class HuerinGraph {
         // Setup legend
         $graph->legend->SetAbsPos(10,270,'left','bottom');
         $graph->legend->SetColumns(3);
-        $graph->legend->SetFont(FF_FONT1,FS_NORMAL,16);
+        $graph->legend->SetFont(FF_FONT1,FS_NORMAL,12);
 
         $graph->title->Set($this->data['title']);
-        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
+        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,12);
         $graph->title->SetColor("brown");
         $graph->xaxis->SetTickLabels($this->data['xAxis']);
         $graph->xaxis->title->Set($this->data['xTitle']);
@@ -143,7 +143,7 @@ class HuerinGraph {
         $b1plot->SetWidth(0.1);
 
         $graph->title->Set($this->data['title']);
-        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,14);
+        $graph->title->SetFont(FF_DV_SANSSERIF,FS_BOLD,12);
         $graph->title->SetColor("brown");
         $graph->xaxis->SetTickLabels($this->data['xAxis']);
         $graph->xaxis->title->Set($this->data['xTitle']);
