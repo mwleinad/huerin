@@ -1,6 +1,6 @@
 <?php
 $items = [];
-include_once(DOC_ROOT.'/libs/graph/graphContract.php');
+include_once(DOC_ROOT.'/libs/graph/graphAltasBajas.php');
 $item = [
     'url'=>$fileName,
     'name' => 'graph1'

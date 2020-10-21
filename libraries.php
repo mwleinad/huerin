@@ -131,6 +131,7 @@ include_once(DOC_ROOT."/classes/cronServicio.class.php");
 $cronServicio = new CronServicio();
 include_once(DOC_ROOT."/classes/backup.class.php");
 $backup = new Backup();
+include_once(DOC_ROOT."/classes/huerinGraph.class.php");
 
 $db = new DB;
 $dbRemote = new DBRemote;
