@@ -3,8 +3,6 @@ if(!isset($_SESSION)){
     session_start();
 }
 include_once('../config.php');
-ini_set("display_errors", "ON");
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 include_once(DOC_ROOT.'/libraries.php');
 date_default_timezone_set('America/Mexico_City');
 $data = $reportebonos->generateReportBonosWhitLevel($_POST);
@@ -54,6 +52,7 @@ $smarty->assign("DOC_ROOT", DOC_ROOT);
 $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono-order-rol.tpl');
 
 $name = 'reporte_de_bonos_cobranza';
+ob_clean();
 header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
 header("Content-type:   application/x-msexcel; charset=utf-8");
 header("Content-Disposition: attachment; filename=".$name.".xls");
