@@ -5,9 +5,9 @@
 		{if in_array(232,$permissions)|| $User.isRoot}<td align="center">{$item.celphone}</td>{/if}
 		{if in_array(233,$permissions)|| $User.isRoot}<td align="center">{$item.email}</td>{/if}
 		{if in_array(234,$permissions)|| $User.isRoot}<td align="center">{$item.skype}</td>{/if}
-		{if in_array(235,$permissions)|| $User.isRoot}<td align="center">{$item.aspel}</td>{/if}
+		{if in_array(235,$permissions)|| $User.isRoot}<td align="center">{$item.passwordAspel}</td>{/if}
 		{if in_array(237,$permissions)|| $User.isRoot}<td align="center">{$item.fechaIngreso}</td>{/if}
-		{if in_array(239,$permissions)|| $User.isRoot}<td align="center">{$item.computadora}</td>{/if}
+		{if in_array(239,$permissions)|| $User.isRoot}<td align="center">{$item.passwordComputadora}</td>{/if}
 		{if in_array(241,$permissions)|| $User.isRoot}<td align="center">{$item.username}</td>{/if}
 		{if in_array(241,$permissions)|| $User.isRoot}<td align="center">{$item.passwd}</td>{/if}
 		{if in_array(244,$permissions)|| $User.isRoot}<td align="center">{$item.tipoPersonal}</td>{/if}
