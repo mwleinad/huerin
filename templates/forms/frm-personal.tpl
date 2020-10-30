@@ -17,7 +17,7 @@
             {/if}
             {if in_array(231,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Tel&eacute;fono:</div>
+                    <div style="width:30%;float:left">Tel&eacute;fono fijo:</div>
                     <input class="smallInput medium" name="phone" id="phone" type="text" value="{$post.phone}"
                            size="50"/>
                     <hr/>
@@ -41,16 +41,32 @@
             {/if}
             {if in_array(234,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left"># de Equipo:</div>
+                    <div style="width:30%;float:left">Numero de Equipo:</div>
                     <input class="smallInput medium" name="skype" id="skype" type="text" value="{$post.skype}"
+                           size="50"/>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(280,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Sistema Aspel:</div>
+                    <input class="smallInput medium" name="systemAspel" id="systemAspel" type="text" value="{$post.systemAspel}"
+                           size="50"/>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(279,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Usuario Aspel:</div>
+                    <input class="smallInput medium" name="userAspel" id="userAspel" type="text" value="{$post.userAspel}"
                            size="50"/>
                     <hr/>
                 </div>
             {/if}
             {if in_array(235,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Clave Aspel:</div>
-                    <input class="smallInput medium" name="aspel" id="aspel" type="text" value="{$post.aspel}"
+                    <div style="width:30%;float:left">Contraseña Aspel:</div>
+                    <input class="smallInput medium" name="passwordAspel" id="passwordAspel" type="text" value="{$post.passwordAspel}"
                            size="50"/>
                     <hr/>
                 </div>
@@ -80,17 +96,25 @@
                     <hr/>
                 </div>
             {/if}
+            {if in_array(278,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Usuario Computadora</div>
+                    <input class="smallInput medium" name="userComputadora" id="userComputadora" type="text"
+                           value="{$post.userComputadora}" size="50"/>
+                    <hr/>
+                </div>
+            {/if}
             {if in_array(239,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Clave Computadora</div>
-                    <input class="smallInput medium" name="computadora" id="computadora" type="text"
-                           value="{$post.computadora}" size="50"/>
+                    <div style="width:30%;float:left">Contraseña Computadora</div>
+                    <input class="smallInput medium" name="passwordComputadora" id="passwordComputadora" type="text"
+                           value="{$post.passwordComputadora}" size="50"/>
                     <hr/>
                 </div>
             {/if}
             {if in_array(241,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Usuario:</div>
+                    <div style="width:30%;float:left">Usuario plataforma:</div>
                     <input class="smallInput medium" name="username" id="username" type="text" value="{$post.username}"
                            size="50"/>
                     <hr/>
@@ -98,7 +122,7 @@
             {/if}
             {if in_array(242,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">* Contrase&ntilde;a:</div>
+                    <div style="width:30%;float:left">* Contrase&ntilde;a plataforma:</div>
                     <input class="smallInput medium" name="passwd" id="passwd" type="text" value="{$post.passwd}"
                            size="50"/>
                     <hr/>

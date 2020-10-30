@@ -50,12 +50,24 @@ class Personal extends Main
         $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Puesto");
         $this->puesto = $value;
     }
-
-    private $aspel;
-    public function setAspel($value)
+    private $systemAspel;
+    public function setSystemAspel($value)
     {
-        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Aspel");
-        $this->aspel = $value;
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Sistema aspel");
+        $this->systemAspel = $value;
+    }
+
+    private $passwordAspel;
+    public function setPasswordAspel($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Contraseña aspel");
+        $this->passwordAspel = $value;
+    }
+    private $userAspel;
+    public function setUserAspel($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Usuario aspel");
+        $this->userAspel = $value;
     }
 
     private $horario;
@@ -79,11 +91,18 @@ class Personal extends Main
         $this->grupo = $value;
     }
 
-    private $computadora;
-    public function setComputadora($value)
+    private $userComputadora;
+    public function setUserComputadora($value)
     {
-        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Computadora");
-        $this->computadora = $value;
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Usuario computadora");
+        $this->userComputadora = $value;
+    }
+
+    private $passwordComputadora;
+    public function setPasswordComputadora($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars=60, $minChars = 0, "Contraseña computadora");
+        $this->passwordComputadora = $value;
     }
 
 
@@ -346,16 +365,22 @@ class Personal extends Main
             $strUpdate .="ext='".$this->ext."', ";
         if(strlen($this->celphone)>0)
             $strUpdate .=" celphone='".$this->celphone."', ";
-        if(strlen($this->aspel)>0)
-            $strUpdate .=" aspel='".$this->aspel."', ";
+        if(strlen($this->systemAspel)>0)
+            $strUpdate .=" systemAspel='".$this->systemAspel."', ";
+        if(strlen($this->userAspel)>0)
+            $strUpdate .=" userAspel='".$this->userAspel."', ";
+        if(strlen($this->passwordAspel)>0)
+            $strUpdate .=" passwordAspel='".$this->passwordAspel."', ";
         if(strlen($this->skype)>0)
             $strUpdate .=" skype='".$this->skype."', ";
         if(strlen($this->horario)>0)
             $strUpdate .=" horario='".$this->horario."', ";
         if(strlen($this->fechaIngreso)>0)
             $strUpdate .=" fechaIngreso='".$this->fechaIngreso."', ";
-        if(strlen($this->computadora)>0)
-            $strUpdate .=" computadora='".$this->computadora."', ";
+        if(strlen($this->userComputadora)>0)
+            $strUpdate .=" userComputadora='".$this->userComputadora."', ";
+        if(strlen($this->passwordComputadora)>0)
+            $strUpdate .=" passwordComputadora='".$this->passwordComputadora."', ";
         if(strlen($this->grupo)>0)
             $strUpdate .=" grupo='".$this->grupo."', ";
         if(strlen($this->tipoPersonal)>0)
@@ -437,13 +462,16 @@ class Personal extends Main
                 ext,
                 celphone,
                 skype,
-                aspel,
+                systemAspel,
+                userAspel,
+                passwordAspel,
                 puesto,
                 horario,
                 sueldo,
                 grupo,
                 jefeInmediato,
-                computadora,
+                userComputadora,
+                passwordComputadora,
                 tipoPersonal,
                 roleId,
                 departamentoId,
@@ -461,13 +489,16 @@ class Personal extends Main
                 '".$this->ext."',
                 '".$this->celphone."',
                 '".$this->skype."',
-                '".$this->aspel."',
+                '".$this->systemAspel."',
+                '".$this->userAspel."',
+                '".$this->passwordAspel."',
                 '".$this->puesto."',
                 '".$this->horario."',
                 '".$this->sueldo."',
                 '".$this->grupo."',
                 '".$this->jefeInmediato."',
-                '".$this->computadora."',
+                '".$this->userComputadora."',
+                '".$this->passwordComputadora."',
                 '".trim($this->tipoPersonal)."',
                 '".trim($this->roleId)."',
                 '".$this->departamentoId."',

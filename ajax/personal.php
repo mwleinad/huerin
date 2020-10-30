@@ -4,7 +4,7 @@ include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
 switch($_POST["type"])
 {
-	case "addPersonal": 
+	case "addPersonal":
 		$departamentos = $personal->ListDepartamentos();
 		$smarty->assign("departamentos", $departamentos);
 
@@ -40,8 +40,14 @@ switch($_POST["type"])
             $personal->setEmail($_POST['email']);
         if(isset($_POST["skype"]))
             $personal->setSkype($_POST['skype']);
-        if(isset($_POST["aspel"]))
-            $personal->setAspel($_POST['aspel']);
+
+		if(isset($_POST["systemAspel"]))
+			$personal->setSystemAspel($_POST['systemAspel']);
+        if(isset($_POST["userAspel"]))
+            $personal->setUserAspel($_POST['userAspel']);
+		if(isset($_POST["passwordAspel"]))
+			$personal->setPasswordAspel($_POST['passwordAspel']);
+
         if(isset($_POST["horario"]))
             $personal->setHorario($_POST['horario']);
         if(isset($_POST["fechaIngreso"])){
@@ -50,8 +56,10 @@ switch($_POST["type"])
         }
         if(isset($_POST["grupo"]))
             $personal->setGrupo($_POST['grupo']);
-        if(isset($_POST["computadora"]))
-            $personal->setComputadora($_POST['computadora']);
+		if(isset($_POST["userComputadora"]))
+			$personal->setUserComputadora($_POST['userComputadora']);
+        if(isset($_POST["passwordComputadora"]))
+            $personal->setPasswordComputadora($_POST['passwordComputadora']);
         if(isset($_POST["username"]))
             $personal->setUsername($_POST['username']);
         if(isset($_POST["passwd"]))
@@ -170,8 +178,12 @@ switch($_POST["type"])
             $personal->setEmail($_POST['email']);
         if(isset($_POST["skype"]))
             $personal->setSkype($_POST['skype']);
-        if(isset($_POST["aspel"]))
-            $personal->setAspel($_POST['aspel']);
+		if(isset($_POST["systemAspel"]))
+			$personal->setSystemAspel($_POST['systemAspel']);
+		if(isset($_POST["userAspel"]))
+			$personal->setUserAspel($_POST['userAspel']);
+        if(isset($_POST["passwordAspel"]))
+            $personal->setPasswordAspel($_POST['passwordAspel']);
         if(isset($_POST["horario"]))
             $personal->setHorario($_POST['horario']);
         if(isset($_POST["fechaIngreso"])){
@@ -180,8 +192,10 @@ switch($_POST["type"])
         }
         if(isset($_POST["grupo"]))
             $personal->setGrupo($_POST['grupo']);
-        if(isset($_POST["computadora"]))
-            $personal->setComputadora($_POST['computadora']);
+        if(isset($_POST["userComputadora"]))
+            $personal->setUserComputadora($_POST['userComputadora']);
+		if(isset($_POST["passwordComputadora"]))
+			$personal->setPasswordComputadora($_POST['passwordComputadora']);
         if(isset($_POST["username"]))
             $personal->setUsername($_POST['username']);
         if(isset($_POST["passwd"]))
@@ -271,6 +285,6 @@ switch($_POST["type"])
 			$smarty->assign("results", $results);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-exp-employe.tpl');
 	break;
-		
+
 }
 ?>
