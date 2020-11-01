@@ -91,7 +91,10 @@
                 $contract->setAlternativeCp($_POST['alternativeCp']);
 				$contract->setSeparateInvoice(1);
             }
-        }
+        }else {
+			$contract->setUseAlternativeRzForInvoice(0);
+			$contract->setSeparateInvoice(1);
+		}
         $contract->setQualification($_POST['qualification']);
 
 
