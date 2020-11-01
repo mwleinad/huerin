@@ -368,8 +368,7 @@ class InvoiceService extends Cfdi{
         foreach($contratos as $contrato){
             //si el contrato tiene createSeparateInvoice  == 0 se ignora
             //por que sera procesado por otra empresa
-            if($contrato['createSeparateInvoice'] == '0')
-                continue;
+
 
             $this->resetEmisor();
             $this->resetData();
@@ -381,6 +380,11 @@ class InvoiceService extends Cfdi{
             $this->isCreatedInvoice(false);
             $this->resetWorkflows();
             $this->setCurrentContract($contrato);
+            
+            if($contrato['createSeparateInvoice'] == '0') {
+                $this->ChangeLastProcessInvoice();
+                continue;
+            }
 
             if(!$this->Util->ValidateRfc($this->currentContract["rfc"]))
                 continue;
