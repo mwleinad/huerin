@@ -96,6 +96,9 @@
                 $contract->setAlternativeRfc($_POST['alternativeRfc']);
                 $contract->setAlternativeCp($_POST['alternativeCp']);
             }
+        } else {
+            $contract->setUseAlternativeRzForInvoice(0);
+            $contract->setSeparateInvoice(1);
         }
         $contract->setQualification($_POST['qualification']);
 
