@@ -110,9 +110,9 @@ class ReportService extends Servicio {
                 if ($flag) {
                     array_push($items, $cad);
                 }
-
             }
         }
+        $items = $this->Util()->orderMultiDimensionalArray($items, 'dateMovimiento');
         return $items;
     }
 }
