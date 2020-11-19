@@ -182,7 +182,7 @@
                 {/if}
                 {if in_array(282,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-company-activity" {if $page == "report-company-activity"}class="current"{/if} title="Reporte de empresas-actividades" target="_blank">
-                            <span>Reporte altas y bajas</span></a></li>
+                            <span>Reporte de empresa-actividades</span></a></li>
                 {/if}
 
             {/if}
