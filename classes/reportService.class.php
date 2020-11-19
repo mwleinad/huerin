@@ -23,7 +23,7 @@ class ReportService extends Servicio {
                     )
                 ),
                 ']'      
-                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo FROM servicio
+                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo, tipoServicio.departamentoId FROM servicio
                                    INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId) a
                 INNER JOIN (SELECT contract.contractId, contract.name, customer.nameContact FROM contract
                             INNER JOIN customer ON contract.customerId = customer.customerId) b
@@ -39,73 +39,80 @@ class ReportService extends Servicio {
         $filterMonth = $_POST['month'] ? (int)$_POST['month'] :'';
         $filterYear = $_POST['year'] ? (int)$_POST['year']:'';
 
-        $statusBaja = ['baja', 'bajaParcial'];
+        $statusBusqueda = ['baja', 'bajaParcial', 'activo'];
+        $statusEquivalent = [
+            'readonly' => 'Reactivacion solo lectura',
+            'baja' => 'Baja',
+            'activo' => 'Alta',
+            'modificacion' => 'Modificacion',
+            'bajaParcial' => 'Baja temporal',
+            'reactivacion' => 'Reactivacion'
+        ];
+
+        $contracts = [];
+        $id_contracts = [];
         foreach ($services as $key => $var) {
             $history = json_decode($var['history'], true);
-            $flag =  true;
+
             if(!is_array($history))
                 continue;
 
-            $services[$key]['historyArray'] = $history;
-            $firstHistory =$history[key($history)];
-            end($history);
-            $lastHistory = $history[key($history)];
-
-            $currentStatus = $var['status'];
-            $dateAlta =  $firstHistory['fecha'];
-            $dateBaja =  null;
-            if (in_array($currentStatus, $statusBaja)) {
-                $dateBaja = $this->Util()->isValidateDate($var['fechaBaja'], 'Y-m-d') ? $var['fechaBaja'] :  $lastHistory ['fecha'];
-            }
-
-
-            $dateAlta = date('Y-m-d', strtotime($dateAlta));
-            $dateBaja = date('Y-m-d', strtotime($dateBaja));
-            $monthDateAlta = date('m', strtotime($dateAlta));
-            $var['month'] =  $monthsComplete[$monthDateAlta];
-            $var['dateMovimiento'] =  $firstHistory['fecha'];
-            $var['typeMovimiento'] =  'Alta';
-
-            if($_POST['statusSearch'] == 'baja' || $_POST['statusSearch'] == 'alta') {
-
-                if ($_POST['statusSearch'] == 'baja') {
-                    $dateEval = $dateBaja;
-                    $var['dateMovimiento'] =  $lastHistory['fecha'];
-                    $var['typeMovimiento'] =  'Baja';
-                } elseif ($_POST['statusSearch'] == 'alta') {
-                    $dateEval = $dateAlta;
-                    $var['dateMovimiento'] =  $firstHistory['fecha'];
-                }
-
-                $dateMonth = date('m', strtotime($dateEval));
-                $dateYear = (int) date('Y', strtotime($dateEval));
-
-                if ($filterYear) {
-                    if ($filterYear !== $dateYear)
-                        $flag = false;
-                }
-
-                if ($filterMonth) {
-                    if ($filterMonth !== (int)$dateMonth)
-                        $flag = false;
-                }
-                $var['month'] =  $monthsComplete[$dateMonth];
-            }
-
-            if ($flag) {
+            $contract_id = $var['contractId'];
+            if(!in_array($contract_id, $id_contracts)) {
                 $sql = ' SELECT a.departamentoId, a.departamento, b.personalId, c.name  FROM departamentos a
                          LEFT JOIN contractPermiso b ON a.departamentoId=b.departamentoId  
                          INNER JOIN personal c ON b.personalId = c.personalId
-                         WHERE b.contractId = "'.$var['contractId'].'"
+                         WHERE b.contractId = "'.$contract_id.'"
                          GROUP BY a.departamentoId';
 
                 $this->Util()->DB()->setQuery($sql);
                 $responsables = $this->Util()->DB()->GetResult();
-                $key =  array_search($var['departamentoId'], array_column($responsables, 'departamentoId'));
-                $var['supervisor']  = $personal->findSupervisor($responsables[$key]['personalId']);
-                array_push($items, $var);
+                $responsables_lineal = [];
+                foreach ($responsables as $resp) {
+                    $responsables_lineal[$resp['departamentoId']] = $resp['personalId'];
+                }
+                $contracts[$contract_id]['responsables_lineal'] = $responsables_lineal;
+                array_push($id_contracts, $contract_id);
             }
-        };
+
+            $current_resposables =  $contracts[$contract_id]['responsables_lineal'];
+
+            $var['supervisor']  = $personal->findSupervisor($current_resposables[$var['departamentoId']]);
+            foreach ($history as $kh => $hist) {
+               $flag =  true;
+               $cad =  $var;
+               $fecha = date('Y-m-d', strtotime($hist['fecha']));
+               if ($_POST['statusSearch']) {
+                   if ($_POST['statusSearch'] != $hist['status'])
+                       continue;
+               } else {
+                   if ( !in_array($hist['status'], $statusBusqueda))
+                       continue;
+               }
+
+               $dateMonth = date('m', strtotime($fecha));
+               $dateYear = (int) date('Y', strtotime($fecha));
+
+               if ($filterYear) {
+                   if ($filterYear !== $dateYear)
+                      $flag = false;
+               }
+
+               if ($filterMonth) {
+                   if ($filterMonth !== (int)$dateMonth)
+                      $flag = false;
+               }
+
+               $cad['month'] =  $monthsComplete[$dateMonth];
+               $cad['typeMovimiento'] =  $statusEquivalent[$hist['status']];
+               $cad['dateMovimiento'] =  $fecha;
+
+                if ($flag) {
+                    array_push($items, $cad);
+                }
+
+            }
+        }
         return $items;
     }
 }

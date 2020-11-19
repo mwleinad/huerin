@@ -24,7 +24,7 @@
         <td align="center">{$item.nombreServicio}</td>
         <td align="center">{$item.supervisor}</td>
         <td align="center">$ {$item.costo|number_format:'2':'.':','}</td>
-        <td align="center"></td>
+        <td align="center">$ {$item.costo|number_format:'2':'.':','}</td>
         <td align="center"></td>
     </tr>
 {foreachelse}
