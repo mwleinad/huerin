@@ -99,6 +99,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-account-manager',
 		'chart',
 		'report-ab-all',
+		'report-company-activity',
 
 		//cafeteria
         'coffe',

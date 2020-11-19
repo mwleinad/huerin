@@ -54,4 +54,19 @@ switch ($_POST['type']) {
          }
          echo json_encode($data);
          break;
+
+    case 'responsableSupervisor':
+        $personal->setPersonalId($_POST['id']);
+        $subordinados = $personal->GetCascadeSubordinates();
+        $supervisores = [];
+        foreach ($subordinados as $sub) {
+            if ($sub['nivel'] == 4) {
+                $cad['id'] =  $sub['personalId'];
+                $cad['name'] = $sub['name'];
+                array_push($supervisores, $cad);
+            }
+        }
+        echo json_encode($supervisores);
+    break;
+
 }

@@ -46,7 +46,10 @@ jQ(document).ready(function () {
 		jQ('.select2').select2(ops);
 		new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT+"/ajax/load_items_select.php", ops);
 		new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT+"/ajax/load_items_select.php", ops);
+		if(jQ('#responsableGerente').length > 0)
+			new Select2Cascade(jQ('#responsableGerente'), jQ('#responsableSupervisor'), WEB_ROOT+"/ajax/load_items_select.php", ops);
 	}
+
 	if(jQ('#use_alternative_rz_for_invoice').length > 0) {
 		jQ('#use_alternative_rz_for_invoice').on('change', function () {
 			if (this.value === '1') {
