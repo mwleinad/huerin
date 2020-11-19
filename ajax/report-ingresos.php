@@ -71,7 +71,7 @@ switch($_POST["type"])
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-ingresos.tpl');
 		break;
-    case 'searchAltasBajas2':
+    case 'searchBitacoraAltasBajas':
         echo 'ok[#]';
         $formValues['subordinados'] = $_POST['subordinados'];
         $formValues['respCuenta'] = $_POST['responsableCuenta'];

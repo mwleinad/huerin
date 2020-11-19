@@ -1,4 +1,4 @@
-Event.observe(window, 'load', function() 
+Event.observe(window, 'load', function()
 {
 	if($('rfc2'))
 	{
@@ -43,10 +43,10 @@ Event.observe(window, 'load', function()
 			$('suggestionDiv').hide();
 			return;
 		}
-		
+
 	}
 
-		
+
 	AddSuggestListener2 = function(e) {
 		var el = e.element();
 		var del = el.hasClassName('suggestUserDiv');
@@ -61,17 +61,17 @@ Event.observe(window, 'load', function()
 			$('suggestionDiv2').hide();
 			return;
 		}
-		
+
 	}
 
 	if($('suggestionDiv')!= undefined)
 	{
 		$('suggestionDiv').observe("click", AddSuggestListener);
-	}	
+	}
 	if($('suggestionDiv2')!= undefined)
 	{
 		$('suggestionDiv2').observe("click", AddSuggestListener2);
-	}	
+	}
 });
 
 function FillRFC(elem, id)
@@ -89,7 +89,7 @@ function FillRFC2(elem, id)
 function FillDatos(id)
 {
 	$('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/fill_form_report.php', {
   	parameters: {value: id, type: "datos"},
 		method:'post',
@@ -106,7 +106,7 @@ function FillDatos(id)
 function FillDatos2(id)
 {
 	$('loadingDivDatosFactura2').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/fill_form_servicios.php', {
   	parameters: {value: id, type: "datos"},
 		method:'post',
@@ -122,7 +122,7 @@ function FillDatos2(id)
 }
 function SuggestUser()
 {
-	new Ajax.Request(WEB_ROOT+'/ajax/suggest_report.php', 
+	new Ajax.Request(WEB_ROOT+'/ajax/suggest_report.php',
 	{
 		parameters: {value: $('rfc').value},
 		method:'post',
@@ -141,7 +141,7 @@ function SuggestUser()
 }
 function SuggestUser2()
 {
-	new Ajax.Request(WEB_ROOT+'/ajax/suggest_customer.php', 
+	new Ajax.Request(WEB_ROOT+'/ajax/suggest_customer.php',
 	{
   		parameters: {value: $('rfc2').value},
 		method:'post',
@@ -158,7 +158,7 @@ function SuggestUser2()
   });
 }
 function doSearch(){
-	$('type').value = "searchAltasBajas";
+	$('type').value = "searchBitacoraAltasBajas";
 	new Ajax.Request(WEB_ROOT+'/ajax/report-ingresos.php',
 	{
 		method:'post',
@@ -170,10 +170,10 @@ function doSearch(){
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-			$("loading").style.display = "none";						
+			$("loading").style.display = "none";
 			$('contenido').innerHTML = splitResponse[1];
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
