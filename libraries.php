@@ -136,6 +136,8 @@ include_once(DOC_ROOT."/classes/huerinGraph.class.php");
 include_once(DOC_ROOT."/classes/dataGraph.class.php");
 $dataGraph = new DataGraph();
 
+include_once(DOC_ROOT."/classes/reportService.class.php");
+
 $db = new DB;
 $dbRemote = new DBRemote;
 $error = new Error;

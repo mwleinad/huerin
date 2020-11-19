@@ -176,6 +176,10 @@
                     <li><a href="{$WEB_ROOT}/chart" {if $page == "chart"}class="current"{/if} title="Graficas" target="_blank">
                     <span>Graficas</span></a></li>
                 {/if}
+                {if $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-ab-all" {if $page == "report-ab-all"}class="current"{/if} title="Reportes de altas y bajas" target="_blank">
+                            <span>Reporte altas y bajas</span></a></li>
+                {/if}
 
             {/if}
 

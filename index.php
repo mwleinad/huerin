@@ -98,6 +98,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-exp-employe',
 		'report-account-manager',
 		'chart',
+		'report-ab-all',
 
 		//cafeteria
         'coffe',

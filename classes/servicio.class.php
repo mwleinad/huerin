@@ -1164,6 +1164,7 @@ class Servicio extends Contract
         }
         return $serviciosAfectados;
     }
+
     /*
      * Funcion
      * Reactivar servicios de un contrato de status baja a status readonly
