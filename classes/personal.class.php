@@ -922,13 +922,17 @@ class Personal extends Main
             return false;
         }
     }
-    public function findSupervisor($id)
+    public function findSupervisor($id, $associative = false)
     {
         global $rol;
         $this->setPersonalId($id);
         $infP = $this->InfoWhitRol();
         $jefes = [];
-        $this->deepJefesArray($jefes, true);
+        if ($associative)
+            $this->deepJefesAssoc($jefes, true);
+        else
+            $this->deepJefesArray($jefes, true);
+
         $supervisor = "";
         switch ($infP["nameLevel"]) {
             case 'Contador':
@@ -941,6 +945,7 @@ class Personal extends Main
         }
         return $supervisor;
     }
+
     public function getOrdenJefes()
     {
         $ordenJefes = [];
