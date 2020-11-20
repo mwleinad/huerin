@@ -11,14 +11,20 @@
 </thead>
 <tbody>
 {foreach from=$registros item=item key=key}
+    {foreach from=$item.companies item=company}
+        <tr>
+            <td align="center">{$item.name}</td>
+            <td align="center">{$company.supervisor}</td>
+            <td align="center">{$company.name}</td>
+            <td align="center">{$company.actividad.sector}</td>
+            <td align="center">{$company.actividad.subsector}</td>
+            <td align="center">{$company.actividad.actividad}</td>
+        </tr>
+    {foreachelse}
     <tr>
-        <td align="center">{$item.gerente}</td>
-        <td align="center">{$item.supervisor}</td>
-        <td align="center">{$item.name}</td>
-        <td align="center">{$item.nameSector}</td>
-        <td align="center">{$item.nameSubsector}</td>
-        <td align="center">{$item.actividad}</td>
+        <td colspan="6" align="center">Ning&uacute;n registro encontrado</td>
     </tr>
+    {/foreach}
 {foreachelse}
     <tr>
         <td colspan="6" align="center">Ning&uacute;n registro encontrado</td>

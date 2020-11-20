@@ -137,6 +137,7 @@ include_once(DOC_ROOT."/classes/dataGraph.class.php");
 $dataGraph = new DataGraph();
 
 include_once(DOC_ROOT."/classes/reportService.class.php");
+include_once(DOC_ROOT."/classes/contractActivity.class.php");
 
 $db = new DB;
 $dbRemote = new DBRemote;
