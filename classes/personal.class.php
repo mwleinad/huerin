@@ -392,6 +392,9 @@ class Personal extends Main
         if(strlen($this->jefeInmediato)>0)
             $strUpdate .=" jefeInmediato='".$this->jefeInmediato."', ";
 
+        if(isset($_POST['fechaCompra']) && $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y'))
+            $strUpdate .=" fechaCompra='".$this->Util()->FormatDateMySql($_POST['fechaCompra'])."', ";
+
         $this->Util()->DB()->setQuery("
             UPDATE
                 personal
@@ -450,6 +453,8 @@ class Personal extends Main
         if(!is_numeric($this->sueldo))
             $this->sueldo=0;
 
+        $fechaCompra = $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y') ? $this->Util()->FormatDateMySql($_POST['fechaCompra']) : '';
+
         $this->Util()->DB()->setQuery("
             INSERT INTO
                 personal
@@ -477,7 +482,8 @@ class Personal extends Main
                 departamentoId,
                 fechaIngreso,
                 lastChangePassword,
-                active
+                active,
+                fechaCompra
         )
         VALUES
         (
@@ -504,7 +510,8 @@ class Personal extends Main
                 '".$this->departamentoId."',
                 '".$this->fechaIngreso."',
                 '".$this->fechaIngreso."',
-                '".$this->active."'
+                '".$this->active."',
+                '".$fechaCompra."'
         );");
         $id = $this->Util()->DB()->InsertData();
         if(isset($_POST["expe"])){
