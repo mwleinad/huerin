@@ -596,7 +596,8 @@ class Servicio extends Contract
 
 		//actualizar historial
         $log->saveHistoryChangesServicios($this->servicioId,$this->inicioFactura,"modificacion",$this->costo,$_SESSION['User']['userId'],$this->inicioOperaciones,'');
-		$this->Util()->setError(1, "complete");
+        $this->resetDateLastProcessInvoice($infoServicio['contractId']);
+        $this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
 		return true;
 	}
@@ -626,6 +627,7 @@ class Servicio extends Contract
 		);");
 
 		$servicioId = $this->Util()->DB()->InsertData();
+		$this->resetDateLastProcessInvoice($this->getContractId());
 
 		//actualizar historial
 		$this->Util()->DB()->setQuery("
@@ -745,6 +747,13 @@ class Servicio extends Contract
 
 		return $data;
 	}
+
+	public function resetDateLastProcessInvoice ($id) {
+	    $sql = "update contract set lastProcessInvoice= '0000-00-00' where  contractId='".$id."'";
+	    $this->Util()->DB()->setQuery($sql);
+	    $this->Util()->DB()->UpdateData();
+    }
+
 	/*
 	 * funcion DownServicio()
 	 * Dar de baja los servicios de forma complete o partial
@@ -1035,6 +1044,7 @@ class Servicio extends Contract
                 $log->saveHistoryChangesServicios($servId,$if,$evento,$costo,$_SESSION['User']['userId'],$io,'',$flw);
             }
         }
+        $this->resetDateLastProcessInvoice($contratoId);
         $log->sendLogMultipleOperation($servs,$contratoId);
         $this->Util()->setError(0, 'complete', 'Se han modificado los servicios correctamente. ');
         $this->Util()->PrintErrors();
@@ -1123,6 +1133,7 @@ class Servicio extends Contract
          $log->setNewValue(serialize($newServicio));
          $log->SaveOnly();
        }
+       $this->resetDateLastProcessInvoice($conId);
        $log->sendLogMultipleOperation($id_services,$conId,'new',$actuales);
 	   $this->cleanItemsServices();
        $this->Util()->setError(0,'complete',"Se han guardado correctamente los servicios.");
@@ -1198,6 +1209,7 @@ class Servicio extends Contract
                 array_push($serviciosAfectados,$afterDetail);
             }
         }
+        $this->resetDateLastProcessInvoice($conId);
         return $serviciosAfectados;
     }
 }
