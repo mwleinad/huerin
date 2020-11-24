@@ -83,7 +83,7 @@
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Fecha Ingreso:</div>
                     <input style="width: 20%!important;" class="smallInput medium" name="fechaIngreso" id="fechaIngreso"
-                           onclick="CalendarioSimple(this)" type="text" value="{$post.fechaIngreso}" size="50"
+                           onclick="CalendarioSimple(this)" type="text" value="{$post.fechaIngreso|date_format:'%d-%m-%Y'}" size="50"
                            maxlength="10" readonly="readonly"/>
                     <hr/>
                 </div>
@@ -167,6 +167,13 @@
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">Activo:</div>
                 <input name="active" id="active" type="checkbox" {if $post.active}checked{/if} value="1""/>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left">Fecha Compra:</div>
+                <input style="width: 20%!important;" class="smallInput medium" name="fechaCompra" id="fechaCompra"
+                       onclick="CalendarioSimple(this)" type="text" value="{$post.fechaCompra|date_format:'%d-%m-%Y'}" size="50"
+                       maxlength="10" readonly="readonly"/>
                 <hr/>
             </div>
             {if in_array(240,$permissions)|| $User.isRoot}
