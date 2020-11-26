@@ -263,6 +263,11 @@ class Notice extends Main
                              $mails[$usuario['email']] = $usuario['name'];
 
                 }
+                if($User['isRoot']) {
+                    echo count($mails);
+                    dd($mails);
+                }
+
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
                 $body .= "<br><br>El aviso fue creado por " . $this->usuario;
                 $body .= "<br><br><small>Aviso".$noticeId."</small>";
