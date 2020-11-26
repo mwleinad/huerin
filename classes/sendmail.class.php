@@ -3,11 +3,11 @@
 //require_once(DOC_ROOT."/phpmailer/class.phpmailer.php");
 class SendMail extends Main
 {
-		
-	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema") 
+
+	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
 	{
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
-			
+
 			$subject= utf8_decode($subject);
 		 	$fromName = utf8_decode($fromName);
 		 	try{
@@ -155,8 +155,12 @@ class SendMail extends Main
         $mail->Port       = SMTP_PORT2;
         $mail->Username   = SMTP_USER2;
         $mail->Password   = SMTP_PASS2;
-        $mail->SMTPDebug=0;
+        if($_SESSION['User']['isRoot'])
+            $mail->SMTPDebug=2;
+        else
+            $mail->SMTPDebug=0;
         $mail->SMTPKeepAlive=true;
+
         if($attachment != "")
         {
             $mail->AddAttachment($attachment, $fileName);
