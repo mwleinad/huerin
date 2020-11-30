@@ -355,7 +355,7 @@ class Personal extends Main
         }
         if(strlen($this->phone)>0)
             $strUpdate .=" phone='".$this->phone."', ";
-        if(strlen($this->email)>0)
+        if(isset($_POST['email']))
             $strUpdate .=" email='".$this->email."', ";
         if(strlen($this->username)>0)
             $strUpdate .=" username='".$this->username."', ";
