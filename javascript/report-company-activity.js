@@ -13,10 +13,16 @@ function doSearch(){
 		},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			var splitResponse = response.split("[#]");
-			$("btnBuscar").style.display = "block";
-			$("loading").style.display = "none";
-			$('contenido').innerHTML = splitResponse[1];
+			var splitResp = response.split("[#]");
+			if(splitResp[0]==='ok')
+			{
+				jQ('#loading').hide();
+				jQ("#btnBuscar").show();
+				window.location = splitResp[1];
+			}else{
+				jQ('#loading').hide();
+				jQ("#btnBuscar").show();
+			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});

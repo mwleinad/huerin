@@ -19,11 +19,15 @@ class ReportService extends Servicio {
                         'status',
                         '\":\"',
                         c.STATUS,
+                         '\",\"',
+                        'fechaFacturacion',
+                        '\":\"',
+                        c.inicioFactura,
                         '\"}'
                     )
                 ),
                 ']'      
-                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo, tipoServicio.departamentoId FROM servicio
+                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo,servicio.inicioFactura,tipoServicio.departamentoId FROM servicio
                                    INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId) a
                 INNER JOIN (SELECT contract.contractId, contract.name, customer.nameContact FROM contract
                             INNER JOIN customer ON contract.customerId = customer.customerId) b
@@ -106,6 +110,7 @@ class ReportService extends Servicio {
                $cad['month'] =  $monthsComplete[$dateMonth];
                $cad['typeMovimiento'] =  $statusEquivalent[$hist['status']];
                $cad['dateMovimiento'] =  $fecha;
+               $cad['fechaFacturacion'] =  $hist['fechaFacturacion'];
 
                 if ($flag) {
                     array_push($items, $cad);
