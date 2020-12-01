@@ -282,7 +282,7 @@ class ContractActivity extends Contract {
         $endRowGranTotal = $rowGranTotal - 1;
         $sheet->setCellValueByColumnAndRow($col, $row, '');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row,'Total '.substr($total['name'],0,15))
+        $sheet->setCellValueByColumnAndRow($col, $row,'Total')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
         $col++;
         $end_row = $end_row-1;
