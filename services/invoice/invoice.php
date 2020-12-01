@@ -141,7 +141,8 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sqlRev);
         $res = $this->Util()->DB()->GetResult();
 
-        $childs = $res ? array_column($res, 'contractId') : [];
+        $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
+        
         array_push($childs, $id);
         $strId =  implode(',', $childs);
         $sql = "select a.*,b.claveSat,b.nombreServicio from servicio a
