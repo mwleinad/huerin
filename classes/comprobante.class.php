@@ -860,7 +860,7 @@ class Comprobante extends Producto
 			return false;
 		}
 	}//CancelarComprobante
-	function GetTotalDesglosado($data)
+	function GetTotalDesglosado($data = [])
 	{
 		if(!$_SESSION["conceptos"])
 		{

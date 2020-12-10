@@ -138,7 +138,7 @@ $dataGraph = new DataGraph();
 
 $db = new DB;
 $dbRemote = new DBRemote;
-$error = new Error;
+$error = new CustomError;
 $util = new Util;
 $main = new Main;
 $notice = new Notice;

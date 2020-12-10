@@ -1,7 +1,7 @@
 <?php
-require_once (DOC_ROOT.'/libs/graph/src/jpgraph.php');
+require_once (DOC_ROOT.'/libs/jpgraph-4.3.4/src/jpgraph.php');
 
-require_once (DOC_ROOT.'/libs/graph/src/jpgraph_bar.php');
+require_once (DOC_ROOT.'/libs/jpgraph-4.3.4/src/jpgraph_bar.php');
 class HuerinGraph {
 
     private $data;

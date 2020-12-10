@@ -52,7 +52,7 @@
                 	<span class="inner media_library png">Departamentos</span>
                 </span>
             </a>
-        </li>        
+        </li>
         {/if}
         {if in_array(7,$permissions)|| $User.isRoot}
         <li {if in_array(213,$permissions) || in_array(217,$permissions) || $User.isRoot} class="item middle"{else} class="item last"{/if} id="three">
@@ -81,6 +81,6 @@
                 </a>
             </li>
         {/if}
-     		  
+
     </ul>
 </div>
