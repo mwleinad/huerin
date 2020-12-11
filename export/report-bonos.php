@@ -62,10 +62,7 @@ $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono-order-ro
 
 $name = 'reporte_de_bonos_cobranza';
 ob_clean();
-header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
-header("Content-type:   application/x-msexcel; charset=utf-8");
-header("Content-Disposition: attachment; filename=".$name.".xls");
-header("Pragma: no-cache");
-header("Expires: 0");
 echo $html;
 exit;
+
+
