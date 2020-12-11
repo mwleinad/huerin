@@ -616,10 +616,10 @@ class ReporteBonos extends Main
                         $totales["totalEmpresas"]++;
                     }
                     foreach($service["instancias"] as $ikey=>$itemins){
-                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=$itemins['costo'];
-                        $serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=$itemins['completado'];
-                        $totales['granTotalVerticalDevengado'][$ikey] += $itemins['costo'];
-                        $totales['granTotalVerticalCompletado'][$ikey] += $itemins['completado'];
+                        @$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalDevengado'][$ikey] +=@$itemins['costo'];
+                        @$serviciosEncontrados[$socio]['subordinados'][$gerente]['subordinados'][$subgerente]["subordinados"][$supervisor]["subordinados"][$encargadoDep]['totalVerticalCompletado'][$ikey] +=@$itemins['completado'];
+                        @$totales['granTotalVerticalDevengado'][$ikey] += @$itemins['costo'];
+                        @$totales['granTotalVerticalCompletado'][$ikey] += @$itemins['completado'];
 
                         if(!in_array($encargadoDep,$listsEncargados)){
                             array_push($listsEncargados,$encargadoDep);
@@ -631,8 +631,8 @@ class ReporteBonos extends Main
                             $cad['personalId']=$encargadoDep;
                             $totalesEncargados[$encargadoDep]=$cad;
                         }else{
-                            $totalesEncargados[$encargadoDep]['totalDevengado']+=$itemins['costo'];
-                            $totalesEncargados[$encargadoDep]['totalCompletado']+=$itemins['completado'];
+                            $totalesEncargados[$encargadoDep]['totalDevengado']+=@$itemins['costo'];
+                            $totalesEncargados[$encargadoDep]['totalCompletado']+=@$itemins['completado'];
                         }
                     }
                 break;
@@ -711,9 +711,9 @@ class ReporteBonos extends Main
             }
         } else {
             $newArray[$value["jefeInmediato"]] = $allEncargados[$value["jefeInmediato"]];
-            $newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
-            $newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
-            $newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
+            @$newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
+            @$newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
+            @$newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
             $sueldo = $newArray[$value['jefeInmediato']]["sueldo"] + $sueldo;
             if ($newArray[$value['jefeInmediato']]['jefeInmediato']) {
                 $this->recursiveTotalEncargado($allEncargados, $newArray, $newArray[$value['jefeInmediato']], $acumDevengado, $acumCompletado, $sueldo);
