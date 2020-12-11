@@ -8,7 +8,7 @@ class ContractRep extends Main
         $this->contractId=$value;
     }
     public function findPermission($contrato, $respsCuenta){
-        $split = split('-',$contrato['permisos']);
+        $split = explode('-',$contrato['permisos']);
         foreach($split as $sp){
             $split2 = split(',',$sp);
             //Se agrego dep 25 que ya no existe
