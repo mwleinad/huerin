@@ -10,7 +10,7 @@ class ContractRep extends Main
     public function findPermission($contrato, $respsCuenta){
         $split = explode('-',$contrato['permisos']);
         foreach($split as $sp){
-            $split2 = split(',',$sp);
+            $split2 = explode(',',$sp);
             //Se agrego dep 25 que ya no existe
             if($split2[0] == 25) {
                 continue;
@@ -19,6 +19,7 @@ class ContractRep extends Main
                 return true;
             }
         }
+        return false;
         return false;
     }
     public function BuscarContract($formValues=array(),$activos=false , $deptos = array())
