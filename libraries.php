@@ -100,7 +100,7 @@ include_once(DOC_ROOT."/classes/expediente.class.php");
 include_once(DOC_ROOT."/classes/rol.class.php");
 include_once(DOC_ROOT."/classes/catalogue.class.php");
 
-if($_GET['page'] == 'add-payment') {
+if(@$_GET['page'] == 'add-payment') {
 	include_once(DOC_ROOT."/services/Cfdi.php");
 } else{
 	include_once(DOC_ROOT."/classes/cfdi.class.php");

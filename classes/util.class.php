@@ -3,6 +3,8 @@
 class Util extends CustomError
 {
 
+	private $DB;
+
 	public function DB($change_collate = true)
 	{
 		if($this->DB == null )

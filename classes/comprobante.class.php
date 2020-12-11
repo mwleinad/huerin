@@ -764,7 +764,7 @@ class Comprobante extends Producto
 		return true;
 	}//GenerarComprobante
 
-	function CancelarComprobante($data, $id_comprobante, $notaCredito = false, $motivo_cancelacion)
+	function CancelarComprobante($data = null, $id_comprobante= null, $notaCredito = false, $motivo_cancelacion = null)
 	{
 		global $cancelation;
 	    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
@@ -2200,7 +2200,7 @@ class PDF_ImageAlpha extends PDF{
 	*                               Public methods                                 *
 	*                                                                              *
 	*******************************************************************************/
-	function Image($file,$x,$y,$w=0,$h=0,$type='',$link='', $isMask=false, $maskImg=0)
+	function Image($file,$x=null,$y=null,$w=0,$h=0,$type='',$link='', $isMask=false, $maskImg=0)
 	{
 			//Put an image on the page
 			if(!isset($this->images[$file]))

@@ -1,6 +1,4 @@
 <?php
-
-session_start();
 class ContractRep extends Main
 {
     private $contractId;
@@ -19,7 +17,6 @@ class ContractRep extends Main
                 return true;
             }
         }
-        return false;
         return false;
     }
     public function BuscarContract($formValues=array(),$activos=false , $deptos = array())

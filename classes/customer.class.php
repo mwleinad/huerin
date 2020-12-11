@@ -1116,7 +1116,7 @@ class Customer extends Main
     $ftrCustomer .= $filter['cliente'] ? " and b.customerId = '". $filter['cliente'] ."' " : "";
     $ftrCustomer .= $filter['factura13'] === 'si'
                     ? " and b.noFactura13 = 'No' "
-                    : $filter['noFactura13'] === 'no' ? " and b.noFactura13 = 'Si' " : "";
+                    : ($filter['noFactura13'] === 'no' ? " and b.noFactura13 = 'Si' " : "");
 
      $allowAccessAnyContract = $this->accessAnyContract();
      if($allowAccessAnyContract === false)

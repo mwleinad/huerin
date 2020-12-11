@@ -386,8 +386,10 @@ class ReporteBonos extends Main
             $allow = $this->accessAnyContract() === '1' && $ftr['responsableCuenta'] <= 0 ? true : false;
             $encargados = $contractRep->encargadosCustomKey('departamentoId','personalId',$service['contractId']);
             if(!$allow) {
-                if(in_array($encargados[$service['departamentoId']],$fullSubordinados))
-                    $allow = true;
+                if (key_exists($service['departamentoId'], $encargados)){
+                    if (in_array($encargados[$service['departamentoId']], $fullSubordinados))
+                        $allow = true;
+                }
             }
 
             if(!$allow)

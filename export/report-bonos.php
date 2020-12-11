@@ -4,8 +4,16 @@ if(!isset($_SESSION)){
 }
 
 include_once('../config.php');
+ini_set("display_errors", 1);
+error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
+if (PHP_MAJOR_VERSION >= 7) {
+    set_error_handler(function ($errno, $errstr) {
+        return strpos($errstr, 'Declaration of') === 0;
+    }, E_WARNING);
+}
 date_default_timezone_set('America/Mexico_City');
 include_once(DOC_ROOT.'/libraries.php');
+
 $data = $reportebonos->generateReportBonosWhitLevel($_POST);
 $period = $_POST['period'];
 if($period== "efm"){

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Task extends Step
 {
@@ -28,7 +28,7 @@ class Task extends Step
 		$this->Util()->ValidateInteger($value, 365, 0);
 		$this->prorroga = $value;
 	}
-	
+
 	private $nombreTask;
 	public function setNombreTask($value)
 	{
@@ -77,10 +77,10 @@ class Task extends Step
             $this->extensiones = $value;
 
     }
-	public function Enumerate()
+	public function Enumerate($id = 0, $status = '')
 	{
 		global $months;
-		
+
 		$this->Util()->DB()->setQuery("SELECT * FROM step 
 			LEFT JOIN servicio ON step.servicioId = servicio.servicioId
 				WHERE step.servicioId = '".$this->getServicioId()."'					
@@ -94,9 +94,9 @@ class Task extends Step
 				ORDER BY taskId ASC");
 			$result[$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$result[$key]["countTasks"] = count($result[$key]["tasks"]);
-			
+
 		}
-		
+
 		return $result;
 	}
 
@@ -104,7 +104,7 @@ class Task extends Step
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM task WHERE taskId = '".$this->taskId."'");
 		$row = $this->Util()->DB()->GetRow();
-		
+
 		return $row;
 	}
 

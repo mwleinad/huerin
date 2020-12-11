@@ -78,6 +78,7 @@ class Departamentos extends Main
     public function GetFirstDep()
     {
         global $User;
+        $sql_add="";
         $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos  WHERE parentId=6 and permisoId!=149 AND permisoId!=148 ORDER BY titulo ASC '.$sql_add);
         $perms = $this->Util()->DB()->GetResult();
         $perm = $this->Util()->ConvertToLineal($perms,'permisoId');

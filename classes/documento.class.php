@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Documento extends Contract
 {
@@ -18,7 +18,7 @@ class Documento extends Contract
 		return $this->documentoId;
 	}
 
-	public function setContractId($value)
+	public function setContractId($value, $required = false)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->contractId = $value;
@@ -66,20 +66,20 @@ class Documento extends Contract
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM documento");
 		$result = $this->Util()->DB()->GetResult();
-		
+
 		foreach($result as $key => $value)
 		{
 			$result[$key]["filePath"] = WEB_ROOT."/documentos/".$value["contractId"]."_".$value["path"];
 		}
 		return $result;
 	}
-	
-	public function Enumerate()
+
+	public function Enumerate($id = 0, $status = '')
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM documento 
 		LEFT JOIN tipoDocumento ON tipoDocumento.tipoDocumentoId = documento.tipoDocumentoId WHERE contractId = '".$this->getContractId()."' ORDER BY documentoId ASC");
 		$result = $this->Util()->DB()->GetResult();
-		
+
 		foreach($result as $key => $value)
 		{
 			$result[$key]["filePath"] = WEB_ROOT."/documentos/".$value["contractId"]."_".$value["path"];
@@ -133,16 +133,16 @@ class Documento extends Contract
 				'".$this->tipoDocumentoId."',
 				'".$this->dateExpiration."'
 		);");
-		
+
 		$id =	$this->Util()->DB()->InsertData();
 		$folder = DOC_ROOT."/documentos/".$this->getContractId();
-		
+
 		$nombreArchivo = preg_replace("/&#?[a-z0-9]+;/i","", basename( $_FILES["path"]['name']));
 		$nombreArchivo = str_replace(" ","", $nombreArchivo);
-		
-		$target_path = $folder ."_". $nombreArchivo; 
-		$target_path_path = $nombreArchivo; 
-			
+
+		$target_path = $folder ."_". $nombreArchivo;
+		$target_path_path = $nombreArchivo;
+
 		if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)) {
 			$this->Util()->DB()->setQuery("UPDATE documento SET path = '".$target_path_path."' WHERE documentoId = '".$id."'");
 			$this->Util()->DB()->UpdateData();

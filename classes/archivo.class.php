@@ -19,7 +19,7 @@ class Archivo extends Contract
 		return $this->archivoId;
 	}
 
-	public function setContractId($value)
+	public function setContractId($value, $required=false)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->contractId = $value;
@@ -80,7 +80,7 @@ class Archivo extends Contract
 		return $result;
 	}
 
-	public function Enumerate()
+	public function Enumerate($id = 0, $status = '')
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM archivo 
 		LEFT JOIN tipoArchivo ON tipoArchivo.tipoArchivoId = archivo.tipoArchivoId WHERE contractId = '".$this->getContractId()."'ORDER BY archivoId ASC ".$sql_add);

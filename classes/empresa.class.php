@@ -647,7 +647,7 @@ class Empresa extends Main
 		return true;
 	}
 
-	function CancelarComprobante()
+	function CancelarComprobante($data = null, $id_comprobante = null, $notaCredito = false, $motivo_cancelacion = null)
 	{
 		global $comprobante,$personal;
 		if($this->Util()->PrintErrors())

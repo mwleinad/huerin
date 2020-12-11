@@ -757,7 +757,7 @@ class Personal extends Main
             $card["personalId"] = $value["personalId"];
             $_SESSION["lineal"][] = $card;
 
-            if(count($value["children"]) > 0)
+            if(@count($value["children"]) > 0)
             {
                 $this->JerarquiaLinealJustId($value["children"]);
             }
