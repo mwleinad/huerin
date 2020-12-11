@@ -18,7 +18,7 @@ if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] 
   @setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
 
   ini_set("display_errors", 1);
-  error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
+  error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
     if (PHP_MAJOR_VERSION >= 7) {
         set_error_handler(function ($errno, $errstr) {
             return strpos($errstr, 'Declaration of') === 0;
