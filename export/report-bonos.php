@@ -15,6 +15,7 @@ date_default_timezone_set('America/Mexico_City');
 include_once(DOC_ROOT.'/libraries.php');
 
 $data = $reportebonos->generateReportBonosWhitLevel($_POST);
+dd($data);exit;
 $period = $_POST['period'];
 if($period== "efm"){
     $monthNames = array("Ene", "Feb", "Mar");
@@ -59,8 +60,6 @@ $smarty->assign("data", $data);
 $smarty->assign("EXCEL", "SI");
 $smarty->assign("DOC_ROOT", DOC_ROOT);
 $html .= $smarty->fetch(DOC_ROOT.'/templates/lists/report-servicio-bono-order-rol.tpl');
-echo $html;exit;
-
 $name = 'reporte_de_bonos_cobranza';
 ob_clean();
 header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
