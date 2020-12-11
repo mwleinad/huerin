@@ -3,7 +3,7 @@
 class Main
 {
 	protected $page;
-	private $Util;
+	public $Util;
 
 
 	public function setPage($value)

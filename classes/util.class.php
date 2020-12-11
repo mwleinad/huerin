@@ -3,7 +3,7 @@
 class Util extends CustomError
 {
 
-	private $DB;
+	public $DB;
 
 	public function DB($change_collate = true)
 	{
