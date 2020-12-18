@@ -4,7 +4,8 @@ class Util extends CustomError
 {
 
 	public $DB;
-
+	private $DBSelect;
+	private $DBRemote;
 	public function DB($change_collate = true)
 	{
 		if($this->DB == null )
