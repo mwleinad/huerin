@@ -46,7 +46,6 @@ class PdfService extends Producto{
         $this->smarty->assign('empresaId', $empresaId);
 
         $options = new Options();
-        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
@@ -72,6 +71,7 @@ class PdfService extends Producto{
         ob_clean();
         $html = $this->smarty->fetch(DOC_ROOT.'/templates/pdf/basico.tpl');
         $dompdf->loadHtml($html);
+        $options->set('isRemoteEnabled', true);
 
         $dompdf->setPaper('A4', 'portrait');
 
