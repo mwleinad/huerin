@@ -26,7 +26,7 @@ class QrService extends Producto{
         $rfcActivo = $this->getRfcActive();
 
         $root = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
-        //$web_root = WEB_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
+        $web_root = WEB_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/qr/";
         $rootFacturas = DOC_ROOT."/empresas/".$_SESSION["empresaId"]."/certificados/".$rfcActivo."/facturas/";
 
         if(!is_dir($rootFacturas)){
@@ -42,7 +42,7 @@ class QrService extends Producto{
         QRcode::png($cadenaCodigoBarras, $root.$fileName.".png", 'L', 4, 2);
 
         //This requires the full path to the url, can't use http:// or it won't show
-        return $root.$fileName.".png";
+        return $web_root.$fileName.".png";
     }
 }
 ?>

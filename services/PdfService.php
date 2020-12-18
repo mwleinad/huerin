@@ -4,6 +4,7 @@ use Dompdf\Options;
 class PdfService extends Producto{
     private $domPdf;
     private $smarty;
+    private $qrService;
 
     public function __construct()
     {
@@ -44,8 +45,21 @@ class PdfService extends Producto{
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
-
-        $dompdf = new Dompdf();
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $auth = base64_encode("username:password");
+        $context = stream_context_create(array(
+            'ssl' => array(
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+                'allow_self_signed'=> TRUE
+            ),
+            'http' => array(
+                'header' => "Authorization: Basic $auth"
+            )
+        ));
+        $dompdf->setHttpContext($context);
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
