@@ -24,7 +24,6 @@
     <tbody>
     <tr>
         <td rowspan="2" width="30%" valign="top">
-            {$qrFile}
             <img width="200px" src="{$qrFile}">
         </td>
         <td width="70%" valign="top">

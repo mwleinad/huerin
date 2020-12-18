@@ -64,10 +64,10 @@ class PdfService extends Producto{
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
 
-        $logo = DOC_ROOT."/empresas/".$empresaId."/qrs/".$xmlData['serie']["serieId"].".jpg";
+        $logo = "/empresas/".$empresaId."/qrs/".$xmlData['serie']["serieId"].".jpg";
 
-        if(file_exists($logo)) {
-            $this->smarty->assign('logo', $logo);
+        if(file_exists(DOC_ROOT.$logo)) {
+            $this->smarty->assign('logo', WEB_ROOT.$logo);
         }
 
         $logoEscuela = DOC_ROOT."/images/header_333.jpg";
