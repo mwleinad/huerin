@@ -45,20 +45,9 @@ class PdfService extends Producto{
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('logOutputFile', DOC_ROOT."/sendFiles/dompdf_log.txt");
-
-        $dompdf = new Dompdf($options);
-        $dompdf->getOptions()->setChroot(DOC_ROOT);
-        $context = stream_context_create([
-            'ssl' => [
-                'verify_peer' => FALSE,
-                'verify_peer_name' => FALSE,
-                'allow_self_signed'=> TRUE
-            ]
-        ]);
-        $dompdf->setHttpContext($context);
+        $dompdf = new Dompdf();
+        $dompdf->getOptions()->setChroot(DOC_ROOT."/empresas");
+        $dompdf->setHttpContext();
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
@@ -66,7 +55,7 @@ class PdfService extends Producto{
         $logo = "/empresas/".$empresaId."/qrs/".$xmlData['serie']["serieId"].".jpg";
 
         if(file_exists(DOC_ROOT.$logo)) {
-            $this->smarty->assign('logo', WEB_ROOT.$logo);
+            $this->smarty->assign('logo', DOC_ROOT.$logo);
         }
 
         $logoEscuela = DOC_ROOT."/images/header_333.jpg";
