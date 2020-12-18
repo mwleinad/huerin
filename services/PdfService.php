@@ -1,6 +1,6 @@
 <?php
 use Dompdf\Dompdf;
-
+use Dompdf\Options;
 class PdfService extends Producto{
     private $domPdf;
     private $smarty;
@@ -44,7 +44,9 @@ class PdfService extends Producto{
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
 
-        $dompdf = new Dompdf();
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
