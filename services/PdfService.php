@@ -48,7 +48,9 @@ class PdfService extends Producto{
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $options->set('logOutputFile', DOC_ROOT."/sendFiles/dompdf_log.txt");
+
         $dompdf = new Dompdf($options);
+        $dompdf->getOptions()->setChroot(DOC_ROOT);
         $context = stream_context_create([
             'ssl' => [
                 'verify_peer' => FALSE,
