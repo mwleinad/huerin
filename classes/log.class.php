@@ -53,8 +53,8 @@ class Log extends Util
     }
 	public function SaveOnly(){
 	    global $personal;
-	    $newValue =  strlen($this->newValue) > 0 ? mysql_real_escape_string($this->newValue) : '';
-        $oldValue =  strlen($this->oldValue) > 0 ? mysql_real_escape_string($this->oldValue) : '';
+	    $newValue =  strlen($this->newValue) > 0 ? htmlspecialchars($this->newValue, ENT_QUOTES) : '';
+        $oldValue =  strlen($this->oldValue) > 0 ? htmlspecialchars($this->oldValue, ENT_QUOTES) : '';
 	    $currentUser = $personal->getCurrentUser();
         $sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
@@ -68,7 +68,7 @@ class Log extends Util
         $currentUser = $personal->getCurrentUser();
 		$sql = "INSERT INTO log(personalId, fecha, tabla, tablaId, action, oldValue, newValue,namePerson)
 				 VALUES ('".$currentUser["personalId"]."', '".$this->fecha."', '".$this->tabla."', '".$this->tablaId."',
-				 '".$this->action."', '".mysql_real_escape_string($this->oldValue)."', '".mysql_real_escape_string($this->newValue)."','".$currentUser["name"]."')";
+				 '".$this->action."', '".htmlspecialchars($this->oldValue, ENT_QUOTES)."', '".htmlspecialchars($this->newValue, ENT_QUOTES)."','".$currentUser["name"]."')";
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->InsertData();
 
