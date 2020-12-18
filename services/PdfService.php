@@ -47,7 +47,6 @@ class PdfService extends Producto{
 
         $dompdf = new Dompdf();
         $dompdf->getOptions()->setChroot(DOC_ROOT."/empresas");
-        $dompdf->setHttpContext();
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
