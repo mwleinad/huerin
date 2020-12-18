@@ -110,6 +110,7 @@
         <tbody>
         <tr>
             <td rowspan="2" width="20%" valign="top">
+                {$logo}
                 <img src="{$logo}" width="130px">
             </td>
             <td width="40%" valign="top">
