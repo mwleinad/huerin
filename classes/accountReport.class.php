@@ -116,7 +116,6 @@ class AccountReport extends Personal
     public function generateReport(array $filters) {
         $gerentes = $this->generateArray($filters);
         $book = new PHPExcel();
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
