@@ -206,7 +206,7 @@ class DB
 		$this->query = "SHOW COLUMNS FROM `$table` LIKE '$field' ";
 		$this->ExecuteQuery();
 
-		$row = mysql_fetch_array( $this->sqlResult , MYSQL_NUM );
+		$row = mysqli_fetch_array( $this->sqlResult , MYSQLI_NUM );
 		$regex = "/'(.*?)'/";
 
 		preg_match_all( $regex , $row[1], $enum_array );
