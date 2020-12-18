@@ -5,9 +5,11 @@ if (!isset($_SESSION))
 {
     session_start();
 }
+ini_set("display_errors", "ON");
+error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
 if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] == 'vp_menu' || $_GET['page'] == 'resource-office-pdf' || $_GET['page'] == 'prospect-offer-pdf')) {
-  ini_set("display_errors", "ON");
-  error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE);
+
+
   date_default_timezone_set('America/Mexico_City');
   header('Content-type: text/html; charset=iso-8859-1');
 } else {
@@ -16,14 +18,11 @@ if(isset($_GET['page'])&&($_GET['page'] == 'cfdi33-generate-pdf'||$_GET['page'] 
   ini_set("max_execution_time","7200");
 
   @setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
-
-  ini_set("display_errors", 1);
-  error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
-    if (PHP_MAJOR_VERSION >= 7) {
+  if (PHP_MAJOR_VERSION >= 7) {
         set_error_handler(function ($errno, $errstr) {
             return strpos($errstr, 'Declaration of') === 0;
         }, E_WARNING);
-    }
+  }
 
   date_default_timezone_set('America/Mexico_City');
   header('Content-type: text/html; charset=utf-8');
