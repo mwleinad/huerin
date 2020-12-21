@@ -355,7 +355,7 @@ class Personal extends Main
         }
         if(strlen($this->phone)>0)
             $strUpdate .=" phone='".$this->phone."', ";
-        if(strlen($this->email)>0)
+        if(isset($_POST['email']))
             $strUpdate .=" email='".$this->email."', ";
         if(strlen($this->username)>0)
             $strUpdate .=" username='".$this->username."', ";
@@ -391,6 +391,9 @@ class Personal extends Main
             $strUpdate .=" departamentoId='".$this->departamentoId."', ";
         if(strlen($this->jefeInmediato)>0)
             $strUpdate .=" jefeInmediato='".$this->jefeInmediato."', ";
+
+        if(isset($_POST['fechaCompra']) && $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y'))
+            $strUpdate .=" fechaCompra='".$this->Util()->FormatDateMySql($_POST['fechaCompra'])."', ";
 
         $this->Util()->DB()->setQuery("
             UPDATE
@@ -450,6 +453,8 @@ class Personal extends Main
         if(!is_numeric($this->sueldo))
             $this->sueldo=0;
 
+        $fechaCompra = $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y') ? $this->Util()->FormatDateMySql($_POST['fechaCompra']) : '';
+
         $this->Util()->DB()->setQuery("
             INSERT INTO
                 personal
@@ -477,7 +482,8 @@ class Personal extends Main
                 departamentoId,
                 fechaIngreso,
                 lastChangePassword,
-                active
+                active,
+                fechaCompra
         )
         VALUES
         (
@@ -504,7 +510,8 @@ class Personal extends Main
                 '".$this->departamentoId."',
                 '".$this->fechaIngreso."',
                 '".$this->fechaIngreso."',
-                '".$this->active."'
+                '".$this->active."',
+                '".$fechaCompra."'
         );");
         $id = $this->Util()->DB()->InsertData();
         if(isset($_POST["expe"])){
@@ -922,13 +929,17 @@ class Personal extends Main
             return false;
         }
     }
-    public function findSupervisor($id)
+    public function findSupervisor($id, $associative = false)
     {
         global $rol;
         $this->setPersonalId($id);
         $infP = $this->InfoWhitRol();
         $jefes = [];
-        $this->deepJefesArray($jefes, true);
+        if ($associative)
+            $this->deepJefesAssoc($jefes, true);
+        else
+            $this->deepJefesArray($jefes, true);
+
         $supervisor = "";
         switch ($infP["nameLevel"]) {
             case 'Contador':
@@ -941,6 +952,7 @@ class Personal extends Main
         }
         return $supervisor;
     }
+
     public function getOrdenJefes()
     {
         $ordenJefes = [];

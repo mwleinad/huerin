@@ -215,5 +215,8 @@ switch ($_POST['type']) {
              </a>";
 
     break;
+    case 'report-altas-bajas':
+            $filtro =  $_POST;
+    break;
 }
 ?>

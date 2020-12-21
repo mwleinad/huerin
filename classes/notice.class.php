@@ -3,12 +3,12 @@
 class Notice extends Main
 {
 	private $usuario;
-	private $description;	
-	private $fecha;	
+	private $description;
+	private $fecha;
 	private $noticeId;
 	private $prioridad;
 	private $dir;
-	
+
 	public function setUsuario($value)
 	{
 		$this->usuario = $value;
@@ -20,7 +20,7 @@ class Notice extends Main
 	public function setPath($value)
 	{
 		$this->dir = $value;
-	}			
+	}
 	public function setDescription($value)
 	{
 		if($this->Util()->ValidateRequireField($value, "Aviso"))
@@ -91,40 +91,40 @@ class Notice extends Main
         }
 		$data["items"] = $result;
 		$data["pages"] = $pages;
-		return $data;	
+		return $data;
 	}
 	public function GetLast()
-	{		
-								
+	{
+
 		$sql = "SELECT 
 					MAX(noticeId)
 				FROM 
 					notice";
-		
+
 		$this->Util()->DB()->setQuery($sql);
 		$single = $this->Util()->DB()->GetSingle();
-				
+
 		return $single;
 	}
-		
+
 	public function Info()
 	{
-		
+
 		$sql = "SELECT 
 					* 
 				FROM 
 					notice 
 				WHERE 
 					noticeId = '".$this->noticeId."'";
-	
+
 		$this->Util()->DB()->setQuery($sql);
 		$info = $this->Util()->DB()->GetRow();
-		
+
 		$row = $this->Util->EncodeRow($info);
-				
+
 		return $row;
 	}
-        
+
     public function GetIp(){
         foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
             if (array_key_exists($key, $_SERVER) === true){
@@ -164,7 +164,7 @@ class Notice extends Main
         //comprobar que se ha seleccionado  por lo menos una area
         $owners = $this->CheckIfSelectedArea($this->sendCustomer);
 		if($this->Util()->PrintErrors()){
-			return false; 
+			return false;
 		}
 		if($this->sendCustomer)
 		    $enviadoCliente = "Si";
@@ -191,7 +191,7 @@ class Notice extends Main
                         '".$ip."',
                         '".$enviadoCliente."'
 					)";
-								
+
 		$this->Util()->DB()->setQuery($sqlQuery);
 		$noticeId = $this->Util()->DB()->InsertData();
         //guardar los permisos
@@ -263,6 +263,11 @@ class Notice extends Main
                              $mails[$usuario['email']] = $usuario['name'];
 
                 }
+                if($User['isRoot']) {
+                    echo count($mails);
+                    dd($mails);
+                }
+
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
                 $body .= "<br><br>El aviso fue creado por " . $this->usuario;
                 $body .= "<br><br><small>Aviso".$noticeId."</small>";
@@ -291,7 +296,7 @@ class Notice extends Main
             }
             //enviar correo al cliente
             $subject ="BRAUN HUERIN INFORMA";
-            $body ='<pre>Despcripcion del aviso :<br><br>'.nl2br(utf8_decode($this->description));
+            $body =''.nl2br(utf8_decode($this->description));
             if(file_exists($destino))
             {
                 $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
@@ -307,10 +312,10 @@ class Notice extends Main
 
 
 	public function Update(){
-		if($this->Util()->PrintErrors()){ 
-			return false; 
+		if($this->Util()->PrintErrors()){
+			return false;
 		}
-		
+
 		$sql = "UPDATE 
 					notice 
 				SET 
@@ -321,45 +326,45 @@ class Notice extends Main
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->ExecuteQuery();
 		return true;
-				
+
 	}
-	
+
 	public function Delete(){
-		
-		if($this->Util()->PrintErrors()){ 
-			return false; 
+
+		if($this->Util()->PrintErrors()){
+			return false;
 		}
-		
+
 		$sql = "DELETE FROM 
 					notice
 				WHERE 
 					noticeId = ".$this->noticeId;
-							
+
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->ExecuteQuery();
-										
+
 		$this->Util()->setError(21043, "complete");
 		$this->Util()->PrintErrors();
-		
+
 		return true;
-				
+
 	}
-		
+
 	public function GetNameById(){
-			
+
 		$sql = 'SELECT 
 					name
 				FROM 
 					city 
 				WHERE 
 					cityId = '.$this->cityId;
-		
+
 		$this->Util()->DB()->setQuery($sql);
-		
+
 		return $this->Util()->DB()->GetSingle();
-		
-	}	
-	
+
+	}
+
 }//Notice
 
 ?>

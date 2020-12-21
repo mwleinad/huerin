@@ -71,7 +71,7 @@ switch($_POST["type"])
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-ingresos.tpl');
 		break;
-    case 'searchAltasBajas':
+    case 'searchBitacoraAltasBajas':
         echo 'ok[#]';
         $formValues['subordinados'] = $_POST['subordinados'];
         $formValues['respCuenta'] = $_POST['responsableCuenta'];
@@ -340,4 +340,20 @@ switch($_POST["type"])
                 $smarty->display(DOC_ROOT.'/templates/lists/report-up-down.tpl');
             break;
         }
+    case 'searchAltasBajas':
+        $formValues['subordinados'] = $_POST['subordinados'];
+        $formValues['respCuenta'] = $_POST['responsableCuenta'];
+        $formValues['departamentoId'] = $_POST["departamentoId"];
+        $formValues['statusSearch'] = $_POST["statusSearch"];
+        $formValues['tipoSearch'] = $_POST["tipoSearch"];
+        $formValues['sinServicios'] =true;
+        $formValues['cliente'] = $_POST["rfc"];
+        $idContrato = $_POST['contractId'];
+        $contracts = [];
+        $reportService = new ReportService();
+        $results = $reportService->getAbServices();
+        echo "ok[#]";
+        $smarty->assign("registros", $results);
+        $smarty->display(DOC_ROOT.'/templates/lists/reporte-ab-all.tpl');
+    break;
 }

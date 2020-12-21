@@ -6,11 +6,12 @@
  * Time: 06:37 PM
  */
 //si el dia que se ejecuta es mayor que los dias 25 de cada mes se anula
-if(date('d')>=25)
+/*if(date('d')>=25)
 {
     echo "ejecutado en los ultimos dias de mes, se anula tarea".chr(13);
     exit;
-}
+}*/
+
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');

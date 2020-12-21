@@ -176,6 +176,14 @@
                     <li><a href="{$WEB_ROOT}/chart" {if $page == "chart"}class="current"{/if} title="Graficas" target="_blank">
                     <span>Graficas</span></a></li>
                 {/if}
+                {if in_array(281,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-ab-all" {if $page == "report-ab-all"}class="current"{/if} title="Reportes de altas y bajas de servicios" target="_blank">
+                            <span>Reporte de altas y bajas</span></a></li>
+                {/if}
+                {if in_array(282,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-company-activity" {if $page == "report-company-activity"}class="current"{/if} title="Reporte de empresas-actividades" target="_blank">
+                            <span>Reporte de empresa-actividades</span></a></li>
+                {/if}
 
             {/if}
 

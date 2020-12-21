@@ -64,7 +64,7 @@ switch ($_POST["type"]) {
         $servicio->setInicioFactura($_POST['inicioFactura']);
         $servicio->setInicioOperaciones($_POST['inicioOperaciones']);
         $servicio->setCosto($_POST['costo']);
-        if ($servicio->SaveItemInSession()) {
+        if ($servicio->saveItemInSession()) {
             echo "ok[#]";
             $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
             echo "[#]";
