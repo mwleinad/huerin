@@ -818,12 +818,12 @@ class Xml extends Producto{
 
         if(!is_dir($rootFacturas))
         {
-            mkdir($rootFacturas, 0777);
+            mkdir($rootFacturas, 0775);
         }
 
         if(!is_dir($root))
         {
-            mkdir($root, 0777);
+            mkdir($root, 0775);
         }
         //print_r($this->xml);exit;
 
