@@ -101,9 +101,6 @@ class Pac extends Util
         );
         $data = [];
         $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        if($_SESSION['User']['isRoot']) {
-        	dd($response);
-		}
         if($response['cancelCFDiAsyncReturn']['status']==201){ // remove $response['detail']['fault']['cod']==201
             $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
             $data['cancelado'] = true;
@@ -135,6 +132,10 @@ class Pac extends Util
                         if($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable']=='No Cancelable'){
                             $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
                         }
+                        if($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'] === 'En proceso') {
+							$data['cancelado'] =  true;
+							$data['message'] = "Factura en proceso de cancelación";
+						}
                     break;
                 }
             }else{
