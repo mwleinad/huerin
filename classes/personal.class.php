@@ -237,13 +237,9 @@ class Personal extends Main
     }
     public function EnumerateAll()
     {
-        $sql = "SELECT
-                    *
-                FROM
-                    personal WHERE 1
-                ".$sqlFilter.$sqlActive."
-                ORDER BY
-                    name ASC";
+        $sql = "select personal.*, roles.nivel  from personal
+                inner join roles on personal.roleId = roles.rolId
+                order by personal.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
 
