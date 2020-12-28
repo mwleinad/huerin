@@ -134,6 +134,7 @@ class Pac extends Util
                         }
                         if($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'] === 'En proceso') {
 							$data['cancelado'] =  true;
+							$data['conAceptacion'] = true;
 							$data['message'] = "Factura en proceso de cancelación";
 						}
                     break;
