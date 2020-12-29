@@ -26,7 +26,7 @@
         <td align="center">{$item.supervisor}</td>
         <td align="center">{$item.fechaFacturacion}</td>
         <td align="center">{if $item.periodicidad|lower neq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
-        <td align="center">{if $item.periodicidad|lower eq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{/if}</td>
+        <td align="center">{if $item.periodicidad|lower eq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
         <td align="center"></td>
     </tr>
 {foreachelse}
