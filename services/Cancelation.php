@@ -4,6 +4,7 @@ class Cancelation extends Main
 {
     const REJECTED = 'Solicitud rechazada';
     const CANCELLED = 'Cancelado';
+    const NOCANCELABLE = 'No cancelable';
     public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotive){
         $sql = "delete from pending_cfdi_cancel where cfdi_id = '".$cfdiId."' ";
         $this->Util()->DB()->setQuery($sql);
@@ -61,7 +62,7 @@ class Cancelation extends Main
         return $status['getCFDiStatusReturn'];
     }
     public function processCancelation($cfdi, $response) {
-        if($response['status'] === self::REJECTED) {
+        if($response['status'] === self::REJECTED || $response['isCancelable'] === self::NOCANCELABLE) {
             $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
         }
         if($response['status']=== self::CANCELLED) {
