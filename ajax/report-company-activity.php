@@ -7,12 +7,6 @@ switch($_POST["type"]) {
 	case 'search':
 
             $contractActivity = new ContractActivity();
-			/*$result = $contractActivity->getReport();
-			$smarty->assign("registros", $result['registros']);
-            $smarty->assign("totales", $result['totales']);
-            $smarty->assign("sectores", $result['sectores']);
-			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			$smarty->display(DOC_ROOT.'/templates/lists/report-company-activity.tpl');*/
             $contractActivity->getFileReport();
             $nameFile = $contractActivity->getNameFile();
             echo "ok[#]";

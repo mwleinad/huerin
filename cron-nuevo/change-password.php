@@ -49,7 +49,7 @@ foreach($results as $key =>$item){
                    <br><br>
                    Este correo se creo automaticamente, favor de no responder.
                    ";
-            $subject="CAMBIO DE CONTRASEÑA ".$item['name'];
+            $subject="CAMBIO DE CONTRASENIA ".$item['name'];
             $to = $item['email'];
             $toName= $item['name'];
 

@@ -11,6 +11,17 @@ class ContractActivity extends Contract {
         if($_POST["responsableGerente"])
             $strFilter .= " and a.personalId = '".$_POST['responsableGerente']."' ";
 
+        if($_POST["departamentoId"]) {
+            $deps = [(int) $_POST['departamentoId']];
+            if ((int)$_POST['departamentoId'] === 8 || (int)$_POST['departamentoId'] === 24)
+                $deps = [8, 24];
+            if ((int)$_POST['departamentoId'] === 22 || (int)$_POST['departamentoId'] === 21)
+                $deps = [22, 21];
+
+
+            $strFilter .= " and a.departamentoId IN (0," . implode(',', $deps). ") ";
+        }
+
         $sql = "select a.*, b.nivel,c.departamento, b.name as nameRol from personal a
                 inner join roles b on a.roleId = b.rolId
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
@@ -76,7 +87,6 @@ class ContractActivity extends Contract {
                 $encargados =  json_decode($con['encargados'], true);
                 $keyId = array_search($currentDepartamentGerente, array_column($encargados, 'departamentoId'));
                 $encar_dep_id =  $keyId >= 0  ? $encargados[$keyId]['personalId'] : $value['personalId'];
-
 
                 $supervisor = $personal->findSupervisor($encar_dep_id, true);
                 $supervisorId = $supervisor['personalId'];
