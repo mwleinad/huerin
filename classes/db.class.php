@@ -168,7 +168,8 @@ class DB
 
 	  $this->CleanQuery();
 
-	  return $rs;  }
+	  return $rs;
+  }
 
   function InsertData()
 	{

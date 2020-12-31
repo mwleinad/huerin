@@ -20,8 +20,8 @@
                             <img src="{$WEB_ROOT}/images/icons/pdf.png">
                         </a>
                 {/if}
-                {if $res.status eq 'Baja'}
-                    <a href="{$WEB_ROOT}{$res.responsiva_root}" title="Ver responsiva de baja" target="_blank" class="spanAll" >
+                {if $res.status eq 'Baja' && $res.responsiva_baja_root neq ''}
+                    <a href="{$WEB_ROOT}{$res.responsiva_baja_root}" title="Ver responsiva de baja" target="_blank" class="spanAll" >
                         <img src="{$WEB_ROOT}/images/icons/pdf.png">
                     </a>
                 {/if}
