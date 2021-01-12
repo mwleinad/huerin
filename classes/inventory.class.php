@@ -249,8 +249,10 @@ class Inventory extends Articulo
         $this->Util()->DB()->setQuery('SELECT * FROM office_resource WHERE status="Activo" ORDER BY office_resource_id DESC ' . $sql_add);
         $result = $this->Util()->DB()->GetResult();
 
-        foreach ($result as $key => $var)
+        foreach ($result as $key => $var) {
             $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+        }
+
 
         $data["items"] = $result;
         $data["pages"] = $pages;
