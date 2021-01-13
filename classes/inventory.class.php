@@ -251,6 +251,8 @@ class Inventory extends Articulo
 
         foreach ($result as $key => $var) {
             $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+            $this->setId($var['office_resource_id']);
+            $result[$key]["upkeeps"] = $this->enumerateUpKeeps(true);
         }
 
 
@@ -309,8 +311,11 @@ class Inventory extends Articulo
                  WHERE a.status = 'Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC " . $sql_add;
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-        foreach ($result as $key => $var)
+        foreach ($result as $key => $var) {
             $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+            $this->setId($var['office_resource_id']);
+            $result[$key]["upkeeps"] = $this->enumerateUpKeeps(true);
+        }
 
         $data["items"] = $result;
         $data["pages"] = $pages;
