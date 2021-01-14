@@ -85,6 +85,9 @@ switch ($_POST["type"]) {
         if (isset($_POST["resource_id"]))
             $personal->setResource($_POST['resource_id']);
 
+        if (isset($_POST["numberAccountsAllowed"]))
+            $personal->setNumberAccountsAllowed($_POST['numberAccountsAllowed']);
+
         if (!$personal->Save()) {
             echo "fail[#]";
             $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
@@ -215,6 +218,9 @@ switch ($_POST["type"]) {
 
         if (isset($_POST["resource_id"]))
             $personal->setResource($_POST['resource_id']);
+
+        if (isset($_POST["numberAccountsAllowed"]))
+            $personal->setNumberAccountsAllowed($_POST['numberAccountsAllowed']);
 
         if ($_POST['active'])
             $personal->setActive(1);

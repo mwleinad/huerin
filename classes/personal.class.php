@@ -64,6 +64,14 @@ class Personal extends Main
             $this->resourceIsAvailable();
     }
 
+    private $numberAccountsAllowed;
+
+    public function setNumberAccountsAllowed($value)
+    {
+        $this->Util()->ValidateOnlyNumeric($value, 'Numero de empresas por administrar');
+        $this->numberAccountsAllowed = $value;
+    }
+
     private $puesto;
 
     public function setPuesto($value)
@@ -439,6 +447,9 @@ class Personal extends Main
         if (isset($_POST['fechaCompra']) && $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y'))
             $strUpdate .= " fechaCompra='" . $this->Util()->FormatDateMySql($_POST['fechaCompra']) . "', ";
 
+        if (strlen($this->numberAccountsAllowed) > 0)
+            $strUpdate .= " numberAccountsAllowed='" . $this->numberAccountsAllowed . "', ";
+
         $this->Util()->DB()->setQuery("
             UPDATE
                 personal
@@ -531,7 +542,8 @@ class Personal extends Main
                 fechaIngreso,
                 lastChangePassword,
                 active,
-                fechaCompra
+                fechaCompra,
+                numberAccountsAllowed
         )
         VALUES
         (
@@ -560,6 +572,7 @@ class Personal extends Main
                 '" . $this->fechaIngreso . "',
                 '" . $this->active . "',
                 '" . $fechaCompra . "'
+                '" . $this->numberAccountsAllowed . "'
         );");
         $id = $this->Util()->DB()->InsertData();
         if (isset($_POST["expe"])) {

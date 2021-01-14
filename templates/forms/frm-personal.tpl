@@ -169,6 +169,14 @@
                 <input name="active" id="active" type="checkbox" {if $post.active eq '1' || !$post}checked{/if} value="1""/>
                 <hr/>
             </div>
+            {if in_array(283, $permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Numero de empresas por administrar:</div>
+                    <input style="width: 20%!important;" class="smallInput medium" name="numberAccountsAllowed" id="numberAccountsAllowed"
+                           type="text" value="{$post.numberAccountsAllowed}">
+                    <hr/>
+                </div>
+            {/if}
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">Fecha Compra:</div>
                 <input style="width: 20%!important;" class="smallInput medium" name="fechaCompra" id="fechaCompra"
