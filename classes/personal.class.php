@@ -571,7 +571,7 @@ class Personal extends Main
                 '" . $this->fechaIngreso . "',
                 '" . $this->fechaIngreso . "',
                 '" . $this->active . "',
-                '" . $fechaCompra . "'
+                '" . $fechaCompra . "',
                 '" . $this->numberAccountsAllowed . "'
         );");
         $id = $this->Util()->DB()->InsertData();
