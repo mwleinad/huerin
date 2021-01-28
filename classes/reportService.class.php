@@ -27,7 +27,8 @@ class ReportService extends Servicio {
                     )
                 ),
                 ']'      
-                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo,servicio.inicioFactura,tipoServicio.departamentoId FROM servicio
+                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo,servicio.inicioFactura,tipoServicio.departamentoId,
+                                   tipoServicio.periodicidad FROM servicio
                                    INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId) a
                 INNER JOIN (SELECT contract.contractId, contract.name, customer.nameContact FROM contract
                             INNER JOIN customer ON contract.customerId = customer.customerId) b

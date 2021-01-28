@@ -1,5 +1,4 @@
 <?php
-session_start();
 class Contract extends Main
 {
     private $facturador;

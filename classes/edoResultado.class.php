@@ -9,7 +9,6 @@ class EdoResultado extends ReporteBonos
     function generateEdoResult($ftr){
         $gerentes = $this->generateArrayEdoResult($ftr);
         $book = new PHPExcel();
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);

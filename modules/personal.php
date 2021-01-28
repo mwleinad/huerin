@@ -5,7 +5,7 @@
 	$user->allowAccess(8);
 	/* End Session Control */
 	$personals = $personal->Enumerate();
-		
+
 	$smarty->assign("personals", $personals);
 	$smarty->assign('mainMnu','catalogos');
 

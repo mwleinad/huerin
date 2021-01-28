@@ -23,8 +23,9 @@
 	<td align="center">
 		<select name="statusSearch" id="statusSearch"  class="largeInput"  style="width: 90%;">
 			<option value="">Todas</option>
-			<option value="alta">Altas</option>
-			<option value="baja">Bajas</option>
+			<option value="activo">Altas</option>
+			<option value="bajaParcial">Baja temporal</option>
+			<option value="baja">Baja definitiva</option>
 		</select>
 	</td>
 </tr>

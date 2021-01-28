@@ -1,32 +1,32 @@
 <?php
 
-class Error
+class CustomError
 {
 	private $type = array();
 	private $errorField = array();
 	private $error = array();
 	private $complete = false;
 
-	public function Util() 
+	public function Util()
 	{
-		if($this->Util == null ) 
+		if($this->Util == null )
 		{
 			$this->Util = new Util();
 		}
 		return $this->Util;
 	}
-	
+
 	public function setError($value = NULL, $type="error", $custom = "", $errorField = "")
 	{
 		$this->type[] = $type;
 		$this->setErrorField($errorField);
 		$this->setErrorValue($value, $custom);
-		
+
 		if($type == "complete")
 		{
 			$this->complete = true;
 		}
-		
+
 	}
 
 	function setErrorValue($value, $custom)
@@ -40,7 +40,7 @@ class Error
 			$this->error[] = $value;
 		}
 	}
-	
+
 	function setErrorField($value)
 	{
 		if($value != "")
@@ -52,7 +52,7 @@ class Error
 			$this->errorField[] = NULL;
 		}
 	}
-	
+
 	public function getErrors()
 	{
 		global $property;
@@ -62,10 +62,10 @@ class Error
 			{
 					$this->error[$key] = $property["error"][$val];
 			}
-		}						
-		
+		}
+
 		$errors = array("value" => $this->error, "field" => $this->errorField, "type" => $this->type);
-		
+
 		$errors["total"] = count($errors["value"]);
 		$errors["complete"] = $this->complete;
 		return $errors;
@@ -78,7 +78,7 @@ class Error
 		$this->type = array();
 		$this->complete = false;
 	}
-	
+
 	public function PrintErrors()
 	{
 		$errors = $this->getErrors();

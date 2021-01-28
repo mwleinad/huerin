@@ -4,7 +4,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
 {
 	$docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
     session_save_path("C:/xampp/tmp");
@@ -22,8 +22,8 @@ else
 	include_once(DOC_ROOT.'/libraries.php');
 
 	$timeStart = date("d-m-Y").' a las '.date('H:i:s');
-	
-	if (!isset($_SESSION)) 
+
+	if (!isset($_SESSION))
 	{
 	  session_start();
 	}
@@ -43,7 +43,7 @@ else
 	$file = DOC_ROOT."/cron/facturas.txt";
 	$open = fopen($file,"w");
 
-	if ( $open ) {		
+	if ( $open ) {
     	fwrite($open,$entry);
 	    fclose($open);
 	}

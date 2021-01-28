@@ -3,6 +3,7 @@
 class Main
 {
 	protected $page;
+	public $Util;
 
 
 	public function setPage($value)
@@ -10,7 +11,7 @@ class Main
 		$this->Util()->ValidateInteger($value, 9999999999, 0);
 		$this->page = $value;
 	}
-	
+
 	public function getPage()
 	{
 		return $this->page;
@@ -19,11 +20,11 @@ class Main
 	function ListTiposDeComprobantes()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM tiposComprobante ORDER BY tiposComprobanteId");
-		
+
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
-		
+
 		return $result;
-	}	
+	}
 
 	function ListTiposDeComprobantesValidos()
 	{
@@ -31,11 +32,11 @@ class Main
 			SELECT * FROM tiposComprobante  
 			RIGHT JOIN serie ON serie.tiposComprobanteId = tiposComprobante.tiposComprobanteId
 			ORDER BY tiposComprobante.tiposComprobanteId");
-		
+
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
-		
+
 		return $result;
-	}	
+	}
     function ListSerieTipoComprobantes(){
 	    $sql = "SELECT a.serieId,a.serie,a.consecutivo,c.razonSocial,b.tiposComprobanteId from serie a 
                 INNER JOIN tiposComprobante b ON a.tiposComprobanteId = b.tiposComprobanteId 
@@ -47,36 +48,36 @@ class Main
 	function InfoComprobante($id)
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM tiposComprobante WHERE tiposComprobanteId = '".$id."'");
-		
+
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-		
+
 		return $result;
 	}
 	function ListIvas()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("comprobante", "tasaIva");
-		
+
 		return $result;
 	}
 
 	function ListRetIsr()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("comprobante", "porcentajeRetIsr");
-		
+
 		return $result;
 	}
 
 	function ListRetIva()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("comprobante", "porcentajeRetIva");
-		
+
 		return $result;
 	}
 
 	function ListTipoDeMoneda()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("comprobante", "tipoDeMoneda");
-		
+
 		return $result;
 	}
 
@@ -114,12 +115,12 @@ class Main
 	function ListExcentoIva()
 	{
 		$result = $this->Util()->DBSelect($_SESSION["empresaId"])->EnumSelect("concepto", "excentoIva");
-		
+
 		return $result;
 	}
-	public function Util() 
+	public function Util()
 	{
-		if($this->Util == null ) 
+		if($this->Util == null )
 		{
 			$this->Util = new Util();
 		}
@@ -166,6 +167,4 @@ class Main
         return $row ? $row['allow_any_employee'] : false;
     }
 }
-
-
 ?>

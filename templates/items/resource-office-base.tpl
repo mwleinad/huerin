@@ -1,6 +1,18 @@
 <tr class="{$clase}">
     <td  style="width:10%;">{$res.nombre}</td>
-    <td  style="width:30%;">{$res.descripcion|truncate:255:"...":true}</td>
+    <td  style="width:15%; text-align: justify">{$res.descripcion|truncate:255:"...":true}<br>
+        <b>Cuenta con nobreak:</b> {if $res.con_nobreak eq '1'}Si<br>{else}No<br>{/if}
+        <b>Cuenta con hub usb:</b> {if $res.con_hubusb eq '1'}Si<br>{else}No<br>{/if}
+        {if $res.no_licencia}<b>No. licencia:</b> {$res.no_licencia}<br>{/if}
+        {if $res.no_serie}<b>No. serie:</b> {$res.no_serie}<br>{/if}
+        {if $res.codigo_activacion}<b>Codigo activación:</b> {$res.codigo_activacion}<br>{/if}
+    </td>
+    <td  style="width:15%;">
+        {foreach from=$res.upkeeps key=kkep item=itemKep}
+            - <b>Fecha:</b> {$itemKep.upkeep_date}<br>
+              <p style="text-align: justify"><b>Descripcion: </b>{$itemKep.upkeep_description}</p>
+        {/foreach}
+    </td>
     <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo{else}{$res.tipo_recurso|ucfirst}{/if}</td>
     <td  style="width:10%;">
         {foreach from=$res.responsables key=kr item=itemr}

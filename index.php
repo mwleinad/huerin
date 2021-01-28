@@ -140,7 +140,6 @@ include_once(DOC_ROOT.'/libraries.php');
 	{
 		$page = "homepage";
 	}
-	include_once(DOC_ROOT.'/modules/user.php');
 	include_once(DOC_ROOT.'/modules/'.$page.'.php');
 
 	$smarty->assign('page', $page);

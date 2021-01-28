@@ -11,7 +11,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
 }

@@ -6,13 +6,17 @@
 				<td colspan="8" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 			</tr>
 			<tr>
-				<td align="center" style="width: 20%">Gerente:</td>
+				<td align="center" style="width: 10%">Departamento</td>
+				<td align="center" style="width: 20%">Gerente</td>
 				<td align="center" style="width: 20%">Supervisor:</td>
 				<td align="center" style="width: 20%">Sector</td>
 				<td align="center" style="width: 20%">Subsector</td>
 				<td align="center" style="width: 20%">Actividad</td>
 			</tr>
 			<tr>
+				<td>
+					{include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl" class="largeInput select2"}
+				</td>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
 					<select name="responsableGerente" id="responsableGerente"  class="largeInput select2">
 						{if $User.level eq 1 || $User.allow_visualize_any_contract}

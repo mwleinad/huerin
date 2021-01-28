@@ -31,7 +31,7 @@ class AccountReport extends Personal
         if($filters['departamentoId'])
             $strFilter .=" and c.departamentoId = '".$filters['departamentoId']."' ";
 
-        $sql = "select a.*, b.nivel,c.departamento,b.name as nameRol from personal a 
+        $sql = "select a.*, b.nivel,c.departamento,b.name as nameRol, numberAccountsAllowed from personal a 
                 inner join roles b on a.roleId = b.rolId 
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
@@ -116,7 +116,6 @@ class AccountReport extends Personal
     public function generateReport(array $filters) {
         $gerentes = $this->generateArray($filters);
         $book = new PHPExcel();
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
@@ -155,7 +154,7 @@ class AccountReport extends Personal
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesGerente);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['name'])
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesGerente);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, 0);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['numberAccountsAllowed']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['totalCuentas'])
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);;
             $col++;
@@ -185,7 +184,7 @@ class AccountReport extends Personal
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                 $sheet->setCellValueByColumnAndRow(++$col, $row, $child['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
-                $sheet->setCellValueByColumnAndRow(++$col, $row, 0);
+                $sheet->setCellValueByColumnAndRow(++$col, $row, $child['numberAccountsAllowed']);
                 $sheet->setCellValueByColumnAndRow(++$col, $row, $child['totalCuentas'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
                 $col++;

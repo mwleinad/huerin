@@ -9,7 +9,7 @@
         <th align="center" width="60">Servicio</th>
         <th align="center" width="60">Supervisor</th>
         <th align="center" width="60">Fecha inicio facturación</th>
-        <th align="center" width="60">Costo mensual</th>
+        <th align="center" width="60">Costo por periodo</th>
 		<th align="center" width="60">Costo una sola ocasíon</th>
         <th align="center" width="60">Recomendado</th>
 	</tr>
@@ -25,8 +25,8 @@
         <td align="center">{$item.nombreServicio}</td>
         <td align="center">{$item.supervisor}</td>
         <td align="center">{$item.fechaFacturacion}</td>
-        <td align="center">$ {$item.costo|number_format:'2':'.':','}</td>
-        <td align="center">$ {$item.costo|number_format:'2':'.':','}</td>
+        <td align="center">{if $item.periodicidad|lower neq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
+        <td align="center">{if $item.periodicidad|lower eq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
         <td align="center"></td>
     </tr>
 {foreachelse}

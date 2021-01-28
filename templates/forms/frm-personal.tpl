@@ -166,14 +166,32 @@
             {/if}
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">Activo:</div>
-                <input name="active" id="active" type="checkbox" {if $post.active}checked{/if} value="1""/>
+                <input name="active" id="active" type="checkbox" {if $post.active eq '1' || !$post}checked{/if} value="1""/>
                 <hr/>
             </div>
+            {if in_array(283, $permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Numero de empresas por administrar:</div>
+                    <input style="width: 20%!important;" class="smallInput medium" name="numberAccountsAllowed" id="numberAccountsAllowed"
+                           type="text" value="{$post.numberAccountsAllowed}">
+                    <hr/>
+                </div>
+            {/if}
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">Fecha Compra:</div>
                 <input style="width: 20%!important;" class="smallInput medium" name="fechaCompra" id="fechaCompra"
                        onclick="CalendarioSimple(this)" type="text" value="{$post.fechaCompra|date_format:'%d-%m-%Y'}" size="50"
                        maxlength="10" readonly="readonly"/>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left"> Equipo de computo:</div>
+                <select class="smallInput medium" name="resource_id" id="resource_id">
+                    <option value="">Seleccionar un equipo de la lista....</option>
+                    {foreach from=$resources item=item key=key}
+                        <option value="{$item.office_resource_id}" {if $item.office_resource_id eq $post.resource.office_resource_id}selected{/if}>{$item.nombre}({$item.tipo_equipo})</option>
+                    {/foreach}
+                </select>
                 <hr/>
             </div>
             {if in_array(240,$permissions)|| $User.isRoot}

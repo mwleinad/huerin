@@ -4,18 +4,18 @@
     $user->allowAccess(2);  //level 1
     $user->allowAccess(62);//level 2
     /* end Session Control Modules*/
-	
+
 	$okMsg = $_SESSION['msgOk'];
 	$_SESSION['msgOk'] = 0;
-			
+
 	//Obtenemos los Tipos de Contrato
 	$categories = $contCat->Enumerate();
 	//si por alguna razon el usuario cliente quisiera ingresar con otro id obligar a que sea exclusivo de el.
      if($_SESSION['User']['level']>6)
          $_GET['id']= $_SESSION['User']['userId'];
-	
-	$val = split('-',$_GET['id']);
-	
+
+	$val = explode('-',$_GET['id']);
+
 	$id = $val[0];
 	$status = $val[1];
 
@@ -29,10 +29,10 @@
 
 	$smarty->assign("infoCustomer", $infoCustomer);
 	$departamentos = $departamentos->Enumerate();
-	
-	$smarty->assign("departamentos", $departamentos);	
-	$smarty->assign("id", $_GET["id"]);	
-	$smarty->assign("msgOk", $okMsg);	
+
+	$smarty->assign("departamentos", $departamentos);
+	$smarty->assign("id", $_GET["id"]);
+	$smarty->assign("msgOk", $okMsg);
 	$smarty->assign("categories", $categories);
 	$smarty->assign("contracts", $resContracts);
 	$smarty->assign('mainMnu','contratos');

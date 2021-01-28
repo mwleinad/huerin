@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Requerimiento extends Contract
 {
@@ -18,7 +18,7 @@ class Requerimiento extends Contract
 		return $this->requerimientoId;
 	}
 
-	public function setContractId($value)
+	public function setContractId($value, $required = false)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->contractId = $value;
@@ -55,20 +55,20 @@ class Requerimiento extends Contract
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM requerimiento");
 		$result = $this->Util()->DB()->GetResult();
-		
+
 		foreach($result as $key => $value)
 		{
 			$result[$key]["filePath"] = WEB_ROOT."/requerimientos/".$value["contractId"]."_".$value["path"];
 		}
 		return $result;
 	}
-	
-	public function Enumerate()
+
+	public function Enumerate($id = 0, $status = '')
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM requerimiento 
 		LEFT JOIN tipoRequerimiento ON tipoRequerimiento.tipoRequerimientoId = requerimiento.tipoRequerimientoId WHERE contractId = '".$this->getContractId()."' ORDER BY requerimientoId ASC");
 		$result = $this->Util()->DB()->GetResult();
-		
+
 		foreach($result as $key => $value)
 		{
 			$result[$key]["filePath"] = WEB_ROOT."/requerimientos/".$value["contractId"]."_".$value["path"];
@@ -107,7 +107,7 @@ class Requerimiento extends Contract
 	public function Save()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
- 
+
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
 				requerimiento
@@ -120,26 +120,26 @@ class Requerimiento extends Contract
 				'".$this->contractId."',
 				'".$this->tipoRequerimientoId."'
 		);");
-		
+
 		$id =	$this->Util()->DB()->InsertData();
 		$folder = DOC_ROOT."/requerimientos/".$this->getContractId();
-		
+
 		$nombreArchivo = preg_replace("/&#?[a-z0-9]+;/i","", basename( $_FILES["path"]['name']));
 		$nombreArchivo = str_replace(" ","", $nombreArchivo);
-		
-		$target_path = $folder ."_". $nombreArchivo; 
-		$target_path_path = $nombreArchivo; 
-			
+
+		$target_path = $folder ."_". $nombreArchivo;
+		$target_path_path = $nombreArchivo;
+
 		if(move_uploaded_file($_FILES["path"]['tmp_name'], $target_path)) {
 			$this->Util()->DB()->setQuery("UPDATE requerimiento SET path = '".$target_path_path."' WHERE requerimientoId = '".$id."'");
 			$this->Util()->DB()->UpdateData();
-			$this->Util()->setError(0, "complete", 'El archivo fue agregado correctamente');			
+			$this->Util()->setError(0, "complete", 'El archivo fue agregado correctamente');
 		}else{
-			$this->Util()->setError(0, 'error', 'Ocurrio un error al subir el archivo');			
-		}		
-		
+			$this->Util()->setError(0, 'error', 'Ocurrio un error al subir el archivo');
+		}
+
 		$this->Util()->PrintErrors();
-		
+
 		return true;
 	}
 

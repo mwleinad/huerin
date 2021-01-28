@@ -9,38 +9,38 @@
             En esta sección se define la inclusión de las plantillas de utilerías para colapsar espacios
 
     -->
-    <xsl:include href="/var/www/html/xslt/utilerias.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/utilerias.xslt"/>
     <!--
 
             En esta sección se define la inclusión de las demás plantillas de transformación para
             la generación de las cadenas originales de los complementos fiscales
 
     -->
-    <xsl:include href="/var/www/html/xslt/ecc11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/donat11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/divisas.xslt"/>
-    <xsl:include href="/var/www/html/xslt/implocal.xslt"/>
-    <xsl:include href="/var/www/html/xslt/leyendasFisc.xslt"/>
-    <xsl:include href="/var/www/html/xslt/pfic.xslt"/>
-    <xsl:include href="/var/www/html/xslt/TuristaPasajeroExtranjero.xslt"/>
-    <xsl:include href="/var/www/html/xslt/nomina12.xslt"/>
-    <xsl:include href="/var/www/html/xslt/cfdiregistrofiscal.xslt"/>
-    <xsl:include href="/var/www/html/xslt/pagoenespecie.xslt"/>
-    <xsl:include href="/var/www/html/xslt/aerolineas.xslt"/>
-    <xsl:include href="/var/www/html/xslt/valesdedespensa.xslt"/>
-    <xsl:include href="/var/www/html/xslt/consumodecombustibles.xslt"/>
-    <xsl:include href="/var/www/html/xslt/notariospublicos.xslt"/>
-    <xsl:include href="/var/www/html/xslt/vehiculousado.xslt"/>
-    <xsl:include href="/var/www/html/xslt/servicioparcialconstruccion.xslt"/>
-    <xsl:include href="/var/www/html/xslt/renovacionysustitucionvehiculos.xslt"/>
-    <xsl:include href="/var/www/html/xslt/certificadodedestruccion.xslt"/>
-    <xsl:include href="/var/www/html/xslt/obrasarteantiguedades.xslt"/>
-    <xsl:include href="/var/www/html/xslt/ComercioExterior11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/ine11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/iedu.xslt"/>
-    <xsl:include href="/var/www/html/xslt/ventavehiculos11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/terceros11.xslt"/>
-    <xsl:include href="/var/www/html/xslt/Pagos10.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/ecc11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/donat11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/divisas.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/implocal.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/leyendasFisc.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/pfic.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/TuristaPasajeroExtranjero.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/nomina12.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/cfdiregistrofiscal.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/pagoenespecie.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/aerolineas.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/valesdedespensa.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/consumodecombustibles.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/notariospublicos.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/vehiculousado.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/servicioparcialconstruccion.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/renovacionysustitucionvehiculos.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/certificadodedestruccion.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/obrasarteantiguedades.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/ComercioExterior11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/ine11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/iedu.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/ventavehiculos11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/terceros11.xslt"/>
+    <xsl:include href="/var/www/mainplatform/public_html/xslt/Pagos10.xslt"/>
     <!--
      Aquí iniciamos el procesamiento de la cadena original con su | inicial y el terminador ||
     -->

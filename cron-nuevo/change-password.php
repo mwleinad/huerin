@@ -10,7 +10,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
 }
@@ -49,7 +49,7 @@ foreach($results as $key =>$item){
                    <br><br>
                    Este correo se creo automaticamente, favor de no responder.
                    ";
-            $subject="CAMBIO DE CONTRASEÑA ".$item['name'];
+            $subject="CAMBIO DE CONTRASENIA ".$item['name'];
             $to = $item['email'];
             $toName= $item['name'];
 

@@ -2,206 +2,194 @@
 
 class DBRemote
 {
-	public $query = NULL;
-	private $sqlResult = NULL;
-	
-	private $conn_id = false;
+    public $query = NULL;
+    private $sqlResult = NULL;
 
-	private $sqlHost;
-	private $sqlDatabase;
-	private $sqlUser;
-	private $sqlPassword;
-	
-	private $projectStatus = "test";
-	
-	public function setSqlHost($value)
-	{
-		$this->sqlHost = $value;
-	}
-	
-	public function getSqlHost()
-	{
-		return $this->sqlHost;
-	}
+    private $conn_id = false;
 
-	public function setSqlDatabase($value)
-	{
-		$this->sqlDatabase = $value;
-	}
-	
-	public function getSqlDatabase()
-	{
-		return $this->sqlDatabase;
-	}
+    private $sqlHost;
+    private $sqlDatabase;
+    private $sqlUser;
+    private $sqlPassword;
 
-	public function setSqlUser($value)
-	{
-		$this->sqlUser = $value;
-	}
-	
-	public function getSqlUser()
-	{
-		return $this->sqlUser;
-	}
+    private $projectStatus = "test";
 
-	public function setSqlPassword($value)
-	{
-		$this->sqlPassword = $value;
-	}
-	
-	public function getSqlPassword()
-	{
-		return $this->sqlPassword;
-	}
+    public function setSqlHost($value)
+    {
+        $this->sqlHost = $value;
+    }
 
-	public function setQuery($value)
-	{
-		$this->query = $value;
-	}
-	
-	public function getQuery()
-	{
-		return $this->query;
-	}
+    public function getSqlHost()
+    {
+        return $this->sqlHost;
+    }
 
-	public function setProjectStatus($value)
-	{
-		$this->projectStatus = $value;
-	}
-	
-	public function getProjectStatus()
-	{
-		return $this->projectStatus;
-	}
+    public function setSqlDatabase($value)
+    {
+        $this->sqlDatabase = $value;
+    }
 
-	function __construct($database = "pascacio_general")
-	{
-		//echo $database;
-		$this->sqlHost = SQL_HOST_REMOTE;
-		$this->sqlDatabase = $database;
-		$this->sqlUser = SQL_USER_REMOTE;
-		$this->sqlPassword = SQL_PASSWORD_REMOTE;
-	}
+    public function getSqlDatabase()
+    {
+        return $this->sqlDatabase;
+    }
 
-  public function DatabaseConnect() 
-	{
-		//$this->sqlDatabase = "pascacio_general";
-    $this->conn_id = mysql_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, 1);
-    mysql_select_db($this->sqlDatabase, $this->conn_id) or die("<br/>".mysql_error()."<br/>");
-  }
-	
-	public function ExecuteQuery()
-	{
-  	//if(!$this->conn_id)
-   	  $this->DatabaseConnect();
+    public function setSqlUser($value)
+    {
+        $this->sqlUser = $value;
+    }
 
+    public function getSqlUser()
+    {
+        return $this->sqlUser;
+    }
 
-		//TODO we might want to add some security in the queries here, but that can be done later, this is the place
-		if($this->projectStatus == "test")
-		{
-			//echo "<br><br>".$this->query."<br><br>";
-//				print_r(debug_backtrace());
-	    	$this->sqlResult = mysql_query($this->query, $this->conn_id) or die (trigger_error(mysql_error()));
-		}	
-		else
-		{  //echo "<br><br>".$this->query."<br><br>";
-			$this->sqlResult = mysql_query($this->query, $this->conn_id);
-		}	
-	}
-	
-  function GetResult()
-	{
-  	$retArray = array();
+    public function setSqlPassword($value)
+    {
+        $this->sqlPassword = $value;
+    }
 
-		$this->ExecuteQuery();
-		
-	  while($rs=mysql_fetch_assoc($this->sqlResult))
-		{
-	    	$retArray[] = $rs;
-		}	
+    public function getSqlPassword()
+    {
+        return $this->sqlPassword;
+    }
 
-    $this->CleanQuery();
+    public function setQuery($value)
+    {
+        $this->query = $value;
+    }
 
-    return $retArray;
-  }
+    public function getQuery()
+    {
+        return $this->query;
+    }
 
-  function GetTotalRows()
-	{
-		$this->ExecuteQuery();
-		
-		return mysql_num_rows($this->sqlResult);
-  }
+    public function setProjectStatus($value)
+    {
+        $this->projectStatus = $value;
+    }
 
-  function GetRow()
-	{
-		$this->ExecuteQuery();
+    public function getProjectStatus()
+    {
+        return $this->projectStatus;
+    }
 
-	  $rs=mysql_fetch_assoc($this->sqlResult);
+    function __construct($database = "pascacio_general")
+    {
+        //echo $database;
+        $this->sqlHost = SQL_HOST_REMOTE;
+        $this->sqlDatabase = $database;
+        $this->sqlUser = SQL_USER_REMOTE;
+        $this->sqlPassword = SQL_PASSWORD_REMOTE;
+    }
 
-    $this->CleanQuery();
+    public function DatabaseConnect()
+    {
+        $this->conn_id = mysqli_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, $this->sqlDatabase) or die("error" . mysqli_error($this->conn_id));
+    }
 
-    return $rs;
-  }
+    public function ExecuteQuery()
+    {
+        $this->DatabaseConnect();
+        if ($this->projectStatus == "test") {
+            $this->sqlResult = mysqli_query($this->conn_id, $this->query) or die (mysqli_error($this->conn_id));
+        } else {
+            $this->sqlResult = mysqli_query($this->conn_id, $this->query) or die (trigger_error(mysqli_error($this->conn_id)));
+        }
+    }
 
-  function GetSingle()
-	{
-		$this->ExecuteQuery();
+    function GetResult()
+    {
+        $retArray = array();
+        $this->ExecuteQuery();
+        while ($rs = mysqli_fetch_assoc($this->sqlResult)) {
+            $retArray[] = $rs;
+        }
+        $this->CleanQuery();
+        return $retArray;
+    }
 
-		$rs=@mysql_result($this->sqlResult, 0);
+    function GetTotalRows()
+    {
+        $this->ExecuteQuery();
 
-		if(!$rs)
-			$rs = 0;
-			
-    $this->CleanQuery();
+        return mysqli_num_rows($this->sqlResult);
+    }
 
-    return $rs;
-  }
+    function GetRow()
+    {
 
-  function InsertData()
-	{
-		$this->ExecuteQuery();
-		$last_id=mysql_insert_id($this->conn_id);
+        $this->ExecuteQuery();
 
-    $this->CleanQuery();
+        $rs = mysqli_fetch_assoc($this->sqlResult);
 
-    return $last_id;
-  }
+        $this->CleanQuery();
 
-  function UpdateData()
-	{
-		$this->ExecuteQuery();
+        return $rs;
+    }
 
-		$return = mysql_affected_rows($this->conn_id);
+    function GetSingle()
+    {
+        $this->ExecuteQuery();
 
-  	$this->CleanQuery();
+        $rs = @mysqli_fetch_array($this->sqlResult);
 
-    return $return;
-  }
+        if (!$rs) {
+            return 0;
+        }
 
-  function DeleteData()
-	{
-		return $this->UpdateData();
-  }
-	
-  function CleanQuery()
-	{
-    @mysql_free_result($this->sqlResult);
-    //$this->query = "";
-  }
-	
-	function EnumSelect( $table , $field )
-	{
-		$this->query = "SHOW COLUMNS FROM `$table` LIKE '$field' ";
-		$this->ExecuteQuery();
+        $rs = $rs[0];
 
-		$row = mysql_fetch_array( $this->sqlResult , MYSQL_NUM );
-		$regex = "/'(.*?)'/";
+        $this->CleanQuery();
 
-		preg_match_all( $regex , $row[1], $enum_array );
-		$enum_fields = $enum_array[1];
+        return $rs;
+    }
 
-		return( $enum_fields );
-	}	
+    function InsertData()
+    {
+        $this->ExecuteQuery();
+        $last_id = mysqli_insert_id($this->conn_id);
+
+        $this->CleanQuery();
+
+        return $last_id;
+    }
+
+    function UpdateData()
+    {
+        $this->ExecuteQuery();
+
+        $return = mysqli_affected_rows($this->conn_id);
+
+        $this->CleanQuery();
+
+        return $return;
+    }
+
+    function DeleteData()
+    {
+        return $this->UpdateData();
+    }
+
+    function CleanQuery()
+    {
+        @mysqli_free_result($this->sqlResult);
+        //$this->query = "";
+    }
+
+    function EnumSelect($table, $field)
+    {
+        $this->query = "SHOW COLUMNS FROM `$table` LIKE '$field' ";
+        $this->ExecuteQuery();
+
+        $row = mysqli_fetch_array($this->sqlResult, MYSQL_NUM);
+        $regex = "/'(.*?)'/";
+
+        preg_match_all($regex, $row[1], $enum_array);
+        $enum_fields = $enum_array[1];
+
+        return ($enum_fields);
+    }
 }
 
 ?>

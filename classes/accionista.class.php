@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 class Accionista extends Contract
 {
 	private $accionistaId;
 	private $name;
 	private $percentaje;
-	private $file;	
+	private $file;
 
 	public function setAccionistaId($value)
 	{
@@ -19,7 +19,7 @@ class Accionista extends Contract
 			$this->Util()->ValidateString($value, $max_chars=60, $minChars = 1, "Nombre");
 		$this->name = $value;
 	}
-	
+
 	public function setPercentaje($value)
 	{
 		$this->percentaje = $value;
@@ -29,13 +29,13 @@ class Accionista extends Contract
 	{
 		$this->file = $value;
 	}
-	
 
-	public function Enumerate()
+
+	public function Enumerate($id = 0, $status = '')
 	{
 		if($this->getContractId())
 			$sqlActive = " WHERE contractId = '".$this->getContractId()."'";
-						
+
 		$sql = "SELECT 
 					* 
 				FROM 
@@ -43,13 +43,13 @@ class Accionista extends Contract
 				".$sqlActive."				
 				ORDER BY 
 					name ASC";
-		
+
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
-				
+
 		return $result;
 	}
-	
+
 	public function Info()
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM wallmart WHERE wallmartId = '".$this->wallmartId."'");
@@ -119,27 +119,27 @@ class Accionista extends Contract
 			WHERE
 				wallmartId = '".$this->wallmartId."'");
 		$this->Util()->DB()->DeleteData();
-				
+
 		$this->Util()->setError(10053, "complete");
 		$this->Util()->PrintErrors();
 		return true;
 	}
-	
+
 	public function GetNameById(){
-			
+
 		$sql = 'SELECT 
 					name
 				FROM 
 					wallmart 
 				WHERE 
 					wallmartId = '.$this->wallmartId;
-		
+
 		$this->Util()->DB()->setQuery($sql);
-		
+
 		return $this->Util()->DB()->GetSingle();
-		
+
 	}
-	
+
 }
 
 ?>

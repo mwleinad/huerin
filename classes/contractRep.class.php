@@ -1,6 +1,4 @@
 <?php
-
-session_start();
 class ContractRep extends Main
 {
     private $contractId;
@@ -8,9 +6,9 @@ class ContractRep extends Main
         $this->contractId=$value;
     }
     public function findPermission($contrato, $respsCuenta){
-        $split = split('-',$contrato['permisos']);
+        $split = explode('-',$contrato['permisos']);
         foreach($split as $sp){
-            $split2 = split(',',$sp);
+            $split2 = explode(',',$sp);
             //Se agrego dep 25 que ya no existe
             if($split2[0] == 25) {
                 continue;

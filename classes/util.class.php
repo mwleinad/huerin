@@ -1,8 +1,11 @@
 <?php
 
-class Util extends Error
+class Util extends CustomError
 {
 
+	public $DB;
+	private $DBSelect;
+	private $DBRemote;
 	public function DB($change_collate = true)
 	{
 		if($this->DB == null )
@@ -596,7 +599,7 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		}//if
 	}//if
 	else{
-		$total_pages = (int)($total/$items_per_page);
+		$total_pages = ((int)$total/(int)$items_per_page);
 	}//else
 
 	if($page > 0){

@@ -33,7 +33,7 @@ class Step extends Servicio
 		$this->descripcion = $value;
 	}
 
-	public function Enumerate()
+	public function Enumerate($id = 0, $status = '')
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM step 
 			LEFT JOIN servicio ON step.servicioId = servicio.servicioId

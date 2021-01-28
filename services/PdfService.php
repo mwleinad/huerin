@@ -1,9 +1,10 @@
 <?php
 use Dompdf\Dompdf;
-
+use Dompdf\Options;
 class PdfService extends Producto{
     private $domPdf;
     private $smarty;
+    private $qrService;
 
     public function __construct()
     {
@@ -45,14 +46,15 @@ class PdfService extends Producto{
         $this->smarty->assign('empresaId', $empresaId);
 
         $dompdf = new Dompdf();
+        $dompdf->getOptions()->setChroot(DOC_ROOT."/empresas");
         $this->qrService->setRfcId($rfcActivo);
         $qrFile = $this->qrService->generate($xmlData);
         $this->smarty->assign('qrFile', $qrFile);
 
-        $logo = DOC_ROOT."/empresas/".$empresaId."/qrs/".$xmlData['serie']["serieId"].".jpg";
+        $logo = "/empresas/".$empresaId."/qrs/".$xmlData['serie']["serieId"].".jpg";
 
-        if(file_exists($logo)) {
-            $this->smarty->assign('logo', $logo);
+        if(file_exists(DOC_ROOT.$logo)) {
+            $this->smarty->assign('logo', DOC_ROOT.$logo);
         }
 
         $logoEscuela = DOC_ROOT."/images/header_333.jpg";
@@ -69,6 +71,7 @@ class PdfService extends Producto{
         ob_clean();
         $html = $this->smarty->fetch(DOC_ROOT.'/templates/pdf/basico.tpl');
         $dompdf->loadHtml($html);
+
 
         $dompdf->setPaper('A4', 'portrait');
 

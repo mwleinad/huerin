@@ -4,7 +4,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
 
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
 }
@@ -21,5 +21,6 @@ $result = $db->GetResult();
 foreach($result as $key => $row) {
     $response = $cancelation->getStatus($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
     $cancelation->processCancelation($row, $response);
+    dd($response);
     echo "UUID: ".$row['uuid']." => ".$response['status'].chr(13).chr(10);
 }

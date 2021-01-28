@@ -170,7 +170,7 @@ class Servicio extends Contract
         $cad['monthNew'] = $monthNew;
         return $cad;
     }
-	public function Enumerate()
+	public function Enumerate($id = '', $status = '')
 	{
 		global $months;
 

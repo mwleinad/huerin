@@ -106,10 +106,10 @@ class Rol extends main
     }
     public function Enumerate(){
         $where ="";
-        $where .=!$_SESSION["User"]["isRoot"] ? 
-                 (int)$_SESSION["User"]["level"] != 1 ? 
+        $where .=!$_SESSION["User"]["isRoot"] ?
+                 (int)$_SESSION["User"]["level"] != 1 ?
                  " and a.nivel >= '".$_SESSION['User']['level']."' "
-                 :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ? 
+                 :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ?
                  " and a.nivel > '".$_SESSION['User']['level']."' "
                  : " and (a.nivel > '".$_SESSION['User']['level']."'  or lower(a.name) = 'asistente socio') "
                  :"";
@@ -428,7 +428,8 @@ class Rol extends main
        $single = $this->Util()->DB()->GetSingle();
        return $single;
    }
-   function FindFirstPage(){
+   function FindFirstPage() {
+       $filtro = "";
        global $User;
        if(!$this->isAdmin())
            $filtro = " AND a.rolId='".$this->rolId."' ";
