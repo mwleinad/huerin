@@ -229,7 +229,7 @@ switch($_POST["type"])
         $invoice = new InvoiceService();
         $invoice->setCurrentContract($contrato);
         $invoice->GetFilterServicesByContract(false);
-        $_SESSION['conceptos'] = $invoice->GenerateConceptos(false);
+        $_SESSION['conceptos'] = $invoice->GenerateConceptos(true);
         echo "ok|ok|";
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
