@@ -29,6 +29,7 @@ define("RFC_DEFAULT", 30);
 switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
+    case 'huerin.test':
         define("SEND_TO", "leasib_666@hotmail.com");
         //define("SEND_TO1", "jeje@braunhuerin.com.mx ");
         //define("SEND_TO2", "de@gmail.com");

@@ -132,7 +132,7 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetRow();
     }
-    function GetFilterServicesByContract() {
+    function GetFilterServicesByContract($validateInstance =  true) {
         $this->resetServiciosToConceptos();
         $id =  $this->currentContract["contractId"];
         //revisar empresa si presta datos para facturacion
@@ -142,7 +142,7 @@ class InvoiceService extends Cfdi{
         $res = $this->Util()->DB()->GetResult();
 
         $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
-        
+
         array_push($childs, $id);
         $strId =  implode(',', $childs);
         $sql = "select a.*,b.claveSat,b.nombreServicio from servicio a
@@ -163,12 +163,12 @@ class InvoiceService extends Cfdi{
            if($firstDayInicioFactura>$firstDayCurrentDate)
                 continue;
 
-
-           $instancia = $this->GetCurrentWorkflow($item["servicioId"],date('Y-m-d'));
-           $instancia =  !$instancia?$this->ProcessIfIsRif($item,date('Y-m-d')):$instancia;
-           if(!$instancia)
-                continue;
-
+           if($validateInstance) {
+                $instancia = $this->GetCurrentWorkflow($item["servicioId"], date('Y-m-d'));
+                $instancia = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
+                if (!$instancia)
+                    continue;
+            }
            if($instancia["comprobanteId"])
                 continue;
 
@@ -264,7 +264,7 @@ class InvoiceService extends Cfdi{
         $this->data["procedencia"] = $this->month13?"manual":$this->data["procedencia"];
         $this->data['isRifNoInstance'] = $this->rifNoInstance;
     }
-    function GenerateConceptos(){
+    function GenerateConceptos($fromManual = false){
         global $months;
         $conceptos = [];
         foreach($this->getServiciosToConceptos() as $item){
@@ -278,7 +278,7 @@ class InvoiceService extends Cfdi{
 
             $iva = $item["costo"] * ($this->emisor["iva"] / 100);
             $subtotal += $item["costo"] + $iva;
-            $fecha = explode("-", $item["date"]);
+            $fecha = $fromManual ? explode('-', date('Y-m-d')) : explode("-", $item["date"]);
             $fechaText = $this->month13?" 13 del ".$fecha["0"]:" DE ".$months[$fecha[1]]." del ".$fecha["0"];
             $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
@@ -369,8 +369,6 @@ class InvoiceService extends Cfdi{
         foreach($contratos as $contrato){
             //si el contrato tiene createSeparateInvoice  == 0 se ignora
             //por que sera procesado por otra empresa
-
-
             $this->resetEmisor();
             $this->resetData();
             $this->resetReceptor();

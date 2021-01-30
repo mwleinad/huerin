@@ -12,13 +12,13 @@ function SuggestUser()
                 var response = transport.responseText || "no response text";
                 $('suggestionDiv').show();
                 $('suggestionDiv').innerHTML = response;
-                AddSuggestListener();
+                AddSuggestListenerInvoice();
             },
             onFailure: function(){ alert('Something went wrong...') }
         });
 }
 
-function FillRFC(elem, id)
+function FillRFCInvoice(elem, id)
 {
     $('suggestionDiv').hide();
     FillDatosFacturacion(id);
@@ -101,8 +101,6 @@ function FillImpuestoData()
 function FillConceptoData()
 {
     $('loadingDivConcepto').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-
-//	$('suggestionProductDiv').hide();
     new Ajax.Request(WEB_ROOT+'/ajax/fill_form.php',
         {
             parameters: {value: $('noIdentificacion').value, type: "producto"},
@@ -151,8 +149,6 @@ function UpdateValorUnitarioSinIva(valor)
 function FillDatosFacturacion(id)
 {
     $('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-
-//	$('suggestionDiv').hide();
     new Ajax.Request(WEB_ROOT+'/ajax/fill_form.php',
         {
             parameters: {value: id, type: "datosFacturacion"},
@@ -160,11 +156,6 @@ function FillDatosFacturacion(id)
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
-                //splitResponse[3] = splitResponse[3].replace(/\r?\n/g, '<br />');
-                //alert(decodeURIComponent(splitResponse[3]));
-                console.log(splitResponse);
-
-
                 $('razonSocial').value = splitResponse[3];
                 $('rfc').value = splitResponse[15];
                 $('userId').value = splitResponse[16];
@@ -172,12 +163,37 @@ function FillDatosFacturacion(id)
                 $('pais').value = splitResponse[7];
                 $('loadingDivDatosFactura').innerHTML = '';
 
+                var useServiceConcept =  confirm(' ¿ Desea cargar los sevicios facturables de esta empresa como conceptos?');
+                if(useServiceConcept)
+                    loadConceptosFromServices();
+
             },
             onFailure: function(){ alert('Something went wrong...') }
         });
 
 }
-
+function loadConceptosFromServices () {
+    $('conceptos').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /></div>';
+    new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php', {
+            method:'post',
+            parameters: { value: $('userId').value, type: "loadConceptoFromService" },
+            onSuccess: function(transport) {
+                var response = transport.responseText || "no response text";
+                var splitResponse = response.split("|");
+                if(splitResponse[0] == "fail")
+                {
+                    $('divStatus').innerHTML = splitResponse[1];
+                    $('centeredDiv').show();
+                    grayOut(true);
+                }
+                $('conceptos').innerHTML = splitResponse[2];
+                var elements = $$('span.linkBorrar');
+                AddBorrarConceptoListeners(elements);
+                UpdateTotalesDesglosados();
+            },
+            onFailure: function(){ alert('Something went wrong...') }
+        });
+}
 function UpdateIepsConcepto()
 {
     $('iepsConcepto').value = $('porcentajeIEPS').value;
@@ -206,7 +222,6 @@ function AgregarConcepto()
                 $('conceptos').innerHTML = splitResponse[2];
                 var elements = $$('span.linkBorrar');
                 AddBorrarConceptoListeners(elements);
-
                 UpdateTotalesDesglosados();
             },
             onFailure: function(){ alert('Something went wrong...') }
@@ -511,45 +526,40 @@ Event.observe(window, 'load', function() {
         var elements = $$('span.linkBorrar');
     }
 
-    AddSuggestListener = function(e) {
+    AddSuggestListenerInvoice = function(e) {
         var el = e.element();
         var del = el.hasClassName('suggestUserDiv');
         var id = el.identify();
-        if(del == true){
-            FillRFC(1, id);
+        if(del == true) {
+            FillRFCInvoice(1, id);
             return;
         }
 
         del = el.hasClassName('suggestProductoDiv');
-
         if(del == true){
             FillNoIdentificacion(1, id);
             return;
         }
 
         del = el.hasClassName('suggestImpuestoDiv');
-
         if(del == true){
             FillImpuestoId(1, id);
             return;
         }
 
         del = el.hasClassName('closeSuggestUserDiv');
-
         if(del == true){
             $('suggestionDiv').hide();
             return;
         }
 
         del = el.hasClassName('closeSuggestProductoDiv');
-
         if(del == true){
             $('suggestionProductDiv').hide();
             return;
         }
 
         del = el.hasClassName('closeSuggestImpuestoDiv');
-
         if(del == true){
             $('suggestionImpuestoDiv').hide();
             return;
@@ -560,7 +570,7 @@ Event.observe(window, 'load', function() {
 
     if($('divForm')!= undefined)
     {
-        $('divForm').observe("click", AddSuggestListener);
+        $('divForm').observe("click", AddSuggestListenerInvoice);
     }
 });
 

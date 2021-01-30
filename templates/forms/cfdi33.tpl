@@ -204,7 +204,7 @@
           <div class="titleLabel" ">Tipo relacion:</div>
           <div class="controlLg">
           <select name="tipoRelacion" id="tipoRelacion"  class="largeInput" style="width:315px">
-            <option value="04" selected>No tiene CFDi relacionado</option>
+            <option value="">No tiene CFDi relacionado</option>
          	{foreach from=$tipoRelacion item=relacion}
                 <option value="{$relacion.c_TipoRelacion}">{$relacion.descripcion}</option>
             {/foreach}
