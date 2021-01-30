@@ -101,8 +101,8 @@
 
 <body>
 {if $page == "login"}
-<div style="background-color:#009900; color:#FFFFFF" align="center">
-Sistema ejecutandose desde nuevo servidor
+<div style="background-color:#{($PROJECT_STATUS eq 'test') ? 'FFF5A463':'009900'}; color:#FFFFFF" align="center">
+ {if $PROJECT_STATUS eq 'test'}Sistema en entorno de desarrollo{else}Sistema en linea{/if}
 </div>
 {/if}
 
