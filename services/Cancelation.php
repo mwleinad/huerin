@@ -75,6 +75,7 @@ class Cancelation extends Main
                               WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
             $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
             $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+            $this->updateInstanciaIfExist($cfdi['cfdi_id']);
             $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
         }
     }
@@ -85,6 +86,40 @@ class Cancelation extends Main
 			WHERE
 				solicitud_cancelacion_id = '".$id."'");
         $this->Util()->DB()->DeleteData();
+    }
+
+    /*
+     * set comprobanteId inside instanciaServicio table and reset lastProccessInvoice='0000-00-00' inside contract table
+     * @param $id
+     * return true | false
+     */
+    public function updateInstanciaIfExist ($id) {
+        global $servicio;
+        if(!$id)
+            return false;
+
+        $sQuery = "SELECT fecha, comprobanteId, userId FROM comprobante WHERE comprobanteId = '".$id."' ";
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sQuery);
+        $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $firstDayCurrentMonth =  $this->Util()->getFirstDate(date('Y-m-d'));
+        $lastDayCurrentMonth = date('Y')."-".date('m')."-".$this->Util()->getLastDayMonth((int)date('Y'), (int)date('m'));
+        $firstDayDateInvoice = $this->Util()->getFirstDate(date('Y-m-d', strtotime($row['fecha'])));
+
+        if($firstDayCurrentMonth === $firstDayDateInvoice && date('Y-m-d') != $lastDayCurrentMonth ) {
+            $sQuery = "select instanciaServicioId from instanciaServicio where comprobanteId = '".$id."' ";
+            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sQuery);
+            $workIds = $this->Util()->DBSelect($_SESSION["empresaId"])->GetResult();
+            $workIds = count($workIds) > 0 ? array_column($workIds, 'instanciaServicioId') : [];
+            if (count($workIds)) {
+                $sQueryUp =  "update instanciaServicio set comprobanteId= '0' where instanciaServicioId  IN (".implode(',', $workIds).") ";
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sQueryUp);
+                $rowsAffects = $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                if($rowsAffects)
+                    $servicio->resetDateLastProcessInvoice($row['userId']);
+            }
+        }
+        return true;
     }
 }
 ?>

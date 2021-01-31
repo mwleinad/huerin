@@ -436,7 +436,7 @@ class Cfdi extends Comprobante
 
         if (count ($data['workflowsIdUpdateInvoice']) > 0) {
            foreach($data['workflowsIdUpdateInvoice'] as $wupdate) {
-               $idCompUpdate =  $wupdate['factura'] == 'Si' ? $comprobanteId : -1;
+               $idCompUpdate =  $wupdate['factura'] == 'Si' ? $comprobanteId : 0;
                $sqlCompUpdate =  "UPDATE instanciaServicio SET comprobanteId = '".$idCompUpdate."' where instanciaServicioId='".$wupdate['instanciaServicioId']."' ";
                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlCompUpdate);
                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();

@@ -168,9 +168,10 @@ class InvoiceService extends Cfdi{
                 $instancia = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
                 if (!$instancia)
                     continue;
+
+               if((int)$instancia["comprobanteId"]>0)
+                   continue;
             }
-           if($instancia["comprobanteId"])
-                continue;
 
            if($item["status"]=="bajaParcial"){
                if(!$this->Util()->isValidateDate($item["lastDateWorkflow"],'Y-m-d'))

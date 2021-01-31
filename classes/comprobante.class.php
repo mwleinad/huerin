@@ -748,7 +748,10 @@ class Comprobante extends Producto
     function CancelarComprobante($data = null, $id_comprobante = null, $notaCredito = false, $motivo_cancelacion = null)
     {
         global $cancelation;
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,comprobante.tiposComprobanteId,version,total FROM comprobante
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,
+            comprobante.tiposComprobanteId,version,
+            comprobante.total, comprobante.fecha
+            FROM comprobante
 			LEFT JOIN contract ON contract.contractId = comprobante.userId
 			WHERE comprobanteId = " . $id_comprobante);
 
@@ -794,6 +797,7 @@ class Comprobante extends Producto
                 $sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "' . $motivo_cancelacion . '", status = "0", fechaPedimento = "' . date("Y-m-d") . '",usuarioCancelacion="' . $_SESSION['User']['userId'] . '" WHERE comprobanteId = ' . $id_comprobante;
                 $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
                 $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                $cancelation->updateInstanciaIfExist($id_comprobante);
             }
             //si es version antes de 3.3 , stampar cancelado en el pdf.
             if ($row["version"] == "2.0") {

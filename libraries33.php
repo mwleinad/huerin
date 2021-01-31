@@ -188,6 +188,10 @@ include_once(DOC_ROOT."/services/XmlReaderService.php");
 $xmlReaderService = new XmlReaderService;
 include_once(DOC_ROOT."/services/invoice/invoice.php");
 $invoiceService = new InvoiceService;
+include_once(DOC_ROOT."/services/ControlFromXml.php");
+$controlFromXml = new ControlFromXml;
+include_once(DOC_ROOT."/services/Cancelation.php");
+$cancelation = new Cancelation;
 
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
