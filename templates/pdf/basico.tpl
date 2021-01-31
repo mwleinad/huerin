@@ -118,6 +118,9 @@
                 <strong>Nombre receptor:</strong> {$xmlData.receptor.Nombre}<br>
                 <strong>RFC receptor:</strong> {$xmlData.receptor.Rfc}<br>
                 <strong>Uso CFDI:</strong> {$xmlData.receptor.UsoCFDI} {$catalogos.UsoCFDI}<br>
+                {if $xmlData.cfdiRelacionados}
+                    <strong>CFDI Relacionado:</strong> {$xmlData.cfdiRelacionados.uuid} <br>
+                {/if}
                 {if $xmlData.escuela.noControl} <strong># Control:</strong> {$xmlData.escuela.noControl} {/if}<br>
                 {if $xmlData.escuela.carrera} <strong>Carrera:</strong> {$xmlData.escuela.carrera} {/if}<br>
             </td>

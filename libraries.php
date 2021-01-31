@@ -264,6 +264,7 @@ $smarty->assign('permissions', $permissions);
 $smarty->assign('firstPages', $firstPages);
 $smarty->assign('User',$User);
 $smarty->assign("firstDep", $firstDep);
+$smarty->assign("PROJECT_STATUS", PROJECT_STATUS);
 
 function dd($data) {
 	echo "<pre>";

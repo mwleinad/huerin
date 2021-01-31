@@ -29,7 +29,7 @@ class User extends Sucursal
 		if(!$this->userId)
 			$this->userId = $_SESSION["User"]["userId"];
 
-		if($_SESSION["User"]["roleId"] == 4){
+		if($_SESSION["User"]["roleId"] == '4'){
 			$sql = "SELECT * FROM customer WHERE customerId = '".$this->userId."'";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
@@ -50,10 +50,7 @@ class User extends Sucursal
             $this->Util()->DB()->setQuery($sql);
             $row = $this->Util()->DB()->GetRow();
 		}
-
-
 		$row["version"] = "v3";
-
 		return $row;
 	}
 

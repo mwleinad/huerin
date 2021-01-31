@@ -132,8 +132,6 @@ class Xml extends Producto{
 
         $this->buildXsd($xsd);
 
-//        print_r($this->save());
-
         return $this->save();
     }
 

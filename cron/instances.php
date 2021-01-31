@@ -6,8 +6,8 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 }
 if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
 {
-	$docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
-    session_save_path("C:/xampp/tmp");
+	$docRoot = $_SERVER['DOCUMENT_ROOT']."";
+    session_save_path("C:/laragon/tmp");
 }
 else
 {

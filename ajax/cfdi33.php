@@ -222,6 +222,19 @@ switch($_POST["type"])
         $rfc->setRfcId($_POST["rfcId"]);
         $rfc->SetAsActive();
         break;
+    case 'loadConceptoFromService':
+        $id = $_POST['value'];
+        $contract->setContractId($id);
+        $contrato = $contract->Info();
+        $invoice = new InvoiceService();
+        $invoice->setCurrentContract($contrato);
+        $invoice->GetFilterServicesByContract(false);
+        $_SESSION['conceptos'] = $invoice->GenerateConceptos(true);
+        echo "ok|ok|";
+        $smarty->assign("conceptos", $_SESSION["conceptos"]);
+        $smarty->assign("DOC_ROOT", DOC_ROOT);
+        $smarty->display(DOC_ROOT.'/templates/lists/conceptos.tpl');
+    break;
 }
 
 ?>

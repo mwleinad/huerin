@@ -134,7 +134,6 @@ include_once(DOC_ROOT.'/libraries.php');
 
 
 	);
-
 	$page = $_GET['page'];
 	if(!in_array($page, $pages))
 	{

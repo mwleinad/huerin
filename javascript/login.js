@@ -17,7 +17,7 @@ function DoLogin()
 	{
 		method:'post',
 		parameters: $('frmLogin').serialize(true),
-    onSuccess: function(transport){
+    	onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			console.log(response);
 			var splitResponse = response.split("[#]");

@@ -3,7 +3,7 @@
 	include_once('../init.php');
 	include_once('../config.php');
     include_once('../constants.php');
-	include_once(DOC_ROOT.'/libraries.php');
+	include_once(DOC_ROOT.'/libraries33.php');
 
 	switch($_POST['type']){
 		case 'showDetails':
@@ -12,38 +12,38 @@
 			$user->setUserId($compInfo['userId'],1);
 			$usr = $user->GetUserInfo();
 			$nomRfc = $usr['rfc'];
-						
+
 			$serie = $compInfo['serie'];
 			$folio = $compInfo['folio'];
-			
+
 			$smarty->assign('id_comprobante', $id_comprobante);
 			$smarty->assign('rfc', $nomRfc);
 			$smarty->assign('serie', $serie);
 			$smarty->assign('folio', $folio);
-			$smarty->assign('DOC_ROOT', DOC_ROOT);		
-			
+			$smarty->assign('DOC_ROOT', DOC_ROOT);
+
 			$info = $user->Info();
-			$smarty->assign("info", $info);	
+			$smarty->assign("info", $info);
 			$smarty->display(DOC_ROOT.'/templates/boxes/acciones-factura-popup.tpl');
 		break;
 		case 'cancelar_div':
-			$id_comprobante = $_POST['id_item'];			
-			
+			$id_comprobante = $_POST['id_item'];
+
 			$compInfo = $comprobante->GetInfoComprobante($id_comprobante);
 			$user->setUserId($compInfo['userId'],1);
 			$usr = $user->GetUserInfo();
 			$nomRfc = $usr['rfc'];
-						
+
 			$serie = $compInfo['serie'];
 			$folio = $compInfo['folio'];
 			$status = $compInfo['status'];
-			
+
 			$smarty->assign('status', $status);
 			$smarty->assign('id_comprobante', $id_comprobante);
 			$smarty->assign('rfc', $nomRfc);
 			$smarty->assign('serie', $serie);
 			$smarty->assign('folio', $folio);
-			$smarty->assign('DOC_ROOT', DOC_ROOT);			
+			$smarty->assign('DOC_ROOT', DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/cancelar-factura-popup.tpl');
 		break;
 		case 'cancelar_factura':
@@ -84,7 +84,7 @@
                 $iva = number_format($iva,2,'.',',');
                 $isr = number_format($isr,2,'.',',');
 				echo 'ok[#]';
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');				
+				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo '[#]';
                 $smarty->assign('comprobantes',$comprobantes);
                 $smarty->assign('totalFacturas',$totalFacturas);
@@ -104,7 +104,7 @@
 				}
 				$comprobantes = array();
 				$comprobante->setPage(0);
-				$comprobantes = $comprobante->SearchComprobantesByRfc($values);				
+				$comprobantes = $comprobante->SearchComprobantesByRfc($values);
 				$smarty->assign('comprobantes',$comprobantes);
 				$total = 0;
 				echo 'ok[#]';
@@ -127,7 +127,7 @@
 						}
 					}
 				}
-			
+
 				$total = number_format($total,2,'.',',');
 				$subtotal = number_format($subtotal,2,'.',',');
 				$iva = number_format($iva,2,'.',',');
@@ -136,8 +136,8 @@
 				$smarty->assign('total',$total);
 				$smarty->assign('subtotal',$subtotal);
 				$smarty->assign('iva',$iva);
-				$smarty->assign('isr',$isr);				
-				
+				$smarty->assign('isr',$isr);
+
 				$smarty->display(DOC_ROOT.'/templates/boxes/resumen-facturas.tpl');
 				echo '[#]';
 				$smarty->assign('DOC_ROOT', DOC_ROOT);
@@ -156,14 +156,14 @@
 		 	 }
 		break;
 		case 'exportar':
-				
+
 				foreach($_POST as $key => $val){
 					$values[$key] = $val;
 				}
-				
+
 				$comprobantes = array();
-				$comprobantes = $comprobante->SearchComprobantesByRfc($values);		
-				//print_r($comprobantes);		
+				$comprobantes = $comprobante->SearchComprobantesByRfc($values);
+				//print_r($comprobantes);
 				//$smarty->assign('comprobantes',$comprobantes);
 
 				$data .= "Serie,Folio,RFC,Razon Social,Fecha,Subtotal,% Descuento,Descuento,Iva,Total,Tipo Moneda,Tipo de Cambio,% Retencion Iva,% Retencion ISR,% IEPS \n";
@@ -177,7 +177,7 @@
 						{
 							unset($comprobante[$key]);
 						}
-						
+
 						if($key == "status")
 						{
 							if($value == 1)
@@ -193,7 +193,7 @@
 						{
 							$comprobante[$key] = "$".number_format($value, 2, ".", "");
 						}
-						
+
 						if($key == "porcentajeRetIva" || $key == "porcentajeRetIsr" || $key == "porcentajeIEPS" || $key == "porcentajeDescuento")
 						{
 							$comprobante[$key] = number_format($value, 2, ".", "")."%";
@@ -203,7 +203,7 @@
 					$data .= implode(",", $comprobante);
 					$data .= "\n";
 				}
-				
+
 				$data = utf8_decode($data);
 				$data = html_entity_decode($data);
 				//echo $data;
@@ -213,8 +213,8 @@
 				fwrite($fh, $data);
 				fclose($fh);
 				echo "Reporte Generado. Ahora puedes descargarlo";
-			break;				
-				
+			break;
+
 	}//switch
 
 ?>

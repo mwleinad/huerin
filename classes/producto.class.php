@@ -282,8 +282,6 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["categoriaConcepto"] = urldecode($this->categoriaConcepto);
 		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
 		$_SESSION["conceptos"][$conceptos]["claveUnidad"] = $this->claveUnidad;
-
-		// print_r($_SESSION);
 		return true;
 	}
 
