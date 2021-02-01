@@ -679,7 +679,8 @@ class Empresa extends Main
             $currentUser =  $personal->getCurrentUser();
 
             $body = "";
-            $subject = "CANCELACION DE ".$row['tipoDocumento']." ".$row['serie'].$row['folio'];
+            $subjectPrefix  = FROM_FACTURA === 'test' ? "CANCELACION EN TEST DE " : "CANCELACION DE ";
+            $subject = $subjectPrefix.$row['tipoDocumento']." ".$row['serie'].$row['folio'];
             $body .="<div style='width: 600px;text-align: justify'>";
             $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion ".$row['tipoDocumento']." con folio ".$row['serie'].$row['folio']." de la razon social $razon </p>";
             $body .="<p>Por el siguiente motivo:</p>";

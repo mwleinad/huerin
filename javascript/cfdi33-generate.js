@@ -342,7 +342,7 @@ function GenerarComprobante(format)
         return;
     }
 
-    $('showFactura').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /><br>Generando Comprobante, este proceso puede tardar unos segundos</div>';
+
 
     $('nuevaFactura').enable();
     var nuevaFactura = $('nuevaFactura').serialize();
@@ -440,16 +440,20 @@ function GenerarComprobante(format)
                 referencia:referencia,
             },
             method:'post',
+            onLoading: function () {
+                $('showFactura').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /><br>Generando Comprobante, este proceso puede tardar unos segundos</div>';
+                $('reemplazarBoton').style.display='none';
+            },
             onSuccess: function(transport){
                 var response = transport.responseText || "no response text";
-                console.log(response);
                 var splitResponse = response.split("|");
-
                 $('showFactura').innerHTML = "";
-
+                $('reemplazarBoton').style.display='block';
                 if(splitResponse[0] == "ok"){
                     $('showFactura').innerHTML = splitResponse[1];
-                    //$("reemplazarBoton").hide();
+                    $('reemplazarBoton').style.display='block';
+                    if (splitResponse[2] === 'real')
+                        $('reemplazarBoton').innerHTML = '<a class="button" href="javascript:;"  onclick="location.reload()" title="Generar nuevo comprobante"><span id="anonymous_element_1">Nuevo comprobante</span></a>';
                 }else{
                     $('divStatus').innerHTML = splitResponse[1];
                     $('centeredDiv').show();
