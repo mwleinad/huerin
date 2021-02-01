@@ -30,6 +30,7 @@ switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
     case 'huerin.test':
+    case 'bhtest.ddns.net':
         define("SEND_TO", "leasib_666@hotmail.com");
         //define("SEND_TO1", "jeje@braunhuerin.com.mx ");
         //define("SEND_TO2", "de@gmail.com");
