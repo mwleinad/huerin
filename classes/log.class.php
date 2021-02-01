@@ -333,7 +333,7 @@ class Log extends Util
             $fileName="";
         }
         $mail = new SendMail();
-        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $mail->PrepareMultipleNotice($subject,utf8_decode($body),$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
         if(file_exists( $file)) {
            unlink($file);
@@ -705,7 +705,7 @@ class Log extends Util
 
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
-        $subject = "NOTIFICACION DE CAMBIOS EN PLATAFORMA";
+        $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $send->PrepareMultipleNotice($subject,$body,$emails,"",$file,$fileName,"","","noreply@braunhuerin.com.mx","Administrador plataforma",true);
         @unlink($file);
     }
@@ -728,7 +728,8 @@ class Log extends Util
 
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
-        $send->Prepare('NOTIFACION DE CAMBIOS EN PLATAFORMA',"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
+        $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $send->Prepare($subject,"Multiples cambios realizados, ver archivo adjunto.",EMAILCOORDINADOR,"COORDINADOR",$file,$fileName,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
         @unlink($file);
 	}
      /*
@@ -851,7 +852,7 @@ class Log extends Util
         $file1 = DOC_ROOT."/sendFiles/$fileName";
         file_put_contents($file1, $output);
 
-        $subject = 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
+        $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $body ="<p>Se han realizado cambios masivos por el colaborador ".$current_user['name'].". </p>";
         $body .="<p>En el archivo adjunto encontrara la informacion detallada. </p>";
         if(is_file($file1)) {

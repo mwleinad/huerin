@@ -206,6 +206,7 @@ switch($_POST["type"])
                 echo "ok|";
                 $smarty->assign("response", $response);
                 $smarty->display(DOC_ROOT.'/templates/boxes/cfdi33-vista-previa.tpl');
+                echo "|isVistaPrevia";
                 exit;
             }
 
@@ -215,6 +216,7 @@ switch($_POST["type"])
             $comprobante = $comprobante->GetLastComprobante();
             $smarty->assign("comprobante", $comprobante);
             $smarty->display(DOC_ROOT.'/templates/boxes/export-factura.tpl');
+            echo "|real";
         }
 
         break;

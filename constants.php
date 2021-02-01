@@ -30,25 +30,28 @@ switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
     case 'huerin.test':
-    case 'bhtest.ddns.net':
         define("SEND_TO", "leasib_666@hotmail.com");
-        //define("SEND_TO1", "jeje@braunhuerin.com.mx ");
-        //define("SEND_TO2", "de@gmail.com");
-        //define("SEND_TO3", "desarrollo@hotmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "isc061990@gmail.com");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
         define("PATHWKHTML",DOC_ROOT.'/util/wkhtmltox/bin/wkhtmltopdf');
+        define("FROM_FACTURA", "test");
+    break;
+    case 'bhtest.ddns.net':
+        define("SEND_TO", "leasib_666@hotmail.com");
+        define("FROM_MAIL", "noreply@braunhuerin.com.mx");
+        define("EMAILCOORDINADOR", "rzetina@braunhuerin.com.mx");
+        define("FROM_MAILAlERTA", "noreply@noreply.com");
+        define("PATHWKHTML",'/usr/bin/wkhtmltopdf');
+        define("FROM_FACTURA", "test");
     break;
     default:
         define("SEND_TO", "asanchez@braunhuerin.com.mx");
-        //define("SEND_TO1", "cobranzabh1@braunhuerin.com.mx ");
-        //define("SEND_TO2", "cobranzabh2@braunhuerin.com.mx ");
-        //define("SEND_TO3", "cobranzabh3@braunhuerin.com.mx");
         define("FROM_MAIL", "facturacionbh@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "rzetina@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
         define("PATHWKHTML",'/usr/bin/wkhtmltopdf');
+        define("FROM_FACTURA", "produccion");
     break;
 }
 $facturadores =  ["'BHSC'","'Huerin'","'Braun'","'Efectivo'"];
