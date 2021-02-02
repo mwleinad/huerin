@@ -112,6 +112,7 @@ class Servicio extends Contract
 	public function setContratosActivos($value){
 		$this->contratosActivos = $value;
 	}
+
   	public function OverwriteMonth($month){
 	    $cad =array();
 	    $add = '';

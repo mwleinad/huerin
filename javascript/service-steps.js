@@ -202,8 +202,8 @@ function EditStep()
 		method:'post',
 		parameters: $('editStepForm').serialize(true),
         onLoading:function(){
-            $('loading-img').style.display='block';
-            $('btnEditTask').style.display='none';
+            $('loader').style.display='block';
+            $('btnEditStep').style.display='none';
         },
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
@@ -211,14 +211,14 @@ function EditStep()
 			if(splitResponse[0] == "fail")
 			{
 				ShowStatusPopUp(splitResponse[1]);
-                $('btnEditTask').style.display='block';
-                $('loading-img').style.display='none';
+                $('btnEditStep').style.display='block';
+                $('loader').style.display='none';
 			}
 			else
 			{
 				ShowStatusPopUp(splitResponse[1])
-                $('btnAddTask').style.display='block';
-                $('loading-img').style.display='none';
+                $('btnEditStep').style.display='block';
+                $('loader').style.display='none';
 				$('contenido').innerHTML = splitResponse[2];
 				EditStepPopup(0);
 			}
@@ -280,16 +280,24 @@ function AddStep()
 	{
 		method:'post',
 		parameters: $('addStepForm').serialize(true),
+		onLoading:function(){
+			$('loader').style.display='block';
+			$('btnAddStep').style.display='none';
+		},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
-				ShowStatusPopUp(splitResponse[1])
+				ShowStatusPopUp(splitResponse[1]);
+				$('btnAddStep').style.display='block';
+				$('loader').style.display='none';
 			}
 			else
 			{
 				ShowStatusPopUp(splitResponse[1])
+				$('btnAddStep').style.display='block';
+				$('loader').style.display='none';
 				$('contenido').innerHTML = splitResponse[2];
 				AddStepsDiv(0);
 			}
