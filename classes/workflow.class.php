@@ -412,6 +412,7 @@ class Workflow extends Servicio
 		$row = $this->Util()->DB()->GetRow();
 		$date = explode("-", $row["date"]);
 		$contabilidad2015 = false;
+
 		if($row["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016)
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
@@ -449,7 +450,17 @@ class Workflow extends Servicio
 		//Get Tasks
 		$ii = 1;
 		$row["completedSteps"] = 0;
-		foreach($row["steps"] as $key => $value){
+		foreach($row["steps"] as $key => $value) {
+			if($row['date'] < $value['effectiveDate']) {
+				unset($row['steps'][$key]);
+				continue;
+			}
+
+			if($value['finalEffectiveDate'] !== null && $row['date'] > $value['finalEffectiveDate']) {
+				unset($row['steps'][$key]);
+				continue;
+			}
+
 		    if($concatFiltro){
 		        switch(strtoupper(trim($value["nombreStep"]))){
                     case 'MOVIMIENTOS IMSS':
