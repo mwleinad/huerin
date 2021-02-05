@@ -45,6 +45,10 @@ class Step extends Servicio
         $this->effectiveDate = (strlen($value)) ? $this->effectiveDate = $this->Util()->FormatDateMySql($value) : "";
     }
 
+    public function getEffectiveDate() {
+        return $this->effectiveDate;
+    }
+
     private $finalEffectiveDate;
 
     public function setFinalEffectiveDate($value)
@@ -56,18 +60,32 @@ class Step extends Servicio
         }
     }
 
+    public function getFinalEffectiveDate() {
+        return $this->finalEffectiveDate;
+    }
+
+    private $order;
+
+    public function setOrder($value)
+    {
+        $this->Util()->ValidateRequireField($value, 'Orden');
+        $this->Util()->ValidateOnlyNumeric($value, 'Orden');
+        $this->order = $value;
+
+    }
+
     public function Enumerate($id = 0, $status = '')
     {
         $this->Util()->DB()->setQuery("SELECT * FROM step 
 			LEFT JOIN servicio ON step.servicioId = servicio.servicioId
 				WHERE step.servicioId = '" . $this->getServicioId() . "'					
-				ORDER BY step.stepId ASC");
+				ORDER BY step.position ASC");
         $result = $this->Util()->DB()->GetResult();
         foreach ($result as $key => $value) {
             //get tasks
             $this->Util()->DB()->setQuery("SELECT * FROM task
 				WHERE stepId = '" . $value["stepId"] . "'					
-				ORDER BY taskId ASC");
+				ORDER BY taskPosition ASC");
             $result[$key]["tasks"] = $this->Util()->DB()->GetResult();
             $result[$key]["countTasks"] = count($result[$key]["tasks"]);
 
@@ -99,7 +117,8 @@ class Step extends Servicio
 				`nombreStep` = '" . $this->nombreStep . "',
 				`descripcion` = '" . $this->descripcion . "',
 				`effectiveDate` = $dateEffective,
-				`finalEffectiveDate` = $dateFinalEffective
+				`finalEffectiveDate` = $dateFinalEffective,
+				`position` = '".$this->order."'
 			WHERE stepId = '" . $this->stepId . "'");
         $this->Util()->DB()->UpdateData();
 
@@ -123,7 +142,8 @@ class Step extends Servicio
 				`nombreStep`,
 				`descripcion`,
 				`effectiveDate`,
-				`finalEffectiveDate`
+				`finalEffectiveDate`,
+				`position`      
 		      )
                 VALUES
                 (
@@ -131,8 +151,8 @@ class Step extends Servicio
                         '" . $this->nombreStep . "',
                         '" . $this->descripcion . "',
                         $dateEffective,
-                        $dateFinalEffective
-                        
+                        $dateFinalEffective,
+                        '" . $this->order . "'
                 );");
         $this->Util()->DB()->InsertData();
         $this->Util()->setError(2, "complete");

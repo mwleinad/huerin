@@ -5,21 +5,27 @@ include_once(DOC_ROOT.'/libraries.php');
 switch($_POST["type"])
 {
 	case "addTask":
+			$data['title'] = "Agregar tarea";
+			$data['nameForm'] = "addTaskForm";
 		    $extensiones =  $catalogue->ListFilesExtension();
+			$smarty->assign("data", $data);
 			$smarty->assign("extensiones", $extensiones);
             $smarty->assign("stepId", $_POST["stepId"]);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			$smarty->display(DOC_ROOT.'/templates/boxes/add-task-popup.tpl');
-		break;	
-		
+			$smarty->display(DOC_ROOT.'/templates/boxes/task-popup.tpl');
+		break;
+
 	case "saveAddTask":
 			$task->setNombreTask($_POST['nombreTask']);
-			$task->setDiaVencimiento($_POST['diaVencimiento']);			
-			$task->setProrroga($_POST['prorroga']);			
+			$task->setDiaVencimiento($_POST['diaVencimiento']);
+			$task->setProrroga($_POST['prorroga']);
 			$task->setControl($_POST['control']);
 			$task->setExtensiones($_POST['extensiones']);
-			$task->setControl2($_POST['control2']);			
-			$task->setControl3($_POST['control3']);			
+			$task->setControl2($_POST['control2']);
+			$task->setControl3($_POST['control3']);
+			$task->setTaskOrder($_POST['order']);
+		    $task->setEffectiveDate($_POST['effectiveDate']);
+			$task->setFinalEffectiveDate($_POST['finalEffectiveDate']);
 			$task->setStepId($_POST['stepId']);
 			if(!$task->Save())
 			{
@@ -33,19 +39,19 @@ switch($_POST["type"])
 				echo "[#]";
 				$step->setStepId($_POST['stepId']);
 				$info = $step->Info();
-				
+
 				$step->setServicioId($info["servicioId"]);
 				$steps = $step->Enumerate();
-					
+
 				$smarty->assign("steps", $steps);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/steps.tpl');
 			}
-			
+
 		break;
-		
+
 	case "deleteTask":
-			
+
 			$task->setTaskId($_POST['taskId']);
 			if($task->Delete())
 			{
@@ -54,15 +60,18 @@ switch($_POST["type"])
 				echo "[#]";
 				$step->setServicioId($_POST["servicioId"]);
 				$steps = $step->Enumerate();
-					
+
 				$smarty->assign("steps", $steps);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/steps.tpl');
 			}
-			
+
 		break;
-		
+
 	case "editTask":
+			$data['title'] = "Editar tarea";
+			$data['nameForm'] = "editTaskForm";
+			$smarty->assign("data", $data);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$task->setTaskId($_POST['taskId']);
 			$myTask = $task->Info();
@@ -81,10 +90,10 @@ switch($_POST["type"])
 			$smarty->assign("extensiones", $extensiones);
 			$smarty->assign("post", $myTask);
 			$smarty->assign("servicioId", $_POST["servicioId"]);
-			$smarty->display(DOC_ROOT.'/templates/boxes/edit-task-popup.tpl');
-		
+			$smarty->display(DOC_ROOT.'/templates/boxes/task-popup.tpl');
+
 		break;
-		
+
 	case "saveEditTask":
 		$task->setNombreTask($_POST['nombreTask']);
 		$task->setDiaVencimiento($_POST['diaVencimiento']);
@@ -93,6 +102,9 @@ switch($_POST["type"])
 		$task->setExtensiones($_POST['extensiones']);
 		$task->setControl2($_POST['control2']);
 		$task->setControl3($_POST['control3']);
+		$task->setTaskOrder($_POST['order']);
+		$task->setEffectiveDate($_POST['effectiveDate']);
+		$task->setFinalEffectiveDate($_POST['finalEffectiveDate']);
 		$task->setTaskId($_POST['taskId']);
 		if(!$task->Edit())
 		{
@@ -136,6 +148,6 @@ switch($_POST["type"])
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
 	break;
-		
+
 }
 ?>

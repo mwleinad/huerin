@@ -1,6 +1,6 @@
 <div id="divForm">
 	<form id="addTaskForm" name="addTaskForm" method="post">
-	<input type="hidden" id="type" name="type" value="saveAddTask"/>
+	<input type="hidden" id="type" name="type" value="{if $post}{else}saveAddTask"{/if}/>
 	<input type="hidden" id="stepId" name="stepId" value="{$stepId}"/>
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
@@ -8,7 +8,7 @@
                  <div style="width:30%;float:left"><input  name="nombreTask" id="nombreTask" type="text" value="{$post.nombreTask}" size="27" class="largeInput medium"/> </div>
 				<hr />
              </div>
-            
+
             <div class="formLine" style="width:100%; text-align:left">
 				<div style="width:30%;float:left">*Dia de Vencimiento:</div>
                 <div style="width:30%;float:left"><input  name="diaVencimiento" id="diaVencimiento" type="text" value="{$post.diaVencimiento}" size="27" class="largeInput medium"/> </div>

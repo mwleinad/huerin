@@ -21,6 +21,14 @@
                 <hr/>
             </div>
             <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:20%;float:left">* Orden:</div>
+                <div style="width:30%;float:left">
+                    <input name="order" id="order" type="text"
+                           value="{$post.position}" class="largeInput medium"/>
+                </div>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:20%;float:left">* Vigencia del</div>
                 <div style=" width:65%;display: table;border-collapse: separate;position: relative">
                     <input type="text" id="effectiveDate" name="effectiveDate" class="largeInput"

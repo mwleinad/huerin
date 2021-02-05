@@ -416,17 +416,17 @@ class Workflow extends Servicio
 		if($row["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016)
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
-		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
+		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."' order by position asc");
 		}
 		elseif($row["tipoServicioId"] == 3 && $date["0"] < 2016)
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
-		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."'");
+		    WHERE stepId != 103 AND servicioId = '".$row["tipoServicioId"]."' order by position asc");
 		}
 		else
 		{
 		    $this->Util()->DB()->setQuery("SELECT * FROM step 
-		    WHERE servicioId = '".$row["tipoServicioId"]."'");
+		    WHERE servicioId = '".$row["tipoServicioId"]."' order by position asc");
 
 		}
 		$strFiltroStepTask ="";
@@ -482,7 +482,7 @@ class Workflow extends Servicio
                 }
             }
 			$row["steps"][$key]["step"] = $ii;
-			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask");
+			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask order by taskPosition asc");
 			$row["steps"][$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$row["steps"][$key]["totalTasks"] = count($row["steps"][$key]["tasks"]);
 			$row["steps"][$key]["completedTasks"] = 0;
@@ -493,6 +493,16 @@ class Workflow extends Servicio
 			$porcentajeTotal = 0;
 			$porcentajeDone = 0;
 			foreach($row["steps"][$key]["tasks"] as $keyTask => $valueTask){
+				if($row['date'] < $valueTask['effectiveDate']) {
+					unset($row["steps"][$key]["tasks"][$keyTask]);
+					continue;
+				}
+
+				if($valueTask['finalEffectiveDate'] !== null && $row['date'] > $valueTask['finalEffectiveDate']) {
+					unset($row["steps"][$key]["tasks"][$keyTask]);
+					continue;
+				}
+
 				$porcentajeTotal += 100;
 				$row["steps"][$key]["tasks"][$keyTask]["controlFile"] = 0;
 				if($valueTask["control"]){
