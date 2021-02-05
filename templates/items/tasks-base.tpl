@@ -1,8 +1,12 @@
 {foreach from=$item.tasks item=task key=key}
 	<tr id="1">
+		<td align="center" class="id">{$task.taskPosition}</td>
 		<td align="center" class="id">{$task.nombreTask}</td>
-		<td align="center">Dia {$task.diaVencimiento}</td>  
-		<td align="center">{$task.prorroga} Dias</td>  
+		<td align="center" class="id">{if $task.effectiveDate}Desde {$task.effectiveDate|date_format:"%d-%m-%Y"}{/if}
+			{if $task.finalEffectiveDate} al {$task.finalEffectiveDate|date_format:"%d-%m-%Y"}{/if}
+		</td>
+		<td align="center">Dia {$task.diaVencimiento}</td>
+		<td align="center">{$task.prorroga} Dias</td>
     <td align="center">{$task.control}</td>
     <td align="center">{$task.control2}</td>
     <td align="center">{$task.control3}</td>

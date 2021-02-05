@@ -61,6 +61,15 @@ class Task extends Step
 		$this->Util()->ValidateString($value, 255, 0, 'Control Tres');
 		$this->control3 = $value;
 	}
+
+    private $taskOrder;
+    public function setTaskOrder($value)
+    {
+        $this->Util()->ValidateString($value, 255, 0, 'Orden');
+        $this->Util()->ValidateOnlyNumeric($value, 'Orden');
+        $this->taskOrder = $value;
+    }
+
     private $rutaZipCreated;
 	public function  setRutaZipCreated($value){
 	    $this->rutaZipCreated = $value;
@@ -111,6 +120,10 @@ class Task extends Step
 	public function Edit()
 	{
 		if($this->Util()->PrintErrors()){ return false; }
+
+        $dateEffective = strlen($this->getEffectiveDate()) ? "'" . $this->getEffectiveDate() . "'" : 'NULL';
+        $dateFinalEffective = strlen($this->getFinalEffectiveDate()) ? "'" . $this->getFinalEffectiveDate() . "'" : 'NULL';
+
 		$this->Util()->DB()->setQuery("
 			UPDATE
 				task
@@ -121,6 +134,9 @@ class Task extends Step
 				`control` = '".$this->control."',
 				`control2` = '".$this->control2."',
 				`control3` = '".$this->control3."',
+				`taskPosition` = '".$this->taskOrder."',
+				`effectiveDate` = $dateEffective,
+				`finalEffectiveDate` = $dateFinalEffective,
 				`extensiones` = '".implode(',',$this->extensiones)."'
 			WHERE taskId = '".$this->taskId."'");
 		$this->Util()->DB()->UpdateData();
@@ -134,6 +150,9 @@ class Task extends Step
 	{
 		if($this->Util()->PrintErrors()){ return false; }
 
+        $dateEffective = strlen($this->getEffectiveDate()) ? "'" . $this->getEffectiveDate() . "'" : 'NULL';
+        $dateFinalEffective = strlen($this->getFinalEffectiveDate())? "'" . $this->getFinalEffectiveDate() . "'" : 'NULL';
+
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
 				task
@@ -145,6 +164,9 @@ class Task extends Step
 				`control`,
 				`control2`,
 				`control3`,
+			 	`taskPosition`,
+			    `effectiveDate`,
+				`finalEffectiveDate`,
 				`extensiones`
 		)
 		VALUES
@@ -156,6 +178,9 @@ class Task extends Step
 				'".$this->control."',
 				'".$this->control2."',
 				'".$this->control3."',
+				'".$this->taskOrder."',
+				 $dateEffective,
+                 $dateFinalEffective,
 				'".implode(',',$this->extensiones)."'
 				
 		);");
@@ -183,7 +208,7 @@ class Task extends Step
         global $workflow;
         $sql = "SELECT b.nombreServicio,a.nombreStep from step a 
                 INNER JOIN tipoServicio b ON a.servicioId=b.tipoServicioId
-                WHERE a.stepId='".$this->getStepId()."' ";
+                WHERE a.stepId='".$this->getStepId()."'";
         $this->Util()->DB()->setQuery($sql);
         $dataService = $this->Util()->DB()->GetRow();
 
@@ -219,14 +244,26 @@ class Task extends Step
 
         }
         //workflowId  es la instanciaServicioId viene desde url
-        $this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '" . $this->getStepId() . "' $strFiltroStepTask");
+        $this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '" . $this->getStepId() . "' $strFiltroStepTask order by taskPosition asc");
         $data['tasks'] = $this->Util()->DB()->GetResult();
-        $data["totalTasks"] = count($data["tasks"]);
+        $totalTask = 0;
         $data['completedTasks'] = 0;
         $data['stepId']=$this->getStepId();
         $porcentajeTotal = 0;
         $porcentajeDone = 0;
         foreach ($data['tasks'] as $keyTask => $valueTask) {
+
+            if($data['workflow']['date'] < $valueTask['effectiveDate']) {
+                unset($data["tasks"][$keyTask]);
+                continue;
+            }
+
+            if($valueTask['finalEffectiveDate'] !== null && $data['workflow']['date'] > $valueTask['finalEffectiveDate']) {
+                unset($data["tasks"][$keyTask]);
+                continue;
+            }
+
+            $totalTask++;
             $porcentajeTotal += 100;
             $data["tasks"][$keyTask]["controlFile"] = 0;
             if ($valueTask["control"]) {
@@ -255,6 +292,7 @@ class Task extends Step
             }//if
 
         }//foreach
+        $data["totalTasks"] = $totalTask;
         if ($porcentajeTotal == 0)
             $porcentajeTotal = 1;
 

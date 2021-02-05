@@ -19,6 +19,7 @@ switch($_POST["type"])
 			$step->setServicioId($_POST['servicioId']);
 			$step->setEffectiveDate($_POST['effectiveDate']);
 			$step->setFinalEffectiveDate($_POST['finalEffectiveDate']);
+			$step->setOrder($_POST['order']);
 			if(!$step->Save())
 			{
 				echo "fail[#]";
@@ -79,6 +80,7 @@ switch($_POST["type"])
 			$step->setDescripcion($_POST['descripcion']);
 			$step->setEffectiveDate($_POST['effectiveDate']);
 			$step->setFinalEffectiveDate($_POST['finalEffectiveDate']);
+			$step->setOrder($_POST['order']);
 			$myStep = $step->Info();
 
 			if(!$step->Edit())
