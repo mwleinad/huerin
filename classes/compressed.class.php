@@ -135,7 +135,7 @@ class Compressed extends  Main
             }
             $numOrderTask =(int)explode('-',$fileExplode[4])[0];
             //obtener id tareas en 1 dimension
-            $this->Util()->DB()->setQuery("select taskId from task where stepId='".$stepId."' order by taskId asc");
+            $this->Util()->DB()->setQuery("select taskId from task where stepId='".$stepId."' order by taskPosition asc");
             $idTasks = $this->Util()->DB()->GetResult();
             $idTasks = $this->Util()->ConvertToLineal($idTasks,'taskId');
 
@@ -359,7 +359,7 @@ class Compressed extends  Main
             //archivos alojados en carpetas que no tengan prefijos numericos, se ignoran en la validacion.
             $numOrderTask =(int)explode('-',$fileExplode[4])[0];
             //obtener id tareas en 1 dimension
-            $this->Util()->DB()->setQuery("select taskId from task where stepId='".$stepId."' order by taskId asc");
+            $this->Util()->DB()->setQuery("select taskId from task where stepId='".$stepId."' order by taskPosition asc");
             //echo $this->Util()->DB()->getQuery().chr(13);
             $idTasks = $this->Util()->DB()->GetResult();
             $idTasks = $this->Util()->ConvertToLineal($idTasks,'taskId');

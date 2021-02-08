@@ -891,29 +891,43 @@ class Workflow extends Servicio
         return  $row;
     }
     public function listStepByWorkflow($filter){
-         global $task;
+        global $task;
+        $sql =  "select * from instanciaServicio where instanciaServicioId = '".$filter['instanciaId']."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $rowInstancia = $this->Util()->DB()->GetRow();
+
         $date = explode("-", $filter["finstancia"]);
         if($filter["tipoServicioId"] == SERVICIO_CONTABILIDAD && $date["0"] < 2016)
         {
             $this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."'");
+		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."' order by position asc");
         }
         elseif($filter["tipoServicioId"] == 3 && $date["0"] < 2016)
         {
             $this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."'");
+		WHERE stepId != 103 AND servicioId = '".$filter["tipoServicioId"]."' order by position asc");
         }
         else
         {
             $this->Util()->DB()->setQuery("SELECT * FROM step 
-		WHERE servicioId = '".$filter["tipoServicioId"]."'");
+		WHERE servicioId = '".$filter["tipoServicioId"]."' order by position asc");
 
         }
         //Get Steps
         $steps = $this->Util()->DB()->GetResult();
         $data["completedSteps"] = 0;
         $ii=1;
-        foreach($steps as $key => $value){
+        foreach($steps as $key => $value) {
+			if($rowInstancia['date'] < $value['effectiveDate']) {
+				unset($steps[$key]);
+				continue;
+			}
+
+			if($value['finalEffectiveDate'] !== null && $rowInstancia['date'] > $value['finalEffectiveDate']) {
+				unset($steps[$key]);
+				continue;
+			}
+
             $task->setStepId($value["stepId"]);
             $task->setWorkflowId($_POST['instanciaId']);
             $tasks =  $task->checkTasksByStep();
@@ -1030,8 +1044,4 @@ class Workflow extends Servicio
     }
 
 }
-
-
-
-
 ?>
