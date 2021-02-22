@@ -99,7 +99,7 @@
                     <span>Listado Temporal</span></a></li>
                 {/if}
                 {if in_array(271,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/prospect" {if $page == "prospect"}class="current"{/if} target="_blank">
+                    <li><a href="{$WEB_ROOT}/prospect" {if $page == "prospect" || $page == "company"}class="current"{/if} target="_blank">
                     <span>Prospectos</span></a></li>
                 {/if}
                 {if in_array(181,$permissions)|| $User.isRoot}

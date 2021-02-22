@@ -23,6 +23,7 @@
 	<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/styles/custom.css" />
 {/if}
 <link href="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.css" rel="stylesheet" />
+<link href="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.css" rel="stylesheet" />
 <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 
@@ -73,6 +74,7 @@
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-ui.js?{$timestamp}"></script>
 <script type="text/javascript">var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.js" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.js" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/javascript/script-service.js?{$timestamp}" type="text/javascript"></script>

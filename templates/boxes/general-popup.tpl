@@ -1,6 +1,6 @@
 <div class="popupheader" style="z-index:70">
 	<div id="fviewmenu" style="z-index:70">
-		<div id="fviewclose"><span style="color:#CCC" id="closePopUpDiv">Close<img src="{$WEB_ROOT}/images/b_disn.png" border="0" alt="close" /></span>
+		<div id="fviewclose"><span style="color:#CCC" id="closePopUpDiv" onclick="close_popup()">Close<img src="{$WEB_ROOT}/images/b_disn.png" border="0" alt="close" /></span>
 		</div>
 	</div>
 	<div id="ftitl">

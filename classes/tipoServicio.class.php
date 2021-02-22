@@ -144,6 +144,51 @@ class TipoServicio extends Main
 		$data["pages"] = $pages;
 		return $data;
 	}
+
+	public function EnumerateGroupByDepartament($normalizeJson = false) {
+		$sql = "select
+       			departamentos.departamentoId,
+				departamentos.departamento,
+        		CONCAT(
+					'[',
+					GROUP_CONCAT(
+						CONCAT(
+							'{\"value',
+							'\":\"',
+							tipoServicio.tipoServicioId,
+							'\",\"',
+							'name',
+							'\":\"',
+							 tipoServicio.nombreServicio,
+							'\",\"',
+							'checked',
+							'\":\"',
+							 '',
+							'\"}'
+						)
+					),
+					']'
+				)  as servicios
+				from tipoServicio 	
+				inner join departamentos on departamentos.departamentoId = tipoServicio.departamentoId
+				group by tipoServicio.departamentoId order by departamentos.departamento asc, tipoServicio.nombreServicio asc
+				";
+		$this->Util()->DB()->setQuery($sql);
+		$result =  $this->Util()->DB()->GetResult();
+
+		if ($normalizeJson) {
+			$newServicesGroup = [];
+			foreach ($result as $var) {
+				$cad = [];
+				$services  = $var['servicios'] ? json_decode($var['servicios'], true) : [];
+				$cad['label'] =  $var['departamento'];
+				$cad['options'] = $services;
+				array_push($newServicesGroup, $cad);
+			}
+			return $newServicesGroup;
+		}
+		return $result;
+	}
     public function EnumerateOnePage(){
         global $User;
 

@@ -119,6 +119,8 @@ include_once(DOC_ROOT."/classes/utileriaInvoice.class.php");
 include_once(DOC_ROOT."/classes/articulo.class.php");
 include_once(DOC_ROOT."/classes/inventory.class.php");
 include_once(DOC_ROOT."/classes/prospect.class.php");
+include_once(DOC_ROOT."/classes/company.class.php");
+$company = new Company;
 include_once(DOC_ROOT."/classes/prospectOffer.class.php");
 $prospect = new Prospect;
 include_once(DOC_ROOT."/classes/activity.class.php");

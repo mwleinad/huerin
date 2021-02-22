@@ -3,4 +3,4 @@
 <tbody>
 	{include file="{$DOC_ROOT}/templates/items/prospect-base.tpl"}
 </tbody>
-</table> 
+</table>
