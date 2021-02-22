@@ -37,7 +37,7 @@
                         <div style="width:40%;float:left"> Fecha constitucion</div>
                         <div style="width:60%;float: left;">
                             <input type="text" name="constitution_date" id="constitution_date"
-                                   value="{if $post}{$post.constitution_date|date_format:'%d-%m-%Y'}{/if}" class="largeInput"
+                                   value="{if $post && $post.constitution_date neq '0000-00-00'}{$post.constitution_date|date_format:'%d-%m-%Y'}{/if}" class="largeInput"
                                    onclick="CalendarioSimple(this)"
                             />
                         </div>
