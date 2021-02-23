@@ -24,6 +24,7 @@ include_once(DOC_ROOT."/constants.php");
 
 include_once(DOC_ROOT.'/classes/db.class.php');
 include_once(DOC_ROOT.'/classes/db-remote.class.php');
+include_once(DOC_ROOT.'/classes/db-prospect.class.php');
 include_once(DOC_ROOT.'/classes/error.class.php');
 include_once(DOC_ROOT.'/classes/util.class.php');
 include_once(DOC_ROOT.'/classes/main.class.php');
@@ -143,6 +144,7 @@ include_once(DOC_ROOT."/classes/contractActivity.class.php");
 
 $db = new DB;
 $dbRemote = new DBRemote;
+$dbProspect = new DBProspect;
 $error = new CustomError;
 $util = new Util;
 $main = new Main;

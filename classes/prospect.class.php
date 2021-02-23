@@ -72,22 +72,22 @@ class Prospect extends Main
     {
         $sQuery = "select * from prospect 
                    where id = '" . $this->id . "' ";
-        $this->Util()->DB()->setQuery($sQuery);
-        return $this->Util()->DB()->GetRow();
+        $this->Util()->DBProspect()->setQuery($sQuery);
+        return $this->Util()->DBProspect()->GetRow();
     }
 
     public function enumerate()
     {
-        $this->Util()->DB()->setQuery('SELECT COUNT(*) FROM prospect');
-        $total = $this->Util()->DB()->GetSingle();
+        $this->Util()->DBProspect()->setQuery('SELECT COUNT(*) FROM prospect');
+        $total = $this->Util()->DBProspect()->GetSingle();
 
         $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/prospect");
 
         $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
         $sQuery = "select  * from prospect a 
                              where 1 order by created_at desc " . $sql_add;
-        $this->Util()->DB()->setQuery($sQuery);
-        $result = $this->Util()->DB()->GetResult();
+        $this->Util()->DBProspect()->setQuery($sQuery);
+        $result = $this->Util()->DBProspect()->GetResult();
         $data["items"] = $result;
         $data["pages"] = $pages;
         return $data;
@@ -102,15 +102,15 @@ class Prospect extends Main
                     name,
                     phone,
                     email,
-                    observation
+                    comment
                 ) VALUES (
                     '" . $this->name . "', 
                     '" . $this->phone . "',
                     '" . $this->email . "',
                     '" . $this->observation . "' 
                  )";
-        $this->Util()->DB()->setQuery($sql);
-        $this->Util()->DB()->InsertData();
+        $this->Util()->DBProspect()->setQuery($sql);
+        $this->Util()->DBProspect()->InsertData();
 
         $this->Util()->setError(0, "complete", "Registro guardado");
         $this->Util()->PrintErrors();
@@ -126,10 +126,10 @@ class Prospect extends Main
                     name = '".$this->name."',
                     phone = '".$this->phone."',
                     email = '".$this->email."',
-                    observation = '".$this->observation."'
+                    comment = '".$this->observation."'
                     WHERE id = '".$this->id."' ";
-        $this->Util()->DB()->setQuery($sql);
-        $this->Util()->DB()->InsertData();
+        $this->Util()->DBProspect()->setQuery($sql);
+        $this->Util()->DBProspect()->InsertData();
 
         $this->Util()->setError(0, "complete", "Registro actualizado");
         $this->Util()->PrintErrors();

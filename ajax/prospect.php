@@ -4,6 +4,9 @@ include_once('../config.php');
 include_once(DOC_ROOT . '/libraries.php');
 
 switch ($_POST['type']) {
+    case 'test';
+        echo "prueba io";
+    break;
     case "openAddProspect":
         $data['title'] = "Agregar prospecto";
         $data["form"] = "frm-prospect";
