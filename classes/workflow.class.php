@@ -484,7 +484,6 @@ class Workflow extends Servicio
 			$row["steps"][$key]["step"] = $ii;
 			$this->Util()->DB()->setQuery("SELECT * FROM task WHERE stepId = '".$value["stepId"]."' $strFiltroStepTask order by taskPosition asc");
 			$row["steps"][$key]["tasks"] = $this->Util()->DB()->GetResult();
-			$row["steps"][$key]["totalTasks"] = count($row["steps"][$key]["tasks"]);
 			$row["steps"][$key]["completedTasks"] = 0;
 			if(count($row["steps"][$key]["tasks"]) == 0){
 				unset($row["steps"][$key]);
@@ -492,7 +491,8 @@ class Workflow extends Servicio
 			}
 			$porcentajeTotal = 0;
 			$porcentajeDone = 0;
-			foreach($row["steps"][$key]["tasks"] as $keyTask => $valueTask){
+			$totalTasks = 0;
+			foreach($row["steps"][$key]["tasks"] as $keyTask => $valueTask) {
 				if($row['date'] < $valueTask['effectiveDate']) {
 					unset($row["steps"][$key]["tasks"][$keyTask]);
 					continue;
@@ -528,7 +528,11 @@ class Workflow extends Servicio
 					$row["steps"][$key]["tasks"][$keyTask]["taskCompleted"] = 1;
 					$row["steps"][$key]["completedTasks"]++;
 				}//if
+
+				$totalTasks++;
+
 			}//foreach
+			$row["steps"][$key]["totalTasks"] =  $totalTasks;
 			if($porcentajeTotal == 0)
 				$porcentajeTotal = 1;
 			$realPercent = $porcentajeDone / $porcentajeTotal * 100;
