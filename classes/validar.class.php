@@ -77,6 +77,7 @@ class Validar extends Main
                             where ".$columna['field_comparison_foreign']." = '".$row[$col]."'";
                     $this->Util()->DB(false)->setQuery($sql);
                     $find  = $this->Util()->DB(false)->GetRow();
+                    print_r($find);
                     if(!$find) {
                         $this->Util()->setError(0,"error","El valor referenciado no se encuentra en el sistema, ver columna $col_name y fila $fila");
                         break 2;
@@ -118,6 +119,7 @@ class Validar extends Main
             array_push($items, $card_main);
             $fila++;
         }
+        echo "finaliza validacion";
         if($this->Util()->PrintErrors())
             return false;
 
