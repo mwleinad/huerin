@@ -73,7 +73,7 @@ class Validar extends Main
                 }
 
                 if($columna['constraint'] === true && $row[$col] !== "") {
-                    $sql = "select ".$columna['field_return_foreign']." from  ".$columna['reference_table']."  
+                   echo $sql = "select ".$columna['field_return_foreign']." from  ".$columna['reference_table']."  
                             where ".$columna['field_comparison_foreign']." = '".$row[$col]."'";
                     $this->Util()->DB(false)->setQuery($sql);
                     $find  = $this->Util()->DB(false)->GetRow();
