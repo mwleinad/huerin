@@ -54,7 +54,7 @@ class Validar extends Main
 
                 if($columna['check_in_db'] === true) {
                     $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
-                            where ".$columna['check_field']." = '".($row[$col])."' ";
+                            where ".$columna['check_field']." = '".($row[$col])."' COLLATE utf8mb4_general_ci";
                     $this->Util()->DB(false)->setQuery($sql);
                     $exist  = $this->Util()->DB(false)->GetRow();
                     if(!$exist) {
@@ -74,7 +74,7 @@ class Validar extends Main
 
                 if($columna['constraint'] === true && $row[$col] !== "") {
                     $sql = "select ".$columna['field_return_foreign']." from  ".$columna['reference_table']."  
-                            where ".$columna['field_comparison_foreign']." = '".$row[$col]."'";
+                            where ".$columna['field_comparison_foreign']." = '".$row[$col]."' COLLATE utf8mb4_general_ci";
                     $this->Util()->DB(false)->setQuery($sql);
                     $find  = $this->Util()->DB(false)->GetRow();
                     if(!$find) {
