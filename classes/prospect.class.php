@@ -313,8 +313,7 @@ class Prospect extends Main
         $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/prospect");
 
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-        $sQuery = "select a.*, b.nombreRegimen from prospect a 
-                   inner join tipoRegimen b on a.regimen_id = b.tipoRegimenId 
+        $sQuery = "select * from prospect
                    where 1 order by create_at desc ". $sql_add;
         $this->Util()->DB()->setQuery($sQuery);
         $result = $this->Util()->DB()->GetResult();
