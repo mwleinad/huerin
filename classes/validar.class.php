@@ -55,8 +55,8 @@ class Validar extends Main
                 if($columna['check_in_db'] === true) {
                     echo $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
                             where ".$columna['check_field']." = '".$row[$col]."'";
-                    $this->Util()->DB(false)->setQuery($sql);
-                    $exist  = $this->Util()->DB(false)->GetRow();
+                    $this->Util()->DB(true)->setQuery($sql);
+                    $exist  = $this->Util()->DB(true)->GetRow();
                     if(!$exist) {
                         $this->Util()->setError(0,"error","No se encontro algun registro con el dato proporcionado en la columna $col_name y fila $fila");
                         break 2;
