@@ -314,7 +314,7 @@ class Prospect extends Main
 
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
         $sQuery = "select * from prospect
-                   where 1 order by create_at desc ". $sql_add;
+                   where 1 order by created_at desc ". $sql_add;
         $this->Util()->DB()->setQuery($sQuery);
         $result = $this->Util()->DB()->GetResult();
         $data["items"] = $result;
