@@ -53,7 +53,7 @@ class Validar extends Main
                     $col_primary_key =  $col;
 
                 if($columna['check_in_db'] === true) {
-                    $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
+                    echo $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
                             where ".$columna['check_field']." = '".$row[$col]."'";
                     $this->Util()->DB(false)->setQuery($sql);
                     $exist  = $this->Util()->DB(false)->GetRow();
