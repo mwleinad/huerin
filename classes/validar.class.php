@@ -55,8 +55,8 @@ class Validar extends Main
                 if($columna['check_in_db'] === true) {
                     $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
                             where ".$columna['check_field']." = '".($row[$col])."'";
-                    $this->Util()->DB(true)->setQuery($sql);
-                    $exist  = $this->Util()->DB(true)->GetRow();
+                    $this->Util()->DB(false)->setQuery($sql);
+                    $exist  = $this->Util()->DB(false)->GetRow();
                     if(!$exist) {
                         $this->Util()->setError(0,"error","No se encontro algun registro con el dato proporcionado en la columna $col_name y fila $fila");
                         break 2;
@@ -75,8 +75,8 @@ class Validar extends Main
                 if($columna['constraint'] === true && $row[$col] !== "") {
                     $sql = "select ".$columna['field_return_foreign']." from  ".$columna['reference_table']."  
                             where ".$columna['field_comparison_foreign']." = '".$row[$col]."'";
-                    $this->Util()->DB(true)->setQuery($sql);
-                    $find  = $this->Util()->DB(true)->GetRow();
+                    $this->Util()->DB(false)->setQuery($sql);
+                    $find  = $this->Util()->DB(false)->GetRow();
                     if(!$find) {
                         $this->Util()->setError(0,"error","El valor referenciado no se encuentra en el sistema, ver columna $col_name y fila $fila");
                         break 2;
