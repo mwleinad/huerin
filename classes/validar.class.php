@@ -54,7 +54,7 @@ class Validar extends Main
 
                 if($columna['check_in_db'] === true) {
                     $sql = "select ".$columna['field_bd']." from  ".$columna['check_table']."  
-                            where ".$columna['check_field']." = '".$row[$col]."'";
+                            where ".$columna['check_field']." = '".($row[$col])."'";
                     $this->Util()->DB(false)->setQuery($sql);
                     $exist  = $this->Util()->DB(false)->GetRow();
                     if(!$exist) {
@@ -108,7 +108,7 @@ class Validar extends Main
 
                 $card['field'] =  $columna['field_bd'];
                 $card['value'] =  $columna['constraint'] ?
-                                  isset($find[$columna['field_return_foreign']]) ?  $find[$columna['field_return_foreign']] : '0' : mysql_real_escape_string($row[$col]);
+                                  isset($find[$columna['field_return_foreign']]) ?  $find[$columna['field_return_foreign']] : '0' : htmlspecialchars_decode($row[$col]);
                 array_push($fields, $card);
             }
             $card_main['primary_key'] = $columnas[$col_primary_key]['field_bd'];

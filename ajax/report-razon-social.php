@@ -270,7 +270,7 @@ switch ($_POST['type']) {
             $current_row_catalogue = 2;
             $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
             foreach($actividades as $act) {
-                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $act['name']);
+                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, trim($act['name']));
                 $current_row_catalogue++;
             }
             $current_end_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
