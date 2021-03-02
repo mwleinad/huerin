@@ -12,7 +12,6 @@ switch($_POST['type']){
         $tipo = $_POST['tipo'];
         $string = file_get_contents(DOC_ROOT."/properties/config_layout_".$tipo.".json");
         $headers = json_decode($string, true);
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $catalogue = $book->createSheet(1);
@@ -181,7 +180,6 @@ switch($_POST['type']){
     break;
     case 'layout-update-encargado':
         $book =  new PHPExcel();
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $sheet->setTitle('layoutRazon');
@@ -229,7 +227,6 @@ switch($_POST['type']){
     break;
     case 'layout-update-servicios':
         $book =  new PHPExcel();
-        PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $sheet->setTitle('LayoutServicios');
