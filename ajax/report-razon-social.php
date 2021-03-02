@@ -166,7 +166,7 @@ switch ($_POST['type']) {
                         $val_cell =  $item[$header['field_excel']];
                     }
 
-                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($val_cell, PHPExcel_Cell_DataType::TYPE_STRING );
+                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($val_cell, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode('@');
                 }
             }
