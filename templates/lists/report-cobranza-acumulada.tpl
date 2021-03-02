@@ -21,7 +21,7 @@
 			<td align="justify">{$item.name}</td>
 				{foreach from=$contrato.facturas item=factura}
 					{if $pago.isColTotal}
-						<td style="text-align: center">$ {$factura.total|number_format:2:'.':','}</td>
+						<td style="text-align: center">{$factura.total|number_format:2:'.':','}</td>
 					{else}
 						<td	style="
 								{if $factura.class eq 'pagado'}
@@ -35,7 +35,7 @@
 										{/if}
 									{/if}
 								{/if}">
-							$ {$factura.total|number_format:2:'.':','}
+							{$factura.total|number_format:2:'.':','}
 						</td>
 					{/if}
 				{/foreach}
@@ -45,7 +45,7 @@
 			<td colspan="2"></td>
 			<td><b>Total cobrado</b></td>
 			{foreach from=$rowCobTotal[$key] item=tot}
-				<td>$ {$tot|number_format:2:'.':','}</td>
+				<td>{$tot|number_format:2:'.':','}</td>
 			{/foreach}
 			<td></td>
 			<td></td>
@@ -55,7 +55,7 @@
 			<td colspan="2"></td>
 			<td><b>Total facturado</b></td>
 			{foreach from=$rowDevTotal[$key] item=tot}
-				<td>$ {$tot|number_format:2:'.':','}</td>
+				<td>{$tot|number_format:2:'.':','}</td>
 			{/foreach}
 			<td>{$totDevVerXEncargado[$key]|number_format:2:'.':','}</td>
 			<td>{$totCompVerXEncargado[$key]|number_format:2:'.':','}</td>

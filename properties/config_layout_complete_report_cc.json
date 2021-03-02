@@ -57,7 +57,8 @@
     "name": "Total de iguala",
     "comment": "",
     "field_excel": "totalMensual",
-    "field_bd": ""
+    "field_bd": "",
+    "type_value": "n"
   },
   {
     "name": "Tipo",
