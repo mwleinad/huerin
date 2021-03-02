@@ -76,19 +76,30 @@ class Step extends Servicio
 
     public function Enumerate($id = 0, $status = '')
     {
+        global $catalogue;
+        $extensiones =  $catalogue->ListFilesExtension();
         $this->Util()->DB()->setQuery("SELECT * FROM step 
 			LEFT JOIN servicio ON step.servicioId = servicio.servicioId
 				WHERE step.servicioId = '" . $this->getServicioId() . "'					
 				ORDER BY step.position ASC");
         $result = $this->Util()->DB()->GetResult();
         foreach ($result as $key => $value) {
-            //get tasks
             $this->Util()->DB()->setQuery("SELECT * FROM task
 				WHERE stepId = '" . $value["stepId"] . "'					
 				ORDER BY taskPosition ASC");
-            $result[$key]["tasks"] = $this->Util()->DB()->GetResult();
+            $tasks  = $this->Util()->DB()->GetResult();
+            foreach($tasks as $ktask => $vtask) {
+                $extens = [];
+                $currentExtensions = explode(',',$vtask['extensiones']);
+                foreach ($extensiones as $kext => $vext) {
+                    if(in_array($vext['extension'],$currentExtensions)) {
+                        array_push($extens, $vext);
+                    }
+                }
+                $tasks[$ktask]['extensiones'] = $extens;
+            }
+            $result[$key]["tasks"] = $tasks;
             $result[$key]["countTasks"] = count($result[$key]["tasks"]);
-
         }
 
         return $result;

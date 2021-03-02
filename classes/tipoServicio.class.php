@@ -149,9 +149,11 @@ class TipoServicio extends Main
 
         //filtro departamento
         if($User['departamentoId']!="1" && $User["roleId"]!=1)
-            $filtroDep=" AND departamentoId=".$User['departamentoId'];
+            $filtroDep=" AND a.departamentoId=".$User['departamentoId'];
 
-        $this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" '.$filtroDep.' ORDER BY nombreServicio ASC ');
+        $this->Util()->DB()->setQuery("SELECT a.*, b.departamento  FROM tipoServicio a 
+											  INNER JOIN departamentos b ON a.departamentoId = b.departamentoId
+											  WHERE a.status='1' ".$filtroDep." ORDER BY a.nombreServicio ASC ");
         $result = $this->Util()->DB()->GetResult();
 
         foreach($result as $key => $row)
