@@ -1,8 +1,9 @@
 var driverApi = function () {
     var url = URL_API;
-    var getToken = function (params) {
+    var generateToken = function (params) {
         jQ.ajax({
             type: "post",
+            async: false,
             url: url + '/auth/login',
             data: { email: params.email, password: params.password},
         }).done(function (response, status, xhr) {
@@ -12,35 +13,38 @@ var driverApi = function () {
             console.log(err)
         });
     };
-
+    var getToken = () => {
+        return localStorage.getItem('huerinToken');
+    }
+    var setHeader = function (xhr) {
+        xhr.setRequestHeader('Authorization', getToken)
+    }
     var refreshToken = function () {
-        token = localStorage.getItem('huerinToken');
-        if(token === 'undefined' || token === null) {
-            getToken();
-            token = localStorage.getItem('huerinToken');
+        var currentToken = getToken()
+        if(currentToken === null || currentToken === 'undefined') {
+            generateToken(PARAMSLOGIN)
         } else {
+            console.log('refresh')
             jQ.ajax({
-                type: "get",
+                type: "GET",
+                async: false,
                 url: url + '/auth/refresh',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", token);
-                }
+                data: {},
+                beforeSend: setHeader,
             }).done(function (response, status, xhr) {
+                console.log('refresh')
                 var jwt = xhr.getResponseHeader('Authorization');
                 localStorage.setItem('huerinToken', jwt);
             }).fail(function (err) {
-                console.log(err)
             });
         }
-        return localStorage.getItem('huerinToken');
+
+        return getToken()
     };
     return {
-        init: function(par) {
-            getToken(par);
-        },
-        refreshToken: function () {
-           return  refreshToken();
-        }
+        init: (param) => generateToken ( param ),
+        setHeader: () => setHeader(),
+        refreshToken: () => refreshToken(),
     };
 }();
 jQuery(document).ready(function () {

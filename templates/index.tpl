@@ -86,8 +86,9 @@
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jstree/dist/jstree.min.js?{$timestamp}"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.23/datatables.min.css"/>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.23/datatables.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.23/datatables.min.css"/>
+
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.23/datatables.min.js"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/datatable.js?{$timestamp}"></script>
 {/if}
 {if $section == 'consultar-facturas'}

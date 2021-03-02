@@ -36,12 +36,9 @@ var tableProspect = function () {
                         "targets": -1,
                         "render": function (data) {
                             var content = '<div class="center">';
-                            content = content +  '<a class="btn btn-xs yellow" href="'+WEB_ROOT+'/do-poll/id/' + data.victimaId +'"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>';
-                            if (data.completePoll) {
-                                content = content + '<a class="btn btn-xs green btn-chart" href="javascript:;" title="Ver grafica" id="' + data.victimaId + '"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>';
-                                content = content + '<a class="btn btn-xs green-dark" href="'+WEB_ROOT+'/poll-result-pdf/id/' + data.victimaId +'" title="Ver reporte" target="_blank"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>';
-                            }
-                            content = content + '<a class="btn btn-xs red btn-delete" href="javascript:;"' +'title="Eliminar" id="'+ data.victimaId +'"><i class="fa fa-minus-square" aria-hidden="true"></i></a>';
+                            content = content +  '<a href="javascript:;" title="Editar prospecto" data-id="'+data.id+'" data-type="openEditProspect" class="spanControlProspect"><img src="'+WEB_ROOT+'/images/icons/edit.gif" aria-hidden="true" /></a>';
+                            content = content +  '<a href="'+data.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>';
+                            content = content +  '<a href="'+WEB_ROOT+'/company/id/'+data.id+'" title="Ir a empresas" target="_blank"><img src="'+WEB_ROOT+'/images/icons/office-building.png" aria-hidden="true" /></a>';
                             content = content + '</div>';
                             return content;
                         }
@@ -59,7 +56,59 @@ var tableProspect = function () {
                 "order": [
                     [1, "asc"]
                 ],// set first column as a default sort by asc
+                "language": {
+                    "url":WEB_ROOT + '/properties/i18n/Spanish.json',
+                },
             }
+        });
+
+        jQ(document).on("click", ".spanControlProspect", function () {
+            var type = jQ(this).data('type');
+            var id = jQ(this).data('id');
+            jQ.ajax({
+                url: WEB_ROOT + "/ajax/prospect.php",
+                type: 'post',
+                data: {type: type, id: id},
+                success: function (response) {
+                    grayOut(true);
+                    jQ('#fview').show();
+                    FViewOffSet(response);
+                },
+                error: function () {
+                    alert("Error");
+                }
+            });
+        });
+
+        jQ(document).on('click', '.spanSaveProspect', function () {
+            var form = jQ(this).parents('form:first');
+            if (form.length > 0) {
+                jQ.ajax({
+                    url: WEB_ROOT + '/ajax/prospect.php',
+                    method: 'post',
+                    data: form.serialize(true),
+                    beforeSend: function () {
+                        jQ('.spanSaveProspect').hide();
+                        jQ('#loader').show();
+                    },
+                    success: function (response) {
+                        var splitResp = response.split("[#]");
+                        if (splitResp[0] == 'ok') {
+                            jQ('#loader').hide();
+                            jQ('.spanSaveProspect').show();
+                            ShowStatusPopUp(splitResp[1]);
+                            jQ('#fview').hide();
+                            grid.getDataTable().ajax.reload()
+
+                        } else {
+                            ShowStatusPopUp(splitResp[1]);
+                            jQ('#loader').hide();
+                            jQ('.spanSaveProspect').show();
+                        }
+                    }
+                });
+            } else
+                return;
         });
     }
     return {
@@ -72,53 +121,3 @@ var tableProspect = function () {
 jQ(document).ready(function () {
     tableProspect.init();
 })
-jQ(document).on("click", ".spanControlProspect", function () {
-    var type = jQ(this).data('type');
-    var id = jQ(this).data('id');
-    jQ.ajax({
-        url: WEB_ROOT + "/ajax/prospect.php",
-        type: 'post',
-        data: {type: type, id: id},
-        success: function (response) {
-            grayOut(true);
-            jQ('#fview').show();
-            FViewOffSet(response);
-        },
-        error: function () {
-            alert("Error");
-        }
-    });
-});
-
-jQ(document).on('click', '.spanSaveProspect', function () {
-    var form = jQ(this).parents('form:first');
-    if (form.length > 0) {
-        jQ.ajax({
-            url: WEB_ROOT + '/ajax/prospect.php',
-            method: 'post',
-            data: form.serialize(true),
-            beforeSend: function () {
-                jQ('.spanSaveProspect').hide();
-                jQ('#loader').show();
-            },
-            success: function (response) {
-                var splitResp = response.split("[#]");
-                if (splitResp[0] == 'ok') {
-                    jQ('#loader').hide();
-                    jQ('.spanSaveProspect').show();
-                    ShowStatusPopUp(splitResp[1]);
-                    jQ('#contenido').html(splitResp[2]);
-                    jQ('#fview').hide();
-                } else {
-                    ShowStatusPopUp(splitResp[1]);
-                    jQ('#loader').hide();
-                    jQ('.spanSaveProspect').show();
-                }
-            }
-        });
-    } else
-        return;
-});
-
-// jquery datatable
-// load rows via api ajax

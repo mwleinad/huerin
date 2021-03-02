@@ -3,7 +3,7 @@
         <h1 class="clientes">Prospectos</h1>
     </div>
     <div class="grid_6" id="eventbox">
-        <a href="http://chontiq.test/capture-info" class="inline_add"   data-type="openAddProspect">Agregar prospecto</a>
+        <a href="javascript:;" class="inline_add spanControlProspect"   data-type="openAddProspect">Agregar prospecto</a>
         <div id="loadPrint">
         </div>
     </div>

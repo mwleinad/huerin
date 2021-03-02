@@ -57,14 +57,14 @@ var Datatable = function() {
                      // pagination type(bootstrap, bootstrap_full_number or bootstrap_extended)
                     "autoWidth": false, // disable fixed width and enable fluid table
                     "processing": false, // enable/disable display message box on record load
-                    "serverSide": true, // enable/disable server side ajax loading
+                    "serverSide": false, // enable/disable server side ajax loading
 
                     "ajax": { // define ajax settings
                         "url": "", // ajax URL
                         "type": "get", // request type
                         "timeout": 20000,
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader("Authorization", driverApi.refreshToken());
+                            xhr.setRequestHeader('Authorization', driverApi.refreshToken())
                         },
                         "data": function(data) { // add request parameters before submit
                             jQ.each(ajaxParams, function(key, value) {
@@ -82,11 +82,11 @@ var Datatable = function() {
                     },
                 }
             }, options);
-            
+
             table = jQ(options.src);
             // initialize a datatable
             dataTable = table.DataTable(options.dataTable);
         },
+        getDataTable: () => { return dataTable }
     };
-
 };
