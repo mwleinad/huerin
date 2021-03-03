@@ -160,8 +160,8 @@ class Company extends Main
     {
         $sQuery = "select * from company 
                    where id = '" . $this->id . "' ";
-        $this->Util()->DB()->setQuery($sQuery);
-        $row = $this->Util()->DB()->GetRow();
+        $this->Util()->DBProspect()->setQuery($sQuery);
+        $row = $this->Util()->DBProspect()->GetRow();
 
         if($row)
             $row['services'] = $this->serviceByCompany();
@@ -171,8 +171,10 @@ class Company extends Main
 
     public function enumerate()
     {
-        $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM company where deleted_at is null and prospect_id = '".$this->prospect_id."' ");
-        $total = $this->Util()->DB()->GetSingle();
+        $sql =  "SELECT COUNT(*) FROM company
+                 WHERE deleted_at is null and prospect_id = '".$this->prospect_id."' ";
+        $this->Util()->DBProspect()->setQuery($sql);
+        $total = $this->Util()->DBProspect()->GetSingle();
 
         $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/company");
 
@@ -180,8 +182,8 @@ class Company extends Main
         $sQuery = "select  * from company a 
                              where deleted_at is null
                              and prospect_id = '".$this->prospect_id."' order by created_at desc  " . $sql_add;
-        $this->Util()->DB()->setQuery($sQuery);
-        $result = $this->Util()->DB()->GetResult();
+        $this->Util()->DBProspect()->setQuery($sQuery);
+        $result = $this->Util()->DBProspect()->GetResult();
         $data["items"] = $result;
         $data["pages"] = $pages;
         return $data;
@@ -195,23 +197,27 @@ class Company extends Main
         $sql = "INSERT INTO company(
                     prospect_id,
                     name,
-                    is_new_company,
-                    constitution_date,
-                    rfc,
-                    email,
-                    phone,
+                    taxpayer_id,
                     legal_representative,
-                    observation   
+                    activity_id,
+                    regimen_id,
+                    date_constitution,
+                    is_new_company,
+                    comment,
+                    created_at,
+                    updated_at
                 ) VALUES (
                     '" . $this->prospect_id . "',
                     '" . $this->name . "', 
-                    '" . $this->is_new_company . "',
-                    '" . $this->constitution_date . "',
                     '" . $this->rfc . "',
-                    '" . $this->email . "',
-                    '" . $this->phone . "',
                     '" . $this->legal_representative . "',
-                    '" . $this->observation . "'
+                    '" . $this->business_activity . "',
+                    '" . $this->regimen_id."',
+                    '" . $this->constitution_date . "',
+                    '" . $this->is_new_company . "',
+                    '" . $this->observation . "',
+                    now(),
+                    now()
                  )";
         $this->Util()->DB()->setQuery($sql);
         $lastId = $this->Util()->DB()->InsertData();
@@ -224,8 +230,8 @@ class Company extends Main
     }
     private function serviceByCompany() {
         $sql =  "select * from company_service where company_id = '".$this->id."'";
-        $this->Util()->DB()->setQuery($sql);
-        return $this->Util()->DB()->GetResult();
+        $this->Util()->DBProspect()->setQuery($sql);
+        return $this->Util()->DBProspect()->GetResult();
     }
 
     public function assocServiceToCompany ($id, $data = []) {
@@ -271,16 +277,17 @@ class Company extends Main
 
         $sql = "UPDATE company set 
                     name = '".$this->name."',
-                    is_new_company = '".$this->is_new_company."',
-                    constitution_date = '".$this->constitution_date."',
-                    rfc = '".$this->rfc."',
-                    email = '".$this->email."',
-                    phone = '".$this->phone."',
+                    taxpayer_id = '".$this->rfc."',
                     legal_representative = '".$this->legal_representative."',
-                    observation = '".$this->observation."'   
+                    activity_id = '".$this->business_activity."',
+                    regimen_id = '".$this->regimen_id."',
+                    date_constitution = '".$this->constitution_date."',
+                    is_new_company = '".$this->is_new_company."',
+                    comment = '".$this->observation."',                
+                    updated_at = now()
                     WHERE id = '".$this->id."' ";
-        $this->Util()->DB()->setQuery($sql);
-        $this->Util()->DB()->UpdateData();
+        $this->Util()->DBProspect()->setQuery($sql);
+        $this->Util()->DBProspect()->UpdateData();
         $this->assocServiceToCompany($this->id, $_POST['services']);
         $this->Util()->setError(0, "complete", "Registro actualizado");
         $this->Util()->PrintErrors();

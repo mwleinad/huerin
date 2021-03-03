@@ -28,7 +28,7 @@
 					<div class="formLine" style="width:100%;  display: inline-block;">
 						<div style="width:40%;float:left"> Rfc</div>
 						<div style="width:60%;float: left;">
-							<input type="text" name="rfc" id="rfc" value="{$post.rfc}" class="largeInput "/>
+							<input type="text" name="rfc" id="rfc" value="{$post.taxpayer_id}" class="largeInput "/>
 						</div>
 					</div>
 				</div>
@@ -36,8 +36,8 @@
                     <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:40%;float:left"> Fecha constitucion</div>
                         <div style="width:60%;float: left;">
-                            <input type="text" name="constitution_date" id="constitution_date"
-                                   value="{if $post && $post.constitution_date neq '0000-00-00'}{$post.constitution_date|date_format:'%d-%m-%Y'}{/if}" class="largeInput"
+                            <input type="text" name="date_constitution" id="date_constitution"
+                                   value="{if $post && $post.date_constitution neq '0000-00-00'}{$post.date_constitution|date_format:'%d-%m-%Y'}{/if}" class="largeInput"
                                    onclick="CalendarioSimple(this)"
                             />
                         </div>
@@ -75,9 +75,30 @@
                 </div>
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> Observacion</div>
+                        <div style="width:40%;float:left"> Actividad</div>
                         <div style="width:60%;float: left;">
-                            <input type="text" name="observation" id="observation" value="{$post.observation}" class="largeInput "/>
+                            <select class="largeInput"  name="activity_id" id="activity_id">
+                                <option value="">Seleccionar..</option>
+                                {foreach from=$actividades item=item}
+                                    <option value="{$item.id}" {if $post.activity_id eq $item.id}selected{/if}>{$item.name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div class="grid_16">
+                <div class="grid_8">
+                    <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:40%;float:left"> Regimen</div>
+                        <div style="width:60%;float: left;">
+                            <select class="largeInput"  name="regimen_id" id="regimen_id">
+                                <option value="">Seleccionar..</option>
+                                {foreach from=$regimenes item=item}
+                                    <option value="{$item.tipoRegimenId}" {if $post.regimen_id eq $item.tipoRegimenId}selected{/if}>{$item.nombreRegimen}</option>
+                                {/foreach}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -85,12 +106,24 @@
             </div>
             <div class="grid_16">
                 <div class="formLine" style="width:100%;  display: inline-block;">
-                    <div style="width:30%;float:left"> Servicios</div>
-                    <div style="width:70%;float: left;">
-                        <select class="largeInput " multiple="multiple" name="services[]" id="customMultiple">
+                    <div style="width:20%;float:left"> Servicios</div>
+                    <div style="width:80%;float: left;">
+                        <select class="largeInput" multiple="multiple" name="services[]" id="customMultiple">
                         </select>
                     </div>
                 </div>
+                <hr>
+            </div>
+            <div class="grid_16">
+                <div class="formLine" style="width:100%;  display: inline-block;">
+                    <div style="width:30%;float:left"> Observacion</div>
+                    <div style="width:100%;float: left;">
+                        <textarea name="observation" id="observation" class="largeInput" rows="5">
+                        {$post.observation}
+                        </textarea>
+                    </div>
+                </div>
+                <hr>
             </div>
 
             <div style="clear:both"></div>

@@ -86,6 +86,8 @@ class DBProspect
     public function DatabaseConnect()
     {
         $this->conn_id = mysqli_connect($this->sqlHost, $this->sqlUser, $this->sqlPassword, $this->sqlDatabase) or die("error" . mysqli_error($this->conn_id));
+        mysqli_query($this->conn_id, "SET FOREIGN_KEY_CHECKS = 0");
+        mysqli_set_charset($this->conn_id, "utf8");
     }
 
     public function ExecuteQuery()
@@ -173,6 +175,7 @@ class DBProspect
 
     function CleanQuery()
     {
+        mysqli_query($this->conn_id, "SET FOREIGN_KEY_CHECKS = 1");
         @mysqli_free_result($this->sqlResult);
         //$this->query = "";
     }

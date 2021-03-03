@@ -10,6 +10,8 @@ switch ($_POST['type']) {
         $smarty->assign("data", $data);
         $prospect->setId($_POST['prospect_id']);
         $smarty->assign("prospect", $prospect->info());
+        $smarty->assign("regimenes", $catalogue->EnumerateCatalogue('tipoRegimen'));
+        $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         $json['services'] = $tipoServicio->EnumerateGroupByDepartament(true);
         echo json_encode($json);
@@ -24,6 +26,8 @@ switch ($_POST['type']) {
         $smarty->assign("prospect", $prospect->info());
         $smarty->assign("post", $companyRow);
         $smarty->assign("data", $data);
+        $smarty->assign("regimenes", $catalogue->EnumerateCatalogue('tipoRegimen'));
+        $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         $currentServices = is_array($companyRow['services']) ? array_column($companyRow['services'], 'service_id'): [];
         $catalogoServices = $tipoServicio->EnumerateGroupByDepartament(true);
@@ -42,7 +46,7 @@ switch ($_POST['type']) {
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
         if(!isset($_POST['is_new_company']))
-            $company->setConstitutionDate($_POST['constitution_date']);
+            $company->setConstitutionDate($_POST['date_constitution']);
 
         if(!isset($_POST['is_new_company']))
             $company->setRfc($_POST['rfc']);
@@ -51,6 +55,8 @@ switch ($_POST['type']) {
         $company->setPhone($_POST['phone']);
         $company->setLegalRepresentative($_POST['legal_representative']);
         $company->setObservation($_POST['observation']);
+        $company->setBusinessActivity($_POST['activity_id']);
+        $company->setRegimenId($_POST['regimen_id']);
         echo $company->save() ? "ok" : "fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
@@ -64,7 +70,7 @@ switch ($_POST['type']) {
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
         if(!isset($_POST['is_new_company']))
-            $company->setConstitutionDate($_POST['constitution_date']);
+            $company->setConstitutionDate($_POST['date_constitution']);
 
         if(!isset($_POST['is_new_company']))
             $company->setRfc($_POST['rfc']);
@@ -73,6 +79,8 @@ switch ($_POST['type']) {
         $company->setPhone($_POST['phone']);
         $company->setLegalRepresentative($_POST['legal_representative']);
         $company->setObservation($_POST['observation']);
+        $company->setBusinessActivity($_POST['activity_id']);
+        $company->setRegimenId($_POST['regimen_id']);
         echo $company->update() ? "ok":"fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');

@@ -29,6 +29,27 @@ jQ(document).on("click", ".spanControlCompany", function () {
                 });
                 jQ("select[multiple]").multiselect('loadOptions', response.services);
             }
+
+            if (jQ("#activity_id").length) {
+
+                jQ("select#activity_id").multiselect({
+                    columns: 1,
+                    search: true,
+                    maxHeight: 40,
+                    texts: {
+                        placeholder: 'Seleccione actividad',
+                        search         : 'Buscar',         // search input placeholder text
+                        selectedOptions: ' Seleccionado',      // selected suffix text
+                        noneSelected   : 'Ningun elemento seleccionado'   // None selected text
+                    }
+                });
+                ocns = response.actividades.map(function (el) {
+                    return { value:el.id, name: el.name}
+                });
+                console.log(ocns)
+                jQ("select#activity_id").multiselect('loadOptions', ocns);
+
+            }
         },
         error: function () {
             alert("Error");
