@@ -3,7 +3,7 @@
             <option value="" >Todos...</option>
     {/if}
     {foreach from=$departamentos item=depto}
-        {if $User.tipoPers eq 'Admin' || $User.tipoPers eq 'Socio' || $User.tipoPers eq 'Coordinador' || in_array($depto.departamentoI, $User.moreDepartament) ||($depto.departamentoId eq 24 && $User.roleId eq 8)||($User.roleId eq 28||$User.roleId eq 19) ||$unlimited || $User.level<=2}
+        {if $User.tipoPers eq 'Admin' || $User.tipoPers eq 'Socio' || $User.tipoPers eq 'Coordinador' || in_array($depto.departamentoId, $User.moreDepartament) ||($depto.departamentoId eq 24 && $User.roleId eq 8)||($User.roleId eq 28||$User.roleId eq 19) ||$unlimited || $User.level<=2}
             <option value="{$depto.departamentoId}" >{$depto.departamento}</option>
         {/if}
     {/foreach}
