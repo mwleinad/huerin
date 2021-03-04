@@ -134,6 +134,14 @@ class User extends Sucursal
                 $card['level'] = $row["nivel"];
 				$card['username'] = $row['username'];
 				$card['departamentoId'] = $row['departamentoId'];
+
+				$moreDep = [(int)$row['departamentoId']];
+				if ($row['departamentoId'] == 8 )
+					array_push($moreDep,24 );
+				if ($row['departamentoId'] == 24 )
+					array_push($moreDep,8 );
+
+				$card['moreDepartament'] =$moreDep;
 				$card['isLogged'] = true;
 				$card['tipoPers'] = $row['tipoPersonal'];
 				$_SESSION['User'] = $card;
