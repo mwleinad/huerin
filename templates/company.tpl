@@ -12,6 +12,7 @@
     <div id="portlets">
         <div class="clear"></div>
         <div class="portlet">
+            <input type="hidden" id="prospect_id" name="prospect_id" value="{$prospect}"/>
             <div class="portlet-content nopadding borderGray" id="contenido">
                 {include file="lists/company.tpl"}
             </div>

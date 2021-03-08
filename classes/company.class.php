@@ -16,6 +16,7 @@ class Company extends Main
     }
 
     private $prospect_id;
+
     public function setProspectId($value)
     {
         $this->Util()->ValidateInteger($value);
@@ -121,8 +122,8 @@ class Company extends Main
 
     public function setConstitutionDate($value)
     {
-        if($this->Util()->ValidateRequireField($value, "Fecha de constitución"))
-            if($this->Util()->validateDateFormat($value, 'Fecha de constitución', 'd-m-Y'))
+        if ($this->Util()->ValidateRequireField($value, "Fecha de constitución"))
+            if ($this->Util()->validateDateFormat($value, 'Fecha de constitución', 'd-m-Y'))
                 $this->constitution_date = $this->Util()->FormatDateMySql($value);
 
     }
@@ -134,7 +135,8 @@ class Company extends Main
 
     private $is_new_company;
 
-    public function setIsNewCompany($value)  {
+    public function setIsNewCompany($value)
+    {
         $this->is_new_company = $value;
     }
 
@@ -163,7 +165,7 @@ class Company extends Main
         $this->Util()->DBProspect()->setQuery($sQuery);
         $row = $this->Util()->DBProspect()->GetRow();
 
-        if($row)
+        if ($row)
             $row['services'] = $this->serviceByCompany();
 
         return $row;
@@ -171,8 +173,8 @@ class Company extends Main
 
     public function enumerate()
     {
-        $sql =  "SELECT COUNT(*) FROM company
-                 WHERE deleted_at is null and prospect_id = '".$this->prospect_id."' ";
+        $sql = "SELECT COUNT(*) FROM company
+                 WHERE deleted_at is null and prospect_id = '" . $this->prospect_id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $total = $this->Util()->DBProspect()->GetSingle();
 
@@ -181,7 +183,7 @@ class Company extends Main
         $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
         $sQuery = "select  * from company a 
                              where deleted_at is null
-                             and prospect_id = '".$this->prospect_id."' order by created_at desc  " . $sql_add;
+                             and prospect_id = '" . $this->prospect_id . "' order by created_at desc  " . $sql_add;
         $this->Util()->DBProspect()->setQuery($sQuery);
         $result = $this->Util()->DBProspect()->GetResult();
         $data["items"] = $result;
@@ -212,15 +214,15 @@ class Company extends Main
                     '" . $this->rfc . "',
                     '" . $this->legal_representative . "',
                     '" . $this->business_activity . "',
-                    '" . $this->regimen_id."',
+                    '" . $this->regimen_id . "',
                     '" . $this->constitution_date . "',
                     '" . $this->is_new_company . "',
                     '" . $this->observation . "',
                     now(),
                     now()
                  )";
-        $this->Util()->DB()->setQuery($sql);
-        $lastId = $this->Util()->DB()->InsertData();
+        $this->Util()->DBProspect()->setQuery($sql);
+        $lastId = $this->Util()->DBProspect()->InsertData();
 
         $this->assocServiceToCompany($lastId, $_POST['services']);
 
@@ -228,46 +230,62 @@ class Company extends Main
         $this->Util()->PrintErrors();
         return true;
     }
-    private function serviceByCompany() {
-        $sql =  "select * from company_service where company_id = '".$this->id."'";
+
+    private function serviceByCompany()
+    {
+        $sql = "select * from company_service where company_id = '" . $this->id . "'";
         $this->Util()->DBProspect()->setQuery($sql);
         return $this->Util()->DBProspect()->GetResult();
     }
 
-    public function assocServiceToCompany ($id, $data = []) {
+    public function assocServiceToCompany($id, $data = [])
+    {
         $this->setId($id);
         $currentServices = $this->serviceByCompany();
-        $currentServicesLineal =  count($currentServices) ? array_column($currentServices, 'service_id'): [];
+        $currentCompany = $this->info();
+        /*$currentServicesLineal = count($currentServices) ? array_column($currentServices, 'service_id') : [];
         $postServices = count($_POST['services']) ? $_POST['services'] : [];
-        $diff = array_diff($currentServicesLineal, $postServices);
+        $diff = array_diff($currentServicesLineal, $postServices);*/
 
         $count = 0;
-        $sql =  "insert into company_service(company_id, service_id) values";
+        $sql = "insert into company_service(company_id, service_id, created_at, updated_at) values";
+        $sqlProspect = "insert into prospect_service(prospect_id, service_id) values";
         $compQuery = "";
-        foreach($_POST['services'] as $val) {
-            if (!in_array($val, $currentServicesLineal)) {
-                $compQuery .=  "(".$id.", ".$val."),";
-                $count++;
-            }
+        $compProspect = "";
+        foreach ($data as $val) {
+            //if (!in_array($val, $currentServicesLineal)) {
+            $compQuery .= "(" . $id . ", " . $val . ", now(), now()),";
+            $compProspect .= "(" . $currentCompany['prospect_id'] . ", " . $val . "),";
+            $count++;
+            //}
         }
         if ($count > 0) {
-            $compQuery =  substr($compQuery, 0, -1);
+            $this->removeServiceFromCompany($currentCompany);
+            $compQuery = substr($compQuery, 0, -1);
+            $compProspect = substr($compProspect, 0, -1);
             $sql = $sql . $compQuery;
-            $this->Util()->DB()->setQuery($sql);
-            $this->Util()->DB()->InsertData();
+            $this->Util()->DBProspect()->setQuery($sql);
+            $this->Util()->DBProspect()->InsertData();
+
+            $sqlProspect = $sqlProspect . $compProspect;
+            $this->Util()->DBProspect()->setQuery($sqlProspect);
+            $this->Util()->DBProspect()->InsertData();
 
         }
-        $this->removeServiceFromCompany($id, $diff);
-
     }
-    private function removeServiceFromCompany($id, $data = []) {
-        if (count($data)) {
-            $sql = "delete from company_service 
-                    where service_id IN(".implode(',', $data).")
-                    and company_id = '".$id."' ";
-            $this->Util()->DB()->setQuery($sql);
-            $this->Util()->DB()->DeleteData();
-        }
+
+    private function removeServiceFromCompany($dataCompany)
+    {
+        $sql = "delete from company_service 
+                    where company_id = '" . $dataCompany['id'] . "' ";
+        $this->Util()->DBProspect()->setQuery($sql);
+        $this->Util()->DBProspect()->DeleteData();
+
+        $sql = "delete from prospect_service 
+                    where prospect_id = '" . $dataCompany['prospect_id'] . "' ";
+        $this->Util()->DBProspect()->setQuery($sql);
+        $this->Util()->DBProspect()->DeleteData();
+
     }
 
     public function update()
@@ -276,16 +294,16 @@ class Company extends Main
             return false;
 
         $sql = "UPDATE company set 
-                    name = '".$this->name."',
-                    taxpayer_id = '".$this->rfc."',
-                    legal_representative = '".$this->legal_representative."',
-                    activity_id = '".$this->business_activity."',
-                    regimen_id = '".$this->regimen_id."',
-                    date_constitution = '".$this->constitution_date."',
-                    is_new_company = '".$this->is_new_company."',
-                    comment = '".$this->observation."',                
+                    name = '" . $this->name . "',
+                    taxpayer_id = '" . $this->rfc . "',
+                    legal_representative = '" . $this->legal_representative . "',
+                    activity_id = '" . $this->business_activity . "',
+                    regimen_id = '" . $this->regimen_id . "',
+                    date_constitution = '" . $this->constitution_date . "',
+                    is_new_company = '" . $this->is_new_company . "',
+                    comment = '" . $this->observation . "',                
                     updated_at = now()
-                    WHERE id = '".$this->id."' ";
+                    WHERE id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->UpdateData();
         $this->assocServiceToCompany($this->id, $_POST['services']);

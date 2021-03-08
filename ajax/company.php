@@ -45,18 +45,19 @@ switch ($_POST['type']) {
         $company->setProspectId($_POST['prospect_id']);
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
-        if(!isset($_POST['is_new_company']))
-            $company->setConstitutionDate($_POST['date_constitution']);
 
-        if(!isset($_POST['is_new_company']))
+        if(!isset($_POST['is_new_company'])) {
             $company->setRfc($_POST['rfc']);
+            $company->setConstitutionDate($_POST['date_constitution']);
+            $company->setBusinessActivity($_POST['activity_id']);
+            $company->setRegimenId($_POST['regimen_id']);
+        }
 
-        $company->setEmail($_POST['email']);
-        $company->setPhone($_POST['phone']);
+        //$company->setEmail($_POST['email']);
+        //$company->setPhone($_POST['phone']);
         $company->setLegalRepresentative($_POST['legal_representative']);
         $company->setObservation($_POST['observation']);
-        $company->setBusinessActivity($_POST['activity_id']);
-        $company->setRegimenId($_POST['regimen_id']);
+
         echo $company->save() ? "ok" : "fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
@@ -69,14 +70,16 @@ switch ($_POST['type']) {
         $company->setId($_POST['id']);
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
-        if(!isset($_POST['is_new_company']))
-            $company->setConstitutionDate($_POST['date_constitution']);
 
-        if(!isset($_POST['is_new_company']))
+        if(!isset($_POST['is_new_company'])) {
             $company->setRfc($_POST['rfc']);
+            $company->setConstitutionDate($_POST['date_constitution']);
+            $company->setBusinessActivity($_POST['activity_id']);
+            $company->setRegimenId($_POST['regimen_id']);
+        }
 
-        $company->setEmail($_POST['email']);
-        $company->setPhone($_POST['phone']);
+        //$company->setEmail($_POST['email']);
+        //$company->setPhone($_POST['phone']);
         $company->setLegalRepresentative($_POST['legal_representative']);
         $company->setObservation($_POST['observation']);
         $company->setBusinessActivity($_POST['activity_id']);

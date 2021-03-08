@@ -23,7 +23,7 @@
                 </div>
                 <hr>
             </div>
-			<div class="grid_16" id="data_conditioned">
+			<div class="grid_16" id="data_constitution" style="display:{if $post.is_new_company}none{else}block{/if};">
 				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
 						<div style="width:40%;float:left"> Rfc</div>
@@ -45,25 +45,6 @@
                 </div>
 				<hr>
 			</div>
-            <div class="grid_16">
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> * Email</div>
-                        <div style="width:60%;float: left;">
-                            <input type="text" name="email" id="email" value="{$post.email}" class="largeInput "/>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> * Telefono</div>
-                        <div style="width:60%;float: left;">
-                            <input type="text" name="phone" id="phone" value="{$post.phone}" class="largeInput "/>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            </div>
             <div class="grid_16">
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
@@ -118,9 +99,7 @@
                 <div class="formLine" style="width:100%;  display: inline-block;">
                     <div style="width:30%;float:left"> Observacion</div>
                     <div style="width:100%;float: left;">
-                        <textarea name="observation" id="observation" class="largeInput" rows="5">
-                        {$post.observation}
-                        </textarea>
+                        <textarea name="observation" id="observation" class="largeInput" rows="5">{$post.comment}</textarea>
                     </div>
                 </div>
                 <hr>

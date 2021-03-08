@@ -87,6 +87,9 @@ var Datatable = function() {
             // initialize a datatable
             dataTable = table.DataTable(options.dataTable);
         },
+        setAjaxParam: function(name, value) {
+            ajaxParams[name] = value;
+        },
         getDataTable: () => { return dataTable }
     };
 };

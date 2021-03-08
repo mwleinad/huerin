@@ -37,8 +37,8 @@ var tableProspect = function () {
                         "render": function (data) {
                             var content = '<div class="center">';
                             content = content +  '<a href="javascript:;" title="Editar prospecto" data-id="'+data.id+'" data-type="openEditProspect" class="spanControlProspect"><img src="'+WEB_ROOT+'/images/icons/edit.gif" aria-hidden="true" /></a>';
-                            content = content +  '<a href="'+data.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>';
                             content = content +  '<a href="'+WEB_ROOT+'/company/id/'+data.id+'" title="Ir a empresas" target="_blank"><img src="'+WEB_ROOT+'/images/icons/office-building.png" aria-hidden="true" /></a>';
+                            content = content +  '<a href="'+data.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>'
                             content = content + '</div>';
                             return content;
                         }
