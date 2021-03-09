@@ -226,7 +226,7 @@ class CronServicio extends Contract
     public function CreateWorkflow(){
         //encontrar los servicios sin necesidad de filtros
        $fechaCorriente=  $this->Util()->getFirstDate(date('Y-m-d'));
-       $servicios = $this->getListServices();
+       $servicios = $this->getListServices(1320);
        foreach($servicios as $key=>$servicio){
            $costoWorkflow = $servicio['costo'];
           $fechas_workflow =  $this->CreateStockDates($servicio);

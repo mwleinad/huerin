@@ -17,7 +17,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
 
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html" && $_SERVER['DOCUMENT_ROOT'] != "/var/www/qplatform/public_html")
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT']."";
     session_save_path("C:/laragon/tmp");
@@ -54,6 +54,6 @@ $mask = DOC_ROOT.'/temp/20_B_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));
 $entry =  " inicio ". date("Y-m-d H:i:s").chr(13).chr(10);
-$invoiceService->GenerateInvoices();
+$invoiceService->GenerateInvoices(1320);
 $entry  .=" fin ". date("Y-m-d H:i:s").chr(13).chr(10);
 echo $entry;
