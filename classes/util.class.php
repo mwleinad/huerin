@@ -27,7 +27,7 @@ class Util extends CustomError
 		return $this->DBRemote;
 	}
 
-	public function DBProspect($id = "chontiq")
+	public function DBProspect($id = SQL_DATABASE_PROSPECT)
 	{
 		if($this->DBProspect == null )
 		{

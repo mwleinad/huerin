@@ -74,7 +74,7 @@ class DBProspect
         return $this->projectStatus;
     }
 
-    function __construct($database =  "dbprospect")
+    function __construct($database = SQL_DATABASE_PROSPECT)
     {
         //echo $database;
         $this->sqlHost = SQL_HOST_PROSPECT;
