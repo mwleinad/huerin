@@ -82,8 +82,6 @@ switch ($_POST['type']) {
         //$company->setPhone($_POST['phone']);
         $company->setLegalRepresentative($_POST['legal_representative']);
         $company->setObservation($_POST['observation']);
-        $company->setBusinessActivity($_POST['activity_id']);
-        $company->setRegimenId($_POST['regimen_id']);
         echo $company->update() ? "ok":"fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
