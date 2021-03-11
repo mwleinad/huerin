@@ -233,7 +233,9 @@ class Company extends Main
 
     private function serviceByCompany()
     {
-        $sql = "select * from company_service where company_id = '" . $this->id . "'";
+        $sql = "select * from company_service
+                inner join service on company_service.service_id = service.id
+                where company_service.company_id = '" . $this->id . "'";
         $this->Util()->DBProspect()->setQuery($sql);
         return $this->Util()->DBProspect()->GetResult();
     }

@@ -90,4 +90,21 @@ switch ($_POST['type']) {
         $smarty->assign('results', $company->enumerate());
         $smarty->display(DOC_ROOT . '/templates/lists/company.tpl');
         break;
+    case "generarCotizacion":
+        $data['title'] = "Generar Cotizacion";
+        $data["form"] = "frm-cotizacion";
+
+        $company->setId($_POST['id']);
+        $companyRow = $company->info();
+        $prospect->setId($companyRow['prospect_id']);
+        $smarty->assign("prospect", $prospect->info());
+        $smarty->assign("post", $companyRow);
+        $smarty->assign("data", $data);
+        $smarty->assign("services", $companyRow['services']);
+        $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
+        echo json_encode($json);
+    break;
+    case 'saveGenerate':
+        dd($_POST);
+        break;
 }

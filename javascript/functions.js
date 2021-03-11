@@ -598,3 +598,38 @@ function check_session()
 		}
 	})
 }
+function formToJSON( elem ) {
+	let output = {};
+	new FormData( elem ).forEach(
+		( value, key ) => {
+			// Check if property already exist
+			if ( Object.prototype.hasOwnProperty.call( output, key ) ) {
+				let current = output[ key ];
+				if ( !Array.isArray( current ) ) {
+					// If it's not an array, convert it to an array.
+					current = output[ key ] = [ current ];
+				}
+				current.push( value ); // Add the new value to the array.
+			} else {
+				output[ key ] = value;
+			}
+		}
+	);
+	return JSON.stringify( output );
+}
+jQ.fn.getForm2obj = function() {
+	var _ = {};
+	jQ.map(this.serializeArray(), function(n) {
+		const keys = n.name.match(/[a-zA-Z0-9_]+|(?=\[\])/g);
+		if (keys.length > 1) {
+			let tmp = _;
+			pop = keys.pop();
+			for (let i = 0; i < keys.length, j = keys[i]; i++) {
+				tmp[j] = (!tmp[j] ? (pop === '') ? [] : {} : tmp[j]), tmp = tmp[j];
+			}
+			if (pop === '') tmp = (!Array.isArray(tmp) ? [] : tmp), tmp.push(n.value);
+			else tmp[pop] = n.value;
+		} else _[keys.pop()] = n.value;
+	});
+	return _;
+}
