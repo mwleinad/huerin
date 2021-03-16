@@ -8,8 +8,13 @@
 		<td align="center">Dia {$task.diaVencimiento}</td>
 		<td align="center">{$task.prorroga} Dias</td>
     <td align="center">{$task.control}</td>
-    <td align="center">{$task.control2}</td>
-    <td align="center">{$task.control3}</td>
+    <td align="center">
+		<ul>
+			{foreach from=$task.extensiones key=kext item=itemExt}
+				<li style="font-size: 10px;text-align: left">{$itemExt.name}</li>
+			{/foreach}
+		</ul>
+	</td>
 		<td align="center">
         {if in_array(36,$permissions) || $User.isRoot}
       		<img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanTaskDelete" id="{$task.taskId}" title="Desactivar"/>

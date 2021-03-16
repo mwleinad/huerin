@@ -160,7 +160,13 @@ switch ($_POST['type']) {
                     $sheet->setCellValueByColumnAndRow($keyHead, $currentRow, $item[$header['field_excel']]);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2);
                 } else {
-                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($item[$header['field_excel']], PHPExcel_Cell_DataType::TYPE_STRING );
+                    if ($_POST['type_report'] === 'complete_report_cc' && $header['field_excel'] === 'active') {
+                        $val_cell =  $item[$header['field_excel']] == '1' ? 'Si' : 'No';
+                    } else {
+                        $val_cell =  $item[$header['field_excel']];
+                    }
+
+                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($val_cell, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode('@');
                 }
             }

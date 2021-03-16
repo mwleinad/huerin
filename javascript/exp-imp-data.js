@@ -51,7 +51,11 @@ jQ(document).ready(function(){
               method:'post',
               url: url,
               data:{ type: type, tipo: tipo , type_report: tipo, tipos: status},
+              beforeSend: function() {
+                jQ("#loadPrint").show();
+              },
               success:function(response) {
+                  jQ("#loadPrint").hide();
                   window.location=response;
               } ,
               error:function () {

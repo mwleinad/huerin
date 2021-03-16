@@ -15,7 +15,7 @@ class EdoResultado extends ReporteBonos
         // styles
         $styles = array(
             'numberformat' => [
-                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
             ]
         );
         $stylesPorcent = array(

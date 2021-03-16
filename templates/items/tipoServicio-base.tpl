@@ -1,6 +1,7 @@
 {foreach from=$resTipoServicio.items item=item key=key}
 	<tr id="1">
 		<td align="center" width="30%">{$item.nombreServicio}</td>
+		<td align="center" width="15%">{$item.departamento}</td>
 		<td align="center" width="30%">{$item.periodicidad}</td>
 		<td align="center" width="20%">{$item.totalPasos}</td>
 		<td  align="center" width="20%">
