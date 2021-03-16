@@ -97,7 +97,12 @@ class TipoServicio extends Main
 		$this->mostrarCostoVisual = $value;
 	}
 
-    public function setActivityServiceId($value)
+	private $uniqueInvoice;
+	public function setUniqueInvoice($value){
+		$this->uniqueInvoice = $value;
+	}
+
+	public function setActivityServiceId($value)
     {
         $this->Util()->ValidateInteger($value);
         $this->activityServiceId = $value;
@@ -285,6 +290,7 @@ class TipoServicio extends Main
 				`costoUnico` = '".$this->costoUnico."',
 				`costo` = '".$this->costo."',
 				`costoVisual` = '".$this->costoVisual."',
+				`uniqueInvoice` = '".$this->uniqueInvoice."',
 				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."'
 			WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
@@ -325,6 +331,7 @@ class TipoServicio extends Main
 				`costoUnico`,
 				`costo`,
 				costoVisual,
+			 	uniqueInvoice,
 				mostrarCostoVisual
 		)
 		VALUES
@@ -337,6 +344,7 @@ class TipoServicio extends Main
 				'".$this->costoUnico."',
 				'".$this->costo."',
 				'".$this->costoVisual."',
+				'".$this->uniqueInvoice."',
 				'".$this->mostrarCostoVisual."'
 		);");
 		$id = $this->Util()->DB()->InsertData();

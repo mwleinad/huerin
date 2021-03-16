@@ -63,6 +63,15 @@
                 </div>
                 <div class="grid_16">
                     <div class="formLine" style=" width:100%;display: inline-block;">
+                        <div style="width:30%;float:left"> Generar factura una sola vez:</div>
+                        <div style="width:20%;float: left;">
+                            <input name="uniqueInvoice" id="uniqueInvoice" type="checkbox" class="largeInput" {if $post.uniqueInvoice}checked{/if}/>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="grid_16">
+                    <div class="formLine" style=" width:100%;display: inline-block;">
                         <div style="width:30%;float:left"> * Clave SAT:</div>
                         <div style="width:20%;float: left;">
                             <input name="claveSat" id="claveSat" type="text" value="{$post.claveSat}" class="largeInput" />

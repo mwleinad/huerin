@@ -25,6 +25,7 @@ switch($_POST["type"])
 			$tipoServicio->setDepartamentoId($_POST['departamentoId']);
 			$tipoServicio->setCostoVisual($_POST['costoVisual']);
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
+            $tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
 			if(!$tipoServicio->Save())
 			{
@@ -85,6 +86,7 @@ switch($_POST["type"])
 			$tipoServicio->setDepartamentoId($_POST['departamentoId']);
 			$tipoServicio->setCostoVisual($_POST['costoVisual']);
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
+			$tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
 			if(!$tipoServicio->Edit())
 			{
