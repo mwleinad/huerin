@@ -5,6 +5,7 @@ var ops = {
 	formatSearching: 'Buscando opciones',
 };
 Event.observe(window, 'load', function() {
+
 	if($('login_0'))
 		Event.observe($('login_0'), "click", LoginCheck);
 
@@ -598,26 +599,7 @@ function check_session()
 		}
 	})
 }
-function formToJSON( elem ) {
-	let output = {};
-	new FormData( elem ).forEach(
-		( value, key ) => {
-			// Check if property already exist
-			if ( Object.prototype.hasOwnProperty.call( output, key ) ) {
-				let current = output[ key ];
-				if ( !Array.isArray( current ) ) {
-					// If it's not an array, convert it to an array.
-					current = output[ key ] = [ current ];
-				}
-				current.push( value ); // Add the new value to the array.
-			} else {
-				output[ key ] = value;
-			}
-		}
-	);
-	return JSON.stringify( output );
-}
-jQ.fn.getForm2obj = function() {
+jQ.fn.convertFormToJson = function() {
 	var _ = {};
 	jQ.map(this.serializeArray(), function(n) {
 		const keys = n.name.match(/[a-zA-Z0-9_]+|(?=\[\])/g);

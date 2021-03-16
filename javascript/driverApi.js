@@ -24,7 +24,6 @@ var driverApi = function () {
         if(currentToken === null || currentToken === 'undefined') {
             generateToken(PARAMSLOGIN)
         } else {
-            console.log('refresh')
             jQ.ajax({
                 type: "GET",
                 async: false,
@@ -32,7 +31,6 @@ var driverApi = function () {
                 data: {},
                 beforeSend: setHeader,
             }).done(function (response, status, xhr) {
-                console.log('refresh')
                 var jwt = xhr.getResponseHeader('Authorization');
                 localStorage.setItem('huerinToken', jwt);
             }).fail(function (err) {

@@ -8,6 +8,7 @@
 				<tr>
 					<th></th>
 					<th>Servicios en cotizacion</th>
+					<th></th>
 				</tr>
 				</thead>
 				<tbody>
@@ -15,6 +16,13 @@
 					<tr>
 						<td><input type="checkbox" name="selected_service[]" value="{$item.id}"></td>
 						<td>{$item.name}</td>
+						<td>
+							{if $item.quote_id}
+								<a href="javascript:;" class="spanDowloadQuote" data-service="{$item.service_id}" data-quote="{$item.quote_id}" data-company="{$item.company_id}">
+									<img src="{$WEB_ROOT}/images/icons/downFile.png" title="Descargar cotizacion"/>
+								</a>
+							{/if}
+						</td>
 					</tr>
 				{/foreach}
 				</tbody>

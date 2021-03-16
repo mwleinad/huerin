@@ -28,6 +28,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'responsables-resource',
 		'upkeeps-resource',
 		'activity',
+		'question-service',
 
 		//clientes y contratos
 		'customer',

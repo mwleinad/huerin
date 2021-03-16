@@ -6,11 +6,14 @@ include_once(DOC_ROOT.'/libraries.php');
 switch($_POST["type"])
 {
 	case "addTipoServicio":
+	        $data['title'] = "Agregar servicio";
+	        $data['form'] = "frm-servicio";
 			$departamentos = $personal->ListDepartamentos();
+            $smarty->assign('data', $data);
 			$smarty->assign('servicios', $tipoServicio->EnumerateAll());
 			$smarty->assign("departamentos", $departamentos);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			$smarty->display(DOC_ROOT.'/templates/boxes/add-tipoServicio-popup.tpl');
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
 		break;
 
 	case "saveAddTipoServicio":
@@ -23,7 +26,6 @@ switch($_POST["type"])
 			$tipoServicio->setCostoVisual($_POST['costoVisual']);
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
-
 			if(!$tipoServicio->Save())
 			{
 				echo "fail[#]";
@@ -56,14 +58,21 @@ switch($_POST["type"])
 			}
 		break;
 	case "editTipoServicio":
+            $data['title'] = "Editar servicio";
+            $data['form'] = "frm-servicio";
 			$departamentos = $personal->ListDepartamentos();
+            $smarty->assign("data", $data);
 			$smarty->assign("departamentos", $departamentos);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$tipoServicio->setTipoServicioId($_POST['tipoServicioId']);
 			$myTipoServicio = $tipoServicio->Info(true);
+
+			$myTipoServicio['template'] = is_file(PUBLIC_STORAGE_PROSPECT. "/service/template_".$myTipoServicio['tipoServicioId'].".docx")
+                                          ? HTTP_STORAGE_PROSPECT. "/file_service/template_".$myTipoServicio['tipoServicioId'].".docx"
+                                          : "";
             $smarty->assign('servicios', $tipoServicio->EnumerateAll());
 			$smarty->assign("post", $myTipoServicio);
-			$smarty->display(DOC_ROOT.'/templates/boxes/edit-tipoServicio-popup.tpl');
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
 		break;
 
 	case "saveEditTipoServicio":

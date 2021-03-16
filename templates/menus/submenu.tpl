@@ -39,7 +39,9 @@
                 {/if}
                 {if in_array(24,$permissions)|| $User.isRoot}
                 <li><a href="{$WEB_ROOT}/tipoServicio" {if $page == "tipoServicio"}class="current"{/if} target="_blank">
-                <span>Tipo de Servicio</span></a></li>
+                    <span>Tipo de Servicio</span></a></li>
+                <li><a href="{$WEB_ROOT}/question-service" {if $page == "question-service"}class="current"{/if} target="_blank">
+                    <span>Preguntas de servicio</span></a></li>
                 {/if}
                 {if in_array(37,$permissions)|| $User.isRoot}
                 <li><a href="{$WEB_ROOT}/tipoDocumento" {if $page == "tipoDocumento"}class="current"{/if} target="_blank">

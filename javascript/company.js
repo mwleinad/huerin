@@ -35,8 +35,11 @@ var tableCompany = function () {
                             var content = '<div class="center">';
                             content = content +  '<a href="javascript:;" title="Editar empresa" data-id="'+data.id+'" data-type="openEditCompany" class="spanControlCompany"><img src="'+WEB_ROOT+'/images/icons/edit.gif" aria-hidden="true" /></a>';
                             content = content +  '<a href="'+data.prospect.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>'
-                            if(data.step_id === 2)
+                            if(data.step_id >=2)
                                 content = content +  '<a href="javascript:;" title="Generar cotizacion" data-id="'+data.id+'" data-type="generarCotizacion" class="spanControlCompany"><img src="'+WEB_ROOT+'/images/icons/update_payments.png" aria-hidden="true" /></a>'
+                            if(data.step_id >=3)
+                                content = content +  '<a href="javascript:;" title="Descargar cotizacion" data-id="'+data.id+'" data-type="generarCotizacion" class="spanControlCompany"><img src="'+WEB_ROOT+'/images/icons/downFile.png" aria-hidden="true" /></a>'
+
                             content = content + '</div>';
                             return content;
                         }
@@ -48,8 +51,8 @@ var tableCompany = function () {
                 ],
                 "pageLength": 10, // default record count per page
                 "ajax": {
-                    "type":'GET',
                     "url": URL_API + '/company', // ajax source
+                    "type":'GET',
                     "contentType":'application/json',
                     "data": { predicates: predicates },
                 },
@@ -100,23 +103,24 @@ var tableCompany = function () {
         });
         jQ(document).on("click", ".spanGenerate", function () {
             var form = jQ(this).parents('form:first');
-            var object  = { id:1, selected_service:[1,2] }
-            var jsonNormalize = JSON.stringify(object)
-            console.log(jsonNormalize)
-            //jsonNormalize = jsonNormalize.replace(/"\[/g, "[")
-            //jsonNormalize = jsonNormalize.replace(/]"/g, "]")
-            jQ.ajax({
+            var jsonObject = jQ(form[0]).convertFormToJson();
+            var jsonSerializado = JSON.stringify(jsonObject);
+            jQuery.ajax({
                 url: URL_API + '/company/quote', // ajax source
-                method: 'POST',
+                type: 'POST',
                 contentType: 'application/json',
-                data: jsonNormalize,
+                data: jsonSerializado,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('Authorization', driverApi.refreshToken())
                     jQ('.spanSaveGenerate').hide();
                     jQ('#loader').show();
                 },
                 success: function (response) {
-                    console.log(response)
+                    ShowErrorOnPopup(response.message)
+                    grid.getDataTable().ajax.reload()
+                },
+                error: function (error) {
+                    ShowErrorOnPopup(error.responseJSON.message, true);
                 }
             })
         });
@@ -155,7 +159,40 @@ var tableCompany = function () {
     }
 }();
 jQ(document).ready(function () {
+    if(window.Prototype) {
+        delete Array.prototype.toJSON;
+    }
     tableCompany.init();
+    jQ(document).on('click', '.spanDowloadQuote', function () {
+        var _formJson = {
+            id: jQ(this).data('company'),
+            service_id: jQ(this).data('service'),
+            quote_id: jQ(this).data('quote')
+        }
+        jQ.ajax({
+            url: URL_API + '/company/download-quote', // ajax source
+            type: 'POST',
+            xhrFields: {
+                responseType: 'blob'
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(_formJson),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Authorization', driverApi.refreshToken())
+                jQ('#loader').show();
+            },
+            success: function (response) {
+                const blob = new Blob([response], { type: 'application/*' })
+                const link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'exportar.docx'
+                link.click()
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        })
+    })
 })
 
 

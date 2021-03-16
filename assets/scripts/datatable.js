@@ -74,7 +74,7 @@ var Datatable = function() {
                         "dataSrc": function(res) { // Manipulate the data returned from the server
                             return res.payload;
                         },
-                        "error": function() { // handle general connection errors
+                        "error": function(errors) { // handle general connection errors
                             if (tableOptions.onError) {
                                 tableOptions.onError.call(undefined, the);
                             }

@@ -141,6 +141,8 @@ $dataGraph = new DataGraph();
 
 include_once(DOC_ROOT."/classes/reportService.class.php");
 include_once(DOC_ROOT."/classes/contractActivity.class.php");
+include_once(DOC_ROOT."/classes/question.class.php");
+$question = new Question;
 
 $db = new DB;
 $dbRemote = new DBRemote;

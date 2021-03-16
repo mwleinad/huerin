@@ -5,16 +5,13 @@
 		<td align="center" width="20%">{$item.totalPasos}</td>
 		<td  align="center" width="20%">
 		{if in_array(27,$permissions) || $User.isRoot}
-	  		<img src="{$WEB_ROOT}/images/b_dele.png" class="spanDelete" id="{$item.tipoServicioId}"  title="Eliminar"/>
+	  		<img src="{$WEB_ROOT}/images/b_dele.png" class="spanDelete" data-id="{$item.tipoServicioId}" data-type="deleteTipoServicio"  title="Eliminar"/>
 		{/if}
         {if in_array(26,$permissions) || $User.isRoot}
-      		<img src="{$WEB_ROOT}/images/b_edit.png" class="spanEdit" id="{$item.tipoServicioId}"  title="Editar"/>
+      		<img src="{$WEB_ROOT}/images/b_edit.png" class="spanControlService" data-id="{$item.tipoServicioId}" data-type="editTipoServicio"  title="Editar"/>
 		{/if}
         {if in_array(28,$permissions) || $User.isRoot}
       		<a href="{$WEB_ROOT}/service-steps/id/{$item.tipoServicioId}" onclick="return parent.GB_show('Pasos del Servicio', this.href,500,970) "><img src="{$WEB_ROOT}/images/icons/config.gif" title="Configurar Servicio"/></a>
-		{/if}
-		{if $User.isRoot}
-			<img src="{$WEB_ROOT}/images/icons/add_1.png" class="spanTextToReport" id="{$item.tipoServicioId}"  title="Configurar textos para reporte"/>
 		{/if}
 		</td>
 	</tr>

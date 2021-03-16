@@ -237,7 +237,21 @@ class Company extends Main
                 inner join service on company_service.service_id = service.id
                 where company_service.company_id = '" . $this->id . "'";
         $this->Util()->DBProspect()->setQuery($sql);
-        return $this->Util()->DBProspect()->GetResult();
+        $result =  $this->Util()->DBProspect()->GetResult();
+        foreach($result as $key => $val) {
+            $result[$key]['quote_id'] =  $this->getQuoteByService($val['company_id'], $val['service_id']);
+        }
+        //comprobar si tiene cotizacion generada
+
+        return $result;
+    }
+    private function getQuoteByService($companyId, $serviceId)
+    {
+        $sql = "select id from quotation 
+                where company_id = '" . $companyId ."' and service_id = '" . $serviceId ."'";
+        $this->Util()->DBProspect()->setQuery($sql);
+        $row =  $this->Util()->DBProspect()->GetSingle();
+        return $row;
     }
 
     public function assocServiceToCompany($id, $data = [])
