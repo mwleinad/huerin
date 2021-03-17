@@ -308,18 +308,18 @@ class Company extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
-
-        $sql = "UPDATE company set 
+        $activity = ", activity_id = ".$this->business_activity ? $this->business_activity : NULL;
+        echo $sql = "UPDATE company set 
                     name = '" . $this->name . "',
                     taxpayer_id = '" . $this->rfc . "',
                     legal_representative = '" . $this->legal_representative . "',
-                    activity_id = '" . $this->business_activity . "',
+                    ".$activity."
                     regimen_id = '" . $this->regimen_id . "',
                     date_constitution = '" . $this->constitution_date . "',
                     is_new_company = '" . $this->is_new_company . "',
                     comment = '" . $this->observation . "',                
                     updated_at = now()
-                    WHERE id = '" . $this->id . "' ";
+                    WHERE id = '" . $this->id . "' ";exit;
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->UpdateData();
         $this->assocServiceToCompany($this->id, $_POST['services']);
