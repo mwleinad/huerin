@@ -90,6 +90,7 @@
                                     Archivo actual <img  src="{$WEB_ROOT}/images/icons/iconDown.png"/>
                                 </a>
                                 <span>Adjunte nuevo archivo si desea actualizar.</span>
+                                <span style="color:orange">Unicamente se permite archivos con extension .DOCX </span>
                             {/if}
                         </div>
                     </div>
