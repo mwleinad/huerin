@@ -308,7 +308,7 @@ class Company extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
-        $activity = ", activity_id = ".$this->business_activity ? $this->business_activity : NULL;
+        $activity = ', activity_id = '.$this->business_activity ? $this->business_activity : 'NULL';
         echo $sql = "UPDATE company set 
                     name = '" . $this->name . "',
                     taxpayer_id = '" . $this->rfc . "',
