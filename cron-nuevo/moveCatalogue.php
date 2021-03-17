@@ -82,3 +82,28 @@ foreach($regimenes as $val) {
     $util->DBProspect()->InsertData();
 }
 
+// mover regimenes
+$sql = "TRUNCATE activity";
+$util->DBProspect()->setQuery($sql);
+$util->DBProspect()->UpdateData();
+$sql = "select id, name from actividad_comercial order by id asc";
+$util->DB(true)->setQuery($sql);
+$actividades =$util->DB(true)->GetResult();
+foreach($actividades as $val) {
+    $sql = "INSERT INTO activity(
+                    id,
+                    name,
+                    created_at,
+                    updated_at
+                    ) VALUES (
+                     '".$val['id']."',
+                     '".$val['name']."',
+                      now(),
+                      now()
+                    )";
+    $util->DBProspect()->setQuery($sql);
+    $util->DBProspect()->InsertData();
+}
+
+echo "Finalizado";
+
