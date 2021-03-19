@@ -6,10 +6,10 @@
 				<a href="{$WEB_ROOT}/download.php?file={$item.path}">Descargar</a>
 			{/if}</td>
 		<td class="act">
-            {if ((in_array(149,$permissions)&&in_array(152,$permissions)) || $User.isRoot) && $isSameDepartament}
+            {if ((in_array(149,$permissions)&&in_array(152,$permissions)) || $User.isRoot) && ($isSameDepartament || $User.allow_any_departament)}
 			<img src="{$WEB_ROOT}/images/b_dele.png" onclick="DeleteArchivoPopup({$item.departamentosArchivosId}, {$id})" id="{$item.departamentosArchivosId}"/>
 			{/if}
-            {if ((in_array(149,$permissions)&&in_array(151,$permissions)) || $User.isRoot) && $isSameDepartament}
+            {if ((in_array(149,$permissions)&&in_array(151,$permissions)) || $User.isRoot) && ($isSameDepartament || $User.allow_any_departament)}
 			<img src="{$WEB_ROOT}/images/b_edit.png" onclick="EditArchivoPopup({$item.departamentosArchivosId},{$id})" title="Editar" id="{$item.departamentosArchivosId}"/>
             {/if}
 		</td>

@@ -24,7 +24,7 @@
                                   {assign var=titleBtn  value='Subir'}
                               {/if}
                               <input type="hidden" id="exist_file{$item.personalId}{$item.expedienteId}" value="{$item.findFile}">
-                              <form  class="dropzone"  id="ln_{$item.personalId}_{$item.expedienteId}">
+                              <form  class="dropzone"  id="ln_{$item.personalId}_{$item.expedienteId}" data-ext="{$item.extension}">
                                   <input name="file_name" type="hidden" value="file_{$item.personalId}_{$item.expedienteId}">
                               </form>
                               {*}<a href="javascript:void(0);" title="{$titleBtn}" id="subir_{$item.personalId}_{$item.expedienteId}" style="cursor:pointer">

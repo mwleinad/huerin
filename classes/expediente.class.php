@@ -15,6 +15,16 @@ class Expediente extends Main
         $this->Util()->ValidateRequireField($value,'Nombre');
         $this->name=$value;
     }
+
+    private $extensiones=[];
+    public function setExtensiones($value)
+    {
+        if(!is_array($value)||empty($value))
+            $this->Util()->setError(0,'error',"Es necesario seleccionar por lo menos un elemento  de la lista",'Extensiones de archivos');
+        else
+            $this->extensiones = $value;
+
+    }
     public function setExpedienteId($value){
         $this->Util()->ValidateRequireField($value,'Id');
         $this->expedienteId=$value;
@@ -41,7 +51,14 @@ class Expediente extends Main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql =  "INSERT INTO expedientes(name,status,extension) VALUES('".$this->name."','activo','pdf')";
+        $sql =  "INSERT INTO expedientes(
+                            name,
+                            status,
+                            extension)
+                            VALUES(
+                            '".$this->name."',
+                            'activo',
+                            '".implode(',', $this->extensiones)."')";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -61,7 +78,10 @@ class Expediente extends Main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql =  "UPDATE expedientes SET name= '".$this->name."' WHERE expedienteId='".$this->expedienteId."' ";
+        $sql =  "UPDATE expedientes SET 
+                       name= '".$this->name."', 
+                       extension= '".implode(',', $this->extensiones)."' 
+                       WHERE expedienteId='".$this->expedienteId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 
