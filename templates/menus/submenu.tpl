@@ -9,7 +9,7 @@
                     <span>{$item.departamento}</span></a></li>
                     {/if}
                {/foreach}
-               {if (in_array(148,$permissions) || $User.isRoot) && $isSameDepartament}
+               {if (in_array(148,$permissions) || $User.isRoot) && ($isSameDepartament || $User.allow_any_departament)}
                 <li><a href="#" onclick="NuevoArchivo({$id})">
                 <span>Nuevo Archivo</span></a></li>
                 {/if}

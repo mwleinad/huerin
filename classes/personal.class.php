@@ -918,7 +918,7 @@ class Personal extends Main
 
     public function GetExpedientes()
     {
-        $sql = "SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='" . $this->personalId . "' and b.status='activo' ";
+        $sql = "SELECT a.expedienteId,a.path,a.personalId,b.name,a.fecha,b.extension from personalExpedientes a LEFT JOIN expedientes b ON a.expedienteId=b.expedienteId WHERE a.personalId='" . $this->personalId . "' and b.status='activo' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $result = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
         foreach ($result as $key => $value) {
