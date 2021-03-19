@@ -14,6 +14,7 @@
                         <option value="">Seleccionar...</option>
 						<option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Dispositivo</option>
 						<option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Equipo de computo</option>
+						<option value="software" {if $post.tipo_recurso eq "software"}selected{/if}>Software</option>
 						<option value="inmobiliaria" {if $post.tipo_recurso eq "inmobiliaria"}selected{/if}>Inmobiliaria</option>
 					</select>
 				</div>
@@ -101,7 +102,7 @@
                                 <option value="escritorio" {if $post.tipo_equipo eq "escritorio"}selected{/if}>Escritorio</option>
                                 <option value="portatil" {if $post.tipo_equipo eq "portatil"}selected{/if}>Portatil</option>
                             </select>
-                            
+
                         </div>
                     </div>
                 </div>
