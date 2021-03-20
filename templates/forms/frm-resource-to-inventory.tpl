@@ -27,6 +27,13 @@
 				</div>
 				<hr>
 			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left"> * No. Inventario</div>
+				<div style="width:70%;float: left;">
+					<input type="text" name="no_inventario" id="no_inventario" value="{$post.no_inventario}" class="largeInput "/>
+				</div>
+				<hr>
+			</div>
 			<div class="grid_16">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Descripcion</div>
@@ -37,34 +44,55 @@
 				</div>
 				<hr>
 			</div>
-            <div class="grid_16">
-                <div class="formLine" style="width:100%;  display: inline-block;">
-                    <div style="width:30%;float:left">* Fecha de compra</div>
-                    <div style="width:70%;float: left;">
-                        <input name="fecha_compra"  id="fecha_compra" onclick="CalendarioSimple(this)" value="{if $post.fecha_compra neq "0000-00-00"}{$post.fecha_compra|date_format:"%d-%m-%Y"}{/if}" type="text" class="largeInput "/>
-                    </div>
-                </div>
-                <hr>
-            </div>
-            <div class="grid_16 field_computo {if $post.tipo_recurso neq 'equipo_computo'}noShow{/if}">
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> Cuenta con hub usb</div>
-                        <div style="width:30%;float: left;">
-                            <input name="hub_usb"  id="hub_usb" type="checkbox" class="largeInput " {if $post.con_hubusb}checked{/if}/>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_8">
+			<div class="grid_16 shared_field equipo_computo
+						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+						noShow{/if}"">
+				<div class="formLine" style="width:100%;  display: inline-block;">
+					<div style="width:30%;float:left"> Procesador</div>
+					<div style="width:70%;float: left;">
+						<input name="procesador" id="procesador" class="largeInput" value="{$post.procesador}" />
+					</div>
+
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo
+						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+						noShow{/if}">
+				<div class="grid_16">
 					<div class="formLine" style="width:100%;  display: inline-block;">
-						<div style="width:40%;float:left"> Cuenta con no break</div>
-						<div style="width:30%;float: left;">
-							<input name="no_break"  id="no_break" type="checkbox" class="largeInput" {if $post.con_nobreak}checked{/if}/>
+						<div style="width:30%;float:left"> * Tipo de equipo</div>
+						<div style="width:70%;float: left;">
+							<select class="largeInput" id="tipo_equipo" name="tipo_equipo">
+								<option value="">Seleccionar..</option>
+								<option value="escritorio" {if $post.tipo_equipo eq "escritorio"}selected{/if}>Escritorio</option>
+								<option value="portatil" {if $post.tipo_equipo eq "portatil"}selected{/if}>Portatil</option>
+							</select>
+
 						</div>
 					</div>
-                </div>
+				</div>
 				<hr>
-            </div>
+			</div>
+			<div class="grid_16">
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Marca</div>
+						<div style="width:70%;float: left;">
+							<input name="marca"  id="marca" type="text"  value="{$post.marca}" class="largeInput "/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Modelo</div>
+						<div style="width:70%;float: left;">
+							<input name="modelo"  id="modelo" type="text" value="{$post.modelo}" class="largeInput "/>
+						</div>
+					</div>
+				</div>
+				<hr>
+			</div>
 			<div class="grid_16">
 				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
@@ -74,7 +102,93 @@
 						</div>
 					</div>
 				</div>
-				<div class="grid_8 field_computo {if $post.tipo_recurso neq 'equipo_computo'}noShow{/if}">
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left">* Fecha de compra</div>
+						<div style="width:70%;float: left;">
+							<input name="fecha_compra"  id="fecha_compra" onclick="CalendarioSimple(this)" value="{if $post.fecha_compra neq "0000-00-00"}{$post.fecha_compra|date_format:"%d-%m-%Y"}{/if}" type="text" class="largeInput "/>
+						</div>
+					</div>
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo {if !in_array($post.tipo_recurso, ['equipo_computo'])}noShow{/if}">
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Mouse</div>
+						<div style="width:30%;float: left;">
+							<input name="con_mouse"  id="con_mouse" type="checkbox" class="largeInput " {if $post.con_mouse}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Mousepad</div>
+						<div style="width:30%;float: left;">
+							<input name="con_mousepad"  id="con_mousepad" type="checkbox" class="largeInput " {if $post.con_mousepad}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Teclado</div>
+						<div style="width:30%;float: left;">
+							<input name="con_teclado"  id="con_teclado" type="checkbox" class="largeInput" {if $post.con_teclado}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Monitor</div>
+						<div style="width:30%;float: left;">
+							<input name="con_monitor"  id="con_monitor" type="checkbox" class="largeInput" {if $post.con_monitor}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Ethernet</div>
+						<div style="width:30%;float: left;">
+							<input name="con_ethernet"  id="con_ethernet" type="checkbox" class="largeInput" {if $post.con_ethernet}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Hdmi</div>
+						<div style="width:30%;float: left;">
+							<input name="con_hdmi"  id="con_hdmi" type="checkbox" class="largeInput" {if $post.con_hdmi}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Cuenta con hub usb</div>
+						<div style="width:30%;float: left;">
+							<input name="hub_usb"  id="hub_usb" type="checkbox" class="largeInput " {if $post.con_hubusb}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Cuenta con no break</div>
+						<div style="width:30%;float: left;">
+							<input name="no_break"  id="no_break" type="checkbox" class="largeInput" {if $post.con_nobreak}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:40%;float:left"> Ventilador</div>
+						<div style="width:30%;float: left;">
+							<input name="con_ventilador"  id="con_ventilador" type="checkbox" class="largeInput" {if $post.con_ventilador}checked{/if}/>
+						</div>
+					</div>
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo software {if !in_array($post.tipo_recurso, ['equipo_computo', 'software'])}noShow{/if}">
+				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
 						<div style="width:30%;float:left"> No. licencia</div>
 						<div style="width:70%;float: left;">
@@ -82,32 +196,16 @@
 						</div>
 					</div>
 				</div>
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Cod. activación</div>
+						<div style="width:70%;float: left;">
+							<input name="cod_activacion"  id="cod_activacion" type="text"  value="{$post.codigo_activacion}" class="largeInput "/>
+						</div>
+					</div>
+				</div>
                 <hr>
 			</div>
-            <div class="grid_16 field_computo {if $post.tipo_recurso neq 'equipo_computo'}noShow{/if}">
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:30%;float:left"> Cod. activación</div>
-                        <div style="width:70%;float: left;">
-                            <input name="cod_activacion"  id="cod_activacion" type="text"  value="{$post.codigo_activacion}" class="largeInput "/>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:30%;float:left"> * Tipo de equipo</div>
-                        <div style="width:70%;float: left;">
-                            <select class="largeInput" id="tipo_equipo" name="tipo_equipo">
-                                <option value="">Seleccionar..</option>
-                                <option value="escritorio" {if $post.tipo_equipo eq "escritorio"}selected{/if}>Escritorio</option>
-                                <option value="portatil" {if $post.tipo_equipo eq "portatil"}selected{/if}>Portatil</option>
-                            </select>
-
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            </div>
             <div style="clear:both"></div>
             <div class="grid_16">
                 <span style="float:left">* Campos Obligatorios</span>

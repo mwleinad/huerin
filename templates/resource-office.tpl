@@ -21,7 +21,7 @@
         <div class="clear"></div>
         <div class="portlet">
             <div class="portlet-header">Lista de recursos</div>
-            <div class="portlet-content nopadding borderGray" id="contenido">
+            <div class="portlet-content nopadding borderGray" id="contenido" style="overflow: scroll;">
                 {include file="lists/resource-office.tpl"}
             </div>
         </div>
