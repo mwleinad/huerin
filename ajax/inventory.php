@@ -20,15 +20,25 @@ switch($_POST['type']){
         $inventory->setNombre($_POST['nombre']);
         $inventory->setDescripcion($_POST['descripcion']);
         $inventory->setFechaCompra($_POST['fecha_compra']);
-        if($_POST['tipo_recurso']=='equipo_computo'){
-            $hub_usb =  isset($_POST['hub_usb']);
-            $no_break = isset($_POST['no_break']);
-            $inventory->withHubUsb($hub_usb);
-            $inventory->withNobreak($no_break);
-            $inventory->setNoLicencia($_POST['no_licencia']);
-            $inventory->setCodigoActivacion($_POST['cod_activacion']);
+        $inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
+        $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
+        $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
+        $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
+        $inventory->withMonitor(isset($_POST['con_monitor']) ? 1 : 0);
+        $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
+        $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
+        $inventory->setNoInventario(isset($_POST['con_ethernet']) ? 1 : 0);
+        $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
+        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);
+        $inventory->setNoLicencia($_POST['no_licencia']);
+        $inventory->setCodigoActivacion($_POST['cod_activacion']);
+        $inventory->setMarca($_POST['marca']);
+        $inventory->setModelo($_POST['modelo']);
+        $inventory->setNoInventario($_POST['no_inventario']);
+        $inventory->setProcesador($_POST['procesador']);
+        if($_POST['tipo_recurso'] === 'equipo_computo')
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
-        }
+
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->saveResource()){
             echo "ok[#]";
@@ -48,13 +58,23 @@ switch($_POST['type']){
         $inventory->setNombre($_POST['nombre']);
         $inventory->setDescripcion($_POST['descripcion']);
         $inventory->setFechaCompra($_POST['fecha_compra']);
+        $inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
+        $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
+        $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
+        $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
+        $inventory->withMonitor(isset($_POST['con_monitor']) ? 1 : 0);
+        $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
+        $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
+        $inventory->setNoInventario(isset($_POST['no_inventario']) ? 1 : 0);
+        $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
+        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);
+        $inventory->setNoLicencia($_POST['no_licencia']);
+        $inventory->setCodigoActivacion($_POST['cod_activacion']);
+        $inventory->setMarca($_POST['marca']);
+        $inventory->setModelo($_POST['modelo']);
+        $inventory->setNoInventario($_POST['no_inventario']);
+        $inventory->setProcesador($_POST['procesador']);
         if($_POST['tipo_recurso']=='equipo_computo'){
-            $hub_usb =  isset($_POST['hub_usb']);
-            $no_break = isset($_POST['no_break']);
-            $inventory->withHubUsb($hub_usb);
-            $inventory->withNobreak($no_break);
-            $inventory->setNoLicencia($_POST['no_licencia']);
-            $inventory->setCodigoActivacion($_POST['cod_activacion']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
         }
         $inventory->setNoSerie($_POST['no_serie']);

@@ -1,25 +1,25 @@
 <tr class="{$clase}">
+    <td  style="width:10%;">{$key+1}</td>
+    <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo / {$res.tipo_equipo|ucfirst}{else}{$res.tipo_recurso|ucfirst}{/if}
+
+    </td>
+    <td  style="width:10%;">{$res.no_inventario}</td>
     <td  style="width:10%;">{$res.nombre}</td>
-    <td  style="width:15%; text-align: justify">{$res.descripcion|truncate:255:"...":true}<br>
-        <b>Cuenta con nobreak:</b> {if $res.con_nobreak eq '1'}Si<br>{else}No<br>{/if}
-        <b>Cuenta con hub usb:</b> {if $res.con_hubusb eq '1'}Si<br>{else}No<br>{/if}
-        {if $res.no_licencia}<b>No. licencia:</b> {$res.no_licencia}<br>{/if}
-        {if $res.no_serie}<b>No. serie:</b> {$res.no_serie}<br>{/if}
-        {if $res.codigo_activacion}<b>Codigo activación:</b> {$res.codigo_activacion}<br>{/if}
-    </td>
-    <td  style="width:15%;">
-        {foreach from=$res.upkeeps key=kkep item=itemKep}
-            - <b>Fecha:</b> {$itemKep.upkeep_date}<br>
-              <p style="text-align: justify"><b>Descripcion: </b>{$itemKep.upkeep_description}</p>
-        {/foreach}
-    </td>
-    <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo{else}{$res.tipo_recurso|ucfirst}{/if}</td>
-    <td  style="width:10%;">
-        {foreach from=$res.responsables key=kr item=itemr}
-           {$kr+1}.{$itemr.nombre}<br>
-        {/foreach}
-    </td>
-    <td  style="width:10%;">{if $res.tipo_equipo eq ""}N/A{else}{$res.tipo_equipo|ucfirst}{/if}</td>
+    <td  style="width:10%;">{$res.responsables[0].nombre}</td>
+    <td  style="width:10%;">{$res.responsables[0].email}</td>
+    <td  style="width:10%;">{$res.marca}</td>
+    <td  style="width:10%;">{$res.modelo}</td>
+    <td  style="width:10%;">{$res.no_serie}</td>
+    <td  style="width:10%;">{$res.procesador}</td>
+    <td  style="width:10%;"> {if $res.con_mouse eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_teclado eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_mousepad eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_ventilador eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_monitor eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_ethernet eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_hubusb eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_nobreak eq '1'}Si{else}No{/if}</td>
+    <td  style="width:10%;"> {if $res.con_hdmi eq '1'}Si{else}No{/if}</td>
     <td  style="width:10%;">{$res.fecha_compra|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>
