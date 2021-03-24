@@ -917,6 +917,7 @@ class ReporteBonos extends Main
                         WHERE a.status IN ('activo','bajaParcial') and a.contractId in(%s) and d.departamentoId in(%s)  and d.status ='1' ";
         $year = $ftr["year"];
         $new = [];
+        // crear tabla temporal
         foreach($gerentes as $key => $value) {
             $departamentos = [(int)$value['departamentoId']];
             if((int)$value['departamentoId'] === 8)
@@ -974,6 +975,7 @@ class ReporteBonos extends Main
             }
             // si tiene seleccionado un responsable debe buscar la de sus subordinados
             if($ftr["responsableCuenta"]) {
+
                 foreach ($subordinados as $keySub => $sub) {
                     $childrenSubId = [];
                     array_push($childrenSubId, $sub['personalId']);
@@ -1009,7 +1011,7 @@ class ReporteBonos extends Main
         return $new;
     }
 
-    function getTotales(array $servicios,$year, $meses, $mesesBase, $totalNominas = 0) {
+    function getTotales(array $servicios,$year, $meses, $mesesBase, $totalNominas = 0, $table="instanciaServicio") {
         global $instanciaServicio;
         $data['devengados'] = $mesesBase;
         $data['trabajados'] = $mesesBase;
@@ -1023,7 +1025,7 @@ class ReporteBonos extends Main
             if ($serv['status'] == "bajaParcial")
                 $isParcial = true;
 
-            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true);
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true, $table);
 
             if(empty($temp)||empty($temp["instancias"]))
                 continue;
