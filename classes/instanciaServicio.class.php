@@ -256,7 +256,7 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
-    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false){
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false, $table = "instanciaServicio"){
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
@@ -287,7 +287,7 @@ class InstanciaServicio extends  Servicio
 
         $sql = "SELECT class,servicio.costo,date_format(instanciaServicio.date, '%Y') as anio,date_format(instanciaServicio.date, '%m') as mes,instanciaServicioId, 
                 instanciaServicio.status, servicio.tipoServicioId,instanciaServicio.comprobanteId,instanciaServicio.costoWorkflow,servicio.inicioFactura,instanciaServicio.factura
-				FROM instanciaServicio 
+				FROM ".$table." 
 				INNER JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (".implode(',',$meses).") $sinceMonth) AND YEAR(instanciaServicio.date)='".$year."' $ftrTemporal 
 				AND servicio.status NOT IN('baja','inactiva')

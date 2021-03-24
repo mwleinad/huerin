@@ -595,6 +595,7 @@ class Servicio extends Contract
 			WHERE servicioId = '".$this->servicioId."'");
 		$this->Util()->DB()->UpdateData();
 
+        $this->updatePriceInCurrentWorkflow($this->servicioId, $this->costo);
 		//actualizar historial
         $log->saveHistoryChangesServicios($this->servicioId,$this->inicioFactura,"modificacion",$this->costo,$_SESSION['User']['userId'],$this->inicioOperaciones,'');
         $this->resetDateLastProcessInvoice($infoServicio['contractId']);
@@ -1030,6 +1031,7 @@ class Servicio extends Contract
             if($affect>0){
                 $servs[] = $servId;
                 $actualizados++;
+                $this->updatePriceInCurrentWorkflow($servId, $costo);
                 if($_POST["beforeStatus_$servId"]!=$_POST["status_$servId"]){
                     switch($_POST["status_$servId"]){
                         case 'activo':
@@ -1212,5 +1214,21 @@ class Servicio extends Contract
         }
         $this->resetDateLastProcessInvoice($conId);
         return $serviciosAfectados;
+    }
+
+
+    /*
+     * Atualiza el costo del workflow del mes en que se edita(unicamente)
+     * No actualiza el costo en la factura
+     *
+     */
+    private function updatePriceInCurrentWorkflow($id, $costo) {
+        $currentDate =  $this->Util()->getFirstDate(date('Y-m-d'));
+
+        $query = "update instanciaServicio set costoWorkflow = '".$costo."'
+                  where instanciaServicioId in(select instanciaServicioId from instanciaServicio 
+                  where servicioId = '".$id."' and date = '".$currentDate."')";
+        $this->Util()->DB()->setQuery($query);
+        $this->Util()->DB()->UpdateData();
     }
 }
