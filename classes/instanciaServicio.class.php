@@ -256,7 +256,8 @@ class InstanciaServicio extends  Servicio
         }
         return $new;
     }
-    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false, $table = "instanciaServicio"){
+    function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false, $table = "instanciaServicio") {
+        global $comprobante;
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
@@ -300,19 +301,37 @@ class InstanciaServicio extends  Servicio
         if(empty($data))
           return $newArray;
 
-        foreach($data as $key => $value)
-        {
-            $costo = $value['factura'] == 'Si' || $value['costoWorkflow'] > 0 ?  $value['costoWorkflow'] : 0;
+        foreach($data as $key => $value) {
             $dateWorkflow =  $value['anio']."-".$value['mes']."-01";
-            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d')){
-                $costo = $value['costo'];
-                $costo = $dateWorkflow >= '2019-03-01' ?  $value['costoWorkflow'] : $costo;
+            $costo = 0;
+            $costoCobrado = 0;
+            if ($dateWorkflow >= '2019-03-01') {
+                $costo = $value['factura'] == 'Si' ? $value['costoWorkflow'] : 0;
+            } else {
+                $costo = $value['comprobanteId'] > 0 ? $value['costo'] : 0;
             }
-
-            $numero = $cobrado ? $this->getTotalCobrosMensual($year, $value['mes'], $servicioId) : 0;
+            if ($cobrado) {
+                if ($value['comprobanteId'] > 0) {
+                    $comp = $comprobante->GetInfoComprobante($value['comprobanteId']);
+                    if ($comp['saldo'] <= 0.01 && $comp['status'] == '1')
+                        $costoCobrado = $costo;
+                }
+            }
+            /* || $value['costoWorkflow'] > 0  quitar esta condicion para que en primera instancia el costo solo sumara al devengado si facturo en ese mes.
+            $costo = $value['factura'] == 'Si' ?  $value['costoWorkflow'] : 0;
+            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d') || $value['comprobanteId']){// para años posteriores deberiamos validar si tiene comprobanteId el workflow
+                $costo = $value['costo'];
+                if($dateWorkflow >= '2019-03-01') {
+                    $costo = $value['factura'] == 'Si' ? $value['costoWorkflow'] : 0;
+                } else {
+                    $costo = $value['comprobanteId'] > 0 ? $costo : 0; //utilizamos comprobanteId para fechas posteriores a 2019-03-01
+                }
+               // $costo = $dateWorkflow >= '2019-03-01'  ?  $value['costoWorkflow'] : $costo;
+            }
+            $numero = $cobrado ? $this->getTotalCobrosMensual($year, $value['mes'], $servicioId) : 0;*/
 
             $value['costo'] = $costo;
-            $value['cobrado'] = $costo * $numero;
+            $value['cobrado'] = $costoCobrado; //$costo * $numero;
 
             if($value['class']=='CompletoTardio'|| $value['class']=='Completo'){
                 $totalAcompletado += $value['costo'];

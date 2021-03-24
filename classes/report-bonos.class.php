@@ -398,28 +398,16 @@ class ReporteBonos extends Main
             $isParcial = false;
             if ($service['status']=="bajaParcial")
                 $isParcial = true;
+
             switch ($ftr['period']) {
-                case 'efm':
-                    $meses = array(1, 2, 3);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'amj':
-                    $meses = array(4, 5, 6);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'jas':
-                    $meses = array(7, 8, 9);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'ond':
-                    $meses = array(10, 11, 12);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                default:
-                    $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
+                case 'efm': $meses = array(1, 2, 3); break;
+                case 'amj': $meses = array(4, 5, 6); break;
+                case 'jas': $meses = array(7, 8, 9); break;
+                case 'ond': $meses = array(10, 11, 12); break;
+                default: $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12); break;
             }
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
+            
             if(!empty($temp['instancias']) || $isParcial){
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
                 $yearLastWorkflow = $isParcial ? (int)date('Y',strtotime($service['lastDateWorkflow'])) : null ;
