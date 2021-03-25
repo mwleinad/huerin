@@ -1,29 +1,13 @@
 <tr class="{$clase}">
     <td  style="width:10%;">{$key+1}</td>
     <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo / {$res.tipo_equipo|ucfirst}{else}{$res.tipo_recurso|ucfirst}{/if}
-
     </td>
-    <td  style="width:10%;">{$res.no_inventario}</td>
     <td  style="width:10%;">{$res.nombre}</td>
-    <td  style="width:10%;">{$res.responsables[0].nombre}</td>
-    <td  style="width:10%;">{$res.responsables[0].email}</td>
     <td  style="width:10%;">{$res.marca}</td>
-    <td  style="width:10%;">{$res.modelo}</td>
-    <td  style="width:10%;">{$res.no_serie}</td>
-    <td  style="width:10%;">{$res.procesador}</td>
-    <td  style="width:10%;"> {if $res.con_mouse eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_teclado eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_mousepad eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_ventilador eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_monitor eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_ethernet eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_hubusb eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_nobreak eq '1'}Si{else}No{/if}</td>
-    <td  style="width:10%;"> {if $res.con_hdmi eq '1'}Si{else}No{/if}</td>
     <td  style="width:10%;">{$res.fecha_compra|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>
-    <td>
+    <td style="width:10%;">
         <div style="min-width: 80px;float: left">
             {if in_array(256,$permissions)|| $User.isRoot}
                 <a target="_blank" href="{$WEB_ROOT}/resource-office-pdf&id={$res.office_resource_id}&type=view">

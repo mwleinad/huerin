@@ -27,13 +27,6 @@
 				</div>
 				<hr>
 			</div>
-			<div class="formLine" style="width:100%;  display: inline-block;">
-				<div style="width:30%;float:left"> * No. Inventario</div>
-				<div style="width:70%;float: left;">
-					<input type="text" name="no_inventario" id="no_inventario" value="{$post.no_inventario}" class="largeInput "/>
-				</div>
-				<hr>
-			</div>
 			<div class="grid_16">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Descripcion</div>
