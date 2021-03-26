@@ -46,6 +46,7 @@ if($current==$firstDay)
         exit;
     }
 }
+
 $_SESSION['empresaId'] = IDEMPRESA;
 $mask = DOC_ROOT.'/temp/15_A_*.*';
 $array = glob($mask);
@@ -54,6 +55,6 @@ $mask = DOC_ROOT.'/temp/20_B_*.*';
 $array = glob($mask);
 array_map('unlink', glob($mask));
 $entry =  " inicio ". date("Y-m-d H:i:s").chr(13).chr(10);
-$invoiceService->GenerateInvoices(1320);
+$invoiceService->GenerateInvoices();
 $entry  .=" fin ". date("Y-m-d H:i:s").chr(13).chr(10);
 echo $entry;

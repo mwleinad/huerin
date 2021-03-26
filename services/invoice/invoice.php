@@ -132,6 +132,16 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetRow();
     }
+    private function validateIfGenerateUniqueInvoice($serv) {
+        if((int)$serv['uniqueInvoice']) {
+            $query = "select instanciaServicioId, comprobanteId from instanciaServicio
+                      where servicioId = '".$serv['servicioId']."' and comprobanteId > 0 LIMIT 1";
+            $this->Util()->DB()->setQuery($query);
+            $row =  $this->Util()->DB()->GetRow();
+            return $row  ? true : false;
+        }
+       return false;
+    }
     function GetFilterServicesByContract($validateInstance =  true) {
         $this->resetServiciosToConceptos();
         $id =  $this->currentContract["contractId"];
@@ -145,7 +155,7 @@ class InvoiceService extends Cfdi{
 
         array_push($childs, $id);
         $strId =  implode(',', $childs);
-        $sql = "select a.*,b.claveSat,b.nombreServicio from servicio a
+        $sql = "select a.*,b.claveSat,b.nombreServicio, b.uniqueInvoice from servicio a
                 inner join tipoServicio b on a.tipoServicioId = b.tipoServicioId 
                 where a.contractId in($strId) and b.status='1' 
                 and a.status in('activo','bajaParcial') and week(inicioFactura) is not null
@@ -181,17 +191,14 @@ class InvoiceService extends Cfdi{
                if($firstDayCurrentDate>$firstDayLastDateWorkflow)
                 continue;
            }
-           //$idTypeService =  $item['tipoServicioId'];
-           //if (!in_array($idTypeService, $servicesIn)) {
-               //array_push($servicesIn, $idTypeService);
+           // comprobar factura unica ocasion
+           if($this->validateIfGenerateUniqueInvoice($item))
+               continue;
+
            $item["workflowId"] = $instancia["instanciaServicioId"];
            $item["date"] = $instancia["date"];
            $item["isRifNoInstance"] = $instancia["isRifNoInstance"];
            $this->serviciosToConceptos[] = $item;
-              // $services[$idTypeService] =  $item;
-           /*} else {
-               $services[$idTypeService]['costo'] += $item['costo'];
-           }*/
        }
 
     }
