@@ -28,6 +28,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'responsables-resource',
 		'upkeeps-resource',
 		'activity',
+		'question-service',
 
 		//clientes y contratos
 		'customer',
@@ -44,6 +45,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'contract-view',
 		'contract-docs',
         'prospect',
+        'company',
         'prospect-offer-pdf',
 
         //Servicios

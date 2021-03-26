@@ -17,7 +17,7 @@ if(!$_SERVER["DOCUMENT_ROOT"])
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
 
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
+if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html" && $_SERVER['DOCUMENT_ROOT'] != "/var/www/qplatform/public_html")
 {
     $docRoot = $_SERVER['DOCUMENT_ROOT']."";
     session_save_path("C:/laragon/tmp");
@@ -46,6 +46,7 @@ if($current==$firstDay)
         exit;
     }
 }
+
 $_SESSION['empresaId'] = IDEMPRESA;
 $mask = DOC_ROOT.'/temp/15_A_*.*';
 $array = glob($mask);

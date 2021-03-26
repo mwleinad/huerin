@@ -1,9 +1,9 @@
 <div class="grid_16" id="content">
     <div class="grid_9">
-        <h1 class="clientes">Prospectos</h1>
+        <h1 class="clientes">Empresas de prospecto</h1>
     </div>
     <div class="grid_6" id="eventbox">
-        <a href="javascript:;" class="inline_add spanControlProspect"   data-type="openAddProspect">Agregar prospecto</a>
+        <a href="javascript:void(0)" class="inline_add spanControlCompany"  data-type="openAddCompany" data-prospect="{$prospect}">Agregar</a>
         <div id="loadPrint">
         </div>
     </div>
@@ -12,8 +12,9 @@
     <div id="portlets">
         <div class="clear"></div>
         <div class="portlet">
+            <input type="hidden" id="prospect_id" name="prospect_id" value="{$prospect}"/>
             <div class="portlet-content nopadding borderGray" id="contenido">
-                {include file="lists/prospect.tpl"}
+                {include file="lists/company.tpl"}
             </div>
         </div>
     </div>

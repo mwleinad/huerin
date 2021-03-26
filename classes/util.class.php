@@ -6,6 +6,7 @@ class Util extends CustomError
 	public $DB;
 	private $DBSelect;
 	private $DBRemote;
+	private $DBProspect;
 	public function DB($change_collate = true)
 	{
 		if($this->DB == null )
@@ -24,6 +25,16 @@ class Util extends CustomError
 		}
 		$this->DBRemote->setSqlDatabase($id);
 		return $this->DBRemote;
+	}
+
+	public function DBProspect($id = SQL_DATABASE_PROSPECT)
+	{
+		if($this->DBProspect == null )
+		{
+			$this->DBProspect = new DBProspect($id);
+		}
+		$this->DBProspect->setSqlDatabase($id);
+		return $this->DBProspect;
 	}
 
 

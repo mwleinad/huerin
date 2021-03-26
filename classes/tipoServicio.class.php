@@ -45,7 +45,7 @@ class TipoServicio extends Main
 
 	public function setNombreServicio($value)
 	{
-		$this->Util()->ValidateString($value, 10000, 1, '<br> Nombre de servicio');
+		$this->Util()->ValidateString($value, 10000, 1, 'Nombre de servicio');
 		$this->nombreServicio = $value;
 	}
     public function setClaveSat($value)
@@ -55,6 +55,15 @@ class TipoServicio extends Main
         $this->Util()->ValidateOnlyNumeric($value,"Clave SAT");
         $this->claveSat = $value;
     }
+
+    private function validateFileIfExist() {
+		if(isset($_FILES['template']) && $_FILES['template']['error'] === 0) {
+			$extension = explode(".", $_FILES['template']['name']);
+			$ext = end($extension);
+			if($ext != "docx")
+				$this->Util()->setError(0, 'error', 'El archivo adjunto no es valido.');
+		}
+	}
 
 	public function getNombreServicio()
 	{
@@ -88,7 +97,12 @@ class TipoServicio extends Main
 		$this->mostrarCostoVisual = $value;
 	}
 
-    public function setActivityServiceId($value)
+	private $uniqueInvoice;
+	public function setUniqueInvoice($value){
+		$this->uniqueInvoice = $value;
+	}
+
+	public function setActivityServiceId($value)
     {
         $this->Util()->ValidateInteger($value);
         $this->activityServiceId = $value;
@@ -143,6 +157,51 @@ class TipoServicio extends Main
 		$data["items"] = $result;
 		$data["pages"] = $pages;
 		return $data;
+	}
+
+	public function EnumerateGroupByDepartament($normalizeJson = false) {
+		$sql = "select
+       			departamentos.departamentoId,
+				departamentos.departamento,
+        		CONCAT(
+					'[',
+					GROUP_CONCAT(
+						CONCAT(
+							'{\"value',
+							'\":\"',
+							tipoServicio.tipoServicioId,
+							'\",\"',
+							'name',
+							'\":\"',
+							 tipoServicio.nombreServicio,
+							'\",\"',
+							'checked',
+							'\":\"',
+							 '',
+							'\"}'
+						)
+					),
+					']'
+				)  as servicios
+				from tipoServicio 	
+				inner join departamentos on departamentos.departamentoId = tipoServicio.departamentoId
+				group by tipoServicio.departamentoId order by departamentos.departamento asc, tipoServicio.nombreServicio asc
+				";
+		$this->Util()->DB()->setQuery($sql);
+		$result =  $this->Util()->DB()->GetResult();
+
+		if ($normalizeJson) {
+			$newServicesGroup = [];
+			foreach ($result as $var) {
+				$cad = [];
+				$services  = $var['servicios'] ? json_decode($var['servicios'], true) : [];
+				$cad['label'] =  $var['departamento'];
+				$cad['options'] = $services;
+				array_push($newServicesGroup, $cad);
+			}
+			return $newServicesGroup;
+		}
+		return $result;
 	}
     public function EnumerateOnePage(){
         global $User;
@@ -216,6 +275,7 @@ class TipoServicio extends Main
 
 	public function Edit()
 	{
+		$this->validateFileIfExist();
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
@@ -230,6 +290,7 @@ class TipoServicio extends Main
 				`costoUnico` = '".$this->costoUnico."',
 				`costo` = '".$this->costo."',
 				`costoVisual` = '".$this->costoVisual."',
+				`uniqueInvoice` = '".$this->uniqueInvoice."',
 				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."'
 			WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
@@ -239,11 +300,24 @@ class TipoServicio extends Main
 		$this->Util()->setError(1, "complete");
 		$this->Util()->PrintErrors();
 
+		//save to prospect db
+		$sql = "UPDATE
+				service
+			SET
+				`name` = '".$this->nombreServicio."',
+				`departament_id` = '".$this->departamentoId."',
+				`updated_at` = now()
+			WHERE id = '".$this->tipoServicioId."'";
+		$this->Util()->DBProspect()->setQuery($sql);
+		$this->Util()->DBProspect()->UpdateData();
+		//mover archivo
+		$this->moveTemplate($this->tipoServicioId);
 		return true;
 	}
 
 	public function Save()
 	{
+		$this->validateFileIfExist();
 		if($this->Util()->PrintErrors()){ return false; }
 		$this->Util()->DB()->setQuery("
 			INSERT INTO
@@ -257,6 +331,7 @@ class TipoServicio extends Main
 				`costoUnico`,
 				`costo`,
 				costoVisual,
+			 	uniqueInvoice,
 				mostrarCostoVisual
 		)
 		VALUES
@@ -269,12 +344,29 @@ class TipoServicio extends Main
 				'".$this->costoUnico."',
 				'".$this->costo."',
 				'".$this->costoVisual."',
+				'".$this->uniqueInvoice."',
 				'".$this->mostrarCostoVisual."'
 		);");
 		$id = $this->Util()->DB()->InsertData();
 		if(isset($_POST['steps'])) {
 			$this->saveSteps($id);
 		}
+		//save to prospect db
+		$sql = "insert into service(
+                    name,
+                    departament_id,
+                    created_at,
+                    updated_at
+                    ) values(
+                       '".$this->nombreServicio."',
+                       '".$this->departamentoId."',
+                       now(),
+                       now()
+                    )";
+		$this->Util()->DBProspect()->setQuery($sql);
+		$id = $this->Util()->DBProspect()->InsertData();
+		//mover archivo
+		if($id) $this->moveTemplate($id);
 
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
@@ -323,6 +415,11 @@ class TipoServicio extends Main
 			WHERE
 				tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
+
+		$sql = "update service set deleted_at = now() where id = '".$this->tipoServicioId."'";
+		$this->Util()->DBProspect()->setQuery($sql);
+		$this->Util()->DBProspect()->UpdateData();
+
 		$this->Util()->setError(3, "complete");
 		$this->Util()->PrintErrors();
 		return true;
@@ -384,6 +481,13 @@ class TipoServicio extends Main
 	    $this->Util()->DB()->setQuery($query);
 	    return $this->Util()->DB()->GetRow();
     }
+    private function moveTemplate($id) {
+		if(isset($_FILES['template']) && $_FILES['template']['error'] === 0) {
+			$rootStorage = PUBLIC_STORAGE_PROSPECT . "/service";
+			$file = "template_".$id.".docx";
+			$move = move_uploaded_file($_FILES['template']['tmp_name'], $rootStorage."/".$file);
+		}
+	}
 
 }
 

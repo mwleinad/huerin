@@ -2,4 +2,4 @@
 
 $user->allowAccess(2);
 $user->allowAccess(271);
-$smarty->assign('mainMnu', 'contratos');
+$smarty->assign('mainMnu', 'catalogos');

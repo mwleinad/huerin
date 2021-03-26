@@ -24,6 +24,7 @@ include_once(DOC_ROOT."/constants.php");
 
 include_once(DOC_ROOT.'/classes/db.class.php');
 include_once(DOC_ROOT.'/classes/db-remote.class.php');
+include_once(DOC_ROOT.'/classes/db-prospect.class.php');
 include_once(DOC_ROOT.'/classes/error.class.php');
 include_once(DOC_ROOT.'/classes/util.class.php');
 include_once(DOC_ROOT.'/classes/main.class.php');
@@ -119,6 +120,8 @@ include_once(DOC_ROOT."/classes/utileriaInvoice.class.php");
 include_once(DOC_ROOT."/classes/articulo.class.php");
 include_once(DOC_ROOT."/classes/inventory.class.php");
 include_once(DOC_ROOT."/classes/prospect.class.php");
+include_once(DOC_ROOT."/classes/company.class.php");
+$company = new Company;
 include_once(DOC_ROOT."/classes/prospectOffer.class.php");
 $prospect = new Prospect;
 include_once(DOC_ROOT."/classes/activity.class.php");
@@ -138,9 +141,12 @@ $dataGraph = new DataGraph();
 
 include_once(DOC_ROOT."/classes/reportService.class.php");
 include_once(DOC_ROOT."/classes/contractActivity.class.php");
+include_once(DOC_ROOT."/classes/question.class.php");
+$question = new Question;
 
 $db = new DB;
 $dbRemote = new DBRemote;
+$dbProspect = new DBProspect;
 $error = new CustomError;
 $util = new Util;
 $main = new Main;

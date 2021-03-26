@@ -5,6 +5,7 @@ var ops = {
 	formatSearching: 'Buscando opciones',
 };
 Event.observe(window, 'load', function() {
+
 	if($('login_0'))
 		Event.observe($('login_0'), "click", LoginCheck);
 
@@ -597,4 +598,20 @@ function check_session()
 			}
 		}
 	})
+}
+jQ.fn.convertFormToJson = function() {
+	var _ = {};
+	jQ.map(this.serializeArray(), function(n) {
+		const keys = n.name.match(/[a-zA-Z0-9_]+|(?=\[\])/g);
+		if (keys.length > 1) {
+			let tmp = _;
+			pop = keys.pop();
+			for (let i = 0; i < keys.length, j = keys[i]; i++) {
+				tmp[j] = (!tmp[j] ? (pop === '') ? [] : {} : tmp[j]), tmp = tmp[j];
+			}
+			if (pop === '') tmp = (!Array.isArray(tmp) ? [] : tmp), tmp.push(n.value);
+			else tmp[pop] = n.value;
+		} else _[keys.pop()] = n.value;
+	});
+	return _;
 }
