@@ -247,13 +247,13 @@ function ShowFilePopup(id) {
 
 function LoadBoxDropzone() {
     jQ('#file-up form.dropzone').each(function () {
-        //ocultar el contenedor
+        var _ext = jQ(this).data('ext').length ? jQ(this).data('ext') : '.pdf'
         var sp = (this.id).split('_');
         var existFile = jQ('#exist_file' + sp[1] + sp[2]).val();
         if (existFile)
             var defaultMessage = 'Ya existe un archivo, haga click en el icono de abajo <img src="' + WEB_ROOT + '/images/downCloud24.png"> para vista preliminar, de lo contrario arraste o click  en esta zona para actualizar<br>Si desea eliminar archivo click en  <img src="' + WEB_ROOT + '/images/deleteCloud24.png">';
         else
-            var defaultMessage = 'Arraste o click en esta zona para subir archivo';
+            var defaultMessage = 'Arrastre o click en esta zona para subir archivo';
         jQ(this).dropzone({
             dictDefaultMessage: defaultMessage,
             dictCancelUpload: 'Cancelar',
@@ -261,13 +261,13 @@ function LoadBoxDropzone() {
             url: WEB_ROOT + '/ajax/expediente.php',
             paramName: 'file_' + sp[1] + sp[2],
             addRemoveLinks: true,
-            dictInvalidFileType: 'La extension de archivo no es valida',
             dictRemoveFile: 'Eliminar',
             maxFileSize: 2,
             autoProcessQueue: true,
             maxFiles: 1,
             uploadMultiple: false,
-            acceptedFiles: 'application/pdf',
+            acceptedFiles: _ext,
+            dictInvalidFileType: 'La extension de archivo no es valida',
             init: function () {
                 var my = this;
                 this.on('sending', function (file, xhr, formData) {

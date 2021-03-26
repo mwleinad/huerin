@@ -398,28 +398,16 @@ class ReporteBonos extends Main
             $isParcial = false;
             if ($service['status']=="bajaParcial")
                 $isParcial = true;
+
             switch ($ftr['period']) {
-                case 'efm':
-                    $meses = array(1, 2, 3);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'amj':
-                    $meses = array(4, 5, 6);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'jas':
-                    $meses = array(7, 8, 9);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                case 'ond':
-                    $meses = array(10, 11, 12);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
-                default:
-                    $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                    $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-                    break;
+                case 'efm': $meses = array(1, 2, 3); break;
+                case 'amj': $meses = array(4, 5, 6); break;
+                case 'jas': $meses = array(7, 8, 9); break;
+                case 'ond': $meses = array(10, 11, 12); break;
+                default: $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12); break;
             }
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
+            
             if(!empty($temp['instancias']) || $isParcial){
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
                 $yearLastWorkflow = $isParcial ? (int)date('Y',strtotime($service['lastDateWorkflow'])) : null ;
@@ -917,6 +905,7 @@ class ReporteBonos extends Main
                         WHERE a.status IN ('activo','bajaParcial') and a.contractId in(%s) and d.departamentoId in(%s)  and d.status ='1' ";
         $year = $ftr["year"];
         $new = [];
+        // crear tabla temporal
         foreach($gerentes as $key => $value) {
             $departamentos = [(int)$value['departamentoId']];
             if((int)$value['departamentoId'] === 8)
@@ -974,6 +963,7 @@ class ReporteBonos extends Main
             }
             // si tiene seleccionado un responsable debe buscar la de sus subordinados
             if($ftr["responsableCuenta"]) {
+
                 foreach ($subordinados as $keySub => $sub) {
                     $childrenSubId = [];
                     array_push($childrenSubId, $sub['personalId']);
@@ -1009,7 +999,7 @@ class ReporteBonos extends Main
         return $new;
     }
 
-    function getTotales(array $servicios,$year, $meses, $mesesBase, $totalNominas = 0) {
+    function getTotales(array $servicios,$year, $meses, $mesesBase, $totalNominas = 0, $table="instanciaServicio") {
         global $instanciaServicio;
         $data['devengados'] = $mesesBase;
         $data['trabajados'] = $mesesBase;
@@ -1023,7 +1013,7 @@ class ReporteBonos extends Main
             if ($serv['status'] == "bajaParcial")
                 $isParcial = true;
 
-            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true);
+            $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true, $table);
 
             if(empty($temp)||empty($temp["instancias"]))
                 continue;

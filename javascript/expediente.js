@@ -1,3 +1,7 @@
+jQ(document).on('click','#check_all',function () {
+    jQ('form input[type=checkbox]#extensiones').prop('checked', jQ(this).is(':checked'));
+});
+
 jQ(document).on('click','.spanEdit',function(){
     jQ.ajax({
        method:'post',
@@ -75,7 +79,6 @@ jQ(document).on('click','#btnExpediente',function(){
         return;
 
 });
-
 jQ(document).on('click','#closePopUpDiv',function(){
     close_popup();
 });

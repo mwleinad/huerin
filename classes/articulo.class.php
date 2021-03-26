@@ -109,6 +109,95 @@ class Articulo extends Main
         return  $this->hubUsb;
     }
 
+    private $mouse = false;
+    public function withMouse($value){
+        $this->mouse = $value;
+    }
+    public function getMouse(){
+        return  $this->mouse;
+    }
+
+    private $keyboard = false;
+    public function withKeyboard($value){
+        $this->keyboard = $value;
+    }
+    public function getKeyboard(){
+        return  $this->keyboard;
+    }
+
+    private $mousepad = false;
+    public function withMousepad($value){
+        $this->mousepad = $value;
+    }
+    public function getMousepad(){
+        return  $this->mousepad;
+    }
+
+    private $ventilador = false;
+    public function withVentilador($value){
+        $this->ventilador = $value;
+    }
+    public function getVentilador(){
+        return  $this->ventilador;
+    }
+
+    private $monitor = false;
+    public function withMonitor($value){
+        $this->monitor = $value;
+    }
+    public function getMonitor(){
+        return  $this->monitor;
+    }
+
+    private $hdmi = false;
+    public function withHdmi($value){
+        $this->hdmi = $value;
+    }
+    public function getHdmi(){
+        return  $this->hdmi;
+    }
+
+    private $ethernet = false;
+    public function withEthernet($value){
+        $this->ethernet = $value;
+    }
+    public function getEthernet(){
+        return  $this->ethernet;
+    }
+
+    private $noIinventario;
+    public function setNoInventario($value){
+        $this->Util()->ValidateRequireField($value,"No. Inventario");
+        $this->noIinventario = $value;
+    }
+    public function getNoInventario(){
+        return  $this->noIinventario;
+    }
+
+    private $marca;
+    public function setMarca($value){
+        $this->marca = $value;
+    }
+    public function getMarca(){
+        return  $this->marca;
+    }
+
+    private $modelo;
+    public function setModelo($value){
+        $this->modelo = $value;
+    }
+    public function getModelo(){
+        return  $this->modelo;
+    }
+
+    private $procesador;
+    public function setProcesador($value){
+        $this->procesador = $value;
+    }
+    public function getProcesador(){
+        return  $this->procesador;
+    }
+
     private $motivoBaja;
     public function setMotivoBaja($value){
         $this->Util()->ValidateRequireField($value," Motivo de baja");

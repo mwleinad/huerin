@@ -53,6 +53,17 @@ class Inventory extends Articulo
                             fecha_compra,
                             tipo_equipo,
                             con_hubusb,
+                            con_mouse,
+                            marca,
+                            modelo,
+                            procesador,
+                            con_teclado,
+                            con_mousepad,   
+                            con_ventilador,
+                            con_monitor,
+                            con_hdmi,
+                            con_ethernet,
+                            no_inventario,
                             status,
                             usuario_alta,
                             fecha_alta) VALUES(
@@ -66,6 +77,17 @@ class Inventory extends Articulo
                               '" . $this->getFechaCompra() . "',
                               '" . $this->getTipoEquipo() . "',
                               '" . $this->isHubUsb() . "',
+                              '" . $this->getMouse() . "',
+                              '" . $this->getMarca() . "',
+                              '" . $this->getModelo() . "',
+                              '" . $this->getProcesador() . "',
+                              '" . $this->getKeyboard() . "',
+                              '" . $this->getMousepad() . "',
+                              '" . $this->getVentilador() . "',
+                              '" . $this->getMonitor() . "',
+                              '" . $this->getHdmi() . "',
+                              '" . $this->getEthernet() . "',
+                              '" . $this->getNoInventario() . "',
                               'Activo',
                               '" . $_SESSION['User']['username'] . "',
                               '" . date("Y-m-d H:i:s") . "'             
@@ -94,6 +116,17 @@ class Inventory extends Articulo
                     fecha_compra = '" . $this->getFechaCompra() . "',
                     tipo_equipo = '" . $this->getTipoEquipo() . "',
                     con_hubusb = '" . $this->isHubUsb() . "',
+                    con_mouse = '" . $this->getMouse() . "',
+                    marca = '" . $this->getMarca() . "',
+                    modelo = '" . $this->getModelo() . "',
+                    procesador = '" . $this->getProcesador() . "',
+                    con_teclado = '" . $this->getKeyboard() . "',
+                    con_mousepad = '" . $this->getMousepad() . "',
+                    con_ventilador = '" . $this->getVentilador() . "',
+                    con_monitor = '" . $this->getMonitor() . "',
+                    con_hdmi = '" . $this->getHdmi() . "',
+                    con_ethernet = '" . $this->getEthernet() . "',
+                    no_inventario = '" . $this->getNoInventario() . "',
                     fecha_ultima_modificacion = '" . date("Y-m-d H:i:s") . "' 
                     WHERE office_resource_id = '" . $this->getId() . "'
                 ";
@@ -208,9 +241,9 @@ class Inventory extends Articulo
         if (!$incluirBaja)
             $filtro .= " and a.status ='Activo' ";
 
-        $sql = "select a.*,b.name as nombre from responsables_resource_office a
+        $sql = "select a.*,b.name as nombre, b.email  from responsables_resource_office a
                 INNER JOIN personal b ON a.personalId = b.personalId
-                WHERE a.office_resource_id = '" . $id . "' $filtro order by a.status asc, a.fecha_entrega_responsable desc ";
+                WHERE a.office_resource_id = '" . $id . "' $filtro order by a.responsable_resource_id desc, a.fecha_entrega_responsable desc ";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
