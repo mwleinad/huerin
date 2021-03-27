@@ -57,6 +57,9 @@ switch($_POST["type"])
                     $serv['costoMensual'] = number_format($costoMensual,2,'.','');
                     $serv['costoVisual'] = number_format($costoVisual,2,'.','');
 
+                    if(!$util->isValidateDate($serv['inicioFactura'], 'Y-m-d'))
+                        $serv['inicioFactura'] = '0000-00-00';
+
                     $totalPeriodo += $serv['costo'];
                     $totalMensual += $costoMensual;
 
