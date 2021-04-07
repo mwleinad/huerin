@@ -12,6 +12,7 @@ switch($_POST["type"])
             $filter['subordinados'] =  $subordinados;
             $filter['tipos'] = 'activos';
             $contracts = $contract->Suggest($filter, false, true);
+            $totalPeriodo = 0;
             foreach($contracts as $key => $value) {
                 $servicios = array();
                 foreach($value['servicios'] as $serv) {
