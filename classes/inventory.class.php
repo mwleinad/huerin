@@ -273,11 +273,11 @@ class Inventory extends Articulo
 
     public function enumerateResource()
     {
-        $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM office_resource WHERE status='Activo'");
+        /*$this->Util()->DB()->setQuery("SELECT COUNT(*) FROM office_resource WHERE status='Activo'");
 
         $total = $this->Util()->DB()->GetSingle();
         $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/resource-office");
-        $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
+        $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];*/
 
         $this->Util()->DB()->setQuery('SELECT * FROM office_resource WHERE status="Activo" ORDER BY office_resource_id DESC ' . $sql_add);
         $result = $this->Util()->DB()->GetResult();
@@ -290,7 +290,7 @@ class Inventory extends Articulo
 
 
         $data["items"] = $result;
-        $data["pages"] = $pages;
+        //$data["pages"] = $pages;
 
         return $data;
     }
