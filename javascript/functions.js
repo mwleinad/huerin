@@ -423,6 +423,23 @@ function printExcel(id, type)
     	onFailure: function(){ alert('Something went wrong...') }
   });
 }
+function printExcelJq(id, type)
+{
+	jQ.ajax({
+		url:WEB_ROOT+"/ajax/print.php",
+		method:"POST",
+		data: { contenido: jQ('#contenido').html(), type:type},
+		beforeSend: function() {
+			jQ('#loadPrint').html("Sea paciente mientras carga el archivo...");
+		},
+		success:function(response)
+		{
+			var splitResponse = response.split("[#]");
+			$('loadPrint').innerHTML = "";
+			window.location = splitResponse[1];
+		}
+	})
+}
 
 function ToggleSpecifiedDiv(id)
 {
