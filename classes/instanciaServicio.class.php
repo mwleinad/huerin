@@ -15,7 +15,7 @@
 class InstanciaServicio extends  Servicio
 {
 
-    function getInstanciaByServicio($servicioId, $year,$foperaciones="0000-00-00",$isParcial =  false)
+    function getInstanciaByServicio($servicioId, $year, $foperaciones="0000-00-00", $isParcial =  false)
     {
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
@@ -68,27 +68,6 @@ class InstanciaServicio extends  Servicio
             $base[$value['mes']] =  $value;
         }
         return $base;
-    }
-    function getInstanciaByServicio12($servicioId, $year)
-    {
-        $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
-            10=>array(),11=>array(),12=>array());
-
-        $sql = "CALL getInstancias(".$year.", ".$servicioId.",'all'); ";
-        $this->Util()->DB()->setQuery($sql);
-        $data = $this->Util()->DB()->GetResultPdo();
-        foreach($data as $key => $value)
-        {
-            $base[$value['mes']] =  $value;
-        }
-        return $base;
-    }
-    function getInstanciaAtrasado12($servicioId,$year){
-
-        $sql = "CALL getInstancias(".$year.", ".$servicioId.",'atrasados'); ";
-        $this->Util()->DB()->setQuery($sql);
-        $data = $this->Util()->DB()->GetResult();
-        return $data;
     }
     function getInstanciaAtrasado($servicioId,$year,$foperaciones="0000-00-00",$isParcial =  false){
         $data = [];

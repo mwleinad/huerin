@@ -1,7 +1,7 @@
 <?php
 if((int)$User['level'] == 1){
     //Si seleccionaron TODOS
-    if($formValues['respCuenta'] == 0){
+    if($formValues['respCuenta'] == 0) {
         $personal->setActive(1);
         $socios = $personal->ListSocios();
         $idPersons= array();
@@ -21,7 +21,7 @@ if((int)$User['level'] == 1){
         $formValues['respCuenta'] =  $idPersons;
         $contracts = $contractRep->BuscarContract($formValues, true);
 
-    }else{
+    } else {
         $idPersons = array();
         $respCuenta = $formValues['respCuenta'];
         array_push($idPersons,$respCuenta);

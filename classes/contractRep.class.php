@@ -108,6 +108,8 @@ class ContractRep extends Main
             if($encontrado == false &&!$skip) {
                 continue;
             }
+            $res['resDepName'] =  $this->encargadosCustomKey('departamentoId', 'name', $res['contractId']);
+            $res['resDepId'] =  $this->encargadosCustomKey('departamentoId', 'personalId', $res['contractId']);
             if(in_array($res["contractId"], explode(',', CONTRACTS_EXECPTION)))
                 $noInclude="";
             //Checamos Servicios
