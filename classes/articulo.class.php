@@ -97,8 +97,19 @@ class Articulo extends Main
         $this->Util()->ValidateRequireField($value,"Tipo de equipo");
         $this->tipoEquipo  = $value;
     }
+
     public function  getTipoEquipo(){
         return $this->tipoEquipo;
+    }
+
+    private $tipoDispositivo;
+    public function setTipoDispositivo($value){
+        $this->Util()->ValidateRequireField($value,"Tipo de dispositivo");
+        $this->tipoDispositivo  = $value;
+    }
+
+    public function  getTipoDispositivo(){
+        return $this->tipoDispositivo;
     }
 
     private $hubUsb = false;

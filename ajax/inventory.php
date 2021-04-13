@@ -2,25 +2,34 @@
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+include(DOC_ROOT.'/libs/excel/PHPExcel.php');
 switch($_POST['type']){
     case 'search':
+        $inventory->generateReport();
+        $nameFile = $inventory->getNameReport();
         echo "ok[#]";
-        $smarty->assign("registros",$inventory->searchResource());
-        $smarty->display(DOC_ROOT."/templates/lists/resource-office.tpl");
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
     break;
     case "openAddResource":
+        if (isset($_SESSION['device_resource']))
+           unset($_SESSION['device_resource']);
+
+
         $data['title'] =  "Agregar recurso a inventario";
         $data["form"] = "frm-resource-to-inventory";
         $smarty->assign("data",$data);
+        $smarty->assign("consecutive",$inventory->getConsecutiveIdResource());
+        $smarty->assign("devices",$inventory->listResourceInStock());
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
     case 'saveResource':
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
-        $inventory->setNombre($_POST['nombre']);
-        $inventory->setDescripcion($_POST['descripcion']);
+       // $inventory->setNombre($_POST['nombre']);
+        if($_POST['tipo_recurso'] !== 'dispositivo')
+            $inventory->setDescripcion($_POST['descripcion']);
+
         $inventory->setFechaCompra($_POST['fecha_compra']);
-        $inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
+        /*$inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
         $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
         $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
         $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
@@ -28,14 +37,20 @@ switch($_POST['type']){
         $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
         $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
         $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
-        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);
+        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);*/
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
         $inventory->setModelo($_POST['modelo']);
         $inventory->setProcesador($_POST['procesador']);
-        if($_POST['tipo_recurso'] === 'equipo_computo')
+        if($_POST['tipo_recurso'] === 'equipo_computo') {
+            $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
+        }
+
+
+        if($_POST['tipo_recurso'] === 'dispositivo')
+            $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
 
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->saveResource()){
@@ -53,10 +68,12 @@ switch($_POST['type']){
     case 'updateResource':
         $inventory->setId($_POST['office_resource_id']);
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
-        $inventory->setNombre($_POST['nombre']);
-        $inventory->setDescripcion($_POST['descripcion']);
+        //$inventory->setNombre($_POST['nombre']);
+        if($_POST['tipo_recurso'] !== 'dispositivo')
+            $inventory->setDescripcion($_POST['descripcion']);
+
         $inventory->setFechaCompra($_POST['fecha_compra']);
-        $inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
+        /*$inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
         $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
         $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
         $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
@@ -64,15 +81,21 @@ switch($_POST['type']){
         $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
         $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
         $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
-        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);
+        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);*/
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
         $inventory->setModelo($_POST['modelo']);
         $inventory->setProcesador($_POST['procesador']);
-        if($_POST['tipo_recurso']=='equipo_computo'){
+
+        if($_POST['tipo_recurso'] === 'equipo_computo') {
+            $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
         }
+
+        if($_POST['tipo_recurso'] === 'dispositivo')
+            $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
+
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->updateResource()){
             echo "ok[#]";
@@ -87,13 +110,19 @@ switch($_POST['type']){
         }
         break;
     case 'openEditResource':
+
+        if (isset($_SESSION['device_resource']))
+            unset($_SESSION['device_resource']);
+
         $data['title'] =  "Editar recurso";
         $data["form"] = "frm-resource-to-inventory";
         $smarty->assign("data",$data);
 
         $inventory->setId($_POST["id"]);
         $info = $inventory->infoResource();
+        $_SESSION['device_resource'] = $info['device_resource'];
         $smarty->assign("post",$info);
+        $smarty->assign("devices",$inventory->listResourceInStock());
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
     case 'openDeleteResource':
@@ -235,4 +264,56 @@ switch($_POST['type']){
 
         break;
 
+    case 'addDeviceToKit':
+        if (!isset($_SESSION['device_resource']))
+            $_SESSION['device_resource'] = [];
+
+        if(in_array($_POST['device_id'], array_column($_SESSION['device_resource'],'office_resource_id')))
+            $util->setError(0, "error", "El dispositivo ya se encuentra vinculado.");
+
+        if((!isset($_POST['device_id']) || $_POST['device_id'] === ''))
+            $util->setError(0, "error", "Seleccione un dispositivo disponible.");
+
+        if($util->PrintErrors()) {
+            $json['status'] = 'fail';
+            $json['message'] = $smarty->fetch(DOC_ROOT. "/templates/boxes/status_on_popup.tpl");
+        } else {
+
+            $inventory->setId($_POST['device_id']);
+            $resource = $inventory->basicInfoResource();
+
+            end($_SESSION['device_resource']);
+            $key = isset($_POST['key']) ? $_POST['key'] : key($_SESSION['device_resource']) + 1;
+            $_SESSION['device_resource'][$key] =  $resource;
+            $_SESSION['device_resource'][$key]['id'] = !$_POST['key'] ? null : $_SESSION['device_resource'][$key]['id'];
+            $smarty->assign('listDevices', $_SESSION['device_resource']);
+            $json['status'] = 'ok';
+            $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/lists/computo_device.tpl");
+            $json['listDevices'] = $_SESSION['device_resource'];
+        }
+        echo json_encode($json);
+    break;
+    case "deleteFromResource":
+        //
+        $item = $_SESSION['device_resource'][$_POST['key']];
+        if($item['id']) {
+            $_SESSION['device_resource'][$_POST['key']]['deleteAction'] = true;
+            $_SESSION['device_resource'][$_POST['key']]['typeDelete'] = 'deleteFromResource';
+        }
+        else
+            unset($_SESSION['device_resource'][$_POST['key']]);
+
+        $smarty->assign('listDevices', $_SESSION['device_resource']);
+        $json['template'] = $smarty->fetch(DOC_ROOT."/templates/lists/computo_device.tpl");
+        $json['listDevices'] = $_SESSION['device_resource'];
+        echo json_encode($json);
+    break;
+    case "deleteFromStock":
+        $_SESSION['device_resource'][$_POST['key']]['deleteAction'] = true;
+        $_SESSION['device_resource'][$_POST['key']]['typeDelete'] = 'deleteFromStock';
+        $smarty->assign('listDevices', $_SESSION['device_resource']);
+        $json['template'] = $smarty->fetch(DOC_ROOT."/templates/lists/computo_device.tpl");
+        $json['listDevices'] = $_SESSION['device_resource'];
+        echo json_encode($json);
+        break;
 }

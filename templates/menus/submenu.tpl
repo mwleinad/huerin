@@ -16,6 +16,14 @@
            {/if}
      	</ul>
         <ul>
+            {if $mainMnu == "inventario"}
+                {if in_array(251,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/resource-office" {if $page == "resource-office"}class="current"{/if} target="_blank">
+                            <span>Recursos</span></a></li>
+                {/if}
+            {/if}
+        </ul>
+        <ul>
         	{if $mainMnu == "catalogos"}
                 {if in_array(8,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/personal" {if $page == "personal"}class="current"{/if} target="_blank">
@@ -62,10 +70,6 @@
                 {if in_array(182,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/expediente" {if $page == "expediente"}class="current"{/if} target="_blank">
                     <span>Expedientes</span></a></li>
-                {/if}
-                {if in_array(251,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/resource-office" {if $page == "resource-office"}class="current"{/if} target="_blank">
-                    <span>Inventario de recursos</span></a></li>
                 {/if}
             {/if}
 
@@ -185,6 +189,10 @@
                 {if in_array(282,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-company-activity" {if $page == "report-company-activity"}class="current"{/if} title="Reporte de empresas-actividades" target="_blank">
                             <span>Reporte de empresa-actividades</span></a></li>
+                {/if}
+                {if in_array(285,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-inventory" {if $page == "report-inventory"}class="current"{/if} title="Reporte de inventario" target="_blank">
+                            <span>Reporte de inventario</span></a></li>
                 {/if}
 
             {/if}

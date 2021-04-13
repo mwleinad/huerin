@@ -12,9 +12,6 @@ class Excel
             $file_log = DOC_ROOT."/sendFiles/debug_phpexcel.txt";
             $handle = fopen($file_log,"w");
         }
-        echo "inicio ".strlen($htmltable). "   segundo ".strlen(strip_tags($htmltable));
-        echo $htmltable. "salto \n";
-        echo strip_tags($htmltable);
 
         if(strlen($htmltable) == strlen(strip_tags($htmltable)) ) {
             echo "<br />Invalid HTML Table after Stripping Tags, nothing to Export.";

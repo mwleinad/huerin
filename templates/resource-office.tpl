@@ -1,7 +1,7 @@
 <div class="grid_16" id="content">
 
     <div class="grid_9">
-        <h1 class="catalogos">Inventario de recursos de oficina</h1>
+        <h1 class="catalogos">Recursos</h1>
     </div>
     <div class="grid_6" id="eventbox">
         {if in_array(255,$permissions)|| $User.isRoot}
@@ -16,7 +16,6 @@
 
     </div>
     <div class="clear"></div>
-    {include file="forms/search-resource-office.tpl"}
     <div id="portlets">
         <div class="clear"></div>
         <div class="portlet">
