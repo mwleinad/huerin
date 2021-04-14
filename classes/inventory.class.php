@@ -58,7 +58,6 @@ class Inventory extends Articulo
         $sql = "INSERT INTO office_resource(
                             nombre,
                             descripcion,
-                            con_nobreak,
                             tipo_recurso,
                             no_serie,
                             no_licencia,
@@ -66,24 +65,18 @@ class Inventory extends Articulo
                             fecha_compra,
                             tipo_equipo,
                             tipo_dispositivo,
-                            con_hubusb,
-                            con_mouse,
+                            tipo_software,
                             marca,
                             modelo,
                             procesador,
-                            con_teclado,
-                            con_mousepad,   
-                            con_ventilador,
-                            con_monitor,
-                            con_hdmi,
-                            con_ethernet,
+                            memoria_ram,
+                            disco_duro,
                             no_inventario,
                             status,
                             usuario_alta,
                             fecha_alta) VALUES(
                               '" . $this->getNombre() . "',
                               '" . $this->getDescripcion() . "',
-                              '" . $this->isNobreak() . "',
                               '" . $this->getTipoRecurso() . "',
                               '" . $this->getNoSerie() . "',
                               '" . $this->getNoLicencia() . "',
@@ -91,17 +84,12 @@ class Inventory extends Articulo
                               '" . $this->getFechaCompra() . "',
                               '" . $this->getTipoEquipo() . "',
                               '" . $this->getTipoDispositivo() . "',
-                              '" . $this->isHubUsb() . "',
-                              '" . $this->getMouse() . "',
+                              '" . $this->getTipoSoftware() . "',
                               '" . $this->getMarca() . "',
                               '" . $this->getModelo() . "',
                               '" . $this->getProcesador() . "',
-                              '" . $this->getKeyboard() . "',
-                              '" . $this->getMousepad() . "',
-                              '" . $this->getVentilador() . "',
-                              '" . $this->getMonitor() . "',
-                              '" . $this->getHdmi() . "',
-                              '" . $this->getEthernet() . "',
+                              '" . $this->getMemoriaRam() . "',
+                              '" . $this->getDiscoDuro() . "',
                               '" . $this->getNoInventario() . "',
                               'Activo',
                               '" . $_SESSION['User']['username'] . "',
@@ -123,7 +111,6 @@ class Inventory extends Articulo
         $sql = " UPDATE office_resource SET
                     nombre = '" . $this->getNombre() . "',
                     descripcion = '" . $this->getDescripcion() . "',
-                    con_nobreak = '" . $this->isNobreak() . "',
                     usuario_modificacion = '" . $_SESSION["User"]["username"] . "',
                     tipo_recurso =  '" . $this->getTipoRecurso() . "',
                     no_serie = '" . $this->getNoSerie() . "',
@@ -132,17 +119,12 @@ class Inventory extends Articulo
                     fecha_compra = '" . $this->getFechaCompra() . "',
                     tipo_equipo = '" . $this->getTipoEquipo() . "',
                     tipo_dispositivo = '" . $this->getTipoDispositivo() . "',
-                    con_hubusb = '" . $this->isHubUsb() . "',
-                    con_mouse = '" . $this->getMouse() . "',
+                    tipo_software = '" . $this->getTipoSoftware() . "',
                     marca = '" . $this->getMarca() . "',
                     modelo = '" . $this->getModelo() . "',
                     procesador = '" . $this->getProcesador() . "',
-                    con_teclado = '" . $this->getKeyboard() . "',
-                    con_mousepad = '" . $this->getMousepad() . "',
-                    con_ventilador = '" . $this->getVentilador() . "',
-                    con_monitor = '" . $this->getMonitor() . "',
-                    con_hdmi = '" . $this->getHdmi() . "',
-                    con_ethernet = '" . $this->getEthernet() . "',
+                    memoria_ram = '" . $this->getMemoriaRam() . "',
+                    disco_duro = '" . $this->getDiscoDuro() . "',
                     no_inventario = '" . $this->getNoInventario() . "',
                     fecha_ultima_modificacion = '" . date("Y-m-d H:i:s") . "' 
                     WHERE office_resource_id = '" . $this->getId() . "'
@@ -406,8 +388,8 @@ class Inventory extends Articulo
 
     private function generateDataReport()
     {
-        $typeDispositivos = ['ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
-            'nobreak', 'hdmi'];
+        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
+            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
         $data = $this->searchResource();
         $new = [];
         foreach ($data['items'] as $key => $var) {
@@ -428,8 +410,8 @@ class Inventory extends Articulo
 
     public function generateReport()
     {
-        $typeDispositivos = ['ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
-            'nobreak', 'hdmi'];
+        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
+            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
         $data = $this->generateDataReport();
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
@@ -452,6 +434,10 @@ class Inventory extends Articulo
         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
         $sheet->setCellValueByColumnAndRow(++$col, $row, "PROCESADOR")
         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "MEMORIA RAM")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "DISCO DURO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
         $sheet->setCellValueByColumnAndRow(++$col, $row, "CORREO")
         ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
         $col++;
@@ -477,6 +463,10 @@ class Inventory extends Articulo
             $sheet->setCellValueByColumnAndRow($col, $row, $var['no_serie']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['procesador']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['memoria_ram']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['disco_duro']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['email']);
             $col++;

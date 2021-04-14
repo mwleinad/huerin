@@ -25,19 +25,11 @@ switch($_POST['type']){
     case 'saveResource':
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
        // $inventory->setNombre($_POST['nombre']);
-        if($_POST['tipo_recurso'] !== 'dispositivo')
+        if(in_array($_POST['tipo_recurso'], ['equipo_computo', 'inmobiliaria']))
             $inventory->setDescripcion($_POST['descripcion']);
 
+
         $inventory->setFechaCompra($_POST['fecha_compra']);
-        /*$inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
-        $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
-        $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
-        $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
-        $inventory->withMonitor(isset($_POST['con_monitor']) ? 1 : 0);
-        $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
-        $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
-        $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
-        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);*/
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
@@ -46,11 +38,15 @@ switch($_POST['type']){
         if($_POST['tipo_recurso'] === 'equipo_computo') {
             $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
+            $inventory->setMemoriaRam($_POST['memoria_ram']);
+            $inventory->setDiscoDuro($_POST['disco_duro']);
         }
-
 
         if($_POST['tipo_recurso'] === 'dispositivo')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
+
+        if($_POST['tipo_recurso'] === 'software')
+            $inventory->setTipoSoftware($_POST['tipo_software']);
 
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->saveResource()){
@@ -69,19 +65,10 @@ switch($_POST['type']){
         $inventory->setId($_POST['office_resource_id']);
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
         //$inventory->setNombre($_POST['nombre']);
-        if($_POST['tipo_recurso'] !== 'dispositivo')
+        if(in_array($_POST['tipo_recurso'], ['equipo_computo', 'inmobiliaria']))
             $inventory->setDescripcion($_POST['descripcion']);
 
         $inventory->setFechaCompra($_POST['fecha_compra']);
-        /*$inventory->withMouse(isset($_POST['con_mouse']) ? 1 : 0);
-        $inventory->withKeyboard(isset($_POST['con_teclado']) ? 1 : 0);
-        $inventory->withMousepad(isset($_POST['con_mousepad']) ? 1 : 0);
-        $inventory->withVentilador(isset($_POST['con_ventilador']) ? 1 : 0);
-        $inventory->withMonitor(isset($_POST['con_monitor']) ? 1 : 0);
-        $inventory->withHdmi(isset($_POST['con_hdmi']) ? 1 : 0);
-        $inventory->withEthernet(isset($_POST['con_ethernet']) ? 1 : 0);
-        $inventory->withHubUsb(isset($_POST['hub_usb']) ? 1 : 0);
-        $inventory->withNobreak(isset($_POST['no_break']) ? 1 : 0);*/
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
@@ -91,10 +78,15 @@ switch($_POST['type']){
         if($_POST['tipo_recurso'] === 'equipo_computo') {
             $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
+            $inventory->setMemoriaRam($_POST['memoria_ram']);
+            $inventory->setDiscoDuro($_POST['disco_duro']);
         }
 
         if($_POST['tipo_recurso'] === 'dispositivo')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
+
+        if($_POST['tipo_recurso'] === 'software')
+            $inventory->setTipoSoftware($_POST['tipo_software']);
 
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->updateResource()){
