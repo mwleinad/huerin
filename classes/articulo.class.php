@@ -23,7 +23,7 @@ class Articulo extends Main
 
     private $descripcion;
     public function setDescripcion($value){
-        $this->Util()->ValidateRequireField($value,"Descripcion");
+        $this->Util()->ValidateRequireField($value,"Observacion");
         $this->descripcion = htmlspecialchars($value,ENT_QUOTES);
     }
     public function getDescripcion(){
@@ -97,72 +97,29 @@ class Articulo extends Main
         $this->Util()->ValidateRequireField($value,"Tipo de equipo");
         $this->tipoEquipo  = $value;
     }
+
     public function  getTipoEquipo(){
         return $this->tipoEquipo;
     }
 
-    private $hubUsb = false;
-    public function withHubUsb($value){
-        $this->hubUsb = $value;
-    }
-    public function isHubUsb(){
-        return  $this->hubUsb;
+    private $tipoDispositivo;
+    public function setTipoDispositivo($value){
+        $this->Util()->ValidateRequireField($value,"Tipo de dispositivo");
+        $this->tipoDispositivo  = $value;
     }
 
-    private $mouse = false;
-    public function withMouse($value){
-        $this->mouse = $value;
-    }
-    public function getMouse(){
-        return  $this->mouse;
+    public function  getTipoDispositivo(){
+        return $this->tipoDispositivo;
     }
 
-    private $keyboard = false;
-    public function withKeyboard($value){
-        $this->keyboard = $value;
-    }
-    public function getKeyboard(){
-        return  $this->keyboard;
+    private $tipoSoftware;
+    public function setTipoSoftware($value){
+        $this->Util()->ValidateRequireField($value,"Tipo de software");
+        $this->tipoSoftware  = $value;
     }
 
-    private $mousepad = false;
-    public function withMousepad($value){
-        $this->mousepad = $value;
-    }
-    public function getMousepad(){
-        return  $this->mousepad;
-    }
-
-    private $ventilador = false;
-    public function withVentilador($value){
-        $this->ventilador = $value;
-    }
-    public function getVentilador(){
-        return  $this->ventilador;
-    }
-
-    private $monitor = false;
-    public function withMonitor($value){
-        $this->monitor = $value;
-    }
-    public function getMonitor(){
-        return  $this->monitor;
-    }
-
-    private $hdmi = false;
-    public function withHdmi($value){
-        $this->hdmi = $value;
-    }
-    public function getHdmi(){
-        return  $this->hdmi;
-    }
-
-    private $ethernet = false;
-    public function withEthernet($value){
-        $this->ethernet = $value;
-    }
-    public function getEthernet(){
-        return  $this->ethernet;
+    public function  getTipoSoftware(){
+        return $this->tipoSoftware;
     }
 
     private $noIinventario;
@@ -196,6 +153,24 @@ class Articulo extends Main
     }
     public function getProcesador(){
         return  $this->procesador;
+    }
+
+    private $memoriaRam;
+    public function setMemoriaRam($value){
+        $this->Util()->ValidateRequireField($value,"Tamaño de Memoria Ram");
+        $this->memoriaRam = htmlspecialchars($value,ENT_QUOTES);
+    }
+    public function getMemoriaRam(){
+        return  $this->memoriaRam;
+    }
+
+    private $discoDuro;
+    public function setDiscoDuro($value){
+        $this->Util()->ValidateRequireField($value," Capacidad Disco Duro");
+        $this->discoDuro = htmlspecialchars($value,ENT_QUOTES);
+    }
+    public function getDiscoDuro(){
+        return  $this->discoDuro;
     }
 
     private $motivoBaja;

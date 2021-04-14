@@ -3,6 +3,19 @@
 
 class Inventory extends Articulo
 {
+    private $nameReport;
+
+    public function getNameReport()
+    {
+        return $this->nameReport;
+    }
+
+    public function getConsecutiveIdResource()
+    {
+        $this->Util()->DB()->setQuery("select max(office_resource_id)+1 from office_resource");
+        return $this->Util()->DB()->GetSingle();
+    }
+
     public function validateResponsableIfExist()
     {
         if ($this->getResponsableResourceId())
@@ -45,55 +58,46 @@ class Inventory extends Articulo
         $sql = "INSERT INTO office_resource(
                             nombre,
                             descripcion,
-                            con_nobreak,
                             tipo_recurso,
                             no_serie,
                             no_licencia,
                             codigo_activacion,
                             fecha_compra,
                             tipo_equipo,
-                            con_hubusb,
-                            con_mouse,
+                            tipo_dispositivo,
+                            tipo_software,
                             marca,
                             modelo,
                             procesador,
-                            con_teclado,
-                            con_mousepad,   
-                            con_ventilador,
-                            con_monitor,
-                            con_hdmi,
-                            con_ethernet,
+                            memoria_ram,
+                            disco_duro,
                             no_inventario,
                             status,
                             usuario_alta,
                             fecha_alta) VALUES(
                               '" . $this->getNombre() . "',
                               '" . $this->getDescripcion() . "',
-                              '" . $this->isNobreak() . "',
                               '" . $this->getTipoRecurso() . "',
                               '" . $this->getNoSerie() . "',
                               '" . $this->getNoLicencia() . "',
                               '" . $this->getCodigoActivacion() . "',
                               '" . $this->getFechaCompra() . "',
                               '" . $this->getTipoEquipo() . "',
-                              '" . $this->isHubUsb() . "',
-                              '" . $this->getMouse() . "',
+                              '" . $this->getTipoDispositivo() . "',
+                              '" . $this->getTipoSoftware() . "',
                               '" . $this->getMarca() . "',
                               '" . $this->getModelo() . "',
                               '" . $this->getProcesador() . "',
-                              '" . $this->getKeyboard() . "',
-                              '" . $this->getMousepad() . "',
-                              '" . $this->getVentilador() . "',
-                              '" . $this->getMonitor() . "',
-                              '" . $this->getHdmi() . "',
-                              '" . $this->getEthernet() . "',
+                              '" . $this->getMemoriaRam() . "',
+                              '" . $this->getDiscoDuro() . "',
                               '" . $this->getNoInventario() . "',
                               'Activo',
                               '" . $_SESSION['User']['username'] . "',
                               '" . date("Y-m-d H:i:s") . "'             
                             )";
         $this->Util()->DB()->setQuery($sql);
-        $this->Util()->DB()->InsertData();
+        $lastId = $this->Util()->DB()->InsertData();
+        $this->syncDeviceToKit($lastId);
         $this->Util()->setError(0, "complete", "El registro se ha guardado correctamente.");
         $this->Util()->PrintErrors();
         return true;
@@ -107,7 +111,6 @@ class Inventory extends Articulo
         $sql = " UPDATE office_resource SET
                     nombre = '" . $this->getNombre() . "',
                     descripcion = '" . $this->getDescripcion() . "',
-                    con_nobreak = '" . $this->isNobreak() . "',
                     usuario_modificacion = '" . $_SESSION["User"]["username"] . "',
                     tipo_recurso =  '" . $this->getTipoRecurso() . "',
                     no_serie = '" . $this->getNoSerie() . "',
@@ -115,23 +118,20 @@ class Inventory extends Articulo
                     codigo_activacion = '" . $this->getCodigoActivacion() . "',
                     fecha_compra = '" . $this->getFechaCompra() . "',
                     tipo_equipo = '" . $this->getTipoEquipo() . "',
-                    con_hubusb = '" . $this->isHubUsb() . "',
-                    con_mouse = '" . $this->getMouse() . "',
+                    tipo_dispositivo = '" . $this->getTipoDispositivo() . "',
+                    tipo_software = '" . $this->getTipoSoftware() . "',
                     marca = '" . $this->getMarca() . "',
                     modelo = '" . $this->getModelo() . "',
                     procesador = '" . $this->getProcesador() . "',
-                    con_teclado = '" . $this->getKeyboard() . "',
-                    con_mousepad = '" . $this->getMousepad() . "',
-                    con_ventilador = '" . $this->getVentilador() . "',
-                    con_monitor = '" . $this->getMonitor() . "',
-                    con_hdmi = '" . $this->getHdmi() . "',
-                    con_ethernet = '" . $this->getEthernet() . "',
+                    memoria_ram = '" . $this->getMemoriaRam() . "',
+                    disco_duro = '" . $this->getDiscoDuro() . "',
                     no_inventario = '" . $this->getNoInventario() . "',
                     fecha_ultima_modificacion = '" . date("Y-m-d H:i:s") . "' 
                     WHERE office_resource_id = '" . $this->getId() . "'
                 ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
+        $this->syncDeviceToKit($this->getId());
         $this->Util()->setError(0, "complete", "El registro se ha actualizado correctamente.");
         $this->Util()->PrintErrors();
         return true;
@@ -258,8 +258,20 @@ class Inventory extends Articulo
             if ($responsables) {
                 $info["responsables"] = $responsables;
             }
+            $devices = $this->getDeviceResource($info['office_resource_id']);
+            if ($devices) {
+                $info["device_resource"] = $devices;
+            }
+
         }
         return $info;
+    }
+
+    public function basicInfoResource()
+    {
+        $sql = "select * from office_resource where office_resource_id = '" . $this->getId() . "'  ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetRow();
     }
 
     public function infoResponsableResource()
@@ -269,6 +281,15 @@ class Inventory extends Articulo
                 WHERE a.responsable_resource_id = '" . $this->getResponsableResourceId() . "'  ";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetRow();
+    }
+
+    private function getDeviceResource($id)
+    {
+        $sql = "select a.id,a.device_id, b.* from device_resource a
+                inner join office_resource b on a.device_id = b.office_resource_id
+                where a.office_resource_id='" . $id . "' ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
     }
 
     public function enumerateResource()
@@ -298,6 +319,15 @@ class Inventory extends Articulo
     public function listResource()
     {
         $this->Util()->DB()->setQuery("SELECT office_resource_id, nombre, tipo_equipo FROM office_resource WHERE status='Activo' ORDER BY nombre ASC ");
+        return $this->Util()->DB()->GetResult();
+    }
+
+    public function listResourceInStock()
+    {
+        $this->Util()->DB()->setQuery("SELECT office_resource_id, marca, modelo,no_serie, tipo_dispositivo 
+                                              FROM office_resource 
+                                              WHERE status='Activo' and tipo_recurso= 'dispositivo'  and no_inventario=''
+                                              ORDER BY office_resource_id ASC ");
         return $this->Util()->DB()->GetResult();
     }
 
@@ -344,16 +374,120 @@ class Inventory extends Articulo
                  WHERE a.status = 'Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC " . $sql_add;
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
-        foreach ($result as $key => $var) {
+        /*foreach ($result as $key => $var) {
             $result[$key]["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
             $this->setId($var['office_resource_id']);
             $result[$key]["upkeeps"] = $this->enumerateUpKeeps(true);
-        }
+        }*/
 
         $data["items"] = $result;
         $data["pages"] = $pages;
 
         return $data;
+    }
+
+    private function generateDataReport()
+    {
+        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
+            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
+        $data = $this->searchResource();
+        $new = [];
+        foreach ($data['items'] as $key => $var) {
+            $devices = $var['tipo_recurso'] === 'equipo_computo'
+                ? $this->getDeviceResource($var['office_resource_id'])
+                : [];
+
+            $devices = array_column($devices, 'tipo_dispositivo');
+            $cad = $var;
+            $cad["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+            foreach ($typeDispositivos as $val)
+                $cad[$val] = in_array($val, $devices) ? true : false;
+
+            $new[] = $cad;
+        }
+        return $new;
+    }
+
+    public function generateReport()
+    {
+        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
+            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
+        $data = $this->generateDataReport();
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $hoja = 0;
+        $sheet = $book->createSheet($hoja);
+        $row = 1;
+        $col = 0;
+        $sheet->setTitle('Reporte inventario');
+        $sheet->setCellValueByColumnAndRow($col, $row, "NO FISICO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "TIPO EQUIPO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "NOMBRE RESPONSABLE")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "MARCA")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "MODELO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "SERIE")
+        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "PROCESADOR")
+        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "MEMORIA RAM")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "DISCO DURO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "CORREO")
+        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $col++;
+        foreach ($typeDispositivos as $head) {
+            $sheet->setCellValueByColumnAndRow($col, $row, strtolower(strtoupper($head)))
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+            $col++;
+        }
+        $row++;
+
+        foreach($data as $kt => $var) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['no_inventario'] === '' ? 'En bodega' : $var['no_inventario']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, ucfirst($var['tipo_equipo']));
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['marca']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['modelo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['no_serie']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['procesador']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['memoria_ram']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['disco_duro']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['email']);
+            $col++;
+            foreach ($typeDispositivos as $head2) {
+                $sheet->setCellValueByColumnAndRow($col, $row, $var[$head2] ? 'Si' : 'No');
+                $col++;
+            }
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile= "reporte_inventario".$_SESSION["User"]["userId"].".xlsx";
+        $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
+        $this->nameReport = $nameFile;
     }
 
     public function makeDownResource()
@@ -462,5 +596,37 @@ class Inventory extends Articulo
         $this->Util()->PrintErrors();
 
         return true;
+    }
+
+    private function syncDeviceToKit($lastId)
+    {
+        if (count($_SESSION['device_resource']) <= 0 || $this->getTipoRecurso() !== 'equipo_computo')
+            return false;
+
+        foreach ($_SESSION['device_resource'] as $var) {
+            if ($var['deleteAction']) {
+                $idResource = $var['device_id'];
+                $set = $var['typeDelete'] === 'deleteFromStock'
+                    ? " status = 'Baja', motivo_baja='Baja realizada desde equipo de computo', fecha_baja=now(), usuario_baja='" . $_SESSION['User']['username'] . "' "
+                    : " no_inventario='' ";
+
+                $sql = "update office_resource set " . $set . " where office_resource_id='" . $idResource . "' ";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->UpdateData();
+
+                $sql = "delete from device_resource where id='" . $var['id'] . "' ";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->UpdateData();
+            } elseif (!$var['id']) {
+                $sql = "insert into device_resource(office_resource_id, device_id)
+                    values('" . $lastId . "','" . $var['office_resource_id'] . "')";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->InsertData();
+
+                $sql = "update office_resource set no_inventario='" . $this->getNoInventario() . "' where office_resource_id='" . $var['office_resource_id'] . "' ";
+                $this->Util()->DB()->setQuery($sql);
+                $this->Util()->DB()->UpdateData();
+            }
+        }
     }
 }

@@ -11,14 +11,9 @@ if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
-{
-    $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
-}
-else
-{
-    $docRoot = $_SERVER['DOCUMENT_ROOT'];
-}
+
+$docRoot = $_SERVER['DOCUMENT_ROOT'];
+
 define('DOC_ROOT', $docRoot);
 
 include_once(DOC_ROOT.'/initContent.php');
@@ -28,7 +23,7 @@ if(!isset($_SESSION['User'])){
     echo "no se puede ejecutar, favor de iniciar sesion";
     exit;
 }
-$sql = "SELECT * FROM personal WHERE active='1'  ORDER BY personalId  ASC";
+$sql = "SELECT * FROM personal WHERE active='1' ORDER BY personalId  ASC  ";
 $db->setQuery($sql);
 $results = $db->GetResult();
 $new = array();
@@ -42,7 +37,7 @@ foreach($results as $key => $value){
     $cad['contador'] = $jefes['Contador'];
     $cad['supervisor'] = $jefes['Supervisor'];
     $cad['subgerente'] = $jefes['Subgerente'];
-    $cad['gerente'] = $jefes['Gerente'];
+    $cad['gerente'] = !isset($jefes['Gerente']) ? $jefes['Coordinador'] : $jefes['Gerente']   ;
     $cad['jefeMax'] = $jefes['Socio'];
     /*
      Al final se reemplaza, los numeros vienen del nivel del rol.
@@ -55,12 +50,14 @@ foreach($results as $key => $value){
     */
     switch($needle){
         case 'coordinador':
+            $cad['gerente'] = $jefes['me']; break;
         case 'socio':
             $cad['jefeMax'] = $jefes['me']; break;
         break;
         default: $cad[$needle] = $jefes["me"]; break;
 
     }
+
     $new[] = $cad;
 }
 $html = '<html>

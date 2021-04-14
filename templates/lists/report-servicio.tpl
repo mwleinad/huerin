@@ -64,8 +64,8 @@
 			</tr>
 		{else}
 		<tr>
-    		<td align="center" class="" title="{$item.nameContact}">{$item.nameContact}</td>
-    		<td align="center" class="" title="{$item.name}">{$item.name}</td>
+    		<td align="center" class="" title="">{$item.nameContact}</td>
+    		<td align="center" class="" title="">{$item.name}</td>
 			<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
 			<td align="center" class="" title="{$item.supervisadoBy}">{$item.supervisadoBy}</td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio name=instancias}

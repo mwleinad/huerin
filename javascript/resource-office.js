@@ -35,6 +35,7 @@ jQ(document).on('click', ".spanEdit", function () {
 
     });
 });
+
 jQ(document).on('click', ".spanDeleteResponsable", function () {
     var con = confirm("¿ Esta seguro de realizar esta accion?");
     if (!con)
@@ -60,7 +61,7 @@ jQ(document).on('click', ".spanDeleteResponsable", function () {
 jQ(document).on('change', "#tipo_recurso", function () {
     var selected = jQ(this).children('option:selected').val();
 
-    if (selected !== 'equipo_computo' && selected !== 'software') {
+    if (['equipo_computo', 'software', 'dispositivo', 'inmobiliaria'].indexOf(selected) === -1) {
         jQ('.shared_field').hide()
         return
     }
@@ -209,4 +210,38 @@ function close_popup() {
     $('fview').hide();
     grayOut(false);
     return;
+}
+jQ(document).on('click', ".spanAddDevice", addDeviceToKit);
+jQ(document).on('click', ".spanDeleteFromResource", deleteDevice);
+jQ(document).on('click', ".spanDeleteFromStock", deleteDevice);
+
+function deleteDevice () {
+    var key =  jQ(this).data('key')
+    var type =  jQ(this).data('type')
+    jQ.ajax({
+        url:WEB_ROOT + '/ajax/inventory.php',
+        method:'POST',
+        data: { key: key, type: type },
+        dataType:'json',
+        success: function (response) {
+            jQ('#list_device').html(response.template);
+        }
+    });
+}
+
+function addDeviceToKit() {
+    var selected = jQ('#device_id').children('option:selected').val();
+    jQ.ajax({
+        url:WEB_ROOT + '/ajax/inventory.php',
+        method:'POST',
+        data: { type:'addDeviceToKit', device_id: selected },
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'ok') {
+                options = response.options
+                jQ("#device_id option:selected").prop("selected", false);
+                jQ('#list_device').html(response.template);
+            } else  ShowStatusPopUp(response.message)
+        }
+    });
 }

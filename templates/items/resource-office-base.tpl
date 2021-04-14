@@ -1,9 +1,9 @@
 <tr class="{$clase}">
-    <td  style="width:10%;">{$key+1}</td>
+    <td  style="width:10%;">{if $res.no_inventario eq ''}En bodega{else}{$res.no_inventario}{/if}</td>
     <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo / {$res.tipo_equipo|ucfirst}{else}{$res.tipo_recurso|ucfirst}{/if}
     </td>
-    <td  style="width:10%;">{$res.nombre}</td>
     <td  style="width:10%;">{$res.marca}</td>
+    <td  style="width:10%;">{$res.modelo}</td>
     <td  style="width:10%;">{$res.fecha_compra|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>

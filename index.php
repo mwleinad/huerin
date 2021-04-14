@@ -102,6 +102,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'chart',
 		'report-ab-all',
 		'report-company-activity',
+		'report-inventory',
 
 		//cafeteria
         'coffe',
