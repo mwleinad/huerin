@@ -34,11 +34,11 @@ foreach($results as $key => $value){
     $needle = strtolower(trim($info["nameLevel"]));
     $jefes=[];
     $personal->deepJefesArray($jefes,true);
-    $cad['contador'] = $jefes['Contador'];
-    $cad['supervisor'] = $jefes['Supervisor'];
-    $cad['subgerente'] = $jefes['Subgerente'];
+    $cad['contador'] = isset($jefes['Contador']) ? $jefes['Contador'] : '';
+    $cad['supervisor'] = isset($jefes['Supervisor']) ?  $jefes['Supervisor'] : '';
+    $cad['subgerente'] = isset($jefes['Subgerente']) ? $jefes['Subgerente'] : '';
     $cad['gerente'] = !isset($jefes['Gerente']) ? $jefes['Coordinador'] : $jefes['Gerente']   ;
-    $cad['jefeMax'] = $jefes['Socio'];
+    $cad['jefeMax'] = isset($jefes['Socio']) ? $jefes['Socio'] : '';
     /*
      Al final se reemplaza, los numeros vienen del nivel del rol.
       1 = socio
