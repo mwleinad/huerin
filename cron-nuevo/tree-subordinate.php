@@ -60,6 +60,8 @@ foreach($results as $key => $value){
 
     $new[] = $cad;
 }
+
+dd($new);exit;
 $html = '<html>
 			<head>
 				<title>Cupon</title>
