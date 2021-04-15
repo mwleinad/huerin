@@ -53,15 +53,12 @@ foreach($results as $key => $value){
             $cad['gerente'] = $jefes['me']; break;
         case 'socio':
             $cad['jefeMax'] = $jefes['me']; break;
-        break;
         default: $cad[$needle] = $jefes["me"]; break;
 
     }
 
     $new[] = $cad;
 }
-
-dd($new);exit;
 $html = '<html>
 			<head>
 				<title>Cupon</title>
