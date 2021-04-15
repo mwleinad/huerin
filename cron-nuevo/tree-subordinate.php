@@ -54,7 +54,6 @@ foreach($results as $key => $value){
         case 'socio':
             $cad['jefeMax'] = $jefes['me']; break;
         default: $cad[$needle] = $jefes["me"]; break;
-
     }
 
     $new[] = $cad;
