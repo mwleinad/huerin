@@ -245,3 +245,38 @@ function addDeviceToKit() {
         }
     });
 }
+
+jQ(document).on('click', ".spanAddSoftware", addSoftwareToResource);
+jQ(document).on('click', ".spanDeleteSoftwareFromResource", deleteSoftware);
+jQ(document).on('click', ".spanDeleteSoftwareFromStock", deleteSoftware);
+
+function deleteSoftware () {
+    var key =  jQ(this).data('key')
+    var type =  jQ(this).data('type')
+    jQ.ajax({
+        url:WEB_ROOT + '/ajax/inventory.php',
+        method:'POST',
+        data: { key: key, type: type },
+        dataType:'json',
+        success: function (response) {
+            jQ('#list_software').html(response.template);
+        }
+    });
+}
+
+function addSoftwareToResource() {
+    var selected = jQ('#software_id').children('option:selected').val();
+    jQ.ajax({
+        url:WEB_ROOT + '/ajax/inventory.php',
+        method:'POST',
+        data: { type:'addSoftwareToResource', software_id: selected },
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'ok') {
+                options = response.options
+                jQ("#software_id option:selected").prop("selected", false);
+                jQ('#list_software').html(response.template);
+            } else  ShowStatusPopUp(response.message)
+        }
+    });
+}

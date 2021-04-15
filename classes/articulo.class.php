@@ -173,6 +173,26 @@ class Articulo extends Main
         return  $this->discoDuro;
     }
 
+    private $costoCompra;
+    public function setCostoCompra($value){
+        if(!empty($value))$this->Util()->ValidateIsNumeric($value, 'Costo de compra');
+        $this->costoCompra = $value;
+    }
+
+    public function getCostoCompra(){
+        return  $this->costoCompra;
+    }
+
+    private $costoRecuperacion;
+    public function setCostoRecuperacion($value){
+        if(!empty($value))$this->Util()->ValidateIsNumeric($value, 'Costo de recuperación');
+        $this->costoRecuperacion = $value;
+    }
+
+    public function getCostoRecuperacion(){
+        return  $this->costoRecuperacion;
+    }
+
     private $motivoBaja;
     public function setMotivoBaja($value){
         $this->Util()->ValidateRequireField($value," Motivo de baja");
