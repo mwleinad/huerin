@@ -20,6 +20,7 @@ switch($_POST['type']){
         $smarty->assign("data",$data);
         $smarty->assign("consecutive",$inventory->getConsecutiveIdResource());
         $smarty->assign("devices",$inventory->listResourceInStock());
+        $smarty->assign("softwares",$inventory->listResourceInStock('software'));
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
     case 'saveResource':
@@ -30,6 +31,8 @@ switch($_POST['type']){
 
 
         $inventory->setFechaCompra($_POST['fecha_compra']);
+        $inventory->setCostoCompra($_POST['costo_compra']);
+        $inventory->setCostoRecuperacion($_POST['costo_recuperacion']);
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
@@ -69,6 +72,8 @@ switch($_POST['type']){
             $inventory->setDescripcion($_POST['descripcion']);
 
         $inventory->setFechaCompra($_POST['fecha_compra']);
+        $inventory->setCostoCompra($_POST['costo_compra']);
+        $inventory->setCostoRecuperacion($_POST['costo_recuperacion']);
         $inventory->setNoLicencia($_POST['no_licencia']);
         $inventory->setCodigoActivacion($_POST['cod_activacion']);
         $inventory->setMarca($_POST['marca']);
@@ -113,8 +118,10 @@ switch($_POST['type']){
         $inventory->setId($_POST["id"]);
         $info = $inventory->infoResource();
         $_SESSION['device_resource'] = $info['device_resource'];
+        $_SESSION['software_resource'] = $info['software_resource'];
         $smarty->assign("post",$info);
         $smarty->assign("devices",$inventory->listResourceInStock());
+        $smarty->assign("softwares",$inventory->listResourceInStock('software'));
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
     case 'openDeleteResource':
@@ -306,6 +313,61 @@ switch($_POST['type']){
         $smarty->assign('listDevices', $_SESSION['device_resource']);
         $json['template'] = $smarty->fetch(DOC_ROOT."/templates/lists/computo_device.tpl");
         $json['listDevices'] = $_SESSION['device_resource'];
+        echo json_encode($json);
+        break;
+
+    //agregar software
+    //
+    case 'addSoftwareToResource':
+        if (!isset($_SESSION['software_resource']))
+            $_SESSION['software_resource'] = [];
+
+        if(in_array($_POST['software_id'], array_column($_SESSION['software_resource'],'office_resource_id')))
+            $util->setError(0, "error", "El software ya se encuentra vinculado.");
+
+        if((!isset($_POST['software_id']) || $_POST['software_id'] === ''))
+            $util->setError(0, "error", "Seleccione un dispositivo disponible.");
+
+        if($util->PrintErrors()) {
+            $json['status'] = 'fail';
+            $json['message'] = $smarty->fetch(DOC_ROOT. "/templates/boxes/status_on_popup.tpl");
+        } else {
+
+            $inventory->setId($_POST['software_id']);
+            $resource = $inventory->basicInfoResource();
+
+            end($_SESSION['software_resource']);
+            $key = isset($_POST['key']) ? $_POST['key'] : key($_SESSION['software_resource']) + 1;
+            $_SESSION['software_resource'][$key] =  $resource;
+            $_SESSION['software_resource'][$key]['id'] = !$_POST['key'] ? null : $_SESSION['software_resource'][$key]['id'];
+            $smarty->assign('listSoftware', $_SESSION['software_resource']);
+            $json['status'] = 'ok';
+            $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/lists/computo_software.tpl");
+            $json['listSoftware'] = $_SESSION['software_resource'];
+        }
+        echo json_encode($json);
+        break;
+    case "deleteSoftwareFromResource":
+        //
+        $item = $_SESSION['software_resource'][$_POST['key']];
+        if($item['id']) {
+            $_SESSION['software_resource'][$_POST['key']]['deleteAction'] = true;
+            $_SESSION['software_resource'][$_POST['key']]['typeDelete'] = 'deleteSoftwareFromResource';
+        }
+        else
+            unset($_SESSION['software_resource'][$_POST['key']]);
+
+        $smarty->assign('listSoftware', $_SESSION['software_resource']);
+        $json['template'] = $smarty->fetch(DOC_ROOT."/templates/lists/computo_software.tpl");
+        $json['listSoftware'] = $_SESSION['software_resource'];
+        echo json_encode($json);
+        break;
+    case "deleteSoftwareFromStock":
+        $_SESSION['software_resource'][$_POST['key']]['deleteAction'] = true;
+        $_SESSION['software_resource'][$_POST['key']]['typeDelete'] = 'deleteSoftwareFromStock';
+        $smarty->assign('listSoftware', $_SESSION['software_resource']);
+        $json['template'] = $smarty->fetch(DOC_ROOT."/templates/lists/computo_software.tpl");
+        $json['listSoftware'] = $_SESSION['software_resource'];
         echo json_encode($json);
         break;
 }

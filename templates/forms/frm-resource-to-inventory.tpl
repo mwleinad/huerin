@@ -172,6 +172,25 @@
 				</div>
 				<hr>
 			</div>
+			<div class="grid_16">
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Costo de compra</div>
+						<div style="width:70%;float: left;">
+							<input name="costo_compra"  id="costo_compra" type="text"  value="{$post.costo_compra}" class="largeInput "/>
+						</div>
+					</div>
+				</div>
+				<div class="grid_8">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Costo de Recuperación</div>
+						<div style="width:70%;float: left;">
+							<input name="costo_recuperacion"  id="costo_recuperacion" value="{$post.costo_recuperacion}" type="text" class="largeInput "/>
+						</div>
+					</div>
+				</div>
+				<hr>
+			</div>
 			<div class="grid_16 shared_field equipo_computo software {if !in_array($post.tipo_recurso, ['equipo_computo', 'software'])}noShow{/if}">
 				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
@@ -217,6 +236,35 @@
 				</div>
 				<div class="grid_16" id="list_device">
 					{include file="{$DOC_ROOT}/templates/lists/computo_device.tpl" listDevices=$post.device_resource}
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo {if !in_array($post.tipo_recurso, ['equipo_computo'])}noShow{/if}">
+				<div class="grid_16">
+					<div style="text-align: left; padding-bottom:5px">Vincular softwares con el equipo de computo.</div>
+				</div>
+				<div class="grid_12">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<div style="width:30%;float:left"> Softwares disponibles</div>
+						<div style="width:70%;float: left;">
+							<select name="software_id" id="software_id" class="largeInput">
+								<option value="">Seleccionar.......</option>
+								{foreach from=$softwares item=item key=key}
+									<option value="{$item.office_resource_id}">{$item.tipo_recurso|upper} {$item.tipo_software|upper} {$item.marca|upper} {$item.modelo|upper} {$item.no_serie|upper} {$item.no_licencia|upper} {$item.codigo_activacion|upper}</option>
+								{/foreach}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="grid_4">
+					<div class="formLine" style="width:100%;  display: inline-block;">
+						<a  href="javascript:;" class="button_grey spanAddSoftware" style="margin: 0px">
+							<span>Agregar</span>
+						</a>
+					</div>
+				</div>
+				<div class="grid_16" id="list_software">
+					{include file="{$DOC_ROOT}/templates/lists/computo_software.tpl" listSoftware=$post.software_resource}
 				</div>
 				<hr>
 			</div>

@@ -211,6 +211,16 @@ class Util extends CustomError
 
         return true;
     }
+	function ValidateIsNumeric($value,$field)
+	{
+		if (!is_numeric($value))
+		{
+			$this->setError(10055, 'error', 'El valor debe ser una cadena numerica:',$field);
+			return false;
+		}
+
+		return true;
+	}
 
 	function ValidateOption($value, $field){
 
