@@ -425,12 +425,12 @@ function printExcel(id, type)
 }
 function printExcelJq(id, type)
 {
-	var con = jQ('#contenido').html();
+	var con = jQ('div#contenido').html();
 	console.log(con)
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
-		data: { contenido: jQ('#contenido').html(), type:type},
+		data: { contenido: jQ('div#contenido').html(), type:type},
 		beforeSend: function() {
 			jQ('#loadPrint').html("Sea paciente mientras carga el archivo...");
 		},
