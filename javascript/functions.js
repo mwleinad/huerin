@@ -429,7 +429,7 @@ function printExcelJq(id, type)
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
-		data: { contenido: currentHTML, type:type},
+		data: { type:type},
 		beforeSend: function() {
 			jQ('#loadPrint').html("Sea paciente mientras carga el archivo...");
 		},
