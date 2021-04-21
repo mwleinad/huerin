@@ -418,7 +418,7 @@ function printExcel(id, type)
       		var response = transport.responseText || "no response text";
       		var splitResponse = response.split("[#]");
 			$('loadPrint').innerHTML = "";
-			//window.location = splitResponse[1];
+			window.location = splitResponse[1];
 		},
     	onFailure: function(){ alert('Something went wrong...') }
   });
