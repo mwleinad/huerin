@@ -426,7 +426,9 @@ function printExcel(id, type)
 function printExcelJq(id, type)
 {
 	var con = jQ('div#contenido').html();
-	console.log(con)
+	const currentHTML = document.getElementById('contenido').innerHTML;
+	console.log("current ", currentHTML)
+	console.log("contenido largo", con)
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
