@@ -425,6 +425,8 @@ function printExcel(id, type)
 }
 function printExcelJq(id, type)
 {
+	var con = jQ('#contenido').html();
+	console.log(con);
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
