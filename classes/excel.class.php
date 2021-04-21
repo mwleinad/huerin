@@ -1,19 +1,17 @@
 <?php
-
 class Excel
 {
-
-    public function ConvertToExcel($htmltable, $type, $debug = false,$fileName='exportar',$wrap=false,$finWrap='D')
+    public function ConvertToExcel($htmltable, $type, $debug = false, $fileName = 'exportar', $wrap = false, $finWrap = 'D')
     {
-        if($debug === false) {
+        if ($debug === false) {
             $debug = false;
-        }else{
+        } else {
             $debug = true;
-            $file_log = DOC_ROOT."/sendFiles/debug_phpexcel.txt";
-            $handle = fopen($file_log,"w");
+            $file_log = DOC_ROOT . "/sendFiles/debug_phpexcel.txt";
+            $handle = fopen($file_log, "w");
         }
 
-        if(strlen($htmltable) == strlen(strip_tags($htmltable)) ) {
+        if (strlen($htmltable) == strlen(strip_tags($htmltable))) {
             echo "<br />Invalid HTML Table after Stripping Tags, nothing to Export.";
             exit;
         }
@@ -32,21 +30,21 @@ class Excel
         $dom = new domDocument;
         $htmltable = utf8_decode($htmltable);
         @$dom->loadHTML($htmltable);
-        if(!$dom) {
+        if (!$dom) {
             echo "<br />Invalid HTML DOM, nothing to Export.";
             exit;
         }
         $dom->preserveWhiteSpace = false;             // remove redundant whitespace
         $tables = $dom->getElementsByTagName('table');
-        if(!is_object($tables)) {
+        if (!is_object($tables)) {
             echo "<br />Invalid HTML Table DOM, nothing to Export.";
             exit;
         }
-        if($debug) {
-            fwrite($handle, "\nTable Count: ".$tables->length);
+        if ($debug) {
+            fwrite($handle, "\nTable Count: " . $tables->length);
         }
         $tbcnt = $tables->length - 1;                 // count minus 1 for 0 indexed loop over tables
-        if($tbcnt > $limit) {
+        if ($tbcnt > $limit) {
             $tbcnt = $limit;
         }
 
@@ -55,9 +53,9 @@ class Excel
         // Create new PHPExcel object with default attributes
         //
 
-        include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        include_once(DOC_ROOT . '/libs/excel/PHPExcel.php');
         $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-        $cacheSettings = array( 'memoryCacheSize' => '1024MB');
+        $cacheSettings = array('memoryCacheSize' => '1024MB');
         PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 
         $objPHPExcel = new PHPExcel();
@@ -66,8 +64,8 @@ class Excel
         $tm = date(YmdHis);
         $pos = strpos($usermail, "@");
         $user = substr($usermail, 0, $pos);
-        $user = str_replace(".","",$user);
-        $tfn = $user."_".$tm."_".$tablevar.".xlsx";
+        $user = str_replace(".", "", $user);
+        $tfn = $user . "_" . $tm . "_" . $tablevar . ".xlsx";
 
         $fname = $tfn;
         $objPHPExcel->getProperties()->setCreator($username)
@@ -82,7 +80,7 @@ class Excel
         // Loop over tables in DOM to create an array, each table becomes a worksheet
         //
 
-        for($z=0;$z<=$tbcnt;$z++) {
+        for ($z = 0; $z <= $tbcnt; $z++) {
 
             $maxcols = 0;
             $totrows = 0;
@@ -92,67 +90,65 @@ class Excel
             $h = 0;
             $rows = $tables->item($z)->getElementsByTagName('tr');
             $totrows = $rows->length;
-            if($debug) {
-                fwrite($handle, "\nTotal Rows: ".$totrows);
+            if ($debug) {
+                fwrite($handle, "\nTotal Rows: " . $totrows);
             }
 
             foreach ($rows as $row) {
                 $ths = $row->getElementsByTagName('th');
-                if(is_object($ths)) {
-                    if($ths->length > 0) {
+                if (is_object($ths)) {
+                    if ($ths->length > 0) {
                         $headrows[$h]['colcnt'] = $ths->length;
-                        if($ths->length > $maxcols) {
+                        if ($ths->length > $maxcols) {
                             $maxcols = $ths->length;
                         }
                         $nodes = $ths->length - 1;
-                        for($x=0;$x<=$nodes;$x++) {
+                        for ($x = 0; $x <= $nodes; $x++) {
                             $thishdg = $ths->item($x)->nodeValue;
                             $headrows[$h]['th'][] = $thishdg;
                             $headrows[$h]['bold'][] = findBoldText(innerHTML($ths->item($x)));
-                            if($ths->item($x)->hasAttribute('style')) {
+                            if ($ths->item($x)->hasAttribute('style')) {
                                 $style = $ths->item($x)->getAttribute('style');
                                 $stylecolor = findStyleColor($style);
-                                if($stylecolor == '') {
+                                if ($stylecolor == '') {
                                     $headrows[$h]['color'][] = findSpanColor(innerHTML($ths->item($x)));
-                                }else{
+                                } else {
                                     $headrows[$h]['color'][] = $stylecolor;
                                 }
-                            }else{
+                            } else {
                                 $headrows[$h]['color'][] = findSpanColor(innerHTML($ths->item($x)));
                             }
-                            if($ths->item($x)->hasAttribute('colspan')) {
+                            if ($ths->item($x)->hasAttribute('colspan')) {
                                 $headrows[$h]['colspan'][] = $ths->item($x)->getAttribute('colspan');
-                            }else{
+                            } else {
                                 $headrows[$h]['colspan'][] = 1;
                             }
-                            if($ths->item($x)->hasAttribute('align')) {
+                            if ($ths->item($x)->hasAttribute('align')) {
                                 $headrows[$h]['align'][] = $ths->item($x)->getAttribute('align');
-                            }else{
+                            } else {
                                 $headrows[$h]['align'][] = 'left';
                             }
-                            if($ths->item($x)->hasAttribute('valign')) {
+                            if ($ths->item($x)->hasAttribute('valign')) {
                                 $headrows[$h]['valign'][] = $ths->item($x)->getAttribute('valign');
-                            }else{
+                            } else {
                                 $headrows[$h]['valign'][] = 'top';
                             }
-                            if($ths->item($x)->hasAttribute('bgcolor')) {
+                            if ($ths->item($x)->hasAttribute('bgcolor')) {
                                 $headrows[$h]['bgcolor'][] = str_replace("#", "", $ths->item($x)->getAttribute('bgcolor'));
-                            }else if($ths->item($x)->hasAttribute('class') && $wrap){
+                            } else if ($ths->item($x)->hasAttribute('class') && $wrap) {
 
-                                if(preg_match("/cabeceraTabla/i",$ths->item($x)->getAttribute('class')))
-                                {$headrows[$h]['bgcolor'][] = '6b6b6b';}
-                                elseif(preg_match("/divInside/i",$ths->item($x)->getAttribute('class')))
-                                {$headrows[$h]['bgcolor'][] = '686DAB';}
-                                elseif(preg_match("/greenBox/i",$ths->item($x)->getAttribute('class')))
-                                {$headrows[$h]['bgcolor'][] = '009900';}
-                                elseif(preg_match("/redBox/i",$ths->item($x)->getAttribute('class')))
-                                {$headrows[$h]['bgcolor'][] = 'F00F00';}
-                                else
-                                 $headrows[$h]['bgcolor'][] = 'FFFFFF';
+                                if (preg_match("/cabeceraTabla/i", $ths->item($x)->getAttribute('class'))) {
+                                    $headrows[$h]['bgcolor'][] = '6b6b6b';
+                                } elseif (preg_match("/divInside/i", $ths->item($x)->getAttribute('class'))) {
+                                    $headrows[$h]['bgcolor'][] = '686DAB';
+                                } elseif (preg_match("/greenBox/i", $ths->item($x)->getAttribute('class'))) {
+                                    $headrows[$h]['bgcolor'][] = '009900';
+                                } elseif (preg_match("/redBox/i", $ths->item($x)->getAttribute('class'))) {
+                                    $headrows[$h]['bgcolor'][] = 'F00F00';
+                                } else
+                                    $headrows[$h]['bgcolor'][] = 'FFFFFF';
 
-                            }
-                            else
-                            {
+                            } else {
                                 $headrows[$h]['bgcolor'][] = 'FFFFFF';
                             }
                         }
@@ -163,51 +159,51 @@ class Excel
 
             foreach ($rows as $row) {
                 $tds = $row->getElementsByTagName('td');
-                if(is_object($tds)) {
-                    if($tds->length > 0) {
+                if (is_object($tds)) {
+                    if ($tds->length > 0) {
                         $bodyrows[$r]['colcnt'] = $tds->length;
-                        if($tds->length > $maxcols) {
+                        if ($tds->length > $maxcols) {
                             $maxcols = $tds->length;
                         }
                         $nodes = $tds->length - 1;
-                        for($x=0;$x<=$nodes;$x++) {
+                        for ($x = 0; $x <= $nodes; $x++) {
                             $isBg = false;
                             $thistxt = $tds->item($x)->nodeValue;
                             $bodyrows[$r]['td'][] = preg_replace('/[\s\t\n]{2,}/', ' ', $thistxt);
                             $bodyrows[$r]['bold'][] = findBoldText(innerHTML($tds->item($x)));
-                            if($tds->item($x)->hasAttribute('style')) {
+                            if ($tds->item($x)->hasAttribute('style')) {
                                 $style = $tds->item($x)->getAttribute('style');
                                 $stylecolor = findStyleColor($style);
-                                if($stylecolor == '') {
+                                if ($stylecolor == '') {
                                     $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
-                                }else{
+                                } else {
                                     $bodyrows[$r]['color'][] = $stylecolor;
                                 }
                                 $bgColor = findStyleColor($style, 'background');
-                                if($bgColor != '') {
+                                if ($bgColor != '') {
                                     $bodyrows[$r]['bgcolor'][] = $bgColor;
                                     $isBg = true;
                                 }
-                            }else{
+                            } else {
                                 $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
                             }
-                            if($tds->item($x)->hasAttribute('colspan')) {
+                            if ($tds->item($x)->hasAttribute('colspan')) {
                                 $bodyrows[$r]['colspan'][] = $tds->item($x)->getAttribute('colspan');
-                            }else{
+                            } else {
                                 $bodyrows[$r]['colspan'][] = 1;
                             }
-                            if($tds->item($x)->hasAttribute('align')) {
+                            if ($tds->item($x)->hasAttribute('align')) {
                                 $bodyrows[$r]['align'][] = $tds->item($x)->getAttribute('align');
-                            }else{
+                            } else {
                                 $bodyrows[$r]['align'][] = 'left';
                             }
-                            if($tds->item($x)->hasAttribute('valign')) {
+                            if ($tds->item($x)->hasAttribute('valign')) {
                                 $bodyrows[$r]['valign'][] = $tds->item($x)->getAttribute('valign');
-                            }else{
+                            } else {
                                 $bodyrows[$r]['valign'][] = 'center';
                             }
 
-                            if(!$isBg) {
+                            if (!$isBg) {
                                 if ($tds->item($x)->hasAttribute('class')) {
                                     if (preg_match("/stCompletoTardio/i", $tds->item($x)->getAttribute('class'))) {
                                         $bodyrows[$r]['bgcolor'][] = '01FFFF';
@@ -235,19 +231,19 @@ class Excel
                 }
             }
 
-            if($z > 0) {
+            if ($z > 0) {
                 $objPHPExcel->createSheet($z);
             }
             $suf = $z + 1;
-            $tableid = $tablevar.$suf;
+            $tableid = $tablevar . $suf;
             $wksheetname = ucfirst($tableid);
             $objPHPExcel->setActiveSheetIndex($z);                      // each sheet corresponds to a table in html
             $objPHPExcel->getActiveSheet()->setTitle($wksheetname);     // tab name
             $worksheet = $objPHPExcel->getActiveSheet();                // set worksheet we're working on
             $style_overlay = array('font' =>
                 array('color' =>
-                    array('rgb' => '000000'),'bold' => false,),
-                'fill' 	=>
+                    array('rgb' => '000000'), 'bold' => false,),
+                'fill' =>
                     array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'CCCCFF')),
                 'alignment' =>
                     array('wrap' => true, 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -260,8 +256,8 @@ class Excel
             $xcol = '';
             $xrow = 1;
             $usedhdrows = 0;
-            $heightvars = array(1=>'42', 2=>'42', 3=>'48', 4=>'52', 5=>'58', 6=>'64', 7=>'68', 8=>'76', 9=>'82');
-            for($h=0;$h<count($headrows);$h++) {
+            $heightvars = array(1 => '42', 2 => '42', 3 => '48', 4 => '52', 5 => '58', 6 => '64', 7 => '68', 8 => '76', 9 => '82');
+            for ($h = 0; $h < count($headrows); $h++) {
                 $th = $headrows[$h]['th'];
                 $colspans = $headrows[$h]['colspan'];
                 $aligns = $headrows[$h]['align'];
@@ -272,8 +268,12 @@ class Excel
                 $bolds = $headrows[$h]['bold'];
                 $usedhdrows++;
                 $mergedcells = false;
-                for($t=0;$t<count($th);$t++) {
-                    if($xcol == '') {$xcol = 'A';}else{$xcol++;}
+                for ($t = 0; $t < count($th); $t++) {
+                    if ($xcol == '') {
+                        $xcol = 'A';
+                    } else {
+                        $xcol++;
+                    }
                     $thishdg = $th[$t];
                     $thisalign = $aligns[$t];
                     $thisvalign = $valigns[$t];
@@ -281,10 +281,10 @@ class Excel
                     $thiscolor = $colors[$t];
                     $thisbg = $bgcolors[$t];
                     $thisbold = $bolds[$t];
-                    $strbold = ($thisbold==true) ? 'true' : 'false';
-                    if($thisbg == 'FFFFFF') {
+                    $strbold = ($thisbold == true) ? 'true' : 'false';
+                    if ($thisbg == 'FFFFFF') {
                         $style_overlay['fill']['type'] = PHPExcel_Style_Fill::FILL_NONE;
-                    }else{
+                    } else {
                         $style_overlay['fill']['type'] = PHPExcel_Style_Fill::FILL_SOLID;
                     }
                     $style_overlay['alignment']['vertical'] = $thisvalign;              // set styles for cell
@@ -292,31 +292,31 @@ class Excel
                     $style_overlay['font']['color']['rgb'] = $thiscolor;
                     $style_overlay['font']['bold'] = $thisbold;
                     $style_overlay['fill']['color']['rgb'] = $thisbg;
-                    $worksheet->setCellValue($xcol.$xrow, $thishdg);
-                    $worksheet->getStyle($xcol.$xrow)->applyFromArray($style_overlay);
-                    if($debug) {
-                        fwrite($handle, "\n".$xcol.":".$xrow." ColSpan:".$thiscolspan." Color:".$thiscolor." Align:".$thisalign." VAlign:".$thisvalign." BGColor:".$thisbg." Bold:".$strbold." cellValue: ".$thishdg);
+                    $worksheet->setCellValue($xcol . $xrow, $thishdg);
+                    $worksheet->getStyle($xcol . $xrow)->applyFromArray($style_overlay);
+                    if ($debug) {
+                        fwrite($handle, "\n" . $xcol . ":" . $xrow . " ColSpan:" . $thiscolspan . " Color:" . $thiscolor . " Align:" . $thisalign . " VAlign:" . $thisvalign . " BGColor:" . $thisbg . " Bold:" . $strbold . " cellValue: " . $thishdg);
                     }
-                    if($thiscolspan > 1) {                                                // spans more than 1 column
+                    if ($thiscolspan > 1) {                                                // spans more than 1 column
                         $mergedcells = true;
                         $lastxcol = $xcol;
-                        for($j=1;$j<$thiscolspan;$j++) {
+                        for ($j = 1; $j < $thiscolspan; $j++) {
                             $lastxcol++;
-                            $worksheet->setCellValue($lastxcol.$xrow, '');
-                            $worksheet->getStyle($lastxcol.$xrow)->applyFromArray($style_overlay);
+                            $worksheet->setCellValue($lastxcol . $xrow, '');
+                            $worksheet->getStyle($lastxcol . $xrow)->applyFromArray($style_overlay);
                         }
-                        $cellRange = $xcol.$xrow.':'.$lastxcol.$xrow;
-                        if($debug) {
-                            fwrite($handle, "\nmergeCells: ".$xcol.":".$xrow." ".$lastxcol.":".$xrow);
+                        $cellRange = $xcol . $xrow . ':' . $lastxcol . $xrow;
+                        if ($debug) {
+                            fwrite($handle, "\nmergeCells: " . $xcol . ":" . $xrow . " " . $lastxcol . ":" . $xrow);
                         }
                         $worksheet->mergeCells($cellRange);
                         $worksheet->getStyle($cellRange)->applyFromArray($style_overlay);
                         $num_newlines = substr_count($thishdg, "\n");                       // count number of newline chars
-                        if($num_newlines > 1) {
+                        if ($num_newlines > 1) {
                             $rowheight = $heightvars[1];                                      // default to 35
-                            if(array_key_exists($num_newlines, $heightvars)) {
+                            if (array_key_exists($num_newlines, $heightvars)) {
                                 $rowheight = $heightvars[$num_newlines];
-                            }else{
+                            } else {
                                 $rowheight = 75;
                             }
                             $worksheet->getRowDimension($xrow)->setRowHeight($rowheight);     // adjust heading row height
@@ -328,24 +328,24 @@ class Excel
                 $xcol = '';
             }
             //Put an auto filter on last row of heading only if last row was not merged
-            if(!$mergedcells) {
-                $worksheet->setAutoFilter("A$usedhdrows:" . $worksheet->getHighestColumn() . $worksheet->getHighestRow() );
+            if (!$mergedcells) {
+                $worksheet->setAutoFilter("A$usedhdrows:" . $worksheet->getHighestColumn() . $worksheet->getHighestRow());
             }
-            if($debug) {
-                fwrite($handle, "\nautoFilter: A".$usedhdrows.":".$worksheet->getHighestColumn().$worksheet->getHighestRow());
+            if ($debug) {
+                fwrite($handle, "\nautoFilter: A" . $usedhdrows . ":" . $worksheet->getHighestColumn() . $worksheet->getHighestRow());
             }
             // Freeze heading lines starting after heading lines
             $usedhdrows++;
             $worksheet->freezePane("A$usedhdrows");
-            if($debug) {
-                fwrite($handle, "\nfreezePane: A".$usedhdrows);
+            if ($debug) {
+                fwrite($handle, "\nfreezePane: A" . $usedhdrows);
             }
             //
             // Loop thru data rows and write them out
             //
             $xcol = '';
             $xrow = $usedhdrows;
-            for($b=0;$b<count($bodyrows);$b++) {
+            for ($b = 0; $b < count($bodyrows); $b++) {
                 $td = $bodyrows[$b]['td'];
                 $colcnt = preg_replace('/[\s\t\n]{2,}/', ' ', $bodyrows[$b]['colcnt']);
                 $colspans = $bodyrows[$b]['colspan'];
@@ -354,8 +354,12 @@ class Excel
                 $bgcolors = $bodyrows[$b]['bgcolor'];
                 $colors = $bodyrows[$b]['color'];
                 $bolds = $bodyrows[$b]['bold'];
-                for($t=0;$t<count($td);$t++) {
-                    if($xcol == '') {$xcol = 'A';}else{$xcol++;}
+                for ($t = 0; $t < count($td); $t++) {
+                    if ($xcol == '') {
+                        $xcol = 'A';
+                    } else {
+                        $xcol++;
+                    }
                     $thistext = trim($td[$t]);
                     $thisalign = $aligns[$t];
                     $thisvalign = $valigns[$t];
@@ -363,10 +367,10 @@ class Excel
                     $thiscolor = $colors[$t];
                     $thisbg = $bgcolors[$t];
                     $thisbold = $bolds[$t];
-                    $strbold = ($thisbold==true) ? 'true' : 'false';
-                    if($thisbg == 'FFFFFF') {
+                    $strbold = ($thisbold == true) ? 'true' : 'false';
+                    if ($thisbg == 'FFFFFF') {
                         $style_overlay['fill']['type'] = PHPExcel_Style_Fill::FILL_NONE;
-                    }else{
+                    } else {
                         $style_overlay['fill']['type'] = PHPExcel_Style_Fill::FILL_SOLID;
                     }
                     $style_overlay['alignment']['vertical'] = $thisvalign;              // set styles for cell
@@ -374,41 +378,39 @@ class Excel
                     $style_overlay['font']['color']['rgb'] = $thiscolor;
                     $style_overlay['font']['bold'] = $thisbold;
                     $style_overlay['fill']['color']['rgb'] = $thisbg;
-                    if($thiscolspan == 1) {
-                        if($wrap){
-                            if($xcol>$finWrap)
+                    if ($thiscolspan == 1) {
+                        if ($wrap) {
+                            if ($xcol > $finWrap)
                                 $worksheet->getColumnDimension($xcol)->setWidth(12);
                             else
                                 $worksheet->getColumnDimension($xcol)->setAutoSize(true);
-                        }
-                        else
+                        } else
                             $worksheet->getColumnDimension($xcol)->setWidth(10);
                     }
-                    if($thistext[0]=='$')
-                    {
-                        $thistext= str_replace('$','',$thistext);
-                        $style_overlay['numberformat']['code']=PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE;
-                    }else{
-                        $style_overlay['numberformat']['code']=PHPExcel_Style_NumberFormat::FORMAT_TEXT;
+                    if ($thistext[0] == '$') {
+                        $thistext = str_replace('$', '', $thistext);
+                        $style_overlay['numberformat']['code'] = PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE;
+                    } else {
+                        $style_overlay['numberformat']['code'] = PHPExcel_Style_NumberFormat::FORMAT_TEXT;
                     }
 
 
-                    $worksheet->setCellValue($xcol.$xrow, $thistext);
-                    if($debug) {
-                        fwrite($handle, "\n".$xcol.":".$xrow." ColSpan:".$thiscolspan." Color:".$thiscolor." Align:".$thisalign." VAlign:".$thisvalign." BGColor:".$thisbg." Bold:".$strbold." cellValue: ".$thistext);
+                    $worksheet->setCellValue($xcol . $xrow, $thistext);
+                    if ($debug) {
+                        fwrite($handle, "\n" . $xcol . ":" . $xrow . " ColSpan:" . $thiscolspan . " Color:" . $thiscolor . " Align:" . $thisalign . " VAlign:" . $thisvalign . " BGColor:" . $thisbg . " Bold:" . $strbold . " cellValue: " . $thistext);
                     }
-                    $worksheet->getStyle($xcol.$xrow)->applyFromArray($style_overlay);
-                    if($wrap)
+                    $worksheet->getStyle($xcol . $xrow)->applyFromArray($style_overlay);
+                    if ($wrap)
                         $worksheet->getRowDimension($xrow)->setRowHeight(-1);
 
-                    if($thiscolspan > 1) {                                                // spans more than 1 column
+                    if ($thiscolspan > 1) {                                                // spans more than 1 column
                         $lastxcol = $xcol;
-                        for($j=1;$j<$thiscolspan;$j++) {
+                        for ($j = 1; $j < $thiscolspan; $j++) {
                             $lastxcol++;
                         }
-                        $cellRange = $xcol.$xrow.':'.$lastxcol.$xrow;
-                        if($debug) {
-                            fwrite($handle, "\nmergeCells: ".$xcol.":".$xrow." ".$lastxcol.":".$xrow);
+                        $cellRange = $xcol . $xrow . ':' . $lastxcol . $xrow;
+                        if ($debug) {
+                            fwrite($handle, "\nmergeCells: " . $xcol . ":" . $xrow . " " . $lastxcol . ":" . $xrow);
                         }
                         $worksheet->mergeCells($cellRange);
                         $worksheet->getStyle($cellRange)->applyFromArray($style_overlay);
@@ -421,28 +423,27 @@ class Excel
             }
             // autosize columns to fit data
             $azcol = 'A';
-            for($x=1;$x==$maxcols;$x++) {
+            for ($x = 1; $x == $maxcols; $x++) {
                 $worksheet->getColumnDimension($azcol)->setAutoSize(true);
                 $azcol++;
             }
-            if($debug) {
-                fwrite($handle, "\nHEADROWS: ".print_r($headrows, true));
-                fwrite($handle, "\nBODYROWS: ".print_r($bodyrows, true));
+            if ($debug) {
+                fwrite($handle, "\nHEADROWS: " . print_r($headrows, true));
+                fwrite($handle, "\nBODYROWS: " . print_r($bodyrows, true));
             }
         } // end for over tables
         $objPHPExcel->setActiveSheetIndex(0);                      // set to first worksheet before close
 //
 // Write to Browser
 //
-        if($debug) {
+        if ($debug) {
             fclose($handle);
         }
 
-        if($type == "pdf")
-        {
+        if ($type == "pdf") {
             $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
             $rendererLibrary = '';
-            $rendererLibraryPath = DOC_ROOT.'/pdf/' . $rendererLibrary;
+            $rendererLibraryPath = DOC_ROOT . '/pdf/' . $rendererLibrary;
             PHPExcel_Settings::setPdfRenderer(
                 $rendererName,
                 $rendererLibraryPath);
@@ -450,21 +451,20 @@ class Excel
             $objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_LEGAL);
             $objWriter = new PHPExcel_Writer_PDF($objPHPExcel);
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'PDF');
-            $objWriter->save(DOC_ROOT."/exportar.pdf");
-        }
-        else
-        {
+            $objWriter->save(DOC_ROOT . "/exportar.pdf");
+        } else {
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            if($fileName=='exportar')
-                $objWriter->save(DOC_ROOT."/exportar.xlsx");
+            if ($fileName == 'exportar')
+                $objWriter->save(DOC_ROOT . "/exportar.xlsx");
             else
-                $objWriter->save(DOC_ROOT."/sendFiles/".$fileName.".xlsx");
+                $objWriter->save(DOC_ROOT . "/sendFiles/" . $fileName . ".xlsx");
         }
     }
 
 }
 
-function innerHTML($node) {
+function innerHTML($node)
+{
     $doc = $node->ownerDocument;
     $frag = $doc->createDocumentFragment();
     foreach ($node->childNodes as $child) {
@@ -472,7 +472,9 @@ function innerHTML($node) {
     }
     return $doc->saveXML($frag);
 }
-function findSpanColor($node) {
+
+function findSpanColor($node)
+{
     $pos = stripos($node, "color:");       // ie: looking for style='color: #FF0000;'
     if ($pos === false) {                  //                        12345678911111
         return '000000';                     //                                 01234
@@ -480,14 +482,16 @@ function findSpanColor($node) {
     $node = substr($node, $pos);           // truncate to color: start
     $start = "#";                          // looking for html color string
     $end = ";";                            // should end with semicolon
-    $node = " ".$node;                     // prefix node with blank
-    $ini = stripos($node,$start);          // look for #
+    $node = " " . $node;                     // prefix node with blank
+    $ini = stripos($node, $start);          // look for #
     if ($ini === false) return "000000";   // not found, return default color of black
     $ini += strlen($start);                // get 1 byte past start string
-    $len = stripos($node,$end,$ini) - $ini; // grab substr between start and end positions
-    return substr($node,$ini,$len);        // return the RGB color without # sign
+    $len = stripos($node, $end, $ini) - $ini; // grab substr between start and end positions
+    return substr($node, $ini, $len);        // return the RGB color without # sign
 }
-function findStyleColor($style, $needle = "color:") {
+
+function findStyleColor($style, $needle = "color:")
+{
     $pos = stripos($style, $needle);      // ie: looking for style='color: #FF0000;'
     if ($pos === false) {                  //                        12345678911111
         return '';                           //                                 01234
@@ -495,15 +499,16 @@ function findStyleColor($style, $needle = "color:") {
     $style = substr($style, $pos);           // truncate to color: start
     $start = "#";                          // looking for html color string
     $end = ";";                            // should end with semicolon
-    $style = " ".$style;                     // prefix node with blank
-    $ini = stripos($style,$start);          // look for #
+    $style = " " . $style;                     // prefix node with blank
+    $ini = stripos($style, $start);          // look for #
     if ($ini === false) return "";         // not found, return default color of black
     $ini += strlen($start);                // get 1 byte past start string
-    $len = stripos($style,$end,$ini) - $ini; // grab substr between start and end positions
-    return substr($style,$ini,$len);        // return the RGB color without # sign
+    $len = stripos($style, $end, $ini) - $ini; // grab substr between start and end positions
+    return substr($style, $ini, $len);        // return the RGB color without # sign
 }
 
-function findBoldText($node) {
+function findBoldText($node)
+{
     $pos = stripos($node, "<b>");          // ie: looking for bolded text
     if ($pos === false) {                  //                        12345678911111
         return false;                        //                                 01234
