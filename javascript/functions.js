@@ -425,14 +425,11 @@ function printExcel(id, type)
 }
 function printExcelJq(id, type)
 {
-	var con = jQ('div#contenido').html();
 	const currentHTML = document.getElementById('contenido').innerHTML;
-	console.log("current ", currentHTML)
-	console.log("contenido largo", con)
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
-		data: { contenido: jQ('div#contenido').html(), type:type},
+		data: { contenido: currentHTML, type:type},
 		beforeSend: function() {
 			jQ('#loadPrint').html("Sea paciente mientras carga el archivo...");
 		},
@@ -440,7 +437,7 @@ function printExcelJq(id, type)
 		{
 			console.log(response);
 			var splitResponse = response.split("[#]");
-			$('loadPrint').innerHTML = "";
+			jQ('#loadPrint').html("");
 			//window.location = splitResponse[1];
 		},
 		error: function (error) {
@@ -454,9 +451,7 @@ function ToggleSpecifiedDiv(id)
 	var myId;
 	$$('#contenido tr.class-'+id).each(function(e){
 		myId = e.identify();
-		console.log(myId);
 		e.toggle();
-
 		if(e.visible() === false)
 		{
 			$$('#contenido tr.'+id).each(function(f){
@@ -607,7 +602,6 @@ jQ(document).on('click','.showPayment',function (e) {
 	e.preventDefault();
    var id =  this.id;
    var clase =  this.className;
-   console.log('.'+clase+'-'+id);
    jQ('.'+clase+'-'+id).toggle();
 });
 function check_session()
