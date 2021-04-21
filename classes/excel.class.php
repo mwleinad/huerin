@@ -18,7 +18,7 @@ class Excel
             fwrite($handle1, "\nTotal Rows: " . strlen($htmltable));
             fclose($handle1);
 
-            $file_log2 = DOC_ROOT . "/sendFiles/htmltable.txt";
+            $file_log2 = DOC_ROOT . "/sendFiles/htmltablestrip.txt";
             $handle2 = fopen($file_log2, "w");
             fwrite($handle2, strip_tags($htmltable));
             fwrite($handle2, "\nTotal Rows: " . strlen(strip_tags($htmltable)));
