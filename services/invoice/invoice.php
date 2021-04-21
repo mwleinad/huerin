@@ -212,7 +212,7 @@ class InvoiceService extends Cfdi{
         $this->data["porcentajeRetIsr"] = 0;
         $this->data["porcentajeIEPS"] = 0 ;
         $this->data["formaDePago"] = '99';
-        $this->data["NumCtaPago"] = $this->currentContrato["noCuenta"];
+        $this->data["NumCtaPago"] = $this->currentContract["noCuenta"];
 
         $this->data['userId'] = $this->currentContract["contractId"];
         $this->data['format'] = 'generar';
