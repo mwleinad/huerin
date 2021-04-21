@@ -434,6 +434,7 @@ function printExcelJq(id, type)
 		},
 		success:function(response)
 		{
+			console.log(response);
 			var splitResponse = response.split("[#]");
 			$('loadPrint').innerHTML = "";
 			//window.location = splitResponse[1];

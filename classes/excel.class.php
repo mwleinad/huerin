@@ -12,6 +12,17 @@ class Excel
         }
 
         if (strlen($htmltable) == strlen(strip_tags($htmltable))) {
+            $file_log1 = DOC_ROOT . "/sendFiles/htmltable.txt";
+            $handle1 = fopen($file_log1, "w");
+            fwrite($handle1, $htmltable);
+            fwrite($handle1, "\nTotal Rows: " . strlen($htmltable));
+            fclose($handle1);
+
+            $file_log2 = DOC_ROOT . "/sendFiles/htmltable.txt";
+            $handle2 = fopen($file_log2, "w");
+            fwrite($handle2, strip_tags($htmltable));
+            fwrite($handle2, "\nTotal Rows: " . strlen(strip_tags($htmltable)));
+            fclose($handle2);
             echo "<br />Invalid HTML Table after Stripping Tags, nothing to Export.";
             exit;
         }
