@@ -436,7 +436,7 @@ function printExcelJq(id, type)
 		{
 			var splitResponse = response.split("[#]");
 			$('loadPrint').innerHTML = "";
-			window.location = splitResponse[1];
+			//window.location = splitResponse[1];
 		}
 	})
 }
