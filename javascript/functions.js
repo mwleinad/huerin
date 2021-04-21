@@ -426,7 +426,6 @@ function printExcel(id, type)
 function printExcelJq(id, type)
 {
 	var con = jQ('#contenido').html();
-	console.log(con);
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
@@ -440,6 +439,9 @@ function printExcelJq(id, type)
 			var splitResponse = response.split("[#]");
 			$('loadPrint').innerHTML = "";
 			//window.location = splitResponse[1];
+		},
+		error: function (error) {
+			console.log(error)
 		}
 	})
 }
