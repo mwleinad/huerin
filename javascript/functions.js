@@ -444,7 +444,7 @@ function printExcelJq(id, type)
 			console.log(response);
 			var splitResponse = response.split("[#]");
 			jQ('#loadPrint').html("");
-			//window.location = splitResponse[1];
+			window.location = splitResponse[1];
 		},
 		error: function (error) {
 			console.log(error)
