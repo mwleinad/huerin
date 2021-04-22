@@ -426,10 +426,16 @@ function printExcel(id, type)
 function printExcelJq(id, type)
 {
 	const currentHTML = document.getElementById('contenido').innerHTML;
+	var frm = new FormData();
+	frm.append('type', type ? type : '');
+	frm.append('contenido', currentHTML)
+	console.log(frm);
 	jQ.ajax({
 		url:WEB_ROOT+"/ajax/print.php",
 		method:"POST",
-		data: { type:type},
+		data: frm,
+		processData: false,
+		contentType: false,
 		beforeSend: function() {
 			jQ('#loadPrint').html("Sea paciente mientras carga el archivo...");
 		},
