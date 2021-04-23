@@ -11,6 +11,7 @@ include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 $file_temp = DOC_ROOT."/documento.csv";
+echo DOC_ROOT;
 
 if(is_file($file_temp))
     echo "archivo existe";
