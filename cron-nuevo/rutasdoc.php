@@ -4,23 +4,24 @@ if(!$_SERVER["DOCUMENT_ROOT"])
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
 }
 
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
-{
-    $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
-}
-else
-{
-    $docRoot = $_SERVER['DOCUMENT_ROOT'];
-}
+$docRoot = $_SERVER['DOCUMENT_ROOT'];
 define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-$db->setQuery("SELECT * FROM pending_cfdi_cancel WHERE status = 'pending'");
-$result = $db->GetResult();
-foreach($result as $key => $row) {
-    $response = $cancelation->getStatus($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
-    $cancelation->processCancelation($row, $response);
-    dd($response);
-    echo "UUID: ".$row['uuid']." => ".$response['status'].chr(13).chr(10);
+
+$file_temp = DOC_ROOT."/documento.csv";
+$fp = fopen($file_temp,'r');
+$fila= 1;
+while(($row=fgetcsv($fp,4096,","))==true) {
+    if($fila == 1) {
+        $fila++;
+        continue;
+    }
+    $name_file =  $row[1]."_".$row[4];
+    if(file_exists(DOC_ROOT."/documentos/".$name_file)) {
+        echo "todo en orden fila ". $fila."\n";
+    } else {
+        echo "el archivo. ".$row[4]." de la fila ". $fila." no existe\n";
+    }
 }
