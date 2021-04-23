@@ -11,6 +11,12 @@ include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
 $file_temp = DOC_ROOT."/documento.csv";
+
+if(is_file($file_temp))
+    echo "archivo existe";
+else
+    echo "arhco no esiste";
+
 $fp = fopen($file_temp,'r');
 $fila= 1;
 while(($row=fgetcsv($fp,4096,","))==true) {
@@ -19,9 +25,10 @@ while(($row=fgetcsv($fp,4096,","))==true) {
         continue;
     }
     $name_file =  $row[1]."_".$row[4];
-    if(file_exists(DOC_ROOT."/documentos/".$name_file)) {
+    if(is_file(DOC_ROOT."/documentos/".$name_file)) {
         echo "todo en orden fila ". $fila."\n";
     } else {
         echo "el archivo. ".$row[4]." de la fila ". $fila." no existe\n";
     }
+    $fila++;
 }
