@@ -15,24 +15,7 @@ switch($_POST["type"])
        $data =  $task->checkTasksByStep();
        $data['isDrill'] = $_POST["drill"];
 
-       //comprobar departamento del usuario logueado
-        $fltDeps = [8,24];
-        //asignar permiso de borrar y actualizar solo si la instancia pertenece ala misma area del usuario activo
-        switch($User['tipoPers']){
-            case 'Admin':
-            case 'Coordinador':
-            case 'Socio':
-                $isDep = true;
-                break;
-            default:
-                if($User['departamentoId']==$data['workflow']['departamentoId'])
-                    $isDep= true;
-                elseif(in_array($User['departamentoId'],$fltDeps) && in_array($data['workflow']['departamentoId'],$fltDeps))
-                    $isDep= true;
-                else
-                    $isDep=false;
-                break;
-       }
+       $isDep =  $User['allow_any_departament'] || in_array($data['workflow']['departamentoId'], $User['moreDepartament']);
        $smarty->assign('isDep',$isDep);
        $smarty->assign('data',$data);
        $smarty->display(DOC_ROOT."/templates/lists/tasks-step.tpl");

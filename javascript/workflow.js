@@ -119,12 +119,6 @@ var createDropzoneWorkflow = ()=>{
 }
 //controlar la visualizacion de los pasos y tareas.
 jQ(document).on('click','.boxStep',function () {
-    /*var tasks = document.querySelectorAll('.tasks');
-    tasks.forEach(
-        (e) => {
-            jQ(e).removeClass('zoneTaskShow');
-            jQ(e).addClass('zoneTaskHiden');
-        });*/
     var myForm = document.getElementById('frmWorkFlow');
     var form = new FormData(myForm);
     form.set('type','listTasksStep');

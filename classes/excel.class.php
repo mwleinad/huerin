@@ -1,4 +1,5 @@
 <?php
+
 class Excel
 {
     public function ConvertToExcel($htmltable, $type, $debug = false, $fileName = 'exportar', $wrap = false, $finWrap = 'D')
@@ -12,17 +13,6 @@ class Excel
         }
 
         if (strlen($htmltable) == strlen(strip_tags($htmltable))) {
-            $file_log1 = DOC_ROOT . "/sendFiles/htmltable.txt";
-            $handle1 = fopen($file_log1, "w");
-            fwrite($handle1, $htmltable);
-            fwrite($handle1, "\nTotal Rows: " . strlen($htmltable));
-            fclose($handle1);
-
-            $file_log2 = DOC_ROOT . "/sendFiles/htmltablestrip.txt";
-            $handle2 = fopen($file_log2, "w");
-            fwrite($handle2, strip_tags($htmltable));
-            fwrite($handle2, "\nTotal Rows: " . strlen(strip_tags($htmltable)));
-            fclose($handle2);
             echo "<br />Invalid HTML Table after Stripping Tags, nothing to Export.";
             exit;
         }
@@ -443,10 +433,8 @@ class Excel
                 fwrite($handle, "\nBODYROWS: " . print_r($bodyrows, true));
             }
         } // end for over tables
-        $objPHPExcel->setActiveSheetIndex(0);                      // set to first worksheet before close
-//
-// Write to Browser
-//
+        $objPHPExcel->setActiveSheetIndex();
+
         if ($debug) {
             fclose($handle);
         }
@@ -455,12 +443,20 @@ class Excel
             $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
             $rendererLibrary = '';
             $rendererLibraryPath = DOC_ROOT . '/pdf/' . $rendererLibrary;
-            PHPExcel_Settings::setPdfRenderer(
+            if (!PHPExcel_Settings::setPdfRenderer(
                 $rendererName,
-                $rendererLibraryPath);
+                $rendererLibraryPath
+            )) {
+                die(
+                    'NOTICE: Please set the $rendererName and $rendererLibraryPath values' .
+                    '<br />' .
+                    'at the top of this script as appropriate for your directory structure'
+                );
+            }
             $objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
             $objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_LEGAL);
             $objWriter = new PHPExcel_Writer_PDF($objPHPExcel);
+            $objWriter->setSheetIndex(0);
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'PDF');
             $objWriter->save(DOC_ROOT . "/exportar.pdf");
         } else {

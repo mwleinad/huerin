@@ -5,7 +5,7 @@
   </div>
   {if in_array(98,$permissions) || $User.isRoot}
   <div class="grid_6" id="eventbox">
-      <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcelJq('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
+      <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
       <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
       <div id="loadPrint">
       </div>

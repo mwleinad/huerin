@@ -35,14 +35,14 @@
                                         <a href="{$WEB_ROOT}/download.php?file=tasks/{$file.servicioId}_{$file.stepId}_{$file.taskId}_{$file.control}_{$file.version}.{$file.ext}" target="_blank">&raquo; Ver Archivo</a>
                                     {/if}
                                 {/if}
-                  {if in_array(105,$permissions)||$User.isRoot}
-                                {if $isDep}
-                                    <span><a href="javascript:;" data-file="{$file.taskFileId}" data-step="{{$data.stepId}}" class="deleteFileWorkflow" data-datos='{ "idWorkFlow":{$data.workflow.instanciaServicioId} }'>&raquo; Borrar Archivo</a></span>
+                                {if in_array(105,$permissions)||$User.isRoot}
+                                    {if $isDep}
+                                        <span><a href="javascript:;" data-file="{$file.taskFileId}" data-step="{{$data.stepId}}" class="deleteFileWorkflow" data-datos='{ "idWorkFlow":{$data.workflow.instanciaServicioId} }'>&raquo; Borrar Archivo</a></span>
+                                    {/if}
                                 {/if}
-                            {/if}
-                  <br />
+                                <br />
                             {/foreach}
-              </span>
+                        </span>
                         {if $data.workflow.status neq "inactiva"}
                             {if in_array(103,$permissions)||$User.isRoot}
                                 {if $isDep}
