@@ -89,31 +89,13 @@ switch($_POST["type"])
         }
     break;
     case 'saveFromWorkflow':
-             //$_POST['servicioId'] es el id del workflow es decir instanciaServicioId
             $id =  $_POST['servicioId'];
             $workflow->setInstanciaServicioId($id);
-            //comprobar departamento del usuario logueado
-            $fltDeps = [8,24];
             if($workflow->UploadControl()){
                 $task->setWorkflowId($id);
                 $task->setStepId($_POST['stepId']);
                 $data =  $task->checkTasksByStep();
-                //asignar permiso de borrar y actualizar solo si la instancia pertenece ala misma area del usuario activo
-                switch($User['tipoPers']){
-                    case 'Admin':
-                    case 'Coordinador':
-                    case 'Socio':
-                        $isDep = true;
-                        break;
-                    default:
-                        if($User['departamentoId']==$data['workflow']['departamentoId'])
-                            $isDep= true;
-                        elseif(in_array($User['departamentoId'],$fltDeps) && in_array($data['workflow']['departamentoId'],$fltDeps))
-                            $isDep= true;
-                        else
-                            $isDep=false;
-                        break;
-                }
+                $isDep =  $User['allow_any_departament'] || in_array($data['workflow']['departamentoId'], $User['moreDepartament']);
                 $djson['message'] = 'ok';
                 $djson['notificacion'] = $smarty->fetch(DOC_ROOT."/templates/boxes/status_on_popup.tpl");
                 $smarty->assign('isDep',$isDep);
@@ -149,25 +131,7 @@ switch($_POST["type"])
             $task->setStepId($_POST['stepId']);
             $data =  $task->checkTasksByStep();
 
-            //comprobar si se va cambiar de color el paso
-
-            //asignar permiso de borrar y actualizar solo si la instancia pertenece ala misma area del usuario activo
-            switch($User['tipoPers']){
-                case 'Admin':
-                case 'Coordinador':
-                case 'Socio':
-                    $isDep = true;
-                    break;
-                default:
-                    if($User['departamentoId']==$data['workflow']['departamentoId'])
-                        $isDep= true;
-                    elseif(in_array($User['departamentoId'],$fltDeps) && in_array($data['workflow']['departamentoId'],$fltDeps))
-                        $isDep= true;
-                    else
-                        $isDep=false;
-                    break;
-            }
-
+            $isDep = $User['allow_any_departament'] || in_array($data['workflow']['departamentoId'], $User['moreDepartament']);
             $djson['message'] = 'ok';
             $djson['notificacion'] = $smarty->fetch(DOC_ROOT."/templates/boxes/status_on_popup.tpl");
             $smarty->assign('isDep',$isDep);
