@@ -1034,7 +1034,7 @@ class Workflow extends Servicio
     	if($this->Util()->PrintErrors())
     		return false;
 
-    	$sql =  "select taskFileId, servicioId, ruta, ext from taskFile a where servicioId = '".$this->instanciaServicioId."' ";
+    	$sql =  "select taskFileId, servicioId,stepId,taskId,control,version, ruta, ext from taskFile a where servicioId = '".$this->instanciaServicioId."' ";
     	$this->Util()->DB()->setQuery($sql);
     	$result =  $this->Util()->DB()->GetResult();
     	foreach($result as $var) {
