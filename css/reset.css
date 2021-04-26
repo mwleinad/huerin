@@ -66,6 +66,11 @@ button, html input[type=button] {
 	background-color: #32c5d2;
 	border-color: #32c5d2;
 }
+.btn.error {
+	color: #FFF;
+	background-color: #d23245;
+	border-color: #d23245;
+}
 .btn:not(.btn-sm):not(.btn-lg) {
 	line-height: 1.44;
 }

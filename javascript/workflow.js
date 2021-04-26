@@ -75,6 +75,28 @@ function UpdateDateWorkflow(el) {
 
   )
 }
+function resetWorkflow() {
+    var doDelete =  confirm('¿ Esta seguro de realizar esta accion ?, una vez realizada la acción no se puede deshacer.');
+    if(!doDelete)
+        return;
+
+    jQ.ajax({
+            url: WEB_ROOT+"/ajax/workflow.php",
+            data: { type: "resetFilesWorflow", id: jQ(this).data('id'), customer: jQ(this).data('customer')},
+            type: 'POST',
+            beforeSend: function() {
+                jQ("#message_reset").show();
+            },
+            success: function(response){
+                var splitResponse = response.split("[#]");
+                ShowStatusPopUp(splitResponse[1]);
+                if(splitResponse[0]== 'ok')
+                  window.location.reload();
+            },
+        }
+
+    )
+}
 var createDropzoneWorkflow = ()=>{
     if(jQ('#frm-workflow').length) {
         jQ('form#frm-workflow').each(
@@ -117,7 +139,6 @@ var createDropzoneWorkflow = ()=>{
 
     }
 }
-//controlar la visualizacion de los pasos y tareas.
 jQ(document).on('click','.boxStep',function () {
     var myForm = document.getElementById('frmWorkFlow');
     var form = new FormData(myForm);
@@ -144,7 +165,7 @@ jQ(document).on('click','.boxStep',function () {
         },
     });
 });
-
+jQ(document).on('click','#resetWorkflow', resetWorkflow);
 jQ(document).on('click','.deleteFileWorkflow',function () {
     var myForm = document.getElementById('frmWorkFlow');
     var form = new FormData(myForm);
