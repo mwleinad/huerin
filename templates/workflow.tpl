@@ -9,9 +9,10 @@
               <input type="hidden" id="type" name="type" value="changeDateWorkFlow">
               Cliente: <b>{$myWorkflow.customerName}</b> Razon Social:<b>{$myWorkflow.contractName}</b> Fecha:
             <input class="form-control btn btn-xs green" type="button" name="date-workflow"  id="date-workflow"  {if in_array(116,$permissions)||$User.isRoot}onclick="Calendario(this)"{/if} value="{$myWorkflow.date}" />
-      </span>|{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} | <a href="{$WEB_ROOT}/report-servicio">Regresar</a><br />
+      |{if in_array(101,$permissions)||$User.isRoot}<a href="{$WEB_ROOT}/download_tasks.php?id={$workFlowId}" style="font-weight:bold">Descargar Archivos</a>{/if} |{if $myWorkflow.customerId eq $CUSTOMER_CAPACITACION}<input type="button" class="form-control btn btn-xs error" data-id = "{$workFlowId}" data-customer="{$myWorkflow.customerId}" value="Reiniciar" id="resetWorkflow" title="Reiniciar workflow" />|{/if}<a href="{$WEB_ROOT}/report-servicio">Regresar</a><br />
       </form>
   <div class="clearfix"></div>
+  <span style="display: none; color:red" id="message_reset"><br>Reseteando workflow, espere un momento..........</span>
   <div class="portlet">
       <div class="portlet-content nopadding borderGray" id="contenido" style="padding:15px">
             {foreach from=$myWorkflow.steps item=step}
@@ -34,8 +35,8 @@
       </div>
   </div>
  </div>
-      <div style="clear:both"> </div>           
-      <div class="formLine" style="text-align:center; margin-left:420px">            
+      <div style="clear:both"> </div>
+      <div class="formLine" style="text-align:center; margin-left:420px">
       {if $myWorkflow.status neq "inactiva"}
           {if in_array(106,$permissions)||$User.isRoot}
             {if $isDep}

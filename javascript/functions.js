@@ -477,9 +477,6 @@ function Calendario(input) {
         if (flag) {
             if (e.currentTarget.value != dateNow)
                 UpdateDateWorkflow(input);
-            else {
-                console.log('no cambio');
-            }
             flag = false;
         }
 

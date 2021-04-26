@@ -60,4 +60,10 @@ switch($_POST["type"])
         }
 
     break;
+    case 'resetFilesWorflow':
+        $workflow->setInstanciaServicioId($_POST['id']);
+        echo $workflow->resetFilesFromWorkflow() ? "ok" : "fail";
+        echo "[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+    break;
 }

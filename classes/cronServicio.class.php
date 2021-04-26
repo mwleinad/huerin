@@ -16,7 +16,9 @@ class CronServicio extends Contract
         if($contractId != 0)
             $sqlContract = " AND c.contractId = '".$contractId."'";
 
-        $sql =  "select a.servicioId,a.status,a.lastDateWorkflow,a.costo,a.inicioOperaciones,a.inicioFactura,a.contractId,b.periodicidad,b.nombreServicio,b.tipoServicioId from servicio a
+        $sql =  "select a.servicioId,a.status,a.lastDateWorkflow,a.costo,a.inicioOperaciones,
+                        a.inicioFactura,a.contractId,b.periodicidad,b.nombreServicio, b.tipoServicioId, d.customerId
+                 from servicio a
                  inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId  and b.status='1'
                  inner join contract c on a.contractId=c.contractId and c.activo='Si' $sqlContract
                  inner join customer d on c.customerId=d.customerId and d.active='1' $sqlCustomer
@@ -33,6 +35,12 @@ class CronServicio extends Contract
         $this->Util()->DB()->setQuery($sqlLast);
         $ultimoWorkflowCreado = $this->Util()->DB()->GetSingle();
 
+        //si el cliente es el id 1701 solo debe tener un workflow todas sus empresas;
+        if ($serv['customerId'] == CUSTOMER_CAPACITACION) {
+            if($ultimoWorkflowCreado) {
+                return $fechas_workflow;
+            }
+        }
         $isWorkflowInicial =  false;
         //si no tiene ultimo workflow se usa como ultimo la fecha de inicio de operaciones y se activa flag que indica que es el primer workflow que se creara
         if(!$ultimoWorkflowCreado)
@@ -224,13 +232,12 @@ class CronServicio extends Contract
         return $fechas_workflow;
     }
     public function CreateWorkflow(){
-        //encontrar los servicios sin necesidad de filtros
        $fechaCorriente=  $this->Util()->getFirstDate(date('Y-m-d'));
        $servicios = $this->getListServices();
        foreach($servicios as $key=>$servicio){
            $costoWorkflow = $servicio['costo'];
-          $fechas_workflow =  $this->CreateStockDates($servicio);
-          if(count($fechas_workflow)>0){
+           $fechas_workflow =  $this->CreateStockDates($servicio);
+           if(count($fechas_workflow)>0){
               foreach($fechas_workflow as $fecha){
                   $sql ="select instanciaServicioId from instanciaServicio where servicioId='".$servicio['servicioId']."' and date='".$fecha."' ";
                   $this->Util()->DB()->setQuery($sql);
