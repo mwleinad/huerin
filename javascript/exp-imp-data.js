@@ -29,7 +29,9 @@ jQ(document).ready(function(){
             },
             error: function () {
                 jQ('#' + id).show();
-                alert('error')
+                jQ('#loading-img').hide();
+                form[0].reset();
+                ShowErrorOnPopup("Error al importar",true)
             }
         });
     });

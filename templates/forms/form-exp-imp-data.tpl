@@ -16,10 +16,11 @@
                         <option value="update#customer">Actualizar clientes principales</option>
                         <option value="add#contract">Importar nuevas razones sociales / contratos</option>
                         <option value="add#customer">Importar nuevos clientes principales</option>
+                        <option value="importar_servicios_nuevos">Importar nuevos servicios</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
-                        <option value="importar_servicios_nuevos">Importar nuevos servicios a clientes</option>
+
                         <option value="update-servicios">Actualizar servicios de clientes</option>-->
                         {if $User.isRoot}
                             <option value="doPermiso">Reconstruir permisos</option>
