@@ -738,7 +738,7 @@ class Validar extends Main
             if($row[3]==""){
                 $this->Util()->setError(0, 'error', "Falta inicio de facturacion en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
-            } else {
+            } elseif($row[3]!='0000-00-00') {
                 if(!$this->Util()->isValidateDate($row[3], 'd/m/Y')) {
                     $this->Util()->setError(0, 'error', "Formato de fecha inicio de facturacion en la fila " . $fila . " es invalido.  Usar dia/mes/año ");
                     break;
@@ -747,7 +747,7 @@ class Validar extends Main
             if($row[4]==""){
                 $this->Util()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
-            } else {
+            } elseif($row[4]!='0000-00-00') {
                 if(!$this->Util()->isValidateDate($row[4], 'd/m/Y')) {
                     $this->Util()->setError(0, 'error', "Formato de fecha inicio de operacion en la fila " . $fila . " es invalido.  Usar dia/mes/año ");
                     break;
