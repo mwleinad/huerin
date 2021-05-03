@@ -733,29 +733,31 @@ class Validar extends Main
             $tipoServicioId = $this->Util()->DB()->GetSingle();
             if($tipoServicioId<=0) {
                 $this->Util()->setError(0, 'error', "Servicio de la fila " . $fila . " no encontrado");
-                $this->Util()->setError(0,'error',$sql );
                 break;
             }
-            if($row[4]==""){
+            if($row[3]==""){
                 $this->Util()->setError(0, 'error', "Falta inicio de facturacion en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
+            } else {
+                if(!$this->Util()->isValidateDate($row[3], 'd/m/Y')) {
+                    $this->Util()->setError(0, 'error', "Formato de fecha inicio de facturacion en la fila " . $fila . " es invalido.  Usar dia/mes/año ");
+                    break;
+                }
             }
-            if($row[5]==""){
+            if($row[4]==""){
                 $this->Util()->setError(0, 'error', "Falta inicio de operaciones en la fila " . $fila . " de no tenerlo usar 0000-00-00");
                 break;
+            } else {
+                if(!$this->Util()->isValidateDate($row[4], 'd/m/Y')) {
+                    $this->Util()->setError(0, 'error', "Formato de fecha inicio de operacion en la fila " . $fila . " es invalido.  Usar dia/mes/año ");
+                    break;
+                }
             }
             if($isNew){
-                if($row[4]=='0000-00-00')
-                    $fechaFacturacion = $row[4];
-                else
-                    $fechaFacturacion = $this->Util()->FormatDateMySqlSlash($row[4]);
+                $fechaFacturacion = $row[3] == '0000-00-00' ? $row[3] : $this->Util()->FormatDateMySqlSlash($row[3]);
+                $fechaInicioOperacion = $row[4] == '0000-00-00' ? $row[4] : $this->Util()->FormatDateMySqlSlash($row[4]);
 
-                if($row[5]=='0000-00-00')
-                    $fechaInicioOperacion = $row[5];
-                else
-                    $fechaInicioOperacion = $this->Util()->FormatDateMySqlSlash($row[5]);
-
-                echo $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$fechaInicioOperacion."' and inicioFactura='". $fechaFacturacion."' and status in('activo','bajaParcial') ";
+                $sqlServ = "SELECT servicioId from servicio where contractId='".$conId."' and tipoServicioId='".$tipoServicioId."' and inicioOperaciones='".$fechaInicioOperacion."' and inicioFactura='". $fechaFacturacion."' and status in('activo','bajaParcial') ";
                 $this->Util()->DB()->setQuery($sqlServ);
                 $servicesFind= $this->Util()->DB()->GetResult();
                 if(count($servicesFind)>0){

@@ -940,14 +940,8 @@ switch ($opcion[0]) {
             $db->setQuery($sql2);
             $tipoServicioId = $db->GetSingle();
 
-            if ($row[4] == '0000-00-00')
-                $fechaFacturacion = $row[4];
-            else
-                $fechaFacturacion = $util->FormatDateMySqlSlash($row[4]);
-            if ($row[5] == '0000-00-00')
-                $fechaInicioOperacion = $row[5];
-            else
-                $fechaInicioOperacion = $util->FormatDateMySqlSlash($row[5]);
+            $fechaFacturacion = $row[3] == '0000-00-00' ? $row[3] : $util->FormatDateMySqlSlash($row[3]);
+            $fechaInicioOperacion = $row[4] == '0000-00-00' ? $row[4] : $util->FormatDateMySqlSlash($row[4]);
 
             $sqlInser = "insert into 
                               servicio(
@@ -962,7 +956,7 @@ switch ($opcion[0]) {
                               '" . $tipoServicioId . "',
                               '" . $fechaInicioOperacion . "',
                               '" . $fechaFacturacion . "',
-                              '" . $row[7] . "',
+                              '" . $row[5] . "',
                               'activo'
                               )";
             $db->setQuery($sqlInser);
@@ -974,7 +968,7 @@ switch ($opcion[0]) {
                 if ($_SESSION['User']['tipoPers'] == 'Admin')
                     $who = "Administrador de sistema(desarrollador)";
                 //guardar el log del registro
-                $log->saveHistoryChangesServicios($lastId, $fechaFacturacion, 'activo', $row[7], $_SESSION['User']['userId'], $fechaInicioOperacion, $who);
+                $log->saveHistoryChangesServicios($lastId, $fechaFacturacion, 'activo', $row[5], $_SESSION['User']['userId'], $fechaInicioOperacion, $who);
                 $nuevos++;
             }
             $fila++;
