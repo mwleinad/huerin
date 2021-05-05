@@ -56,3 +56,4 @@ exportar3.pdf
 exportar3.xlsx
 /sysprospect
 cron/*.log
+/backup_db
