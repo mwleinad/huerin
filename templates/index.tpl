@@ -37,7 +37,7 @@
 {if $page == "login"}
 	<link href="{$WEB_ROOT}/css/login.css?{$timestamp}" rel="stylesheet" type="text/css" media="all" />
 {/if}
-<script src="{$WEB_ROOT}/javascript/js-config.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/js-config.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript">
 		//var WEB_ROOT = "{$WEB_ROOT}/";
 		var GB_ROOT_DIR = "{$WEB_ROOT}/GreyBox/greybox/";
@@ -69,17 +69,17 @@
 {/if}
 </style>
 {if $page != 'costeo-add' && $page != 'invoice-new'}
-<script type="text/javascript" src="{$WEB_ROOT}/javascript/prototype.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/js/prototype.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-ui.js?{$timestamp}"></script>
 <script type="text/javascript">var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.js" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.js" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/util.js?{$timestamp}" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/functions.js?{$timestamp}" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/script-service.js?{$timestamp}" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/datetimepicker.js" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/javascript/driverApi.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/util.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/functions.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/script-service.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/datetimepicker.js" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/driverApi.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
@@ -91,17 +91,17 @@
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/datatable.js?{$timestamp}"></script>
 {/if}
 {if $section == 'consultar-facturas'}
-<script src="{$WEB_ROOT}/javascript/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 
 {if $page eq 'contract-edit' || $page eq 'contract-view' || $page eq 'workflow' || $page eq 'report-servicio-drill' || $page eq 'contract'}
-	<script src="{$WEB_ROOT}/javascript/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
-	<script src="{$WEB_ROOT}/javascript/add-documento.js?{$timestamp}" type="text/javascript"></script>
+	<script src="{$WEB_ROOT}/js/huerinDropzone.js?{$timestamp}" type="text/javascript"></script>
+	<script src="{$WEB_ROOT}/js/add-documento.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 
-<script src="{$WEB_ROOT}/javascript/autocomplete.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/autocomplete.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/ui-tree.js?{$timestamp}"></script>
-<script src="{$WEB_ROOT}/javascript/{$includedTpl}.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/{$includedTpl}.js?{$timestamp}" type="text/javascript"></script>
 
 </head>
 
