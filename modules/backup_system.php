@@ -2,7 +2,6 @@
 $user->allowAccess(217);
 $user->allowAccess(218);
 /* End Session Control */
-//clean session platillos if exist
 $bd_user= SQL_USER;
 $bd_host = SQL_HOST;
 $bd_pass = SQL_PASSWORD;

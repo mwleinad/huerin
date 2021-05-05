@@ -18,7 +18,7 @@ switch($_POST["type"])
                echo "ok[#]";
                $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
                echo "[#]";
-               $web_dir_root = WEB_DIR_BACKUP;
+               $web_dir_root = DIR_BACKUP."/";
                $web_root =  WEB_ROOT;
                echo $web_root."/download.php?file=$web_dir_root$nameBackup";
            }else{
