@@ -47,6 +47,7 @@ class Backup extends main
     }
     public function SendBackupToEmail(){
         $send =  new SendMail();
+        $mails = ['isc061990@gmail.com'=>"Hector", "isc061990@outlook.com"=>'Dev'];
         $send->Prepare("Confirmacion de resplado de bd","",EMAILCOORDINADOR,"Coordinador",DOC_DIR_BACKUP.$this->customNameBackup,$this->customNameBackup,"","","admin@braunhuerin.com.mx","Respaldo BD BH");
     }
 
