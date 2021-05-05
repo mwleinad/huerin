@@ -14,10 +14,14 @@ $backup =  new Backup();
 $sufijo = date("Y-m-d H:i:s");
 $sufijo =  str_replace(" ","-",$sufijo);
 $sufijo =  str_replace(":","_",$sufijo);
-$sufijo =  $sufijo.".sql.gz";
-$backup->setCustomNameBackup("huerin_".$sufijo);
+$sufijo =  "bk_".$sufijo.".sql.gz";
+$backup->setCustomNameBackup($sufijo);
 if($backup->CreateBackup()){
-    $backup->SendBackupToEmail();
+    $send =  new SendMail();
+    $mails = ['isc061990@gmail.com'=>"Hector", "isc061990@outlook.com"=>'Dev'];
+    $body = "Se ha creado el respaldo ". $sufijo. " de la base de datos de plataforma \n";
+    $body .="en la ruta siguiente : ". DOC_ROOT.DIR_BACKUP."/".$sufijo." \n";
+    $send->PrepareMultiple("Confirmacion de respaldo de bd", $body, $mails,"","","","","","admin@braunhuerin.com.mx","Respaldo DB Plataforma");
 }
 else{
     echo "Respaldo no realizado";

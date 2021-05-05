@@ -6,10 +6,9 @@ include_once(DOC_ROOT.'/libraries.php');
 switch($_POST["type"])
 {
     case "doBackup":
-
            $backup->setCustomNameBd(trim($_POST['name_bd']));
            $sufijo = date("Y-m-d H:i:s");
-           $sufijo =  str_replace(" ","-",$sufijo);
+           $sufijo =  str_replace(" ","_",$sufijo);
            $sufijo =  str_replace(":","_",$sufijo);
            $sufijo =  $sufijo.".sql.gz";
            $nameBackup=trim($_POST['name_bd'])."_".$sufijo;
