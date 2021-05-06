@@ -9,6 +9,8 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
+echo "No operation";
+exit;
 
 $file_temp = DOC_ROOT."/manualupdatepathdoc.csv";
 $fp = fopen($file_temp,'r');
