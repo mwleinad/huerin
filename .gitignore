@@ -15,6 +15,7 @@
 /.idea
 config.php
 javascript/js-config.js
+js/js-config.js
 /.svn
 /dev
 /sendFiles
