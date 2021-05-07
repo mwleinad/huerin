@@ -112,6 +112,9 @@ class Inventory extends Articulo
     {
         if ($this->Util()->PrintErrors())
             return false;
+        $actualizables = "";
+        if(in_array($this->getTipoRecurso(), ['equipo_computo', 'inmobiliaria']))
+            $actualizables .= "no_inventario = '" . $this->getNoInventario() . "',";
 
         $sql = " UPDATE office_resource SET
                     nombre = '" . $this->getNombre() . "',
@@ -132,7 +135,7 @@ class Inventory extends Articulo
                     procesador = '" . $this->getProcesador() . "',
                     memoria_ram = '" . $this->getMemoriaRam() . "',
                     disco_duro = '" . $this->getDiscoDuro() . "',
-                    no_inventario = '" . $this->getNoInventario() . "',
+                    ".$actualizables."
                     fecha_ultima_modificacion = '" . date("Y-m-d H:i:s") . "' 
                     WHERE office_resource_id = '" . $this->getId() . "'
                 ";
@@ -272,7 +275,7 @@ class Inventory extends Articulo
             }
 
             $softwares = $this->getSoftwareResource($info['office_resource_id']);
-            if ($devices) {
+            if ($softwares) {
                 $info["software_resource"] = $softwares;
             }
 
@@ -339,7 +342,7 @@ class Inventory extends Articulo
 
     public function listResource()
     {
-        $this->Util()->DB()->setQuery("SELECT office_resource_id, nombre, tipo_equipo FROM office_resource WHERE status='Activo' ORDER BY nombre ASC ");
+        $this->Util()->DB()->setQuery("SELECT office_resource_id, marca,modelo,no_serie,tipo_equipo FROM office_resource WHERE status='Activo' ORDER BY nombre ASC ");
         return $this->Util()->DB()->GetResult();
     }
 
@@ -347,7 +350,7 @@ class Inventory extends Articulo
     {
         $this->Util()->DB()->setQuery("SELECT office_resource_id, marca, modelo,no_serie, tipo_dispositivo, tipo_software, no_licencia, codigo_activacion 
                                               FROM office_resource 
-                                              WHERE status='Activo' and tipo_recurso= '".$type."'  and no_inventario=''
+                                              WHERE status='Activo' and tipo_recurso= '".$type."'  and (no_inventario='' or no_inventario is null)
                                               ORDER BY office_resource_id ASC ");
         return $this->Util()->DB()->GetResult();
     }
@@ -409,6 +412,7 @@ class Inventory extends Articulo
 
     private function generateDataReport()
     {
+        global $personal;
         $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
             'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
         $typeSoftwares = ['aspel_coi', 'aspel_noi', 'aspel_facture', 'aspel_sae', 'admin_xml', 'adobe_photoshop', 'adobe_ilustrator', 'microsoft_office'];
@@ -426,7 +430,26 @@ class Inventory extends Articulo
             $devices = array_column($devices, 'tipo_dispositivo');
             $softwares = array_column($softwares, 'tipo_software');
             $cad = $var;
-            $cad["responsables"] = $this->getListResponsablesResource($var["office_resource_id"]);
+            $cad["responsables"] = $this->getListResponsablesResource($var["office_resource_id"], true);
+            if (count($cad["responsables"] )> 0) {
+                $jefes = [];
+                $personal->setPersonalId($cad['responsables'][0]['personalId']);
+                $info = $personal->InfoWhitRol();
+                $needle = strtolower(trim($info["nameLevel"]));
+                $personal->deepJefesArray($jefes,true);
+                $cad["jefes"]['contador'] = isset($jefes['Contador']) ? $jefes['Contador'] : '';
+                $cad["jefes"]['supervisor'] = isset($jefes['Supervisor']) ?  $jefes['Supervisor'] : '';
+                $cad["jefes"]['subgerente'] = isset($jefes['Subgerente']) ? $jefes['Subgerente'] : '';
+                $cad["jefes"]['gerente'] = !isset($jefes['Gerente']) ? $jefes['Coordinador'] : $jefes['Gerente']   ;
+                $cad["jefes"]['jefeMax'] = isset($jefes['Socio']) ? $jefes['Socio'] : '';
+                switch($needle){
+                    case 'coordinador':
+                        $cad['jefes']['gerente'] = $jefes['me']; break;
+                    case 'socio':
+                        $cad['jefes']['jefeMax'] = $jefes['me']; break;
+                    default: $cad['jefes'][$needle] = $jefes["me"]; break;
+                }
+            }
             foreach ($typeDispositivos as $val)
                 $cad[$val] = in_array($val, $devices) ? true : false;
 
@@ -488,6 +511,12 @@ class Inventory extends Articulo
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
             $col++;
         }
+        $sheet->setCellValueByColumnAndRow($col, $row, "SUPERVISOR")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "GERENTE")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "USUARIO ANTERIOR")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
         $row++;
 
         foreach($data as $kt => $var) {
@@ -526,6 +555,11 @@ class Inventory extends Articulo
                 $sheet->setCellValueByColumnAndRow($col, $row, $var[$head3] ? 'Si' : 'No');
                 $col++;
             }
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['jefes']['supervisor']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['jefes']['gerente']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][1]['nombre']);
             $row++;
         }
         $book->setActiveSheetIndex(0);
