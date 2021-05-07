@@ -189,7 +189,7 @@
                 <select class="smallInput medium" name="resource_id" id="resource_id">
                     <option value="">Seleccionar un equipo de la lista....</option>
                     {foreach from=$resources item=item key=key}
-                        <option value="{$item.office_resource_id}" {if $item.office_resource_id eq $post.resource.office_resource_id}selected{/if}>{$item.nombre}({$item.tipo_equipo})</option>
+                        <option value="{$item.office_resource_id}" {if $item.office_resource_id eq $post.resource.office_resource_id}selected{/if}>{$item.marca}_{$item.modelo}_{$item.no_serie}({$item.tipo_equipo})</option>
                     {/foreach}
                 </select>
                 <hr/>
