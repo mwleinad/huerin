@@ -250,6 +250,9 @@ $controlFromXml = new ControlFromXml;
 include_once(DOC_ROOT."/services/Cancelation.php");
 $cancelation = new Cancelation;
 
+include_once(DOC_ROOT."/services/pdfs/AcuseResource.php");
+$acuseResource = new AcuseResource;
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();

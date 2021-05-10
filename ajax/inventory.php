@@ -370,4 +370,12 @@ switch($_POST['type']){
         $json['listSoftware'] = $_SESSION['software_resource'];
         echo json_encode($json);
         break;
+
+    case "generateAcuse":
+        $acuseResource->setId($_POST['id']);
+        $acuseResource->generateAcuse();
+        $nameFile = $acuseResource->getNameReport();
+        echo "ok[#]";
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+    break;
 }
