@@ -293,6 +293,4 @@ class Articulo extends Main
     public function getUpkeepDescription(){
         return $this->upkeepDescription;
     }
-
-
 }

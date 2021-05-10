@@ -9,6 +9,11 @@
     <td  style="width:10%;">{$res.usuario_alta}</td>
     <td style="width:10%;">
         <div style="min-width: 80px;float: left">
+            {if $res.tipo_recurso eq "equipo_computo"}
+                <a href="javascript:;" class="spanDownloadAcuse" data-id="{$res.office_resource_id}" data-type="generateAcuse" title="Descargar acuse">
+                    <img src="{$WEB_ROOT}/images/icons/doc.png"/>
+                </a>
+            {/if}
             {if in_array(256,$permissions)|| $User.isRoot}
                 <a target="_blank" href="{$WEB_ROOT}/resource-office-pdf&id={$res.office_resource_id}&type=view">
                     <img src="{$WEB_ROOT}/images/pdf_icon.png" class="" id="{$res.office_resource_id}" border="0" title="Ver reporte" width="16"/>

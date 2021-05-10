@@ -5,6 +5,9 @@ class Inventory extends Articulo
 {
     private $nameReport;
 
+    public function setNameReport ($value) {
+        $this->nameReport = $value;
+    }
     public function getNameReport()
     {
         return $this->nameReport;

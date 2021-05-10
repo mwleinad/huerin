@@ -57,7 +57,6 @@ jQ(document).on('click', ".spanDeleteResponsable", function () {
     });
 });
 
-
 jQ(document).on('change', "#tipo_recurso", function () {
     var selected = jQ(this).children('option:selected').val();
 
@@ -71,6 +70,7 @@ jQ(document).on('change', "#tipo_recurso", function () {
     jQ('.shared_field' + _class).show()
 
 });
+
 jQ(document).on('click', ".spanDelete", function () {
     grayOut(true);
     jQ('#fview').show();
@@ -280,3 +280,22 @@ function addSoftwareToResource() {
         }
     });
 }
+
+jQ(document).on('click', '.spanDownloadAcuse', function () {
+     var id = jQ(this).data('id')
+     var type = jQ(this).data('type')
+    jQ.ajax({
+        url: AJAX_PATH, // ajax source
+        type: 'POST',
+        data: { type, id},
+        beforeSend: function (xhr) {
+        },
+        success: function (response) {
+            var splitResp = response.split('[#]')
+            window.location = splitResp[1];
+        },
+        error: function (error) {
+            console.log(error)
+        }
+    })
+})
