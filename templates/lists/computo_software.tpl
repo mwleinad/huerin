@@ -3,6 +3,7 @@
 	<thead>
 		<tr>
 			<th>Software</th>
+			<th>Vencimiento</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -11,13 +12,20 @@
 		{if !$item.deleteAction}
 		<tr>
 			<td>{$item.tipo_sofware|upper} {$item.marca} {$item.modelo} {$item.no_serie} {$item.no_licencia} {$item.codigo_activacion}</td>
+			<td>{if $item.dataVencimiento.vencido === null}
+				 Permanente
+				{else}
+					{if $item.dataVencimiento.vencido} Vencido al {$item.dataVencimiento.fvencimiento}{else}<span style="color: darkgreen"> Vence en {$item.dataVencimiento.diasxvencer} dias</span>{/if}
+				{/if}
+
+			</td>
 			<td>
 				<a href="javascript:;" title="Eliminar de equipo" class="spanDeleteSoftwareFromResource" data-type="deleteSoftwareFromResource" data-key="{$key}">
-					<img src="{$WEB_ROOT}/images/icons/action_remove.gif">
+					<img src="{$WEB_ROOT}/images/icons/softdelete.png">
 				</a>
 				{if $item.no_inventario neq ''}
 					<a href="javascript:;" title="Baja definitiva de inventario" class="spanDeleteSoftwareFromStock" data-type="deleteSoftwareFromStock" data-key="{$key}">
-						<img src="{$WEB_ROOT}/images/icons/delete.png">
+						<img src="{$WEB_ROOT}/images/icons/harddelete.png">
 					</a>
 				{/if}
 			</td>

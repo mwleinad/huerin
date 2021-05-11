@@ -211,37 +211,40 @@ function close_popup() {
     grayOut(false);
     return;
 }
+
 jQ(document).on('click', ".spanAddDevice", addDeviceToKit);
 jQ(document).on('click', ".spanDeleteFromResource", deleteDevice);
 jQ(document).on('click', ".spanDeleteFromStock", deleteDevice);
 
-function deleteDevice () {
-    var key =  jQ(this).data('key')
-    var type =  jQ(this).data('type')
+function deleteDevice() {
+    var doDelete = confirm('¿Esta seguro de eliminar este dispositivo del equipo ?')
+    if (!doDelete)
+        return
+    var key = jQ(this).data('key')
+    var type = jQ(this).data('type')
     jQ.ajax({
-        url:WEB_ROOT + '/ajax/inventory.php',
-        method:'POST',
-        data: { key: key, type: type },
-        dataType:'json',
+        url: WEB_ROOT + '/ajax/inventory.php',
+        method: 'POST',
+        data: {key: key, type: type},
+        dataType: 'json',
         success: function (response) {
             jQ('#list_device').html(response.template);
         }
     });
 }
-
 function addDeviceToKit() {
     var selected = jQ('#device_id').children('option:selected').val();
     jQ.ajax({
-        url:WEB_ROOT + '/ajax/inventory.php',
-        method:'POST',
-        data: { type:'addDeviceToKit', device_id: selected },
+        url: WEB_ROOT + '/ajax/inventory.php',
+        method: 'POST',
+        data: {type: 'addDeviceToKit', device_id: selected},
         dataType: 'json',
         success: function (response) {
             if (response.status === 'ok') {
                 options = response.options
                 jQ("#device_id option:selected").prop("selected", false);
                 jQ('#list_device').html(response.template);
-            } else  ShowStatusPopUp(response.message)
+            } else ShowStatusPopUp(response.message)
         }
     });
 }
@@ -250,14 +253,18 @@ jQ(document).on('click', ".spanAddSoftware", addSoftwareToResource);
 jQ(document).on('click', ".spanDeleteSoftwareFromResource", deleteSoftware);
 jQ(document).on('click', ".spanDeleteSoftwareFromStock", deleteSoftware);
 
-function deleteSoftware () {
-    var key =  jQ(this).data('key')
-    var type =  jQ(this).data('type')
+function deleteSoftware() {
+    var doDelete = confirm('¿Esta seguro de eliminar este software del equipo ?')
+    if (!doDelete)
+        return
+
+    var key = jQ(this).data('key')
+    var type = jQ(this).data('type')
     jQ.ajax({
-        url:WEB_ROOT + '/ajax/inventory.php',
-        method:'POST',
-        data: { key: key, type: type },
-        dataType:'json',
+        url: WEB_ROOT + '/ajax/inventory.php',
+        method: 'POST',
+        data: {key: key, type: type},
+        dataType: 'json',
         success: function (response) {
             jQ('#list_software').html(response.template);
         }
@@ -267,35 +274,33 @@ function deleteSoftware () {
 function addSoftwareToResource() {
     var selected = jQ('#software_id').children('option:selected').val();
     jQ.ajax({
-        url:WEB_ROOT + '/ajax/inventory.php',
-        method:'POST',
-        data: { type:'addSoftwareToResource', software_id: selected },
+        url: WEB_ROOT + '/ajax/inventory.php',
+        method: 'POST',
+        data: {type: 'addSoftwareToResource', software_id: selected},
         dataType: 'json',
         success: function (response) {
             if (response.status === 'ok') {
                 options = response.options
                 jQ("#software_id option:selected").prop("selected", false);
                 jQ('#list_software').html(response.template);
-            } else  ShowStatusPopUp(response.message)
+            } else ShowStatusPopUp(response.message)
         }
     });
 }
 
 jQ(document).on('click', '.spanDownloadAcuse', function () {
-     var id = jQ(this).data('id')
-     var type = jQ(this).data('type')
+    var id = jQ(this).data('id')
+    var type = jQ(this).data('type')
     jQ.ajax({
-        url: AJAX_PATH, // ajax source
-        type: 'POST',
-        data: { type, id},
-        beforeSend: function (xhr) {
-        },
+        url: AJAX_PATH,
+        method: 'post',
+        data: { type, id },
         success: function (response) {
             var splitResp = response.split('[#]')
             window.location = splitResp[1];
         },
         error: function (error) {
-            console.log(error)
+           alert(error)
         }
     })
 })

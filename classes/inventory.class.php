@@ -1,6 +1,5 @@
 <?php
 
-
 class Inventory extends Articulo
 {
     private $nameReport;
@@ -65,6 +64,7 @@ class Inventory extends Articulo
                             no_serie,
                             no_licencia,
                             codigo_activacion,
+                            vencimiento,
                             fecha_compra,
                             costo_compra,
                             costo_recuperacion,
@@ -86,6 +86,7 @@ class Inventory extends Articulo
                               '" . $this->getNoSerie() . "',
                               '" . $this->getNoLicencia() . "',
                               '" . $this->getCodigoActivacion() . "',
+                              '" . $this->getFechaVencimiento() . "',
                               '" . $this->getFechaCompra() . "',
                               '" . $this->getCostoCompra() . "',
                               '" . $this->getCostoRecuperacion() . "',
@@ -127,6 +128,7 @@ class Inventory extends Articulo
                     no_serie = '" . $this->getNoSerie() . "',
                     no_licencia = '" . $this->getNoLicencia() . "',
                     codigo_activacion = '" . $this->getCodigoActivacion() . "',
+                    vencimiento = '" . $this->getFechaVencimiento() . "',
                     fecha_compra = '" . $this->getFechaCompra() . "',
                     costo_compra = '" . $this->getCostoCompra() . "',
                     costo_recuperacion = '" . $this->getCostoRecuperacion() . "',
@@ -316,7 +318,10 @@ class Inventory extends Articulo
                 inner join office_resource b on a.software_id = b.office_resource_id
                 where a.office_resource_id='" . $id . "' ";
         $this->Util()->DB()->setQuery($sql);
-        return $this->Util()->DB()->GetResult();
+        $result = $this->Util()->DB()->GetResult();
+        foreach($result as $key => $var)
+            $result[$key]['dataVencimiento'] = $this->calculateVencimientoSoftware($var);
+        return $result;
     }
 
     public function enumerateResource()
@@ -696,7 +701,7 @@ class Inventory extends Articulo
             if ($var['deleteAction']) {
                 $idResource = $var['device_id'];
                 $set = $var['typeDelete'] === 'deleteFromStock'
-                    ? " status = 'Baja', motivo_baja='Baja realizada desde equipo de computo', fecha_baja=now(), usuario_baja='" . $_SESSION['User']['username'] . "' "
+                    ? " status = 'Baja', motivo_baja='Baja definitiva realizada desde equipo de computo', fecha_baja=now(), usuario_baja='" . $_SESSION['User']['username'] . "' "
                     : " no_inventario='' ";
 
                 $sql = "update office_resource set " . $set . " where office_resource_id='" . $idResource . "' ";
@@ -749,5 +754,24 @@ class Inventory extends Articulo
                 $this->Util()->DB()->UpdateData();
             }
         }
+    }
+    public function calculateVencimientoSoftware ( $data = []) {
+        $fvencimiento =  $data['vencimiento'];
+        $vreturn['vencido'] = null;
+        $vreturn['fvencimiento'] = null;
+        $vreturn['diasxvencer'] = null;
+        if($fvencimiento === null)
+            return $vreturn;
+
+
+        $vencido = date('Y-m-d') > $data['vencimiento'] ? true : false;
+        $vreturn['vencido'] = $vencido;
+
+        $date1= new DateTime($fvencimiento);
+        $date2= new DateTime(date('Y-m-d'));
+        $diff = $date1->diff($date2);
+        $vreturn['fvencimiento'] = $fvencimiento;
+        $vreturn['diasxvencer'] = $diff->days;
+        return $vreturn;
     }
 }

@@ -5,7 +5,7 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class AcuseResource extends Inventory
 {
-    public function generateAcuse () {
+    public function generateResponsiva () {
         global $monthsComplete;
         $data =  $this->infoResource();
         //encontrar los precios

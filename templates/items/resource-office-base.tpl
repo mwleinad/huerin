@@ -10,7 +10,7 @@
     <td style="width:10%;">
         <div style="min-width: 80px;float: left">
             {if $res.tipo_recurso eq "equipo_computo"}
-                <a href="javascript:;" class="spanDownloadAcuse" data-id="{$res.office_resource_id}" data-type="generateAcuse" title="Descargar acuse">
+                <a href="javascript:;" class="spanDownloadAcuse" data-id="{$res.office_resource_id}" data-type="generateResponsiva" title="Descargar responsiva">
                     <img src="{$WEB_ROOT}/images/icons/doc.png"/>
                 </a>
             {/if}

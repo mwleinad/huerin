@@ -13,11 +13,11 @@
 			<td>{$item.tipo_dispositivo|upper} {$item.marca} {$item.modelo} {$item.no_serie}</td>
 			<td>
 				<a href="javascript:;" title="Eliminar de equipo" class="spanDeleteFromResource" data-type="deleteFromResource" data-key="{$key}">
-					<img src="{$WEB_ROOT}/images/icons/action_remove.gif">
+					<img src="{$WEB_ROOT}/images/icons/softdelete.png">
 				</a>
 				{if $item.no_inventario neq ''}
 					<a href="javascript:;" title="Baja definitiva de inventario" class="spanDeleteFromStock" data-type="deleteFromStock" data-key="{$key}">
-						<img src="{$WEB_ROOT}/images/icons/delete.png">
+						<img src="{$WEB_ROOT}/images/icons/harddelete.png">
 					</a>
 				{/if}
 			</td>
