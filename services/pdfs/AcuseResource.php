@@ -32,7 +32,7 @@ class AcuseResource extends Inventory
         $word->setValue('marca_equipo', $data['marca']);
         $word->setValue('modelo_equipo', $data['modelo']);
         $word->setValue('no_serie', $data['no_serie']);
-        $word->setValue('observacion', $data['observacion']);
+        $word->setValue('observacion', $data['descripcion']);
 
         $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
             'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
@@ -51,7 +51,7 @@ class AcuseResource extends Inventory
         $dateExplode = explode('-', date('Y-m-d'));
         $fecha = $dateExplode[2]." de ".$monthsComplete[$dateExplode[1]]. " del ". $dateExplode[0];
         $word->setValue('fecha', $fecha);
-        $name = "acuse_".date('Y-m-d H:i:s');
+        $name = "responsiva_".date('Y-m-d H:i:s');
         $name = str_replace("-", "_", $name);
         $name = str_replace(":", "_", $name);
         $name = $name.".docx";
