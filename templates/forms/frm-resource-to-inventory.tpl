@@ -210,6 +210,19 @@
 				</div>
 				<hr>
 			</div>
+            <div class="grid_16 shared_field software {if !in_array($post.tipo_recurso, ['software'])}noShow{/if}">
+                <div class="grid_8">
+                    <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:30%;float:left"> Fecha de vencimiento</div>
+                        <div style="width:70%;float: left;">
+                            <input name="vencimiento" id="vencimiento" type="text"
+                                   onclick="CalendarioSimple(this)" value="{if $post.vencimiento neq null}{$post.vencimiento|date_format:"%d-%m-%Y"}{/if}"
+                                   class="largeInput " placeholder="dia-mes-año"/>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
 			<div class="grid_16 shared_field equipo_computo {if !in_array($post.tipo_recurso, ['equipo_computo'])}noShow{/if}">
 				<div class="grid_16">
 					<div style="text-align: left; padding-bottom:5px">Vincular dispositivos con el equipo de computo.</div>

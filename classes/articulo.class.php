@@ -82,6 +82,16 @@ class Articulo extends Main
         return $this->codigoActivacion;
     }
 
+    private $fechaVencimiento;
+    public function setFechaVencimiento($value){
+        if($value!="")
+            $this->Util()->validateDateFormat($value,"Fecha de vencimiento","d-m-Y");
+        $this->fechaVencimiento= $this->Util()->FormatDateMySql($value);
+    }
+    public function  getFechaVencimiento(){
+        return $this->fechaVencimiento;
+    }
+
     private $fechaCompra;
     public function setFechaCompra($value){
         if($this->Util()->ValidateRequireField($value,"Fecha de compra"))

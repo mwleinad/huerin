@@ -25,7 +25,6 @@ switch($_POST['type']){
     break;
     case 'saveResource':
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
-       // $inventory->setNombre($_POST['nombre']);
         if(in_array($_POST['tipo_recurso'], ['equipo_computo', 'inmobiliaria']))
             $inventory->setDescripcion($_POST['descripcion']);
 
@@ -48,8 +47,10 @@ switch($_POST['type']){
         if($_POST['tipo_recurso'] === 'dispositivo')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
 
-        if($_POST['tipo_recurso'] === 'software')
+        if($_POST['tipo_recurso'] === 'software') {
             $inventory->setTipoSoftware($_POST['tipo_software']);
+            $inventory->setFechaVencimiento($_POST['vencimiento']);
+        }
 
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->saveResource()){
@@ -90,8 +91,11 @@ switch($_POST['type']){
         if($_POST['tipo_recurso'] === 'dispositivo')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
 
-        if($_POST['tipo_recurso'] === 'software')
+        if($_POST['tipo_recurso'] === 'software') {
             $inventory->setTipoSoftware($_POST['tipo_software']);
+            $inventory->setFechaVencimiento($_POST['vencimiento']);
+        }
+
 
         $inventory->setNoSerie($_POST['no_serie']);
         if($inventory->updateResource()){
@@ -371,9 +375,9 @@ switch($_POST['type']){
         echo json_encode($json);
         break;
 
-    case "generateAcuse":
+    case "generateResponsiva":
         $acuseResource->setId($_POST['id']);
-        $acuseResource->generateAcuse();
+        $acuseResource->generateResponsiva();
         $nameFile = $acuseResource->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
