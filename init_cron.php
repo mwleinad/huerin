@@ -5,16 +5,16 @@ ini_set("session.gc_maxlifetime","86400");
 ini_set("memory_limit","2048M");
 ini_set("max_execution_time","0");
 
-setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
+
+ini_set("display_errors", 'ON');
+error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
+
+@setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time()+86400);
 
 if (!isset($_SESSION))
 {
   session_start();
 }
-
-ini_set("display_errors", 'ON');
-error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE ^ E_WARNING);
-
 
 date_default_timezone_set('America/Mexico_City');
 header('Content-type: text/html; charset=utf-8');
