@@ -57,6 +57,7 @@ class Inventory extends Articulo
     {
         if ($this->Util()->PrintErrors())
             return false;
+        $vencimiento = $this->Util()->isValidateDate($this->getFechaVencimiento(), 'Y-m-d') ? "'".$this->getFechaVencimiento()."'" : 'null';
         $sql = "INSERT INTO office_resource(
                             nombre,
                             descripcion,
@@ -86,7 +87,7 @@ class Inventory extends Articulo
                               '" . $this->getNoSerie() . "',
                               '" . $this->getNoLicencia() . "',
                               '" . $this->getCodigoActivacion() . "',
-                              '" . $this->getFechaVencimiento() . "',
+                              ".$vencimiento.",
                               '" . $this->getFechaCompra() . "',
                               '" . $this->getCostoCompra() . "',
                               '" . $this->getCostoRecuperacion() . "',
@@ -119,7 +120,7 @@ class Inventory extends Articulo
         $actualizables = "";
         if(in_array($this->getTipoRecurso(), ['equipo_computo', 'inmobiliaria']))
             $actualizables .= "no_inventario = '" . $this->getNoInventario() . "',";
-
+        $vencimiento = $this->Util()->isValidateDate($this->getFechaVencimiento(), 'Y-m-d') ? "'".$this->getFechaVencimiento()."'" : 'null';
         $sql = " UPDATE office_resource SET
                     nombre = '" . $this->getNombre() . "',
                     descripcion = '" . $this->getDescripcion() . "',
@@ -128,7 +129,7 @@ class Inventory extends Articulo
                     no_serie = '" . $this->getNoSerie() . "',
                     no_licencia = '" . $this->getNoLicencia() . "',
                     codigo_activacion = '" . $this->getCodigoActivacion() . "',
-                    vencimiento = '" . $this->getFechaVencimiento() . "',
+                    vencimiento = ".$vencimiento.",
                     fecha_compra = '" . $this->getFechaCompra() . "',
                     costo_compra = '" . $this->getCostoCompra() . "',
                     costo_recuperacion = '" . $this->getCostoRecuperacion() . "',
