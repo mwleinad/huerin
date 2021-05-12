@@ -216,8 +216,9 @@
                         <div style="width:30%;float:left"> Fecha de vencimiento</div>
                         <div style="width:70%;float: left;">
                             <input name="vencimiento" id="vencimiento" type="text"
-                                   onclick="CalendarioSimple(this)" value="{if $post.vencimiento neq null}{$post.vencimiento|date_format:"%d-%m-%Y"}{/if}"
+                                   onclick="CalendarioSimple(this)" value="{if $post.vencimiento !== null && $post.vencimiento !== ''}{$post.vencimiento|date_format:"%d-%m-%Y"}{/if}"
                                    class="largeInput " placeholder="dia-mes-año"/>
+							<span style="color: #FFA500FF">Para software sin vencimiento, dejar vacio.</span>
                         </div>
                     </div>
                 </div>
