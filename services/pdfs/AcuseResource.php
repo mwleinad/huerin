@@ -8,8 +8,6 @@ class AcuseResource extends Inventory
     public function generateResponsiva () {
         global $monthsComplete;
         $data =  $this->infoResource();
-        //encontrar los precios
-
         $precioEquipo = $data['costo_recuperacion'];
         $precioDispositivos = 0;
 
@@ -33,6 +31,7 @@ class AcuseResource extends Inventory
         $word->setValue('modelo_equipo', $data['modelo']);
         $word->setValue('no_serie', $data['no_serie']);
         $word->setValue('observacion', $data['descripcion']);
+        $word->setValue('costo_recuperacion', "$ ".number_format($data['costo_recuperacion'],2, '.', ','));
 
         $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
             'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
@@ -43,6 +42,7 @@ class AcuseResource extends Inventory
            $word->setValue('modelo_'. $dev, $find !== false ? $data['device_resource'][$find]['modelo'] :  '--');
            $word->setValue('noserie_'. $dev, $find !== false ? $data['device_resource'][$find]['no_serie'] :  '--');
            $word->setValue('observation_'. $dev, $find !== false ? $data['device_resource'][$find]['descripcion'] :  '--');
+           $word->setValue('costor_'. $dev, $find !== false ? "$ ".number_format($data['device_resource'][$find]['costo_recuperacion'],2, '.', ',') :  '--');
         }
 
         $word->setValue('monto_recuperacion', "$".number_format($precioTotal, 2,'.', ',') );
