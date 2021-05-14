@@ -14,6 +14,14 @@ class UtileriaInvoice extends Comprobante
             $value = [];
         $this->listInvoicesActiveInSat = $value;
     }
+    private $nameFile;
+    public function setNameFile($value){
+        $this->nameFile = $value;
+    }
+
+    public function getNameFile() {
+        return $this->nameFile;
+    }
     function getListInvoicesActiveInSat(){
         return $this->listInvoicesActiveInSat;
     }
@@ -185,6 +193,94 @@ class UtileriaInvoice extends Comprobante
         $this->Util()->PrintErrors();
         return true;
 
+    }
+    private function checkCsvFile() {
+        if ($_FILES['file']['error'] === 4) {
+            $this->Util()->setError(0, "error", 'No se ha seleccionado un archivo', 'Archivo');
+            return false;
+        }
+        $name = $_FILES['file']['name'];
+        $ext = end(explode(".", $name));
+        if (strtolower($ext) !== "csv") {
+            $this->Util()->setError(0, "error", 'Verificar extension, solo se acepta CSV', 'Archivo');
+            return false;
+        }
+        return true;
+    }
+    public function cancelCfdiFromCsv () {
+        $this->checkCsvFile();
+        $emisores = [];
+        $sql = "SELECT rfc.rfc, rfc.rfcId, rfc.empresaId, serie.noCertificado FROM serie 
+                INNER JOIN rfc  ON serie.rfcId=rfc.rfcId
+                WHERE serie.tiposComprobanteId=1";
+        $this->Util()->DB()->setQuery($sql);
+        $results = $this->Util()->DB()->GetResult();
+        foreach ($results  as $var) {
+            $path = DOC_ROOT."/empresas/".$var['empresaId']."/certificados/".$var['rfcId']."/".$var["noCertificado"].".cer.pfx";
+            if(!is_file($path))
+                continue;
+
+            $root_password = DOC_ROOT."/empresas/".$var['empresaId']."/certificados/".$var['rfcId']."/password.txt";
+            if(!file_exists($root_password))
+                continue;
+            $fh = fopen($root_password, 'r');
+            $password = fread($fh, filesize($root_password));
+            fclose($fh);
+            $emisores[$var['rfc']] = $var;
+            $emisores[$var['rfc']]['path'] = $path;
+            $emisores[$var['rfc']]['password'] = $password;
+        }
+        if(count($emisores)<=0)
+            $this->Util()->setError(0, 'error', "No hay emisores configurados.");
+
+        if($this->Util()->PrintErrors())
+            return false;
+        $file_temp = $_FILES['file']['tmp_name'];
+        $fp = fopen($file_temp,'r');
+        $fila=1;
+        $pac = new Pac;
+        $acuse = "Emisor,Empresa,Receptor,Serie,Folio,Uuid,Fecha,Cancelado,Tipo cancelacion".chr(13).chr(10);
+        while (($row = fgetcsv($fp, 4096, ',' )) == true) {
+            if($fila === 1) {
+                $fila++;
+                continue;
+            }
+            $cancelado = false;
+            $tipoCancelacion = "";
+            $uuid = $row[8];
+            $emisor = $row[10];
+            $receptor = $row[13];
+            $total = $row[18];
+            $path = $emisores[$emisor]['path'];
+            $password = $emisores[$emisor]['password'];
+            $response = $pac->CancelaCfdi2018(USER_PAC, PW_PAC, $emisor, $receptor, $uuid, $total, $path, $password);
+            if($response['cancelado']) {
+                $tipoCancelacion = $response['conAceptacion'] ?  "Con aceptacion" : " Normal";
+                $cancelado = true;
+            }
+            $canceladoString = $cancelado ? "Si": "No";
+            $acuse .= $emisor.",".$row[14].",".$receptor.",".$row[6].",".$row[7].","
+                     .$uuid.",".$row[3].",".$canceladoString.",".$tipoCancelacion
+                     .chr(13).chr(10);
+            $fila++;
+        }
+        $nameFile = "cfdi_result_". date("Y-m-d H:i:s");
+        $nameFile = str_replace("-", "_", $nameFile);
+        $nameFile = str_replace(" ", "_", $nameFile);
+        $nameFile = str_replace(":", "_", $nameFile);
+        $nameFile = $nameFile.".csv";
+        $file = DOC_ROOT."/sendFiles/". $nameFile;
+        $open = fopen($file,"w");
+        if ( $open ) {
+            fwrite($open, $acuse);
+            fclose($open);
+        }
+        if(is_file($file))
+            $this->setNameFile($nameFile);
+
+       $this->Util()->setError(0, 'complete', 'Proceso realizado');
+       $this->Util()->PrintErrors();
+       return true;
     }
 
 }

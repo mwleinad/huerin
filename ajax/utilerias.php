@@ -64,4 +64,20 @@ switch($_POST["type"]){
         echo "ok[#]";
         $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         break;
+    case 'open_cancel_cfdi_from_csv':
+        $data['title'] ="Cancelar CFDI´S con archivo CSV";
+        $data['form'] ="frm-cancel-cfdi-from-csv";
+        $smarty->assign("data", $data);
+        $smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+    break;
+    case 'cancel_cfdi_from_csv':
+        echo $utileriaInvoice->cancelCfdiFromCsv() ? "ok[#]" : "fail[#]";
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+        $nameFile = $utileriaInvoice->getNameFile();
+        $acuse_exist = is_file(DOC_ROOT."/sendFiles/". $nameFile) ?  1: 0;
+        echo "[#]";
+        echo $acuse_exist;
+        echo "[#]";
+        echo WEB_ROOT."/download.php?file=/sendFiles/".$nameFile;
+    break;
 }
