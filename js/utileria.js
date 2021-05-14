@@ -33,21 +33,26 @@ jQ(document).on("click",".spanOpenModalCheck",function () {
 
 jQ(document).on('click','#btnCheckStatus',function(){
     var form = jQ(this).parents('form:first');
+    var data = new FormData(form[0]);
     if(form.length>0){
         jQ.ajax({
             url:WEB_ROOT+'/ajax/utilerias.php',
             method:'post',
-            data:form.serialize(true),
+            data: data,
+            processData: false,
+            contentType: false,
             beforeSend:function(){
                 jQ('#btnCheckStatus').hide();
                 jQ('#loading-img').show();
             },
             success:function(response){
                 var splitResp =  response.split("[#]");
-                if(splitResp[0]=='ok'){
+                if(splitResp[0] === 'ok'){
                     jQ('#loading-img').hide();
                     jQ('#btnCheckStatus').show();
                     ShowStatusPopUp(splitResp[1]);
+                    if(splitResp[2] === '1')
+                        location.href = splitResp[3]
                 }
                 else{
                     ShowStatusPopUp(splitResp[1]);

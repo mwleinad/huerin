@@ -41,15 +41,16 @@
               <tr>
                   <td style="width: 20%">Herramienta que cancela facturas aun activas en el SAT</td>
                   <td style="width: 2%;text-align: left">
-                      <a href="javascript:;" class="spanAll spanDoAction" title="Cancelar facturas" data-type="cancel_invoice_active_in_sat">
+                      <a href="javascript:;" class="spanAll spanOpenModalCheck" title="Cancelar facturas" data-type="cancel_invoice_active_in_sat">
                           <img src="{$WEB_ROOT}/images/icons/action_check.gif">
                       </a>
                   </td>
               </tr>
+
               <tr>
-                  <td style="width: 20%">Herramienta para obtener el salario de un empleado</td>
+                  <td style="width: 20%">Cancelar CFDI´S con archivo csv</td>
                   <td style="width: 2%;text-align: left">
-                      <a href="javascript:;" class="spanAll spanOpenGetSalario" title="Obtener salario" data-type="openGetSalario">
+                      <a href="javascript:;" class="spanAll spanOpenModalCheck" title="Cancelar CFDI´S" data-type="open_cancel_cfdi_from_csv">
                           <img src="{$WEB_ROOT}/images/icons/action_check.gif">
                       </a>
                   </td>
