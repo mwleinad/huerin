@@ -181,8 +181,11 @@ jQ(document).ready(function () {
         jQ.ajax({
             url: URL_API + '/company/' + url_section, // ajax source
             type: 'POST',
+            xhrFields: {
+                responseType: 'blob'
+            },
             contentType: 'application/json',
-            data: JSON.stringify(_formJson),
+            data: _formJson,
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('Authorization', driverApi.refreshToken())
                 jQ('#loader').show();
