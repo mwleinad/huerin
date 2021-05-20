@@ -184,7 +184,7 @@ jQ(document).ready(function () {
             xhrFields: {
                 responseType: 'blob'
             },
-            cors:true,
+            crossDomain:true,
             contentType: 'application/json',
             data: JSON.stringify(_formJson),
             beforeSend: function (xhr) {
