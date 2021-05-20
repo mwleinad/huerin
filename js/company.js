@@ -200,6 +200,7 @@ jQ(document).ready(function () {
             },
             error: function (error) {
                 jQ('#loader').hide();
+                ShowErrorOnPopup(error.responseJSON.message, true);
                 console.log(error)
             }
         })
