@@ -38,7 +38,7 @@ foreach($deps as $dep) {
 $sql = "TRUNCATE service;";
 $util->DBProspect()->setQuery($sql);
 $util->DBProspect()->UpdateData();
-$sql = "select tipoServicioId, nombreServicio,departamentoId from tipoServicio order by tipoServicioId asc";
+$sql = "select tipoServicioId, nombreServicio,departamentoId from tipoServicio where status = '1' order by tipoServicioId asc";
 $util->DB(true)->setQuery($sql);
 $services =$util->DB(true)->GetResult();
 foreach($services as $key => $val) {

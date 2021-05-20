@@ -18,7 +18,7 @@
 						<td>{$item.name}</td>
 						<td>
 							{if $item.quote_id}
-								<a href="javascript:;" class="spanDowloadQuote" data-service="{$item.service_id}" data-quote="{$item.quote_id}" data-company="{$item.company_id}">
+								<a href="javascript:;" class="spanDownloadQuote" data-service="{$item.service_id}" data-quote="{$item.quote_id}" data-company="{$item.company_id}" data-type="download_normal_quote">
 									<img src="{$WEB_ROOT}/images/icons/downFile.png" title="Descargar cotizacion"/>
 								</a>
 							{/if}
@@ -32,7 +32,7 @@
 		<div class="actionPopup">
 			<span class="msjRequired">* Campos requeridos </span><br>
 			<div class="actionsChild">
-				<img  src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img-mul"/>
+				<img  src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loader"/>
 			</div>
 			<div class="actionsChild">
 				<a  href="javascript:;" class="button_grey spanGenerate">
