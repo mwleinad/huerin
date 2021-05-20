@@ -181,10 +181,6 @@ jQ(document).ready(function () {
         jQ.ajax({
             url: URL_API + '/company/' + url_section, // ajax source
             type: 'POST',
-            xhrFields: {
-                responseType: 'blob'
-            },
-            crossDomain:true,
             contentType: 'application/json',
             data: JSON.stringify(_formJson),
             beforeSend: function (xhr) {
