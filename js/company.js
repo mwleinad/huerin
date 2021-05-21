@@ -185,7 +185,7 @@ jQ(document).ready(function () {
                 responseType: 'blob'
             },
             contentType: 'application/json',
-            data: _formJson,
+            data: JSON.stringify(_formJson),
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('Authorization', driverApi.refreshToken())
                 jQ('#loader').show();
@@ -201,7 +201,7 @@ jQ(document).ready(function () {
             error: function (error) {
                 console.log('error')
                 jQ('#loader').hide();
-                ShowErrorOnPopup(error.message, true);
+                ShowErrorOnPopup(error.statusText, true);
                 console.log(error)
             }
         })
