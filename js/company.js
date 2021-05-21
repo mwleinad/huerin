@@ -199,6 +199,7 @@ jQ(document).ready(function () {
                 link.click()
             },
             error: function (error) {
+                console.log('error')
                 jQ('#loader').hide();
                 ShowErrorOnPopup(error.responseJSON.message, true);
                 console.log(error)
