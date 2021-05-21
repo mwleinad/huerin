@@ -201,7 +201,7 @@ jQ(document).ready(function () {
             error: function (error) {
                 console.log('error')
                 jQ('#loader').hide();
-                ShowErrorOnPopup(error.responseJSON.message, true);
+                ShowErrorOnPopup(error.message, true);
                 console.log(error)
             }
         })
