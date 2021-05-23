@@ -2,6 +2,7 @@
 <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a">
 	<thead>
 		<tr>
+			<th>#</th>
 			<th>Respuesta</th>
 			<th>Precio</th>
 			<th></th>
@@ -10,6 +11,7 @@
 <tbody>
 	{foreach from=$options item=item key=key}
 		<tr>
+			<td>{$key + 1}</td>
 			<td>{$item.text}</td>
 			<td>$ {$item.price|number_format:2:'.':','}</td>
 			<td>
