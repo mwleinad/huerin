@@ -33,13 +33,24 @@ var tableCompany = function () {
                         "targets": -1,
                         "render": function (data) {
                             var content = '<div class="center">';
-                            content = content +  '<a href="javascript:;" title="Editar empresa" data-id="'+data.id+'" data-type="openEditCompany" class="spanControlCompany"><img src="'+WEB_ROOT+'/images/icons/edit.gif" aria-hidden="true" /></a>';
-                            content = content +  '<a href="'+data.prospect.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>'
+                            content = content +  '<a href="javascript:;" title="Editar empresa" data-id="'
+                                      + data.id +'" data-type="openEditCompany" class="spanControlCompany"><img src="'
+                                      + WEB_ROOT +'/images/icons/edit.gif" aria-hidden="true" /></a>';
+                            content = content +  '<a href="'+data.prospect.url+'" title="Resolver encuesta" target="_blank"><img src="'
+                                      + WEB_ROOT +'/images/icons/task.png" aria-hidden="true" /></a>'
                             if(data.step_id >=2)
-                                content = content +  '<a href="javascript:;" title="Generar cotizacion" data-id="'+data.id+'" data-type="generarCotizacion" class="spanControlCompany"><img src="'+WEB_ROOT+'/images/icons/update_payments.png" aria-hidden="true" /></a>'
-                            if(data.step_id >=3)
-                                content = content +  '<a href="javascript:;" title="Descargar cotizaciones" data-company="'+data.id+'" data-type="download_zip_quote" class="spanDownloadQuote"><img src="'+WEB_ROOT+'/images/icons/zip-icon.png" width="16" aria-hidden="true" /></a>'
+                                content = content +  '<a href="javascript:;" title="Generar cotizacion" data-id="'
+                                          + data.id +'" data-type="generarCotizacion" class="spanControlCompany"><img src="'
+                                          + WEB_ROOT +'/images/icons/update_payments.png" aria-hidden="true" /></a>'
+                            if(data.step_id >=3) {
+                                content = content + '<a href="javascript:;" title="Descargar cotizaciones" data-company="'
+                                          + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote"><img src="'
+                                          + WEB_ROOT + '/images/icons/zip.png" width="16" aria-hidden="true" /></a>'
+                                content = content + '<a href="javascript:;" title="Validar y cerrar cotizacion" data-company="'
+                                          + data.id + '" data-type="validate_quote" class="spanValidate"><img src="'
+                                          + WEB_ROOT + '/images/icons/check.png" aria-hidden="true" /></a>'
 
+                            }
                             content = content + '</div>';
                             return content;
                         }
@@ -199,12 +210,14 @@ jQ(document).ready(function () {
                 link.click()
             },
             error: function (error) {
-                console.log('error')
                 jQ('#loader').hide();
                 ShowErrorOnPopup(error.statusText, true);
-                console.log(error)
             }
         })
+    })
+
+    jQ(document).on('click', '.spanValidate', function (e) {
+        console.log(e)
     })
 })
 
