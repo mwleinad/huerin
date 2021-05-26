@@ -1137,8 +1137,15 @@ class Customer extends Main
                   contract.emailContactoContabilidad, contract.telefonoContactoContabilidad, contract.nameContactoDirectivo, 
                   contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
                   contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
-                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad, contract.qualification, ac.*,
-                   CONCAT(
+                  contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,
+                  contract.qualification,
+                  case
+                      when contract.activo = 'No' then contract.fechaBaja
+                      when contract.activo = 'Si' then null 
+                  end
+                  as fechaBaja,
+                  ac.*,
+                  CONCAT(
                        '[',
                         GROUP_CONCAT(
                             CONCAT(
