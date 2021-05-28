@@ -2,12 +2,12 @@
     <form name="frmSearchRazon" id="frmSearchRazon" method="post" onsubmit="return false">
         <input type="hidden" name="type" id="type" value="generate_report_razon_social">
         <input type="hidden" name="cliente" id="cliente" value="0" />
-        <input type="hidden" name="type_report" id="type_report" value="complete_report_cc" />
         <table width="100%" align="center">
             <tr style="background-color:#CCC">
-                <td colspan="5" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
+                <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
             </tr>
             <tr>
+                <td style="text-align: center;width: 10%">Tipo de reporte</td>
                 <td style="text-align: center;width: 20%">Cliente</td>
                 <td style="text-align: center;width: 20%">Encargado</td>
                 <td style="text-align: center;width: 10 %">Incluir subordinados</td>
@@ -15,6 +15,12 @@
                 <td style="text-align: center;width: 10%">Generan factura del mes 13</td>
             </tr>
             <tr>
+                <td style="text-align: center;width: 20%; padding:0px 4px 4px 8px;">
+                    <select class="largeInput" name="type_report" id="type_report">
+                        <option value="complete_report_cc">Completo</option>
+                        <option value="update_contract">Layout para importar</option>
+                    </select>
+                </td>
                 <td style="text-align: center;width: 20%; padding:0px 4px 4px 8px;">
                     <input type="text" size="25" name="rfc" id="rfc" class="largeInput" autocomplete="off" value="{$search.rfc}" />
                     <div id="loadingDivDatosFactura"></div>
