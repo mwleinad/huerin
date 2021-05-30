@@ -1,6 +1,7 @@
 <div align="center"  id="divForm">
     <form name="frmSearch" id="frmSearch" action="export/report-cxc.php" method="post">
     <input type="hidden" name="type" id="type" value="search" />
+    <input type="hidden" name="showAll" id="showAll" value="1" />
         <div class="grid_16">
             <div class="grid_16" style="background: #CCCC;">
                 <h3 class="text-bold">Filtro de busqueda</h3>
