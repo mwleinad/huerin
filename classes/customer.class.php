@@ -1095,11 +1095,12 @@ class Customer extends Main
   }
   public function SuggestCustomerRazon($filter = [], $group ='contractId')
   {
-    global $personal, $departamentos;
+    global $personal, $departamentos, $contractRep;
     $catalogo = new Catalogo;
     $ftrCustomer = "";
     $ftrContract = "";
     $ftrSubquery = "";
+    $findEncargados = false;
 
     $str_group = " group by a.".$group;
 
@@ -1123,9 +1124,10 @@ class Customer extends Main
          return [];
 
      $idImplode =  implode(',',  $filter['encargados']);
-     $ftrSubquery .= $allowAccessAnyContract === '0' || $filter['selectedResp']
-         ? " and contractPermiso.personalId IN ($idImplode) "
-         : "";
+     if ($allowAccessAnyContract === '0' || $filter['selectedResp']) {
+        $ftrSubquery .=  " and contractPermiso.personalId IN ($idImplode) ";
+        $findEncargados = true;
+     }
 
     $sql = "SELECT  b.customerId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
              b.fechaAlta as fechaAltaCustomer,b.observacion,b.active, a.*
@@ -1196,7 +1198,12 @@ class Customer extends Main
       $metodoDePago = $catalogo->getFormaPagoByClave($val['metodoDePago']);
       $result[$key]['metodoDePago'] = $metodoDePago['descripcion'];
       $result[$key]["numActiveContracts"] =  $this->HowManyRazonesSociales($val["customerId"]);
-      $encargados = $val['encargados'] !== null ? json_decode($val['encargados'], true) : [];
+      $encargadosComplete =  $findEncargados
+                             ? $contractRep->encargadosArea($val['contractId'])
+                             : json_decode($val['encargados'], true);
+      $encargados = $encargadosComplete!== null && !empty($encargadosComplete)
+                    ? $encargadosComplete
+                    : [];
       foreach($listDepartamentos as $dep){
           $key_exist = array_search($dep['departamentoId'],array_column($encargados, 'departamentoId'));
 
