@@ -717,8 +717,8 @@ class Validar extends Main
             }
             //encontrar el contrato
             $sql ="select max(a.contractId) from contract a 
-                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[0])))."' and b.active='1' 
-                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[1])))."' and a.activo='Si'
+                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='".mb_strtolower(str_replace(' ','', $row[0]))."' and b.active='1' 
+                  where lower(replace(a.name,' ',''))='".mb_strtolower(str_replace(' ','',$row[1]))."' and a.activo='Si'
                   ";
             $this->Util()->DB()->setQuery($sql);
             $conId =  $this->Util()->DB()->GetSingle();
@@ -728,7 +728,7 @@ class Validar extends Main
                 break;
             }
             //encontrar el servicio
-            $sql= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',utf8_encode($row[2])))."' ";
+            $sql= "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='".mb_strtolower(str_replace(' ','',$row[2]))."' ";
             $this->Util()->DB()->setQuery($sql);
             $tipoServicioId = $this->Util()->DB()->GetSingle();
             if($tipoServicioId<=0) {
