@@ -339,7 +339,6 @@ class Workflow extends Servicio
             }
 
         }
-
         return $clientes;
     }
 
@@ -384,10 +383,6 @@ class Workflow extends Servicio
 
         }
         $data["tasks"] = $tasks;
-
-        /*echo "<pre>";
-        print_r($data);
-        exit;*/
         return $data;
     }
 
@@ -1027,33 +1022,73 @@ class Workflow extends Servicio
         $data['totalCobrado'] = $totalCobrado;
         return $data;
     }
-    function resetFilesFromWorkflow () {
-    	if($_POST['customer'] != CUSTOMER_CAPACITACION)
-    		$this->Util()->setError(0, "error", "Error al reiniciar workflow!");
 
-    	if($this->Util()->PrintErrors())
-    		return false;
+    function resetFilesFromWorkflow()
+    {
+        if ($_POST['customer'] != CUSTOMER_CAPACITACION)
+            $this->Util()->setError(0, "error", "Error al reiniciar workflow!");
 
-    	$sql =  "select taskFileId, servicioId,stepId,taskId,control,version, ruta, ext from taskFile a where servicioId = '".$this->instanciaServicioId."' ";
-    	$this->Util()->DB()->setQuery($sql);
-    	$result =  $this->Util()->DB()->GetResult();
-    	foreach($result as $var) {
-    		$sql = "delete from taskFile where taskFileId = '".$var['taskFileId']."' ";
+        if ($this->Util()->PrintErrors())
+            return false;
+
+        $sql = "select taskFileId, servicioId,stepId,taskId,control,version, ruta, ext from taskFile a where servicioId = '" . $this->instanciaServicioId . "' ";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        foreach ($result as $var) {
+            $sql = "delete from taskFile where taskFileId = '" . $var['taskFileId'] . "' ";
             $this->Util()->DB()->setQuery($sql);
             $del = $this->Util()->DB()->DeleteData();
-            $nameFile = $var["ruta"]!=''
-                        ? $var['ruta']
-                        : $var["servicioId"]."_".$var['stepId']."_".$var['taskId'].
-                          "_".$var['control']."_".$var['version'].".".$var['ext'];
-            $file = DOC_ROOT."/tasks/".$nameFile;
-            if(is_file($file) && $del > 0)
+            $nameFile = $var["ruta"] != ''
+                ? $var['ruta']
+                : $var["servicioId"] . "_" . $var['stepId'] . "_" . $var['taskId'] .
+                "_" . $var['control'] . "_" . $var['version'] . "." . $var['ext'];
+            $file = DOC_ROOT . "/tasks/" . $nameFile;
+            if (is_file($file) && $del > 0)
                 unlink($file);
-    	}
+        }
         $this->Util()->setError(0, "complete", "Workflow reseteado!");
-    	$this->Util()->PrintErrors();
-    	return true;
-	}
+        $this->Util()->PrintErrors();
+        return true;
+    }
 
+    /*
+     * @param array $data
+     * return  steps and tasks
+     */
+    function validateStepTaskByWorkflow($data) {
+        $sql = "select stepId, servicioId, effectiveDate, finalEffectiveDate 
+                from step where servicioId = '".$data['tipoServicioId']."'  ";
+        $this->Util()->DB()->setQuery($sql);
+        $steps = $this->Util()->DB()->GetResult();
+
+        $filterSteps = [];
+        foreach($steps as $key => $step) {
+            if ($data['finstancia'] < $step['effectiveDate'])
+                continue;
+            if ($step['finalEffectiveDate']!== null && $data['finstancia'] > $step['finalEffectiveDate'])
+                continue;
+
+            $sql = "select * from task where stepId = '".$step['stepId']."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $tasks = $this->Util()->DB()->GetResult();
+
+            $filterTasks = [];
+            foreach ($tasks as $keyTask => $task) {
+                if (($data['finstancia'] < $task['effectiveDate']))
+                    continue;
+                if ($task['finalEffectiveDate']!== null && $data['finstancia'] > $task['finalEffectiveDate'])
+                    continue;
+
+                array_push($filterTasks, $task);
+            }
+            if(count($filterTasks) > 0 ) {
+                $step['tasks'] = $filterTasks;
+                array_push($filterSteps, $step);
+            }
+            return $filterSteps;
+        }
+
+    }
 }
 
 ?>
