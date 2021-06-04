@@ -74,7 +74,8 @@ switch($_POST["type"])
 						$serv['dateLastWorkflow'] = $isParcial ? $util->getFirstDate($serv['lastDateWorkflow']) : '0000-00-00';
 
                         $serv['instancias'] = $instanciaServicio->getInstanciaByServicio($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
-                        if(!$serv['instancias'])
+                        $instanciasLineal=  array_column($serv['instancias'], 'instanciaServicioId');
+                        if(!$instanciasLineal)
                             continue;
 
 						$yearLastWorkflow = (int)date('Y',strtotime($serv['lastDateWorkflow']));
