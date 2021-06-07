@@ -111,14 +111,14 @@ foreach($emisores as $key => $var) {
              <br><br>
              Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
-    $to = array(EMAIL_DEV => 'Desarrollador');
-    /*if (REP_STATUS == 'test')
 
+    if (REP_STATUS == 'test')
+        $to = array(EMAIL_DEV => 'Desarrollador');
     else
-        $to = array('rzetina@braunhuerin.com.mx' => 'ROGELIO ZETINA', EMAIL_DEV => 'Desarrollador');*/
+        $to = array('rzetina@braunhuerin.com.mx' => 'ROGELIO ZETINA', EMAIL_DEV => 'Desarrollador');
 
     $attachment = DOC_ROOT . "/sendFiles/" . $file . ".xlsx";
-    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file . ".xlsx", $file_zip, $file_name, 'noreply@braunhuerin.com.mx', "REP-COBRANZA");
+    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file . ".xlsx", $file_zip, $file_name, 'noreply@braunhuerin.com.mx', "REPORTE DE COBRANZA");
     echo "reporte enviado correctamente";
     unlink($attachment);
     unlink($file_zip);
