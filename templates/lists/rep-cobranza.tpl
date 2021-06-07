@@ -2,7 +2,7 @@
 <thead>
     <tr rowspan="10">
 		<th colspan="5" class="divInside" align="center">
-               REPORTE DE COBRANZA DE BHSC CONTADORES SC CORRESPONDIENTE AL MES DE {$mes|upper}
+               REPORTE DE COBRANZA DE {$razonSocial|upper} CORRESPONDIENTE AL MES DE {$mes|upper}
 		</th>
 	</tr>
 	<tr>
