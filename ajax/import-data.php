@@ -930,13 +930,13 @@ switch ($opcion[0]) {
             }
             //encontrar el id de la razon ya se ha validado pero se vuelve obtener, lo mismo pasa con el id del servicio
             $sql = "select max(a.contractId) from contract a 
-                  inner join customer b on a.customerId=b.customerId and lower(replace(b.nameContact,' ',''))='" . mb_strtolower(str_replace(' ', '', utf8_encode($row[0]))) . "' and b.active='1' 
-                  where lower(replace(a.name,' ',''))='" . mb_strtolower(str_replace(' ', '', utf8_encode($row[1]))) . "' and a.activo='Si'
+                  inner join customer b on a.customerId=b.customerId and replace(trim(lower(replace(replace(b.nameContact,' ',''), '&amp;', '&'))), char(9), '')='" . mb_strtolower(str_replace(' ', '', $row[0])) . "' and b.active='1' 
+                  where replace(trim(lower(replace(replace(a.name,' ',''), '&amp;', '&'))), char(9), '')='" . mb_strtolower(str_replace(' ', '', $row[1])) . "' and a.activo='Si'
                   ";
             $db->setQuery($sql);
             $conId = $db->GetSingle();
             //encontrar el servicio
-            $sql2 = "select tipoServicioId from tipoServicio where lower(replace(nombreServicio,' ',''))='" . mb_strtolower(str_replace(' ', '', utf8_encode($row[2]))) . "' ";
+            $sql2 = "select tipoServicioId from tipoServicio where replace(trim(lower(replace(replace(nombreServicio,' ',''), '&amp;', '&'))), char(9), '')='" . mb_strtolower(str_replace(' ', '', $row[2])) . "' ";
             $db->setQuery($sql2);
             $tipoServicioId = $db->GetSingle();
 

@@ -17,6 +17,7 @@ class InstanciaServicio extends  Servicio
 
     function getInstanciaByServicio($servicioId, $year, $foperaciones="0000-00-00", $isParcial =  false)
     {
+        global $workflow;
         $base = array(1=>array(),2=>array(),3=>array(),4=>array(),5=>array(),6=>array(),7=>array(),8=>array(),9=>array(),
             10=>array(),11=>array(),12=>array());
         $ftrTemporal = "";
@@ -25,7 +26,7 @@ class InstanciaServicio extends  Servicio
             $this->Util()->DB()->setQuery("select YEAR(lastDateWorkflow) from servicio where servicioId='".$servicioId."' ");
             $ylast =  $this->Util()->DB()->GetSingle();
             //si el año requerido es mayor a lastDateWorkflow no debe obtener instancias.
-            if($year>$ylast)
+            if($year > $ylast)
                 return $base;
 
             if($year==$ylast)
@@ -52,20 +53,21 @@ class InstanciaServicio extends  Servicio
                 class
                 END 
                 AS class
-                ,MONTH(instanciaServicio.date) as mes,instanciaServicio.date as finstancia,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
-				FROM instanciaServicio 
+                ,MONTH(instanciaServicio.date) as mes,instanciaServicio.date as finstancia,instanciaServicioId, 
+                instanciaServicio.status, servicio.tipoServicioId
+				FROM instanciaServicio
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 				WHERE (MONTH(instanciaServicio.date) IN (1,2,3,4,5,6,7,8,9,10,11,12)  $sinceMonth $ftrTemporal)
 				AND YEAR(instanciaServicio.date) = '".$year."'
 				AND servicio.status NOT IN('baja','inactiva')
-				AND instanciaServicio.status != 'baja'		
+				AND instanciaServicio.status != 'baja'
 				AND servicio.servicioId = '".$servicioId."'  ORDER BY instanciaServicio.instanciaServicioId DESC" ;
         $this->Util()->DB()->setQuery($sql);
         $data = $this->Util()->DB()->GetResult();
 
-        foreach($data as $key => $value)
-        {
-            $base[$value['mes']] =  $value;
+        foreach($data as $key => $value) {
+            $pasos = $workflow->validateStepTaskByWorkflow($value);
+            $base[$value['mes']] = count($pasos) > 0   ? $value : [];
         }
         return $base;
     }
@@ -296,19 +298,6 @@ class InstanciaServicio extends  Servicio
                         $costoCobrado = $costo;
                 }
             }
-            /* || $value['costoWorkflow'] > 0  quitar esta condicion para que en primera instancia el costo solo sumara al devengado si facturo en ese mes.
-            $costo = $value['factura'] == 'Si' ?  $value['costoWorkflow'] : 0;
-            if($this->Util()->isValidateDate($value['inicioFactura'],'Y-m-d') || $value['comprobanteId']){// para años posteriores deberiamos validar si tiene comprobanteId el workflow
-                $costo = $value['costo'];
-                if($dateWorkflow >= '2019-03-01') {
-                    $costo = $value['factura'] == 'Si' ? $value['costoWorkflow'] : 0;
-                } else {
-                    $costo = $value['comprobanteId'] > 0 ? $costo : 0; //utilizamos comprobanteId para fechas posteriores a 2019-03-01
-                }
-               // $costo = $dateWorkflow >= '2019-03-01'  ?  $value['costoWorkflow'] : $costo;
-            }
-            $numero = $cobrado ? $this->getTotalCobrosMensual($year, $value['mes'], $servicioId) : 0;*/
-
             $value['costo'] = $costo;
             $value['cobrado'] = $costoCobrado; //$costo * $numero;
 

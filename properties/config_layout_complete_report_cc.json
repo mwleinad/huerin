@@ -42,7 +42,7 @@
     "field_bd": "observacion"
   },
   {
-    "name": "Status cliente",
+    "name": "Cliente activo",
     "comment": "Equivalencias:\n1 = Activo\n0 = Inactivo",
     "field_excel": "active",
     "field_bd": "active"
@@ -85,10 +85,16 @@
     "field_bd": "sociedadId"
   },
   {
-    "name": "Status contrato",
+    "name": "Empresa activa",
     "comment": "Equivalencias:\nSi = Activo\nNo = Inactivo",
     "field_excel": "activo",
     "field_bd": "activo"
+  },
+  {
+    "name": "Fecha de baja de la empresa",
+    "comment": "",
+    "field_excel": "fechaBaja",
+    "field_bd": "fechaBaja"
   },
   {
     "name": "Sector",
