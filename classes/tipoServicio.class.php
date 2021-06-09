@@ -185,6 +185,7 @@ class TipoServicio extends Main
 				)  as servicios
 				from tipoServicio 	
 				inner join departamentos on departamentos.departamentoId = tipoServicio.departamentoId
+				where tipoServicio.status = '1'
 				group by tipoServicio.departamentoId order by departamentos.departamento asc, tipoServicio.nombreServicio asc
 				";
 		$this->Util()->DB()->setQuery($sql);

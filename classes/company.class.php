@@ -237,7 +237,7 @@ class Company extends Main
     {
         $sql = "select * from company_service
                 inner join service on company_service.service_id = service.id
-                where company_service.company_id = '" . $this->id . "'";
+                where company_service.company_id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $result =  $this->Util()->DBProspect()->GetResult();
         foreach($result as $key => $val) {
@@ -250,7 +250,7 @@ class Company extends Main
     private function getQuoteByService($companyId, $serviceId)
     {
         $sql = "select id from quotation 
-                where company_id = '" . $companyId ."' and service_id = '" . $serviceId ."'";
+                where deleted_at is null and company_id = '" . $companyId ."' and service_id = '" . $serviceId ."'";
         $this->Util()->DBProspect()->setQuery($sql);
         $row =  $this->Util()->DBProspect()->GetSingle();
         return $row;
@@ -261,21 +261,20 @@ class Company extends Main
         $this->setId($id);
         $currentServices = $this->serviceByCompany();
         $currentCompany = $this->info();
-        /*$currentServicesLineal = count($currentServices) ? array_column($currentServices, 'service_id') : [];
-        $postServices = count($_POST['services']) ? $_POST['services'] : [];
-        $diff = array_diff($currentServicesLineal, $postServices);*/
-
+        $currentServicesLineal = count($currentServices) ? array_column($currentServices, 'service_id') : [];
+        $diff1 = array_diff($data, $currentServicesLineal);
+        $diff2 = array_diff($currentServicesLineal, $data);
+        $changeService = count($diff1) === 0 && count($diff2) === 0 ? false : true;
         $count = 0;
         $sql = "insert into company_service(company_id, service_id, created_at, updated_at) values";
         $sqlProspect = "insert into prospect_service(prospect_id, service_id) values";
         $compQuery = "";
         $compProspect = "";
         foreach ($data as $val) {
-            //if (!in_array($val, $currentServicesLineal)) {
             $compQuery .= "(" . $id . ", " . $val . ", now(), now()),";
             $compProspect .= "(" . $currentCompany['prospect_id'] . ", " . $val . "),";
             $count++;
-            //}
+
         }
         if ($count > 0) {
             $this->removeServiceFromCompany($currentCompany);
@@ -289,6 +288,11 @@ class Company extends Main
             $this->Util()->DBProspect()->setQuery($sqlProspect);
             $this->Util()->DBProspect()->InsertData();
 
+        }
+        if ($changeService) {
+            $sql = "update company set step_id = 1 where id = '".$id."' ";
+            $this->Util()->DBProspect()->setQuery($sql);
+            $this->Util()->DBProspect()->UpdateData();
         }
     }
 

@@ -51,8 +51,13 @@ switch ($_POST['type']) {
                 $_SESSION['optionQuestion'] = [];
 
             end($_SESSION['optionQuestion']);
-            $key = isset($_POST['key']) ? $_POST['key'] : key($_SESSION['optionQuestion'])+1;
-            $_SESSION['optionQuestion'][$key]['id'] = !$_POST['key'] ? null : $_SESSION['optionQuestion'][$key]['id'];
+            $key = isset($_POST['key'])
+                ? $_POST['key']
+                : (empty($_SESSION['optionQuestion'])
+                ? 0
+                : key($_SESSION['optionQuestion']) + 1
+                );
+            $_SESSION['optionQuestion'][$key]['id'] = $_POST['key'] >= 0 ? $_SESSION['optionQuestion'][$key]['id'] : null;
             $_SESSION['optionQuestion'][$key]['text'] = $_POST['text'];
             $_SESSION['optionQuestion'][$key]['price'] = $_POST['price'];
             $smarty->assign('options', $_SESSION['optionQuestion']);

@@ -21,7 +21,7 @@ class Question extends Main
 
     private function optionByQuestion($id) {
         $sql = "select * from answer
-                where question_id = '" . $id . "' and deleted_at is null";
+                where question_id = '" . $id . "' and deleted_at is null order by id asc";
         $this->Util()->DBProspect()->setQuery($sql);
         $result =  $this->Util()->DBProspect()->GetResult();
         return $result;
