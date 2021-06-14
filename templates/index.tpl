@@ -100,6 +100,7 @@
 {/if}
 
 <script src="{$WEB_ROOT}/js/autocomplete.js?{$timestamp}" type="text/javascript"></script>
+<script src="{$WEB_ROOT}/js/pure_autocomplete.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/ui-tree.js?{$timestamp}"></script>
 <script src="{$WEB_ROOT}/js/{$includedTpl}.js?{$timestamp}" type="text/javascript"></script>
 

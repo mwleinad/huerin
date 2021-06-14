@@ -417,7 +417,7 @@ class Customer extends Main
     * Quitar ordenamiento ASC (quita mucho tiempo)
     * Quitar el foreach de encontrar los subordinados por cada servicio eso se hace en el foreach de contratos.
     */
-    public function EnumerateOptimizado($type = "subordinado", $customerId = 0, $tipo = ""){
+  public function EnumerateOptimizado($type = "subordinado", $customerId = 0, $tipo = ""){
         global $User, $page,$rol;
         if ($customerId) {
             $add = " AND customerId = '".$customerId."' ";
@@ -1640,5 +1640,10 @@ class Customer extends Main
     $this->Util()->DB()->setQuery($sql);
     $total = $this->Util()->DB()->GetSingle();
     return $total;
+  }
+  public function SuggestAutoComplete($value) {
+    $this->Util()->DB()->setQuery("SELECT customerId, nameContact, email, phone, observacion  FROM customer WHERE nameContact LIKE '%".$value."%' and active ='1' ORDER BY nameContact ASC LIMIT 15");
+    $result =  $this->Util()->DB()->GetResult();
+    return $result;
   }
 }

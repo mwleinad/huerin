@@ -1,6 +1,7 @@
 <div id="divForm">
 	<form id="frmCompany" name="frmCompany" method="post" onsubmit="return false;" action="#"  autocomplete="off">
 		<input type="hidden" id="prospect_id" name="prospect_id" value="{$prospect.id}" >
+        <input type="hidden" id="contract_exists" name="contract_exists" value="{$post.contract_id}" >
 		<input type="hidden" id="type" name="type" value="{if $post}updateCompany{else}saveCompany{/if}"/>
 		{if $post}<input name="id" id="id" type="hidden" value="{$post.id}" size="50"/>{/if}
 		<fieldset>
@@ -9,7 +10,10 @@
                     <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:40%;float:left"> * Nombre o razon social</div>
                         <div style="width:60%;float: left;">
-							<input type="text" name="name" id="name" value="{if $post}{$post.name}{else}{/if}" class="largeInput "/>
+                            <div class="custom-autocomplete">
+                                <input type="text" name="name" id="name" value="{if $post}{$post.name}{else}{/if}"
+                                       class="largeInput "/>
+                            </div>
                         </div>
                     </div>
                 </div>

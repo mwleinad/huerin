@@ -3,7 +3,7 @@ a:hover { text-decoration: underline; color: #C00; }
 #logo { font-size:24px; font-style:italic; font-weight:normal; color:white; line-height:69px; }
 #header { background:url(../images/bg_header_blue.gif) left top no-repeat; height:123px; }
 #content { background:url(../images/bg_content.gif) left top repeat-x #FFFFFF; width:938px !important; border-left:1px solid #9c9c9c; border-right:1px solid #9c9c9c; padding: 10px 0px;}
-#textcontent { padding:10px !important; width:900px !important; } 
+#textcontent { padding:10px !important; width:900px !important; }
 #wrapper { padding-bottom:10px !important; background:url(../images/bg_content_bottom.gif) center bottom no-repeat; }
 #footer { text-align:center; padding:15px 0px; color: #666; font-size:11px; }
 .hidden { display:none; }
@@ -188,14 +188,14 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #menu .content { background-image: url(../images/icon_edit.png); background-repeat: no-repeat;  }
 #menu .reports { background-image: url(../images/icon_reports.png); background-repeat: no-repeat;  }
 #menu .balance { background-image: url(../images/balance.png); background-repeat: no-repeat;  }
-#menu .users { background-image: url(../images/icon_users.png); background-repeat: no-repeat;  } 
+#menu .users { background-image: url(../images/icon_users.png); background-repeat: no-repeat;  }
 #menu .media_library { background-image: url(../images/company.png); background-repeat: no-repeat;  }
 #menu .vencimientos { background-image: url(../images/vencimientos.png); background-repeat: no-repeat;  }
 #menu .orders { background-image: url(../images/orders.png); background-repeat: no-repeat;  }
 #menu .invoice { background-image: url(../images/invoice.png); background-repeat: no-repeat;  }
 #menu .cotizaciones { background-image: url(../images/folios.png); background-repeat: no-repeat;  }
 #menu .catalogos { background-image: url(../images/catalogos.png); background-repeat: no-repeat;  }
-#menu .event_manager { background-image: url(../images/sales.png); background-repeat: no-repeat;  } 
+#menu .event_manager { background-image: url(../images/sales.png); background-repeat: no-repeat;  }
 #menu .newsletter { background-image: url(../images/icon_news.png); background-repeat: no-repeat;  }
 #menu .settings { background-image: url(../images/settings_48.png); background-repeat: no-repeat;  }
 #hidden_submenu {
@@ -309,7 +309,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 }
 
 #tabs ul li.first a{
-  color: #1b486a !important;	
+  color: #1b486a !important;
 }
 /*******************************************************************************
   PORTLETS AND GRID
@@ -321,7 +321,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 .portlet-header { margin: 0em; padding-bottom: 5px; padding-left: 6px; padding-top:4px; padding-right:6px; font-size:12px; border: none !important; color: #333 !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; cursor:move; }
 .portlet-header .ui-icon { float: right; cursor:pointer; }
 .portlet-header img { float:left; margin-right:5px; }
-#portlets .fixed { cursor:auto; } 
+#portlets .fixed { cursor:auto; }
 .portlet-content { padding: 0.8em; font-size:12px !important; color: #333; border-top:1px solid #999 !important; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; }
 .ui-sortable-placeholder { border: 1px dashed #999 !important; visibility: visible !important; height: 100px !important; background: #EBEBEB;}
 .ui-sortable-placeholder * { visibility: hidden; }
@@ -361,7 +361,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #error .info_inner {
 	color: #C00;
 	background: url('../images/icon_error.gif') no-repeat left top;
-	border: 0px;	
+	border: 0px;
 }
 #info .info_inner {
 	color: #4985B2;
@@ -369,7 +369,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 	border: 0px;
 }
 /*******************************************************************************
-  TABLE DESIGN 
+  TABLE DESIGN
 *******************************************************************************/
 #box-table-a {
 	font-size: 12px;
@@ -389,7 +389,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 }
 #box-table-a td {
 	padding: 8px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -403,7 +403,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #box-table-a tr.footer:hover td { background: none !important;  }
 
 /*******************************************************************************
-  TABLE DESIGN 
+  TABLE DESIGN
 *******************************************************************************/
 .box-table-b {
 	font-size: 12px;
@@ -423,7 +423,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 }
 .box-table-b td {
 	padding: 8px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -449,7 +449,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 }
 #box-table-b td {
 	padding: 8px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -459,7 +459,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #box-table-b tr.footer:hover td { background: none !important;  }
 
 /*******************************************************************************
-  TABLE DESIGN 
+  TABLE DESIGN
 *******************************************************************************/
 .box-table-a {
 	font-size: 12px;
@@ -479,7 +479,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 }
 .box-table-a td {
 	padding: 8px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -567,7 +567,7 @@ form .wide2 { width:670px; }
   font-size: 12px;
   outline: none !important;
   cursor: pointer;
-  font-weight: bold;	
+  font-weight: bold;
 }
 .button_grey:link,
 .button_grey:visited{
@@ -681,7 +681,7 @@ form .wide2 { width:670px; }
   font-size: 12px;
   outline: none !important;
   cursor: pointer;
-  font-weight: bold;	
+  font-weight: bold;
 }
 .button_grey_round span {
   background: url('../images/but_round_left_grey.gif') no-repeat left top;
@@ -702,8 +702,8 @@ form .wide2 { width:670px; }
 /*******************************************************************************
   MODAL BOX OVERRIDE
 *******************************************************************************/
-.ui-dialog { 
-padding:0px !important; 
+.ui-dialog {
+padding:0px !important;
 border: none 0 !important;
 font-size: 12px !important;
 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif !important;
@@ -779,7 +779,7 @@ a.inline_add { padding-left:21px; background:url(../images/icons/add.png) no-rep
 
 /*** Fview ***/
 
-#fview {	
+#fview {
 	position: fixed;
 	top: 85px;
 	left: 49%;
@@ -881,7 +881,7 @@ table.setting {
 
 /**** Fview 2 ****/
 
-#fview2 {	
+#fview2 {
 	position: fixed;
 	left: 49%;
 	margin-left: -350px;
@@ -920,12 +920,12 @@ table.setting {
 }
 
 /*******************************************************************************
-  TABLE DESIGN 
+  TABLE DESIGN
 *******************************************************************************/
 #box-table-costeo {
 	font-size: 12px;
 	margin: 0px;
-	text-align: left;		
+	text-align: left;
 	border-width: 1px;
 	border-spacing: 0px;
 	border-style: outset;
@@ -943,7 +943,7 @@ table.setting {
 }
 #box-table-costeo td {
 	padding: 5px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-right: 1px solid #999;
@@ -956,12 +956,12 @@ table.setting {
 #box-table-costeo tr.footer:hover td { background: none !important;  }
 
 /*******************************************************************************
-  TABLE DOCS 
+  TABLE DOCS
 *******************************************************************************/
 #boxTableDocs {
 	font-size: 12px;
 	margin: 0px;
-	text-align: left;		
+	text-align: left;
 	border-width: 0px;
 	border-spacing: 0px;
 	border-style: outset;
@@ -979,7 +979,7 @@ table.setting {
 }
 #boxTableDocs td {
 	padding: 5px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-right: 1px solid #999;
@@ -988,7 +988,7 @@ table.setting {
 #boxTableDocs tr.footer:hover td { background: none !important;  }
 
 /*******************************************************************************
-  TABLE DESIGN 
+  TABLE DESIGN
 *******************************************************************************/
 
 #boxTable {
@@ -1011,7 +1011,7 @@ table.setting {
 
 #boxTable .tdPad{
 	padding: 8px;
-	background: none; 
+	background: none;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -1028,7 +1028,7 @@ table.setting {
 /**********/
 
 .bordTbl{
-	border:1px solid #090;	
+	border:1px solid #090;
 }
 .bordTbl th,
 .bordTbl td{
@@ -1145,56 +1145,56 @@ table.setting {
 div#rounded-box2 {
 	margin:0 auto;
 	padding:0;
-	
+
 	/* Esquinas redondeadas */
 	border-radius:5px;
-	
+
 	/*Descompuesta*/
 	border-top-left-radius:5px;
 	border-top-right-radius:5px;
 	border-bottom-left-radius = 10px;
-	border-bottom-right-radius = 10px; 
-	
+	border-bottom-right-radius = 10px;
+
 	/* Esquinas redondeadas en Firefox */
-	-moz-border-radius: 5px;  
-	
+	-moz-border-radius: 5px;
+
 	/*Descompuesta*/
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-moz-border-radius-bottomleft = 5px;
-	-moz-border-radius-bottomright = 5px;  
-	
+	-moz-border-radius-bottomright = 5px;
+
 	/*Internet Explorer 8 */
 	-ms-border-radius: 5px;
-	
+
 	/*Descompuesta*/
 	-ms-border-radius-topleft: 5px;
 	-ms-border-radius-topright: 5px;
 	-ms-border-radius-bottomleft: 5px;
-	-ms-border-radius-bottomright: 5px; 
-	
+	-ms-border-radius-bottomright: 5px;
+
 	/*Webkit y Safari */
 	-webkit-border-radius: 5px;
-	
+
 	/*Descompuesta*/
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;  
-	
+	-webkit-border-bottom-right-radius: 5px;
+
 	/* Konqueror */
-	-khtml-border-radius: 5px; 
-	
+	-khtml-border-radius: 5px;
+
 	/*Descompuesta*/
 	-khtml-border-radius-topleft: 5px;
 	-khtml-border-radius-topright: 5px;
 	-khtml-border-radius-bottomleft:5px;
-	-khtml-border-radius-bottomright:5px;  
-	
+	-khtml-border-radius-bottomright:5px;
+
 }
 
 .iconSH{
-	float:right; 
+	float:right;
 	cursor:pointer;
 }
 
@@ -1302,7 +1302,7 @@ div.resize-handle {
 
 #box-table-a-1 {
 	padding: 8px;
-	background: #E3E3E3; 
+	background: #E3E3E3;
 	border-top: 1px solid #CCC;
 	color: #666;
 	border-bottom: none !important;
@@ -1459,9 +1459,9 @@ ul.menu_arbol ul {
 	vertical-align: middle;
 }
 .zoneTaskShow{
-	border:solid; 
-	border-width:1px; 
-	margin:10px; 
+	border:solid;
+	border-width:1px;
+	margin:10px;
 	padding:10px;
 	display: block;
 }
@@ -1511,6 +1511,45 @@ ul.menu_arbol ul {
 	border-collapse: separate;
 	position: relative
 }
+.custom-autocomplete{
+	position:relative;
+	display: inline-block;
+	width: 100%;
+}
+.autocomplete-items {
+	position: absolute;
+	border: 1px solid #d4d4d4;
+	border-bottom: none;
+	border-top: none;
+	z-index: 99;
+	/*position the autocomplete items to be the same width as the container:*/
+	top: 100%;
+	left: 0;
+	right: 0;
+	max-height: 254px;
+	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: auto;
+	box-sizing: border-box;
+}
+
+.autocomplete-items div {
+	padding: 10px;
+	cursor: pointer;
+	background-color: #FFFFE6;
+	border-bottom: 1px solid #d4d4d4;
+
+}
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+	background-color: #fafabb;
+}
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+	background-color: #1ABC9C !important;
+	color: #ffffff;
+}
+
 
 
 

@@ -59,7 +59,6 @@ class Prospect extends Main
 
     public function setObservation($value)
     {
-        $this->Util()->ValidateRequireField($value, "Observación");
         $this->observation = $value;
     }
 
@@ -102,12 +101,14 @@ class Prospect extends Main
                     name,
                     phone,
                     email,
-                    comment
+                    comment,
+                    customer_id
                 ) VALUES (
                     '" . $this->name . "', 
                     '" . $this->phone . "',
                     '" . $this->email . "',
-                    '" . $this->observation . "' 
+                    '" . $this->observation . "',
+                    '" . $_POST['customer_exists'] . "' 
                  )";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->InsertData();
@@ -126,7 +127,8 @@ class Prospect extends Main
                     name = '".$this->name."',
                     phone = '".$this->phone."',
                     email = '".$this->email."',
-                    comment = '".$this->observation."'
+                    comment = '".$this->observation."',
+                    customer_id = '".$_POST['customer_exists']."'
                     WHERE id = '".$this->id."' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->InsertData();
