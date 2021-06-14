@@ -8,20 +8,15 @@ switch($_POST["type"])
 	case "producto":
 	$tipoServicio->setTipoServicioId($_POST["value"]);
 	$result= $tipoServicio->Info();
-	//$producto->setNoIdentificacion($_POST["value"]);
-	//$result = $producto->GetProDuctoInfo();
-	//echo urldecode($result["descripcion"]);
 	echo urldecode($result["nombreServicio"]);
 	echo "{#}";
 	echo $result["costo"];
 	echo $result["valorUnitario"];
 	echo "{#}";
 	echo "NO APLICA";
-	//echo $result["unidad"];
 	echo "{#}";
 	break;
 	case "impuesto":
-//	print_r($_POST);
 	$impuesto->setImpuestoId($_POST["value"]);
 	$result = $impuesto->Info();
 	echo urldecode($result["nombre"]);

@@ -1,11 +1,15 @@
 <div id="divForm">
     <form id="formProspect" name="formProspect" method="post" autocomplete="off">
         <input type="hidden" id="type" name="type" value="{if $post}updateProspect{else}saveProspect{/if}"/>
+        <input type="hidden" id="customer_exists" name="customer_exists" value="{$post.customer_id}"" />
         {if $post}<input type="hidden" name="id" value="{$post.id}" />{/if}
         <fieldset>
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* Nombre:</div>
-                <input class="largeInput medium" name="name" id="name" type="text" value="{$post.name}" size="50"/>
+                <div class="custom-autocomplete">
+                    <input class="largeInput medium" name="name" id="name" type="text" value="{$post.name}" size="50"/>
+                </div>
+
                 <hr />
             </div>
 

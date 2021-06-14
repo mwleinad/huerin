@@ -72,6 +72,10 @@ var tableProspect = function () {
                     grayOut(true);
                     jQ('#fview').show();
                     FViewOffSet(response);
+                    if(document.getElementById('name')!=null)
+                        pure_autocomplete(document.getElementById("name"), 'customer',
+                            WEB_ROOT+"/ajax/pure-autocomplete.php",
+                            ['phone', 'email', 'observation', 'customer_exists'])
                 },
                 error: function () {
                     alert("Error");

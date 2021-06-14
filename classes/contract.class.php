@@ -2104,5 +2104,11 @@ class Contract extends Main
         }
         return $contractsAfectados;
     }
+    public function SuggestContractPureAutocomplete ($value) {
+        $this->Util()->DB()->setQuery("SELECT * FROM contract WHERE name LIKE '%".$value."%' and activo ='Si'
+                                              and customerId = '".$this->customerId."' ORDER BY name ASC LIMIT 15");
+        $result =  $this->Util()->DB()->GetResult();
+        return $result;
+    }
 }
 ?>

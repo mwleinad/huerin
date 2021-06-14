@@ -47,7 +47,7 @@ var tableCompany = function () {
                                           + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote"><img src="'
                                           + WEB_ROOT + '/images/icons/zip.png" width="16" aria-hidden="true" /></a>'
                                 content = content + '<a href="javascript:;" title="Validar y cerrar cotizacion" data-company="'
-                                          + data.id + '" data-type="validate_quote" class="spanValidate"><img src="'
+                                          + data.id + '" data-type="openValidateQuote" class="spanValidate"><img src="'
                                           + WEB_ROOT + '/images/icons/check.png" aria-hidden="true" /></a>'
 
                             }
@@ -79,6 +79,7 @@ var tableCompany = function () {
             var type = jQ(this).data('type');
             var id = jQ(this).data('id');
             var prospect_id = jQ(this).data('prospect');
+            var customer_id = document.getElementById('customer').value;
             jQ.ajax({
                 url: WEB_ROOT + "/ajax/company.php",
                 type: 'post',
@@ -106,6 +107,10 @@ var tableCompany = function () {
                         });
                         jQ("select[multiple]").multiselect('loadOptions', response.services);
                     }
+                    if(document.getElementById('name')!=null)
+                        pure_autocomplete(document.getElementById("name"), 'contract',
+                            WEB_ROOT+"/ajax/pure-autocomplete.php",
+                            ['rfc', 'regimen_id', 'activity_id', 'contract_exists'], customer_id)
                 },
                 error: function () {
                     alert("Error");
@@ -217,7 +222,19 @@ jQ(document).ready(function () {
     })
 
     jQ(document).on('click', '.spanValidate', function (e) {
-        console.log(e)
+        var id = jQ(this).data('company');
+        var type= jQ(this).data('type');
+        jQ.ajax({
+            url: WEB_ROOT + "/ajax/company.php",
+            type: 'post',
+            data: { type, id },
+            dataType:'json',
+            success: function (response) {
+                grayOut(true);
+                jQ('#fview').show();
+                FViewOffSet(response.template);
+            }
+        })
     })
 })
 

@@ -2,8 +2,10 @@
 
 $user->allowAccess(2);
 $user->allowAccess(271);
-$smarty->assign('prospect', $_GET['id']);
+$prospect->setId($_GET['id']);
+$info = $prospect->info();
 $company->setProspectId($_GET['id']);
 $results = $company->enumerate();
 $smarty->assign('results', $results);
+$smarty->assign('prospect', $info);
 $smarty->assign('mainMnu', 'contratos');

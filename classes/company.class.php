@@ -158,7 +158,7 @@ class Company extends Main
         return $this->rfc;
     }
 
-    public function info()
+    public function info($withQuoteComplete = false)
     {
         $sQuery = "select * from company 
                    where id = '" . $this->id . "' ";
@@ -166,7 +166,7 @@ class Company extends Main
         $row = $this->Util()->DBProspect()->GetRow();
 
         if ($row)
-            $row['services'] = $this->serviceByCompany();
+            $row['services'] = $this->serviceByCompany($withQuoteComplete);
 
         return $row;
     }
@@ -207,6 +207,7 @@ class Company extends Main
                     date_constitution,
                     is_new_company,
                     comment,
+                    contract_id,
                     created_at,
                     updated_at
                 ) VALUES (
@@ -220,6 +221,7 @@ class Company extends Main
                     '" . $this->constitution_date . "',
                     '" . $this->is_new_company . "',
                     '" . $this->observation . "',
+                    '" . $_POST['contract_exists'] . "',
                     now(),
                     now()
                  )";
@@ -233,7 +235,7 @@ class Company extends Main
         return true;
     }
 
-    private function serviceByCompany()
+    private function serviceByCompany($quoteComplete = false)
     {
         $sql = "select * from company_service
                 inner join service on company_service.service_id = service.id
@@ -241,19 +243,17 @@ class Company extends Main
         $this->Util()->DBProspect()->setQuery($sql);
         $result =  $this->Util()->DBProspect()->GetResult();
         foreach($result as $key => $val) {
-            $result[$key]['quote_id'] =  $this->getQuoteByService($val['company_id'], $val['service_id']);
+            $result[$key]['quote_id'] = $this->getQuoteByService($val['company_id'], $val['service_id'], $quoteComplete);
         }
-        //comprobar si tiene cotizacion generada
-
         return $result;
     }
-    private function getQuoteByService($companyId, $serviceId)
+    private function getQuoteByService($companyId, $serviceId, $quoteComplete = false)
     {
-        $sql = "select id from quotation 
+        $sql = "select * from quotation 
                 where deleted_at is null and company_id = '" . $companyId ."' and service_id = '" . $serviceId ."'";
         $this->Util()->DBProspect()->setQuery($sql);
-        $row =  $this->Util()->DBProspect()->GetSingle();
-        return $row;
+        $row =  $this->Util()->DBProspect()->GetRow();
+        return $quoteComplete ? $row : $row['id'];
     }
 
     public function assocServiceToCompany($id, $data = [])
@@ -324,7 +324,8 @@ class Company extends Main
                     ".$regimen."
                     date_constitution = '" . $this->constitution_date . "',
                     is_new_company = '" . $this->is_new_company . "',
-                    comment = '" . $this->observation . "',                
+                    comment = '" . $this->observation . "',  
+                    contract_id = '" . $_POST['contract_exists'] . "',                
                     updated_at = now()
                     WHERE id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
