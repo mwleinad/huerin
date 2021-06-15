@@ -40,7 +40,6 @@ switch ($_POST['type']) {
         $json['services'] = $catalogoServices;
         echo json_encode($json);
         break;
-
     case "saveCompany":
         $company->setProspectId($_POST['prospect_id']);
         $company->setName($_POST['name']);

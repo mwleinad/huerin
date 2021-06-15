@@ -20,7 +20,9 @@ switch ($_POST["type"]) {
         break;
     case 'contract':
         $contract->setCustomerId($_POST['parent_id']);
-        $result = $contract->SuggestContractPureAutocomplete($_POST["query"]);
+        $result = $_POST['parent_id'] > 0
+                  ? $contract->SuggestContractPureAutocomplete($_POST["query"])
+                  : [];
         $json = [];
         foreach ($result as $cust) {
             $card = [];
