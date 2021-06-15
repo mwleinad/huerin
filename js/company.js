@@ -46,10 +46,15 @@ var tableCompany = function () {
                                 content = content + '<a href="javascript:;" title="Descargar cotizaciones" data-company="'
                                           + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote"><img src="'
                                           + WEB_ROOT + '/images/icons/zip.png" width="16" aria-hidden="true" /></a>'
-                                content = content + '<a href="javascript:;" title="Validar y cerrar cotizacion" data-company="'
-                                          + data.id + '" data-type="openValidateQuote" class="spanValidate"><img src="'
+                                if(data.step_id === 3)
+                                    content = content + '<a href="javascript:;" title="Validar y/o ajustar cotizacion" data-company="'
+                                          + data.id + '" data-type="openValidateQuote" class="spanOpenValidate"><img src="'
                                           + WEB_ROOT + '/images/icons/check.png" aria-hidden="true" /></a>'
-
+                            }
+                            if(data.step_id === 4) {
+                                content = content + '<a href="javascript:;" title="Aceptar o declinar cotizacion" data-company="'
+                                    + data.id + '" data-type="download_zip_quote" class="spanCloseProspect"><img src="'
+                                    + WEB_ROOT + '/images/icons/action_check.gif" width="16" aria-hidden="true" /></a>'
                             }
                             content = content + '</div>';
                             return content;
@@ -149,6 +154,7 @@ var tableCompany = function () {
         jQ(document).on('click', "#is_new_company", function () {
             jQ(this).is(':checked') ? jQ('#data_constitution').hide() : jQ('#data_constitution').show();
         })
+
         jQ(document).on('click', '.spanSaveCompany', function () {
             var form = jQ(this).parents('form:first');
             if (form.length > 0) {
@@ -172,6 +178,52 @@ var tableCompany = function () {
             }
         });
 
+        jQ(document).on("click", ".spanSendValidate", function () {
+            var form = jQ(this).parents('form:first');
+            var jsonObject = jQ(form[0]).convertFormToJson();
+            var jsonSerializado = JSON.stringify(jsonObject);
+            var objectJson = JSON.parse(jsonSerializado);
+            var data = { company_id: objectJson.id }
+            if(objectJson.list_quotes.length > 0) {
+                var quotes = [];
+                objectJson.list_quotes.forEach(function (res) {
+                    var quote = {
+                        id: parseInt(res),
+                        total: parseInt(objectJson['price_'+res]),
+                        status: 1,
+                    }
+                    quotes.push(quote)
+                })
+                data.quotes = quotes
+            }
+            jQuery.ajax({
+                url: URL_API + '/company/validate_quote', // ajax source
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', driverApi.refreshToken())
+                    jQ('.spanSendValidate').hide();
+                    jQ('#loader').show();
+                },
+                success: function (response) {
+                    ShowErrorOnPopup(response.message)
+                    grid.getDataTable().ajax.reload()
+                    jQ('.spanSendValidate').show();
+                    jQ('#loader').hide();
+                    close_popup();
+                },
+                error: function (error) {
+                    ShowErrorOnPopup(error.responseJSON.message, true);
+                    jQ('.spanSendValidate').show();
+                    jQ('#loader').hide();
+                }
+            })
+        });
+
+        jQ(document).on('click', '.spanUnlockPrice', function () {
+            jQ('.inputPrice').prop('readonly', false)
+        })
     }
     return {
         init: function () {
@@ -221,7 +273,7 @@ jQ(document).ready(function () {
         })
     })
 
-    jQ(document).on('click', '.spanValidate', function (e) {
+    jQ(document).on('click', '.spanOpenValidate', function (e) {
         var id = jQ(this).data('company');
         var type= jQ(this).data('type');
         jQ.ajax({
