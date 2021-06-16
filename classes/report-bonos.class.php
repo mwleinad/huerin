@@ -407,8 +407,11 @@ class ReporteBonos extends Main
                 default: $meses = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12); break;
             }
             $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
-            
-            if(!empty($temp['instancias']) || $isParcial){
+            $instanciasLineal=  array_column($temp['instancias'], 'instanciaServicioId');
+            if(!$instanciasLineal)
+                continue;
+
+            if(!empty($temp['instancias']) || $isParcial) {
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
                 $yearLastWorkflow = $isParcial ? (int)date('Y',strtotime($service['lastDateWorkflow'])) : null ;
                 if($isParcial and ((int)$year >= $yearLastWorkflow)) {
