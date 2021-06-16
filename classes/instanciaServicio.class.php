@@ -238,7 +238,7 @@ class InstanciaServicio extends  Servicio
         return $new;
     }
     function getBonoInstanciaWhitInvoice($servicioId,$year,$meses = [],$foperaciones,$isParcial=false,$monthBase=[], $cobrado = false, $table = "instanciaServicio") {
-        global $comprobante;
+        global $comprobante, $workflow;
         $ftrTemporal = "";
         $new = [];
         $newArray = [];
@@ -307,7 +307,8 @@ class InstanciaServicio extends  Servicio
             }
 
             $totalDevengado += $value['costo'];
-            $monthBase[(int)$value['mes']] =  $value;
+            $pasos = $workflow->validateStepTaskByWorkflow($value);
+            $monthBase[(int)$value['mes']] = count($pasos) > 0   ? $value : [];
         }
 
         $newArray['instancias']= $monthBase;
