@@ -412,7 +412,6 @@ class ReporteBonos extends Main
                 continue;
             }
 
-
             if(!empty($temp['instancias']) || $isParcial) {
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
                 $yearLastWorkflow = $isParcial ? (int)date('Y',strtotime($service['lastDateWorkflow'])) : null ;
