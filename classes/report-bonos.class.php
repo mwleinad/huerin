@@ -409,7 +409,6 @@ class ReporteBonos extends Main
             $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
             $instanciasLineal=  array_column($temp['instancias'], 'instanciaServicioId');
             if(!$instanciasLineal) {
-                unset($services[$key]);
                 continue;
             }
 
