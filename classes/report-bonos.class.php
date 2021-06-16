@@ -408,8 +408,11 @@ class ReporteBonos extends Main
             }
             $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($servId, $year, $meses, $service['inicioOperaciones'], $isParcial,$mesesBase);
             $instanciasLineal=  array_column($temp['instancias'], 'instanciaServicioId');
-            if(!$instanciasLineal)
+            if(!$instanciasLineal) {
+                unset($services[$key]);
                 continue;
+            }
+
 
             if(!empty($temp['instancias']) || $isParcial) {
                 $service['instancias'] = count($temp['instancias'])>0 ? array_replace_recursive($mesesBase, $temp['instancias']) : $mesesBase;
