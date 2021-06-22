@@ -388,7 +388,8 @@ class InvoiceService extends Cfdi{
             $this->resetWorkflows();
             $this->setCurrentContract($contrato);
 
-            if($contrato['useAlternativeRzForInvoice'] == '1' && $contrato['createSeparateInvoice'] == '0') {
+            if($contrato['useAlternativeRzForInvoice'] == '1' && $contrato['alternativeRzId'] > 0
+               && $contrato['createSeparateInvoice'] == '0') {
                 $this->ChangeLastProcessInvoice();
                 continue;
             }
