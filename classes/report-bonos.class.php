@@ -705,8 +705,9 @@ class ReporteBonos extends Main
             $newArray[$value["jefeInmediato"]] = $allEncargados[$value["jefeInmediato"]];
             @$newArray[$value['jefeInmediato']]['totalDevengado']  += $acumDevengado;
             @$newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
-            @$newArray[$value['jefeInmediato']]['sueldoTotal'] += $sueldo;
-            $sueldo = $newArray[$value['jefeInmediato']]["sueldo"] + $sueldo;
+            $sueldoLocal = $newArray[$value['jefeInmediato']]["sueldo"] + $sueldo;
+            @$newArray[$value['jefeInmediato']]['sueldoTotal'] = $sueldoLocal;
+
             if ($newArray[$value['jefeInmediato']]['jefeInmediato']) {
                 $this->recursiveTotalEncargado($allEncargados, $newArray, $newArray[$value['jefeInmediato']], $acumDevengado, $acumCompletado, $sueldo);
             }
