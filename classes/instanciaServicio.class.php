@@ -294,8 +294,8 @@ class InstanciaServicio extends Servicio
         $data = $this->Util()->DB()->GetResult();
         $totalAcompletado = 0;
         $totalDevengado = 0;
-        if (empty($data))
-            return $newArray;
+        /*if (empty($data))
+            return $newArray;*/
 
         foreach ($data as $key => $value) {
             $dateWorkflow = $value['anio'] . "-" . $value['mes'] . "-01";
