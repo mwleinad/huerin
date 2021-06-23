@@ -707,7 +707,6 @@ class ReporteBonos extends Main
             @$newArray[$value['jefeInmediato']]['totalCompletado'] += $acumCompletado;
             $sueldoLocal = $newArray[$value['jefeInmediato']]["sueldo"] + $sueldo;
             @$newArray[$value['jefeInmediato']]['sueldoTotal'] = $sueldoLocal;
-
             if ($newArray[$value['jefeInmediato']]['jefeInmediato']) {
                 $this->recursiveTotalEncargado($allEncargados, $newArray, $newArray[$value['jefeInmediato']], $acumDevengado, $acumCompletado, $sueldo);
             }
@@ -1020,8 +1019,8 @@ class ReporteBonos extends Main
 
             $temp = $instanciaServicio->getBonoInstanciaWhitInvoice($serv['servicioId'], $year, $meses, $serv['inicioOperaciones'], $isParcial,$mesesBase, true, $table);
 
-            if(empty($temp)||empty($temp["instancias"]))
-                continue;
+            /*if(empty($temp)||empty($temp["instancias"]))
+                continue;*/
 
             foreach ($temp['instancias'] as $i => $inst){
                 $data['devengados'][$i]['total'] +=$inst['costo'];
