@@ -1139,7 +1139,7 @@ class Comprobante extends Producto
                             CONCAT(
                                 '{\"id',
                                 '\":\"',
-                                instanciaservicio.instanciaServicioId,
+                                instanciaServicio.instanciaServicioId,
                                 '\"}'
                             )
                         ),
