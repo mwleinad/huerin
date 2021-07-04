@@ -314,7 +314,6 @@ class InvoiceService extends Cfdi{
 
     function CreateInvoice(){
         $_SESSION["conceptos"] = [];
-        $this->isCreatedInvoice(true);
         if(!$this->setEmisor()){
             $this->logString .=chr(13).chr(10)." Error al generar factura para ".$this->currentContract['name']." con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
             $this->logString .=chr(13).chr(10)."Emisor ".$this->currentContract['facturador']." no encontrado, verifique si esta activo".chr(13).chr(10);
@@ -326,6 +325,7 @@ class InvoiceService extends Cfdi{
         if(!count($this->getServiciosToConceptos()))
             return false;
 
+        $this->isCreatedInvoice(true);
         $this->setMonth13(false);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
