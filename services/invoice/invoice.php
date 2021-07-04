@@ -100,7 +100,7 @@ class InvoiceService extends Cfdi{
         $sql = "select a.*,b.nameContact as cliente,b.noFactura13 from contract a
                 inner join customer b on a.customerId = b.customerId
                 where b.active ='1' and a.activo='Si' 
-                and facturador != 'Efectivo' $filtro and a.lastProcessInvoice<'$firstDayCurrentMonth' order by a.customerId asc limit 40";
+                and facturador != 'Efectivo' $filtro and a.lastProcessInvoice<'$firstDayCurrentMonth' order by a.customerId asc limit 15";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
@@ -398,11 +398,9 @@ class InvoiceService extends Cfdi{
                 continue;
 
             $this->CreateInvoice();
-            if($contrato["noFactura13"]=="No"){
+            if($contrato["noFactura13"] == "No"){
                 $this->CreateInvoice13();
             }
-
-
             $this->ChangeLastProcessInvoice();
             $this->GenerateSendLog();
         }
