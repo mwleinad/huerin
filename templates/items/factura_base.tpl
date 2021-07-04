@@ -7,11 +7,16 @@
                 <td>${$fact.total_formato}</td>
                 <td align="center">{$fact.serie}{$fact.folio}</td>
                 <td align="center">
-                {if $fact.instanciaServicioId}
-                	<a href="{$WEB_ROOT}/workflow/id/{$fact.instanciaServicioId}">{$fact.instanciaServicioId} - Ir</a>
+                {if $fact.instanciasLigados|count > 0}
+                    {foreach from=$fact.instanciasLigados item=ins}
+                	    <a href="{$WEB_ROOT}/workflow/id/{$ins.id}" title="Ir a workflow" target="_blank">{$ins.id} - Ir</a><br>
+                    {/foreach}
+                {elseif $fact.procedencia eq 'fromRifNoInstance'}
+                	Factura RIF sin workflow
                 {else}
-                	Factura Manual
-                {/if}  </td>
+                    Factura manual
+                {/if}
+                </td>
                 <td style="width:100px; word-wrap:break-word;">{$fact.uuid|wordwrap:20:"\n":true}</td>
                 <td width="90">{*ver factura*}
                     {if $fact.version == '3.3'}
@@ -64,4 +69,3 @@
                     {/if}
                 </td>
               </tr>
-             

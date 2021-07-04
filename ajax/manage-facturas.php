@@ -105,12 +105,13 @@
 				$comprobantes = array();
 				$comprobante->setPage(0);
 				$comprobantes = $comprobante->SearchComprobantesByRfc($values);
-				$smarty->assign('comprobantes',$comprobantes);
+
 				$total = 0;
 				echo 'ok[#]';
 				if($comprobantes["items"])
 				{
-					foreach($comprobantes["items"] as $res){
+					foreach($comprobantes["items"] as $key => $res){
+						$comprobantes["items"][$key]['instanciasLigados'] = json_decode($res['instancias'], true);
 						if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
 						{
 							$total += $res['total'];
@@ -132,6 +133,7 @@
 				$subtotal = number_format($subtotal,2,'.',',');
 				$iva = number_format($iva,2,'.',',');
 				$isr = number_format($isr,2,'.',',');
+				$smarty->assign('comprobantes',$comprobantes);
 				$smarty->assign('totalFacturas',$totalFacturas);
 				$smarty->assign('total',$total);
 				$smarty->assign('subtotal',$subtotal);
