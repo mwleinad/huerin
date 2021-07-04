@@ -1132,9 +1132,22 @@ class Comprobante extends Producto
 
         $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
 
-        $sqlQuery = 'SELECT *, comprobante.status AS status, comprobante.comprobanteId AS comprobanteId FROM comprobante
+        $sqlQuery = "SELECT *, comprobante.status AS status, comprobante.comprobanteId AS comprobanteId,
+                     CONCAT(
+                       '[',
+                        GROUP_CONCAT(
+                            CONCAT(
+                                '{\"id',
+                                '\":\"',
+                                instanciaservicio.instanciaServicioId,
+                                '\"}'
+                            )
+                        ),
+                      ']'      
+                     )  as instancias
+                     FROM comprobante
 		             LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = comprobante.comprobanteId 
-	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC ' . $sqlAdd;
+	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC " . $sqlAdd;
 
         $id_empresa = $_SESSION['empresaId'];
 
@@ -1161,9 +1174,10 @@ class Comprobante extends Producto
             $card['tipoDeComprobante'] = $val['tipoDeComprobante'];
             $card['tiposComprobanteId'] = $val['tiposComprobanteId'];
             $card['instanciaServicioId'] = $val['instanciaServicioId'];
+            $card['instancias'] = $val['instancias'];
             $card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
-
+            $card['procedencia'] = $val['procedencia'];
             $timbreFiscal = unserialize($val['timbreFiscal']);
             $card["uuid"] = $timbreFiscal["UUID"];
             $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '" . $val['comprobanteId'] . "' ");
@@ -1176,7 +1190,6 @@ class Comprobante extends Producto
         $data["items"] = $info;
         $data["pages"] = $pages;
         $data["total"] = $total;
-
         return $data;
 
     }//GetComprobantesByRfc
@@ -1261,7 +1274,20 @@ class Comprobante extends Producto
             $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
             $orderBy = " ORDER BY c.fecha DESC ";
         }
-        $sqlQuery = "SELECT c.*, c.status AS status,c.comprobanteId AS comprobanteId, f.nombreServicio AS concepto, a.name AS name, a.rfc AS rfc, a.contractId AS contractId, d.instanciaServicioId
+        $sqlQuery = "SELECT c.*, c.status AS status,c.comprobanteId AS comprobanteId, f.nombreServicio AS concepto,
+                     a.name AS name, a.rfc AS rfc, a.contractId AS contractId, d.instanciaServicioId,
+                    CONCAT(
+                       '[',
+                        GROUP_CONCAT(
+                            CONCAT(
+                                '{\"id',
+                                '\":\"',
+                                d.instanciaServicioId,
+                                '\"}'
+                            )
+                        ),
+                      ']'      
+                     )  as instancias
                     FROM comprobante as c
                     LEFT JOIN contract a ON a.contractId = c.userId 
                     $innerpermisos
@@ -1298,7 +1324,8 @@ class Comprobante extends Producto
             $card['tiposComprobanteId'] = $val['tiposComprobanteId'];
             $card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
-
+            $card['procedencia'] = $val['procedencia'];
+            $card['instancias'] = $val['instancias'];
             $card['instanciaServicioId'] = $val['instanciaServicioId'];
             $timbreFiscal = unserialize($val['timbreFiscal']);
             $card["uuid"] = $timbreFiscal["UUID"];
