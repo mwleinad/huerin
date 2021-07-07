@@ -21,6 +21,7 @@
                                 <option value="Mensual" {if $post.periodicidad == "Mensual"} selected="selected"{/if}>Mensual</option>
                                 <option value="Bimestral" {if $post.periodicidad == "Bimestral"} selected="selected"{/if}>Bimestral</option>
                                 <option value="Trimestral" {if $post.periodicidad == "Trimestral"} selected="selected"{/if}>Trimestral</option>
+                                <option value="Cuatrimestral" {if $post.periodicidad == "Cuatrimestral"} selected="selected"{/if}>Cuatrimestral</option>
                                 <option value="Semestral" {if $post.periodicidad == "Semestral"} selected="selected"{/if}>Semestral</option>
                                 <option value="Anual" {if $post.periodicidad == "Anual"} selected="selected"{/if}>Anual</option>
                                 <option value="Eventual" {if $post.periodicidad == "Eventual"} selected="selected"{/if}>Eventual</option>
