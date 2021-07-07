@@ -107,6 +107,9 @@ class CronServicio extends Contract
                     case "Trimestral":
                         $add = "+3 month";
                         break;
+                    case "Cuatrimestral":
+                        $add = "+4 month";
+                        break;
                     case "Semestral":
                         $add = "+6 month";
                         break;
