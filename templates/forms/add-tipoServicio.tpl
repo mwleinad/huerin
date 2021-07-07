@@ -21,6 +21,7 @@
                                 <option value="Mensual">Mensual</option>
                                 <option value="Bimestral">Bimensual</option>
                                 <option value="Trimestral">Trimestral</option>
+                                <option value="Cuatrimestral">Cuatrimestral</option>
                                 <option value="Semestral">Semestral</option>
                                 <option value="Anual">Anual</option>
                                 <option value="Eventual">Eventual</option>
