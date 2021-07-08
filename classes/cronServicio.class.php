@@ -38,7 +38,10 @@ class CronServicio extends Contract
         //si el cliente es el id 1701 solo debe tener un workflow todas sus empresas;
         if ($serv['customerId'] == CUSTOMER_CAPACITACION) {
             if($ultimoWorkflowCreado) {
-                return $fechas_workflow;
+                $initDateWorkflow = $this->Util()->getFirstDate($serv['inicioOperaciones']);
+                $lastDateWorkflow = $this->Util()->getFirstDate($ultimoWorkflowCreado);
+                if($lastDateWorkflow >= $initDateWorkflow)
+                    return $fechas_workflow;
             }
         }
         $isWorkflowInicial =  false;
@@ -203,6 +206,9 @@ class CronServicio extends Contract
                         break;
                     case "Trimestral":
                         $add = "+3 month";
+                        break;
+                    case "Cuatrimestral":
+                        $add = "+4 month";
                         break;
                     case "Semestral":
                         $add = "+6 month";
