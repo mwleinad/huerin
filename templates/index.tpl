@@ -70,8 +70,8 @@
 </style>
 {if $page != 'costeo-add' && $page != 'invoice-new'}
 <script type="text/javascript" src="{$WEB_ROOT}/js/prototype.js?{$timestamp}"></script>
-<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-3.2.1.js?{$timestamp}"></script>
-<script type="text/javascript" src="{$WEB_ROOT}/libs/jquery/jquery-ui.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jquery/jquery-3.2.1.min.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jquery-ui-1.12.1/jquery-ui.min.js?{$timestamp}"></script>
 <script type="text/javascript">var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.js" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.js" type="text/javascript"></script>
