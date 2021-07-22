@@ -948,16 +948,16 @@ class Workflow extends Servicio
         return $result;
     }
 
-    public function getRowCobranzaBono($contratoId, $year, $tipo = 'A', $meses = [], $whitIva = tru, $bonos = false)
+    public function getRowCobranzaBono($contratoId, $year, $tipo = 'A', $meses = [], $whitIva = true, $bonos = false)
     {
         $ftrTipo = "";
         if ($tipo == 'I')
             $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
 
         if ($whitIva)
-            $strIva = " sum(a.total) as total";
+            $strIva = " a.total as total";
         else
-            $strIva = "  sum(a.subTotal) as total";
+            $strIva = "  a.subTotal as total";
 
         //create monthBase
         foreach ($meses as $mes)
