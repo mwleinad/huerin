@@ -955,9 +955,9 @@ class Workflow extends Servicio
             $ftrTipo = " and a.tiposComprobanteId IN(1,3,4)";
 
         if ($whitIva)
-            $strIva = " a.total as total";
+            $strIva = " sum(a.total) as total";
         else
-            $strIva = "  a.subTotal as total";
+            $strIva = " sum(a.subTotal) as total";
 
         //create monthBase
         foreach ($meses as $mes)
