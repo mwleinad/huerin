@@ -913,7 +913,7 @@ class ReporteBonos extends Main
         $sql = "select departamentoId from departamentos ";
         $this->Util()->DB()->setQuery($sql);
         $deptos =  $this->Util()->DB()->GetResult();
-        $deptos = array_column('departamentoId', $deptos);
+        $deptos = array_column($deptos, 'departamentoId');
         foreach($gerentes as $key => $value) {
             $departamentos =$ftr['departamentoId'] ?  [(int)$ftr['departamentoId']] : $deptos;
             if((int)$ftr['departamentoId'] === 8)
