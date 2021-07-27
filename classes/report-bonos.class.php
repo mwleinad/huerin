@@ -909,19 +909,23 @@ class ReporteBonos extends Main
                         WHERE a.status IN ('activo','bajaParcial') and a.contractId in(%s) and d.departamentoId in(%s)  and d.status ='1' ";
         $year = $ftr["year"];
         $new = [];
-        // crear tabla temporal
+        //find departaments
+        $sql = "select departamentoId from departamentos ";
+        $this->Util()->DB()->setQuery($sql);
+        $deptos =  $this->Util()->DB()->GetResult();
+        $deptos = array_column('departamentoId', $deptos);
         foreach($gerentes as $key => $value) {
-            $departamentos = [(int)$value['departamentoId']];
-            if((int)$value['departamentoId'] === 8)
+            $departamentos =$ftr['departamentoId'] ?  [(int)$ftr['departamentoId']] : $deptos;
+            if((int)$ftr['departamentoId'] === 8)
                 array_push($departamentos, 24);
 
-            if((int)$value['departamentoId'] === 24)
+            if((int)$ftr['departamentoId'] === 24)
                 array_push($departamentos, 8);
 
-            if((int)$value['departamentoId'] === 22)
+            if((int)$ftr['departamentoId'] === 22)
                 array_push($departamentos, 21);
 
-            if((int)$value['departamentoId'] === 21)
+            if((int)$ftr['departamentoId'] === 21)
                 array_push($departamentos, 22);
 
             $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
@@ -929,6 +933,7 @@ class ReporteBonos extends Main
             $cad['personalId'] = $value['personalId'];
             $cad['headerMeses'] =  $headerMeses;
             $cad['totales']['devengados'] = [];
+
             $cad['totales']['trabajados'] = [];
             $cad['totales']['cobrados'] = [];
             $cad['totales']['nominas'] = [];
