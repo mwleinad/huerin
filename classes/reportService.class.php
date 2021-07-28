@@ -1,6 +1,4 @@
 <?php
-
-
 class ReportService extends Servicio {
 
     function getAbServices () {
@@ -27,7 +25,8 @@ class ReportService extends Servicio {
                     )
                 ),
                 ']'      
-                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio, servicio.status, servicio.costo,servicio.inicioFactura,tipoServicio.departamentoId,
+                ) AS history FROM (SELECT servicio.servicioId,servicio.contractId, tipoServicio.nombreServicio,
+                                   servicio.status, servicio.costo,servicio.inicioFactura,tipoServicio.departamentoId,
                                    tipoServicio.periodicidad FROM servicio
                                    INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId) a
                 INNER JOIN (SELECT contract.contractId, contract.name, customer.nameContact FROM contract
