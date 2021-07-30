@@ -52,7 +52,8 @@ class Servicio extends Contract
 	    switch(strtoupper($name)){
             case 'PRIMA RIESGO DE TRABAJO':
                 if(date('m',strtotime($value))!='02')
-                    $this->Util()->setError(0,"error","Fecha de inicio de operación invalida.");
+                    $this->Util()->setError(0,"error","Fecha de inicio de operación invalida para
+                    el servicio Prima de Riesgo de Trabajo.");
             break;
             case 'ANUAL':
             case 'ANUAL AUDITADA':
@@ -966,7 +967,7 @@ class Servicio extends Contract
         foreach ($_POST['servsMod'] as $servId) {
             $sql = "";
             $status = $_POST["status_$servId"];
-            $flw = $status=='bajaParcial'?$this->Util()->isValidateDate($_POST["lastDateWorkflow_$servId"],'d-m-Y')?$_POST["lastDateWorkflow_$servId"]:false:true;
+            $flw = $status=='bajaParcial' ? ($this->Util()->isValidateDate($_POST["lastDateWorkflow_$servId"],'d-m-Y') ? $_POST["lastDateWorkflow_$servId"]: false) : true;
             $costo = $_POST["costo_$servId"];
             $io = $this->Util()->isValidateDate($_POST["io_$servId"],'d-m-Y')?$_POST["io_$servId"]:false;
 
