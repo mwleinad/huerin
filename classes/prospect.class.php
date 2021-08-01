@@ -102,13 +102,17 @@ class Prospect extends Main
                     phone,
                     email,
                     comment,
-                    customer_id
+                    customer_id,
+                    created_at,
+                    updated_at
                 ) VALUES (
                     '" . $this->name . "', 
                     '" . $this->phone . "',
                     '" . $this->email . "',
                     '" . $this->observation . "',
-                    '" . $_POST['customer_exists'] . "' 
+                    '" . $_POST['customer_exists'] . "',
+                    now(),
+                    now() 
                  )";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->InsertData();
