@@ -24,7 +24,7 @@
 {/if}
 <link href="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.css" rel="stylesheet" />
 <link href="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.css" rel="stylesheet" />
-<link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
+<link type="text/css" href="{$WEB_ROOT}/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.standalone.min.css" rel="stylesheet" />
 <link type="text/css" href="{$WEB_ROOT}/css/smoothness/ui.css" rel="stylesheet" />
 
 <link rel="icon" type="image/svg+xml" href="{$WEB_ROOT}/images/icons/favicon.svg">
@@ -86,9 +86,11 @@
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/bootstrap-datepicker/js/bootstrap-datepicker.es.min.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jstree/dist/jstree.min.js?{$timestamp}"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/moment_2.18.1/moment.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/dt_1.10.25/datatables.min.css"/>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/dt_1.10.25/datatables.min.js"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/datatable.js?{$timestamp}"></script>
+
 {/if}
 {if $section == 'consultar-facturas'}
 <script src="{$WEB_ROOT}/js/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>

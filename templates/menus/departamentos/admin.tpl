@@ -18,6 +18,15 @@
                 </a>
             </li>
         {/if}
+        {if in_array(271,$permissions)|| $User.isRoot}
+            <li class="item middle" id="two">
+                <a href="{$WEB_ROOT}/{$firstPages[271]}" class="main{if $mainMnu == "prospect"} current{/if}" target="_blank">
+            	<span class="outer">
+                	<span class="inner prospect">Prospectos</span>
+                </span>
+                </a>
+            </li>
+        {/if}
         {if in_array(2,$permissions)|| $User.isRoot}
         <li class="item middle" id="two">
         	<a href="{$WEB_ROOT}/{$firstPages[2]}" class="main{if $mainMnu == "contratos"} current{/if}" target="_blank">

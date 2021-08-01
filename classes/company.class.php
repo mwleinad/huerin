@@ -241,18 +241,19 @@ class Company extends Main
                 inner join service on company_service.service_id = service.id
                 where company_service.company_id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
-        $result =  $this->Util()->DBProspect()->GetResult();
-        foreach($result as $key => $val) {
+        $result = $this->Util()->DBProspect()->GetResult();
+        foreach ($result as $key => $val) {
             $result[$key]['quote_id'] = $this->getQuoteByService($val['company_id'], $val['service_id'], $quoteComplete);
         }
         return $result;
     }
+
     private function getQuoteByService($companyId, $serviceId, $quoteComplete = false)
     {
         $sql = "select * from quotation 
-                where deleted_at is null and company_id = '" . $companyId ."' and service_id = '" . $serviceId ."'";
+                where deleted_at is null and company_id = '" . $companyId . "' and service_id = '" . $serviceId . "'";
         $this->Util()->DBProspect()->setQuery($sql);
-        $row =  $this->Util()->DBProspect()->GetRow();
+        $row = $this->Util()->DBProspect()->GetRow();
         return $quoteComplete ? $row : $row['id'];
     }
 
@@ -290,7 +291,7 @@ class Company extends Main
 
         }
         if ($changeService) {
-            $sql = "update company set step_id = 1 where id = '".$id."' ";
+            $sql = "update company set step_id = 1 where id = '" . $id . "' ";
             $this->Util()->DBProspect()->setQuery($sql);
             $this->Util()->DBProspect()->UpdateData();
         }
@@ -314,14 +315,14 @@ class Company extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
-        $activity = 'activity_id = '. ($this->business_activity ? $this->business_activity : 'NULL').',';
-        $regimen = 'regimen_id = '. ($this->regimen_id ? $this->regimen_id : 'NULL').',';
+        $activity = 'activity_id = ' . ($this->business_activity ? $this->business_activity : 'NULL') . ',';
+        $regimen = 'regimen_id = ' . ($this->regimen_id ? $this->regimen_id : 'NULL') . ',';
         $sql = "UPDATE company set 
                     name = '" . $this->name . "',
                     taxpayer_id = '" . $this->rfc . "',
                     legal_representative = '" . $this->legal_representative . "',
-                    ".$activity."
-                    ".$regimen."
+                    " . $activity . "
+                    " . $regimen . "
                     date_constitution = '" . $this->constitution_date . "',
                     is_new_company = '" . $this->is_new_company . "',
                     comment = '" . $this->observation . "',  
@@ -335,4 +336,17 @@ class Company extends Main
         $this->Util()->PrintErrors();
         return true;
     }
+
+    public function processSendToMain()
+    {
+        $params = [];
+        array_push($params, ['type' =>'i', 'value' => $this->id]);
+        $sql = "select company.*   from company
+                inner join prospect on company.prospect_id = prospect.id
+                where company.id = ? ";
+        $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
+        $row = $this->Util()->DBProspect()->GetStmtRow();
+        dd($row);
+    }
+
 }

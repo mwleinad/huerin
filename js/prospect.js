@@ -3,6 +3,7 @@ var tableProspect = function () {
         {"title": "Nombre", "data": "name"},
         {"title": "Telefono", "data": "phone"},
         {"title": "Email", "data": "email"},
+        {"title": "Fecha de alta", "data": "created_at"},
         {"title": "Observaciones", "data": "comment"},
         {"title": "", "data": null},
     ]
@@ -22,13 +23,7 @@ var tableProspect = function () {
                 // execute some code on ajax data load
             },
             loadingMessage: 'Cargando...',
-            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
-
-                // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
-                // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/scripts/datatable.js).
-                //"dom": "<'grid_16'r<'grid_12't><'grid_6'pli>>",
-                // So when dropdowns used the scrollable div should be removed.
-                // save datatable state(pagination, sort, etc) in cookie.
+            dataTable: {
                 "bStateSave": true,
                 "columns": customColumns,
                 "columnDefs": [
@@ -38,9 +33,14 @@ var tableProspect = function () {
                             var content = '<div class="center">';
                             content = content +  '<a href="javascript:;" title="Editar prospecto" data-id="'+data.id+'" data-type="openEditProspect" class="spanControlProspect"><img src="'+WEB_ROOT+'/images/icons/edit.gif" aria-hidden="true" /></a>';
                             content = content +  '<a href="'+WEB_ROOT+'/company/id/'+data.id+'" title="Ir a empresas" target="_blank"><img src="'+WEB_ROOT+'/images/icons/office-building.png" aria-hidden="true" /></a>';
-                            content = content +  '<a href="'+data.url+'" title="Resolver encuesta" target="_blank"><img src="'+WEB_ROOT+'/images/icons/task.png" aria-hidden="true" /></a>'
                             content = content + '</div>';
                             return content;
+                        }
+                    },
+                    {
+                        targets: 3,
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD')
                         }
                     }
                 ],
@@ -53,7 +53,7 @@ var tableProspect = function () {
                     "url": URL_API + '/prospect', // ajax source
                 },
                 "order": [
-                    [1, "asc"]
+                    [3, "desc"]
                 ],// set first column as a default sort by asc
                 "language": {
                     "url":WEB_ROOT + '/properties/i18n/Spanish.json',

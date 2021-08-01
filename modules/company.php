@@ -1,6 +1,5 @@
 <?php
 
-$user->allowAccess(2);
 $user->allowAccess(271);
 $prospect->setId($_GET['id']);
 $info = $prospect->info();

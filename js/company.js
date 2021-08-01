@@ -13,17 +13,9 @@ var tableCompany = function () {
         predicates.push({ name:"prospect_id", comparison:"array", value:[parseInt(jQ('#prospect_id').val())]})
         grid.init({
             src: jQ("#box-table-a"),
-            onSuccess: function (grid, response) {
-                // grid:        grid object
-                // response:    json object of server side ajax response
-                // execute some code after table records loaded
-            },
-            onError: function (grid) {
-                // execute some code on network or other general error
-            },
-            onDataLoad: function(grid) {
-                // execute some code on ajax data load
-            },
+            onSuccess: function (grid, response) {},
+            onError: function (grid) {},
+            onDataLoad: function(grid) {},
             loadingMessage: 'Cargando...',
             dataTable: {
                 "bStateSave": true,
@@ -53,7 +45,7 @@ var tableCompany = function () {
                             }
                             if(data.step_id === 4) {
                                 content = content + '<a href="javascript:;" title="Aceptar o declinar cotizacion" data-company="'
-                                    + data.id + '" data-type="download_zip_quote" class="spanCloseProspect"><img src="'
+                                    + data.id + '" data-type="openSendToMain" class="spanSendToMain">' +'<img src="'
                                     + WEB_ROOT + '/images/icons/action_check.gif" width="16" aria-hidden="true" /></a>'
                             }
                             content = content + '</div>';
@@ -122,6 +114,7 @@ var tableCompany = function () {
                 }
             });
         });
+
         jQ(document).on("click", ".spanGenerate", function () {
             var form = jQ(this).parents('form:first');
             var jsonObject = jQ(form[0]).convertFormToJson();
@@ -224,6 +217,31 @@ var tableCompany = function () {
         jQ(document).on('click', '.spanUnlockPrice', function () {
             jQ('.inputPrice').prop('readonly', false)
         })
+
+        jQ(document).on('click', '.spanSaveSendToMain', function () {
+            var form = jQ(this).parents('form:first');
+            if (form.length > 0) {
+                jQ.ajax({
+                    url: WEB_ROOT + '/ajax/company.php',
+                    method: 'post',
+                    data: form.serialize(true),
+                    beforeSend: function () {
+                        jQ('.spanSaveSendToMain').hide();
+                        jQ('#loader').show();
+                    },
+                    success: function (response) {
+                        console.log(response)
+                        jQ('#loader').hide();
+                        jQ('.spanSaveSendToMain').show();
+                        /*var splitResp = response.split("[#]");
+                        grid.getDataTable().ajax.reload()
+                        ShowStatusPopUp(splitResp[1]);
+                        splitResp[0] === 'ok' && jQ('#fview').hide()*/
+                    }
+                });
+            }
+        });
+
     }
     return {
         init: function () {
@@ -273,7 +291,23 @@ jQ(document).ready(function () {
         })
     })
 
-    jQ(document).on('click', '.spanOpenValidate', function (e) {
+    jQ(document).on('click', '.spanOpenValidate', function () {
+        var id = jQ(this).data('company');
+        var type= jQ(this).data('type');
+        jQ.ajax({
+            url: WEB_ROOT + "/ajax/company.php",
+            type: 'post',
+            data: { type, id },
+            dataType:'json',
+            success: function (response) {
+                grayOut(true);
+                jQ('#fview').show();
+                FViewOffSet(response.template);
+            }
+        })
+    })
+
+    jQ(document).on('click', '.spanSendToMain', function () {
         var id = jQ(this).data('company');
         var type= jQ(this).data('type');
         jQ.ajax({

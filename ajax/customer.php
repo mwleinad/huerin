@@ -18,13 +18,17 @@ switch($_POST["type"])
 		$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
 	break;
 	case "addCustomer":
+		$data['title'] ="Agregar cliente";
+		$data['form'] = "frm-customer";
+		$data['nameForm'] = "addCustomerForm";
 		$empleados = $personal->Enumerate();
+		$smarty->assign("data", $data);
 		$smarty->assign("empleados", $empleados);
-		$smarty->assign("DOC_ROOT", DOC_ROOT);
-		$smarty->display(DOC_ROOT.'/templates/boxes/add-customer-popup.tpl');
+		$smarty->assign("tipo", $_POST["tipo"]);
+		$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
 	break;
 	case "saveAddCustomer":
-			$customer->setName($_POST['name']);			
+			$customer->setName($_POST['name']);
 			$customer->setPhone($_POST['phone']);
 			$customer->setEmail($_POST['email']);
 			$customer->setNameContact($_POST['nameContact']);
@@ -33,12 +37,12 @@ switch($_POST["type"])
 			$customer->setFechaAlta($_POST['fechaAlta']);
 			$customer->setPassword($_POST['password']);
 			$customer->setObservacion($_POST["observacion"]);
-						
+
 			if($_POST['active'])
 				$customer->setActive(1);
 			else
 				$customer->setActive(0);
-			
+
 			if(!$customer->Save())
 			{
 				echo "fail[#]";
@@ -51,14 +55,14 @@ switch($_POST["type"])
 				echo "[#]";
 				$resCustomers = $customer->Enumerate($type = "subordinado", $customerId = 0,  $_SESSION["tipoMod"]);
 				//$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
-				
+
 				$smarty->assign("customers", $resCustomers);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
 			}
-			
+
 		break;
-		
+
 	case "deleteCustomer":
 			$customer->setCustomerId($_POST['customerId']);
 			if($customer->Delete())
@@ -69,30 +73,33 @@ switch($_POST["type"])
 				/*$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
 //				$resCustomers = $customer->Enumerate();
 				$customers = $resCustomers;
-				
+
 				$smarty->assign("customers", $customers);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');*/
 			}
 		break;
-		
+
 	case "editCustomer":
-			$empleados = $personal->Enumerate();			
+			$empleados = $personal->Enumerate();
+			$data['title'] ="Editar cliente";
+			$data['form'] = "frm-customer";
+			$data['nameForm'] = "editCustomerForm";
 			$smarty->assign("empleados", $empleados);
 			$smarty->assign("valur", $_POST["valur"]);
 			$smarty->assign("tipo", $_POST["tipo"]);
-			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$customer->setCustomerId($_POST['customerId']);
 			$info = $customer->Info();
 			$smarty->assign("post", $info);
-			$smarty->display(DOC_ROOT.'/templates/boxes/edit-customer-popup.tpl');
-		
+			$smarty->assign("data", $data);
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+
 		break;
-		
+
 	case "saveEditCustomer":
-			
+
 			$customer->setCustomerId($_POST['customerId']);
-			$customer->setName($_POST['name']);			
+			$customer->setName($_POST['name']);
 			$customer->setPhone($_POST['phone']);
 			$customer->setEmail($_POST['email']);
 			$customer->setNameContact($_POST['nameContact']);
@@ -100,9 +107,9 @@ switch($_POST["type"])
 			$customer->setResponsableCuenta($_POST['responsableCuenta']);
 			$customer->setFechaAlta($_POST['fechaAlta']);
         	$customer->setObservacion($_POST['observacion']);
-			
+
 			$info = $customer->Info();
-			
+
 			if($_POST['password'] != $info["password"] && $_POST["password"] != "")
 			{
 				$customer->setPassword($_POST['password']);
@@ -111,8 +118,8 @@ switch($_POST["type"])
 			{
 				$customer->setPassword($info['password']);
 			}
-			
-			
+
+
 			if($_POST['active'])
 				$customer->setActive(1);
 			else
@@ -122,7 +129,7 @@ switch($_POST["type"])
 				$customer->setNoFactura13("Si");
 			else
 				$customer->setNoFactura13("No");
-			
+
 			if(!$customer->Edit())
 			{
 				echo "fail[#]";
@@ -141,7 +148,7 @@ switch($_POST["type"])
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');*/
 			}
-			
+
 		break;
 	case 'openModalBajaTemporal':
 		$customer->setCustomerId($_POST['id']);
@@ -185,6 +192,6 @@ switch($_POST["type"])
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
     break;
-		
+
 }
 ?>
