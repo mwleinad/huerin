@@ -235,7 +235,7 @@ function AddCustomerDiv(id) {
     new Ajax.Request(WEB_ROOT + '/ajax/customer.php',
         {
             method: 'post',
-            parameters: {type: "addCustomer"},
+            parameters: {type: "addCustomer", tipo: $('type').value},
             onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 FViewOffSet(response);

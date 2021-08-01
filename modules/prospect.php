@@ -1,5 +1,5 @@
 <?php
 
-$user->allowAccess(2);
 $user->allowAccess(271);
-$smarty->assign('mainMnu', 'contratos');
+$user->allowAccess(286);
+$smarty->assign('mainMnu', 'prospect');

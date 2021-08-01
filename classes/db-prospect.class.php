@@ -6,6 +6,7 @@ class DBProspect
     private $sqlResult = NULL;
 
     private $conn_id = false;
+    private $stmt =  NULL;
 
     private $sqlHost;
     private $sqlDatabase;
@@ -98,6 +99,36 @@ class DBProspect
         } else {
             $this->sqlResult = mysqli_query($this->conn_id, $this->query) or die (trigger_error(mysqli_error($this->conn_id)));
         }
+    }
+    public function PrepareStmtQuery($query, $params = []) {
+        $this->DatabaseConnect();
+        $this->stmt = mysqli_prepare($this->conn_id, $query);
+        foreach ($params as $param) {
+            mysqli_stmt_bind_param($this->stmt, $param['type'], $param['value']);
+        }
+    }
+    public function ExecuteStmtQuery()
+    {
+        mysqli_stmt_execute($this->stmt);
+        $this->result = mysqli_stmt_get_result($this->stmt);
+
+    }
+    function GetStmtRow()
+    {
+        $this->ExecuteStmtQuery();
+        $rs = mysqli_fetch_assoc($this->result);
+        $this->CleanQuery();
+        return $rs;
+    }
+    function GetStmtResult()
+    {
+        $retArray = [];
+        $this->ExecuteStmtQuery();
+        while ($rs = mysqli_fetch_assoc($this->sqlResult)) {
+            $retArray[] = $rs;
+        }
+        $this->CleanQuery();
+        return $retArray;
     }
 
     function GetResult()

@@ -1,6 +1,6 @@
 <div class="grid_16" id="content">
     <div class="grid_9">
-        <h1 class="clientes">Prospectos</h1>
+        <h1 class="prospect">Prospectos</h1>
     </div>
     <div class="grid_6" id="eventbox">
         <a href="javascript:;" class="inline_add spanControlProspect"   data-type="openAddProspect">Agregar prospecto</a>

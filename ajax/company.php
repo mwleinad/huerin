@@ -117,8 +117,22 @@ switch ($_POST['type']) {
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         echo json_encode($json);
         break;
-    case 'saveGenerate':
-        dd($_POST);
-        break;
+    case "openSendToMain":
+        $data['title'] = "Aceptar o declinar";
+        $data["form"] = "frm-accept-quote";
 
+        $company->setId($_POST['id']);
+        $companyRow = $company->info(true);
+        $prospect->setId($companyRow['prospect_id']);
+        $smarty->assign("prospect", $prospect->info());
+        $smarty->assign("post", $companyRow);
+        $smarty->assign("data", $data);
+        $smarty->assign("services", $companyRow['services']);
+        $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
+        echo json_encode($json);
+        break;
+    case 'sendToMain':
+        $company->setId($_POST['id']);
+        $company->processSendToMain();
+    break;
 }

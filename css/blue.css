@@ -35,6 +35,7 @@ h1.vencimientos { background:url(../images/vencimientos_small.png) left 3px no-r
 h1.ordenes { background:url(../images/orders_small.png) left 3px no-repeat; padding-left:35px;}
 h1.facturacion { background:url(../images/invoice_small.png) left 3px no-repeat; padding-left:35px;}
 h1.config { background:url(../images/icon_settings_small.gif) left 3px no-repeat; padding-left:35px;}
+h1.prospect { background:url(../images/icons_prospect_small.png) left 3px no-repeat; padding-left:35px;}
 h2 { font-size:18px !important; }
 h3 { font-size: 13px !important; }
 /*******************************************************************************
@@ -198,6 +199,7 @@ a.inline_tip { padding-left:21px; background:url(../images/icons/lightbulb_off.g
 #menu .event_manager { background-image: url(../images/sales.png); background-repeat: no-repeat;  }
 #menu .newsletter { background-image: url(../images/icon_news.png); background-repeat: no-repeat;  }
 #menu .settings { background-image: url(../images/settings_48.png); background-repeat: no-repeat;  }
+#menu .prospect { background-image: url(../images/prospect.png); background-repeat: no-repeat;  }
 #hidden_submenu {
 	background:#FFF;
 	padding:10px;

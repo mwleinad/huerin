@@ -104,16 +104,17 @@
                     <li><a href="{$WEB_ROOT}/customer/tipo/Temporal" {if ($page == "customer" && $tipo == "Temporal")}class="current"{/if} target="_blank">
                     <span>Listado Temporal</span></a></li>
                 {/if}
-                {if in_array(271,$permissions)|| $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/prospect" {if $page == "prospect" || $page == "company"}class="current"{/if} target="_blank">
-                    <span>Prospectos</span></a></li>
-                {/if}
                 {if in_array(181,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/exp-imp-data" {if ($page == "exp-imp-data")}class="current"{/if} target="_blank">
                     <span>Importar desde archivo</span></a></li>
                 {/if}
             {/if}
-
+            {if $mainMnu == 'prospect'}
+                {if in_array(286, $permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/prospect" {if $page == "prospect" || $page == "company"}class="current"{/if} target="_blank">
+                            <span>Prospectos</span></a></li>
+                {/if}
+            {/if}
             {if $mainMnu == "reportes"}
                 {if in_array(153,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-invoice" {if $page == "report-invoice"}class="current"{/if} target="_blank">
