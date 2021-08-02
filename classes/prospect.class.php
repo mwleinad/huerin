@@ -55,6 +55,56 @@ class Prospect extends Main
         return $this->email;
     }
 
+    private $is_referred;
+
+    public function setIsReferred($value)
+    {
+        $this->is_referred = $value;
+    }
+    public function getIsReferred()
+    {
+        return $this->is_referred;
+    }
+
+    private $type_referred;
+
+    public function setTypeReferred($value)
+    {
+        $this->Util()->ValidateRequireField($value, "Referido por");
+        $this->type_referred = $value;
+    }
+
+    public function getTypeReferred()
+    {
+        return $this->type_referred;
+    }
+
+    private $partner_id;
+
+    public function setPartner($value)
+    {
+        $this->Util()->ValidateRequireField($value, "Asociados comerciales");
+        $this->partner_id = $value;
+    }
+
+    public function getPartner()
+    {
+        return $this->partner_id;
+    }
+
+    private $name_referrer;
+
+    public function setNameReferrer($value)
+    {
+        $this->Util()->ValidateRequireField($value, "Referente");
+        $this->name_referrer = $value;
+    }
+
+    public function getNameReferrer()
+    {
+        return $this->name_referrer;
+    }
+
     private $observation;
 
     public function setObservation($value)
@@ -96,6 +146,10 @@ class Prospect extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
+echo (int)$this->is_referred;
+        $type_referred = (int)$this->is_referred === 0 ? 'NULL' : "'".$this->type_referred."'";
+        $partner_id = (int)$this->type_referred != 'partner' ? 'NULL' : "'".$this->partner_id."'";
+        $name_referrer = (int)$this->type_referred === 'partner' ? 'NULL' : "'".$this->name_referrer."'";
 
         $sql = "INSERT INTO prospect(
                     name,
@@ -103,6 +157,10 @@ class Prospect extends Main
                     email,
                     comment,
                     customer_id,
+                    is_referred,
+                    type_referred,
+                    partner_id,
+                    name_referrer, 
                     created_at,
                     updated_at
                 ) VALUES (
@@ -111,6 +169,10 @@ class Prospect extends Main
                     '" . $this->email . "',
                     '" . $this->observation . "',
                     '" . $_POST['customer_exists'] . "',
+                    '" . $this->is_referred . "',
+                    $type_referred,
+                    $partner_id,
+                    $name_referrer,
                     now(),
                     now() 
                  )";
@@ -126,13 +188,20 @@ class Prospect extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
-
+        $type_referred = "type_referred = " . ((int)$this->is_referred === 0 ? 'NULL' : "'".$this->type_referred."'") .",";
+        $partner_id = "partner_id = " . ($this->type_referred != 'partner' || (int)$this->is_referred  === 0 ? 'NULL' : "'".$this->partner_id."'" ) .",";
+        $name_referrer = "name_referrer = " . ($this->type_referred === 'partner' || (int)$this->is_referred  === 0 ? 'NULL' : "'".$this->name_referrer."'") .",";
         $sql = "UPDATE prospect set 
                     name = '".$this->name."',
                     phone = '".$this->phone."',
                     email = '".$this->email."',
                     comment = '".$this->observation."',
-                    customer_id = '".$_POST['customer_exists']."'
+                    is_referred = '".$this->is_referred."',
+                    ".$type_referred."
+                    ".$partner_id."
+                    ".$name_referrer."
+                    customer_id = '".$_POST['customer_exists']."',
+                    updated_at = now()
                     WHERE id = '".$this->id."' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->InsertData();

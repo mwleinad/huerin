@@ -39,5 +39,8 @@ class Catalogue extends Main
         $this->Util()->DB()->setQuery("select * from actividad_comercial where 1 $where order by name asc ");
         return $this->Util()->DB()->GetResult();
     }
-
+    function ListAssociated() {
+        $this->Util()->DBProspect()->PrepareStmtQuery("select * from associated where 1 order by name asc");
+        return $this->Util()->DBProspect()->GetStmtResult();
+    }
 }

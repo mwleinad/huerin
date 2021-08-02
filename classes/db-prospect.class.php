@@ -110,13 +110,13 @@ class DBProspect
     public function ExecuteStmtQuery()
     {
         mysqli_stmt_execute($this->stmt);
-        $this->result = mysqli_stmt_get_result($this->stmt);
+        $this->sqlResult = mysqli_stmt_get_result($this->stmt);
 
     }
     function GetStmtRow()
     {
         $this->ExecuteStmtQuery();
-        $rs = mysqli_fetch_assoc($this->result);
+        $rs = mysqli_fetch_assoc($this->sqlResult);
         $this->CleanQuery();
         return $rs;
     }

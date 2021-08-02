@@ -11,6 +11,7 @@ switch ($_POST['type']) {
         $data['title'] = "Agregar prospecto";
         $data["form"] = "frm-prospect";
         $smarty->assign("data", $data);
+        $smarty->assign("partners", $catalogue->ListAssociated());
         $smarty->display(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         break;
     case "openEditProspect":
@@ -19,6 +20,7 @@ switch ($_POST['type']) {
         $prospect->setId($_POST['id']);
         $smarty->assign("post", $prospect->info());
         $smarty->assign("data", $data);
+        $smarty->assign("partners", $catalogue->ListAssociated());
         $smarty->display(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         break;
 
@@ -27,6 +29,15 @@ switch ($_POST['type']) {
         $prospect->setPhone($_POST['phone']);
         $prospect->setEmail($_POST['email']);
         $prospect->setObservation($_POST['observation']);
+        if((int)$_POST['is_referred'] === 1) {
+            $prospect->setTypeReferred($_POST['type_referred']);
+            if($_POST['type_referred'] === 'partner')
+                $prospect->setPartner($_POST['partner_id']);
+
+            if($_POST['type_referred'] === 'otro')
+                $prospect->setNameReferrer($_POST['name_referrer']);
+
+        }
         echo $prospect->save() ? "ok" : "fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
@@ -40,6 +51,16 @@ switch ($_POST['type']) {
         $prospect->setPhone($_POST['phone']);
         $prospect->setEmail($_POST['email']);
         $prospect->setObservation($_POST['observation']);
+        if((int)$_POST['is_referred'] === 1) {
+            $prospect->setIsReferred($_POST['is_referred']);
+            $prospect->setTypeReferred($_POST['type_referred']);
+            if($_POST['type_referred'] === 'partner')
+                $prospect->setPartner($_POST['partner_id']);
+
+            if($_POST['type_referred'] === 'otro')
+                $prospect->setNameReferrer($_POST['name_referrer']);
+
+        }
         echo $prospect->update() ? "ok":"fail";
         echo "[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
