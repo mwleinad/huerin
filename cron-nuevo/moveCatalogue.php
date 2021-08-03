@@ -64,7 +64,7 @@ foreach($services as $key => $val) {
 $sql = "TRUNCATE regimen";
 $util->DBProspect()->setQuery($sql);
 $util->DBProspect()->UpdateData();
-$sql = "select tipoRegimenId, claveRegimen, nombreRegimen from tipoRegimen order by tipoRegimenId asc";
+$sql = "select tipoRegimenId, claveRegimen, nombreRegimen, tax_purpose from tipoRegimen order by tipoRegimenId asc";
 $util->DB(true)->setQuery($sql);
 $regimenes =$util->DB(true)->GetResult();
 foreach($regimenes as $val) {

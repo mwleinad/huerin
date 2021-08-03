@@ -47,7 +47,7 @@ class Catalogue extends Main
         $where = "";
         $params = [];
         if($tax_purpose) {
-            $where .= " and tax_purpose = ? ";
+            $where .= " and tax_purpose in(?, '')";
             array_push($params, ['type' =>'s', 'value' => $tax_purpose]);
         }
         $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where 1 $where order by name asc ", $params);
@@ -57,7 +57,7 @@ class Catalogue extends Main
         $params = [];
         array_push($params, ['type' =>'i', 'value' => $id]);
         array_push($params, ['type' =>'s', 'value' => $tax_purpose]);
-        $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where id = ? and tax_purpose =?", $params);
+        $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where id = ? and tax_purpose in (?, '')", $params);
         return $this->Util()->DBProspect()->GetStmtRow();
     }
 }
