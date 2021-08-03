@@ -28,6 +28,19 @@ class Company extends Main
         return $this->prospect_id;
     }
 
+    private $tax_purpose;
+
+    public function setTaxPurpose($value)
+    {
+        $this->Util()->ValidateRequireField($value, "Tipo de persona");
+        $this->tax_purpose = $value;
+    }
+
+    public function getTaxPurpose()
+    {
+        return $this->tax_purpose;
+    }
+
     private $name;
 
     public function setName($value)
@@ -122,7 +135,8 @@ class Company extends Main
 
     public function setConstitutionDate($value)
     {
-        if ($this->Util()->ValidateRequireField($value, "Fecha de constitución"))
+        if ($this->Util()->ValidateRequireField($value,
+            $this->tax_purpose === 'moral' ? "Fecha de constitución" : 'Fecha de alta en el SAT'))
             if ($this->Util()->validateDateFormat($value, 'Fecha de constitución', 'd-m-Y'))
                 $this->constitution_date = $this->Util()->FormatDateMySql($value);
 
@@ -149,7 +163,6 @@ class Company extends Main
 
     public function setRfc($value)
     {
-        $this->Util()->ValidateRequireField($value, "RFC");
         $this->rfc = $value;
     }
 
@@ -198,6 +211,7 @@ class Company extends Main
 
         $sql = "INSERT INTO company(
                     prospect_id,
+                    tax_purpose,
                     name,
                     taxpayer_id,
                     legal_representative,
@@ -212,6 +226,7 @@ class Company extends Main
                     updated_at
                 ) VALUES (
                     '" . $this->prospect_id . "',
+                    '" . $this->tax_purpose . "',
                     '" . $this->name . "', 
                     '" . $this->rfc . "',
                     '" . $this->legal_representative . "',
@@ -318,6 +333,7 @@ class Company extends Main
         $activity = 'activity_id = ' . ($this->business_activity ? $this->business_activity : 'NULL') . ',';
         $regimen = 'regimen_id = ' . ($this->regimen_id ? $this->regimen_id : 'NULL') . ',';
         $sql = "UPDATE company set 
+                    tax_purpose = '" . $this->tax_purpose . "',
                     name = '" . $this->name . "',
                     taxpayer_id = '" . $this->rfc . "',
                     legal_representative = '" . $this->legal_representative . "',

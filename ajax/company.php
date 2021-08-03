@@ -42,10 +42,11 @@ switch ($_POST['type']) {
         break;
     case "saveCompany":
         $company->setProspectId($_POST['prospect_id']);
+        $company->setTaxPurpose($_POST['tax_purpose']);
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
 
-        if(!isset($_POST['is_new_company'])) {
+        if(!isset($_POST['is_new_company']) && $_POST['tax_purpose'] !== '') {
             $company->setRfc($_POST['rfc']);
             $company->setConstitutionDate($_POST['date_constitution']);
             $company->setBusinessActivity($_POST['activity_id']);
@@ -67,10 +68,11 @@ switch ($_POST['type']) {
         break;
     case "updateCompany":
         $company->setId($_POST['id']);
+        $company->setTaxPurpose($_POST['tax_purpose']);
         $company->setName($_POST['name']);
         $company->setIsNewCompany(isset($_POST['is_new_company']) ? 1 : 0);
 
-        if(!isset($_POST['is_new_company'])) {
+        if(!isset($_POST['is_new_company']) && $_POST['tax_purpose'] !== '') {
             $company->setRfc($_POST['rfc']);
             $company->setConstitutionDate($_POST['date_constitution']);
             $company->setBusinessActivity($_POST['activity_id']);

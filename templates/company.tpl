@@ -3,6 +3,7 @@
         <h1 class="clientes">Empresas de prospecto</h1>
     </div>
     <div class="grid_6" id="eventbox">
+        <a href="{$WEB_ROOT}/prospect" class="backbutton">Regresar</a>
         <a href="javascript:void(0)" class="inline_add spanControlCompany"  data-type="openAddCompany"
             data-prospect="{$prospect.id}">Agregar</a>
         <div id="loadPrint">

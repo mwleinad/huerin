@@ -7,4 +7,4 @@ $company->setProspectId($_GET['id']);
 $results = $company->enumerate();
 $smarty->assign('results', $results);
 $smarty->assign('prospect', $info);
-$smarty->assign('mainMnu', 'contratos');
+$smarty->assign('mainMnu', 'prospect');

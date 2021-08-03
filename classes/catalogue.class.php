@@ -43,4 +43,21 @@ class Catalogue extends Main
         $this->Util()->DBProspect()->PrepareStmtQuery("select * from associated where 1 order by name asc");
         return $this->Util()->DBProspect()->GetStmtResult();
     }
+    function ListRegimen($tax_purpose = false) {
+        $where = "";
+        $params = [];
+        if($tax_purpose) {
+            $where .= " and tax_purpose = ? ";
+            array_push($params, ['type' =>'s', 'value' => $tax_purpose]);
+        }
+        $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where 1 $where order by name asc ", $params);
+        return $this->Util()->DBProspect()->GetStmtResult();
+    }
+    function DefaultSelectedRegimen($id, $tax_purpose) {
+        $params = [];
+        array_push($params, ['type' =>'i', 'value' => $id]);
+        array_push($params, ['type' =>'s', 'value' => $tax_purpose]);
+        $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where id = ? and tax_purpose =?", $params);
+        return $this->Util()->DBProspect()->GetStmtRow();
+    }
 }
