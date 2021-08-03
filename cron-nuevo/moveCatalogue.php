@@ -9,7 +9,7 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-
+/*
 // mover departamentos
 $sql = "TRUNCATE departament";
 $util->DBProspect()->setQuery($sql);
@@ -41,6 +41,7 @@ $util->DBProspect()->UpdateData();
 $sql = "select tipoServicioId, nombreServicio,departamentoId from tipoServicio where status = '1' order by tipoServicioId asc";
 $util->DB(true)->setQuery($sql);
 $services =$util->DB(true)->GetResult();
+
 foreach($services as $key => $val) {
     $sql = "INSERT INTO service(
                     id,
@@ -58,7 +59,7 @@ foreach($services as $key => $val) {
     $util->DBProspect()->setQuery($sql);
     $util->DBProspect()->InsertData();
 }
-
+*/
 // mover regimenes
 $sql = "TRUNCATE regimen";
 $util->DBProspect()->setQuery($sql);
@@ -70,18 +71,22 @@ foreach($regimenes as $val) {
     $sql = "INSERT INTO regimen(
                     id,
                     name,
+                    tax_key,
+                    tax_purpose,
                     created_at,
                     updated_at
                     ) VALUES (
                      '".$val['tipoRegimenId']."',
                      '".$val['nombreRegimen']."',
+                     '".$val['claveRegimen']."',
+                     '".$val['tax_purpose']."',
                       now(),
                       now()
                     )";
     $util->DBProspect()->setQuery($sql);
     $util->DBProspect()->InsertData();
 }
-
+exit;
 // mover regimenes
 $sql = "TRUNCATE activity";
 $util->DBProspect()->setQuery($sql);
