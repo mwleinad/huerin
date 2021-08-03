@@ -68,5 +68,32 @@ switch ($_POST['type']) {
         }
         echo json_encode($supervisores);
     break;
+    case 'regimen':
+        $result = $catalogue->ListRegimen($_POST['tax_purpose']);
+        $res = [];
+        foreach ($result as $item) {
+            $cad['id'] =  $item['id'];
+            $cad['text'] = $item['name'];
+            array_push($res, $cad);
+        }
+        echo json_encode($res);
+        break;
+    case 'defaultRegimen':
+        $row = $catalogue->DefaultSelectedRegimen($_POST['id'], $_POST['tax_purpose']);
+        if($row){
+            $data = [
+                'id' => $row['id'],
+                'text' => $row['name']
+            ];
+        } else {
+            if((int)$_POST['id'] ===0) {
+                $data = [
+                    'id' => 0,
+                    'text' => 'Otros datos'
+                ];
+            }
+        }
+        echo json_encode($data);
+        break;
 
 }

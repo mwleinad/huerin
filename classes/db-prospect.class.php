@@ -103,9 +103,14 @@ class DBProspect
     public function PrepareStmtQuery($query, $params = []) {
         $this->DatabaseConnect();
         $this->stmt = mysqli_prepare($this->conn_id, $query);
+        $parameters = [];
+        $str = "";
         foreach ($params as $param) {
-            mysqli_stmt_bind_param($this->stmt, $param['type'], $param['value']);
+            $str .=$param['type'];
+            array_push($parameters, $param['value']);
         }
+        if(count($parameters))
+            mysqli_stmt_bind_param($this->stmt, $str, ...$parameters);
     }
     public function ExecuteStmtQuery()
     {

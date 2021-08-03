@@ -8,6 +8,30 @@
             <div class="grid_16">
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:40%;float:left"> * Tipo de persona</div>
+                        <div style="width:60%;float: left;">
+                                <select type="text" name="tax_purpose" id="tax_purpose" class="largeInput">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="fisica" {if $post.tax_purpose eq 'fisica'}selected{/if}>Persona Fisica</option>
+                                    <option value="moral"  {if $post.tax_purpose eq 'moral'}selected{/if}>Personal Moral</option>
+                                </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid_8 field_is_new_company" style="display:{if $post.tax_purpose eq 'moral'}block{else}none{/if}">
+                    <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:80%;float:left"> * ¿ Empresa de nueva creacion ?</div>
+                        <div style="width:20%;float: left;">
+							<input type="checkbox" name="is_new_company" id="is_new_company" {if $post.is_new_company}checked{/if}>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div class="grid_16">
+                <div class="grid_8">
+                    <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:40%;float:left"> * Nombre o razon social</div>
                         <div style="width:60%;float: left;">
                             <div class="custom-autocomplete">
@@ -18,19 +42,25 @@
                     </div>
                 </div>
                 <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:80%;float:left"> * ¿ Empresa de nueva creacion ?</div>
-                        <div style="width:20%;float: left;">
-							<input type="checkbox" name="is_new_company" id="is_new_company" {if $post.is_new_company}checked{/if}>
+                    <div class="formLine field_regimen" style="width:100%;  display:{if $post}inline-block{else}none{/if};">
+                        <div style="width:40%;float:left"> Regimen</div>
+                        <div style="width:60%;float: left;">
+                            <input type="hidden" class="largeInput" name="regimen_id" id="regimen_id" value="{$post.regimen_id}" />
+                            <!--select class="largeInput"  name="regimen_id" id="regimen_id">
+                                <option value="">Seleccionar..</option>
+                                {foreach from=$regimenes item=item}
+                                    <option value="{$item.tipoRegimenId}" {if $post.regimen_id eq $item.tipoRegimenId}selected{/if}>{$item.nombreRegimen}</option>
+                                {/foreach}
+                            </select-->
                         </div>
                     </div>
                 </div>
                 <hr>
             </div>
-			<div class="grid_16" id="data_constitution" style="display:{if $post.is_new_company}none{else}block{/if};">
+			<div class="grid_16" id="data_constitution" style="display:{if $post}block{else}none{/if};">
 				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
-						<div style="width:40%;float:left"> Rfc</div>
+						<div style="width:40%;float:left"> RFC</div>
 						<div style="width:60%;float: left;">
 							<input type="text" name="rfc" id="rfc" value="{$post.taxpayer_id}" class="largeInput "/>
 						</div>
@@ -38,7 +68,11 @@
 				</div>
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> Fecha constitucion</div>
+                        <div style="width:40%;float:left" id="label_date_constitution">
+                            {if $post.tax_purpose eq 'moral'}
+                                Fecha de constitucion
+                            {elseif $post.tax_purpose eq 'fisica'}
+                                Fecha alta en el SAT{/if}</div>
                         <div style="width:60%;float: left;">
                             <input type="text" name="date_constitution" id="date_constitution"
                                    value="{if $post && $post.date_constitution neq '0000-00-00'}{$post.date_constitution|date_format:'%d-%m-%Y'}{/if}" class="largeInput"
@@ -66,22 +100,6 @@
                                 <option value="">Seleccionar..</option>
                                 {foreach from=$actividades item=item}
                                     <option value="{$item.id}" {if $post.activity_id eq $item.id}selected{/if}>{$item.name}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            </div>
-            <div class="grid_16">
-                <div class="grid_8">
-                    <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> Regimen</div>
-                        <div style="width:60%;float: left;">
-                            <select class="largeInput"  name="regimen_id" id="regimen_id">
-                                <option value="">Seleccionar..</option>
-                                {foreach from=$regimenes item=item}
-                                    <option value="{$item.tipoRegimenId}" {if $post.regimen_id eq $item.tipoRegimenId}selected{/if}>{$item.nombreRegimen}</option>
                                 {/foreach}
                             </select>
                         </div>

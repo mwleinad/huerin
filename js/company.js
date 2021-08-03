@@ -86,6 +86,19 @@ var tableCompany = function () {
                     grayOut(true);
                     jQ('#fview').show();
                     FViewOffSet(response.template);
+                    generateSelectRegimen()
+                    jQ(document).on('change', '#tax_purpose', function () {
+                        jQ('.field_is_new_company').toggle(this.value === 'moral' ?? false)
+                        jQ('#label_date_constitution').html( this.value === 'moral' ? 'Fecha constitucion' : 'Fecha de alta en el SAT')
+                        jQ('#data_constitution').toggle(this.value !== '' ?? false)
+
+                        jQ('.field_regimen').toggle(this.value !== '' ?? false)
+                        jQ('#regimen_id').trigger('change');
+                    })
+
+                    if (jQ('#regimen_id').val() !== '')
+                        jQ('#regimen_id').trigger('change');
+
                     if (jQ("#customMultiple").length) {
                         jQ("select[multiple]").multiselect({
                             columns: 1,
@@ -108,13 +121,46 @@ var tableCompany = function () {
                         pure_autocomplete(document.getElementById("name"), 'contract',
                             WEB_ROOT+"/ajax/pure-autocomplete.php",
                             ['rfc', 'regimen_id', 'activity_id', 'contract_exists'], customer_id)
+
                 },
                 error: function () {
                     alert("Error");
                 }
             });
         });
-
+        function generateSelectRegimen() {
+            jQ('#regimen_id').select2({
+                placeholder: 'Seleccione un regimen..',
+                allowClear: true,
+                minimumResultsForSearch: -1,
+                formatSearching: 'Buscando opciones',
+                ajax: {
+                    type: 'post',
+                    url: WEB_ROOT + "/ajax/load_items_select.php",
+                    data: function () {
+                        return {
+                            type: 'regimen',
+                            tax_purpose: jQ('#tax_purpose').val(),
+                        }
+                    },
+                    processResults: function (data) {
+                        return {results: data}
+                    }
+                },
+                initSelection: function (element, callback) {
+                    var id = jQ(element).val();
+                    if (id !== '') {
+                        jQ.post(WEB_ROOT + "/ajax/load_items_select.php", {
+                            type: 'defaultRegimen',
+                            tax_purpose: jQ('#tax_purpose').val(),
+                            id: id
+                        }, function (response) {
+                            callback(response);
+                        }, 'json');
+                    }
+                }
+            });
+        }
         jQ(document).on("click", ".spanGenerate", function () {
             var form = jQ(this).parents('form:first');
             var jsonObject = jQ(form[0]).convertFormToJson();
@@ -241,7 +287,6 @@ var tableCompany = function () {
                 });
             }
         });
-
     }
     return {
         init: function () {
