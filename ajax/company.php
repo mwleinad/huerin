@@ -135,6 +135,8 @@ switch ($_POST['type']) {
         break;
     case 'sendToMain':
         $company->setId($_POST['id']);
-        $company->processSendToMain();
+        echo $company->processSendToMain() ? "ok":"fail";
+        echo "[#]";
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
     break;
 }

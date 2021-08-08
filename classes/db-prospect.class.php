@@ -135,6 +135,20 @@ class DBProspect
         $this->CleanQuery();
         return $retArray;
     }
+    function UpdateStmtData()
+    {
+        $this->ExecuteStmtQuery();
+        $return = mysqli_affected_rows($this->conn_id);
+        $this->CleanQuery();
+        return $return;
+    }
+    function InsertStmtData()
+    {
+        $this->ExecuteStmtQuery();
+        $last_id = mysqli_insert_id($this->conn_id);
+        $this->CleanQuery();
+        return $last_id;
+    }
 
     function GetResult()
     {
@@ -203,6 +217,7 @@ class DBProspect
 
         return $return;
     }
+
 
     function DeleteData()
     {
