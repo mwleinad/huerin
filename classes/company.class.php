@@ -266,6 +266,20 @@ class Company extends Main
 
         $this->assocServiceToCompany($lastId, $_POST['services']);
 
+
+        $sql = "insert into step_trace (company_id, step_name, made_by, comment, expiration_date,created_at)
+                values( ?, ?, ?, ?, ?, ?)";
+        $params = [];
+        array_push($params, ['type' =>'i', 'value' => $this->$lastId]);
+        array_push($params, ['type' =>'s', 'value' =>'En captura']);
+        array_push($params, ['type' =>'s', 'value' => $_SESSION['User']['username']]);
+        array_push($params, ['type' =>'s', 'value' => 'En captura']);
+        $expiry_date = date("Y-m-d",strtotime(date('Y-m-d')."+ 1 days"));
+        array_push($params, ['type' =>'s', 'value' => $expiry_date]);
+        array_push($params, ['type' =>'s', 'value' => date('Y-m-d H:i:s')]);
+        $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
+        $this->Util()->DBProspect()->InsertStmtData();
+
         $this->Util()->setError(0, "complete", "Registro guardado");
         $this->Util()->PrintErrors();
         return true;
