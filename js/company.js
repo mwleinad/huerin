@@ -3,7 +3,7 @@ var tableCompany = function () {
         {"title": "Nombre", "data": "name"},
         {"title": "Rfc", "data": "taxpayer_id"},
         {"title": "Representante legal", "data": "legal_representative"},
-        {"title": "Paso", "data": "step_name"},
+        {"title": "Paso", "data": null},
         {"title": "Observaciones", "data": "comment"},
         {"title": "", "data": null},
     ]
@@ -29,30 +29,56 @@ var tableCompany = function () {
                             var normalizeUrl= data.prospect.url.replace(rgx, baseUrlAPi + 'capture-info')
                             var content = '<div class="center">';
                             content = content +  '<a href="javascript:;" title="Editar empresa" data-id="'
-                                      + data.id +'" data-type="openEditCompany" class="spanControlCompany"><img src="'
+                                      + data.id +'" data-type="openEditCompany" class="spanControlCompany" style="margin: 2px"><img src="'
                                       + WEB_ROOT +'/images/icons/edit.gif" aria-hidden="true" /></a>';
-                            content = content +  '<a href="'+normalizeUrl+'" title="Resolver encuesta" target="_blank"><img src="'
+                            content = content +  '<a href="javascript:;" title="Ver historial de movimientos" style="margin: 2px" ><img src="'
+                                + WEB_ROOT +'/images/icons/history.png" aria-hidden="true" /></a>'
+                            if(parseInt(data.step_id) !== 5)
+                                content = content +  '<a href="'+normalizeUrl+'" title="Resolver encuesta" target="_blank" style="margin: 2px"><img src="'
                                       + WEB_ROOT +'/images/icons/task.png" aria-hidden="true" /></a>'
-                            if(data.step_id >=2)
+                            if(data.step_id >=2 && parseInt(data.step_id) !== 5)
                                 content = content +  '<a href="javascript:;" title="Generar cotizacion" data-id="'
-                                          + data.id +'" data-type="generarCotizacion" class="spanControlCompany"><img src="'
+                                          + data.id +'" data-type="generarCotizacion" class="spanControlCompany" style="margin: 2px"><img src="'
                                           + WEB_ROOT +'/images/icons/update_payments.png" aria-hidden="true" /></a>'
                             if(data.step_id >=3) {
                                 content = content + '<a href="javascript:;" title="Descargar cotizaciones" data-company="'
-                                          + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote"><img src="'
+                                          + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote" style="margin: 2px"><img src="'
                                           + WEB_ROOT + '/images/icons/zip.png" width="16" aria-hidden="true" /></a>'
                                 if(data.step_id === 3)
                                     content = content + '<a href="javascript:;" title="Validar y/o ajustar cotizacion" data-company="'
-                                          + data.id + '" data-type="openValidateQuote" class="spanOpenValidate"><img src="'
+                                          + data.id + '" data-type="openValidateQuote" class="spanOpenValidate" style="margin: 2px"><img src="'
                                           + WEB_ROOT + '/images/icons/check.png" aria-hidden="true" /></a>'
                             }
                             if(data.step_id === 4) {
                                 content = content + '<a href="javascript:;" title="Aceptar o declinar cotizacion" data-company="'
-                                    + data.id + '" data-type="openSendToMain" class="spanSendToMain">' +'<img src="'
+                                    + data.id + '" data-type="openSendToMain" class="spanSendToMain" style="margin: 2px">' +'<img src="'
                                     + WEB_ROOT + '/images/icons/action_check.gif" width="16" aria-hidden="true" /></a>'
                             }
                             content = content + '</div>';
                             return content;
+                        }
+                    },
+                    {
+                        targets: -3,
+                        render: function (data) {
+                            var history =  data.step_trace
+                            var message_html = ""
+                            history.sort((a,b) => b.id - a.id)
+                            if(history.length > 0) {
+                                if(parseInt(data.step_id) !== 5) {
+                                    var expiration_date = history[0].expiration_date
+                                    var current_date = new Date().toISOString().slice(0, 10)
+                                    var date1 = new Date(current_date)
+                                    var date2 = new Date(expiration_date)
+                                    var vencido = (current_date === expiration_date || current_date > expiration_date) ?? false
+                                    var diference = vencido ? (date1.getTime() - date2.getTime()) : (date2.getTime() - date1.getTime())
+                                    var diference_in_days = diference / (1000 * 3600 * 24)
+                                    message_html = vencido
+                                        ? " ( <span style='color:red'>Vencido desde hace " + diference_in_days + " dias </span> )"
+                                        : " ( <span style='color:darkgreen'>Vence en " + diference_in_days + " dias </span> )"
+                                }
+                            }
+                            return data.step_name + message_html
                         }
                     }
                 ],
@@ -225,7 +251,7 @@ var tableCompany = function () {
             var jsonObject = jQ(form[0]).convertFormToJson();
             var jsonSerializado = JSON.stringify(jsonObject);
             var objectJson = JSON.parse(jsonSerializado);
-            var data = { company_id: objectJson.id }
+            var data = { company_id: objectJson.id , comment: objectJson.comment}
             if(objectJson.list_quotes.length > 0) {
                 var quotes = [];
                 objectJson.list_quotes.forEach(function (res) {
@@ -266,6 +292,17 @@ var tableCompany = function () {
         jQ(document).on('click', '.spanUnlockPrice', function () {
             jQ('.inputPrice').prop('readonly', false)
         })
+        jQ(document).on('change', '.controlSelectInvoice', function () {
+            jQ('#col_init_invoice_'+ jQ(this).data('id')).toggle(parseInt(this.value) === 1)
+
+        })
+        jQ(document).on('change', '.improvePrice', function () {
+            var id = jQ(this).data('quote-id')
+            var current_price =  jQ(this).data('initial-price')
+            var amount =parseFloat(current_price * (this.value/100))
+            var new_current_price = parseFloat(current_price) + amount
+            jQ('#price_' + id).val(new_current_price)
+        })
 
         jQ(document).on('click', '.spanSaveSendToMain', function () {
             var form = jQ(this).parents('form:first');
@@ -279,13 +316,12 @@ var tableCompany = function () {
                         jQ('#loader').show();
                     },
                     success: function (response) {
-                        console.log(response)
                         jQ('#loader').hide();
                         jQ('.spanSaveSendToMain').show();
-                        /*var splitResp = response.split("[#]");
-                        grid.getDataTable().ajax.reload()
+                        var splitResp = response.split("[#]");
                         ShowStatusPopUp(splitResp[1]);
-                        splitResp[0] === 'ok' && jQ('#fview').hide()*/
+                        grid.getDataTable().ajax.reload()
+                        splitResp[0] === 'ok' && jQ('#fview').hide()
                     }
                 });
             }

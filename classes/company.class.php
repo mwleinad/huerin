@@ -171,6 +171,27 @@ class Company extends Main
         return $this->rfc;
     }
 
+    private  $arrayService = [];
+
+    public function validateArrayService () {
+        if(!isset($_POST['quotes']) || !count($_POST['quotes']))
+            $this->Util()->setError(0, 'error', 'No existen servicios seleccionados');
+
+        foreach($_POST['quotes'] as $quote) {
+            if(!$this->Util()->isValidateDate($_POST['date_init_operation_'.$quote], 'd-m-Y')) {
+                $this->Util()->setError(0, 'error', 'Falta fecha de inicio de operacion en uno de los servicios.');
+                break;
+            }
+
+            if((int)$_POST['do_invoice_'.$quote] === 1) {
+                if(!$this->Util()->isValidateDate($_POST['date_init_invoice_'.$quote], 'd-m-Y')) {
+                    $this->Util()->setError(0, 'error', 'Falta fecha de inicio de facturacion en uno de los servicios que requieren factura.');
+                    break;
+                }
+            }
+        }
+    }
+
     public function info($withQuoteComplete = false)
     {
         $sQuery = "select * from company 
@@ -353,16 +374,54 @@ class Company extends Main
         return true;
     }
 
+    private function createOrIgnoreCustomerContract ($row) {
+        $dataCompany =  json_decode($row['data_company'], true);
+        $dataProspect =  json_decode($row['data_company'], true);
+        $dataRes = [];
+        if ((int)$dataProspect['customer_id'] > 0) {
+            $dataRes['customer_id'] = $dataProspect['customer_id'];
+        } else {
+        }
+    }
     public function processSendToMain()
     {
         $params = [];
+        $this->validateArrayService();
+        if($this->Util()->PrintErrors())
+            return false;
+
+
         array_push($params, ['type' =>'i', 'value' => $this->id]);
-        $sql = "select company.*   from company
+        $sql = "select json_object('type',company.tax_purpose, 'name', company.name,'rfc', company.taxpayer_id,
+                'nameRepresentanteLegal', company.legal_representative, 'contract_id', company.contract_id) as data_company, 
+                json_object('id', prospect.id, 'name', prospect.name,'phone', prospect.phone,'email', prospect.email,
+                    'customer_id', prospect.customer_id) as data_prospect   
+                from company
                 inner join prospect on company.prospect_id = prospect.id
                 where company.id = ? ";
         $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
         $row = $this->Util()->DBProspect()->GetStmtRow();
-        dd($row);
+
+        $params = [];
+        array_push($params, ['type' =>'i', 'value' => $this->id]);
+        $sql = "update company set step_id = 5 where id = ? ";
+        $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
+        $row = $this->Util()->DBProspect()->UpdateStmtData();
+
+        $sql = "insert into step_trace (company_id, step_name, made_by, comment, expiration_date,created_at)
+                values( ?, ?, ?, ?, ?, ?)";
+        $params = [];
+        array_push($params, ['type' =>'i', 'value' => $this->id]);
+        array_push($params, ['type' =>'s', 'value' =>'Proceso de cotizacion finalizado']);
+        array_push($params, ['type' =>'s', 'value' => $_SESSION['User']['username']]);
+        array_push($params, ['type' =>'s', 'value' => 'Se finalizo el proceso']);
+        array_push($params, ['type' =>'i', 'value' => NULL]);
+        array_push($params, ['type' =>'s', 'value' => date('Y-m-d H:i:s')]);
+        $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
+        $this->Util()->DBProspect()->InsertStmtData();
+        $this->Util()->setError(0,'complete', 'Proceso finalizado');
+        $this->Util()->PrintErrors();
+        return true;
     }
 
 }
