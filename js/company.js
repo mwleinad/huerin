@@ -27,34 +27,34 @@ var tableCompany = function () {
                             const rgx = /^http:\/\/.*\/capture-info/g
                             var baseUrlAPi = URL_API.slice(0,-3)
                             var normalizeUrl= data.prospect.url.replace(rgx, baseUrlAPi + 'capture-info')
-                            var content = '<div class="center">';
-                            content = content +  '<a href="javascript:;" title="Editar empresa" data-id="'
-                                      + data.id +'" data-type="openEditCompany" class="spanControlCompany" style="margin: 2px"><img src="'
-                                      + WEB_ROOT +'/images/icons/edit.gif" aria-hidden="true" /></a>';
-                            content = content +  '<a href="javascript:;" title="Ver historial de movimientos" style="margin: 2px" ><img src="'
-                                + WEB_ROOT +'/images/icons/history.png" aria-hidden="true" /></a>'
+                            var content = "<div class='center'>";
+                            content = content +  "<a href='javascript:;' title='Editar empresa' data-id='"
+                                      + data.id +"' data-type='openEditCompany' class='spanControlCompany' style='margin: 2px'><img src='"
+                                      + WEB_ROOT +"/images/icons/edit.gif' aria-hidden='true' /></a>";
+                            content = content +  "<a href='javascript:;'  class='drawHistory' data-history='"+ JSON.stringify(data.step_trace) +"' title='Ver historial de movimientos' style='margin: 2px' ><img src='"
+                                + WEB_ROOT + "/images/icons/history.png' aria-hidden='true' /></a>"
                             if(parseInt(data.step_id) !== 5)
-                                content = content +  '<a href="'+normalizeUrl+'" title="Resolver encuesta" target="_blank" style="margin: 2px"><img src="'
-                                      + WEB_ROOT +'/images/icons/task.png" aria-hidden="true" /></a>'
+                                content = content +  "<a href='" + normalizeUrl + "' title='Resolver encuesta' target='_blank' style='margin: 2px'><img src='"
+                                      + WEB_ROOT +"/images/icons/task.png' aria-hidden='true' /></a>"
                             if(data.step_id >=2 && parseInt(data.step_id) !== 5)
-                                content = content +  '<a href="javascript:;" title="Generar cotizacion" data-id="'
-                                          + data.id +'" data-type="generarCotizacion" class="spanControlCompany" style="margin: 2px"><img src="'
-                                          + WEB_ROOT +'/images/icons/update_payments.png" aria-hidden="true" /></a>'
+                                content = content +  "<a href='javascript:;' title='Generar cotizacion' data-id='"
+                                          + data.id +"' data-type='generarCotizacion' class='spanControlCompany' style='margin: 2px'><img src='"
+                                          + WEB_ROOT +"/images/icons/update_payments.png' aria-hidden='true' /></a>"
                             if(data.step_id >=3) {
-                                content = content + '<a href="javascript:;" title="Descargar cotizaciones" data-company="'
-                                          + data.id + '" data-type="download_zip_quote" class="spanDownloadQuote" style="margin: 2px"><img src="'
-                                          + WEB_ROOT + '/images/icons/zip.png" width="16" aria-hidden="true" /></a>'
+                                content = content + "<a href='javascript:;' title='Descargar cotizaciones' data-company='"
+                                          + data.id + "' data-type='download_zip_quote' class='spanDownloadQuote' style='margin: 2px'><img src='"
+                                          + WEB_ROOT + "/images/icons/zip.png' width='16' aria-hidden='true' /></a>"
                                 if(data.step_id === 3)
-                                    content = content + '<a href="javascript:;" title="Validar y/o ajustar cotizacion" data-company="'
-                                          + data.id + '" data-type="openValidateQuote" class="spanOpenValidate" style="margin: 2px"><img src="'
-                                          + WEB_ROOT + '/images/icons/check.png" aria-hidden="true" /></a>'
+                                    content = content + "<a href='javascript:;' title='Validar y/o ajustar cotizacion' data-company='"
+                                          + data.id + "' data-type='openValidateQuote' class='spanOpenValidate' style='margin: 2px'><img src='"
+                                          + WEB_ROOT + "/images/icons/check.png' aria-hidden='true' /></a>"
                             }
                             if(data.step_id === 4) {
-                                content = content + '<a href="javascript:;" title="Aceptar o declinar cotizacion" data-company="'
-                                    + data.id + '" data-type="openSendToMain" class="spanSendToMain" style="margin: 2px">' +'<img src="'
-                                    + WEB_ROOT + '/images/icons/action_check.gif" width="16" aria-hidden="true" /></a>'
+                                content = content + "<a href='javascript:;' title='Aceptar o declinar cotizacion' data-company='"
+                                    + data.id + "' data-type='openSendToMain' class='spanSendToMain' style='margin: 2px'><img src='"
+                                    + WEB_ROOT + "/images/icons/action_check.gif' width='16' aria-hidden='true' /></a>"
                             }
-                            content = content + '</div>';
+                            content = content + "</div>";
                             return content;
                         }
                     },
@@ -157,39 +157,7 @@ var tableCompany = function () {
                 }
             });
         });
-        function generateSelectRegimen() {
-            jQ('#regimen_id').select2({
-                placeholder: 'Seleccione un regimen..',
-                allowClear: true,
-                minimumResultsForSearch: -1,
-                formatSearching: 'Buscando opciones',
-                ajax: {
-                    type: 'post',
-                    url: WEB_ROOT + "/ajax/load_items_select.php",
-                    data: function () {
-                        return {
-                            type: 'regimen',
-                            tax_purpose: jQ('#tax_purpose').val(),
-                        }
-                    },
-                    processResults: function (data) {
-                        return {results: data}
-                    }
-                },
-                initSelection: function (element, callback) {
-                    var id = jQ(element).val();
-                    if (id !== '') {
-                        jQ.post(WEB_ROOT + "/ajax/load_items_select.php", {
-                            type: 'defaultRegimen',
-                            tax_purpose: jQ('#tax_purpose').val(),
-                            id: id
-                        }, function (response) {
-                            callback(response);
-                        }, 'json');
-                    }
-                }
-            });
-        }
+
         jQ(document).on("click", ".spanGenerate", function () {
             var form = jQ(this).parents('form:first');
             var jsonObject = jQ(form[0]).convertFormToJson();
@@ -292,6 +260,7 @@ var tableCompany = function () {
         jQ(document).on('click', '.spanUnlockPrice', function () {
             jQ('.inputPrice').prop('readonly', false)
         })
+        jQ(document).on('click', '.drawHistory', drawStepTrace)
         jQ(document).on('change', '.controlSelectInvoice', function () {
             jQ('#col_init_invoice_'+ jQ(this).data('id')).toggle(parseInt(this.value) === 1)
 
@@ -326,6 +295,75 @@ var tableCompany = function () {
                 });
             }
         });
+        function generateSelectRegimen() {
+            jQ('#regimen_id').select2({
+                placeholder: 'Seleccione un regimen..',
+                allowClear: true,
+                minimumResultsForSearch: -1,
+                formatSearching: 'Buscando opciones',
+                ajax: {
+                    type: 'post',
+                    url: WEB_ROOT + "/ajax/load_items_select.php",
+                    data: function () {
+                        return {
+                            type: 'regimen',
+                            tax_purpose: jQ('#tax_purpose').val(),
+                        }
+                    },
+                    processResults: function (data) {
+                        return {results: data}
+                    }
+                },
+                initSelection: function (element, callback) {
+                    var id = jQ(element).val();
+                    if (id !== '') {
+                        jQ.post(WEB_ROOT + "/ajax/load_items_select.php", {
+                            type: 'defaultRegimen',
+                            tax_purpose: jQ('#tax_purpose').val(),
+                            id: id
+                        }, function (response) {
+                            callback(response);
+                        }, 'json');
+                    }
+                }
+            });
+        }
+        function drawStepTrace () {
+            grayOut(true);
+            jQ('#fview').show();
+            var history =  jQ(this).data('history')
+            var tbody = "<tbody>";
+            history.forEach(function (e) {
+                tbody = tbody.concat("<tr>")
+                tbody = tbody.concat("<td>" + e.step_name + "</td>")
+                tbody = tbody.concat("<td>" + e.made_by + "</td>")
+                tbody = tbody.concat("<td>" + moment(e.created_at).format('YYYY-MM-DD HH:mm:ss') + "</td>")
+            })
+            tbody += '</tbody>'
+            var modal_html = "<div class='popupheader' style='z-index:70'>"
+                +   "<div id='fviewmenu' style='z-index:70'>"
+                +       "<div id='fviewclose'><span style='color:#CCC' id='closePopUpDiv' onClick='close_popup()'>close"
+                +           "<img src='" + WEB_ROOT + "/images/b_disn.png' border='0' alt='close'/></span>"
+                +       "</div>"
+                +   "</div>"
+                +   "<div id='ftitl'>"
+                +       "<div class='flabel'>Ejemplo</div>"
+                +       "<div id='vtitl'><span title='Titulo'>Ejemplo</span></div>"
+                +   "</div>"
+                +   "<div id='draganddrop' style='position:absolute;top:45px;left:640px'>"
+                +       "<img src='" + WEB_ROOT + "/images/draganddrop.png' border='0' alt='mueve'/>"
+                +   "</div>"
+                +"</div>"
+                +"<div class='wrapper'>"
+                +"<table border='1' width='100%'>"
+                +"<thead>"
+                +"<tr><th>Proceso realizado</th><th>Realizado por</th><th>Fecha</th></tr>"
+                +"</thead>"
+                +tbody
+                +"</table>"
+                +"</div>"
+            FViewOffSet(modal_html);
+        }
     }
     return {
         init: function () {
