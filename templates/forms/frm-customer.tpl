@@ -38,7 +38,7 @@
 
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Activo:</div>
-                    <input name="active" id="active" type="checkbox" {if $post.active}checked{/if} value="1"/>
+                    <input name="active" id="active" type="checkbox" {if $post.active || !($post.customerId)}checked{/if} value="1"/>
                     <hr/>
                 </div>
 
