@@ -1,10 +1,20 @@
-    <div id="fview" style="display:none;">	
-      <input type="hidden" id="inputs_changed" value="0" />  	
+    <div id="fview" style="display:none;">
+      <input type="hidden" id="inputs_changed" value="0" />
         <div id="fviewload" style="display:block"><img src="{$WEB_ROOT}/images/load.gif" border="0" /></div>
         <div id="fviewcontent" style="display:none"></div>
         <div id="modal">
             <div id="submodal">
-               
+
+            </div>
+        </div>
+    </div>
+    <div id="fview_large" style="display:none;">
+        <input type="hidden" id="inputs_changed" value="0" />
+        <div id="fviewload" style="display:block"><img src="{$WEB_ROOT}/images/load.gif" border="0" /></div>
+        <div id="fviewcontent" style="display:none"></div>
+        <div id="modal">
+            <div id="submodal">
+
             </div>
         </div>
     </div>
@@ -14,11 +24,11 @@
     <a href="{$WEB_ROOT}">
         <img src="{$WEB_ROOT}/images/logo.svg" height="60" border="0" />
     </a>
-    </div>    
+    </div>
     <div class="grid_wlc">
         <div id="user_tools"><span>Bienvenido <a href="#">{$infoUser.name}</a>  |  <a href="{$WEB_ROOT}/logout">Salir</a></span></div>
-    </div>    
-      
+    </div>
+
     <div class="grid_16" id="header">
 
         <div class="spanner">
@@ -27,9 +37,9 @@
         {include file="menus/main.tpl"}
             </div>
     </div>
-    
+
     <div class="grid_16">
-        {include file="menus/submenu.tpl"}   
+        {include file="menus/submenu.tpl"}
     </div>
-    
-{/if} 
+
+{/if}

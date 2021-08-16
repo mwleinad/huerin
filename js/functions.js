@@ -608,3 +608,41 @@ jQ.fn.convertFormToJson = function () {
     });
     return _;
 }
+
+function setAccordionEffect () {
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            /* Toggle between adding and removing the "active" class,
+            to highlight the button that controls the panel */
+            this.classList.toggle("active");
+
+            /* Toggle between hiding and showing the active panel */
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+}
+
+
+// events shared beetwen prospect and company
+jQ(document).on('change', '#is_referred', function () {
+    if(this.value === '1') {
+        jQ('.field_type_referred').show()
+    } else {
+        jQ('.field_type_referred').hide()
+        jQ('.field_list_partner').hide()
+        jQ('.field_other_referred').hide()
+    }
+    jQ('#separate_is_referred').toggle(this.value === '1' ?? false)
+});
+jQ(document).on('change', '#type_referred', function () {
+    jQ('.field_list_partner').toggle(this.value === 'partner' ?? false)
+    jQ('.field_other_referred').toggle(this.value === 'otro' ?? false)
+});

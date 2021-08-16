@@ -890,12 +890,14 @@ class Contract extends Main
     /**
      * Save
      *
-     * @return guarda un nuevo contrato
+     * @return true | false un nuevo contrato
      */
-    public function Save()
+    public function Save($saveAndSendLog = true)
     {
         global $User, $log;
         $permiso = new Permiso();
+        if($this->Util()->getErrors()['total'])
+            return false;
 
         $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
         $this->Util()->DB()->setQuery(
@@ -1038,10 +1040,9 @@ class Contract extends Main
         $log->setAction('Insert');
         $log->setOldValue('');
         $log->setNewValue(serialize($newData));
-        if (isset($_POST['sendNotificacion']))
-            $log->Save();
-        else
-            $log->SaveOnly();
+        ($saveAndSendLog || isset($_POST['sendNotificacion']))
+            ? $log->Save()
+            : $log->SaveOnly();
         //actualizar historial
         $this->Util()->DB()->setQuery("
 			INSERT INTO

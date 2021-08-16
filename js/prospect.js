@@ -82,27 +82,6 @@ var tableProspect = function () {
                 }
             });
         });
-        jQ(document).on('change', '#is_referred', function () {
-            if(this.value === '1') {
-                jQ('.field_type_referred').show()
-            } else {
-                jQ('.field_type_referred').hide()
-                jQ('.field_list_partner').hide()
-                jQ('.field_other_referred').hide()
-            }
-        });
-        jQ(document).on('change', '#type_referred', function () {
-            if (this.value === 'partner') {
-                jQ('.field_list_partner').show()
-                jQ('.field_other_from_referred').hide()
-            } else if (this.value === 'otro') {
-                jQ('.field_list_partner').hide()
-                jQ('.field_other_referred').show()
-            }else {
-                jQ('.field_list_partner').hide()
-                jQ('.field_other_referred').hide()
-            }
-        });
 
         jQ(document).on('click', '.spanSaveProspect', function () {
             var form = jQ(this).parents('form:first');

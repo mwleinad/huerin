@@ -1657,5 +1657,14 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		$json = json_decode($str);
 		return $json && $str != $json;
 	}
+
+	function rollbackTable($table,$field, $ids) {
+		if (!$table || !$field || !$ids)
+			return false;
+		$operator  = is_array($ids) ? "in (".implode(',', $ids).")" : "='".$ids."'";
+		$sql = "delete from ".$table." where  ".$field.$operator;
+		$this->Util()->DB()->setQuery($sql);
+		$this->Util()->DB()->DeleteData();
+	}
 }
 ?>

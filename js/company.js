@@ -272,8 +272,32 @@ var tableCompany = function () {
             var new_current_price = parseFloat(current_price) + amount
             jQ('#price_' + id).val(new_current_price)
         })
+        jQ(document).on('click', '.spanSendToMain', function () {
+            var id = jQ(this).data('company');
+            var type= jQ(this).data('type');
+            jQ.ajax({
+                url: WEB_ROOT + "/ajax/company.php",
+                type: 'post',
+                data: { type, id },
+                dataType:'json',
+                success: function (response) {
+                    grayOut(true);
+                    jQ('#fview').show();
+                    FViewOffSet(response.template);
+                    generateSelectRegimen()
+                    if (jQ('#regimen_id').val() !== '')
+                        jQ('#regimen_id').trigger('change')
 
+                    setAccordionEffect();
+
+                }
+            })
+        })
         jQ(document).on('click', '.spanSaveSendToMain', function () {
+            var send =  confirm('Esta accion no se puede deshacer, esta seguro de realizarla.')
+            if (!send)
+                return
+
             var form = jQ(this).parents('form:first');
             if (form.length > 0) {
                 jQ.ajax({
@@ -414,22 +438,6 @@ jQ(document).ready(function () {
     })
 
     jQ(document).on('click', '.spanOpenValidate', function () {
-        var id = jQ(this).data('company');
-        var type= jQ(this).data('type');
-        jQ.ajax({
-            url: WEB_ROOT + "/ajax/company.php",
-            type: 'post',
-            data: { type, id },
-            dataType:'json',
-            success: function (response) {
-                grayOut(true);
-                jQ('#fview').show();
-                FViewOffSet(response.template);
-            }
-        })
-    })
-
-    jQ(document).on('click', '.spanSendToMain', function () {
         var id = jQ(this).data('company');
         var type= jQ(this).data('type');
         jQ.ajax({
