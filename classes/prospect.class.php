@@ -122,7 +122,13 @@ class Prospect extends Main
         $sQuery = "select * from prospect 
                    where id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sQuery);
-        return $this->Util()->DBProspect()->GetRow();
+        $row = $this->Util()->DBProspect()->GetRow();
+        if ($row) {
+            $sql = "select * from customer where customerId = '".$row['customer_id']."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $row['customer'] = $this->Util()->DB()->GetRow() ?? null;
+        }
+        return $row;
     }
 
     public function enumerate()

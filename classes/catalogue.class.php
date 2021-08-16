@@ -55,7 +55,7 @@ class Catalogue extends Main
     }
     function DefaultSelectedRegimen($id, $tax_purpose) {
         $params = [];
-        array_push($params, ['type' =>'i', 'value' => $id]);
+        array_push($params, ['type' =>'i', 'value' => (int)$id]);
         array_push($params, ['type' =>'s', 'value' => $tax_purpose]);
         $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where id = ? and tax_purpose in (?, '')", $params);
         return $this->Util()->DBProspect()->GetStmtRow();

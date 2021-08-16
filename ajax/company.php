@@ -130,6 +130,12 @@ switch ($_POST['type']) {
         $smarty->assign("post", $companyRow);
         $smarty->assign("data", $data);
         $smarty->assign("services", $companyRow['services']);
+        $smarty->assign("partners", $catalogue->ListAssociated());
+        $smarty->assign("emisores", $rfc->listEmisores());
+        $smarty->assign("sociedades", $sociedad->EnumerateAll());
+        $smarty->assign("metodoPagos", $catalogue->EnumerateCatalogue('c_FormaPago'));
+        $smarty->assign("regimenes", $catalogue->EnumerateCatalogue('tipoRegimen'));
+        $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         echo json_encode($json);
         break;

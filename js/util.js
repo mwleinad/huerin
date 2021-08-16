@@ -68,13 +68,13 @@ function ShowStatusPopUp(status)
 	grayOut(true);
 }
 
-function FViewOffSet(response)
+function FViewOffSet(response, modal = 'fview')
 {
-	var offset = Element.cumulativeScrollOffset($('fview'));
+	var offset = Element.cumulativeScrollOffset($(modal));
 	var top = window.scrollY + 50;
-	$('fview').style.position = "absolute";
-	$('fview').style.top = top+"px";
-	$('fview').innerHTML = response;
+	$(modal).style.position = "absolute";
+	$(modal).style.top = top+"px";
+	$(modal).innerHTML = response;
 	jQ('#fview').draggable({
         handle:"#draganddrop"
     });

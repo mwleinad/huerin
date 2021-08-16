@@ -80,20 +80,11 @@ switch ($_POST['type']) {
         break;
     case 'defaultRegimen':
         $row = $catalogue->DefaultSelectedRegimen($_POST['id'], $_POST['tax_purpose']);
-        if($row){
-            $data = [
-                'id' => $row['id'],
-                'text' => $row['name']
-            ];
-        } else {
-            if((int)$_POST['id'] ===0) {
-                $data = [
-                    'id' => 0,
-                    'text' => 'Otros datos'
-                ];
-            }
-        }
+        $cad = [
+            'id' => $row ? $row['id']: '',
+            'text' =>$row ?  $row['name'] : 'Seleccionar...'
+        ];
+        $data = $row || (int)$_POST['id'] ? $cad : NULL;
         echo json_encode($data);
         break;
-
 }

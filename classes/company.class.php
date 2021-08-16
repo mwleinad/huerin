@@ -188,7 +188,19 @@ class Company extends Main
                     $this->Util()->setError(0, 'error', 'Falta fecha de inicio de facturacion en uno de los servicios que requieren factura.');
                     break;
                 }
+                if(!(int)$_POST['price_'.$quote]) {
+                    $this->Util()->setError(0, 'error', 'El costo cotizado debe ser mayor a 0 cuando se requiere factura.');
+                    break;
+                }
             }
+            $cad['service_id'] = $_POST['service_id_'.$quote];
+            $cad['start_operation'] = $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote]);
+            $cad['start_invoice'] = (int)$_POST['do_invoice_'.$quote] === 1
+                                    ? $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote])
+                                    : null;
+            $cad['price'] = $_POST['price_'.$quote];
+            $cad['name'] = $_POST['name_'.$quote];
+            array_push($this->arrayService, $cad);
         }
     }
 
@@ -199,9 +211,12 @@ class Company extends Main
         $this->Util()->DBProspect()->setQuery($sQuery);
         $row = $this->Util()->DBProspect()->GetRow();
 
-        if ($row)
+        if ($row) {
             $row['services'] = $this->serviceByCompany($withQuoteComplete);
-
+            $sql = "select * from contract where contractId = '".$row['contract_id']."' ";
+            $this->Util()->DB()->setQuery($sql);
+            $row['contract'] = $this->Util()->DB()->GetRow() ?? null;
+        }
         return $row;
     }
 
@@ -389,22 +404,97 @@ class Company extends Main
     }
 
     private function createOrIgnoreCustomerContract ($row) {
+        global $customer, $contract, $log, $servicio;
         $dataCompany =  json_decode($row['data_company'], true);
-        $dataProspect =  json_decode($row['data_company'], true);
+        $dataProspect =  json_decode($row['data_prospect'], true);
         $dataRes = [];
-        if ((int)$dataProspect['customer_id'] > 0) {
-            $dataRes['customer_id'] = $dataProspect['customer_id'];
-        } else {
-        }
-    }
-    public function processSendToMain()
-    {
-        $params = [];
         $this->validateArrayService();
-        if($this->Util()->PrintErrors())
+        if ($this->Util()->PrintErrors())
             return false;
 
+        $customer->setName($_POST['nameContact']);
+        $customer->setPhone($_POST['phone']);
+        $customer->setEmail($_POST['email']);
+        $customer->setNameContact($_POST['nameContact']);
+        $customer->setFechaAlta(date('Y-m-d'));
+        if((int)$_POST['is_referred'] === 1) {
+            $customer->setIsReferred($_POST['is_referred']);
+            $customer->setTypeReferred($_POST['type_referred']);
+            if($_POST['type_referred'] === 'partner')
+                $customer->setPartner($_POST['partner_id']);
 
+            if($_POST['type_referred'] === 'otro')
+                $customer->setNameReferrer($_POST['name_referrer']);
+        }
+        $customer_id = (int)$dataProspect['customer_id'] ? $dataProspect['customer_id'] : $customer->Save(false);
+        if ($customer->Util()->PrintErrors())
+            return false;
+
+        $contract->setCustomerId($customer_id);
+        $contract->setType('Persona '.ucfirst($_POST['tax_purpose']));
+        $contract->setFacturador($_POST['facturador']);
+        $contract->setName($_POST['name']);
+        $contract->setRfc($_POST['rfc']);
+        $contract->setRegimenId($_POST['regimen_id']);
+
+        if(isset($_POST['actividad_comercial']))
+            $contract->setActividadComercialId($_POST['actividad_comercial']);
+
+        $contract->setAddress($_POST['address']);
+        $contract->setNoExtAddress($_POST['noExtAddress']);
+        $contract->setNoIntAddress($_POST['noIntAddress']);
+        $contract->setColoniaAddress($_POST['coloniaAddress']);
+        $contract->setMunicipioAddress($_POST['municipioAddress']);
+        $contract->setEstadoAddress($_POST['estadoAddress']);
+        $contract->setPaisAddress($_POST['paisAddress']);
+        $contract->setCpAddress($_POST['cpAddress']);
+        $contract->setQualification('AAA');
+        $contract->setNameRepresentanteLegal($_POST['legal_representative']);
+
+        $contract->setDireccionComercial($_POST['direccionComercial']);
+        $contract_id = (int)$dataCompany['contract_id'] ? $dataCompany['contract_id'] :  $contract->Save(false);
+
+        if(!$contract_id && !$dataProspect['customer_id']) {
+            $this->Util()->rollbackTable('customer', 'customerId', $customer_id);
+        }
+
+        if ($contract->Util()->PrintErrors())
+            return false;
+
+        $sql ="insert into servicio(contractId, tipoServicioId, costo, inicioOperaciones, inicioFactura) 
+               VALUES (%d,%d,%f,%s,%s)";
+
+        $current_services = $customer->GetServicesByContract($contract_id);
+        $services_affected = [];
+        foreach($this->arrayService as $serv) {
+            $query = sprintf($sql, $contract_id, $serv['service_id'], $serv['price'],
+                "'".$serv['start_operation']."'","'".$serv['start_invoice']."'");
+            $this->Util()->DB()->setQuery($query);
+            $lastId = $this->Util()->DB()->InsertData();
+            $services_affected[] = $lastId;
+            $log->saveHistoryChangesServicios($lastId, $serv['start_invoice'],'activo',
+                                              $serv['price'],0, $serv['start_operation']);
+
+            $servicio->setServicioId($lastId);
+            $newServicio = $servicio->InfoLog();
+
+            $log->setPersonalId($_SESSION['User']['userId']);
+            $log->setFecha(date('Y-m-d H:i:s'));
+            $log->setTabla('servicio');
+            $log->setTablaId($lastId);
+            $log->setAction('Insert');
+            $log->setOldValue('');
+            $log->setNewValue(serialize($newServicio));
+            $log->SaveOnly();
+        }
+        if(count($services_affected))
+            $log->sendLogMultipleOperation($services_affected, $contract_id,'new', $current_services);
+
+        // en este punto es donde se debe enviar por correo. pendiente
+        return true;
+    }
+    public function processSendToMain() {
+        $params = [];
         array_push($params, ['type' =>'i', 'value' => $this->id]);
         $sql = "select json_object('type',company.tax_purpose, 'name', company.name,'rfc', company.taxpayer_id,
                 'nameRepresentanteLegal', company.legal_representative, 'contract_id', company.contract_id) as data_company, 
@@ -416,11 +506,14 @@ class Company extends Main
         $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
         $row = $this->Util()->DBProspect()->GetStmtRow();
 
+        if(!$this->createOrIgnoreCustomerContract($row))
+            return false;
+
         $params = [];
         array_push($params, ['type' =>'i', 'value' => $this->id]);
         $sql = "update company set step_id = 5 where id = ? ";
         $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
-        $row = $this->Util()->DBProspect()->UpdateStmtData();
+        $this->Util()->DBProspect()->UpdateStmtData();
 
         $sql = "insert into step_trace (company_id, step_name, made_by, comment, expiration_date,created_at)
                 values( ?, ?, ?, ?, ?, ?)";
@@ -428,7 +521,7 @@ class Company extends Main
         array_push($params, ['type' =>'i', 'value' => $this->id]);
         array_push($params, ['type' =>'s', 'value' =>'Proceso de cotizacion finalizado']);
         array_push($params, ['type' =>'s', 'value' => $_SESSION['User']['username']]);
-        array_push($params, ['type' =>'s', 'value' => 'Se finalizo el proceso']);
+        array_push($params, ['type' =>'s', 'value' => 'El proceso de cotizacion ha finalizado, el prospecto fue un exito y ahora ya es parte de nuestra cartera de clientes.']);
         array_push($params, ['type' =>'i', 'value' => NULL]);
         array_push($params, ['type' =>'s', 'value' => date('Y-m-d H:i:s')]);
         $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
