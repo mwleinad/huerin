@@ -152,7 +152,7 @@ class Prospect extends Main
     {
         if ($this->Util()->PrintErrors())
             return false;
-echo (int)$this->is_referred;
+
         $type_referred = (int)$this->is_referred === 0 ? 'NULL' : "'".$this->type_referred."'";
         $partner_id = (int)$this->type_referred != 'partner' ? 'NULL' : "'".$this->partner_id."'";
         $name_referrer = (int)$this->type_referred === 'partner' ? 'NULL' : "'".$this->name_referrer."'";

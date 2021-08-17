@@ -149,7 +149,7 @@ var tableCompany = function () {
                     if(document.getElementById('name')!=null)
                         pure_autocomplete(document.getElementById("name"), 'contract',
                             WEB_ROOT+"/ajax/pure-autocomplete.php",
-                            ['rfc', 'regimen_id', 'activity_id', 'contract_exists'], customer_id)
+                            ['rfc', 'regimen_id', 'activity_id', 'contract_exists', 'legal_representative', 'tax_purpose'], customer_id)
 
                 },
                 error: function () {
@@ -361,6 +361,7 @@ var tableCompany = function () {
                 tbody = tbody.concat("<tr>")
                 tbody = tbody.concat("<td>" + e.step_name + "</td>")
                 tbody = tbody.concat("<td>" + e.made_by + "</td>")
+                tbody = tbody.concat("<td>" + e.comment + "</td>")
                 tbody = tbody.concat("<td>" + moment(e.created_at).format('YYYY-MM-DD HH:mm:ss') + "</td>")
             })
             tbody += '</tbody>'
@@ -381,7 +382,7 @@ var tableCompany = function () {
                 +"<div class='wrapper'>"
                 +"<table border='1' width='100%'>"
                 +"<thead>"
-                +"<tr><th>Proceso realizado</th><th>Realizado por</th><th>Fecha</th></tr>"
+                +"<tr><th>Proceso realizado</th><th>Realizado por</th><th>Comentarios</th><th>Fecha</th></tr>"
                 +"</thead>"
                 +tbody
                 +"</table>"

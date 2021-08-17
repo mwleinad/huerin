@@ -134,8 +134,12 @@ function pure_autocomplete(inp,type,ruta, fillable = null, parent_id = null) {
     }
     function fillData(data) {
         for (field of fillable) {
-            if(document.getElementById(field)!=null)
-                document.getElementById(field).value = data[field]
+            if(document.getElementById(field)!=null) {
+                var element = document.getElementById(field)
+                element.value = data[field]
+                if(element.tagName === 'SELECT')
+                    jQ('#' + field).trigger('change');
+            }
         }
     }
     function resetValues () {
