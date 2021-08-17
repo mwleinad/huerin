@@ -6,7 +6,7 @@
                     <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:100%;float:left"> * Tipo de persona</div>
                         <div style="width:100%;float: left;">
-                            <select type="text" name="tax_purpose" id="tax_purpose" class="largeInput">
+                            <select name="tax_purpose" id="tax_purpose" class="largeInput">
                                 <option value="">Seleccionar...</option>
                                 <option value="fisica" {if $post.tax_purpose eq 'fisica' || $post.contract.type eq 'Persona Fisica'}
                                                         selected{/if}>Persona Fisica</option>

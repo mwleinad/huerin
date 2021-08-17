@@ -32,6 +32,7 @@ switch ($_POST["type"]) {
             $card["activity_id"] = $cust["actividadComercialId"];
             $card["regimen_id"] = $cust["regimenId"];
             $card["legal_representative"] = $cust["nameRepresentanteLegal"];
+            $card["tax_purpose"] = strtolower(substr($cust["type"], 8));
             $card["rfc"] = $cust["rfc"];
             $json[] = $card;
         }
