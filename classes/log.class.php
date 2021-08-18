@@ -386,7 +386,7 @@ class Log extends Util
                                  'reqFiel','cerSellos','keySellos','reqSellos','idse1','idse2','idse3',
                                  'auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad','nombreComercial',
                                  'tipoDePersona','lastDateCreateWorkflow','fechaBaja','lastProcessInvoice','fechaBaja',
-                                 'fechaAlta', 'partner_id','mame_referred');
+                                 'fechaAlta');
 	     foreach($beforeUnserialize as $key =>$value){
              if(in_array($key,$llavesExcluidas))
                  continue;
@@ -419,6 +419,10 @@ class Log extends Util
                          $valorBefore = $this->Util()->DB()->GetSingle();
                          $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
+                     break;
+                     case 'type_referred':
+                         $valorBefore = $beforeUnserialize[$key] === 'partner' ? 'Asociado' : 'Otro';
+                         $valorAfter  = $afterUnserialize[$key] === 'partner' ? 'Asociado' : 'Otro';
                      break;
                      case 'tipoServicioId':
                          $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$beforeUnserialize[$key]."' ");
@@ -508,7 +512,7 @@ class Log extends Util
                                 'cerFiel','keyFiel','reqFiel','cerSellos','keySellos','reqSellos','idse1',
                                 'idse2','idse3','auxiliarCuenta','cobrador','nombreRegimen','nombreSociedad',
                                 'nombreComercial','tipoDePersona','lastDateCreateWorkflow','fechaBaja',
-                                'lastProcessInvoice','fechaBaja','fechaAlta', 'partner_id','mame_referred');
+                                'lastProcessInvoice','fechaBaja','fechaAlta');
         foreach($allElements as $key =>$value){
             if(in_array($key,$llavesExcluidas))
                 continue;
@@ -529,6 +533,9 @@ class Log extends Util
                     $this->Util()->DB()->setQuery("SELECT nombreRegimen FROM regimen WHERE regimenId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                 break;
+                case 'type_referred':
+                    $valorBefore = $allElements[$key] === 'partner' ? 'Asociado' : 'Otro';
+                    break;
                 case 'actividadComercialId':
                     $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();

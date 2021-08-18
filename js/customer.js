@@ -267,8 +267,8 @@ function AddCustomer() {
                     ShowStatusPopUp(splitResponse[1])
                 } else {
                     ShowStatusPopUp(splitResponse[1])
-                    $('contenido').innerHTML = splitResponse[2];
                     AddCustomerDiv(0);
+                    BuscarServiciosActivos();
                 }
             },
             onFailure: function () {

@@ -13,7 +13,6 @@ switch($_POST["type"])
 		$filter['tipos'] = $_POST['tipo'];
 		$filter['encargados'] = $encargados;
 		$result = $customer->EnumerateAllCustomer($filter);
-		$smarty->assign("DOC_ROOT", DOC_ROOT);
 		$smarty->assign("customers", $result);
 		$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
 	break;
@@ -23,6 +22,7 @@ switch($_POST["type"])
 		$data['nameForm'] = "addCustomerForm";
 		$empleados = $personal->Enumerate();
 		$smarty->assign("data", $data);
+		$smarty->assign("partners", $catalogue->ListAssociated());
 		$smarty->assign("empleados", $empleados);
 		$smarty->assign("tipo", $_POST["tipo"]);
 		$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
@@ -37,30 +37,23 @@ switch($_POST["type"])
 			$customer->setFechaAlta($_POST['fechaAlta']);
 			$customer->setPassword($_POST['password']);
 			$customer->setObservacion($_POST["observacion"]);
+			$customer->setNoFactura13(isset($_POST['noFactura13']) ? 'Si' : 'No');
+			if((int)$_POST['is_referred'] === 1) {
+				$customer->setIsReferred(1);
+				$customer->setTypeReferred($_POST['type_referred']);
+				if($_POST['type_referred'] === 'partner')
+					$customer->setPartner($_POST['partner_id']);
 
-			if($_POST['active'])
-				$customer->setActive(1);
-			else
-				$customer->setActive(0);
+				if($_POST['type_referred'] === 'otro')
+					$customer->setNameReferrer($_POST['name_referrer']);
 
-			if(!$customer->Save())
-			{
-				echo "fail[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 			}
-			else
-			{
-				echo "ok[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-				echo "[#]";
-				$resCustomers = $customer->Enumerate($type = "subordinado", $customerId = 0,  $_SESSION["tipoMod"]);
-				//$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
-
-				$smarty->assign("customers", $resCustomers);
-				$smarty->assign("DOC_ROOT", DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
-			}
-
+			echo $customer->Save() ? 'ok[#]' : 'fail[#]';
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+			echo "[#]";
+			$resCustomers = $customer->Enumerate($type = "subordinado", $customerId = 0,  $_SESSION["tipoMod"]);
+			$smarty->assign("customers", $resCustomers);
+			$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');
 		break;
 
 	case "deleteCustomer":
@@ -69,14 +62,6 @@ switch($_POST["type"])
 			{
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-				echo "[#]";
-				/*$resCustomers = $customer->Search("subordinado", $_SESSION["tipoMod"]);
-//				$resCustomers = $customer->Enumerate();
-				$customers = $resCustomers;
-
-				$smarty->assign("customers", $customers);
-				$smarty->assign("DOC_ROOT", DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');*/
 			}
 		break;
 
@@ -85,19 +70,18 @@ switch($_POST["type"])
 			$data['title'] ="Editar cliente";
 			$data['form'] = "frm-customer";
 			$data['nameForm'] = "editCustomerForm";
-			$smarty->assign("empleados", $empleados);
-			$smarty->assign("valur", $_POST["valur"]);
-			$smarty->assign("tipo", $_POST["tipo"]);
 			$customer->setCustomerId($_POST['customerId']);
 			$info = $customer->Info();
+
+			$smarty->assign("valur", $_POST["valur"]);
+			$smarty->assign("tipo", $_POST["tipo"]);
+			$smarty->assign("partners", $catalogue->ListAssociated());
 			$smarty->assign("post", $info);
 			$smarty->assign("data", $data);
 			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
-
 		break;
 
 	case "saveEditCustomer":
-
 			$customer->setCustomerId($_POST['customerId']);
 			$customer->setName($_POST['name']);
 			$customer->setPhone($_POST['phone']);
@@ -107,49 +91,26 @@ switch($_POST["type"])
 			$customer->setResponsableCuenta($_POST['responsableCuenta']);
 			$customer->setFechaAlta($_POST['fechaAlta']);
         	$customer->setObservacion($_POST['observacion']);
+			$customer->setNoFactura13(isset($_POST['noFactura13']) ? 'Si' : 'No');
+			if((int)$_POST['is_referred'] === 1) {
+				$customer->setIsReferred(1);
+				$customer->setTypeReferred($_POST['type_referred']);
+				if($_POST['type_referred'] === 'partner')
+					$customer->setPartner($_POST['partner_id']);
+
+				if($_POST['type_referred'] === 'otro')
+					$customer->setNameReferrer($_POST['name_referrer']);
+
+			}
 
 			$info = $customer->Info();
+			$_POST['password'] != $info["password"] && $_POST["password"] != ""
+			? $customer->setPassword($_POST['password'])
+			: $customer->setPassword($info['password']);
 
-			if($_POST['password'] != $info["password"] && $_POST["password"] != "")
-			{
-				$customer->setPassword($_POST['password']);
-			}
-			else
-			{
-				$customer->setPassword($info['password']);
-			}
-
-
-			if($_POST['active'])
-				$customer->setActive(1);
-			else
-				$customer->setActive(0);
-
-			if($_POST['noFactura13'] == "Si")
-				$customer->setNoFactura13("Si");
-			else
-				$customer->setNoFactura13("No");
-
-			if(!$customer->Edit())
-			{
-				echo "fail[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-			}
-			else
-			{
-				echo "ok[#]";
-				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
-				/*echo "[#]";
-				$resCustomers = $customer->Search("subordinado", $_POST["tipo"]);
-
-//				$resCustomers = $customer->Enumerate();
-				$customers = $resCustomers;
-				$smarty->assign("customers", $customers);
-				$smarty->assign("DOC_ROOT", DOC_ROOT);
-				$smarty->display(DOC_ROOT.'/templates/lists/customer.tpl');*/
-			}
-
-		break;
+			echo $customer->Edit() ? 'ok[#]' : 'fail[#]';
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+	break;
 	case 'openModalBajaTemporal':
 		$customer->setCustomerId($_POST['id']);
 		$contratos =  $customer->getListContratos('activo');

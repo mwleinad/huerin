@@ -30,6 +30,7 @@ switch ($_POST['type']) {
         $prospect->setEmail($_POST['email']);
         $prospect->setObservation($_POST['observation']);
         if((int)$_POST['is_referred'] === 1) {
+            $prospect->setIsReferred($_POST['is_referred']);
             $prospect->setTypeReferred($_POST['type_referred']);
             if($_POST['type_referred'] === 'partner')
                 $prospect->setPartner($_POST['partner_id']);
