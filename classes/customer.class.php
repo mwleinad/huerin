@@ -200,6 +200,7 @@ class Customer extends Main
         $this->noFactura13 = $value;
     }
 
+    private $is_referred;
     public function setIsReferred($value)
     {
         $this->is_referred = $value;
@@ -778,8 +779,11 @@ class Customer extends Main
         encargadoCuenta = '" . $this->encargadoCuenta . "',        
         responsableCuenta = '" . $this->responsableCuenta . "', 
         observacion = '" . $this->observacion . "',        
-        fechaAlta = '" . $this->fechaAlta . "',        
-        active = '" . $this->active . "'
+        fechaAlta = '" . $this->fechaAlta . "', 
+        is_referred = '" . $this->is_referred . "', 
+        type_referred = '" . $this->type_referred . "', 
+        partner_id = '" . $this->partner_id . "', 
+        name_referrer = '" . $this->name_referrer . "'   
       WHERE customerId = '" . $this->customerId . "'"
         );
         $this->Util()->DB()->UpdateData();
@@ -847,8 +851,12 @@ class Customer extends Main
             responsableCuenta,        
             encargadoCuenta, 
             observacion,        
-            fechaAlta,        
-            active
+            fechaAlta,
+            is_referred,
+            type_referred,
+            partner_id,
+            name_referrer,
+            noFactura13
         )
         VALUES
         (
@@ -860,8 +868,13 @@ class Customer extends Main
             '" . $this->responsableCuenta . "',        
             '" . $this->encargadoCuenta . "', 
             '" . $this->observacion . "',        
-            '" . $this->fechaAlta . "',        
-            '1'
+            '" . $this->fechaAlta . "', 
+            '" . $this->is_referred . "', 
+            '" . $this->type_referred . "', 
+            '" . $this->partner_id . "', 
+            '" . $this->name_referrer . "',
+            '" . $this->noFactura13 . "'
+                   
         );");
         $customerId = $this->Util()->DB()->InsertData();
 
