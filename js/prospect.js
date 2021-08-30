@@ -48,7 +48,7 @@ var tableProspect = function () {
                     [10, 20, 50, 100, 150, -1],
                     [10, 20, 50, 100, 150, "All"] // change per page values here
                 ],
-                "pageLength": 10, // default record count per page
+                "pageLength": -1, // default record count per page
                 "ajax": {
                     "url": URL_API + '/prospect', // ajax source
                 },
