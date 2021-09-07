@@ -9,7 +9,7 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-/*
+
 // mover departamentos
 $sql = "TRUNCATE departament";
 $util->DBProspect()->setQuery($sql);
@@ -59,7 +59,7 @@ foreach($services as $key => $val) {
     $util->DBProspect()->setQuery($sql);
     $util->DBProspect()->InsertData();
 }
-*/
+
 // mover regimenes
 $sql = "TRUNCATE regimen";
 $util->DBProspect()->setQuery($sql);
@@ -86,7 +86,6 @@ foreach($regimenes as $val) {
     $util->DBProspect()->setQuery($sql);
     $util->DBProspect()->InsertData();
 }
-exit;
 // mover regimenes
 $sql = "TRUNCATE activity";
 $util->DBProspect()->setQuery($sql);

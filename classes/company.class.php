@@ -135,10 +135,11 @@ class Company extends Main
 
     public function setConstitutionDate($value)
     {
-        if ($this->Util()->ValidateRequireField($value,
-            $this->tax_purpose === 'moral' ? "Fecha de constitución" : 'Fecha de alta en el SAT'))
-            if ($this->Util()->validateDateFormat($value, 'Fecha de constitución', 'd-m-Y'))
+        if (strlen($value)) {
+            if ($this->Util()->validateDateFormat($value,
+                $this->tax_purpose === 'moral' ? "Fecha de constitución" : 'Fecha de alta en el SAT', 'd-m-Y'))
                 $this->constitution_date = $this->Util()->FormatDateMySql($value);
+        }
 
     }
 
@@ -285,11 +286,11 @@ class Company extends Main
         $sql = "insert into step_trace (company_id, step_name, made_by, comment, expiration_date,created_at)
                 values( ?, ?, ?, ?, ?, ?)";
         $params = [];
-        array_push($params, ['type' =>'i', 'value' => $this->$lastId]);
+        array_push($params, ['type' =>'i', 'value' => $lastId]);
         array_push($params, ['type' =>'s', 'value' =>'En captura']);
         array_push($params, ['type' =>'s', 'value' => $_SESSION['User']['username']]);
-        array_push($params, ['type' =>'s', 'value' => 'En captura']);
-        $expiry_date = date("Y-m-d",strtotime(date('Y-m-d')."+ 1 days"));
+        array_push($params, ['type' =>'s', 'value' => 'Se realiza el alta de una empresa para prospectar']);
+        $expiry_date = date("Y-m-d",strtotime(date('Y-m-d')."+ 15 days"));
         array_push($params, ['type' =>'s', 'value' => $expiry_date]);
         array_push($params, ['type' =>'s', 'value' => date('Y-m-d H:i:s')]);
         $this->Util()->DBProspect()->PrepareStmtQuery($sql, $params);
