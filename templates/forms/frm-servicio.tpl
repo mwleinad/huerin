@@ -114,6 +114,29 @@
                 </div>
                 {/if}
                 <div class="grid_16" id="stepTask"></div>
+                <div class="grid_16">
+                    <div class="formLine" style=" width:100%;display: inline-block;">
+                        <div style="width:30%;float:left"> ¿ Es un servicio primario ?</div>
+                        <div style="width:30%;float: left;">
+                            <select name="isPrimary" id="isPrimary" class="largeInput">
+                                <option value="">--- seleccionar ---</option>
+                                <option value="1" {if $post.is_primary eq '1'}selected{/if}>Si</option>
+                                <option value="0" {if $post.is_primary eq '0'}selected{/if}>No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr/>
+                </div>
+                <div class="grid_16 field_secondary" style="display: {if $post.is_primary}inline-block{else}none{/if};">
+                    <div class="formLine" style=" width:100%;display: inline-block;">
+                        <div style="width:30%;float:left"> Servicios secundarios</div>
+                        <div style="width:70%;float: left;">
+                            <select class="largeInput" multiple="multiple" name="secondary_services[]" id="secondaryMultiple">
+                            </select>
+                        </div>
+                    </div>
+                    <hr/>
+                </div>
             </div>
 		</fieldset>
         <div class="actionPopup">

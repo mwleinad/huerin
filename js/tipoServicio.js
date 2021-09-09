@@ -6,10 +6,29 @@ jQ(document).ready(function () {
 			url: WEB_ROOT + '/ajax/tipoServicio.php',
 			type: 'POST',
 			data: { type: type, tipoServicioId:id},
+			dataType: 'json',
 			success: function (response) {
 				grayOut(true);
 				$('fview').show();
-				FViewOffSet(response);
+				FViewOffSet(response.template);
+				if (jQ("#secondaryMultiple").length) {
+					jQ("select[multiple]").multiselect({
+						columns: 1,
+						search: true,
+						maxHeight:60,
+						selectGroup: true,
+						selectAll:true,
+						texts: {
+							placeholder: 'Selecciona los servicios secundarios',
+							search         : 'Buscar',         // search input placeholder text
+							selectedOptions: ' Seleccionado',      // selected suffix text
+							selectAll      : 'Seleccionar todos',     // select all text
+							unselectAll    : 'Quitar todos',   // unselect all text
+							noneSelected   : 'Ningun elemento seleccionado'   // None selected text
+						}
+					});
+					jQ("select[multiple]").multiselect('loadOptions', response.secondary_services);
+				}
 			},
 			error: function (error) {
 				alert(error)
@@ -93,5 +112,9 @@ jQ(document).on('click','div#stepTask input[type="checkbox"]',function(){
     jQ(this).parents('ul').prev('input[type=checkbox]').prop('checked',function(){
         return jQ(this).next().find(':checked').length;
     });
+});
+
+jQ(document).on('change', '#isPrimary', function () {
+  jQ('.field_secondary').toggle(parseInt(this.value) === 1)
 });
 

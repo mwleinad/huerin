@@ -2,7 +2,8 @@
 	<tr id="1">
 		<td align="center" width="30%">{$item.nombreServicio}</td>
 		<td align="center" width="15%">{$item.departamento}</td>
-		<td align="center" width="30%">{$item.periodicidad}</td>
+		<td align="center" width="10%">{$item.periodicidad}</td>
+		<td align="center" width="10%">{if $item.is_primary}Primario{else}Secundario{/if}</td>
 		<td align="center" width="20%">{$item.totalPasos}</td>
 		<td  align="center" width="20%">
 		{if in_array(27,$permissions) || $User.isRoot}
