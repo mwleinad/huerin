@@ -13,9 +13,10 @@ switch($_POST["type"])
 			$smarty->assign('servicios', $tipoServicio->EnumerateAll());
 			$smarty->assign("departamentos", $departamentos);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
-			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
-		break;
-
+            $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
+            $json['secondary_services'] =  $tipoServicio->EnumerateGroupByDepartament(true, true);
+            echo json_encode($json);
+	break;
 	case "saveAddTipoServicio":
 			$mostrarCostoVisual = ($_POST['mostrarCostoVisual']) ? '1' : '0';
 			$tipoServicio->setNombreServicio($_POST['nombreServicio']);
@@ -27,6 +28,7 @@ switch($_POST["type"])
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
             $tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
+        	$tipoServicio->setIsPrimary((int) $_POST['isPrimary'] );
 			if(!$tipoServicio->Save())
 			{
 				echo "fail[#]";
@@ -73,7 +75,18 @@ switch($_POST["type"])
                                           : "";
             $smarty->assign('servicios', $tipoServicio->EnumerateAll());
 			$smarty->assign("post", $myTipoServicio);
-			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+            $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
+            $secondaryServices =  $tipoServicio->EnumerateGroupByDepartament(true, true);
+
+            $currentSecondary = is_array($myTipoServicio['current_secondary']) ? array_column($myTipoServicio['current_secondary'], 'secondary_id'): [];
+            foreach($secondaryServices as $key => $val) {
+                foreach($val['options'] as $kop => $option)
+                    if (in_array($option['value'], $currentSecondary)) {
+                        $secondaryServices[$key]['options'][$kop]['checked'] = true;
+                    }
+            }
+            $json['secondary_services'] = $secondaryServices;
+            echo json_encode($json);
 		break;
 
 	case "saveEditTipoServicio":
@@ -88,6 +101,7 @@ switch($_POST["type"])
 			$tipoServicio->setMostrarCostoVisual($mostrarCostoVisual);
 			$tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
+            $tipoServicio->setIsPrimary((int) $_POST['isPrimary']);
 			if(!$tipoServicio->Edit())
 			{
 				echo "fail[#]";

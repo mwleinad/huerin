@@ -131,6 +131,15 @@ class TipoServicio extends Main
 	    $this->reports = $value;
     }
 
+    private  $isPrimary;
+    public  function setIsPrimary($value) {
+		$this->isPrimary =  $value;
+	}
+
+	public function getIsPrimary () {
+    	return $this->isPrimary;
+	}
+
 	public function Enumerate()
 	{
 		global $User;
@@ -158,8 +167,8 @@ class TipoServicio extends Main
 		$data["pages"] = $pages;
 		return $data;
 	}
-
-	public function EnumerateGroupByDepartament($normalizeJson = false) {
+	private function GetServicesGroupByDepartament ($onlySecondary = false) {
+		$ftr = $onlySecondary ? " and tipoServicio.is_primary != 1 " : "";
 		$sql = "select
        			departamentos.departamentoId,
 				departamentos.departamento,
@@ -185,12 +194,14 @@ class TipoServicio extends Main
 				)  as servicios
 				from tipoServicio 	
 				inner join departamentos on departamentos.departamentoId = tipoServicio.departamentoId
-				where tipoServicio.status = '1'
+				where tipoServicio.status = '1' ".$ftr."
 				group by tipoServicio.departamentoId order by departamentos.departamento asc, tipoServicio.nombreServicio asc
 				";
 		$this->Util()->DB()->setQuery($sql);
-		$result =  $this->Util()->DB()->GetResult();
-
+		return $this->Util()->DB()->GetResult();
+	}
+	public function EnumerateGroupByDepartament($normalizeJson = false, $onlySecondary = false) {
+		$result = $this->GetServicesGroupByDepartament($onlySecondary);
 		if ($normalizeJson) {
 			$newServicesGroup = [];
 			foreach ($result as $var) {
@@ -262,6 +273,13 @@ class TipoServicio extends Main
 			$tasks = $this->Util()->DB()->GetResult();
 			$row["tasks"] = is_array($tasks) ? $tasks : [];
 		}
+		if($row) {
+			$query = "select * from secondary_service where service_id = ? ";
+			$params = [];
+			array_push($params, ['type' =>'i', 'value' => $this->tipoServicioId]);
+			$this->Util()->DBProspect()->PrepareStmtQuery($query, $params);
+			$row['current_secondary'] = $this->Util()->DBProspect()->GetStmtResult();
+		}
 		return $row;
 	}
 
@@ -292,7 +310,8 @@ class TipoServicio extends Main
 				`costo` = '".$this->costo."',
 				`costoVisual` = '".$this->costoVisual."',
 				`uniqueInvoice` = '".$this->uniqueInvoice."',
-				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."'
+				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."',
+				`is_primary` = '".$this->isPrimary."'
 			WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
 		if(isset($_POST['steps'])) {
@@ -307,12 +326,14 @@ class TipoServicio extends Main
 			SET
 				`name` = '".$this->nombreServicio."',
 				`departament_id` = '".$this->departamentoId."',
+				`is_primary` = '".$this->isPrimary."',
 				`updated_at` = now()
 			WHERE id = '".$this->tipoServicioId."'";
 		$this->Util()->DBProspect()->setQuery($sql);
 		$this->Util()->DBProspect()->UpdateData();
 		//mover archivo
 		$this->moveTemplate($this->tipoServicioId);
+		$this->assoccSecondary($this->tipoServicioId, $_POST['secondary_services']);
 		return true;
 	}
 
@@ -333,7 +354,8 @@ class TipoServicio extends Main
 				`costo`,
 				costoVisual,
 			 	uniqueInvoice,
-				mostrarCostoVisual
+				mostrarCostoVisual,
+			 	is_primary
 		)
 		VALUES
 		(
@@ -346,7 +368,9 @@ class TipoServicio extends Main
 				'".$this->costo."',
 				'".$this->costoVisual."',
 				'".$this->uniqueInvoice."',
-				'".$this->mostrarCostoVisual."'
+				'".$this->mostrarCostoVisual."',
+				'".$this->isPrimary."',
+				
 		);");
 		$id = $this->Util()->DB()->InsertData();
 		if(isset($_POST['steps'])) {
@@ -356,22 +380,46 @@ class TipoServicio extends Main
 		$sql = "insert into service(
                     name,
                     departament_id,
+                    is_primary,
                     created_at,
                     updated_at
                     ) values(
                        '".$this->nombreServicio."',
                        '".$this->departamentoId."',
+                       '".$this->isPrimary."',
                        now(),
                        now()
                     )";
 		$this->Util()->DBProspect()->setQuery($sql);
 		$id = $this->Util()->DBProspect()->InsertData();
+
 		//mover archivo
-		if($id) $this->moveTemplate($id);
+		if($id) {
+			$this->moveTemplate($id);
+			$this->assoccSecondary($id, $_POST['secondary_services']);
+		}
 
 		$this->Util()->setError(2, "complete");
 		$this->Util()->PrintErrors();
 		return true;
+	}
+
+	function assoccSecondary ($id, $secondary) {
+		$secondary_service = is_array($secondary) ? $secondary: [];
+		$this->Util()->DBProspect()->setQuery("delete from secondary_service where service_id = ". $id);
+		$this->Util()->DBProspect()->UpdateData();
+
+		$sql = "insert into secondary_service(service_id, secondary_id) VALUES";
+		$strComp ="";
+		foreach ($secondary_service as $service) {
+				$strComp .= "($id, $service),";
+		}
+		if($strComp!=="") {
+			$strComp = substr($strComp,0,strlen($strComp)-1);
+			$sql = $sql.$strComp;
+			$this->Util()->DBProspect()->setQuery($sql);
+			$this->Util()->DBProspect()->InsertData();
+		}
 	}
 	function saveSteps($id) {
 		$steps = is_array($_POST['steps']) ? $_POST['steps'] : [];
