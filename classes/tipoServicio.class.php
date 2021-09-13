@@ -167,8 +167,8 @@ class TipoServicio extends Main
 		$data["pages"] = $pages;
 		return $data;
 	}
-	private function GetServicesGroupByDepartament ($onlySecondary = false) {
-		$ftr = $onlySecondary ? " and tipoServicio.is_primary != 1 " : "";
+	private function GetServicesGroupByDepartament ($type = null) {
+		$ftr = $type !== null ? " and tipoServicio.is_primary ='".$type."'" : "";
 		$sql = "select
        			departamentos.departamentoId,
 				departamentos.departamento,
@@ -200,20 +200,23 @@ class TipoServicio extends Main
 		$this->Util()->DB()->setQuery($sql);
 		return $this->Util()->DB()->GetResult();
 	}
-	public function EnumerateGroupByDepartament($normalizeJson = false, $onlySecondary = false) {
-		$result = $this->GetServicesGroupByDepartament($onlySecondary);
-		if ($normalizeJson) {
-			$newServicesGroup = [];
-			foreach ($result as $var) {
-				$cad = [];
-				$services  = $var['servicios'] ? json_decode($var['servicios'], true) : [];
-				$cad['label'] =  $var['departamento'];
-				$cad['options'] = $services;
-				array_push($newServicesGroup, $cad);
+	public function EnumerateServiceGroupByDepForSelect2($type = null) {
+		$result = $this->GetServicesGroupByDepartament($type);
+		$newServicesGroup = [];
+		foreach ($result as $var) {
+			$cad = [];
+			$services  = $var['servicios'] ? json_decode($var['servicios'], true) : [];
+			$servs = [];
+			foreach($services as $service) {
+				$serv['id'] =  $service['value'];
+				$serv['text'] = $service['name'];
+				$servs [] =  $serv;
 			}
-			return $newServicesGroup;
+			$cad['text'] =  $var['departamento'];
+			$cad['children'] = $servs;
+			array_push($newServicesGroup, $cad);
 		}
-		return $result;
+		return $newServicesGroup;
 	}
     public function EnumerateOnePage(){
         global $User;
@@ -333,7 +336,8 @@ class TipoServicio extends Main
 		$this->Util()->DBProspect()->UpdateData();
 		//mover archivo
 		$this->moveTemplate($this->tipoServicioId);
-		$this->assoccSecondary($this->tipoServicioId, $_POST['secondary_services']);
+		$secondarys = $_POST['secondary_services'] ? explode(',', $_POST['secondary_services']) : [];
+		$this->assoccSecondary($this->tipoServicioId, $secondarys);
 		return true;
 	}
 
@@ -396,7 +400,8 @@ class TipoServicio extends Main
 		//mover archivo
 		if($id) {
 			$this->moveTemplate($id);
-			$this->assoccSecondary($id, $_POST['secondary_services']);
+			$secondarys = $_POST['secondary_services'] ? explode(',', $_POST['secondary_services']) : [];
+			$this->assoccSecondary($id, $secondarys);
 		}
 
 		$this->Util()->setError(2, "complete");

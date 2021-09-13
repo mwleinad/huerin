@@ -111,8 +111,7 @@
                 <div class="formLine" style="width:100%;  display: inline-block;">
                     <div style="width:20%;float:left"> Servicios</div>
                     <div style="width:80%;float: left;">
-                        <select class="largeInput" multiple="multiple" name="services[]" id="customMultiple">
-                        </select>
+                        <input type="hidden" class="largeInput"  multiple="multiple" name="services" id="customMultiple">
                     </div>
                 </div>
                 <hr>

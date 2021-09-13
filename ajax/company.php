@@ -13,7 +13,9 @@ switch ($_POST['type']) {
         $smarty->assign("regimenes", $catalogue->EnumerateCatalogue('tipoRegimen'));
         $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
-        $json['services'] = $tipoServicio->EnumerateGroupByDepartament(true);
+        $json['services'] = '';
+        $primaryService = $tipoServicio->EnumerateServiceGroupByDepForSelect2(1);
+        $json['listServices'] = $primaryService;
         echo json_encode($json);
         break;
     case "openEditCompany":
@@ -30,14 +32,9 @@ switch ($_POST['type']) {
         $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         $currentServices = is_array($companyRow['services']) ? array_column($companyRow['services'], 'service_id'): [];
-        $catalogoServices = $tipoServicio->EnumerateGroupByDepartament(true);
-        foreach($catalogoServices as $key => $val) {
-            foreach($val['options'] as $kop => $option)
-            if (in_array($option['value'], $currentServices)) {
-                $catalogoServices[$key]['options'][$kop]['checked'] = true;
-            }
-        }
-        $json['services'] = $catalogoServices;
+        $json['services'] = implode(',', $currentServices);
+        $primaryService = $tipoServicio->EnumerateServiceGroupByDepForSelect2(1);
+        $json['listServices'] = $primaryService;
         echo json_encode($json);
         break;
     case "saveCompany":

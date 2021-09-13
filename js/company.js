@@ -129,22 +129,17 @@ var tableCompany = function () {
                         jQ('#regimen_id').trigger('change');
 
                     if (jQ("#customMultiple").length) {
-                        jQ("select[multiple]").multiselect({
-                            columns: 1,
-                            search: true,
-                            maxHeight: 40,
-                            selectGroup: true,
-                            selectAll:true,
-                            texts: {
-                                placeholder: 'Seleccionar servicios',
-                                search         : 'Buscar',         // search input placeholder text
-                                selectedOptions: ' Seleccionado',      // selected suffix text
-                                selectAll      : 'Seleccionar todos',     // select all text
-                                unselectAll    : 'Quitar todos',   // unselect all text
-                                noneSelected   : 'Ningun elemento seleccionado'   // None selected text
-                            }
-                        });
-                        jQ("select[multiple]").multiselect('loadOptions', response.services);
+                        var select2Service = jQ("#customMultiple").select2 ({
+                                placeholder: "Seleccionar un servicio.",
+                                minimumResultsForSearch: 4,
+                                formatSearching: 'Buscando opciones',
+                                closeOnSelect: false,
+                                multiple: true,
+                                data: function () {
+                                  return { results: response.listServices}
+                                },
+                        })
+                        select2Service.val([response.services]).trigger('change')
                     }
                     if(document.getElementById('name')!=null)
                         pure_autocomplete(document.getElementById("name"), 'contract',
@@ -206,7 +201,7 @@ var tableCompany = function () {
                         jQ('#loader').hide();
                         jQ('.spanSaveCompany').show();
                         var splitResp = response.split("[#]");
-                        grid.getDataTable().ajax.reload()
+                        splitResp[0] === 'ok' && grid.getDataTable().ajax.reload()
                         ShowStatusPopUp(splitResp[1]);
                         splitResp[0] === 'ok' && jQ('#fview').hide()
                     }
@@ -454,6 +449,3 @@ jQ(document).ready(function () {
         })
     })
 })
-
-
-
