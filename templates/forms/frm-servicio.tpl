@@ -131,8 +131,7 @@
                     <div class="formLine" style=" width:100%;display: inline-block;">
                         <div style="width:30%;float:left"> Servicios secundarios</div>
                         <div style="width:70%;float: left;">
-                            <select class="largeInput" multiple="multiple" name="secondary_services[]" id="secondaryMultiple">
-                            </select>
+                            <input type="hidden" class="largeInput"  multiple="multiple" name="secondary_services" id="secondaryMultiple">
                         </div>
                     </div>
                     <hr/>

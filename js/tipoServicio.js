@@ -12,22 +12,17 @@ jQ(document).ready(function () {
 				$('fview').show();
 				FViewOffSet(response.template);
 				if (jQ("#secondaryMultiple").length) {
-					jQ("select[multiple]").multiselect({
-						columns: 1,
-						search: true,
-						maxHeight:60,
-						selectGroup: true,
-						selectAll:true,
-						texts: {
-							placeholder: 'Selecciona los servicios secundarios',
-							search         : 'Buscar',         // search input placeholder text
-							selectedOptions: ' Seleccionado',      // selected suffix text
-							selectAll      : 'Seleccionar todos',     // select all text
-							unselectAll    : 'Quitar todos',   // unselect all text
-							noneSelected   : 'Ningun elemento seleccionado'   // None selected text
-						}
-					});
-					jQ("select[multiple]").multiselect('loadOptions', response.secondary_services);
+					var select2Service = jQ("#secondaryMultiple").select2 ({
+						placeholder: "Seleccionar un servicio.",
+						minimumResultsForSearch: 4,
+						formatSearching: 'Buscando opciones',
+						closeOnSelect: false,
+						multiple: true,
+						data: function () {
+							return { results: response.secondary_services}
+						},
+					})
+					select2Service.val([response.current_secondary]).trigger('change')
 				}
 			},
 			error: function (error) {
@@ -117,4 +112,3 @@ jQ(document).on('click','div#stepTask input[type="checkbox"]',function(){
 jQ(document).on('change', '#isPrimary', function () {
   jQ('.field_secondary').toggle(parseInt(this.value) === 1)
 });
-

@@ -14,7 +14,8 @@ switch($_POST["type"])
 			$smarty->assign("departamentos", $departamentos);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
             $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
-            $json['secondary_services'] =  $tipoServicio->EnumerateGroupByDepartament(true, true);
+            $json['secondary_services'] =  $tipoServicio->EnumerateServiceGroupByDepForSelect2(0);
+            $json['current_secondary'] = '';
             echo json_encode($json);
 	break;
 	case "saveAddTipoServicio":
@@ -46,7 +47,6 @@ switch($_POST["type"])
 			}
 
 		break;
-
 	case "deleteTipoServicio":
 			$tipoServicio->setTipoServicioId($_POST['tipoServicioId']);
 			if($tipoServicio->Delete())
@@ -76,16 +76,10 @@ switch($_POST["type"])
             $smarty->assign('servicios', $tipoServicio->EnumerateAll());
 			$smarty->assign("post", $myTipoServicio);
             $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
-            $secondaryServices =  $tipoServicio->EnumerateGroupByDepartament(true, true);
-
+            $secondaryServices =  $tipoServicio->EnumerateServiceGroupByDepForSelect2(0);
             $currentSecondary = is_array($myTipoServicio['current_secondary']) ? array_column($myTipoServicio['current_secondary'], 'secondary_id'): [];
-            foreach($secondaryServices as $key => $val) {
-                foreach($val['options'] as $kop => $option)
-                    if (in_array($option['value'], $currentSecondary)) {
-                        $secondaryServices[$key]['options'][$kop]['checked'] = true;
-                    }
-            }
             $json['secondary_services'] = $secondaryServices;
+            $json['current_secondary'] = implode(',', $currentSecondary);
             echo json_encode($json);
 		break;
 

@@ -279,8 +279,8 @@ class Company extends Main
                  )";
         $this->Util()->DBProspect()->setQuery($sql);
         $lastId = $this->Util()->DBProspect()->InsertData();
-
-        $this->assocServiceToCompany($lastId, $_POST['services']);
+        $services = $_POST['services'] ? explode(',', $_POST['services']) : [];
+        $this->assocServiceToCompany($lastId, $services);
 
 
         $sql = "insert into step_trace (company_id, step_name, made_by, comment, expiration_date,created_at)
@@ -398,7 +398,8 @@ class Company extends Main
                     WHERE id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sql);
         $this->Util()->DBProspect()->UpdateData();
-        $this->assocServiceToCompany($this->id, $_POST['services']);
+        $services = $_POST['services'] ? explode(',', $_POST['services']) : [];
+        $this->assocServiceToCompany($this->id, $services);
         $this->Util()->setError(0, "complete", "Registro actualizado");
         $this->Util()->PrintErrors();
         return true;

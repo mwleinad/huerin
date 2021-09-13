@@ -74,7 +74,6 @@
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/jquery-ui-1.12.1/jquery-ui.min.js?{$timestamp}"></script>
 <script type="text/javascript">var jQ = jQuery.noConflict()</script>
 <script src="{$WEB_ROOT}/assets/plugins/select2_3.5.4/select2.min.js" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/assets/plugins/jQueryMultiSelect/jquery.multiselect.js" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/util.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/script-service.js?{$timestamp}" type="text/javascript"></script>
