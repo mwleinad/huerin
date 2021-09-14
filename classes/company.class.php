@@ -184,16 +184,15 @@ class Company extends Main
                 break;
             }
 
-            if((int)$_POST['do_invoice_'.$quote] === 1) {
-                if(!$this->Util()->isValidateDate($_POST['date_init_invoice_'.$quote], 'd-m-Y')) {
-                    $this->Util()->setError(0, 'error', 'Falta fecha de inicio de facturacion en uno de los servicios que requieren factura.');
-                    break;
-                }
-                if(!(int)$_POST['price_'.$quote]) {
-                    $this->Util()->setError(0, 'error', 'El costo cotizado debe ser mayor a 0 cuando se requiere factura.');
-                    break;
-                }
+            if(!$this->Util()->isValidateDate($_POST['date_init_invoice_'.$quote], 'd-m-Y')) {
+                $this->Util()->setError(0, 'error', 'Falta fecha de inicio de facturacion en uno de los servicios.');
+                break;
             }
+            if(!(int)$_POST['price_'.$quote]) {
+                $this->Util()->setError(0, 'error', 'El costo debe ser mayor a 0 al tener una fecha de facturacion valida.');
+                break;
+            }
+
             $cad['service_id'] = $_POST['service_id_'.$quote];
             $cad['start_operation'] = $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote]);
             $cad['start_invoice'] = (int)$_POST['do_invoice_'.$quote] === 1
