@@ -25,7 +25,6 @@
 								<th>Servicio</th>
 								<th>Costo cotizado</th>
 								<th>Inicio de operaciones</th>
-								<th>¿Requiere factura?</th>
 								<th>Inicio de facturacion</th>
 								</thead>
 								<tbody>
@@ -45,16 +44,10 @@
 										<td><input type="text" class="largeInput" name="date_init_operation_{$item.quote_id.id}"
 												   id="date_init_operation_{$item.quote_id.id}"
 												   onclick="CalendarioSimple(this)" /></td>
-										<td><select class="largeInput controlSelectInvoice" style="width: 15%" name="do_invoice_{$item.quote_id.id}"
-													id="do_invoice_{$item_quote_id.id}" data-id="{$item.quote_id.id}">
-												<option value="0">No</option>
-												<option value="1">Si</option>
-											</select>
+										<td><input type="text" class="largeInput" name="date_init_invoice_{$item.quote_id.id}"
+												   id="date_init_invoice_{$item.quote_id.id}"
+												   onclick="CalendarioSimple(this)"/>
 										</td>
-										<td style="display: none"  id="col_init_invoice_{$item.quote_id.id}"><input type="text" class="largeInput" name="date_init_invoice_{$item.quote_id.id}"
-																													id="date_init_invoice_{$item.quote_id.id}"
-																													onclick="CalendarioSimple(this)"
-											/></td>
 									</tr>
 								{/foreach}
 								</tbody>

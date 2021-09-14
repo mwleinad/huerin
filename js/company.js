@@ -256,10 +256,6 @@ var tableCompany = function () {
             jQ('.inputPrice').prop('readonly', false)
         })
         jQ(document).on('click', '.drawHistory', drawStepTrace)
-        jQ(document).on('change', '.controlSelectInvoice', function () {
-            jQ('#col_init_invoice_'+ jQ(this).data('id')).toggle(parseInt(this.value) === 1)
-
-        })
         jQ(document).on('change', '.improvePrice', function () {
             var id = jQ(this).data('quote-id')
             var current_price =  jQ(this).data('initial-price')
