@@ -59,13 +59,13 @@ class User extends Sucursal
 		$User = $_SESSION['User'];
 		if(!$User['isLogged']){
 			header('Location: '.WEB_ROOT.'/login');
-			exit;
+			exit();
 		}
 
 		if($page != ''&&!$User['isRoot']){
 			if(!$this->allow_access_module($page)){
 				header('Location: '.WEB_ROOT);
-				exit;
+				exit();
 			}
 		}
 	}
@@ -86,6 +86,10 @@ class User extends Sucursal
 
 		if($this->Util()->PrintErrors()){
 			return false;
+		}
+		if (isset($_SESSION['User'])) {
+			echo "existe session";
+			$this->doLogout();
 		}
 
 		$sqlQuery = "SELECT * 
@@ -109,10 +113,8 @@ class User extends Sucursal
 
 			if($row['type'] == 1)
 				$card['tipoPers'] = 'Admin';
-
 			$_SESSION['User'] = $card;
 			$_SESSION["empresaId"] = IDEMPRESA;
-
 			return true;
 
 		}else{

@@ -449,6 +449,4 @@ $titlesPages = [
     'backup_system'=>'Respaldos',
     'utileria'=>'Herramientas y Utilerias',
 
-]
-
-?>
+];

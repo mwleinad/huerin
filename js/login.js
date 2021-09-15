@@ -19,11 +19,10 @@ function DoLogin()
 		parameters: $('frmLogin').serialize(true),
     	onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			console.log(response);
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0].trim() == "ok")
 			{
-                location.href = WEB_ROOT;
+               location.href = WEB_ROOT;
 			}
 			else
 			{

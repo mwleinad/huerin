@@ -1,8 +1,6 @@
 <?php
-
 	if($User['isLogged']){
 		header('Location: '.WEB_ROOT);
-		exit;
+		exit();
 	}
- $smarty->assign("variable","desdelogin");
-?>
+   $smarty->assign("variable","desdelogin");
