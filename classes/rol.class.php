@@ -107,11 +107,11 @@ class Rol extends main
     public function Enumerate(){
         $where ="";
         $where .=!$_SESSION["User"]["isRoot"] ?
-                 (int)$_SESSION["User"]["level"] != 1 ?
+                 ((int)$_SESSION["User"]["level"] != 1 ?
                  " and a.nivel >= '".$_SESSION['User']['level']."' "
-                 :strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ?
+                 :(strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ?
                  " and a.nivel > '".$_SESSION['User']['level']."' "
-                 : " and (a.nivel > '".$_SESSION['User']['level']."'  or lower(a.name) = 'asistente socio') "
+                 : " and (a.nivel > '".$_SESSION['User']['level']."'  or lower(a.name) = 'asistente socio')"))
                  :"";
         $where .= (int)$_SESSION["User"]["level"] != 1 ?
                    " and a.nivel <= 6 and a.departamentoId = '".$_SESSION["User"]["departamentoId"]."' "

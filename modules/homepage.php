@@ -1,7 +1,7 @@
 <?php
-	
+
 	/* For Session Control - Don't remove this */
-	$user->allowAccess();	
+	$user->allowAccess();
 	/* End Session Control */
 	if($_POST["type"]=="saveAddPendiente")
 	{
@@ -11,7 +11,7 @@
 		$pendiente->setFecha(date("Y-m-d"));
 
 	  $id = $pendiente->Save();
-		
+
 	}
 
 	 if($_SESSION["avisoadd"])
