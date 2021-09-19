@@ -7,6 +7,7 @@
 	$personals = $personal->Enumerate();
 
 	$smarty->assign("personals", $personals);
+	$smarty->assign("work_teams", $workTeam->Enumerate());
 	$smarty->assign('mainMnu','catalogos');
 
 ?>

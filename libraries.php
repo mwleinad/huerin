@@ -253,6 +253,9 @@ $cancelation = new Cancelation;
 include_once(DOC_ROOT."/services/pdfs/AcuseResource.php");
 $acuseResource = new AcuseResource;
 
+include_once(DOC_ROOT."/classes/workTeam.class.php");
+$workTeam = new WorkTeam;
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();
