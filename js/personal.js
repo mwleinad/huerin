@@ -298,3 +298,110 @@ function LoadBoxDropzone() {
         });
     });
 }
+function deleteExpediente(id, personalId) {
+    var conf = confirm('¿ Esta seguro de realizar esta accion ?');
+
+    if (!conf)
+        return;
+
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/personal.php',
+        data: {type: 'deleteExpediente', id: id, personalId: personalId},
+        type: 'POST',
+        beforeSend: function () {
+        },
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            if (splitResp[0] == 'ok') {
+                ShowStatusPopUp(splitResp[1]);
+                jQ('#content-expedientes').html('');
+                jQ('#content-expedientes').html(splitResp[2]);
+                LoadBoxDropzone();
+            } else {
+                ShowStatusPopUp(splitResp[1]);
+            }
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
+
+function openEditWorkTeam() {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/workTeam.php',
+        data: {type: 'editWorkTeam', id: this.id},
+        type: 'POST',
+        success: function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
+function deleteWorkTeam() {
+    var flag = confirm('¿esta seguro de eliminar este registro?')
+    if(!flag) return
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/workTeam.php',
+        data: {type: 'deleteWorkTeam', id: this.id},
+        type: 'POST',
+        success: function (response) {
+            var splitResp = response.split('[#]')
+            ShowStatusPopUp(splitResp[1]);
+            if (splitResp[0] == 'ok')
+                jQ('#content_work_team').html(splitResp[2]);
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
+
+function saveWorkTeam() {
+    var form = jQ(this).parents('form:first');
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/workTeam.php',
+        data: form.serialize(true),
+        type: 'POST',
+        beforeSend: function () {
+            jQ('#btnWorkTeam').hide();
+            jQ('#loader').show();
+        },
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            jQ('#btnWorkTeam').show();
+            jQ('#loader').hide();
+            ShowStatusPopUp(splitResp[1]);
+            if (splitResp[0] == 'ok') {
+                jQ('#content_work_team').html(splitResp[2]);
+                close_popup();
+            }
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
+jQ(document).on('click', '#btnWorkTeam', saveWorkTeam);
+jQ(document).on('click', '.spanEditWorkTeam',openEditWorkTeam);
+jQ(document).on('click', '.spanDelWorkTeam',deleteWorkTeam);
+jQ(document).on('click', '#addWorkTeam', function () {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/workTeam.php',
+        data: {type: 'addWorkTeam'},
+        type: 'POST',
+        success: function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+});
+

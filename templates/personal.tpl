@@ -18,14 +18,27 @@
   </div>
   <div class="clear">
   </div>
-  
+
   <div id="portlets">
     <div class="clear"></div>
     <div class="portlet">
         <div class="portlet-content nopadding borderGray" id="contenido" style="overflow-x: scroll">
-            {include file="lists/personal.tpl"}            
+            {include file="lists/personal.tpl"}
         </div>
     </div>
+    <h2>Grupos de trabajo</h2>
+      <div class="container_16">
+          <div class="grid_16" style="text-align:right">
+              <a href="javascript:void(0)" class="inline_add" id="addWorkTeam">Agregar Grupo</a>
+          </div>
+          <div class="grid_16">
+              <div class="portlet">
+                  <div class="portlet-content nopadding borderGray" id="content_work_team" style="overflow-x: scroll">
+                      {include file="lists/work_team.tpl"}
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
-  <div class="clear"> </div>
+  <div class="clear"></div>
 </div>

@@ -1333,4 +1333,50 @@ class Personal extends Main
         $row = $this->Util()->DB()->GetRow();
         return $row;
     }
+
+    public function GetPersonalGroupByDepartament () {
+        $sql = "select
+       			departamentos.departamentoId,
+				departamentos.departamento,
+        		CONCAT(
+					'[',
+					GROUP_CONCAT(
+						CONCAT(
+							'{\"id',
+							'\":\"',
+							personal.personalId,
+							'\",\"',
+							'name',
+							'\":\"',
+							 personal.name,
+							'\"}'
+						)
+					),
+					']'
+				)  as responsables
+				from personal 	
+				inner join departamentos on departamentos.departamentoId = personal.departamentoId
+				where 1 
+				group by personal.departamentoId order by personal.name asc
+				";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $premerge = [];
+        foreach ($result as  $var){
+            $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
+        }
+        $new = [];
+        foreach($premerge as $key => $value) {
+            if(in_array($key, [21, 22])) {
+                $new[$key] = array_merge($premerge[21], $premerge[22]);
+                continue;
+            }
+            if(in_array($key, [8, 24])) {
+                $new[$key] = array_merge($premerge[8], $premerge[24]);
+                continue;
+            }
+            $new[$key] = $value;
+        }
+        return $new;
+    }
 }
