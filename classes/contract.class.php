@@ -37,9 +37,9 @@ class Contract extends Main
     }
 
     private $permisos;
-    public function setPermisos($value, $firsValue)
+    public function setPermisos($value)
     {
-        $this->permisos = "1," . $firsValue . "-" . implode("-", array_filter($value));
+        $this->permisos = implode("-", array_filter($value));
     }
 
     private $noExtComercial;

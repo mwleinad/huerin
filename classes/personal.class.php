@@ -1349,12 +1349,16 @@ class Personal extends Main
 							'name',
 							'\":\"',
 							 personal.name,
+						    '\",\"',
+						    'level',
+						    '\":\"',
+							 personal.nivel,
 							'\"}'
 						)
 					),
 					']'
 				)  as responsables
-				from personal 	
+				from (select a.personalId, a.name, a.departamentoId, b.nivel from personal a inner join roles b on a.roleId=b.rolId) as personal 	
 				inner join departamentos on departamentos.departamentoId = personal.departamentoId
 				where 1 
 				group by personal.departamentoId order by personal.name asc
@@ -1365,18 +1369,27 @@ class Personal extends Main
         foreach ($result as  $var){
             $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
         }
-        $new = [];
         foreach($premerge as $key => $value) {
-            if(in_array($key, [21, 22])) {
-                $new[$key] = array_merge($premerge[21], $premerge[22]);
-                continue;
+            foreach($premerge[$key] as $var) {
+                if ((int)$var['level'] >= 1 && (int)$var['level'] <= 2) {
+                    if(in_array($key, [21, 22])) {
+                        if(!in_array($var['id'], array_column($premerge[21], 'id')))
+                            array_push($premerge[21], $var);
+                        if(!in_array($var['id'], array_column($premerge[22], 'id')))
+                            array_push($premerge[22], $var);
+                    }
+                    if(in_array($key, [8, 24])) {
+                        if(!in_array($var['id'], array_column($premerge[8], 'id')))
+                            array_push($premerge[8], $var);
+                        if(!in_array($var['id'], array_column($premerge[24], 'id')))
+                            array_push($premerge[24], $var);
+                    }
+                }
             }
-            if(in_array($key, [8, 24])) {
-                $new[$key] = array_merge($premerge[8], $premerge[24]);
-                continue;
-            }
-            $new[$key] = $value;
+            $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
+                $premerge[$key], 'name'
+            );
         }
-        return $new;
+        return $premerge;
     }
 }

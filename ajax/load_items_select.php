@@ -87,4 +87,9 @@ switch ($_POST['type']) {
         $data = $row || (int)$_POST['id'] ? $cad : NULL;
         echo json_encode($data);
         break;
+    case 'loadSelectResponsable':
+        $res = $workTeam->getAllByPersonalId($_POST['id']);
+        echo json_encode($res);
+    break;
+
 }

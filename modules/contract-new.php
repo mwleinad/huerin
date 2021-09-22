@@ -40,16 +40,8 @@
 
         //direccion comercial
         $contract->setDireccionComercial($_POST['direccionComercial']);
-        /*$contract->setNoExtComercial($_POST['noExtComercial']);
-        $contract->setNoIntComercial($_POST['noIntComercial']);
-        $contract->setColoniaComercial($_POST['coloniaComercial']);
-        $contract->setMunicipioComercial($_POST['municipioComercial']);
-        $contract->setEstadoComercial($_POST['estadoComercial']);
-        $contract->setCpComercial($_POST['cpComercial']);*/
 
-        //responsables de area (no se validan si son obligatorios aunque si deberia)
-        $contract->setResponsableCuenta($_POST['responsableCuenta']);
-        $contract->setPermisos($_POST['permisos'],$_POST['responsableCuenta']);
+        $contract->setPermisos($_POST['permisos']);
         $contract->setEncargadoCuenta($_POST['encargadoCuenta']);
         $contract->setAuxiliarCuenta($_POST['auxiliarCuenta']);
 
@@ -105,7 +97,6 @@
 		$contract->Save();
 		header("Location:".WEB_ROOT."/contract/id/".$_GET['id']);
 	}
-    //copiar datos basicos de una razon social existente(casi siempre se repite)
     $contract->setCustomerId($_GET['id']);
 	$contractBase = $contract->getInfoLastContract();
     $smarty->assign("bse", $contractBase);
@@ -115,7 +106,6 @@
         $allPerm = array();
        foreach($arrayPermisos as $vp){
            list($dep,$per) = explode(',',$vp);
-           //agregar al array solo los departamentos administracion,mensajeria,contabilidad y juridico
            if($dep==21||$dep==1||$dep==22||$dep==26)
              $allPerm[$dep] = $per;
        }
@@ -147,9 +137,23 @@
 	$regimenesMoral = $regimen->EnumerateAll("moral");
 	$smarty->assign("regimenesMoral", $regimenesMoral);
 
+
+    $empleados = $personal->EnumerateAll();
+    $smarty->assign("empleados", $empleados);
+
+    $filtros['depExcluidos'] ='mensajeria';
+    $departamentos = $departamentos->Enumerate($filtros);
+    $key_dep_account =  array_search(1, array_column($departamentos, 'departamentoId'));
+    $dep_account = $departamentos[$key_dep_account];
+    unset($departamentos[$key_dep_account]);
+    array_unshift($departamentos, $dep_account);
+    $smarty->assign("departamentos", $departamentos);
+    $smarty->assign('departament_responsable', $personal->GetPersonalGroupByDepartament());
+
+    $smarty->assign('formas_pago', $catalogo->formasDePago());
+
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
-
 
 	//Obtenemos la fecha actual para habilitar el calendario
 	$cal['min'] = date('Ymd',strtotime('-5 years'));
@@ -162,11 +166,4 @@
 	$smarty->assign("cal", $cal);
 	$smarty->assign("calO", $calO);
 	$smarty->assign('mainMnu','contratos');
-
-	$empleados = $personal->EnumerateAll();
-	$smarty->assign("empleados", $empleados);
-    $filtros['depExcluidos'] ='mensajeria';
-    $departamentos = $departamentos->Enumerate($filtros);
-	$smarty->assign("departamentos", $departamentos);
-
 ?>

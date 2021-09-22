@@ -3,7 +3,7 @@
 <input type="hidden" name="customerId"  id="customerId" value="{$contractInfo.customerId}" />
 <input type="hidden" name="action" value="edit" />
 
-{include file="{$DOC_ROOT}/templates/forms/edit-contract-basic.tpl"}
+{include file="{$DOC_ROOT}/templates/forms/frm-basic-contract.tpl"}
 {if in_array(175,$permissions)||$User.isRoot}
 <div id="infoCompraVenta2" style="display:block">
 	{include file="{$DOC_ROOT}/templates/forms/edit-datos-contacto.tpl"}
