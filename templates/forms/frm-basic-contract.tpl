@@ -49,7 +49,7 @@
                                 size="50"/></td>
     </tr>
     <tr id="tipoDeSociedad"
-        style="display:{if $contractInfo.type == "Persona Moral"}block{else}none{/if};" >
+        style="display:{if $contractInfo.type == "Persona Moral"}{else}none{/if};" >
         <td align="left" width="40%">* Tipo de Sociedad</td>
         <td align="left">
             <select class="smallInput" name="sociedadId" id="sociedadId">
@@ -61,7 +61,7 @@
         </td>
     </tr>
     <tr id="regimenesFisicos"
-        style="display:{if $contractInfo.type == "Persona Fisica"}contents{else}none{/if};">
+        style="display:{if $contractInfo.type == "Persona Fisica"}{else}none{/if};">
         <td align="left" width="40%">* Regimen Fiscal</td>
         <td align="left">
             <select class="smallInput" name="regimenId" id="regimenId" onchange="LoadSubcontracts()">
@@ -73,7 +73,7 @@
             </select>
         </td>
     </tr>
-    <tr id="regimenesMorales" style="display:{if $contractInfo.type == "Persona Moral"}contents{else}none{/if};">
+    <tr id="regimenesMorales" style="display:{if $contractInfo.type == "Persona Moral"}{else}none{/if};">
         <td align="left" width="40%">* Regimen Fiscal</td>
         <td align="left">
             <select class="smallInput" name="regimenIdMoral" id="regimenIdMoral" onchange="LoadSubcontracts()">
