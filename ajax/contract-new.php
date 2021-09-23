@@ -32,14 +32,9 @@ switch($_POST["action"])
 			$contract->setEstadoAddress($_POST['estadoAddress']);
 			$contract->setPaisAddress($_POST['paisAddress']);
 			$contract->setCpAddress($_POST['cpAddress']);
+			$contract->setMetodoDePago($_POST['metodoDePago']);
 			//direccion comercial
 			$contract->setDireccionComercial($_POST['direccionComercial']);
-			/*$contract->setNoExtComercial($_POST['noExtComercial']);
-			$contract->setNoIntComercial($_POST['noIntComercial']);
-			$contract->setColoniaComercial($_POST['coloniaComercial']);
-			$contract->setMunicipioComercial($_POST['municipioComercial']);
-			$contract->setEstadoComercial($_POST['estadoComercial']);
-			$contract->setCpComercial($_POST['cpComercial']);*/
 
 			//datos de contacto
     		if(isset($_POST['nameContactoAdministrativo']))

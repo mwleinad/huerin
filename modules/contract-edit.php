@@ -183,7 +183,14 @@
 
 	$filtros['depExcluidos'] ='mensajeria';
 	$departamentos = $departamentos->Enumerate($filtros);
+	$key_dep_account =  array_search(1, array_column($departamentos, 'departamentoId'));
+	$dep_account = $departamentos[$key_dep_account];
+	unset($departamentos[$key_dep_account]);
+    array_unshift($departamentos, $dep_account);
 	$smarty->assign("departamentos", $departamentos);
+    $smarty->assign('departament_responsable', $personal->GetPersonalGroupByDepartament());
+
+	$smarty->assign('formas_pago', $catalogo->formasDePago());
 
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
@@ -203,5 +210,4 @@
 		$allowDelete = 1;
 
 	$smarty->assign('allowDelete',$allowDelete);
-
 ?>

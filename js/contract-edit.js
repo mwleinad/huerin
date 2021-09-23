@@ -40,7 +40,7 @@ Event.observe(window, 'load', function() {
       return;
 		}
 	}
-	$('contentArchivos').observe("click", AddEditArchivoListeners);	
+	$('contentArchivos').observe("click", AddEditArchivoListeners);
 
 	AddEditImpuestoListeners = function(e) {
 		var el = e.element();
@@ -313,7 +313,7 @@ function ChangeTipo()
 		$('tipoDeSociedad').show();
 		$('regimenesMorales').show();
 		$('regimenesFisicos').hide();
-		
+
 		$('box-table-a').show();
 		$('idse1').show();
 		$('idse2').show();
@@ -332,7 +332,7 @@ function ChangeTipo()
 }
 
 function VerifyForm(){
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -341,11 +341,11 @@ function VerifyForm(){
 			$("divLoading").style.display = "block";
 		},
 		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";		
+			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 
 			$("divLoading").style.display = "none";
-			
+
 			if(splitResponse[0] == "fail")
 			{
 				ShowStatus(splitResponse[1]);
@@ -355,18 +355,18 @@ function VerifyForm(){
 				$('frmContract').submit();
 		//		window.location.href = WEB_ROOT + "contract";
 			}
-			
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-		
+
 }
 
 
 function LoadSubcontracts(){
 
 	var idContCat = $("contCatId").value;
-	
+
 	if(idContCat == 1){
 		$("infoArrendamiento").style.display = "block";
 		$("infoArrendamiento2").style.display = "block";
@@ -384,29 +384,29 @@ function LoadSubcontracts(){
 		$("titParte2").innerHTML = "Vendedor:";
 		$("txtMonto").innerHTML = "Monto de la compraventa";
 	}
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
 		parameters: {action:"loadSubcontracts", contCatId:idContCat},
 		onLoading: function(){
-			
+
 		},
 		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";			
+			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-						
+
 			if(splitResponse[0] == "ok")
 			{
 				showRow("infoGral",6,true);
 				$('listSubcontratos').innerHTML = splitResponse[1];
 				$('listPartes').innerHTML = splitResponse[2];
 			}
-											
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
 function LoadDocGral(){
@@ -418,134 +418,134 @@ function LoadDocGral(){
 		method:'post',
 		parameters: {action:"loadDocGral", contSubcatId:idContSubcat},
 		onLoading: function(){
-			
+
 		},
 		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";			
+			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-						
+
 			if(splitResponse[0] == "ok")
 			{
 				$('listStatus').innerHTML = splitResponse[1];
-				
+
 				if(idContSubcat == 4)
 					$("tblCond").style.display = "none";
 				else if(idContSubcat == 3)
 					$("tblCond").style.display = "block";
-				
+
 			}
-											
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
-function runJS(html) 
-{ 
- 
+function runJS(html)
+{
+
     var search = html;
     var script;
- 
-    while( script = search.match(/(<script[^>]+javascript[^>]+>\s*(<!--)?)/i)) 
-    { 
-      search = search.substr(search.indexOf(RegExp.$1) + RegExp.$1.length); 
- 
-      if (!(endscript = search.match(/((-->)?\s*<\/script>)/))) break; 
- 
-      block = search.substr(0, search.indexOf(RegExp.$1)); 
-      search = search.substring(block.length + RegExp.$1.length); 
- 
-      var oScript = document.createElement('script'); 
-      oScript.text = block; 
-      document.getElementsByTagName("head").item(0).appendChild(oScript); 
-    } 
+
+    while( script = search.match(/(<script[^>]+javascript[^>]+>\s*(<!--)?)/i))
+    {
+      search = search.substr(search.indexOf(RegExp.$1) + RegExp.$1.length);
+
+      if (!(endscript = search.match(/((-->)?\s*<\/script>)/))) break;
+
+      block = search.substr(0, search.indexOf(RegExp.$1));
+      search = search.substring(block.length + RegExp.$1.length);
+
+      var oScript = document.createElement('script');
+      oScript.text = block;
+      document.getElementsByTagName("head").item(0).appendChild(oScript);
+    }
 }
 
 function showRow(idTable,num,ver) {
-  
+
   dis= ver ? '' : 'none';
   tab=document.getElementById(idTable);
   tab.getElementsByTagName('tr')[num].style.display=dis;
-  
+
 }
 
 function loadCities(){
-	
+
 	var idState = $("stateId").value;
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
 		parameters: {action:"loadCities", stateId:idState},
 		onLoading: function(){
-			
+
 		},
 		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";			
+			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-						
+
 			if(splitResponse[0] == "ok")
 			{
 				$('enumCity').innerHTML = splitResponse[1];
 			}
-											
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-		
+
 }
 
 function loadCitiesC(){
-	
+
 	var idState = $("stateIdC").value;
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
 		parameters: {action:"loadCitiesC", stateId:idState},
 		onLoading: function(){
-			
+
 		},
 		onSuccess: function(transport){
-			var response = transport.responseText || "no response text";			
+			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-						
+
 			if(splitResponse[0] == "ok")
 			{
 				$('enumCityC').innerHTML = splitResponse[1];
 			}
-											
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-		
+
 }
 
 function checkStatus(){
-	
+
 	var status = $("status").value;
-	
+
 	if(status == "firmado")
 		$("divFechaFirma").style.display = "block";
 	else
 		$("divFechaFirma").style.display = "none";
-	
+
 }
 
 function checkCartaCump(){
-	
+
 	var status = $("cartaCump").value;
-	
+
 	if(status == 1)
 		$("divFechaCartaCump").style.display = "block";
 	else
 		$("divFechaCartaCump").style.display = "none";
-	
+
 }
 
 function toggleDocBasic(id){
-	
+
 	if($("apDB_"+id).checked){
 		Form.Element.enable("fechaRecDB_"+id);
 		$("trigRDB_"+id).show();
@@ -555,12 +555,12 @@ function toggleDocBasic(id){
 		$("trigRDB_"+id).hide();
 		Form.Element.disable("descDB_"+id);
 	}
-	
+
 }
 
 num=0;
 function crear(valor) {
-	
+
   num++;
   fi = document.getElementById('fiel'); // 1
   contenedor = document.createElement('div'); // 2
@@ -574,7 +574,7 @@ function crear(valor) {
   ele.name = 'nom[]'; // 6
   ele.value = valor;
   contenedor.appendChild(ele); // 7
-  
+
   ele = document.createElement('input'); // 5
   ele.type = 'button'; // 6
   ele.value = 'Borrar'; // 8
@@ -585,42 +585,42 @@ function crear(valor) {
 }
 
 function borrar(obj) {
-  fi = document.getElementById('fiel'); // 1 
+  fi = document.getElementById('fiel'); // 1
   fi.removeChild(document.getElementById(obj)); // 10
-  
+
 }
 
 function toggleSection(section, status){
-	
+
 	if(status == 1){
-		
-		$(section).style.display = "block";		
+
+		$(section).style.display = "block";
 		$(section+"H").style.display = "block";
 		$(section+"S").style.display = "none";
-		
+
 		if($(section+"AR") != undefined)
 			$(section+"AR").style.display = "block";
-		
+
 		if($(section+"CV") != undefined)
 			$(section+"CV").style.display = "block";
-		
+
 	}else{
-		
-		$(section).style.display = "none";		
+
+		$(section).style.display = "none";
 		$(section+"H").style.display = "none";
 		$(section+"S").style.display = "block";
-		
+
 		if($(section+"AR") != undefined)
 			$(section+"AR").style.display = "none";
-		
+
 		if($(section+"CV") != undefined)
 			$(section+"CV").style.display = "none";
-			
+
 	}
 }
 
 function addProrrogaDiv(id){
-	
+
 	grayOut(true);
 	$('fview').show();
 	if(id == 0)
@@ -638,14 +638,14 @@ function addProrrogaDiv(id){
 			var response = transport.responseText || "no response text";
 			FViewOffSet(response);
 			Event.observe($('fviewclose'), "click", function(){ addProrrogaDiv(0); });
-			Event.observe($('btnAddProrroga'), "click", function() { AddProrroga(id); });			
+			Event.observe($('btnAddProrroga'), "click", function() { AddProrroga(id); });
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
 
 function AddProrroga(docGralId){
-				
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -662,7 +662,7 @@ function AddProrroga(docGralId){
 			}
 			else
 			{
-				ShowStatusPopUp(splitResponse[1]);				
+				ShowStatusPopUp(splitResponse[1]);
 			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
@@ -676,7 +676,7 @@ function DeleteProrroga(id, idDocGral)
 	{
 		return;
 	}
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -688,15 +688,15 @@ function DeleteProrroga(id, idDocGral)
 			ShowStatusPopUp(splitResponse[1]);
 			$('proContent').innerHTML = splitResponse[2];
 			$("list_" + idDocGral).innerHTML = splitResponse[3];
-				
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
 function addDocsDiv(id){
-	
+
 	grayOut(true);
 	$('fview').show();
 	if(id == 0)
@@ -714,14 +714,14 @@ function addDocsDiv(id){
 			var response = transport.responseText || "no response text";
 			FViewOffSet(response);
 			Event.observe($('fviewclose'), "click", function(){ addDocsDiv(0); });
-			Event.observe($('btnAddDocs'), "click",function() { AddDocs(id); });			
+			Event.observe($('btnAddDocs'), "click",function() { AddDocs(id); });
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
 }
 
 function AddDocs(id){
-				
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -739,7 +739,7 @@ function AddDocs(id){
 			}
 			else
 			{
-				ShowStatusPopUp(splitResponse[1]);				
+				ShowStatusPopUp(splitResponse[1]);
 			}
 		},
 		onFailure: function(){ alert('Something went wrong...') }
@@ -753,7 +753,7 @@ function DeleteDocs(id, idDocBasic)
 	{
 		return;
 	}
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -766,15 +766,15 @@ function DeleteDocs(id, idDocBasic)
 			$('proContent').innerHTML = splitResponse[2];
 			$('lstF_'+idDocBasic).innerHTML = splitResponse[3];
 			$('lstD_'+idDocBasic).innerHTML = splitResponse[4];
-				
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
 function CB_ExternalFunctionCBClose(){
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 	{
 		method:'post',
@@ -782,17 +782,17 @@ function CB_ExternalFunctionCBClose(){
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
-			
+
 			idDocBasic = splitResponse[0];
-			
+
 			$('lstF_'+idDocBasic).innerHTML = splitResponse[1];
 			$('lstD_'+idDocBasic).innerHTML = splitResponse[2];
 			$('lstA_'+idDocBasic).innerHTML = splitResponse[3];
-				
+
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
 function checkObligacion(obj, docGralId)
@@ -800,9 +800,22 @@ function checkObligacion(obj, docGralId)
 	if(obj.checked == false){
 		if(confirm("Esta seguro de eliminar esta obligacion?")){
 			$("fechaDG_" + docGralId).value = "";
-			$("fechaRecDG_" + docGralId).value = "";			
+			$("fechaRecDG_" + docGralId).value = "";
 		}else{
 			obj.checked = true;
 		}
 	}
 }
+
+jQ(document).on('change','.changeSelectedPermiso', function () {
+	var id_split = jQ(this).val().split(',')
+	jQ.ajax({
+		 type: 'POST',
+		 url: WEB_ROOT + '/ajax/load_items_select.php',
+		 data: { type: 'loadSelectResponsable', id: id_split[1] },
+		 dataType:' json',
+		 success: function (response) {
+			 response.forEach((res) => { jQ('#permiso_select_' + res.departament_id).val(res.departament_id + ',' + res.personal_id)})
+		 }
+		})
+})

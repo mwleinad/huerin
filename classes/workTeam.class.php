@@ -122,4 +122,13 @@ class WorkTeam extends  Main {
         $this->Util()->PrintErrors();
         return true;
     }
+
+    public function getAllByPersonalId ($id) {
+        $sql = "select * from personal_work_team where work_team_id 
+                in (select work_team_id from personal_work_team where personal_id = '".$id."')";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
+    }
+
+
 }
