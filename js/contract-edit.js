@@ -807,15 +807,3 @@ function checkObligacion(obj, docGralId)
 	}
 }
 
-jQ(document).on('change','.changeSelectedPermiso', function () {
-	var id_split = jQ(this).val().split(',')
-	jQ.ajax({
-		 type: 'POST',
-		 url: WEB_ROOT + '/ajax/load_items_select.php',
-		 data: { type: 'loadSelectResponsable', id: id_split[1] },
-		 dataType:' json',
-		 success: function (response) {
-			 response.forEach((res) => { jQ('#permiso_select_' + res.departament_id).val(res.departament_id + ',' + res.personal_id)})
-		 }
-		})
-})

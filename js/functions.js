@@ -646,3 +646,15 @@ jQ(document).on('change', '#type_referred', function () {
     jQ('.field_list_partner').toggle(this.value === 'partner' ?? false)
     jQ('.field_other_referred').toggle(this.value === 'otro' ?? false)
 });
+jQ(document).on('change','.changeSelectedPermiso', function () {
+    var id_split = jQ(this).val().split(',')
+    jQ.ajax({
+        type: 'POST',
+        url: WEB_ROOT + '/ajax/load_items_select.php',
+        data: { type: 'loadSelectResponsable', id: id_split[1] },
+        dataType:' json',
+        success: function (response) {
+            response.forEach((res) => { jQ('#permiso_select_' + res.departament_id).val(res.departament_id + ',' + res.personal_id)})
+        }
+    })
+})
