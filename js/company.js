@@ -275,6 +275,14 @@ var tableCompany = function () {
                     grayOut(true);
                     jQ('#fview').show();
                     FViewOffSet(response.template);
+                    if (jQ('.select2').length > 0) {
+                        jQ('.select2').select2(ops);
+                        new Select2Cascade(jQ('#sector'), jQ('#subsector'), WEB_ROOT + "/ajax/load_items_select.php", ops);
+                        new Select2Cascade(jQ('#subsector'), jQ('#actividad_comercial'), WEB_ROOT + "/ajax/load_items_select.php", ops);
+                    }
+                    jQ(document).on('change', '#tax_purpose', function(){
+                        jQ('.field_moral').toggle(this.value === 'moral' ?? false)
+                    })
                     generateSelectRegimen()
                     if (jQ('#regimen_id').val() !== '')
                         jQ('#regimen_id').trigger('change')

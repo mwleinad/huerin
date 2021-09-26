@@ -11,7 +11,7 @@
 		<div class="panel">
 			{include file="{$DOC_ROOT}/templates/forms/frm-data-basic-contract.tpl"}
 		</div>
-		<button class="accordion">Servicios</button>
+		<button class="accordion">Listado de servicios</button>
 		<div class="panel">
 
 					<div class="container_16">
