@@ -266,6 +266,14 @@ class TipoServicio extends Main
 		}
 		return $result;
 	}
+
+	public function getSecondaryService ($id) {
+		$query = "select * from secondary_service where service_id = ? ";
+		$params = [];
+		array_push($params, ['type' =>'i', 'value' => $id]);
+		$this->Util()->DBProspect()->PrepareStmtQuery($query, $params);
+		return  $this->Util()->DBProspect()->GetStmtResult();;
+	}
 	public function Info($whitTask = false)
 	{
 		$this->Util()->DB()->setQuery("SELECT * FROM tipoServicio WHERE tipoServicioId = '".$this->tipoServicioId."'");
@@ -277,11 +285,7 @@ class TipoServicio extends Main
 			$row["tasks"] = is_array($tasks) ? $tasks : [];
 		}
 		if($row) {
-			$query = "select * from secondary_service where service_id = ? ";
-			$params = [];
-			array_push($params, ['type' =>'i', 'value' => $this->tipoServicioId]);
-			$this->Util()->DBProspect()->PrepareStmtQuery($query, $params);
-			$row['current_secondary'] = $this->Util()->DBProspect()->GetStmtResult();
+			$row['current_secondary'] =  $this->getSecondaryService($this->tipoServicioId);;
 		}
 		return $row;
 	}
