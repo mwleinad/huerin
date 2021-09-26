@@ -109,7 +109,6 @@ class Company extends Main
 
     public function setBusinessActivity($value)
     {
-        $this->Util()->ValidateRequireField($value, "Giro o actividad principal");
         $this->business_activity = $value;
     }
 
@@ -195,9 +194,7 @@ class Company extends Main
 
             $cad['service_id'] = $_POST['service_id_'.$quote];
             $cad['start_operation'] = $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote]);
-            $cad['start_invoice'] = (int)$_POST['do_invoice_'.$quote] === 1
-                                    ? $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote])
-                                    : null;
+            $cad['start_invoice'] = $this->Util()->FormatDateMySql($_POST['date_init_invoice_'.$quote]);
             $cad['price'] = $_POST['price_'.$quote];
             $cad['name'] = $_POST['name_'.$quote];
             array_push($this->arrayService, $cad);
@@ -206,6 +203,7 @@ class Company extends Main
 
     public function info($withQuoteComplete = false)
     {
+        $contractRep =  new ContractRep();
         $sQuery = "select * from company 
                    where id = '" . $this->id . "' ";
         $this->Util()->DBProspect()->setQuery($sQuery);
@@ -213,9 +211,22 @@ class Company extends Main
 
         if ($row) {
             $row['services'] = $this->serviceByCompany($withQuoteComplete);
-            $sql = "select * from contract where contractId = '".$row['contract_id']."' ";
+            $sql = "select * from contract as c  
+                    left join (select actividad_comercial.id as ac_id, actividad_comercial.name as ac_name,
+                               sector.id as sector_id, subsector.id as subsector_id from actividad_comercial
+                               inner join subsector on actividad_comercial.subsector_id = subsector.id
+                               inner join sector on subsector.sector_id = sector.id) as ac on 
+                    c.actividadComercialId = ac.ac_id where contractId = '".$row['contract_id']."'
+            ";
             $this->Util()->DB()->setQuery($sql);
-            $row['contract'] = $this->Util()->DB()->GetRow() ?? null;
+            $rowContract = $this->Util()->DB()->GetRow() ?? null;
+            if($rowContract) {
+                $rowContract['current_responsable'] =
+                $contractRep->encargadosCustomKey('departamentoId', 'personalId', $rowContract['contractId'])
+                ?? null;
+            }
+            $row['contract'] = $rowContract;
+
         }
         return $row;
     }
@@ -418,6 +429,7 @@ class Company extends Main
         $customer->setEmail($_POST['email']);
         $customer->setNameContact($_POST['nameContact']);
         $customer->setFechaAlta(date('Y-m-d'));
+        $customer->setNoFactura13(isset($_POST['noFactura13']) ? '1' : '0');
         if((int)$_POST['is_referred'] === 1) {
             $customer->setIsReferred($_POST['is_referred']);
             $customer->setTypeReferred($_POST['type_referred']);
@@ -437,10 +449,6 @@ class Company extends Main
         $contract->setName($_POST['name']);
         $contract->setRfc($_POST['rfc']);
         $contract->setRegimenId($_POST['regimen_id']);
-
-        if(isset($_POST['actividad_comercial']))
-            $contract->setActividadComercialId($_POST['actividad_comercial']);
-
         $contract->setAddress($_POST['address']);
         $contract->setNoExtAddress($_POST['noExtAddress']);
         $contract->setNoIntAddress($_POST['noIntAddress']);
@@ -449,10 +457,16 @@ class Company extends Main
         $contract->setEstadoAddress($_POST['estadoAddress']);
         $contract->setPaisAddress($_POST['paisAddress']);
         $contract->setCpAddress($_POST['cpAddress']);
+        $contract->setMetodoDePago($_POST['metodoDePago']);
         $contract->setQualification('AAA');
         $contract->setNameRepresentanteLegal($_POST['legal_representative']);
+        if (strlen($_POST['direccionComercial']))
+            $contract->setDireccionComercial($_POST['direccionComercial']);
 
-        $contract->setDireccionComercial($_POST['direccionComercial']);
+        $contract->setPermisos($_POST['permisos']);
+        if(strlen($_POST['actividad_comercial']))
+            $contract->setActividadComercialId($_POST['actividad_comercial']);
+
         $contract_id = (int)$dataCompany['contract_id'] ? $dataCompany['contract_id'] :  $contract->Save(false);
 
         if(!$contract_id && !$dataProspect['customer_id']) {

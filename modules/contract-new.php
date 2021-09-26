@@ -40,7 +40,6 @@
 
         //direccion comercial
         $contract->setDireccionComercial($_POST['direccionComercial']);
-
         $contract->setPermisos($_POST['permisos']);
         $contract->setEncargadoCuenta($_POST['encargadoCuenta']);
         $contract->setAuxiliarCuenta($_POST['auxiliarCuenta']);

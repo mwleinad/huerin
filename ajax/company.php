@@ -117,7 +117,7 @@ switch ($_POST['type']) {
         echo json_encode($json);
         break;
     case "openSendToMain":
-        $data['title'] = "Aceptar o declinar";
+        $data['title'] = "Aceptar y enviar a cartera";
         $data["form"] = "frm-accept-quote";
 
         $company->setId($_POST['id']);
@@ -132,7 +132,11 @@ switch ($_POST['type']) {
         $smarty->assign("sociedades", $sociedad->EnumerateAll());
         $smarty->assign("metodoPagos", $catalogue->EnumerateCatalogue('c_FormaPago'));
         $smarty->assign("regimenes", $catalogue->EnumerateCatalogue('tipoRegimen'));
-        $smarty->assign("actividades", $catalogue->EnumerateCatalogue('actividad_comercial'));
+        $smarty->assign("sectores", $catalogue->ListSectores());
+        $smarty->assign("subsectores", $catalogue->ListSubsectores($companyRow['contract']['sector_id']));
+        $smarty->assign("actividades_comerciales", $catalogue->ListActividadesComerciales($companyRow['contract']['subsector_id']));
+        $smarty->assign('departamentos', $departamentos->Enumerate());
+        $smarty->assign('departament_responsable', $personal->GetPersonalGroupByDepartament());
         $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/boxes/general-popup.tpl");
         echo json_encode($json);
         break;

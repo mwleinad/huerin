@@ -94,7 +94,7 @@
                 </div>
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
-                        <div style="width:40%;float:left"> Actividad</div>
+                        <div style="width:40%;float:left"> Actividad Comercial</div>
                         <div style="width:60%;float: left;">
                             <select class="largeInput"  name="activity_id" id="activity_id">
                                 <option value="">Seleccionar..</option>
@@ -138,7 +138,6 @@
                     <a href="javascript:;"  id="btnResource" class="button_grey spanSaveCompany"><span>{if $post}Actualizar{else}Guardar{/if}</span></a>
                 </div>
             </div>
-
 		</fieldset>
 	</form>
 </div>

@@ -4,7 +4,7 @@ class Contract extends Main
     private $facturador;
     public function setFacturador($value)
     {
-        $this->Util()->ValidateString($value, $max_chars = 255, $minChars = 0, 'Facturador');
+        $this->Util()->ValidateRequireField($value, 'Facturador');
         $this->facturador = $value;
     }
 
@@ -157,7 +157,7 @@ class Contract extends Main
     private $actividadComercialId;
     public function setActividadComercialId($value)
     {
-        $this->Util()->ValidateRequireField($value,  'Actividad economica');
+        $this->Util()->ValidateRequireField($value,  'Actividad comercial');
         $this->actividadComercialId = $value;
     }
     private $nombreComercial;
@@ -570,7 +570,7 @@ class Contract extends Main
         $value = str_replace("-", "", $value);
         $value = strtoupper($value);
         if ($this->Util()->ValidateRequireField($value, 'RFC')) {
-            $this->Util()->ValidateString($value, $max_chars = 13, $minChars = 11, 'RFC');
+            $this->Util()->ValidateString($value, 13,11, 'RFC');
         }
 
         $value = str_replace("&amp;", "&", $value);
