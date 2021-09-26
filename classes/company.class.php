@@ -174,9 +174,11 @@ class Company extends Main
     private  $arrayService = [];
 
     public function validateArrayService () {
+        global $tipoServicio;
+
         if(!isset($_POST['quotes']) || !count($_POST['quotes']))
             $this->Util()->setError(0, 'error', 'No existen servicios seleccionados');
-
+        $mix_secondary = [];
         foreach($_POST['quotes'] as $quote) {
             if(!$this->Util()->isValidateDate($_POST['date_init_operation_'.$quote], 'd-m-Y')) {
                 $this->Util()->setError(0, 'error', 'Falta fecha de inicio de operacion en uno de los servicios.');
@@ -197,6 +199,21 @@ class Company extends Main
             $cad['start_invoice'] = $this->Util()->FormatDateMySql($_POST['date_init_invoice_'.$quote]);
             $cad['price'] = $_POST['price_'.$quote];
             $cad['name'] = $_POST['name_'.$quote];
+
+            $secondarys = $tipoServicio->getSecondaryService($cad['service_id']);
+            $serv_secondary = [];
+            foreach ($secondarys as $secondary) {
+                $cad2['service_id'] = $secondary['secondary_id'];
+                $cad2['start_operation'] = $this->Util()->FormatDateMySql($_POST['date_init_operation_'.$quote]);
+                $cad2['start_invoice'] = null;
+                $cad2['price'] = 0;
+
+                if (!in_array($secondary['secondary_id'], $mix_secondary)) {
+                    array_push($serv_secondary, $cad2);
+                    array_push($mix_secondary, $secondary['secondary_id']);
+                }
+            }
+            $cad['secondary'] = $serv_secondary;
             array_push($this->arrayService, $cad);
         }
     }
@@ -460,6 +477,7 @@ class Company extends Main
         $contract->setMetodoDePago($_POST['metodoDePago']);
         $contract->setQualification('AAA');
         $contract->setNameRepresentanteLegal($_POST['legal_representative']);
+
         if (strlen($_POST['direccionComercial']))
             $contract->setDireccionComercial($_POST['direccionComercial']);
 
@@ -476,37 +494,47 @@ class Company extends Main
         if ($contract->Util()->PrintErrors())
             return false;
 
-        $sql ="insert into servicio(contractId, tipoServicioId, costo, inicioOperaciones, inicioFactura) 
-               VALUES (%d,%d,%f,%s,%s)";
 
         $current_services = $customer->GetServicesByContract($contract_id);
         $services_affected = [];
         foreach($this->arrayService as $serv) {
-            $query = sprintf($sql, $contract_id, $serv['service_id'], $serv['price'],
-                "'".$serv['start_operation']."'","'".$serv['start_invoice']."'");
-            $this->Util()->DB()->setQuery($query);
-            $lastId = $this->Util()->DB()->InsertData();
-            $services_affected[] = $lastId;
-            $log->saveHistoryChangesServicios($lastId, $serv['start_invoice'],'activo',
-                                              $serv['price'],0, $serv['start_operation']);
-
-            $servicio->setServicioId($lastId);
-            $newServicio = $servicio->InfoLog();
-
-            $log->setPersonalId($_SESSION['User']['userId']);
-            $log->setFecha(date('Y-m-d H:i:s'));
-            $log->setTabla('servicio');
-            $log->setTablaId($lastId);
-            $log->setAction('Insert');
-            $log->setOldValue('');
-            $log->setNewValue(serialize($newServicio));
-            $log->SaveOnly();
+            $lastIdServ = $this->saveService($contract_id, $serv);
+            $services_affected[] = $lastIdServ;
+            foreach($serv['secondary'] as $secondary) {
+                $lastIdServSec = $this->saveService($contract_id, $secondary);
+                $services_affected[] = $lastIdServSec;
+            }
         }
         if(count($services_affected))
             $log->sendLogMultipleOperation($services_affected, $contract_id,'new', $current_services);
 
-        // en este punto es donde se debe enviar por correo. pendiente
         return true;
+    }
+
+    private function saveService ($id, $data = []) {
+        global $log, $servicio;
+        $sql ="insert into servicio(contractId, tipoServicioId, costo, inicioOperaciones, inicioFactura) 
+               VALUES (%d,%d,%f,%s,%s)";
+        $query = sprintf($sql, $id, $data['service_id'], $data['price'], "'".$data['start_operation']."'",
+                         "'".$data['start_invoice']."'");
+        $this->Util()->DB()->setQuery($query);
+        $lastId = $this->Util()->DB()->InsertData();
+
+        $log->saveHistoryChangesServicios($lastId, $data['start_invoice'],'activo', $data['price'],0,
+                                          $data['start_operation']);
+
+        $servicio->setServicioId($lastId);
+        $newServicio = $servicio->InfoLog();
+
+        $log->setPersonalId($_SESSION['User']['userId']);
+        $log->setFecha(date('Y-m-d H:i:s'));
+        $log->setTabla('servicio');
+        $log->setTablaId($lastId);
+        $log->setAction('Insert');
+        $log->setOldValue('');
+        $log->setNewValue(serialize($newServicio));
+        $log->SaveOnly();
+        return $lastId;
     }
     public function processSendToMain() {
         $params = [];
