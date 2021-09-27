@@ -31,6 +31,7 @@ switch($_POST["type"]) {
         }
         break;
     case 'searchBonos':
+        $_POST['deep'] = 1;
         $data = $reportebonos->generateReportBonosWhitLevel($_POST);
         $period = $_POST['period'];
         if ($period == "efm") {
