@@ -377,8 +377,7 @@ class TipoServicio extends Main
 				'".$this->costoVisual."',
 				'".$this->uniqueInvoice."',
 				'".$this->mostrarCostoVisual."',
-				'".$this->isPrimary."',
-				
+				'".$this->isPrimary."'
 		);");
 		$id = $this->Util()->DB()->InsertData();
 		if(isset($_POST['steps'])) {
