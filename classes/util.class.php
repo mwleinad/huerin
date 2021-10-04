@@ -1666,5 +1666,44 @@ function HandleMultipages($page,$total,$link,$items_per_page=0,$pagevar="p"){
 		$this->Util()->DB()->setQuery($sql);
 		$this->Util()->DB()->DeleteData();
 	}
+
+	function createOrReplaceView ($nameView, $select,$custom_fields = []) {
+		if(!$nameView || !$select)
+			return false;
+		$custom_name_fields =  count($custom_fields) ? "(".implode(',', $custom_fields).")" : "";
+		$sql = "create or replace view ".$nameView.$custom_name_fields." as ".$select;
+		$this->Util()->DB()->setQuery($sql);
+		$this->Util()->DB()->ExecuteQuery();
+		$this->Util()->DB()->CleanQuery();
+	}
+	function generateMonthByPeriod($period, $array= true){
+		$base = [];
+		switch($period){
+			case 'efm': $init = 1; $until = 3; break;
+			case 'amj': $init = 4; $until = 6; break;
+			case 'jas': $init = 7; $until = 9; break;
+			case 'ond': $init = 10; $until = 12; break;
+			default: $init = 1; $until = 12; break;
+		}
+		for($ii=$init;$ii<=$until;$ii++) {
+			$base[$ii] =  $array ? [] : $ii;
+		}
+
+		return $base;
+	}
+	function listMonthHeaderForReport($period) {
+		global $monthsInt;
+		$base = [];
+		switch($period){
+			case 'efm': $init = 1; $until = 3; break;
+			case 'amj': $init = 4; $until = 6; break;
+			case 'jas': $init = 7; $until = 9; break;
+			case 'ond': $init = 10; $until = 12; break;
+			default: $init = 1; $until = 12; break;
+		}
+		for($ii=$init;$ii<=$until;$ii++)
+			$base[] = $monthsInt[$ii] ;
+		return $base;
+	}
 }
 ?>

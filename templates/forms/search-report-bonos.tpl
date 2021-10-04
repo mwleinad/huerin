@@ -1,6 +1,6 @@
 <div align="center"  id="divForm">
-	<form name="frmSearch" id="frmSearch"  method="post" action="export/report-bonos.php">
-		<input type="hidden" name="type" id="type" value="searchBonos" />
+	<form name="frmSearch" id="frmSearch"  method="post" action="#" onsubmit="return false">
+		<input type="hidden" name="type" id="type" value="generateBono" />
 		<input type="hidden" name="contrato" id="contrato" value="" />
 		<input type="hidden" name="cliente" id="cliente" value="" />
 		<table width="100%" align="center">
