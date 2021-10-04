@@ -2,7 +2,8 @@
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-session_start();include(DOC_ROOT.'/libs/excel/PHPExcel.php');
+include(DOC_ROOT.'/libs/excel/PHPExcel.php');
+session_start();
 switch($_POST["type"]) {
     case "search":
         $trimestre = explode(' ', $_POST['trimestre']);
@@ -69,6 +70,13 @@ switch($_POST["type"]) {
     case 'accountByManager':
         $accountReport->generateReport($_POST);
         $nameFile = $accountReport->getNameReport();
+        echo "ok[#]";
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+        break;
+    case 'generateBono':
+        $_POST['deep'] = 1;
+        $bono->generateReport();
+        $nameFile = $bono->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
         break;

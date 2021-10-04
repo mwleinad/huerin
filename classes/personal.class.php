@@ -752,8 +752,9 @@ class Personal extends Main
 
     function SubordinadosDetailsAddPass()
     {
-        $sql = "SELECT personal.*, jefes.name AS jefeName FROM personal
-       LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato ORDER BY name ASC";
+        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.nivel FROM personal
+       LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato 
+       inner join roles as roles on personal.roleId=roles.rolId ORDER BY name ASC";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult($sql);
 
@@ -805,13 +806,13 @@ class Personal extends Main
     function Jerarquia(array $elements, $parentId = 0)
     {
         $branch = array();
-
         foreach ($elements as $element) {
             if ($element['jefeInmediato'] == $parentId) {
                 $children = $this->Jerarquia($elements, $element['personalId']);
                 if ($children) {
                     $element['children'] = $children;
                 }
+
                 $branch[] = $element;
             }
         }
@@ -823,12 +824,12 @@ class Personal extends Main
     {
         foreach ($tree as $key => $value) {
             $subs = [];
-            $value['children'] = !is_array($value['children']) ? [] : $value['children'];
-            $this->JerarquiaJustIdByReference($subs, $value['children']);
+            $children= !is_array($value['children']) ? [] : $value['children'];
+            $this->JerarquiaJustIdByReference($subs, $children);
             $value['subordinadosId'] = $subs;
             $new[] = $value;
-            if (count($value["children"]) > 0) {
-                $this->JerarquiaLinealReferencia($new, $value["children"]);
+            if (count($children) > 0) {
+                $this->JerarquiaLinealReferencia($new, $children);
             }
         }
     }
@@ -1390,5 +1391,19 @@ class Personal extends Main
             );
         }
         return $premerge;
+    }
+
+    public function getSubordinadosByLevel ($nivel = 0) {
+        $subordinados_filtrados = [];
+        $subordinados = $this->SubordinadosDetailsAddPass();
+        if(!$nivel)
+            return $subordinados;
+
+        foreach($subordinados as $sub) {
+            if($sub['nivel'] == $nivel) {
+                array_push($subordinados_filtrados, $sub);
+            }
+        }
+        return $subordinados_filtrados;
     }
 }
