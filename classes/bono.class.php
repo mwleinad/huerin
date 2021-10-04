@@ -16,8 +16,8 @@ class Bono extends Personal {
 
        $months = $this->Util()->generateMonthByPeriod($_POST['period'], false);
        $name_view = "instancia_".$_POST['year']."_".implode('_', $months);
-       $custom_fiels = ['contract_id','name', 'servicio_id', 'name_service', 'departamento_id','status_service','is_primary', 'instancias'];
-       $sql = "select c.contractId, c.name, b.servicioId, b.nombreServicio,b.departamentoId,b.status,b.is_primary,
+       $custom_fiels = ['contract_id','name','customer', 'servicio_id', 'name_service', 'departamento_id','status_service','is_primary', 'instancias'];
+       $sql = "select c.contractId, c.name,c.customer_name, b.servicioId, b.nombreServicio,b.departamentoId,b.status,b.is_primary,
                concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
                'costo', a.costoWorkflow,  'fecha', a.date, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias
                from instanciaServicio a
@@ -26,7 +26,8 @@ class Bono extends Personal {
                         tipoServicio.is_primary from servicio 
                         inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
                         where tipoServicio.status='1') b on a.servicioId=b.servicioId
-               inner join contract c on b.contractId=c.contractId
+               inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
+                            from contract inner join customer on contract.customerId = customer.customerId) c on b.contractId=c.contractId
                where year(a.date)=".$_POST['year']." and month(a.date) in (".implode(',', $months).") group by a.servicioId  order by a.date asc";
        $this->Util()->createOrReplaceView($name_view, $sql, $custom_fiels);
 
@@ -215,7 +216,7 @@ class Bono extends Personal {
             if(!in_array($propio['contract_id'], $return['total_contract']))
                 array_push($return['total_contract'], $propio['contract_id']);
 
-            $sheet->setCellValueByColumnAndRow($col, $row, $propio['name'])
+            $sheet->setCellValueByColumnAndRow($col, $row, $propio['customer'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($style_text);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $data['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($style_text);
