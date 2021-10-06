@@ -2,7 +2,7 @@
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT.'/libraries.php');
-include(DOC_ROOT.'/libs/excel/PHPExcel.php');
+include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
 session_start();
 switch($_POST["type"]) {
     case "search":
