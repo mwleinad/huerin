@@ -12,6 +12,7 @@ else
 	include_once(DOC_ROOT.'/properties/errors.es.php');
 }
 require 'vendor/autoload.php';
+include_once(DOC_ROOT.'/properties/config_style_cell.php');
 
 require(DOC_ROOT.'/libs/Smarty.class.php');
 $smarty = new Smarty;
@@ -47,7 +48,6 @@ include_once(DOC_ROOT.'/classes/automatic-invoice-rif.class.php');
 include_once(DOC_ROOT.'/classes/automatic-invoice-braun.class.php');
 
 include_once(DOC_ROOT.'/classes/excel.class.php');
-
 
 include_once(DOC_ROOT.'/classes/user.class.php');
 include_once(DOC_ROOT.'/classes/customer.class.php');
