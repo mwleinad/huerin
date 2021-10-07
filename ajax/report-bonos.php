@@ -59,11 +59,11 @@ switch($_POST["type"]) {
                 $edoResultado->generateDetailedReport($_POST);
             break;
             default:
-                $edoResultado->generateEdoResult($_POST);
+                $consolidado->generateReport();
             break;
         }
 
-        $nameFile = $edoResultado->getNameReport();
+        $nameFile = $consolidado->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
 	break;
