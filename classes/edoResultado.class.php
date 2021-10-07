@@ -868,5 +868,4 @@ class EdoResultado extends ReporteBonos
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         $this->nameReport=$nameFile;
     }
-
 }

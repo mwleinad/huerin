@@ -259,6 +259,9 @@ $workTeam = new WorkTeam;
 include_once(DOC_ROOT."/classes/bono.class.php");
 $bono = new Bono;
 
+include_once(DOC_ROOT."/classes/consolidado.class.php");
+$consolidado = new Consolidado();
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();

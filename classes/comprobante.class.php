@@ -1098,9 +1098,9 @@ class Comprobante extends Producto
             $row["saldo"] = $row["costo"] - $row["payment"];
             return $row;
         } else {
-            $sqlQuery = 'SELECT comprobante.*,contract.facturador FROM comprobante
+            $sqlQuery = "SELECT comprobante.*,contract.facturador FROM comprobante
 					LEFT JOIN contract ON contract.contractId = comprobante.userId
-						WHERE comprobanteId = ' . $id_comprobante;
+						WHERE comprobanteId = '" . $id_comprobante."'";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
             $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
