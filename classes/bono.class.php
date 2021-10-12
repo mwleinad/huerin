@@ -430,7 +430,7 @@ class Bono extends Personal
                 $col++;
             }
 
-            $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months)+4) . $row_nombre;
+            $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months)+3) . $row_nombre;
             $book->getActiveSheet()->mergeCells($merges);
             $row += 2;
         }
@@ -534,7 +534,7 @@ class Bono extends Personal
 
             $col++;
         }
-        $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months)) . $row_nombre;
+        $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + 3) . $row_nombre;
         $book->getActiveSheet()->mergeCells($merges);
     }
 
@@ -564,8 +564,9 @@ class Bono extends Personal
 
         foreach ($gran_consolidado_gerente as $key => $value) {
             $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['total_consolidado_grupo'], $months, $row, $value['info_grupo'], $key);
+            $row += 1;
         }
-
+        $row += 1;
         $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row);
     }
 
