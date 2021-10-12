@@ -1,4 +1,4 @@
-DELIMETER //
+DELIMITER //
 REATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
 	IN `contract_id` INT,
 	IN `tipo_servicio_id` INT,
