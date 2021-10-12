@@ -1,4 +1,5 @@
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
+DELIMETER //
+REATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
 	IN `contract_id` INT,
 	IN `tipo_servicio_id` INT,
 	IN `param_month` INT,
@@ -35,4 +36,5 @@ BEGIN
     EXECUTE stmt_pending;
     DROP PREPARE stmt_pending;
     SELECT COUNT(*)  from tbl_secondary_pendiente;
-END
+END//
+DELIMITER ;
