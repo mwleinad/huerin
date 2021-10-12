@@ -1,5 +1,5 @@
 DELIMITER //
-REATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
 	IN `contract_id` INT,
 	IN `tipo_servicio_id` INT,
 	IN `param_month` INT,
