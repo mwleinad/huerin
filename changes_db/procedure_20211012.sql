@@ -1,11 +1,12 @@
 DELIMITER //
+DROP PROCEDURE IF EXISTS `sp_verify_secondary`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_verify_secondary`(
-	IN `contract_id` INT,
-	IN `tipo_servicio_id` INT,
-	IN `param_month` INT,
-	IN `param_year` VARCHAR(255),
-	IN `name_view` VARCHAR(200),
-	IN `prospect_database` VARCHAR(255)
+	IN `con_id` INT,
+	IN `tipo_id` INT,
+	IN `pmonth` INT,
+	IN `pyear` VARCHAR(255),
+	IN `nview` VARCHAR(200),
+	IN `prospect_dB` VARCHAR(255)
 )
 LANGUAGE SQL
 NOT DETERMINISTIC
@@ -13,12 +14,12 @@ CONTAINS SQL
 SQL SECURITY DEFINER
 COMMENT 'procedimiento para comprobar que los servicios secundarios de un primario esten realizadas'
 BEGIN
-	SET @param_view=name_view;
-	SET @tipo_id=tipo_servicio_id;
-	SET @contract_id=contract_id;
-	SET @param_month = param_month;
-	SET @param_year = param_year;
-	SET @prospect_database = prospect_database;
+	SET @param_view=nview;
+	SET @tipo_id=tipo_id;
+	SET @contract_id=con_id;
+	SET @param_month = pmonth;
+	SET @param_year = pyear;
+	SET @prospect_database = prospect_db;
 
 	DROP TEMPORARY TABLE IF EXISTS tbl_secondary_pendiente;
 	DROP TEMPORARY TABLE IF EXISTS tmp_service_secondary;

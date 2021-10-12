@@ -15,7 +15,11 @@
 			</tr>
 			<tr>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
-					{include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
+					<select name="responsableCuenta" id="responsableCuenta" class="largeInput">
+						{foreach from=$personals item=personal}
+							<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
+						{/foreach}
+					</select>
 				</td>
 				<td align="center" style="padding-left: 5px;padding-right: 5px">
 					{include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
