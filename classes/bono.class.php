@@ -127,18 +127,29 @@ class Bono extends Personal
             $row = 1;
             foreach ($col_title_mix as $title_header) {
                 $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
-                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);;
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
                 $col++;
             }
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Total devengado')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Total trabajado')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Diferencia')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
             $row++;
+            $row_init_col_total = $row;
             $totales = $this->drawRowsPropios($sheet, $months, $supervisor, $row);
             $cad['data'] = $supervisor;
             $cad['totales'] = $totales;
             array_push($consolidado_final, $cad);
-            $this->drawRowTotal($sheet, $totales, $row);
+            $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total);
             foreach ($supervisor['childs'] as $child) {
+                $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row);
-                $this->drawRowTotal($sheet, $totales_child, $row);
+                $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total);
                 $cad2['data'] = $child;
                 $cad2['totales'] = $totales_child;
                 array_push($consolidado_final, $cad2);
@@ -199,8 +210,9 @@ class Bono extends Personal
         return $color;
     }
 
-    function drawRowTotal(&$sheet, $totales, &$row)
+    function drawRowTotal(&$sheet, $totales, &$row,$months, $row_init_total)
     {
+        global $global_config_style_cell;
         $style_currency = array(
             'numberformat' => [
                 'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD,
@@ -249,11 +261,36 @@ class Bono extends Personal
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($style_currency);
             $col++;
         }
+        if(!count($totales['totales_mes'])) $col +=count($months);
+        $col_init_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_init_total;
+        $col_end_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . ($row_trabajado - 1);
+        $cord_total_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
+        $sheet->setCellValueByColumnAndRow($col, $row_devengado, '=sum('.$col_init_devengado.":".$col_end_devengado.")")
+            ->getStyle($cord_total_devengado)->applyFromArray( $style_currency );
+        $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray(  $style_currency );
+
+        $col++;
+        $col_init_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_init_total;
+        $col_end_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . ($row_trabajado - 1);
+        $cord_total_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
+        $sheet->setCellValueByColumnAndRow($col, $row_devengado, '=sum('.$col_init_trabajado.":".$col_end_trabajado.")")
+            ->getStyle($cord_total_trabajado)->applyFromArray(  $style_currency );
+        $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray(  $style_currency );
+        $col++;
+        $cord_total_diferencia = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
+        $sheet->setCellValueByColumnAndRow($col, $row_devengado, '='.$cord_total_trabajado."-".$cord_total_devengado)
+            ->getStyle($cord_total_diferencia)->applyFromArray(  $style_currency );
+        $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray(  $style_currency );
+
         $row += 2;
     }
 
     function drawRowsPropios(&$sheet, $months, $data, &$row)
     {
+        global $global_config_style_cell;
         $style_general = array(
             'numberformat' => [
                 'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD,
@@ -296,17 +333,38 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow(++$col, $row, $propio['name_service'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_text);
             $col++;
+            $sum_col_devengado = 0;
+            $sum_col_trabajado = 0;
             foreach ($months as $month) {
                 $key = array_search($month, array_column($propio['instancias_array'], 'mes'));
                 $month_row = $key === false ? [] : $propio['instancias_array'][$key];
                 $style_general['fill']['color']['rgb'] = $this->backgroundCell($month_row['class']);
+                $current_coordinate_month = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $sheet->setCellValueByColumnAndRow($col, $row, $month_row['costo'])
-                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_general);
+                    ->getStyle($current_coordinate_month)->applyFromArray($style_general);
                 $col++;
+
+
+                if(in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0)
+                   $sum_col_trabajado +=$month_row['costo'];
+
+                $sum_col_devengado +=$month_row['costo'];
+
                 $return['totales_mes'][$month]['total_trabajado'] += in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0
                     ? $month_row['costo'] : 0;
                 $return['totales_mes'][$month]['total_devengado'] += $month_row['costo'];
             }
+            $col_total_dev = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col, $row, $sum_col_devengado)
+                ->getStyle($col_total_dev)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $col_total_trab = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col, $row, $sum_col_trabajado)
+                ->getStyle($col_total_trab)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $col_total_diferencia = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col, $row, '='.$col_total_trab."-".$col_total_dev)
+                ->getStyle($col_total_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
             $row++;
         }
         return $return;
@@ -554,13 +612,23 @@ class Bono extends Personal
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
             $col++;
         }
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Total devengado')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Total trabajado')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Diferencia')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
         $row++;
+        $row_init_col_total = $row;
         $consolidado_final = [];
         $totales_gerente = $this->drawRowsPropios($sheet, $months, $data, $row);
         $cad['data'] = $data;
         $cad['totales'] = $totales_gerente;
         array_push($consolidado_final, $cad);
-        $this->drawRowTotal($sheet, $totales_gerente, $row);
+        $this->drawRowTotal($sheet, $totales_gerente, $row, $months, $row_init_col_total);
 
         foreach ($gran_consolidado_gerente as $key => $value) {
             $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['total_consolidado_grupo'], $months, $row, $value['info_grupo'], $key);
