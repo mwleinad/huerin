@@ -198,7 +198,8 @@ class DB
   }
 
   public function CleanQuery() {
-    mysqli_free_result($this->sqlResult);
+      mysqli_free_result($this->sqlResult);
+	  mysqli_next_result($this->conn_id);
     //$this->query = "";
   }
 
