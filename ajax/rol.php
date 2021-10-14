@@ -227,6 +227,7 @@ switch($_POST['type']){
     case 'savePorcentBono':
         $rol->setNamePorcent($_POST["name"]);
         $rol->setPorcentaje($_POST["porcentaje"]);
+        $rol->setMonto($_POST["monto"]);
         $rol->setCategoria($_POST["categoria"]);
         if($rol->SavePorcent())
         {
@@ -246,6 +247,7 @@ switch($_POST['type']){
     case 'updatePorcentBono':
         $rol->setPorcentId($_POST["porcentId"]);
         $rol->setPorcentaje($_POST["porcentaje"]);
+        $rol->setMonto($_POST["monto"]);
         $rol->setCategoria($_POST["categoria"]);
         if($rol->UpdatePorcent())
         {

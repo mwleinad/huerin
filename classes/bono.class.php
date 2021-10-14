@@ -382,7 +382,7 @@ class Bono extends Personal
 
     function drawsTotalesFinal(&$book, $sheet, $data, $months, &$row)
     {
-        global $global_config_style_cell;
+        global $global_config_style_cell, $global_bonos;
         $stack_bono[1] = 5;
         $stack_bono[2] = 4;
         $stack_bono[3] = 3;
@@ -475,7 +475,7 @@ class Bono extends Personal
                 array_push($total_consolidado_grupo['row_porcent_bono'][$key_month], $cordinate_porcent_bono);
 
                 $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
-                $sheet->setCellValueByColumnAndRow($col, $row_bono, '=+' . $cordinate_utilidad . "*" . $cordinate_porcent_bono)
+                $sheet->setCellValueByColumnAndRow($col, $row_bono, '=+'.$global_bonos[$total['data']['nivel']])
                     ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
                 if(!is_array($total_consolidado_grupo['row_bono'][$key_month])) $total_consolidado_grupo['row_bono'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_bono'][$key_month], $cordinate_bono);

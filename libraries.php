@@ -256,6 +256,8 @@ $acuseResource = new AcuseResource;
 include_once(DOC_ROOT."/classes/workTeam.class.php");
 $workTeam = new WorkTeam;
 
+include_once(DOC_ROOT.'/properties/bono_por_categoria.php');
+
 include_once(DOC_ROOT."/classes/bono.class.php");
 $bono = new Bono;
 

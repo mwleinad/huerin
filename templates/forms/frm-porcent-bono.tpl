@@ -24,6 +24,13 @@
 				<hr>
 			</div>
 			<div class="formLine" style="width:100%;  display: inline-block;">
+				<div style="width:30%;float:left">* Monto en pesos</div>
+				<div style="width:70%;float: left;">
+					<input type="text" name="monto" id="monto" value="{$post.monto}" class="xsmallIn "/>
+				</div>
+				<hr>
+			</div>
+			<div class="formLine" style="width:100%;  display: inline-block;">
 				<div style="width:30%;float:left"> * Categoria</div>
 				<div style="width:70%;float: left;">
 					<input type="text" name="categoria" id="categoria" value="{$post.categoria}" class="xsmallIn "/>
