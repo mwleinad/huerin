@@ -12,48 +12,63 @@ class Rol extends main
     function setAdmin($value){
         $this->admin=$value;
     }
+
     public function isAdmin(){
         return $this->admin;
     }
+
     private $rolId;
     function setRolId($value){
         $this->rolId=$value;
     }
+
     private $name;
     public function setName($value){
         $this->Util()->ValidateRequireField($value,'Nombre de rol');
         $this->name=$value;
     }
+
     private $depId;
     public function setDepartamentoId($value){
         if(!$_SESSION["User"]["isRoot"])
             $this->Util()->ValidateRequireField($value,'Departamento');
         $this->depId=$value;
     }
+
     private $titulo;
     public function setTitulo($value){
         $this->titulo=$value;
     }
+
     private $porcentId;
     function setPorcentId($value){
         $this->porcentId=$value;
     }
+
     private $namePorcent;
     public function setNamePorcent($value){
         $this->Util()->ValidateRequireField($value,'Nombre');
         $this->namePorcent=$value;
     }
+
     private $categoria;
     public function setCategoria($value){
         $this->Util()->ValidateRequireField($value,'Categoria');
         $this->Util()->ValidateOnlyNumeric($value,"categoria");
         $this->categoria=$value;
     }
+
     private $porcentaje;
     public function setPorcentaje($value) {
         $this->Util()->ValidateRequireField($value,'Porcentaje');
         $this->Util()->ValidateNumericWhitRange($value,0,100,'Porcentaje');
         $this->porcentaje = $value;
+    }
+
+    private $monto;
+    public function setMonto($value) {
+        $this->Util()->ValidateRequireField($value,'Monto en pesos');
+        $this->monto = $value;
     }
 
     private $allowAnyContract;
@@ -213,7 +228,8 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "INSERT INTO porcentajesBonos(name,categoria,porcentaje) VALUES('".$this->namePorcent."',$this->categoria,'".$this->porcentaje."') ";
+        $sql  = "INSERT INTO porcentajesBonos(name,categoria,porcentaje, monto) VALUES";
+        $sql .= "('".$this->namePorcent."', $this->categoria, '".$this->porcentaje."', '".$this->monto."') ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->InsertData();
 
@@ -259,7 +275,8 @@ class Rol extends main
         if($this->Util()->PrintErrors())
             return false;
 
-        $sql = "UPDATE porcentajesBonos SET categoria='".$this->categoria."',porcentaje='".$this->porcentaje."' WHERE porcentId='".$this->porcentId."' ";
+        $sql  = "UPDATE porcentajesBonos SET categoria='".$this->categoria."',porcentaje='".$this->porcentaje."', ";
+        $sql .= "monto='".$this->monto."' WHERE porcentId='".$this->porcentId."'";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
 
