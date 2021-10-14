@@ -121,6 +121,7 @@ class Bono extends Personal
         $gran_consolidado_gerente = [];
         foreach ($supervisores as $supervisor) {
             $consolidado_final = [];
+            $total_por_supervisor = [];
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
             $name_title =  substr($supervisor["name"], 0, 6);
@@ -150,16 +151,17 @@ class Bono extends Personal
             $cad['data'] = $supervisor;
             $cad['totales'] = $totales;
             array_push($consolidado_final, $cad);
-            $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total);
+            $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor);
             foreach ($supervisor['childs'] as $child) {
                 $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row);
-                $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total);
+                $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor);
                 $cad2['data'] = $child;
                 $cad2['totales'] = $totales_child;
                 array_push($consolidado_final, $cad2);
             }
 
+            $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row);
             $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row);
 
             if(!is_array($gran_consolidado_gerente[$title_sheet]))
@@ -215,7 +217,7 @@ class Bono extends Personal
         return $color;
     }
 
-    function drawRowTotal(&$sheet, $totales, &$row,$months, $row_init_total)
+    function drawRowTotal(&$sheet, $totales, &$row,$months, $row_init_total, &$total_por_supervisor = [])
     {
         $style_currency = array(
             'numberformat' => [
@@ -258,12 +260,21 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow(3, $row_devengado, 'Total devengado')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_devengado)->applyFromArray($style_text);
         $col = 4;
-        foreach ($totales['totales_mes'] as $total) {
+        foreach ($totales['totales_mes'] as $ktotal => $total) {
+            $coor_total_trabajado =  PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col, $row, $total['total_trabajado'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_currency);
+                ->getStyle($coor_total_trabajado)->applyFromArray($style_currency);
+            $coor_total_devengado =  PHPExcel_Cell::stringFromColumnIndex($col) . ($row + 1);
             $sheet->setCellValueByColumnAndRow($col, $row + 1, $total['total_devengado'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($style_currency);
+                ->getStyle($coor_total_devengado)->applyFromArray($style_currency);
             $col++;
+            if(!is_array($total_por_supervisor[$ktotal]['trabajados']))
+                $total_por_supervisor[$ktotal]['trabajados'] = [];
+            if(!is_array($total_por_supervisor[$ktotal]['devengados']))
+                $total_por_supervisor[$ktotal]['devengados'] = [];
+
+            array_push($total_por_supervisor[$ktotal]['trabajados'], $coor_total_trabajado);
+            array_push($total_por_supervisor[$ktotal]['devengados'], $coor_total_devengado);
         }
         if(!count($totales['totales_mes'])) $col +=count($months);
         $col_init_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_init_total;
@@ -503,6 +514,61 @@ class Bono extends Personal
             $row += 2;
         }
         return $total_consolidado_grupo;
+    }
+    function drawRowTotalConsolidadoPorSupervisor(&$sheet, $totales, &$row)
+    {
+        $style_currency = array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+            ],
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '0E76A8')
+            ),
+            'font' => array('bold' => true),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'color' => array('rgb' => '000000')
+                )
+            )
+        );
+        $style_text = array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_GENERAL,
+            ],
+        );
+        $style_text = array_merge($style_currency, $style_text);
+        $row_trabajado = $row;
+        $row_devengado = $row + 1;
+        $sheet->setCellValueByColumnAndRow(0, $row_trabajado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(0) . $row_trabajado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(1, $row_trabajado, 'Gran No. de empresas')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row_trabajado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(2, $row_trabajado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2) . $row_trabajado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(3, $row_trabajado, 'Gran total trabajado')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_trabajado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(0, $row_devengado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(0) . $row_devengado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(1, $row_devengado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row_devengado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(2, $row_devengado, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2) . $row_devengado)->applyFromArray($style_text);
+        $sheet->setCellValueByColumnAndRow(3, $row_devengado, 'Gran total devengado')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_devengado)->applyFromArray($style_text);
+        $col = 4;
+        foreach ($totales as $total) {
+            $coor_total_trabajado =  PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col, $row,  '=+'.implode('+', $total['trabajados']))
+                ->getStyle($coor_total_trabajado)->applyFromArray($style_currency);
+            $coor_total_devengado =  PHPExcel_Cell::stringFromColumnIndex($col) . ($row + 1);
+            $sheet->setCellValueByColumnAndRow($col, $row + 1, '=+'.implode('+', $total['devengados']))
+                ->getStyle($coor_total_devengado)->applyFromArray($style_currency);
+            $col++;
+        }
+
+        $row += 2;
     }
 
     function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $prefix_sheet = '') {
