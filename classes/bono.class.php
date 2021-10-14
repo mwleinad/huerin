@@ -73,6 +73,7 @@ class Bono extends Personal
 
     public function getRowsBySheet($id, $view)
     {
+        global $workflow;
         $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
 
         $sql = "select a.* from " . $view . " a 
@@ -80,10 +81,14 @@ class Bono extends Personal
                 where b.personalId in (" . $id . ") " . $ftr_departamento . " order by a.name asc, a.name_service asc ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
+        // E precargar array validando pasos
+
         foreach ($res as $key => $row_serv) {
             $valid_instancias = [];
             $instancias = json_decode($row_serv['instancias'], true);
             $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
+            // $pasos = $workflow->validateStepTaskByWorkflow($value); realizarlo por procedimiento;
+            // y aca validar si tiene pasos para el año se toma en cuenta.
             /*if ($row_serv['status_service'] === 'bajaParcial') {
                 foreach ($instancias as $ki => $inst) {
                     if ($this->Util()->getFirstDate($inst['fecha']) <= $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
@@ -212,10 +217,9 @@ class Bono extends Personal
 
     function drawRowTotal(&$sheet, $totales, &$row,$months, $row_init_total)
     {
-        global $global_config_style_cell;
         $style_currency = array(
             'numberformat' => [
-                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD,
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
             ],
             'fill' => array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -293,7 +297,7 @@ class Bono extends Personal
         global $global_config_style_cell;
         $style_general = array(
             'numberformat' => [
-                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD,
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
             ],
             'fill' => array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -338,6 +342,12 @@ class Bono extends Personal
             foreach ($months as $month) {
                 $key = array_search($month, array_column($propio['instancias_array'], 'mes'));
                 $month_row = $key === false ? [] : $propio['instancias_array'][$key];
+                $month_complete = $month >= 10 ? $month : "0".$month;
+                if(($propio['status_service'] === 'bajaParcial' &&
+                    $_POST['year']."-".$month_complete."-01" > $this->Util()->getFirstDate($propio['last_date_workflow'])) && empty($month_row)) {
+                    $month_row['class'] = "Parcial";
+                    $month_row['costo'] = '';
+                }
                 $style_general['fill']['color']['rgb'] = $this->backgroundCell($month_row['class']);
                 $current_coordinate_month = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $sheet->setCellValueByColumnAndRow($col, $row, $month_row['costo'])
@@ -639,17 +649,24 @@ class Bono extends Personal
     }
 
     function processInstancias ($row_serv, $instancias, $view) {
+        global $workflow;
         $instancias_filtered = [];
         foreach($instancias as $inst) {
             $cad = $inst;
-            if ($row_serv['status_service'] === 'bajaParcial' && $this->Util()->getFirstDate($inst['fecha']) > $this->Util()->getFirstDate($row_serv['last_date_workflow']))
-                continue;
-
+            if ($row_serv['status_service'] === 'bajaParcial' && $this->Util()->getFirstDate($inst['fecha']) > $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
+                $cad['class'] = 'Parcial';
+                $cad['costo'] = 0;
+            }
             if($row_serv['is_primary']) {
                 $month = (int) date('m', strtotime($inst['fecha']));
                 $year = (int) date('Y', strtotime($inst['fecha']));
                 $cad['secondary_pending'] = $this->verifySecondary($row_serv['contract_id'], $inst['tipo_servicio_id'], $month, $year, $view);
             }
+            $cad2['finstancia'] = $cad['fecha'];
+            $cad2['tipoServicioId'] = $cad['tipo_servicio_id'];
+            $pasos = $workflow->validateStepTaskByWorkflow($cad2);
+            if(!count($pasos))
+                continue;
           array_push($instancias_filtered, $cad);
         }
         return $instancias_filtered;

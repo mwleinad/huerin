@@ -18,7 +18,7 @@ $global_config_style_cell = array(
     ),
     'style_currency' => array(
         'numberformat' => [
-            'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD,
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
         ],
         'borders' => array(
             'allborders' => array(
