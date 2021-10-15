@@ -455,13 +455,15 @@ class Bono extends Personal
             foreach ($total['totales']['totales_mes'] as $key_month => $total_mes) {
 
                 $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
-                $sheet->setCellValueByColumnAndRow($col, $row_devengado, $total_mes['total_devengado'])
+                $formula = count($total_mes['coordenada_devengado']) ? '=+'.implode('+', $total_mes['coordenada_devengado']) : '';
+                $sheet->setCellValueByColumnAndRow($col, $row_devengado, $formula)
                     ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
                 if(!is_array($total_consolidado_grupo['row_devengado'][$key_month])) $total_consolidado_grupo['row_devengado'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_devengado'][$key_month], $cordinate_devengado);
 
                 $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
-                $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $total_mes['total_trabajado'])
+                $formula = count($total_mes['coordenada_trabajado']) ? '=+'.implode('+', $total_mes['coordenada_trabajado']) : '';
+                $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
                 if(!is_array($total_consolidado_grupo['row_trabajado'][$key_month])) $total_consolidado_grupo['row_trabajado'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_trabajado'][$key_month], $cordinate_trabajado);
@@ -737,6 +739,10 @@ class Bono extends Personal
         $instancias_filtered = [];
         foreach($instancias as $inst) {
             $cad = $inst;
+            //los rif el dia que se abren deven valer doble
+            if(in_array((int)$inst['tipo_servicio_id'], [RIF, RIFAUDITADO]))
+                $cad['costo'] = $cad['costo'] * 2;
+
             if ($row_serv['status_service'] === 'bajaParcial' && $this->Util()->getFirstDate($inst['fecha']) > $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
                 $cad['class'] = 'Parcial';
                 $cad['costo'] = 0;
