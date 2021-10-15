@@ -53,4 +53,51 @@ $global_config_style_cell = array(
             )
         )
     ),
+    'style_currency_total_por_responsable' => array(
+        'numberformat' => [
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+        ],
+        'fill' => array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'color' => array('rgb' => '0E76A8')
+        ),
+        'font' => array('bold' => true),
+        'borders' => array(
+            'allborders' => array(
+                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'color' => array('rgb' => '000000')
+            )
+        )
+    ),
+    'style_simple_text' => array(
+        'numberformat' => [
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_GENERAL,
+        ],
+    ),
+    'style_simple_text_whit_border' => array(
+        'numberformat' => [
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_GENERAL,
+        ],
+        'borders' => array(
+            'allborders' => array(
+                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'color' => array('rgb' => '000000')
+            )
+        )
+    ),
+    'style_general_col' => array(
+        'numberformat' => [
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+        ],
+        'fill' => array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'color' => array('rgb' => '')
+        ),
+        'borders' => array(
+            'allborders' => array(
+                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'color' => array('rgb' => '000000')
+            )
+        )
+    )
 );
