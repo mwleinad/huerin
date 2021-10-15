@@ -739,6 +739,10 @@ class Bono extends Personal
         $instancias_filtered = [];
         foreach($instancias as $inst) {
             $cad = $inst;
+            //los rif el dia que se abren deven valer doble
+            if(in_array((int)$inst['tipo_servicio_id'], [RIF, RIFAUDITADO]))
+                $cad['costo'] = $cad['costo'] * 2;
+
             if ($row_serv['status_service'] === 'bajaParcial' && $this->Util()->getFirstDate($inst['fecha']) > $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
                 $cad['class'] = 'Parcial';
                 $cad['costo'] = 0;
