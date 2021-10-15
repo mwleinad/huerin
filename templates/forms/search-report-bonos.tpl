@@ -27,10 +27,18 @@
 				<td align="center">
 					<select name="period" id="period"  class="largeInput"  style="width: 90%;">
 						<option value="">Todos</option>
-						<option value="efm">Ene Feb Mar</option>
-						<option value="amj">Abr May Jun</option>
-						<option value="jas">Jul Ago Sep</option>
-						<option value="ond">Oct Nov Dic</option>
+						<option value="1">Enero</option>
+						<option value="2">Febrero</option>
+						<option value="3">Marzo</option>
+						<option value="4">Abril</option>
+						<option value="5">Mayo</option>
+						<option value="6">Junio</option>
+						<option value="7">Julio</option>
+						<option value="8">Agosto</option>
+						<option value="9">Septiembre</option>
+						<option value="10">Octubre</option>
+						<option value="11">Noviembre</option>
+						<option value="12">Diciembre</option>
 					</select>
 				</td>
 				<td align="center">

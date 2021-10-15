@@ -1670,6 +1670,15 @@ class Util extends CustomError
         $this->Util()->DB()->CleanQuery();
     }
 
+    function generateMonthUntil($max_month, $array = true)
+    {
+        $base = [];
+        $until = $max_month > 12 || $max_month <=0 ? 12 : (int) $max_month;
+        for ($ii = 1; $ii <= $until; $ii++) {
+            $base[$ii] = $array ? [] : $ii;
+        }
+        return $base;
+    }
     function generateMonthByPeriod($period, $array = true)
     {
         $base = [];
@@ -1702,34 +1711,16 @@ class Util extends CustomError
         return $base;
     }
 
-    function listMonthHeaderForReport($period)
+    function listMonthHeaderForReport($max_month)
     {
         global $monthsInt;
         $base = [];
-        switch ($period) {
-            case 'efm':
-                $init = 1;
-                $until = 3;
-                break;
-            case 'amj':
-                $init = 4;
-                $until = 6;
-                break;
-            case 'jas':
-                $init = 7;
-                $until = 9;
-                break;
-            case 'ond':
-                $init = 10;
-                $until = 12;
-                break;
-            default:
-                $init = 1;
-                $until = 12;
-                break;
-        }
-        for ($ii = $init; $ii <= $until; $ii++)
+        $base = [];
+        $until = $max_month > 12 || $max_month <=0 ? 12 : (int) $max_month;
+        for ($ii = 1; $ii <= $until; $ii++) {
             $base[] = $monthsInt[$ii];
+        }
+
         return $base;
     }
 
