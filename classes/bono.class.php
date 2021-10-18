@@ -452,6 +452,7 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow(3, $row_porcentcrecimiento, 'Porcentaje de crecimiento')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_grantotal']);
             $col = 4;
+            $crecimiento_enero = 100;
             foreach ($total['totales']['totales_mes'] as $key_month => $total_mes) {
 
                 $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
@@ -503,9 +504,18 @@ class Bono extends Personal
                     ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
                 $cordinate_porcentcrecimiento = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentcrecimiento;
-                $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, '')
+
+                if((int)$key_month === 1)
+                    $valor = 1;
+                else {
+                    $cordinate_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col-1) . $row_devengado;
+                    $valor ='=+('.$cordinate_devengado.'/'.$cordinate_devengado_anterior.')-1';
+                }
+
+                $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                     ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
                 $col++;
+
             }
 
             $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months)+3) . $row_nombre;
