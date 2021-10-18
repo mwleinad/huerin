@@ -509,7 +509,7 @@ class Bono extends Personal
                     $valor = 1;
                 else {
                     $cordinate_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col-1) . $row_devengado;
-                    $valor ='=+('.$cordinate_devengado.'/'.$cordinate_devengado_anterior.')-1';
+                    $valor ='=IFERROR((+'.$cordinate_devengado.'/'.$cordinate_devengado_anterior.')-1,0)';
                 }
 
                 $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
