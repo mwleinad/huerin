@@ -18,7 +18,7 @@ $global_config_style_cell = array(
     ),
     'style_currency' => array(
         'numberformat' => [
-            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ],
         'borders' => array(
             'allborders' => array(
@@ -55,7 +55,7 @@ $global_config_style_cell = array(
     ),
     'style_currency_total_por_responsable' => array(
         'numberformat' => [
-            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ],
         'fill' => array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -87,7 +87,7 @@ $global_config_style_cell = array(
     ),
     'style_general_col' => array(
         'numberformat' => [
-            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ],
         'fill' => array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
