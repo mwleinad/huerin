@@ -750,6 +750,15 @@ class Personal extends Main
         return $_SESSION["lineal"];
     }
 
+    function SubordinadosDirectos() {
+        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.nivel FROM personal
+                LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato 
+                inner join roles as roles on personal.roleId=roles.rolId 
+                where personal.jefeInmediato = '".$this->personalId."' ORDER BY name ASC
+        ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
+    }
     function SubordinadosDetailsAddPass()
     {
         $sql = "SELECT personal.*, jefes.name AS jefeName, roles.nivel FROM personal
@@ -1395,7 +1404,7 @@ class Personal extends Main
 
     public function getSubordinadosByLevel ($nivel = 0) {
         $subordinados_filtrados = [];
-        $subordinados = $this->SubordinadosDetailsAddPass();
+        $subordinados = $this->SubordinadosDirectos();
         if(!$nivel)
             return $subordinados;
 
