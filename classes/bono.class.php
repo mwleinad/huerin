@@ -412,6 +412,8 @@ class Bono extends Personal
         $total_consolidado_grupo['row_gasto'] = [];
         $total_consolidado_grupo['row_porcent_bono'] = [];
         $total_consolidado_grupo['row_bono'] = [];
+        $total_consolidado_grupo['gran_cantidad_workflow_trabajado'] = [];
+        $total_consolidado_grupo['gran_cantidad_workflow_devengando'] = [];
 
         foreach ($data as $total) {
             $row_nombre = $row;
@@ -504,7 +506,7 @@ class Bono extends Personal
                                 : 0;
 
                 $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
-                $sheet->setCellValueByColumnAndRow($col, $row_bono, $formula_bono)
+                $sheet->setCellValueByColumnAndRow($col, $row_bono, '')
                     ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
                 if(!is_array($total_consolidado_grupo['row_bono'][$key_month])) $total_consolidado_grupo['row_bono'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_bono'][$key_month], $cordinate_bono);
@@ -513,8 +515,9 @@ class Bono extends Personal
                 $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
                     ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
 
+                $formula_efectividad = '=IFERROR((+'.$total_mes['cantidad_workflow_trabajado'].'/'.$total_mes['cantidad_workflow_devengado'].'),0)';
                 $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
-                $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, '=IFERROR(+' . $cordinate_trabajado . "/" . $cordinate_devengado.',0)')
+                $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                     ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
 
                 $cordinate_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
@@ -526,6 +529,10 @@ class Bono extends Personal
                 $valor = (int)$key_month === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_base_devengando.')-1,0)';
                 $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                     ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
+
+                $total_consolidado_grupo['gran_cantidad_workflow_devengado'][$key_month] ['total'] += $total_mes['cantidad_workflow_devengado'];
+                $total_consolidado_grupo['gran_cantidad_workflow_trabajado'][$key_month] ['total'] += $total_mes['cantidad_workflow_trabajado'];
+
                 $col++;
 
             }
@@ -697,8 +704,9 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
                 ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
 
+            $formula_efectividad = '=IFERROR((+'.$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['gran_cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
-            $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, '=IFERROR(+' . $cordinate_trabajado . "/" . $cordinate_devengado.',0)')
+            $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
 
             $cordinate_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
