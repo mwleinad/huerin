@@ -732,7 +732,6 @@ class Bono extends Personal
             //gran total efectividad
             $gran_total_gerente['cantidad_workflow_trabajado'][$key_mes]['total'] +=$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'];
             $gran_total_gerente['cantidad_workflow_devengado'][$key_mes]['total'] +=$data['gran_cantidad_workflow_devengado'][$key_mes]['total'];
-
             $col++;
         }
         $merges = PHPExcel_Cell::stringFromColumnIndex(4) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + 3) . $row_nombre;
@@ -781,11 +780,11 @@ class Bono extends Personal
             $row += 1;
         }
         $row += 1;
-        $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row);
-        $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $months, $row, $data);
+        $gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row);
+        $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data);
     }
 
-    function drawGranTotalGerente (&$book, $sheet, $data, $months, &$row, $info_grupo) {
+    function drawGranTotalGerente (&$book, $sheet, $data, $data_gerente, $months, &$row, $info_grupo) {
         global $global_config_style_cell;
 
         $col =  4;
@@ -833,17 +832,20 @@ class Bono extends Personal
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
-            $formula = count($data['row_devengado'][$key_mes]) ? '=+'.implode('+', $data['row_devengado'][$key_mes]) : '';
+            $celdas_devengado = array_merge_recursive($data['row_devengado'][$key_mes], $data_gerente['row_devengado'][$key_mes]);
+            $formula = count($celdas_devengado) ? '=+'.implode('+', $celdas_devengado) : '';
             $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
                 ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
-            $formula = count($data['row_trabajado'][$key_mes]) ? '=+'.implode('+', $data['row_trabajado'][$key_mes]) : '';
+            $celdas_trabajado = array_merge_recursive($data['row_trabajado'][$key_mes], $data_gerente['row_trabajado'][$key_mes]);
+            $formula = count($celdas_trabajado) ? '=+'.implode('+', $celdas_trabajado) : '';
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
             $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                 ->getStyle($cordinate_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-            $formula = count($data['row_gasto'][$key_mes]) ? '=+'.implode('+', $data['row_gasto'][$key_mes]) : '';
+            $celdas_gasto = array_merge_recursive($data['row_gasto'][$key_mes], $data_gerente['row_gasto'][$key_mes]);
+            $formula = count($celdas_gasto) ? '=+'.implode('+', $celdas_gasto) : '';
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -851,14 +853,17 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
                 ->getStyle($cordinate_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
-            $formula = count($data['row_bono'][$key_mes]) ? '=+'.implode('+', $data['row_bono'][$key_mes]) : '';
+            $celdas_bono = array_merge_recursive($data['row_bono'][$key_mes], $data_gerente['row_bono'][$key_mes]);
+            $formula = count($celdas_bono) ? '=+'.implode('+', $celdas_bono) : '';
             $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
             $sheet->setCellValueByColumnAndRow($col, $row_bono,$formula)
                 ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
 
-            $formula_efectividad = '=IFERROR((+'.$data['cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
+            $cantidad_workflow_devengado = $data['cantidad_workflow_devengado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_devengado'][$key_mes]['total'];
+            $cantidad_workflow_trabajado = $data['cantidad_workflow_trabajado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_trabajado'][$key_mes]['total'];
 
+            $formula_efectividad = '=IFERROR((+'.$cantidad_workflow_trabajado.'/'.$cantidad_workflow_devengado.'),0)';
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
