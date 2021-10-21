@@ -1715,7 +1715,6 @@ class Util extends CustomError
     {
         global $monthsInt;
         $base = [];
-        $base = [];
         $until = $max_month > 12 || $max_month <=0 ? 12 : (int) $max_month;
         for ($ii = 1; $ii <= $until; $ii++) {
             $base[] = $monthsInt[$ii];
