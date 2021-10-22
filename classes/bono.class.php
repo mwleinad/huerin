@@ -526,7 +526,8 @@ class Bono extends Personal
 
                 $cordinate_porcentcrecimiento = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentcrecimiento;
 
-                $valor = (int)$key_month === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_base_devengando.')-1,0)';
+                $cordenada_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col - 1).$row_devengado;
+                $valor = (int)$key_month === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_devengado_anterior.')-1,0)';
                 $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                     ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
 
@@ -724,7 +725,8 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_devengado.',0)')
                 ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
-            $valor = (int)$key_mes === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_base_devengando.')-1,0)';
+            $cordenada_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col - 1).$row_devengando;
+            $valor = (int)$key_mes === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_devengado_anterior.')-1,0)';
             $cordinate_porcentcrecimiento = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentcrecimiento;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                 ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -872,7 +874,8 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_devengado.',0)')
                 ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
-            $valor = (int)$key_mes === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_base_devengando.')-1,0)';
+            $cordenada_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col - 1).$row_devengando;
+            $valor = (int)$key_mes === 1 ? 1 : '=IFERROR((+'.$cordinate_devengado.'/'.$cordenada_devengado_anterior.')-1,0)';
             $cordinate_porcentcrecimiento = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentcrecimiento;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                 ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
