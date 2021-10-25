@@ -57,23 +57,16 @@
             </div>
 
             <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">*Control Bueno (Obligatorio):</div>
+                <div style="width:30%;float:left">*Cliente Bueno</div>
                 <div style="width:70%;float:left">
                     <textarea name="control" cols="10" id="control" class="largeInput medium">{$post.control}</textarea>
                 </div>
                 <hr/>
             </div>
             <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">Control Regular:</div>
+                <div style="width:30%;float:left">*Cliente Malo</div>
                 <div style="width:70%;float:left">
                     <textarea name="control2" cols="10" id="control2" class="largeInput medium">{$post.control2}</textarea>
-                </div>
-                <hr/>
-            </div>
-            <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">Control Malo:</div>
-                <div style="width:70%;float:left">
-                    <textarea name="control3" cols="10" id="control3" class="largeInput medium">{$post.control3}</textarea>
                 </div>
                 <hr/>
             </div>

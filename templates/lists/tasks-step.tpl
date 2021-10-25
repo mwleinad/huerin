@@ -22,7 +22,8 @@
             <td align="center" class="id">{$task.prorroga} Dias</td>
             <td align="center">
                 {if $task.control}
-                    <b>Control 1: {$task.control}</b>
+                    <span><b>Cliente Bueno: </b> {$task.control}</span><br>
+                    {if $task.control2}<span><b>Cliente Malo: </b> {$task.control2}</span><br>{/if}
                     {if $task.controlFile}
                         <img src="{$WEB_ROOT}/images/icons/activate.png" />
                         <span style="color:#093"><br />
