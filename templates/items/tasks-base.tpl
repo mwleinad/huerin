@@ -9,18 +9,13 @@
 		<td align="center">{$task.prorroga} Dias</td>
     <td align="center" style="font-size: 10px;text-align: justify">
 		{if $task.control !== ''}
-			<span><b>Control Bueno:</b> {$task.control}</span>
+			<span><b>Cliente Bueno:</b> {$task.control}</span>
 		{/if}
 		{if $task.control2 !== ''}
 			<br><br>
-			<span><b>Control Regular:</b> {$task.control2}</span>
+			<span><b>Cliente Malo:</b> {$task.control2}</span>
 
 		{/if}
-		{if $task.control3 !== ''}
-			<br><br>
-			<span><b>Control Malo:</b> {$task.control3}</span>
-		{/if}
-
 	</td>
     <td align="center">
 		<ul>
