@@ -255,7 +255,7 @@
     </tr>
 
     <tr>
-        <td align="left" width="40%" class="tdPad">* Metodo de Pago:</td>
+        <td align="left" width="40%" class="tdPad">* Forma de Pago:</td>
         <td align="left" class="tdPad">
             <select name="metodoDePago" id="metodoDePago" class="largeInput">
                 {foreach from=$formas_pago item=item key=key}
