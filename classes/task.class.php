@@ -44,21 +44,21 @@ class Task extends Step
 	private $control;
 	public function setControl($value)
 	{
-		$this->Util()->ValidateString($value, 255, 1, 'Control Uno');
+		$this->Util()->ValidateString($value, 255, 1, 'Control Bueno');
 		$this->control = $value;
 	}
 
 	private $control2;
 	public function setControl2($value)
 	{
-		$this->Util()->ValidateString($value, 255, 0, 'Control Dos');
+		$this->Util()->ValidateString($value, 255, 0, 'Control Regular');
 		$this->control2 = $value;
 	}
 
 	private $control3;
 	public function setControl3($value)
 	{
-		$this->Util()->ValidateString($value, 255, 0, 'Control Tres');
+		$this->Util()->ValidateString($value, 255, 0, 'Control Malo');
 		$this->control3 = $value;
 	}
 

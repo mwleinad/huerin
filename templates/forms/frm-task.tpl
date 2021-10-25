@@ -49,16 +49,32 @@
 
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">*Dias de Prorroga:</div>
-                <div style="width:30%;float:left"><input name="prorroga" id="prorroga" type="text"
-                                                         value="{$post.prorroga}" size="27" class="largeInput medium"/>
+                <div style="width:30%;float:left">
+                    <input name="prorroga" id="prorroga" type="text"
+                                                            value="{$post.prorroga}" size="27" class="largeInput medium" />
                 </div>
                 <hr/>
             </div>
 
             <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">*Control Uno (Obligatorio):</div>
-                <div style="width:30%;float:left"><input name="control" id="control" type="text" value="{$post.control}"
-                                                         size="27" class="largeInput medium"/></div>
+                <div style="width:30%;float:left">*Control Bueno (Obligatorio):</div>
+                <div style="width:70%;float:left">
+                    <textarea name="control" cols="10" id="control" class="largeInput medium">{$post.control}</textarea>
+                </div>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left">Control Regular:</div>
+                <div style="width:70%;float:left">
+                    <textarea name="control2" cols="10" id="control2" class="largeInput medium">{$post.control2}</textarea>
+                </div>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left">Control Malo:</div>
+                <div style="width:70%;float:left">
+                    <textarea name="control3" cols="10" id="control3" class="largeInput medium">{$post.control3}</textarea>
+                </div>
                 <hr/>
             </div>
             <div class="formLine" style="width:100%;height: auto;vertical-align: middle;display: table;">

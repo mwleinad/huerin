@@ -26,7 +26,7 @@
     {if $item.countTasks > 0}
 	<tr id="tasks-{$item.stepId}" style="display:none">
 		<td align="center" class="id" valign="middle">Tareas</td>
-		<td align="center" colspan="3">
+		<td align="center" colspan="4">
     	<table width="100%" cellpadding="0" cellspacing="0" id="box-table-a">
 				{include file="{$DOC_ROOT}/templates/items/tasks-header.tpl"}
 				<tbody>
