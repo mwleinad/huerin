@@ -258,9 +258,12 @@
         <td align="left" width="40%" class="tdPad">* Metodo de Pago:</td>
         <td align="left" class="tdPad">
             <select name="metodoDePago" id="metodoDePago" class="largeInput">
-                <option value="">--- seleccionar ---</option>
                 {foreach from=$formas_pago item=item key=key}
-                    <option value="{$item.c_FormaPago}" {if $contractInfo.metodoDePago  eq $item.c_FormaPago}selected{/if}>{$item.descripcion|strtolower|ucfirst}</option>
+                    <option value="{$item.c_FormaPago}"
+                            {if $contractInfo.metodoDePago  eq $item.c_FormaPago}
+                             selected
+                            {elseif $item.c_FormaPago eq '99'}selected{/if}
+                    >{$item.descripcion|strtolower|ucfirst}</option>
                 {/foreach}
                 <option value="NA" {if $contractInfo.metodoDePago == "NA"} selected {/if}>NA</option>
             </select>
