@@ -4,7 +4,7 @@ include_once('../config.php');
 include_once(DOC_ROOT . '/libraries.php');
 
 session_start();
-include(DOC_ROOT . '/libs/excel/PHPExcel.php');
+include_once(DOC_ROOT . '/libs/excel/PHPExcel.php');
 switch ($_POST['type']) {
     case 'generate_report_razon_social':
         $file  = DOC_ROOT . "/properties/config_layout_".$_POST['type_report'].".json";
