@@ -21,25 +21,26 @@ class Bono extends Personal
         $data['gerente'] = [];
 
         $months = $this->Util()->generateMonthUntil($_POST['period'], false);
-        $name_view = "instancia_" . $_POST['year'] . "_" . implode('_', $months);
-        $custom_fields = ['contract_id', 'name', 'customer', 'servicio_id', 'name_service', 'departamento_id',
-            'status_service', 'is_primary', 'last_date_workflow', 'instancias'];
-        $add_fields_no_group = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
+        $name_view      = "instancia_" . $_POST['year'] . "_" . implode('_', $months);
+        $custom_fields  = ['contract_id', 'name', 'customer', 'servicio_id', 'name_service', 'departamento_id',
+                           'status_service', 'is_primary', 'last_date_workflow', 'fio', 'fif', 'instancias'];
+        $add_fields_no_group    = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
 
-        $select_general  ="select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
-                            b.is_primary, b.lastDateWorkflow ";
-        $select_nogroup = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
-        $select_group  = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
-                      'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
-        $group_by = " group by a.servicioId ";
-        $order_by = "order by a.date asc ";
+        $select_general     ="select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
+                              b.is_primary, b.lastDateWorkflow, b.fio, b.fif ";
+        $select_nogroup     = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
+        $select_group       = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
+                                 'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
+        $group_by           = " group by a.servicioId ";
+        $order_by           = "order by a.date asc ";
 
         $base_sql = "from instanciaServicio a
                inner join (select servicio.servicioId,servicio.contractId, servicio.tipoServicioId, servicio.status, 
                            tipoServicio.nombreServicio, tipoServicio.periodicidad, tipoServicio.departamentoId,
-                           tipoServicio.is_primary, servicio.lastDateWorkflow from servicio 
+                           tipoServicio.is_primary, servicio.lastDateWorkflow,servicio.inicioOperaciones as fio,
+                           inicioFactura as fif from servicio 
                            inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
-                           where tipoServicio.status='1') b on a.servicioId=b.servicioId
+                           where tipoServicio.status='1' and (servicio.status = 'bajaParcial' OR servicio.status = 'activo')) b on a.servicioId=b.servicioId
                inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
                            from contract inner join customer on contract.customerId = customer.customerId where customer.active = '1'
                            and contract.activo = 'Si') c
@@ -892,6 +893,12 @@ class Bono extends Personal
         $instancias_filtered = [];
         foreach($instancias as $inst) {
             $cad = $inst;
+            // las instancias deben ser apartir de su fecha de inicio de operaciones en adelante si
+            // es menor no debe tomarse encuenta
+            if ($this->Util()->getFirstDate($inst['fecha']) < $this->Util()->getFirstDate($row_serv['fio']))
+                continue;
+
+
             //los rif el dia que se abren deven valer doble
             if(in_array((int)$inst['tipo_servicio_id'], [RIF, RIFAUDITADO]))
                 $cad['costo'] = $cad['costo'] * 2;
