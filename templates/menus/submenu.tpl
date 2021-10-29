@@ -144,11 +144,11 @@
                 {/if*}
                 {if in_array(163,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if} target="_blank">
-                      <span>Bonos trimestral</span></a></li>
+                      <span>Bonos</span></a></li>
                 {/if}
                 {if in_array(215,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza" {if $page == "report-cobranza"}class="current"{/if} target="_blank">
-                      <span>Bonos juridico</span></a></li>
+                      <span>Bonos CxC</span></a></li>
                 {/if}
                 {if in_array(225,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/edo-result" {if $includedTpl == "edo-result"} class="current"{/if} target="_blank"><span>Estado de resultado</span></a></li>
