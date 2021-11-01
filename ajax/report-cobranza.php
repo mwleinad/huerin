@@ -158,27 +158,10 @@ switch($_POST["type"])
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$file_name;
 	break;
     case 'searchAcumulada':
-        $year = $_POST['year'];
-        $formValues['subordinados'] = $_POST['subordinados'];
-        $formValues['respCuenta'] = $_POST['responsableCuenta'];
-        $formValues['cliente'] = $_POST["rfc"];
-        $formValues['year'] = $year;
-        $formValues['activos'] = true;
-        include_once(DOC_ROOT.'/ajax/filterOnlyContract.php');
-        $data = $reportebonos->generateReportBonosJuridico($contracts,$_POST);
+        $bonoCobranza->generateReport();
+        $nameFile = $bonoCobranza->getNameReport();
         echo "ok[#]";
-        $smarty->assign("meses", $data["meses"]);
-        $smarty->assign("rowDevTotal", $data["rowDevTotal"]);
-        $smarty->assign("rowCobTotal", $data["rowCobTotal"]);
-        $smarty->assign("items", $data["items"]);
-        $smarty->assign("totalesAcumulados", $data["totalesAcumulados"]);
-        $smarty->assign("totDevVerXEncargado", $data["totDevVerXEncargado"]);
-        $smarty->assign("totCompVerXEncargado", $data["totCompVerXEncargado"]);
-        $smarty->assign("granTotalDevengado", array_sum($data["totDevVerXEncargado"]));
-        $smarty->assign("granTotalCompletado", array_sum($data["totCompVerXEncargado"]));
-        $smarty->display(DOC_ROOT.'/templates/lists/report-cobranza-acumulada.tpl');
-
-    break;
-
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+        break;
 }
 ?>

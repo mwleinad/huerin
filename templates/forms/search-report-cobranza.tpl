@@ -7,35 +7,33 @@
 				<td colspan="5" bgcolor="#CCCCCC" align="center"><b>Opciones de busqueda</b></td>
 			</tr>
 			<tr>
-				<td align="center">Cliente</td>
 				<td align="center">Responsable</td>
-				<td align="center">Incluir Subordinados</td>
 				<td align="center">Periodo</td>
 				<td align="center">Año</td>
 			</tr>
 			<tr>
 				<td style="width:auto; padding:0px 4px 4px 8px;" align="center">
-					<input type="text" size="35" name="rfc" id="rfc" class="largeInput medium2" autocomplete="off" value="{$search.rfc}"  style="width: 90%;"/>
-					<div id="loadingDivDatosFactura"></div>
-					<div style="position:relative">
-					<div style="position:relative">
-						<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
-						</div>
-					</div>
-				</td>
-				<td style="width:auto; padding:0px 4px 4px 8px;" align="center">
-					{include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
-				</td>
-				<td align="center">
-					<input name="subordinados" id="subordinados" type="checkbox"/>
+					<select name="responsableCuenta" id="responsableCuenta" class="largeInput">
+						{foreach from=$personals item=personal}
+							<option value="{$personal.personalId}" {if $search.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
+						{/foreach}
+					</select>
 				</td>
 				<td style="width: auto; padding:0px 4px 4px 8px;" align="center">
-					<select name="periodo" id="periodo"  class="largeInput"  style="width: 90%;">
+					<select name="period" id="period"  class="largeInput"  style="width: 90%;">
 						<option value="">Todos</option>
-						<option value="efm">Ene Feb Mar</option>
-						<option value="amj">Abr May Jun</option>
-						<option value="jas">Jul Ago Sep</option>
-						<option value="ond">Oct Nov Dic</option>
+						<option value="1">Enero</option>
+						<option value="2">Febrero</option>
+						<option value="3">Marzo</option>
+						<option value="4">Abril</option>
+						<option value="5">Mayo</option>
+						<option value="6">Junio</option>
+						<option value="7">Julio</option>
+						<option value="8">Agosto</option>
+						<option value="9">Septiembre</option>
+						<option value="10">Octubre</option>
+						<option value="11">Noviembre</option>
+						<option value="12">Diciembre</option>
 					</select>
 				</td>
 				<td style="width: auto; padding:0px 4px 4px 8px;" align="center">
