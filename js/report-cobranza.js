@@ -105,13 +105,15 @@ jQ(document).on('click','#btnSearch',function(){
 			var res =  response.split("[#]");
             jQ('#loading-img').hide();
             jQ('#btnSearch').show();
-            if(res[0]=='ok'){
-				jQ('#contenido').html(res[1]);
-			}else{
+            if(res[0]=='ok')
+            {
                 jQ('#loading-img').hide();
-                jQ('#btnSearch').show();
-				ShowStatusPopUp(res[1]);
-			}
+                jQ("#btnSearch").show();
+                window.location = res[1];
+            }else{
+                jQ('#loading-img').hide();
+                jQ("#btnSearch").show();
+            }
         },
         error:function (error) {
 			alert(error);

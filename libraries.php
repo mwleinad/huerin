@@ -261,6 +261,9 @@ include_once(DOC_ROOT.'/properties/bono_por_categoria.php');
 include_once(DOC_ROOT."/classes/bono.class.php");
 $bono = new Bono;
 
+include_once(DOC_ROOT."/classes/bonoCobranza.class.php");
+$bonoCobranza = new BonoCobranza;
+
 include_once(DOC_ROOT."/classes/consolidado.class.php");
 $consolidado = new Consolidado();
 
