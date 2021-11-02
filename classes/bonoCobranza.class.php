@@ -288,7 +288,7 @@ class BonoCobranza extends Personal
                 if(!is_array($return['totales_mes'][$month]['coordenada_facturado']))
                     $return['totales_mes'][$month]['coordenada_facturado'] = [];
 
-                if(($month_row['saldo']) <= 0) {
+                if((double)$month_row['saldo'] <= 0.1) {
                     $sum_col_cobrado +=$month_row['total'];
                     $return['totales_mes'][$month]['total_cobrado'] += $month_row['total'];
                     array_push($return['totales_mes'][$month]['coordenada_cobrado'], $current_coordinate_month);
