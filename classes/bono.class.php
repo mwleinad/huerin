@@ -57,47 +57,45 @@ class Bono extends Personal
         $info = $this->InfoWhitRol();
         $subordinados = $this->getSubordinadosByLevel(4);
         foreach ($subordinados as $key => $sub) {
-            $subordinados[$key]['propios'] = $this->getRowsBySheet($sub['personalId'], $name_view);
+            $subordinados[$key]['propios'] = $this->getRowsBySheet($sub, $name_view, $filtro);
             $this->setPersonalId($sub['personalId']);
             $childs = $this->GetCascadeSubordinates();
             foreach ($childs as $kc => $child) {
-                $childs[$kc]['propios'] = $this->getRowsBySheet($child['personalId'], $name_view);
+                $childs[$kc]['propios'] = $this->getRowsBySheet($child, $name_view, $filtro);
             }
             $subordinados[$key]['childs'] = $childs;
         }
 
         $data['subordinados'] = $subordinados;
-        $info['propios'] = $this->getRowsBySheet($_POST['responsableCuenta'], $name_view);
+        $info['propios'] = $this->getRowsBySheet($info, $name_view, $filtro);
         $data['gerente'] = $info;
 
         return $data;
     }
 
-    public function getRowsBySheet($id, $view)
+    public function getRowsBySheet($encargado, $view, $ftr = [])
     {
         global $workflow;
         $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
 
         $sql = "select a.* from " . $view . " a 
                 inner join contractPermiso b on a.contract_id=b.contractId
-                where b.personalId in (" . $id . ") " . $ftr_departamento . " order by a.name asc, a.name_service asc ";
+                where b.personalId in (" . $encargado['personalId'] . ") " . $ftr_departamento . " order by a.name asc, a.name_service asc ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
         // E precargar array validando pasos
 
         foreach ($res as $key => $row_serv) {
             $valid_instancias = [];
+            if($ftr['departamento_id']) {
+                if($row_serv['departamento_id'] !== $encargado['departamentoId']) {
+                    unset($res[$key]);
+                    continue;
+                }
+            }
+
             $instancias = json_decode($row_serv['instancias'], true);
             $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
-            // $pasos = $workflow->validateStepTaskByWorkflow($value); realizarlo por procedimiento;
-            // y aca validar si tiene pasos para el año se toma en cuenta.
-            /*if ($row_serv['status_service'] === 'bajaParcial') {
-                foreach ($instancias as $ki => $inst) {
-                    if ($this->Util()->getFirstDate($inst['fecha']) <= $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
-                        array_push($valid_instancias, $inst);
-                    }
-                }
-            } else $valid_instancias = $instancias;*/
 
             $res[$key]['instancias_array'] = $valid_instancias;
             if (count($res[$key]['instancias_array']) <= 0)
@@ -836,19 +834,25 @@ class Bono extends Personal
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
+            $data['row_devengado'][$key_mes] = !is_array($data['row_devengado'][$key_mes]) ? [] : $data['row_devengado'][$key_mes];
+            $data_gerente['row_devengado'][$key_mes] = !is_array($data_gerente['row_devengado'][$key_mes]) ? [] : $data_gerente['row_devengado'][$key_mes];
             $celdas_devengado = array_merge_recursive($data['row_devengado'][$key_mes], $data_gerente['row_devengado'][$key_mes]);
             $formula = count($celdas_devengado) ? '=+'.implode('+', $celdas_devengado) : '';
             $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
                 ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
+            $data['row_trabajado'][$key_mes] = !is_array($data['row_trabajado'][$key_mes]) ? [] : $data['row_trabajado'][$key_mes];
+            $data_gerente['row_trabajado'][$key_mes] = !is_array($data_gerente['row_trabajado'][$key_mes]) ? [] : $data_gerente['row_trabajado'][$key_mes];
             $celdas_trabajado = array_merge_recursive($data['row_trabajado'][$key_mes], $data_gerente['row_trabajado'][$key_mes]);
             $formula = count($celdas_trabajado) ? '=+'.implode('+', $celdas_trabajado) : '';
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
             $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                 ->getStyle($cordinate_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
-            $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
+            $data['row_gasto'][$key_mes] = !is_array($data['row_gasto'][$key_mes]) ? [] : $data['row_gasto'][$key_mes];
+            $data_gerente['row_gasto'][$key_mes] = !is_array($data_gerente['row_gasto'][$key_mes]) ? [] : $data_gerente['row_gasto'][$key_mes];
             $celdas_gasto = array_merge_recursive($data['row_gasto'][$key_mes], $data_gerente['row_gasto'][$key_mes]);
+            $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $formula = count($celdas_gasto) ? '=+'.implode('+', $celdas_gasto) : '';
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
