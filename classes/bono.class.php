@@ -56,17 +56,27 @@ class Bono extends Personal
         $this->setPersonalId($_POST['responsableCuenta']);
         $info = $this->InfoWhitRol();
         $subordinados = $this->getSubordinadosByLevel(4);
+        $subordinados_filtrados = [];
         foreach ($subordinados as $key => $sub) {
-            $subordinados[$key]['propios'] = $this->getRowsBySheet($sub, $name_view, $filtro);
+            $cad = $sub;
+            $propios_sub = $this->getRowsBySheet($sub, $name_view, $filtro);
+            $cad['propios'] = $propios_sub;
             $this->setPersonalId($sub['personalId']);
             $childs = $this->GetCascadeSubordinates();
+            $childs_filtrados = [];
             foreach ($childs as $kc => $child) {
-                $childs[$kc]['propios'] = $this->getRowsBySheet($child, $name_view, $filtro);
+                $cad_child =  $child;
+                $propios_child = $this->getRowsBySheet($child, $name_view, $filtro);
+                $cad_child['propios'] = $propios_child;
+                if(count($propios_child) > 0)
+                    array_push($childs_filtrados, $cad_child);
             }
-            $subordinados[$key]['childs'] = $childs;
+            $cad['childs'] = $childs_filtrados;
+            if(count($propios_sub) > 0 || count($childs_filtrados) > 0)
+                array_push($subordinados_filtrados, $cad);
         }
 
-        $data['subordinados'] = $subordinados;
+        $data['subordinados'] = $subordinados_filtrados;
         $info['propios'] = $this->getRowsBySheet($info, $name_view, $filtro);
         $data['gerente'] = $info;
 
