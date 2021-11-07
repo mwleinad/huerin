@@ -225,9 +225,18 @@ switch($_POST["type"])
                                 $ftr .=" and tablaId IN(0) ";
                             }
                         }
-                        $sql ="SELECT a.fecha,a.personalId,a.tablaId,a.fecha,b.nombreServicio,b.servicioId,b.tipoServicioId,b.inicioOperaciones,b.inicioFactura,b.periodicidad,b.departamentoId,b.contractId,b.status,c.name,c.nameContact,'$movimiento' as movimiento FROM log a 
-                               INNER JOIN (select contractId,servicioId,servicio.tipoServicioId,servicio.status,nombreServicio,inicioOperaciones,inicioFactura,periodicidad,departamentoId from servicio inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId) b ON a.tablaId=b.servicioId
-                               INNER JOIN (select contractId,contract.name,nameContact from contract inner join customer on contract.customerId=customer.customerId) c ON b.contractId=c.contractId
+                        $sql ="SELECT a.fecha,a.personalId,a.tablaId,a.fecha,b.nombreServicio,b.servicioId,b.tipoServicioId,
+                               b.inicioOperaciones,b.inicioFactura,b.periodicidad,b.departamentoId,b.contractId,b.status,
+                               c.name,c.nameContact,'$movimiento' as movimiento, b.uniqueInvoice 
+                               FROM log a 
+                               INNER JOIN (select contractId,servicioId,servicio.tipoServicioId,servicio.status,
+                                           nombreServicio,inicioOperaciones,inicioFactura,periodicidad,departamentoId,
+                                           uniqueInvoice      
+                                           from servicio 
+                                           inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId) b ON a.tablaId=b.servicioId
+                               INNER JOIN (select contractId,contract.name,nameContact 
+                                           from contract 
+                                           inner join customer on contract.customerId=customer.customerId) c ON b.contractId=c.contractId
                                WHERE a.tabla = 'servicio' and a.action='$action'  $ftr order by a.fecha desc";
                         $db->setQuery($sql);
                         $modificaciones = $db->GetResult();
@@ -298,10 +307,19 @@ switch($_POST["type"])
                                 $ftr .=" and a.servicioId IN(0) ";
                             }
                         }
-                        $sql ="SELECT c.name,c.nameContact,c.contractId,b.nombreServicio,b.servicioId,b.tipoServicioId,b.inicioOperaciones,b.inicioFactura,b.periodicidad,b.departamentoId,b.status,b.lastDateWorkflow, 'Baja' as movimiento,a.status as action,a.fecha,a.personalId,a.namePerson FROM historyChanges a 
-                               INNER JOIN (select contractId,servicioId,servicio.tipoServicioId,nombreServicio,inicioOperaciones,inicioFactura,periodicidad,departamentoId,servicio.status,servicio.lastDateWorkflow from servicio inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId where servicio.status in('baja','bajaParcial')) b ON a.servicioId=b.servicioId
-                               INNER JOIN (select contractId,contract.name,nameContact from contract inner join customer on contract.customerId=customer.customerId) c ON b.contractId=c.contractId
-                               WHERE a.status IN('baja','bajaParcial') $ftr order by a.fecha desc";
+                        $sql ="SELECT c.name,c.nameContact,c.contractId,b.nombreServicio,b.servicioId,b.tipoServicioId,b.inicioOperaciones,b.inicioFactura,b.periodicidad,
+                                      b.departamentoId,b.status,b.lastDateWorkflow, 'Baja' as movimiento,a.status as action,a.fecha,a.personalId,a.namePerson, b.uniqueInvoice
+                               FROM historyChanges a 
+                               INNER JOIN (SELECT contractId,servicioId,servicio.tipoServicioId,nombreServicio,inicioOperaciones,inicioFactura,periodicidad,departamentoId,servicio.status,
+                                           servicio.lastDateWorkflow, tipoServicio.uniqueInvoice
+                                           FROM servicio 
+                                           INNER JOIN tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId 
+                                           WHERE servicio.status IN('baja','bajaParcial')) b ON a.servicioId=b.servicioId
+                               INNER JOIN (SELECT contractId,contract.name,nameContact 
+                                           FROM contract
+                                           INNER JOIN customer ON contract.customerId=customer.customerId) c ON b.contractId=c.contractId
+                               WHERE a.status IN('baja','bajaParcial') $ftr 
+                               ORDER BY a.fecha DESC";
                         $db->setQuery($sql);
                         $modificaciones = $db->GetResult();
                         $registros = [];
