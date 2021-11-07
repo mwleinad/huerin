@@ -26,9 +26,11 @@
         <td align="center">{$item.nombreServicio}</td>
         <td align="center">{$item.supervisor}</td>
         <td align="center">{$item.fechaFacturacion}</td>
-        <td align="center">{$item.periodicidad|ucfirst}</td>
-        <td align="center">{if $item.periodicidad|lower neq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
-        <td align="center">{if $item.periodicidad|lower eq 'eventual'}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
+        <td align="center">{$item.periodicidad|ucfirst} {if $item.uniqueInvoice && $item.periodicidad|lower neq 'eventual'}(Factura unica ocasion){/if}</td>
+        <td align="center">{if $item.periodicidad|lower neq 'eventual' && !$item.uniqueInvoice}
+                            $ {$item.costo|number_format:'2':'.':','}{else} -- {/if}
+        </td>
+        <td align="center">{if $item.periodicidad|lower eq 'eventual' || $item.uniqueInvoice}$ {$item.costo|number_format:'2':'.':','}{else} -- {/if}</td>
         <td align="center"></td>
     </tr>
 {foreachelse}
