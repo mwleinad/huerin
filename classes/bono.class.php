@@ -525,7 +525,8 @@ class Bono extends Personal
                 $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
                     ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
 
-                $formula_efectividad = '=IFERROR((+'.$total_mes['cantidad_workflow_trabajado'].'/'.$total_mes['cantidad_workflow_devengado'].'),0)';
+                //$formula_efectividad = '=IFERROR((+'.$total_mes['cantidad_workflow_trabajado'].'/'.$total_mes['cantidad_workflow_devengado'].'),0)';
+                $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
                 $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
                 $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                     ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -726,7 +727,8 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
                 ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
 
-            $formula_efectividad = '=IFERROR((+'.$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['gran_cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
+            //$formula_efectividad = '=IFERROR((+'.$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['gran_cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
+            $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -881,7 +883,7 @@ class Bono extends Personal
             $cantidad_workflow_devengado = $data['cantidad_workflow_devengado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_devengado'][$key_mes]['total'];
             $cantidad_workflow_trabajado = $data['cantidad_workflow_trabajado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_trabajado'][$key_mes]['total'];
 
-            $formula_efectividad = '=IFERROR((+'.$cantidad_workflow_trabajado.'/'.$cantidad_workflow_devengado.'),0)';
+            $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
