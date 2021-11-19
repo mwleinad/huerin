@@ -270,10 +270,12 @@ class SendMail extends Main
             }
 
             try {
-               $mail->send();
-               $logSend .="Se envia a ".$name."(".$email.")".chr(13).chr(10);
+               if ($mail->send())
+                    $logSend .="Se envia a ".$name."(".$email.")".chr(13).chr(10);
+               else
+                   $logSend .="Hubo un error en el envio a ".$name."(".$email.")".chr(13).chr(10);
             } catch (Exception $e) {
-               $logSend .="Hubo un error en el envio a ".$name."(".$email.")".chr(13).chr(10);
+
                $mail->getSMTPInstance()->reset();
             }
 
