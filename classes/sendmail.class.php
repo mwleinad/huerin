@@ -1,9 +1,9 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-//require_once(DOC_ROOT."/phpmailer/class.phpmailer.php");
 class SendMail extends Main
 {
-
 	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
 	{
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
@@ -11,14 +11,15 @@ class SendMail extends Main
 			$subject= utf8_decode($subject);
 		 	$fromName = utf8_decode($fromName);
 		 	try{
-                $mail->AddReplyTo($from, $fromName);
-                $mail->SetFrom($from, $fromName);
-                $mail->AddAddress($to, $toName);
+                $mail->addReplyTo($from, $fromName);
+                $mail->setFrom($from, $fromName);
+                $mail->addAddress($to, $toName);
                 $mail->Subject    = $subject;
-                $mail->MsgHTML($body);
-                $mail->IsSMTP();
+                $mail->msgHTML($body);
+                $mail->isSMTP();
                 $mail->SMTPAuth   = true;
                 $mail->Host       = SMTP_HOST2;
+                $mail->SMTPAutoTLS  = false;
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
@@ -26,19 +27,17 @@ class SendMail extends Main
                 $mail->SMTPDebug = 0;
                 if($attachment != "")
                 {
-                    $mail->AddAttachment($attachment, $fileName);
+                    $mail->addAttachment($attachment, $fileName);
                 }
 
                 if($attachment2 != "")
                 {
-                    $mail->AddAttachment($attachment2, $fileName2);
+                    $mail->addAttachment($attachment2, $fileName2);
                 }
 
-                $mail->Send();
+                $mail->send();
 
-            }catch(phpmailerException $e){
-                return false;
-            }catch(Exception $e){
+            } catch (Exception $e){
                 return false;
             }
         return true;
@@ -48,19 +47,19 @@ class SendMail extends Main
 	{
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
             try{
-                $mail->AddReplyTo($from, $fromName);
-                $mail->SetFrom($from, $fromName);
+                $mail->addReplyTo($from, $fromName);
+                $mail->setFrom($from, $fromName);
                 foreach($to as $correo => $name)
                 {
                     switch($name){
                         case 'Desarrollador':
                             if(count($to)>1)
-                                $mail->AddBCC($correo, $name);
+                                $mail->addBCC($correo, $name);
                             else
-                                $mail->AddAddress($correo, $name);
+                                $mail->addAddress($correo, $name);
                             break;
                         default:
-                            $mail->AddAddress($correo, $name);
+                            $mail->addAddress($correo, $name);
                             break;
                     }
                 }
@@ -68,17 +67,18 @@ class SendMail extends Main
                 {
                     foreach($cc as $ccEmail => $ccName)
                     {
-                        $mail->AddBCC($ccEmail, $ccName);
+                        $mail->addBCC($ccEmail, $ccName);
                     }
-                    $mail->AddBCC(EMAIL_DEV,'COPIA CARBON');
+                    $mail->addBCC(EMAIL_DEV,'COPIA CARBON');
                 }else{
-                    $mail->AddAddress(EMAIL_DEV, 'DEVELOPER');
+                    $mail->addAddress(EMAIL_DEV, 'DEVELOPER');
                 }
                 $mail->Subject    = $subject;
-                $mail->MsgHTML($body);
-                $mail->IsSMTP();
+                $mail->msgHTML($body);
+                $mail->isSMTP();
                 $mail->SMTPAuth   = true;
                 $mail->Host       = SMTP_HOST2;
+                $mail->SMTPAutoTLS  = false;
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
@@ -86,17 +86,15 @@ class SendMail extends Main
                 $mail->Timeout=3600;
                 if($attachment != "")
                 {
-                    $mail->AddAttachment($attachment, $fileName);
+                    $mail->addAttachment($attachment, $fileName);
                 }
 
                 if($attachment2 != "")
                 {
-                    $mail->AddAttachment($attachment2, $fileName2);
+                    $mail->addAttachment($attachment2, $fileName2);
                 }
-                $mail->Send();
-            }catch(phpmailerException $e){
-                return false;
-            }catch(Exception $e){
+                $mail->send();
+            } catch (Exception $e){
                 return false;
             }
 
@@ -106,20 +104,21 @@ class SendMail extends Main
     {
         $mail = new PHPMailer();
 
-        $mail->AddReplyTo($from, $fromName);
-        $mail->SetFrom($from, $fromName);
+        $mail->addReplyTo($from, $fromName);
+        $mail->setFrom($from, $fromName);
         foreach($to as $correo => $name)
         {
-           $mail->AddBCC($correo, $name);
+           $mail->addBCC($correo, $name);
         }
         if($sendDesarrollador)
-            $mail->AddBCC(EMAIL_DEV,'Desarrollador');
+            $mail->addBCC(EMAIL_DEV,'Desarrollador');
 
         $mail->Subject    = $subject;
-        $mail->MsgHTML($body);
-        $mail->IsSMTP();
+        $mail->msgHTML($body);
+        $mail->isSMTP();
         $mail->SMTPAuth   = true;
         $mail->Host       = SMTP_HOST2;
+        $mail->SMTPAutoTLS  = false;
         $mail->Port       = SMTP_PORT2;
         $mail->Username   = SMTP_USER2;
         $mail->Password   = SMTP_PASS2;
@@ -128,14 +127,14 @@ class SendMail extends Main
 
         if($attachment != "")
         {
-            $mail->AddAttachment($attachment, $fileName);
+            $mail->addAttachment($attachment, $fileName);
         }
 
         if($attachment2 != "")
         {
-            $mail->AddAttachment($attachment2, $fileName2);
+            $mail->addAttachment($attachment2, $fileName2);
         }
-        if($mail->Send())
+        if($mail->send())
             return true;
         else
             return false;
@@ -145,27 +144,28 @@ class SendMail extends Main
     {
         //crear un objeto mail por cada correo
         $mail = new PHPMailer(); // defaults to using php "mail()"
-        $mail->AddReplyTo($from, $fromName);
-        $mail->SetFrom($from, $fromName);
-        $mail->Subject    = $subject;
-        $mail->MsgHTML($body);
-        $mail->IsSMTP();
-        $mail->SMTPAuth   = true;
-        $mail->Host       = SMTP_HOST2;
-        $mail->Port       = SMTP_PORT2;
-        $mail->Username   = SMTP_USER2;
-        $mail->Password   = SMTP_PASS2;
-        $mail->SMTPDebug=0;
+        $mail->addReplyTo($from, $fromName);
+        $mail->setFrom($from, $fromName);
+        $mail->Subject      = $subject;
+        $mail->msgHTML($body);
+        $mail->isSMTP();
+        $mail->SMTPAuth     = true;
+        $mail->Host         = SMTP_HOST2;
+        $mail->SMTPAutoTLS  = false;
+        $mail->Port         = SMTP_PORT2;
+        $mail->Username     = SMTP_USER2;
+        $mail->Password     = SMTP_PASS2;
+        $mail->SMTPDebug    = 0;
         $mail->SMTPKeepAlive=true;
 
         if($attachment != "")
         {
-            $mail->AddAttachment($attachment, $fileName);
+            $mail->addAttachment($attachment, $fileName);
         }
 
         if($attachment2 != "")
         {
-            $mail->AddAttachment($attachment2, $fileName2);
+            $mail->addAttachment($attachment2, $fileName2);
         }
 
         $cont=1;
@@ -182,25 +182,25 @@ class SendMail extends Main
 
             if($totalCorreo==1){
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
-                $mail->AddAddress($correo, $name);
+                $mail->addAddress($correo, $name);
                 $cont++;
                 $totalCont++;
             }
             if($cont>=50||$totalCont>=$totalCorreo){
                 //en la ultima iteracion o por cada 50 no se incluye el ultimo se debe incluir
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
-                $mail->AddBCC($correo, $name);
+                $mail->addBCC($correo, $name);
 
                 //resetear contador
                 $cont=1;
-                $mail->Send();
+                $mail->send();
                 $logSend.="Lote ".$lote." enviado".chr(13).chr(10);
                 $lote++;
                 $mail->clearAllRecipients();
 
             }else {
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
-                $mail->AddBCC($correo, $name);
+                $mail->addBCC($correo, $name);
                 $cont++;
             }
             $totalCont++;
@@ -214,18 +214,19 @@ class SendMail extends Main
                 if ( $open ) {
                     fwrite($open, $logSend);
                     fclose($open);
-                    $mail->AddAttachment($filePath, $file);
+                    $mail->addAttachment($filePath, $file);
                 }
             }
 
             if(PROJECT_STATUS=='test'){
-                $mail->AddAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
-                $mail->AddCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
             }else{
-                $mail->AddAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
-                $mail->AddBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+                $mail->addBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
             }
-            $mail->Send();
+
+            $mail->send();
             $mail->clearAllRecipients();
             if($totalCorreo>0)
              @unlink($filePath);
@@ -235,6 +236,83 @@ class SendMail extends Main
 
     }
 
+    public function SendMultipleNotice($subject, $body, $to, $archivos = [], $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false) {
+
+        $mail = new PHPMailer();
+        $mail->addReplyTo($from, $fromName);
+        $mail->setFrom($from, $fromName);
+        $mail->Subject    = $subject;
+        $mail->msgHTML($body);
+        $mail->isSMTP();
+        $mail->SMTPAuth   = true;
+        $mail->SMTPAutoTLS  = false;
+        $mail->SMTPKeepAlive=true;
+        $mail->Host       = SMTP_HOST2;
+        $mail->Port       = SMTP_PORT2;
+        $mail->Username   = SMTP_USER2;
+        $mail->Password   = SMTP_PASS2;
+        $mail->SMTPDebug=0;
+
+        $logSend = "Lista de correos enviados: ".chr(13).chr(10);;
+        foreach($to as $email => $name) {
+
+            if($email == EMAILCOORDINADOR) continue;
+
+            try {
+                $mail->addAddress($email, $name);
+            } catch (Exception $e) {
+                continue;
+            }
+
+            foreach ($archivos as $archivo) {
+                if (is_file($archivo['url']))
+                    $mail->addAttachment($archivo['url'], $archivo['name']);
+            }
+
+            try {
+               $mail->send();
+               $logSend .="Se envia a ".$name."(".$email.")".chr(13).chr(10);
+            } catch (Exception $e) {
+               $logSend .="Hubo un error en el envio a ".$name."(".$email.")".chr(13).chr(10);
+               $mail->getSMTPInstance()->reset();
+            }
+
+            $mail->clearAddresses();
+            $mail->clearAttachments();
+        }
+
+        if($sendDesarrollador) {
+            $file = trim('logcorreos_'.strtotime(date('Y-m-d H:i:s')).".txt");
+            $filePath = DOC_ROOT."/sendFiles/".$file;
+            $open = fopen($filePath,"w");
+            if ( $open ) {
+                fwrite($open, $logSend);
+                fclose($open);
+                if (is_file($filePath))
+                    $mail->addAttachment($filePath, $file);
+            }
+
+            foreach ($archivos as $archivo) {
+                if (is_file($archivo['url']))
+                    $mail->addAttachment($archivo['url'], $archivo['name']);
+            }
+
+            if(PROJECT_STATUS=='test'){
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+            }else{
+                $mail->addAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
+                $mail->addBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+            }
+
+            $mail->send();
+            $mail->clearAllRecipients();
+            if(is_file($filePath))
+                @unlink($filePath);
+        }
+        $mail->SmtpClose();
+        unset($mail);
+    }
 }
 
 

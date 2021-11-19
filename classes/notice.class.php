@@ -268,17 +268,17 @@ class Notice extends Main
                             $mails[$usuario['email']] = $usuario['name'];
 
                 }
-                if ($User['isRoot']) {
-                    echo count($mails);
-                    dd($mails);
-                }
 
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
                 $body .= "<br><br>Aviso creado por " . $this->usuario;
+                $adjuntos = [];
                 if (file_exists($destino)) {
+                    $cad['name'] = $fileName;
+                    $cad['url'] =  $destino;
+                    array_push($adjuntos, $cad);
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
-                $sendmail->PrepareMultipleNotice($subject, $body, $mails, '', $destino, $fileName, "", "", 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
+                $sendmail->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
             }
         }
 
@@ -294,12 +294,16 @@ class Notice extends Main
             }
             $subject = "BRAUN HUERIN INFORMA";
             $body = '' . nl2br(utf8_decode($this->description));
+            $adjuntos = [];
             if (file_exists($destino)) {
+                $cad['name'] = $fileName;
+                $cad['url'] =  $destino;
+                array_push($adjuntos, $cad);
                 $body .= "<br><br> Revisar archivo adjunto, Gracias!!";
             }
             //desactivar asta que confime rogelio
             $sendmail = new SendMail();
-            $sendmail->PrepareMultipleNotice($subject, $body, $clientesCorreos, 'BS', $destino, $fileName, "", "", "noreply@braunhuerin.com.mx", "BOLETIN BRAUN HUERIN", true);
+            $sendmail->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
         }
         $this->Util()->setError(0, 'complete', 'El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();
