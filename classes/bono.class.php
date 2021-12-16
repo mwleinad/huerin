@@ -532,7 +532,7 @@ class Bono extends Personal
                     ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
 
                 $cordinate_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
-                $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_devengado.',0)')
+                $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_trabajado.',0)')
                     ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
                 $cordinate_porcentcrecimiento = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentcrecimiento;
@@ -734,7 +734,7 @@ class Bono extends Personal
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
 
             $cordinate_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
-            $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_devengado.',0)')
+            $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_trabajado.',0)')
                 ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
             $cordenada_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col - 1).$row_devengando;
@@ -889,7 +889,7 @@ class Bono extends Personal
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
 
             $cordinate_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
-            $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_devengado.',0)')
+            $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, '=IFERROR((+' . $cordinate_utilidad . "-" . $cordinate_bono . ")/" . $cordinate_trabajado.',0)')
                 ->getStyle($cordinate_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
 
             $cordenada_devengado_anterior = PHPExcel_Cell::stringFromColumnIndex($col - 1).$row_devengando;
