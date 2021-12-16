@@ -492,7 +492,7 @@ class Bono extends Personal
                 array_push($total_consolidado_grupo['row_trabajado'][$key_month], $cordinate_trabajado);
 
                 $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-                $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * 1.4)
+                $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * (1.4 / 100))
                     ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
                 if(!is_array($total_consolidado_grupo['row_gasto'][$key_month])) $total_consolidado_grupo['row_gasto'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_gasto'][$key_month], $cordinate_gasto);
