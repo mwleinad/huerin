@@ -29,6 +29,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'upkeeps-resource',
 		'activity',
 		'question-service',
+		'clasificacion',
 
 		//clientes y contratos
 		'customer',
