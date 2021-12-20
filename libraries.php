@@ -267,6 +267,9 @@ $bonoCobranza = new BonoCobranza;
 include_once(DOC_ROOT."/classes/consolidado.class.php");
 $consolidado = new Consolidado();
 
+include_once(DOC_ROOT."/classes/clasificacion.class.php");
+$clasificacion = new Clasificacion;
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();

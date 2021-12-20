@@ -69,6 +69,10 @@
                     <li><a href="{$WEB_ROOT}/expediente" {if $page == "expediente"}class="current"{/if} target="_blank">
                     <span>Expedientes</span></a></li>
                 {/if}
+                {if in_array(182,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/clasificacion" {if $page == "clasificacion"}class="current"{/if} target="_blank">
+                            <span>Tipos de clasificación</span></a></li>
+                {/if}
             {/if}
 
             {if $mainMnu == "servicios"}
