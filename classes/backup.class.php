@@ -32,7 +32,7 @@ class Backup extends main
 
         $dir=$baseDirBackup."/".$nameBackup;
         $return_var = NULL;
-        system("mysqldump  -h $dbhost -u$dbuser -p$dbpass --databases --add-drop-database $dbname|gzip>$dir",$return_var);
+        system("mysqldump  -h $dbhost -u$dbuser -p$dbpass --databases --add-drop-database --routines $dbname|gzip>$dir",$return_var);
         //system("aws s3 cp $dir s3://backup-huerin/$sufijo");
         if($return_var===0){
             $this->Util()->setError(0,'complete','Respaldo realizado completamente');
