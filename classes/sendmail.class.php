@@ -241,7 +241,7 @@ class SendMail extends Main
         $mail = new PHPMailer();
         $mail->addReplyTo($from, $fromName);
         $mail->setFrom($from, $fromName);
-        $mail->Subject    = $subject;
+        $mail->Subject   = $subject;
         $mail->msgHTML($body);
         $mail->isSMTP();
         $mail->SMTPAuth   = true;
@@ -275,7 +275,6 @@ class SendMail extends Main
                else
                    $logSend .="Hubo un error en el envio a ".$name."(".$email.")".chr(13).chr(10);
             } catch (Exception $e) {
-
                $mail->getSMTPInstance()->reset();
             }
 
@@ -312,7 +311,6 @@ class SendMail extends Main
             if(is_file($filePath))
                 @unlink($filePath);
         }
-        $mail->SmtpClose();
         unset($mail);
     }
 }
