@@ -960,7 +960,7 @@ class Contract extends Main
           alternativeRfc,
           alternativeCp,
           createSeparateInvoice,
-          qualification
+          idTipoClasificacion
         )
         VALUES
         (
@@ -1197,7 +1197,7 @@ class Contract extends Main
 			  alternativeRz = '".$this->alternativeRz."',
 			  alternativeRfc = '".$this->alternativeRfc."',
 			  alternativeCp = '".$this->alternativeCp."',
-			  qualification = '".$this->qualification."'
+			  idTipoClasificacion = '".$this->qualification."'
 			  WHERE
 			  contractId = '" . $this->contractId . "'";
         $this->Util()->DB()->setQuery($sql);

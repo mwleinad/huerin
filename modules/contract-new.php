@@ -91,7 +91,7 @@
             $contract->setUseAlternativeRzForInvoice(0);
             $contract->setSeparateInvoice(1);
         }
-        $contract->setQualification($_POST['qualification']);
+        $contract->setQualification($_POST['idTipoClasificacion']);
 
 		$contract->Save();
 		header("Location:".WEB_ROOT."/contract/id/".$_GET['id']);
@@ -153,6 +153,9 @@
 
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
+
+    $clasificaciones = $catalogue->ListClasificacion();
+    $smarty->assign("clasificaciones", $clasificaciones);
 
 	//Obtenemos la fecha actual para habilitar el calendario
 	$cal['min'] = date('Ymd',strtotime('-5 years'));

@@ -95,8 +95,7 @@
 			$contract->setUseAlternativeRzForInvoice(0);
 			$contract->setSeparateInvoice(1);
 		}
-        $contract->setQualification($_POST['qualification']);
-
+        $contract->setQualification($_POST['idTipoClasificacion']);
 
 		$contract->UpdateMyContract();
 		$contract->setContractId($_GET["contId"]);
@@ -194,6 +193,9 @@
 
     $sectores = $catalogue->ListSectores();
     $smarty->assign("sectores", $sectores);
+
+	$clasificaciones = $catalogue->ListClasificacion();
+	$smarty->assign("clasificaciones", $clasificaciones);
 
     $subsectores = $catalogue->ListSubsectores($contractInfo['sector_id']);
     $smarty->assign("subsectores", $subsectores);
