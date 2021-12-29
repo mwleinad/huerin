@@ -9,9 +9,9 @@ define('SMTP_PORT','587');
 define('SMTP_USER','smtp@avantika.com.mx');
 define('SMTP_PASS','smtp12345');
 
-define('SMTP_HOST2','54.148.210.219');
+define('SMTP_HOST2','mail.braunhuerin.com.mx');
 define('SMTP_PORT2','587');
-define('SMTP_USER2','smtpsis');
+define('SMTP_USER2','avisos@braunhuerin.com.mx');
 define('SMTP_PASS2','Strong47-');
 
 /** PAGINACION **/
