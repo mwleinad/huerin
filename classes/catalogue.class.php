@@ -26,6 +26,12 @@ class Catalogue extends Main
         $this->Util()->DB()->setQuery("select * from sector where 1 order by name asc ");
         return $this->Util()->DB()->GetResult();
     }
+
+    function ListClasificacion() {
+        $this->Util()->DB()->setQuery("select * from tipo_clasificacion where fecha_eliminado is null order by nombre asc ");
+        return $this->Util()->DB()->GetResult();
+    }
+
     function ListSubsectores($sectorId = 0) {
         $where = "";
         $where .= " and sector_id = '$sectorId' ";
