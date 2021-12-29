@@ -278,6 +278,12 @@
     "field_bd": "noCuenta"
   },
   {
+    "name": "Clasificacion",
+    "comment": "",
+    "field_excel": "tipoClasificacion",
+    "field_bd": "idTipoClasificacion"
+  },
+  {
     "name": "Supervisor",
     "comment": "",
     "field_excel": "supervisadoBy",

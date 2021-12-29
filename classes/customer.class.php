@@ -1228,7 +1228,7 @@ class Customer extends Main
                   contract.emailContactoDirectivo, contract.telefonoContactoDirectivo, contract.telefonoCelularDirectivo,
                   contract.nameRepresentanteLegal, contract.claveCiec, contract.claveFiel, contract.claveIdse, contract.claveIsn,
                   contract.facturador, contract.metodoDePago, contract.noCuenta, regimen.nombreRegimen, sociedad.nombreSociedad,
-                  contract.qualification,
+                  contract.idTipoClasificacion, tipo_clasificacion.nombre as tipoClasificacion,
                   case
                       when contract.activo = 'No' then contract.fechaBaja
                       when contract.activo = 'Si' then null 
@@ -1265,6 +1265,7 @@ class Customer extends Main
                    LEFT JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
                    INNER JOIN regimen ON contract.regimenId = regimen.regimenId
                    LEFT JOIN sociedad ON contract.sociedadId = sociedad.sociedadId
+                   LEFT JOIN tipo_clasificacion ON contract.idTipoClasificacion = tipo_clasificacion.id    
                    LEFT JOIN(select actividad_comercial.id as ac_id, actividad_comercial.name as ac_name,
                             sector.id as sector_id, subsector.id as subsector_id, sector.name as sec_name, subsector.name as subsec_name from actividad_comercial
                             inner join subsector on actividad_comercial.subsector_id = subsector.id

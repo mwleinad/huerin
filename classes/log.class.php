@@ -436,6 +436,12 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
+                     case 'idTipoClasificacion':
+                         $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion WHERE id='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion WHERE id='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         break;
                      case 'permisos':
                          $this->Util()->DB()->setQuery("SELECT departamentoId, departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC ");
                          $arrayDeps = $this->Util()->DB()->GetResult();
@@ -540,6 +546,10 @@ class Log extends Util
                     $this->Util()->DB()->setQuery("SELECT name FROM actividad_comercial WHERE id='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                 break;
+                case 'idTipoClasificacion':
+                    $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion WHERE id='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    break;
                 case 'tipoServicioId':
                     $this->Util()->DB()->setQuery("SELECT nombreServicio FROM tipoServicio WHERE tipoServicioId='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();

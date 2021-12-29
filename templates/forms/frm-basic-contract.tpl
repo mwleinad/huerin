@@ -88,11 +88,11 @@
     <tr>
         <td align="left" width="40%"> Clasificacion</td>
         <td align="left">
-            <select name="qualification" id="qualification" class="smallInput">
+            <select name="idTipoClasificacion" id="idTipoClasificacion" class="smallInput">
                 <option value="">Seleccione....</option>
-                <option value="AAA" {if $contractInfo.qualification eq 'AAA'}selected{/if}>Buena</option>
-                <option value="AA" {if $contractInfo.qualification eq 'AA'}selected{/if}>Regular</option>
-                <option value="A" {if $contractInfo.qualification eq 'A'}selected{/if}>Mala</option>
+                {foreach from=$clasificaciones item=item}
+                    <option value="{$item.id}" {if $contractInfo.idTipoClasificacion == $item.id} selected="selected" {/if}>{$item.nombre}</option>
+                {/foreach}
             </select>
         </td>
     </tr>
