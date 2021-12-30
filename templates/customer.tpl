@@ -5,7 +5,7 @@
   </div>
   <div class="grid_6" id="eventbox" >
     {if in_array(60,$permissions)|| $User.isRoot}
-        <a href="javascript:;" title="Exportar a Excel" onclick="ExportExcel()">
+        <a href="javascript:;" title="Exportar a Excel" onclick="printExcel(0, 'xlsx')">
             <img src="{$WEB_ROOT}/images/excel.PNG" width="16" border="0" />
         </a>
         <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
