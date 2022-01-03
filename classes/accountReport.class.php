@@ -22,6 +22,43 @@ class AccountReport extends Personal
       }
       return $new;
     }
+
+    public function getContratosPropio ($responsable) {
+
+        $subString = is_array($responsable) && count($responsable) > 0
+            ? implode(',', $responsable)
+            : $responsable;
+
+        $queryString = "select a.contractId from contract a
+                        inner join customer b on a.customerId=b.customerId 
+                        inner join contractPermiso c on a.contractId = c.contractId
+                        where c.personalId in(%s) and a.activo = 'Si' and b.active ='1'
+                        having (select count(servicio.servicioId) 
+                        from servicio
+                        inner join tipoServicio on tipoServicio.tipoServicioId = servicio.tipoServicioId
+                        where servicio.contractId = a.contractId and tipoServicio.status = '1' ) ";
+        $query = sprintf($queryString, $subString);
+        $this->Util()->DB()->setQuery($query);
+        return $this->Util()->DB()->GetResult();
+    }
+
+    public function getServiciosPropio($contratos, $departamentos) {
+
+        $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
+        $queryFormat = "select count(servicioId) as total, a.tipoServicioId, b.name from servicio a
+                        inner join (select tipoServicio.tipoServicioId, tipoServicio.departamentoId, tipoServicio.nombreServicio as name, tipoServicio.status from tipoServicio
+                                  inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
+                                  ) b on a.tipoServicioId = b.tipoServicioId
+                        where a.status in ('activo', 'bajaParcial') 
+                        and a.contractId in(%s) and b.departamentoId in (%s) and b.status = '1' 
+                        group by a.tipoServicioId order by b.name ASC";
+        $query = sprintf($queryFormat, $stringContratos, $departamentos);
+
+        $this->Util()->DB()->setQuery($query);
+        $result = $this->Util()->DB()->GetResult();
+        return  $this->Util()->changeKeyArray($result, 'tipoServicioId');
+
+    }
     public function generateArray(array $filters) {
         global $customer;
         $strFilter = "";
@@ -44,75 +81,57 @@ class AccountReport extends Personal
             if((int)$value['departamentoId'] === 22)
                 array_push($departamentos, 21);
 
+            $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
+
             $base = $this->generateDinamicHeaders($departamentos);
             $gerentes[$key]['headers'] = $base;
             $this->setPersonalId($value['personalId']);
-            $subordinados = $this->GetCascadeSubordinates();
+            $supervisores_subgerentes = $this->getSubordinadosNoDirectoByLevel([3,4]);
+
             $subordinadosId = [];
             array_push($subordinadosId, $value['personalId']);
-
-            $subString = count($subordinadosId) > 0 ? implode(',', $subordinadosId):  "0";
-
-            $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
-
-            $subqueryFormat = "select contract.contractId from contract 
-                               inner join customer on contract.customerId=customer.customerId 
-                               inner join contractPermiso on contract.contractId = contractPermiso.contractId
-                               where contractPermiso.personalId in(%s) and contract.activo = 'Si' and customer.active ='1' ";
-            $subquery = sprintf($subqueryFormat, $subString);
-
-            $this->Util()->DB()->setQuery($subquery);
-            $contratos = $this->Util()->DB()->GetResult();
-            // remove contratos que no tienen servicios
-            foreach ($contratos as $kc => $var) {
-                if(count($customer->GetServicesByContract($var['contractId'])) <= 0)
-                    unset($contratos[$kc]);
-            }
+            $contratos = $this->getContratosPropio($subordinadosId);
             $gerentes[$key]['totalCuentas'] = count($contratos);
 
-            $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
-
-            $queryFormat = "select count(servicioId) as total, a.tipoServicioId, b.name from servicio a
-                            inner join (select tipoServicio.tipoServicioId, tipoServicio.departamentoId, tipoServicio.nombreServicio as name, tipoServicio.status from tipoServicio
-                                  inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
-                                  ) b on a.tipoServicioId = b.tipoServicioId
-                            where a.status in ('activo', 'bajaParcial') and a.contractId in(%s) and b.departamentoId in (%s) and b.status = '1' group by a.tipoServicioId order by b.name ASC";
-            $query = sprintf($queryFormat, $stringContratos, $dep);
-
-            $this->Util()->DB()->setQuery($query);
-            $result = $this->Util()->DB()->GetResult();
-            $result =  $this->Util()->changeKeyArray($result, 'tipoServicioId');
+            $result = $this->getServiciosPropio($contratos, $dep);
             $result = array_replace_recursive($base, $result);
             $gerentes[$key]['services'] = $result;
-            $childs = [];
-            foreach($subordinados as $sub) {
+
+            $childLevel2 = [];
+            foreach($supervisores_subgerentes as $ksupge => $supge) {
                 $childrenSubId = [];
-                array_push($childrenSubId, $sub['personalId']);
-                $subStringChild = count($childrenSubId) > 0 ? implode(',', $childrenSubId) : "0";
-                $subQueryChild = sprintf($subqueryFormat, $subStringChild);
-                $this->Util()->DB()->setQuery($subQueryChild);
-                $contratos = $this->Util()->DB()->GetResult();
+                array_push($childrenSubId, $supge['personalId']);
+                $contratosSupge = $this->getContratosPropio($childrenSubId);
+                $supge['totalCuentas'] = count($contratosSupge);
 
-                foreach ($contratos as $kcs => $var) {
-                    if(count($customer->GetServicesByContract($var['contractId'])) <= 0)
-                        unset($contratos[$kcs]);
-                }
-
-                $sub['totalCuentas'] = count($contratos);
-                $stringContratos =  count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
-                $queryChild = sprintf($queryFormat, $stringContratos, $dep);
-                $this->Util()->DB()->setQuery($queryChild);
-                $resultChild = $this->Util()->DB()->GetResult();
+                $resultChild = $this->getServiciosPropio($contratosSupge, $dep);;
                 $resultChild =  $this->Util()->changeKeyArray($resultChild, 'tipoServicioId');
                 $resultChild = array_replace_recursive($base, $resultChild);
-                $sub['services'] = $resultChild;
-                unset($sub['children']);
-                $childs[]= $sub;
+                $supge['services'] = $resultChild;
+
+                $this->setPersonalId($supge['personalId']);
+                $subordinados = $this->getSubordinadosByLevel([5,6,7,8]);
+                $childLevel3 = [];
+                foreach($subordinados as $sub) {
+                    $contratosLevel3 = $this->getContratosPropio([$sub['personalId']]);
+                    $sub['totalCuentas'] = count($contratosLevel3);
+
+                    $resultChildLevel3 = $this->getServiciosPropio($contratosLevel3, $dep);;
+                    $resultChildLevel3 =  $this->Util()->changeKeyArray($resultChildLevel3, 'tipoServicioId');
+                    $resultChildLevel3 = array_replace_recursive($base, $resultChildLevel3);
+                    $sub['services'] = $resultChildLevel3;
+
+                    unset($sub['children']);
+                    $childLevel3[]= $sub;
+                }
+                $supge['children'] = $childLevel3;
+                $childLevel2[]= $supge;
             }
-            $gerentes[$key]['children'] = $childs;
+            $gerentes[$key]['children'] = $childLevel2;
         }
         return $gerentes;
     }
+
     public function generateReport(array $filters) {
         $gerentes = $this->generateArray($filters);
         $book = new PHPExcel();
@@ -120,25 +139,34 @@ class AccountReport extends Personal
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
 
+        $stylesHeader = array(
+            'font' => array (
+                'bold' => true,
+            ),
+            'fill' => [
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => ['rgb' => 'bdb5b5']
+            ]
+        );
+
         foreach ($gerentes as $key => $gerente) {
+            $granTotalCuentas = 0;
             $totalCol = [];
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
             $row = 1;
             $col = 0;
             $sheet->setTitle(strtoupper(substr($gerente["name"], 0, 6)));
-            $sheet->setCellValueByColumnAndRow($col, $row, "Cargo")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, "Nombre")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, "Cuentas deben tener")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, "Cuentas tienen")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+            $sheet->setCellValueByColumnAndRow($col, $row, "Nivel")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, "Grupo ".$gerente['name'])
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, "Total de cuentas")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
             $col++;
             foreach($gerente['headers'] as $head) {
                 $sheet->setCellValueByColumnAndRow($col, $row, ucfirst(strtolower($head['name'])))
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
                 $col++;
             }
             $stylesGerente = array(
@@ -148,15 +176,14 @@ class AccountReport extends Personal
                 ]
             );
 
-            $row++;
+            $row ++;
             $col = 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nameRol'])
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesGerente);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['name'])
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesGerente);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['numberAccountsAllowed']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $gerente['totalCuentas'])
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);;
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row);
             $col++;
             foreach ($gerente['services'] as $serv) {
                 $currentCol = PHPExcel_Cell::stringFromColumnIndex($col);
@@ -166,27 +193,37 @@ class AccountReport extends Personal
             }
 
             $row++;
+            $sheet->setCellValueByColumnAndRow(1, $row, 'TOTAL')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+            $sheet->setCellValueByColumnAndRow(2, $row, $gerente['totalCuentas'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2).$row)->getFont()->setBold(true);
+            $row +=2;
+            $granTotalCuentas = $gerente['totalCuentas'];
+            $totalCuentas =  0;
             foreach ($gerente['children'] as $child) {
-                switch ((int)$child['nivel']) {
-                    case 3: $background = '00B04F'; break;
-                    case 4: $background = '6cfb25'; break;
-                    case 5: $background = '92d050'; break;
-                    case 6: $background = 'c6e0b4'; break;
+                $col = 0;
+                $sheet->setCellValueByColumnAndRow($col, $row, "Nivel")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+                $sheet->setCellValueByColumnAndRow(++$col, $row, "Grupo ".$child['name'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+                $sheet->setCellValueByColumnAndRow(++$col, $row, "Total de cuentas")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+                $col++;
+                foreach($gerente['headers'] as $head) {
+                    $sheet->setCellValueByColumnAndRow($col, $row, ucfirst(strtolower($head['name'])))
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($stylesHeader);
+                    $col++;
                 }
-                $styles = array(
-                    'fill' => [
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                        'color' => ['rgb' => $background]
-                    ]
-                );
+                $row++;
+                $totalCuentas = $child['totalCuentas'];
+                $styles = $this->getStylesByLevel((int)$child['nivel']);
                 $col = 0;
                 $sheet->setCellValueByColumnAndRow($col, $row, $child['nameRol'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
                 $sheet->setCellValueByColumnAndRow(++$col, $row, $child['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
-                $sheet->setCellValueByColumnAndRow(++$col, $row, $child['numberAccountsAllowed']);
                 $sheet->setCellValueByColumnAndRow(++$col, $row, $child['totalCuentas'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->getFont()->setBold(true);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row);
                 $col++;
                 foreach ($child['services'] as $servChild) {
                     $currentCol = PHPExcel_Cell::stringFromColumnIndex($col);
@@ -195,7 +232,39 @@ class AccountReport extends Personal
                     $col++;
                 }
                 $row++;
+                foreach ($child['children'] as $level3) {
+                    $totalCuentas = $totalCuentas + $level3['totalCuentas'];
+                    $styles = $this->getStylesByLevel((int)$level3['nivel']);
+                    $col = 0;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $level3['nameRol'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                    $sheet->setCellValueByColumnAndRow(++$col, $row, $level3['name'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styles);
+                    $sheet->setCellValueByColumnAndRow(++$col, $row, $level3['totalCuentas'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row);
+                    $col++;
+                    foreach ($level3['services'] as $servLevel3) {
+                        $currentCol = PHPExcel_Cell::stringFromColumnIndex($col);
+                        $totalCol[$currentCol] +=$servLevel3['total'];
+                        $sheet->setCellValueByColumnAndRow($col, $row, $servLevel3['total']);
+                        $col++;
+                    }
+                    $row++;
+                }
+                $sheet->setCellValueByColumnAndRow(1, $row, 'TOTAL')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+                $sheet->setCellValueByColumnAndRow(2, $row, $totalCuentas)
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2).$row)->getFont()->setBold(true);
+                $granTotalCuentas = $granTotalCuentas + $totalCuentas;
+                $row +=2;
             }
+
+            // gran total suma
+            $sheet->setCellValueByColumnAndRow(1, $row, 'GRAN TOTAL')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1).$row)->getFont()->setBold(true);
+            $sheet->setCellValueByColumnAndRow(2, $row, $granTotalCuentas)
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2).$row)->getFont()->setBold(true);
+
             $newCol  = array_reverse($totalCol, true);
             foreach ($newCol as $kt => $tot) {
                 if((int) $tot === 0) {
@@ -215,5 +284,20 @@ class AccountReport extends Personal
         $nameFile= "cuentas_x_gerente_".$_SESSION["User"]["userId"].".xlsx";
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
         $this->nameReport=$nameFile;
+    }
+
+    private function getStylesByLevel ($level) {
+        switch ($level) {
+            case 3: $background = '00B04F'; break;
+            case 4: $background = '6cfb25'; break;
+            case 5: $background = '92d050'; break;
+            case 6: $background = 'c6e0b4'; break;
+        }
+       return $styles = array(
+            'fill' => [
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => ['rgb' => $background]
+            ]
+        );
     }
 }
