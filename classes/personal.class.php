@@ -751,7 +751,7 @@ class Personal extends Main
     }
 
     function SubordinadosDirectos() {
-        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.nivel FROM personal
+        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.name as nameRol, roles.nivel FROM personal
                 LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato 
                 inner join roles as roles on personal.roleId=roles.rolId 
                 where personal.jefeInmediato = '".$this->personalId."' ORDER BY name ASC
@@ -759,6 +759,7 @@ class Personal extends Main
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
+
     function SubordinadosDetailsAddPass()
     {
         $sql = "SELECT personal.*, jefes.name AS jefeName, roles.nivel FROM personal
@@ -1408,9 +1409,37 @@ class Personal extends Main
         if(!$nivel)
             return $subordinados;
 
-        foreach($subordinados as $sub) {
-            if($sub['nivel'] == $nivel) {
-                array_push($subordinados_filtrados, $sub);
+        if (is_array($nivel)) {
+            foreach ($subordinados as $sub) {
+                if (in_array($sub['nivel'], $nivel))
+                    array_push($subordinados_filtrados, $sub);
+            }
+
+        } else {
+            foreach ($subordinados as $sub) {
+                if ($sub['nivel'] == $nivel)
+                    array_push($subordinados_filtrados, $sub);
+            }
+        }
+        return $subordinados_filtrados;
+    }
+
+    public function getSubordinadosNoDirectoByLevel ($nivel = 0) {
+        $subordinados_filtrados = [];
+        $subordinados = $this->GetCascadeSubordinates();
+        if(!$nivel)
+            return $subordinados;
+
+        if (is_array($nivel)) {
+            foreach ($subordinados as $sub) {
+                if (in_array($sub['nivel'], $nivel))
+                    array_push($subordinados_filtrados, $sub);
+            }
+
+        } else {
+            foreach ($subordinados as $sub) {
+                if ($sub['nivel'] == $nivel)
+                    array_push($subordinados_filtrados, $sub);
             }
         }
         return $subordinados_filtrados;
