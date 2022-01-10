@@ -80,14 +80,14 @@ class Log extends Util
         $jefes = array();
         //componer mensaje de accion
         $wherehuerin="";
-        $excluyehuerin=false;
+        $excluyehuerin=true;
         $sendBraun = false;
-        $defaultId= array(32);
+        $defaultId= array();
         switch($this->action){
             case 'Insert':
                 $accion = "ha sido dado de alta ";
-                array_push($defaultId,IDHUERIN);
-                array_push($defaultId,319);
+                //array_push($defaultId,IDHUERIN);
+                //array_push($defaultId,319);
                 $sendBraun = false;
             break;
             case 'Update':
