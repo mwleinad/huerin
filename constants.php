@@ -38,7 +38,7 @@ switch($_SERVER['HTTP_HOST'])
         define("FROM_FACTURA", "test");
     break;
     case 'bhtest.ddns.net':
-        define("SEND_TO", "leasib_666@hotmail.com");
+        define("SEND_TO", "bissael.cruz@hotmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "rzetina@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
