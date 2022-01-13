@@ -151,7 +151,7 @@ class Bitacora extends Main {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Envio de recotizacion test' : 'Envio de recotizacion';
                 $send->Prepare($subject,"Se hace llegar la recotización.",EMAILCOORDINADOR,"COORDINADOR",$file,$name_file,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
-                unlink($file);
+                //unlink($file);
             }
            break;
         }
