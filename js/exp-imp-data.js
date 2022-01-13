@@ -37,6 +37,7 @@ function enviarRecotizacion () {
             jQ('#loading-img').show();
         },
         success: function (response) {
+            var splitResp = response.split('[#]')
             jQ('#btn-enviar-recotizacion').show();
             jQ('#loading-img').hide();
             ShowStatusPopUp(splitResp[1]);
