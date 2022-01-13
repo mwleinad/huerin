@@ -20,7 +20,7 @@ switch($_POST["type"]) {
     case 3:
         $bitacora->enviarRecotizacion($_POST['id']);
         echo 'ok[#]';
-        $smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+        $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 
     break;
     case 4:
