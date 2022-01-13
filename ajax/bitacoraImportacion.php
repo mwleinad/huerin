@@ -19,6 +19,8 @@ switch($_POST["type"]) {
         break;
     case 3:
         $bitacora->enviarRecotizacion($_POST['id']);
+        echo 'ok[#]';
+        $smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
 
     break;
     case 4:
