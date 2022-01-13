@@ -170,7 +170,7 @@ class Bitacora extends Main {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Envio de recotizacion test' : 'Envio de recotizacion';
                 $body = "Cambios en costo de los servicios ";
-                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', '', true);
+                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', 'Administrador del Sistema', true);
                 unlink($file);
             }
             $count++;
