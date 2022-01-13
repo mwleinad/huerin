@@ -30,7 +30,7 @@ switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
     case 'huerin.test':
-        define("SEND_TO", "leasib_666@hotmail.com");
+        define("SEND_TO", "bissael.cruz@gmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "isc061990@gmail.com");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
