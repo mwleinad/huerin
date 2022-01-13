@@ -1,5 +1,16 @@
 var AJAX_PATH = WEB_ROOT+'/ajax/import-data.php'
 
+function descargarBitacora (id) {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
+        data: { type: 4, id},
+        type: 'POST',
+        cache:false,
+        success: function (response) {
+            window.location = response
+        }
+    })
+}
 function cargarListaImportacion(page = 0) {
     jQ.ajax({
         url: WEB_ROOT + '/ajax/bitacoraImportacion.php',

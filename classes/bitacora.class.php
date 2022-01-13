@@ -59,7 +59,7 @@ class Bitacora extends Main {
         $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-update-bitacora-servicio-masivo.tpl");
         $dompdf->loadHtml($html);
 
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('letter', 'portrait');
         $dompdf->render();
         $fileName  = uniqid().".pdf";
         $output =  $dompdf->output();
@@ -67,6 +67,19 @@ class Bitacora extends Main {
         return  DOC_ROOT."/sendFiles/$fileName";
     }
 
+    function descargarBitacora ($id) {
+        $data = $this->getDataBitacora($id);
+        $dompdf =  new Dompdf();
+        $this->Util()->Smarty()->assign("data",$data);
+        $html =  $this->Util()->Smarty()->fetch(DOC_ROOT."/templates/molds/pdf-update-bitacora-servicio-masivo.tpl");
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter');
+        $dompdf->render();
+        $output =  $dompdf->output();
+        $name = "bitacora_".$id.".pdf";
+        file_put_contents(DOC_ROOT."/sendFiles/$name", $output);
+        return  WEB_ROOT."/sendFiles/$name";
+    }
 
     function enviarBitacora ($id) {
         $data = $this->getDataBitacora($id);

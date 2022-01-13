@@ -20,4 +20,8 @@ switch($_POST["type"]) {
     case 3:
         $bitacora->enviarRecotizacion($_POST['id']);
     break;
+    case 4:
+        $pdf = $bitacora->descargarBitacora($_POST['id']);
+        echo WEB_ROOT."/download.php?file=".$pdf;
+    break;
 }
