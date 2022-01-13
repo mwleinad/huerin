@@ -104,6 +104,7 @@ class User extends Sucursal
 			$card['roleId'] = 1;
             $card['level'] = 1;
 			$card['username'] = $row['name'];
+			$card['name'] = $row['name'];
 			$card['isLogged'] = true;
             $card['isRoot'] = true;
 			$card['allow_visualize_any_contract'] = true;
@@ -135,6 +136,7 @@ class User extends Sucursal
 				$card['roleId'] = $row["roleId"];
                 $card['level'] = $row["nivel"];
 				$card['username'] = $row['username'];
+				$card['name'] = $row['name'];
 				$card['departamentoId'] = $row['departamentoId'];
 
 				$moreDep = [(int)$row['departamentoId']];

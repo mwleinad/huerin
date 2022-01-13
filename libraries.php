@@ -270,6 +270,10 @@ $consolidado = new Consolidado();
 include_once(DOC_ROOT."/classes/clasificacion.class.php");
 $clasificacion = new Clasificacion;
 
+include_once(DOC_ROOT."/classes/bitacora.class.php");
+$bitacora = new Bitacora;
+
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();

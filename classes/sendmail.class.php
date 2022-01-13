@@ -7,9 +7,6 @@ class SendMail extends Main
 	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
 	{
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
-
-			$subject= utf8_decode($subject);
-		 	$fromName = utf8_decode($fromName);
 		 	try{
                 $mail->addReplyTo($from, $fromName);
                 $mail->setFrom($from, $fromName);

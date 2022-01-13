@@ -17,11 +17,12 @@
                         <option value="add#contract">Importar nuevas razones sociales / contratos</option>
                         <option value="add#customer">Importar nuevos clientes principales</option>
                         <option value="importar_servicios_nuevos">Importar nuevos servicios</option>
+                        <option value="update-servicios">Actualizar servicios de clientes</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
 
-                        <option value="update-servicios">Actualizar servicios de clientes</option>-->
+                        -->
                         {if $User.isRoot}
                             <option value="doPermiso">Reconstruir permisos</option>
                             <option value="update_comercial_activity">Importar nuevas actividades comerciales</option>
@@ -35,7 +36,7 @@
                         {/if}
 
                         <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
-                        <!--<option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
+                        <option value="cancelar-uuid">Cancelar CFDI(UUID)</option>
                         <option value="test-funcion">Test funcion</option>-->
                     </select>
                 </td>
