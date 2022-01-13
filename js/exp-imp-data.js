@@ -33,18 +33,14 @@ function enviarRecotizacion () {
         data: form.serialize(true),
         type: 'POST',
         beforeSend: function () {
-            jQ('#btnWorkTeam').hide();
-            jQ('#loader').show();
+            jQ('#btn-enviar-recotizacion').hide();
+            jQ('#loading-img').show();
         },
         success: function (response) {
-            var splitResp = response.split("[#]");
-            jQ('#btnWorkTeam').show();
-            jQ('#loader').hide();
+            jQ('#btn-enviar-recotizacion').show();
+            jQ('#loading-img').hide();
             ShowStatusPopUp(splitResp[1]);
-            if (splitResp[0] == 'ok') {
-                jQ('#content_work_team').html(splitResp[2]);
-                close_popup();
-            }
+            close_popup();
         },
         error: function () {
             alert('error')

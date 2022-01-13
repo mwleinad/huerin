@@ -5,21 +5,13 @@
 		<fieldset>
             <div class="container_16">
                 <div class="grid_16">
-
-                </div>
-                <div class="grid_16">
-                    <div class="formLine" style=" width:100%;display: inline-block;">
-                        <div style="width:100%;float:left; font-weight: bold"><em style="color: #ff0000">*</em> Mensaje</div>
-                        <div style="width:100%;float: left;">
-                            <textarea name="mensaje" id="mensaje" class="largeInput medium2">
-                            </textarea>
-                        </div>
-                    </div>
+                  <p style="font-family: 'Tw Cen MT'; font-size: 16px; color: #767070; text-align: justify">
+                      <b>IMPORTANTE!!. </b>
+                      Este apartado de plataforma, hace llegar por correo al responsable de atencion al cliente, la carta de
+                      ajuste de precios en los servicios de las empresas.
+                  </p>
                 </div>
                 <hr>
-                <div class="grid_16">
-                    <span style="float:left"><em style="color: #ff0000">*</em> Campos Obligatorios</span>
-                </div>
                 <div class="grid_16" style="text-align: center">
                     <img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
                 </div>

@@ -151,22 +151,31 @@ class Bitacora extends Main {
 
         return is_file($file) ?  $file : false;
     }
+
     function enviarRecotizacion($id) {
+
         $sql = "CALL sp_get_data_recotizacion('".$id."')";
         $this->Util()->DB()->setQuery($sql);
         $items = $this->Util()->DB()->GetResult();
+        $count = 0;
         foreach($items as $item) {
             $item['servicios'] = json_decode($item['servicios'], true);
             $file = $this->generarPdfRecotizacion($item);
 
             $name_file = $item['rfc'].".docx";
             if($file) {
+                $adjuntos = array(['url' => $file, 'name' => $name_file]);
+                $mails[EMAILCOORDINADOR] = 'Rogelio Zetina';
+                $mails[EMAIL_DEV] = "Bissael";
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Envio de recotizacion test' : 'Envio de recotizacion';
-                $send->Prepare($subject,"Se hace llegar la recotización.",EMAIL_DEV,"COORDINADOR",$file,$name_file,"","","noreplye@braunhuerin.com.mx","Administrador plataforma");
-                //unlink($file);
+                $body = "Cambios en costo de los servicios ";
+                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', '', true);
+                unlink($file);
             }
-           break;
+            $count++;
+            if($count === 10)
+                break;
         }
     }
 
