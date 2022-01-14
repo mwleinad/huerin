@@ -1046,7 +1046,6 @@ switch ($opcion[0]) {
             $db->setQuery('select @pData');
             $data= $db->GetSingle();
             $data_explode = explode('|', $data);
-            $bitacora->enviarBitacora($data_explode[0]);
             $util->setError(0, 'complete', "Se han actualizado " . $data_explode[1] . " registros correctamente.");
         } else {
             $util->setError(0, 'error','Error al actualizar registros');

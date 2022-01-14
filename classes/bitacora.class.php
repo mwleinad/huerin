@@ -140,8 +140,8 @@ class Bitacora extends Main {
         foreach($data['servicios'] as $serv) {
             $table->addRow();
             $table->addCell()->addText($serv['nombreServicio'], $bodyTable);
-            $table->addCell()->addText($serv['costoAnterior'], $bodyTable);
-            $table->addCell()->addText($serv['costoActual'], $bodyTable);
+            $table->addCell()->addText("$ ". number_format($serv['costoAnterior'], 2,'.', ','), $bodyTable);
+            $table->addCell()->addText("$ ".number_format($serv['costoActual'], 2,'.', ','), $bodyTable);
         }
         $phpWord->setComplexBlock('tabla_comparativa', $table);
 
@@ -170,7 +170,7 @@ class Bitacora extends Main {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Envio de recotizacion test' : 'Envio de recotizacion';
                 $body = "Cambios en costo de los servicios ";
-                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx');
+                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'avisos@braunhuerin.com.mx');
                 unlink($file);
             }
             $count++;
