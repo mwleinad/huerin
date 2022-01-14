@@ -121,13 +121,7 @@ class Bitacora extends Main {
                   'size'=>16 ));
         $phpWord->setComplexValue('nombre_cliente', $nombre_cliente);
 
-        $current_date = new TextRun();
-        $current_date->addText(date('Y'),
-            array(
-                'color' => '767070',
-                'name'=>'Tw Cen MT',
-                'size'=>12 ));
-        $phpWord->setComplexValue('current_date', $current_date);
+        $phpWord->setValue('current_date', date('Y'));
 
         $nombre_empresa = new TextRun();
         $nombre_empresa->addText($data['name'],
