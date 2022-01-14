@@ -73,6 +73,9 @@
                     {if $item2.antes.costo neq $item2.despues.costo}
                         <p><b>Costo</b> : {$item2.antes.costo}</p>
                     {/if}
+                    {if $item2.antes.lastDateWorkflow neq $item2.despues.lastDateWorkflow}
+                        <p><b>Fecha ultimo workflow</b> : {$item2.antes.lastDateWorkflow}</p>
+                    {/if}
                 </td>
                 <td>
                     {if $item2.antes.inicioOperaciones neq $item2.despues.inicioOperaciones}
@@ -83,6 +86,9 @@
                     {/if}
                     {if $item2.antes.costo neq $item2.despues.costo}
                         <p><b>Costo</b> : {$item2.despues.costo}</p>
+                    {/if}
+                    {if $item2.antes.lastDateWorkflow neq $item2.despues.lastDateWorkflow}
+                        <p><b>Fecha ultimo workflow</b> : {$item2.despues.lastDateWorkflow}</p>
                     {/if}
                 </td>
             </tr>
