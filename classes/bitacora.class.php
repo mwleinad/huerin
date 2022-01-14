@@ -15,7 +15,7 @@ class Bitacora extends Main {
         $pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/importacion");
 
         $sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-        $this->Util()->DB()->setQuery('SELECT * FROM bitacora_importacion WHERE ISNULL(fecha_eliminado) ORDER BY id ASC '.$sql_add);
+        $this->Util()->DB()->setQuery('SELECT * FROM bitacora_importacion WHERE ISNULL(fecha_eliminado) ORDER BY id DESC '.$sql_add);
         $result = $this->Util()->DB()->GetResult();
 
         $data["items"] = $result;
@@ -120,6 +120,14 @@ class Bitacora extends Main {
                   'name'=>'Tw Cen MT',
                   'size'=>16 ));
         $phpWord->setComplexValue('nombre_cliente', $nombre_cliente);
+
+        $current_date = new TextRun();
+        $current_date->addText(date('Y'),
+            array(
+                'color' => '767070',
+                'name'=>'Tw Cen MT',
+                'size'=>12 ));
+        $phpWord->setComplexValue('current_date', $current_date);
 
         $nombre_empresa = new TextRun();
         $nombre_empresa->addText($data['name'],
