@@ -250,9 +250,15 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow(2,$row,$value['servicioId']);
             $sheet->setCellValueByColumnAndRow(3,$row,$value['nombreServicio']);
             $sheet->setCellValueByColumnAndRow(4,$row,$value['costo']);
-            $sheet->setCellValueByColumnAndRow(5,$row,$value['inicioOperaciones']!='0000-00-00' && !is_null($value['inicioOperaciones']) ? date('d/m/Y',strtotime($value['inicioOperaciones'])): '');
-            $sheet->setCellValueByColumnAndRow(6,$row,$value['inicioFactura']!='0000-00-00' && !is_null($value['inicioFactura']) ? date('d/m/Y',strtotime($value['inicioFactura'])):'');
-            $sheet->setCellValueByColumnAndRow(7,$row,$value['status']=='bajaParcial'&&$value['status']!='0000-00-00'?date('d/m/Y',strtotime($value['lastDateWorkflow'])):'');
+            $sheet->setCellValueByColumnAndRow(5,$row,$value['inicioOperaciones']!='0000-00-00'
+                                                                     && !is_null($value['inicioOperaciones'])
+                                                                     && (int)date('Y',strtotime($value['inicioOperaciones'])) > 1989 ? date('d/m/Y',strtotime($value['inicioOperaciones'])): '');
+            $sheet->setCellValueByColumnAndRow(6,$row,$value['inicioFactura']!='0000-00-00'
+                                                                     && !is_null($value['inicioFactura'])
+                                                                     && (int)date('Y',strtotime($value['inicioFactura'])) > 1989 ? date('d/m/Y',strtotime($value['inicioFactura'])):'');
+            $sheet->setCellValueByColumnAndRow(7,$row,$value['status']=='bajaParcial'
+                                                                     && !is_null($value['lastDateWorkflow'])
+                                                                     && (int)date('Y',strtotime($value['lastDateWorkflow'])) > 1989 ? date('d/m/Y',strtotime($value['lastDateWorkflow'])):'');
             $sheet->setCellValueByColumnAndRow(8,$row,$value['departamento']);
             $sheet->setCellValueByColumnAndRow(9,$row,$value['periodicidad']);
             $sheet->setCellValueByColumnAndRow(10,$row,$value['status']);

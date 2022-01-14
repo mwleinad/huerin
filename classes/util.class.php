@@ -2,7 +2,6 @@
 
 class Util extends CustomError
 {
-
     public $DB;
     private $DBSelect;
     private $DBRemote;
@@ -1777,6 +1776,38 @@ class Util extends CustomError
             $string
         );
         return $string;
+    }
+
+    function csvToJson($fname, $customKey = [], $ignoreKey = []) {
+        if (!($fp = fopen($fname, 'r'))) {
+            die("Can't open file...");
+        }
+
+        $key = is_array($customKey) && count($customKey)
+            ? $customKey
+            : fgetcsv($fp,"1024",",");
+
+        $json = array();
+        while ($row = fgetcsv($fp,"1024",",")) {
+            $current = array_combine($key, $row);
+            foreach($ignoreKey as $ignore)
+                unset($current[$ignore]);
+
+            $json[] = $current;
+        }
+        fclose($fp);
+        return json_encode($json,JSON_UNESCAPED_SLASHES );
+    }
+
+    function checkUtf8($str){
+        if( mb_detect_encoding($str,"UTF-8, ISO-8859-1")!="UTF-8" ){
+
+            return  utf8_encode($str);
+        }
+        else{
+            return $str;
+        }
+
     }
 }
 

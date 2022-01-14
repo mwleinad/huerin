@@ -1036,55 +1036,22 @@ switch ($opcion[0]) {
      *Envia un reporte siempre y cuando se realizaron cambios.
      */
     case 'update-servicios':
-        $isValid = $valida->ValidateLayoutUpdateServicios($_FILES);
-        if (!$isValid) {
-            echo "fail[#]";
-            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
-            echo "[#]";
-            exit;
-        }
         $file_temp = $_FILES['file']['tmp_name'];
-        $fp = fopen($file_temp, 'r');
-        $fila = 1;
-        $actualizados = 0;
-        $servs = [];
-        while (($row = fgetcsv($fp, 4096, ",")) == true) {
-            if ($fila == 1) {
-                $fila++;
-                continue;
-            }
-            $contractId = trim($row[0]);
-            $servicioId = trim($row[2]);
-            $costo = trim($row[4]);
-            $io = $util->FormatDateMySqlSlash(trim($row[5]));
-            $if = $util->FormatDateMySqlSlash(trim($row[6]));
-            $status = trim($row[10]);
-            if ($status == 'bajaParcial')
-                $flw = $util->FormatDateMySqlSlash(trim($row[7]));
-            else
-                $flw = "";
-
-            $sql = "UPDATE servicio SET
-                    costo ='$costo',
-                    inicioOperaciones = '$io',
-                    inicioFactura = '$if',
-                    lastDateWorkflow = '$flw',
-                    status = '$status'
-                    WHERE servicioId ='$servicioId' AND contractId='$contractId'
-                   ";
-            $util->DB()->setQuery($sql);
-            $affect = $util->DB()->UpdateData();
-            if ($affect > 0) {
-                $servs[] = $servicioId;
-                $actualizados++;
-                $fila++;
-                $log->saveHistoryChangesServicios($servicioId, $if, 'modificacion', $costo, $_SESSION['User']['userId'], $io);
-            }
+        $jsonParam =  $util->csvToJson($file_temp, [], ['nombre_empresa']);
+        $pUsuario = $_SESSION['User']['name'];
+        $store =  "call sp_actualizar_servicio('".$jsonParam."', '".$pUsuario."', @pData)";
+        $db->setQuery($store);
+        $res = 0;
+        if($res = $db->ExcuteConsulta()) {
+            $db->setQuery('select @pData');
+            $data= $db->GetSingle();
+            $data_explode = explode('|', $data);
+            $util->setError(0, 'complete', "Se han actualizado " . $data_explode[1] . " registros correctamente.");
+        } else {
+            $util->setError(0, 'error','Error al actualizar registros');
         }
-        $log->sendLogUpdateServicios($servs);
-        $util->setError(0, 'complete', "Se han actualizado " . $actualizados . " servicios correctamente.");
+        echo $res ? 'ok[#]' : 'fail[#]';
         $util->PrintErrors();
-        echo "ok[#]";
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
         break;
 }

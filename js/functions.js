@@ -622,6 +622,7 @@ function setAccordionEffect() {
 }
 
 
+
 // events shared beetwen prospect and company
 jQ(document).on('change', '#is_referred', function () {
     if (this.value === '1') {

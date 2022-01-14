@@ -52,6 +52,9 @@ form .wide { width:98% !important; }
 .tableCustom100{
 	width: 100%
 }
+.cell5{
+	width: 5%;
+}
 .cell10{
 	width: 10%;
 }

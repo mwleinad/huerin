@@ -7,9 +7,6 @@ class SendMail extends Main
 	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
 	{
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
-
-			$subject= utf8_decode($subject);
-		 	$fromName = utf8_decode($fromName);
 		 	try{
                 $mail->addReplyTo($from, $fromName);
                 $mail->setFrom($from, $fromName);
@@ -24,7 +21,7 @@ class SendMail extends Main
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
                 $mail->Timeout=300;
-                $mail->SMTPDebug = 0;
+                $mail->SMTPDebug = 2;
                 if($attachment != "")
                 {
                     $mail->addAttachment($attachment, $fileName);
@@ -300,10 +297,8 @@ class SendMail extends Main
 
             if(PROJECT_STATUS=='test'){
                 $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
-                $mail->addCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
             }else{
-                $mail->addAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
-                $mail->addBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
             }
 
             $mail->send();

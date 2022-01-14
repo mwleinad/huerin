@@ -122,9 +122,9 @@ class DB
    	        $this->DatabaseConnect();
 
 		if($this->projectStatus == "test") {
-	    	$this->sqlResult = mysqli_query($this->conn_id, $this->query) or die (mysqli_error($this->conn_id));
+	    	$this->sqlResult = mysqli_query($this->conn_id, $this->query);
 		} else {
-			$this->sqlResult = mysqli_query($this->conn_id, $this->query) or die (trigger_error(mysqli_error($this->conn_id)));
+			$this->sqlResult = mysqli_query($this->conn_id, $this->query);
 		}
 	}
 
@@ -179,6 +179,16 @@ class DB
     $this->CleanQuery();
 
     return $last_id;
+  }
+
+  function ExcuteConsulta() {
+	  $this->ExecuteQuery();
+	  $last_id=mysqli_insert_id($this->conn_id);
+
+
+	  $this->CleanQuery();
+
+	  return $this->sqlResult;
   }
 
   function UpdateData()

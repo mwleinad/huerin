@@ -315,9 +315,9 @@ class Servicio extends Contract
         if($departamentoId!="")
             $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
 
-        $sql = "SELECT servicioId,  customer.nameContact AS clienteName,servicio.status,servicio.lastDateWorkflow,
-				contract.name AS razonSocialName, nombreServicio, servicio.costo, servicio.inicioOperaciones, periodicidad,
-				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta,servicio.inicioFactura ,
+        $sql = "SELECT servicioId,  customer.nameContact AS clienteName,servicio.status, IF(ISNULL(WEEK(servicio.lastDateWorkflow)), NULL, servicio.lastDateWorkflow) as lastDateWorkflow,
+				contract.name AS razonSocialName, nombreServicio, servicio.costo, IF(ISNULL(WEEK(servicio.inicioOperaciones)), NULL, servicio.inicioOperaciones) as inicioOperaciones, periodicidad,
+				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, IF(ISNULL(WEEK(servicio.inicioFactura)), NULL, servicio.inicioFactura) as inicioFactura,
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
 				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,tipoServicio.departamento,
 				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo

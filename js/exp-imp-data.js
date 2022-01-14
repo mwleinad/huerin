@@ -1,6 +1,67 @@
 var AJAX_PATH = WEB_ROOT+'/ajax/import-data.php'
-jQ(document).ready(function(){
 
+function descargarBitacora (id) {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
+        data: { type: 4, id},
+        type: 'POST',
+        cache:false,
+        success: function (response) {
+            window.location = response
+        }
+    })
+}
+function cargarListaImportacion(page = 0) {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
+        data: {type: 1, page},
+        type: 'POST',
+        beforeSend: function () {
+            jQ('#content-bitacora').html("<p>Espere un momento...</p>");
+            jQ('#content-bitacora').show();
+        },
+        success: function (response) {
+            jQ('#content-bitacora').html(response);
+        },
+    });
+}
+
+function enviarRecotizacion () {
+    var form = jQ(this).parents('form:first');
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
+        data: form.serialize(true),
+        type: 'POST',
+        beforeSend: function () {
+            jQ('#btn-enviar-recotizacion').hide();
+            jQ('#loading-img').show();
+        },
+        success: function (response) {
+            var splitResp = response.split('[#]')
+            jQ('#btn-enviar-recotizacion').show();
+            jQ('#loading-img').hide();
+            ShowStatusPopUp(splitResp[1]);
+            close_popup();
+        },
+        error: function () {
+            alert('error')
+        }
+    });
+}
+function openEnviarRecotizacion (id) {
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
+        data: {type: 2, id},
+        type: 'POST',
+        success: function (response) {
+            grayOut(true);
+            $('fview').show();
+            FViewOffSet(response);
+        },
+    });
+}
+jQ(document).ready(function(){
+    jQ(document).on('click', '#btn-enviar-recotizacion', enviarRecotizacion)
     jQ('#btnRun').on('click',function() {
         var id = this.id;
         var form = jQ(this).parents('form:first');
@@ -21,6 +82,7 @@ jQ(document).ready(function(){
                 if(splitResp[0]=='ok'){
                     jQ('#loading-img').hide();
                     ShowStatusPopUp(splitResp[1]);
+                    cargarListaImportacion()
                 }
                 else{
                     jQ('#loading-img').hide();
@@ -69,5 +131,5 @@ jQ(document).ready(function(){
            });
         })
     }
-
+    cargarListaImportacion()
 });
