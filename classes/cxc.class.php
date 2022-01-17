@@ -733,6 +733,7 @@ class CxC extends Producto
 			$empresa = new Empresa();
 			$empresa->setComprobanteId($payment["comprobantePagoId"]);
 			$empresa->setMotivoCancelacion("Pago eliminado");
+            $empresa->setMotivoCancelacionSat('02');
 
 			if(!$empresa->CancelarComprobante()){
 				$eliminarPago = false;

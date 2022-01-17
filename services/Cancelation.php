@@ -5,7 +5,7 @@ class Cancelation extends Main
     const REJECTED = 'Solicitud rechazada';
     const CANCELLED = 'Cancelado';
     const NOCANCELABLE = 'No cancelable';
-    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotive){
+    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotiveSat, $uuidSubstitution, $cancelationMotive){
         $sql = "delete from pending_cfdi_cancel where cfdi_id = '".$cfdiId."' ";
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->DeleteData();
@@ -21,11 +21,12 @@ class Cancelation extends Main
 				`rfc_r`,
 				`uuid`,
 				`total`,
-				`cancelation_motive`
-
-		)
-		VALUES
-		(
+				`cancelation_motive`,
+				`cancelation_motive_sat`,
+				`uuid_substitution`
+		    )
+            VALUES
+		    (
 
 				'".$userId."',
 				'".date("Y-m-d H:i:s")."',
@@ -34,7 +35,9 @@ class Cancelation extends Main
 				'".$rTaxPayerId."',
 				'".$uuid."',
 				'".$total."',
-				'".$cancelationMotive."'
+				'".$cancelationMotiveSat."',
+				'".$cancelationMotive."',
+				'".$uuidSubstitution."'
 
 		);");
         return $this->Util()->DB()->InsertData();
@@ -69,6 +72,8 @@ class Cancelation extends Main
             $date = date("Y-m-d");
             $sqlQuery = "UPDATE comprobante SET
                               motivoCancelacion = '".$cfdi['cancelation_motive']."', 
+                              motivoCancelacionSat = '".$cfdi['cancelation_motive_sat']."',
+                              uuidSustitucion = '".$cfdi['uuid_substitution']."',
                               status = '0', 
                               fechaPedimento = '".date("Y-m-d")."',
                               usuarioCancelacion='".$cfdi['user_cancelation']."'

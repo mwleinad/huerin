@@ -745,7 +745,7 @@ class Comprobante extends Producto
         return true;
     }//GenerarComprobante
 
-    function CancelarComprobante($data = null, $id_comprobante = null, $notaCredito = false, $motivo_cancelacion = null)
+    function CancelarCfdi($id_comprobante, $motivoSat, $notaCredito = false, $uuid_sustitucion = '', $motivo_cancelacion = '')
     {
         global $cancelation;
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,
@@ -789,12 +789,29 @@ class Comprobante extends Producto
         }
         $this->setRfcId($rfcActivo);
         $nodoEmisorRfc = $this->InfoRfc();
-        $response = $pac->CancelaCfdi2018($user, $pw, $nodoEmisorRfc["rfc"], $row['rfc'], $uuid, $row['total'], $path, $password);
+        $response = $pac->CancelaCfdi2018($user,
+            $pw,
+            $nodoEmisorRfc["rfc"],
+            $row['rfc'],
+            $uuid,
+            $row['total'],
+            $path,
+            $password,
+            $motivoSat,
+            $uuid_sustitucion);
         if ($response['cancelado']) {
             if ($response['conAceptacion']) {
-                $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $nodoEmisorRfc["rfc"], $row['rfc'], $uuid, $row['total'], $motivo_cancelacion);
+                $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $nodoEmisorRfc["rfc"], $row['rfc'], $uuid, $row['total'],$motivoSat, $uuid_sustitucion, $motivo_cancelacion);
             } else {
-                $sqlQuery = 'UPDATE comprobante SET motivoCancelacion = "' . $motivo_cancelacion . '", status = "0", fechaPedimento = "' . date("Y-m-d") . '",usuarioCancelacion="' . $_SESSION['User']['userId'] . '" WHERE comprobanteId = ' . $id_comprobante;
+                $sqlQuery = 'UPDATE comprobante 
+                             SET 
+                                 motivoCancelacionSat = "'.$motivoSat.'",
+                                 motivoCancelacion = "' . $motivo_cancelacion . '", 
+                                 uuidSustitucion = "' . $uuid_sustitucion . '", 
+                                 status = "0", 
+                                 fechaPedimento = "' . date("Y-m-d") . '",
+                                 usuarioCancelacion="' . $_SESSION['User']['userId'] . '" 
+                             WHERE comprobanteId = ' . $id_comprobante;
                 $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
                 $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
                 $cancelation->updateInstanciaIfExist($id_comprobante);

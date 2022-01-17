@@ -197,7 +197,10 @@
        		if(evt.keyCode == 13)
 				Buscar();
     });
+	jQ(document).on('change', '#motivo_sat', function () {
+		(this.value === '01' || this.value === '04')
+		? jQ('.cfdi-sustitucion').show()
+		: jQ('.cfdi-sustitucion').hide()
 
-
-	
+	})
 });
