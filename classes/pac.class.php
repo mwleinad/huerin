@@ -76,7 +76,7 @@ class Pac extends Util
         return $response;
     }
 
-    function CancelaCfdi2018($user, $pw, $rfcE, $rfcR, $uuid, $total, $pfx, $pfxPassword)
+    function CancelaCfdi2018($user, $pw, $rfcE, $rfcR, $uuid, $total, $pfx, $pfxPassword, $motivo, $sustitucion = null)
     {
         $fh = fopen($pfx, 'r');
         $theData = fread($fh, filesize($pfx));
@@ -99,6 +99,8 @@ class Pac extends Util
             'total' => $total,
             'pfx' => $zipFileEncoded,
             'pfxPassword' => $pfxPassword,
+            'motivo' => $motivo,
+            'sustitucion' => $sustitucion,
             'test' => $isTest
         );
         $data = [];

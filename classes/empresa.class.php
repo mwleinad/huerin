@@ -134,8 +134,21 @@ class Empresa extends Main
 
 	public function setMotivoCancelacion($value)
 	{
-		$this->Util()->ValidateString($value, $max_chars=300, $minChars = 1, "Motivo de Cancelacion");
+		$this->Util()->ValidateRequireField($value, "Descripción breve");
 		$this->motivoCancelacion = $value;
+	}
+	private $motivoCancelacionSat;
+	public function setMotivoCancelacionSat($value)
+	{
+		$this->Util()->ValidateRequireField($value, "Motivo de Cancelación SAT");
+		$this->motivoCancelacionSat = $value;
+	}
+
+	private $uuidSustitucion;
+	public function setUuidSustitucion($value)
+	{
+		$this->Util()->ValidateRequireField($value, "UUID que sustituye");
+		$this->uuidSustitucion = $value;
 	}
 
 	public function getMotivoCancelacion()
@@ -647,7 +660,7 @@ class Empresa extends Main
 		return true;
 	}
 
-	function CancelarComprobante($data = null, $id_comprobante = null, $notaCredito = false, $motivo_cancelacion = null)
+	function CancelarComprobante()
 	{
 		global $comprobante,$personal;
 		if($this->Util()->PrintErrors())
@@ -656,6 +669,9 @@ class Empresa extends Main
 		}
 		$id_comprobante = $this->comprobanteId;
 		$motivo_cancelacion = $this->motivoCancelacion;
+		$motivo_sat = $this->motivoCancelacionSat;
+		$uuid_sustitucion = $this->uuidSustitucion;
+
 		$sqlQuery = "SELECT data, conceptos, userId,serie,folio,
                      CASE tiposComprobanteId
                      WHEN 1 THEN 'de la factura'
@@ -665,12 +681,11 @@ class Empresa extends Main
 
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-		$data = unserialize(urldecode($row['data']));
 		$conceptos = unserialize(urldecode($row['conceptos']));
 		$_SESSION["conceptos"] = array();
 		$_SESSION["conceptos"] = $conceptos;
 		$comprobante->setRfcId($row['rfcId']);
-		if(!$comprobante->CancelarComprobante($data, $id_comprobante, false, $motivo_cancelacion))
+		if(!$comprobante->CancelarCfdi($id_comprobante, $motivo_sat,false, $uuid_sustitucion, $motivo_cancelacion))
 			return false;
 		else{
             //enviar notificacion a los encargados de area, supervisor y gerentes.

@@ -48,7 +48,11 @@
 		break;
 		case 'cancelar_factura':
 			$empresa->setComprobanteId($_POST['id_comprobante']);
+			$empresa->setMotivoCancelacionSat($_POST['motivo_sat']);
+			if(in_array($_POST['motivo_sat'], ['01', '04']))
+				$empresa->setUuidSustitucion($_POST['uuid_sustitucion']);
 			$empresa->setMotivoCancelacion($_POST['motivo']);
+
 			$cancelado = true;
 			if(!$empresa->CancelarComprobante()){
 				echo 'fail[#]';
