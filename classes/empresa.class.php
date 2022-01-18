@@ -670,7 +670,7 @@ class Empresa extends Main
 		$id_comprobante = $this->comprobanteId;
 		$motivo_cancelacion = $this->motivoCancelacion;
 		$motivo_sat = $this->motivoCancelacionSat;
-		$uuid_sustitucion = $this->uuidSustitucion;
+		$uuid_sustitucion = trim($this->uuidSustitucion);
 
 		$sqlQuery = "SELECT data, conceptos, userId,serie,folio,
                      CASE tiposComprobanteId
