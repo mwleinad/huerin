@@ -163,25 +163,26 @@ class Bitacora extends Main {
         foreach($items as $item) {
             $item['servicios'] = json_decode($item['servicios'], true);
             $file = $this->generarPdfRecotizacion($item);
-
             $name_file = $item['rfc'].".docx";
             if($file) {
-                $adjuntos = array(['url' => $file, 'name' => $name_file]);
-                $mails[EMAILCOORDINADOR] = 'Rogelio Zetina';
-                $mails[EMAIL_DEV] = "Bissael";
                 $send =  new SendMail();
-                $subject = PROJECT_STATUS === 'test' ? 'Envio de recotizacion test' : 'Envio de recotizacion';
-                $body = "Cambios en costo de los servicios ";
-                $send->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'avisos@braunhuerin.com.mx');
+                $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
+                $correo = PROJECT_STATUS === 'test' ? 'rzetina@braunhuerin.com.mx' : $item['emailResponsable'];
+                $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
+                $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
+                if ($send->Prepare($subject, $body, $correo,
+                    $name, $file,$name_file, '','',
+                    'noreply@braunhuerin.com.mx')) {
+                    $count++;
+                }
                 unlink($file);
             }
-            $count++;
         }
+
         $this->Util()->setError(0,'complete', $count.' correos enviados.');
         $this->Util()->PrintErrors();
         return true;
     }
 
 }
-
 ?>

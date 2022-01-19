@@ -32,13 +32,13 @@ switch($_SERVER['HTTP_HOST'])
     case 'huerin.test':
         define("SEND_TO", "bissael.cruz@gmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
-        define("EMAILCOORDINADOR", "isc061990@gmail.com");
+        define("EMAILCOORDINADOR", "isc0619900@gmail.com");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
         define("PATHWKHTML",DOC_ROOT.'/util/wkhtmltox/bin/wkhtmltopdf');
         define("FROM_FACTURA", "test");
     break;
     case 'bhtest.ddns.net':
-        define("SEND_TO", "bissael.cruz@hotmail.com");
+        define("SEND_TO", "bissael.cruz@gmail.com");
         define("FROM_MAIL", "noreply@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "rzetina@braunhuerin.com.mx");
         define("FROM_MAILAlERTA", "noreply@noreply.com");
