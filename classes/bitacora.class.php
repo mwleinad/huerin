@@ -139,12 +139,21 @@ class Bitacora extends Main {
         $table->addCell()->addText('Costo Nuevo', $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
+        $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true);
+        $totalAnterior = 0;
+        $totalActual = 0;
         foreach($data['servicios'] as $serv) {
             $table->addRow();
             $table->addCell()->addText($serv['nombreServicio'], $bodyTable);
             $table->addCell()->addText("$ ". number_format($serv['costoAnterior'], 2,'.', ','), $bodyTable);
             $table->addCell()->addText("$ ".number_format($serv['costoActual'], 2,'.', ','), $bodyTable);
+            $totalAnterior = $totalAnterior + $serv['costoAnterior'];
+            $totalActual =  $totalActual + $serv['costoActual'];
         }
+        $table->addRow();
+        $table->addCell()->addText('TOTAL', $styleTotal);
+        $table->addCell()->addText("$ ". number_format($totalAnterior, 2,'.', ','), $styleTotal);
+        $table->addCell()->addText("$ ". number_format($totalActual, 2,'.', ','), $styleTotal);
         $phpWord->setComplexBlock('tabla_comparativa', $table);
 
         $name_file = uniqid();
@@ -167,7 +176,7 @@ class Bitacora extends Main {
             if($file) {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
-                $correo = PROJECT_STATUS === 'test' ? 'rzetina@braunhuerin.com.mx' : $item['emailResponsable'];
+                $correo = PROJECT_STATUS === 'test' ? 'bissael.cruz@gmail.com' : $item['emailResponsable'];
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
