@@ -176,7 +176,7 @@ class Bitacora extends Main {
             if($file) {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
-                $correo = PROJECT_STATUS === 'test' ? 'bissael.cruz@gmail.com' : $item['emailResponsable'];
+                $correo = PROJECT_STATUS === 'test' ? 'rzetina@braunhuerin.com.mx' : $item['emailResponsable'];
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
