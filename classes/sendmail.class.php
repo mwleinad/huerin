@@ -217,10 +217,8 @@ class SendMail extends Main
 
             if(PROJECT_STATUS=='test'){
                 $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
-                $mail->addCC(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
             }else{
-                $mail->addAddress(EMAILCOORDINADOR,'Rogelio Isaac Zetina Olazagasti');
-                $mail->addBCC(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
             }
 
             $mail->send();

@@ -301,9 +301,6 @@ class Log extends Util
         $correosJefes=array();
         if(!empty($jefes))
         {
-            //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
-            array_push($jefes,32);
-            array_push($jefes,319);
             $jefes = array_unique($jefes);
             //comprobar si se excluye a huerin
             if($excluyehuerin){
@@ -311,7 +308,6 @@ class Log extends Util
                 if($index)
                     unset($jefes[$index]);
             }
-
 
             $ids = implode(',',$jefes);
             $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
