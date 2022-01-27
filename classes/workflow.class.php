@@ -664,7 +664,7 @@ class Workflow extends Servicio
                 if (!SEND_LOG_MOD)
                     $correos = [];
 
-                $sendmail->PrepareMultipleNotice($subject, $body, $correos, '', $attachment, $fileName, $attachment2, $fileName2, "noreply@branunhuerin.com.mx", "Administrador del Sistema", false);
+                $sendmail->PrepareMultipleNotice($subject, $body, $correos, '', $attachment, $fileName, $attachment2, $fileName2, "noreply@braunhuerin.com.mx");
             }
             $this->Util()->setError(0, 'complete', 'Archivo guardado correctamente');
             $this->Util()->PrintErrors();
