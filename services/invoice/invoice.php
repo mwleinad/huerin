@@ -286,7 +286,8 @@ class InvoiceService extends Cfdi{
 
             $iva = $item["costo"] * ($this->emisor["iva"] / 100);
             $subtotal += $item["costo"] + $iva;
-            $fecha = $fromManual ? explode('-', date('Y-m-d')) : explode("-", $item["date"]);
+            $mes_anterior =  date("Y-m-d",strtotime($item['date']." - 1 month"));
+            $fecha = $fromManual ? explode('-', date('Y-m-d')) : explode("-", $mes_anterior);
             $fechaText = $this->month13?" 13 del ".$fecha["0"]:" DE ".$months[$fecha[1]]." del ".$fecha["0"];
             $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
