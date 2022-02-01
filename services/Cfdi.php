@@ -448,6 +448,10 @@ class Cfdi extends Comprobante
             //insert conceptos
             foreach($_SESSION["conceptos"] as $concepto)
             {
+                $idServicio = $concepto['servicioId'] ?? 0;
+                $fechaCorrespondiente = isset($concepto['fechaCorrespondiente'])
+                                        ? "'".$concepto['fechaCorrespondiente']."'" : 'NULL';
+
                 $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 					INSERT INTO `concepto` (
 						`comprobanteId`,
@@ -459,7 +463,9 @@ class Cfdi extends Comprobante
 						`excentoIva`,
 						`importe`,
 						`userId`,
-						`empresaId`
+						`empresaId`,
+						`servicioId`,
+						`fechaCorrespondiente`
 					) VALUES (
 						".$comprobanteId.",
 						".$concepto["cantidad"].",
@@ -470,7 +476,9 @@ class Cfdi extends Comprobante
 						'".$concepto["excentoIva"]."',
 						".$concepto["importe"].",
 						".$userId.",
-						".$empresa["empresaId"]."
+						".$empresa["empresaId"].",
+						'".$idServicio."',
+						 $fechaCorrespondiente
 						)");
                 $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
             }
