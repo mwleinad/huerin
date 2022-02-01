@@ -286,8 +286,8 @@ class InvoiceService extends Cfdi{
 
             $iva = $item["costo"] * ($this->emisor["iva"] / 100);
             $subtotal += $item["costo"] + $iva;
-            $mes_anterior =  date("Y-m-d",strtotime($item['date']." - 1 month"));
-            $fecha = $fromManual ? explode('-', date('Y-m-d')) : explode("-", $mes_anterior);
+            $mes_correspondiente = $fromManual ? date('Y-m-d') : date("Y-m-d",strtotime($item['date']." - 1 month"));
+            $fecha = explode("-", $mes_correspondiente);
             $fechaText = $this->month13?" 13 del ".$fecha["0"]:" DE ".$months[$fecha[1]]." del ".$fecha["0"];
             $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
@@ -296,7 +296,9 @@ class InvoiceService extends Cfdi{
                 $claveProdServ =  84111500;
 
             $cad = [];
-            $cad["noIdentificacion"] = $item[""];
+            $cad["noIdentificacion"] = $item["tipoServicioId"];
+            $cad["servicioId"] = $item["servicioId"];
+            $cad["fechaCorrespondiente"] = $mes_correspondiente;
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
             $cad["valorUnitario"] = $item["costo"];
@@ -309,6 +311,8 @@ class InvoiceService extends Cfdi{
             $cad["importeTotal"] = $item["costo"];
             $cad["totalIva"] = $iva;
             $conceptos[] =$cad;
+            echo "<pre>";
+            print_r($conceptos);
         }
         return $conceptos;
     }
