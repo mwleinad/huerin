@@ -440,7 +440,7 @@ class Rol extends main
        return $owns_lineal;
    }
    function GetPermisoByTitulo($titulo){
-       $sql =  "SELECT permisoId from permisos where lower(titulo)='".strtolowe($titulo)."' ";
+       $sql =  "SELECT permisoId from permisos where lower(titulo)='".strtolower($titulo)."' ";
        $this->Util()->DB()->setQuery($sql);
        $single = $this->Util()->DB()->GetSingle();
        return $single;
