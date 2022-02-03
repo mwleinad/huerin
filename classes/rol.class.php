@@ -114,7 +114,7 @@ class Rol extends main
         return $role;
     }
     public function GetIdByName(){
-        $sql = "SELECT rolId FROM roles WHERE status='activo' AND lower(name)='".lower($this->titulo)."' ";
+        $sql = "SELECT rolId FROM roles WHERE status='activo' AND lower(name)='".strtolower($this->titulo)."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $single = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
         return $single;
