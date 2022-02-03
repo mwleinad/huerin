@@ -114,7 +114,7 @@ class Rol extends main
         return $role;
     }
     public function GetIdByName(){
-        $sql = "SELECT rolId FROM roles WHERE status='activo' AND name='".$this->titulo."' ";
+        $sql = "SELECT rolId FROM roles WHERE status='activo' AND lower(name)='".lower($this->titulo)."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $single = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
         return $single;
@@ -440,7 +440,7 @@ class Rol extends main
        return $owns_lineal;
    }
    function GetPermisoByTitulo($titulo){
-       $sql =  "SELECT permisoId from permisos where titulo='".$titulo."' ";
+       $sql =  "SELECT permisoId from permisos where lower(titulo)='".strtolowe($titulo)."' ";
        $this->Util()->DB()->setQuery($sql);
        $single = $this->Util()->DB()->GetSingle();
        return $single;
