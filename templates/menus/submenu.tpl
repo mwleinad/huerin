@@ -4,7 +4,7 @@
        <ul>
         	{if $mainMnu == "archivos"}
           	    {foreach from=$resDepartamentos item=item}
-                    {if (in_array($item.permId,$permissions))|| $User.isRoot}
+                    {if (in_array($item.permId, $permissions))|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/archivos/id/{$item.departamentoId}" {if $page == "archivos" && $item.departamentoId == $id}class="current"{/if}>
                     <span>{$item.departamento}</span></a></li>
                     {/if}
