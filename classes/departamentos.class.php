@@ -69,7 +69,8 @@ class Departamentos extends Main
 		$result = $this->Util()->DB()->GetResult();
 		//encontrar el permisoId de cada departamento
         foreach($result as $key=> $dep){
-            $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos  WHERE titulo="'.$dep['departamento'].'" ');
+            $this->Util()->DB()->setQuery('SELECT permisoId FROM permisos WHERE lower(titulo) = "'.strtolower($dep['departamento']).'" AND parentId = 6 ');
+            $this->Util()->DB()->getQuery();
             $perId = $this->Util()->DB()->GetSingle();
             $result[$key]['permId']=$perId;
         }
