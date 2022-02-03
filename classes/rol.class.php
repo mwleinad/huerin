@@ -439,8 +439,10 @@ class Rol extends main
        $owns_lineal =$this->Util()->ConvertToLineal($array_perm,'permisoId');
        return $owns_lineal;
    }
+
+   // funcion usada unicamente en permisos de archivos-departamentos
    function GetPermisoByTitulo($titulo){
-       $sql =  "SELECT permisoId from permisos where lower(titulo)='".strtolower($titulo)."' ";
+       $sql =  "SELECT permisoId from permisos where lower(titulo)='".strtolower($titulo)."' and parentId = 6 ";
        $this->Util()->DB()->setQuery($sql);
        $single = $this->Util()->DB()->GetSingle();
        return $single;
