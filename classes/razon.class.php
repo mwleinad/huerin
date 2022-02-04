@@ -163,7 +163,7 @@ class Razon extends Contract
        if($compInfo['tiposComprobanteId']==10)
        {
            $fromName = "COBRANZA B&H";
-           $subjectPrefix  = FROM_FACTURA === 'test'
+           $subjectPrefix  = PROJECT_STATUS === 'test'
                ? "COMPLEMENTO DE PAGO EN TEST CON FOLIO No. "
                : "COMPLEMENTO DE PAGO CON FOLIO No. ";
            $subject  = $subjectPrefix.$serie.$folio;
@@ -172,7 +172,7 @@ class Razon extends Contract
        }
        else{
            $fromName = "FACTURACION B&H";
-           $subjectPrefix  = FROM_FACTURA === 'test'
+           $subjectPrefix  = PROJECT_STATUS === 'test'
                ? "ENVIO DE FACTURA EN TEST CON FOLIO No. "
                : "ENVIO DE FACTURA CON FOLIO No. ";
            $subject  = $subjectPrefix.$serie.$folio;
