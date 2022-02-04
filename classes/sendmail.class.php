@@ -172,10 +172,10 @@ class SendMail extends Main
         $logSend ="";
         foreach($to as $correo => $name)
         {
-            if($correo==EMAILCOORDINADOR){
+            /*if($correo==EMAILCOORDINADOR){
                 $totalCont++;
                 continue;
-            }
+            }*/
 
             if($totalCorreo==1){
                 $logSend .="Se envia a ".$name."(".$correo.")".chr(13).chr(10);
