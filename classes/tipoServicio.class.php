@@ -243,7 +243,7 @@ class TipoServicio extends Main
 
 	public function EnumerateAll()
 	{
-		$this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" ORDER BY tipoServicioId ASC');
+		$this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" ORDER BY nombreServicio ASC');
 		$result = $this->Util()->DB()->GetResult();
 
 		return $result;

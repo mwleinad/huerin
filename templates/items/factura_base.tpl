@@ -7,7 +7,8 @@
                 <td>${$fact.total_formato}</td>
                 <td align="center">{$fact.serie}{$fact.folio}</td>
                 <td align="center">
-                {if $fact.instanciasLigados|count > 0}
+                {if $fact.instanciasLigados|count > 0 || $fact.procedencia eq 'fromInstance'}
+                    Factura automatica <br>
                     {foreach from=$fact.instanciasLigados item=ins}
                 	    <a href="{$WEB_ROOT}/workflow/id/{$ins.id}" title="Ir a workflow" target="_blank">{$ins.id} - Ir</a><br>
                     {/foreach}
