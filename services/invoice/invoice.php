@@ -107,7 +107,7 @@ class InvoiceService extends Cfdi{
     function ProcessIfIsRif($serv,$date){
         $mes =  (int)date('m',strtotime($date));
         $year =  (int)date('Y',strtotime($date));
-        if($serv["tipoServicioId"]==RIF||$serv["tipoServicioId"]==RIFAUDITADO){
+        if($serv["tipoServicioId"] == RIF||$serv["tipoServicioId"] == RIFAUDITADO){
             if($mes%2==0)
                 return false;
 
@@ -132,6 +132,18 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetRow();
     }
+    function GetExistsFacturaActual($servicioId, $contractId, $date) {
+        $sql = "select conceptoId from concepto sa
+                inner join comprobante sb ON sa.comprobanteId = sb.comprobanteId
+                where sa.servicioId='$servicioId' 
+                and sa.fechaCorrespondiente = '".$date."'  
+                and sb.userId = '".$contractId."'
+                and sb.status = '1' 
+                order by sa.conceptoId desc limit 1";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetSingle();
+    }
+
     private function validateIfGenerateUniqueInvoice($serv) {
         if((int)$serv['uniqueInvoice']) {
             $query = "select instanciaServicioId, comprobanteId from instanciaServicio
@@ -142,6 +154,26 @@ class InvoiceService extends Cfdi{
         }
        return false;
     }
+
+    function getRangoFechaByPeriodicidad($periodicidad, $fif) {
+        $suma_periodicidad = "";
+        $fechas = [];
+        switch(strtolower($periodicidad)) {
+            case 'mensual': $suma_periodicidad = ' +1 month '; break;
+            case 'bimestral': $suma_periodicidad = ' +2 month '; break;
+            case 'trimestral': $suma_periodicidad = ' +3 month '; break;
+            case 'cuatrimestral': $suma_periodicidad = ' +4 month '; break;
+            case 'semestral': $suma_periodicidad = ' +6 month '; break;
+            case 'anual': $suma_periodicidad = ' +1 year '; break;
+        }
+        $fif_control = $fif;
+        while ($fif_control <= date('Y-m-d')) {
+            array_push($fechas, $fif_control);
+            $fif_control = date('Y-m-d', strtotime($fif_control.$suma_periodicidad));
+        }
+        return $fechas;
+    }
+
     function GetFilterServicesByContract($validateInstance =  true) {
         $this->resetServiciosToConceptos();
         $id =  $this->currentContract["contractId"];
@@ -155,7 +187,8 @@ class InvoiceService extends Cfdi{
 
         array_push($childs, $id);
         $strId =  implode(',', $childs);
-        $sql = "select a.*,b.claveSat,b.nombreServicio, b.uniqueInvoice from servicio a
+        $sql = "select a.*,b.claveSat,b.nombreServicio, b.uniqueInvoice, b.periodicidad
+                from servicio a
                 inner join tipoServicio b on a.tipoServicioId = b.tipoServicioId 
                 where a.contractId in($strId) and b.status='1' 
                 and a.status in('activo','bajaParcial') and week(inicioFactura) is not null
@@ -174,16 +207,29 @@ class InvoiceService extends Cfdi{
                 continue;
 
            if($validateInstance) {
-                $instancia = $this->GetCurrentWorkflow($item["servicioId"], date('Y-m-d'));
-                $instancia = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
-                if (!$instancia)
-                    continue;
+               if (strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) {
+                   $realDate =  $item['inicioFactura'];
+                   $fecha_tope =  $item['inicioFactura'];
+               } else {
+                   $fechas = $this->getRangoFechaByPeriodicidad($item['periodicidad'], $firstDayInicioFactura);
+                   $fecha_tope = end($fechas);
+                   $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
+               }
 
-               if((int)$instancia["comprobanteId"]>0)
+               $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $realDate);
+
+               //$instancia   = $this->GetCurrentWorkflow($item["servicioId"], date('Y-m-d'));
+               //$instancia   = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
+               //if (!$instancia)
+                 //   continue;
+
+              // if((int)$instancia["comprobanteId"]>0)
+                //   continue;
+               if($existFactura)
                    continue;
             }
 
-           if($item["status"]=="bajaParcial"){
+           if($item["status"] == "bajaParcial"){
                if(!$this->Util()->isValidateDate($item["lastDateWorkflow"],'Y-m-d'))
                 continue;
 
@@ -191,13 +237,13 @@ class InvoiceService extends Cfdi{
                if($firstDayCurrentDate>$firstDayLastDateWorkflow)
                 continue;
            }
-           // comprobar factura unica ocasion
+           // remove:: comprobar factura unica ocasion, quitar si no se seguira validando por instancia creada
            if($this->validateIfGenerateUniqueInvoice($item))
-               continue;
+              continue;
 
-           $item["workflowId"] = $instancia["instanciaServicioId"];
-           $item["date"] = $instancia["date"];
-           $item["isRifNoInstance"] = $instancia["isRifNoInstance"];
+           //$item["workflowId"] = $instancia["instanciaServicioId"];
+           $item["date"] = $fecha_tope;
+           //$item["isRifNoInstance"] = $instancia["isRifNoInstance"];
            $this->serviciosToConceptos[] = $item;
        }
 
@@ -269,9 +315,10 @@ class InvoiceService extends Cfdi{
         );
         $this->data["receptor"] = $this->receptor;
         $this->data["procedencia"] = $this->rifNoInstance?"rifWhithoutInstance":"whithInstance";
-        $this->data["procedencia"] = $this->month13?"manual":$this->data["procedencia"];
+        $this->data["procedencia"] = $this->month13 ? "manual" :$this->data["procedencia"];
         $this->data['isRifNoInstance'] = $this->rifNoInstance;
     }
+
     function GenerateConceptos($fromManual = false){
         global $months;
         $conceptos = [];
@@ -286,8 +333,16 @@ class InvoiceService extends Cfdi{
 
             $iva = $item["costo"] * ($this->emisor["iva"] / 100);
             $subtotal += $item["costo"] + $iva;
-            $mes_correspondiente = $fromManual ? date('Y-m-d') : date("Y-m-d",strtotime($item['date']." - 1 month"));
-            $fecha = explode("-", $mes_correspondiente);
+
+            if ($fromManual) {
+                $fecha_real_correspondiente = date('Y-m-d');
+            } else {
+                $fecha_real_correspondiente = (strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1)
+                ? $item['date']
+                : date("Y-m-d",strtotime($item['date']." - 1 month"));
+            }
+
+            $fecha = explode("-", $fecha_real_correspondiente);
             $fechaText = $this->month13?" 13 del ".$fecha["0"]:" DE ".$months[$fecha[1]]." del ".$fecha["0"];
             $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
@@ -298,7 +353,7 @@ class InvoiceService extends Cfdi{
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
             $cad["servicioId"] = $item["servicioId"];
-            $cad["fechaCorrespondiente"] = $mes_correspondiente;
+            $cad["fechaCorrespondiente"] = $fecha_real_correspondiente;
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
             $cad["valorUnitario"] = $item["costo"];
@@ -311,8 +366,6 @@ class InvoiceService extends Cfdi{
             $cad["importeTotal"] = $item["costo"];
             $cad["totalIva"] = $iva;
             $conceptos[] =$cad;
-            echo "<pre>";
-            print_r($conceptos);
         }
         return $conceptos;
     }

@@ -1139,7 +1139,6 @@ class Comprobante extends Producto
 
     function GetComprobantesByRfc()
     {
-
         global $user;
 
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery('SELECT COUNT(*) FROM comprobante ORDER BY fecha DESC');
