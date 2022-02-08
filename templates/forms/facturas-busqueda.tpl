@@ -71,15 +71,14 @@
      <input type="hidden" name="type" id="type" value="buscar" />
         <div class="folioRowOff" style="width:910px">
         </div>
-        <div align="center">
-        		<a class="button" name="btnBuscar" id="btnBuscar"><span>Buscar</span></a>
-            
+        <div style="text-align: center">
+        		<a class="button" id="btnBuscar"><span>Buscar</span></a>
             <!--
             <a name="btnExportar" id="btnExportar">Paso 1. Generar Reporte basado en los filtros actuales</a><br />
             <a href="{$WEB_ROOT}/download.php?file=reporte_comprobantes.csv" title="Descargar Ultimo Reporte Generado">
             <img title="Generar Reporte de Comprobantes" src="{$WEB_ROOT}/images/excel.PNG" /></a>
 			-->
-            <div id="loadBusqueda" style="display:none"><img src="http://www.facturase.com/images/loading.gif" width="16" height="16" />Cargando...</div>       	
+            <div id="loadBusqueda" style="display:none"><img src="{$WEB_ROOT}/images/loading.gif" width="16" height="16" />Cargando...</div>
         </div>
      </form>
 <!-- End Form -->

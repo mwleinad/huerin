@@ -78,7 +78,9 @@
 <script src="{$WEB_ROOT}/js/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/script-service.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/datetimepicker.js" type="text/javascript"></script>
-<script src="{$WEB_ROOT}/js/driverApi.js?{$timestamp}" type="text/javascript"></script>
+{if $page eq 'prospect'}
+	<script src="{$WEB_ROOT}/js/driverApi.js?{$timestamp}" type="text/javascript"></script>
+{/if}
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/tablekit.js?{$timestamp}"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/libs/dropzone/dropzone.js?{$timestamp}"></script>
@@ -89,8 +91,8 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/assets/plugins/dt_1.10.25/datatables.min.css"/>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/dt_1.10.25/datatables.min.js"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/datatable.js?{$timestamp}"></script>
-
 {/if}
+
 {if $section == 'consultar-facturas'}
 <script src="{$WEB_ROOT}/js/consultar-facturas.js?{$timestamp}" type="text/javascript"></script>
 {/if}
@@ -103,8 +105,11 @@
 <script src="{$WEB_ROOT}/js/autocomplete.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/pure_autocomplete.js?{$timestamp}" type="text/javascript"></script>
 <script type="text/javascript" src="{$WEB_ROOT}/assets/scripts/ui-tree.js?{$timestamp}"></script>
-<script src="{$WEB_ROOT}/js/{$includedTpl}.js?{$timestamp}" type="text/javascript"></script>
-
+{assign var="urlfile"  value="`$DOC_ROOT`/js/`$includedTpl`.js"}
+{if is_file("`$urlfile`")}
+	<script src="{$WEB_ROOT}/js/{$includedTpl}.js?{$timestamp}" type="text/javascript"></script>
+{/if}
+<script type="text/javascript" src="{$WEB_ROOT}/assets/plugins/alpinejs/alpine.min.js?{$timestamp}" defer></script>
 </head>
 
 <body>

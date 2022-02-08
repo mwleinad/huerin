@@ -10,7 +10,6 @@ var driverApi = function () {
             var jwt = xhr.getResponseHeader('Authorization');
             localStorage.setItem('huerinToken', jwt);
         }).fail(function (err) {
-            console.log(err)
         });
     };
     var getToken = () => {

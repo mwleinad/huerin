@@ -138,7 +138,7 @@ class InvoiceService extends Cfdi{
                 where sa.servicioId='$servicioId' 
                 and sa.fechaCorrespondiente = '".$date."'  
                 and sb.userId = '".$contractId."'
-                and sb.status = '1' 
+                and (sb.status = '1' or (sb.status='0' && sb.motivoCancelacionSat='03')
                 order by sa.conceptoId desc limit 1";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetSingle();
@@ -200,12 +200,12 @@ class InvoiceService extends Cfdi{
        foreach($results as $item){
            if(!$this->Util()->isValidateDate($item["inicioFactura"],'Y-m-d'))
                 continue;
-
            $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
            $firstDayInicioFactura = $this->Util()->getFirstDate($item["inicioFactura"]);
            if($firstDayInicioFactura>$firstDayCurrentDate)
                 continue;
 
+           $fecha_tope = $firstDayCurrentDate;
            if($validateInstance) {
                if (strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) {
                    $realDate =  $item['inicioFactura'];
@@ -246,8 +246,8 @@ class InvoiceService extends Cfdi{
            //$item["isRifNoInstance"] = $instancia["isRifNoInstance"];
            $this->serviciosToConceptos[] = $item;
        }
-
     }
+
     function GenerateArrayData(){
         $this->data["condicionesDePago"] = "";
         $this->data["tasaIva"] = $this->emisor["iva"];
@@ -406,6 +406,7 @@ class InvoiceService extends Cfdi{
             }
         }
     }
+
     function CreateInvoice13(){
         $_SESSION["conceptos"] = [];
         $firstDayCurrentDate = $this->Util()->getFirstDate(date("Y-m-d"));
@@ -430,6 +431,7 @@ class InvoiceService extends Cfdi{
             $this->logString .="Se creo la factura correspondiente al mes 13 ".$last['serie'].$last['folio']." para ".$this->currentContract['name']."con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
         }
     }
+
     function GenerateInvoices($id=0){
         $contratos =  $this->GetContracts($id);
         foreach($contratos as $contrato){
@@ -463,6 +465,7 @@ class InvoiceService extends Cfdi{
             $this->GenerateSendLog();
         }
     }
+
     function ChangeLastProcessInvoice(){
         if(!$this->procesoRealizado)
             return false;
@@ -473,6 +476,7 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->UpdateData();
     }
+
     function GenerateSendLog(){
         if(!$this->createdInvoice)
             return false;
@@ -488,6 +492,115 @@ class InvoiceService extends Cfdi{
             //enviar por correo el log solo si se crearon facturas
             $sendmail = new SendMail;
             $sendmail->Prepare('LOG INVOICES','Logs invoices','isc061990@outlook.com','HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
+        }
+    }
+
+    function getInfoInvoice ($id) {
+        $sql  = "SELECT 
+                    a.comprobanteId, 
+                    date_format(a.fecha, '%Y-%m-%d') fecha,
+                    a.serie,
+                    a.folio,
+                    b.noCuenta,
+                    b.contractId,
+                    b.facturador,
+                    b.name,
+                    b.address,
+                    b.noExtAddress,
+                    b.noIntAddress,
+                    b.coloniaAddress,
+                    b.municipioAddress,
+                    b.cpAddress,
+                    b.estadoAddress,
+                    b.paisAddress,
+                    b.emailContactoAdministrativo,
+                    b.telefonoContactoAdministrativo  
+                 FROM comprobante a
+                 INNER JOIN contract b ON a.userId = b.contractId
+                 WHERE a.comprobanteId = '".$id."'   
+                 ";
+
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetRow();
+    }
+
+    function sustituirFactura($beforeData) {
+
+        $_SESSION["conceptos"] = [];
+        $dataReturn = [];
+        $currentDate = $this->Util()->getFirstDate(date('Y-m-d'));
+        $beforeInvoiceDate  = $this->Util()->getFirstDate($beforeData['fecha']);
+        $this->resetServiciosToConceptos();
+        $this->resetEmisor();
+        $this->resetData();
+        $this->resetReceptor();
+
+        if($beforeInvoiceDate !==$currentDate) {
+            $this->Util()->setError(0,'error',  'No se puede refacturar meses anteriores, desde este apartado.');
+            $dataReturn['res'] = false;
+        }
+        $sql = "SELECT serie, folio, timbreFiscal, date_format(fecha,'%d/%m/%Y') fecha FROM comprobante 
+                WHERE status = '1' 
+                AND parentId = '".$beforeData['comprobanteId']."' ";
+        $this->Util()->DB()->setQuery($sql);
+        $facturaHijo = $this->Util()->DB()->GetRow();
+
+        if($facturaHijo) {
+            $folio = $facturaHijo['serie'].$facturaHijo['folio'];
+            $unserializeTimbre = unserialize($facturaHijo['timbreFiscal']);
+            $msj = 'Ya existe un comprobante generado anteriormente con fecha : <strong> '.$facturaHijo['fecha'].'</strong>, folio: <strong>'. $folio.'</strong>';
+            $msj .= ' y UUID: <strong>'.  $unserializeTimbre['UUID'].'</strong>';
+            $this->Util()->setError(0,'error',  $msj);
+            $dataReturn['uuid'] = $unserializeTimbre['UUID'];
+            $dataReturn['res'] = false;
+        }
+
+        $sql = "SELECT COUNT(paymentId) total FROM payment 
+                WHERE comprobanteId = '".$beforeData['comprobanteId']."'
+                AND paymentStatus = 'activo' ";
+        $this->Util()->DB()->setQuery($sql);
+        $tienePagos = $this->Util()->DB()->GetSingle();
+
+        if($tienePagos > 0){
+            $this->Util()->setError(0, 'error', 'La factura que pretende cancelar tiene pagos aplicados.');
+            $dataReturn['res'] = false;
+        }
+
+        $this->setCurrentContract($beforeData);
+        if(!$this->setEmisor()){
+            $this->Util()->setError(0, 'error', 'Error!, emisor no encontrado.');
+            $dataReturn['res'] = false;
+        }
+        $this->setReceptor();
+        $this->GetFilterServicesByContract(false);
+
+        if(!count($this->getServiciosToConceptos())) {
+            $this->Util()->setError(0, 'error', 'No se puede generar factura, no existen servicios.');
+            $dataReturn['res'] = false;
+        }
+        if($this->Util()->PrintErrors())
+            return $dataReturn;
+
+        $this->setMonth13(false);
+        $_SESSION["conceptos"] = $this->GenerateConceptos();
+        $this->GenerateArrayData();
+        $this->data['parent'] =  $beforeData['comprobanteId'];
+        $idComprobante = $this->Generar($this->data, false, false);
+        if(!$idComprobante){
+            $this->Util()->setError(0, 'error', 'Error al generar factura, intente nuevamente.');
+            $dataReturn['res'] = false;
+            $this->Util()->PrintErrors();
+            return $dataReturn;
+        } else {
+            $this->Util()->DB()->setQuery("SELECT timbreFiscal, serie, folio FROM comprobante 
+                                                 WHERE comprobanteId ='".$idComprobante."'");
+            $dataResult= $this->Util()->DB()->GetRow();
+            $dataReturn['result'] = $dataResult;
+            $this->Util()->setError(0,
+                'complete',
+                'Se ha generado la factura correctamente con folio '. $dataResult['serie'].$dataResult['folio']);
+            $this->Util()->PrintErrors();
+            $dataReturn['res'] = true;
         }
     }
 }

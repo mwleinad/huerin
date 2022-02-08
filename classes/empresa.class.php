@@ -132,6 +132,14 @@ class Empresa extends Main
 	    return $this->claveFacturador;
     }
 
+	public function validarPagosAplicados($id) {
+		$sql = "SELECT COUNT(paymentId) total FROM payment WHERE comprobanteId = '".$id."' AND paymentStatus = 'activo' ";
+		$this->Util()->DB()->setQuery($sql);
+		$tienePagos = $this->Util()->DB()->GetSingle();
+
+		if($tienePagos > 0)
+			$this->Util()->setError(0, 'error', 'La factura que pretende cancelar tiene pagos aplicados.');
+	}
 	public function setMotivoCancelacion($value)
 	{
 		$this->Util()->ValidateRequireField($value, "Descripción breve");
@@ -663,21 +671,32 @@ class Empresa extends Main
 	function CancelarComprobante()
 	{
 		global $comprobante,$personal;
+
 		if($this->Util()->PrintErrors())
 		{
 			return false;
 		}
+
 		$id_comprobante = $this->comprobanteId;
 		$motivo_cancelacion = $this->motivoCancelacion;
 		$motivo_sat = $this->motivoCancelacionSat;
 		$uuid_sustitucion = trim($this->uuidSustitucion);
 
-		$sqlQuery = "SELECT data, conceptos, userId,serie,folio,
-                     CASE tiposComprobanteId
+		$sqlQuery = "SELECT 
+       				 a.data,
+       				 a.conceptos, 
+       				 a.userId,
+       				 a.serie,
+       				 a.folio,
+       				 b.name,	
+                     CASE a.tiposComprobanteId
                      WHEN 1 THEN 'de la factura'
                      WHEN 10 THEN 'del complemento de pago'
-                     ELSE 'del documento' END AS tipoDocumento,rfcId            
-                     FROM comprobante WHERE comprobanteId = ".$id_comprobante;
+                     ELSE 'del documento' END AS tipoDocumento,
+       				 a.rfcId            
+                     FROM comprobante a
+					 INNER JOIN contract b ON a.userId = b.contractId
+					 WHERE a.comprobanteId = ".$id_comprobante;
 
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
 		$row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
@@ -689,8 +708,6 @@ class Empresa extends Main
 			return false;
 		else{
             //enviar notificacion a los encargados de area, supervisor y gerentes.
-            $this->Util()->DB()->setQuery("select name from contract where contractId ='".$row["userId"]."' ");
-            $razon = $this->Util()->DB()->GetSingle();
             $currentUser =  $personal->getCurrentUser();
 
             $body = "";
@@ -717,7 +734,6 @@ class Empresa extends Main
 		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
 		   return true;
         }
-
 	}
 
 	function DoLogout()
