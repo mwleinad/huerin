@@ -218,7 +218,12 @@ class InvoiceService extends Cfdi{
 
                $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $realDate);
 
-               //$instancia   = $this->GetCurrentWorkflow($item["servicioId"], date('Y-m-d'));
+               $fecha_tope_first_day = $this->Util()->getFirstDate($fecha_tope);
+               // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
+               if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-02-01') {
+                     continue;
+               }
+
                //$instancia   = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
                //if (!$instancia)
                  //   continue;
