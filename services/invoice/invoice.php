@@ -133,12 +133,12 @@ class InvoiceService extends Cfdi{
         return $this->Util()->DB()->GetRow();
     }
     function GetExistsFacturaActual($servicioId, $contractId, $date) {
-       echo $sql = "select conceptoId from concepto sa
+       $sql = "select conceptoId from concepto sa
                 inner join comprobante sb ON sa.comprobanteId = sb.comprobanteId
                 where sa.servicioId='$servicioId' 
                 and sa.fechaCorrespondiente = '".$date."'  
                 and sb.userId = '".$contractId."'
-                and (sb.status = '1' or (sb.status='0' && sb.motivoCancelacionSat='03')
+                and (sb.status = '1' or (sb.status='0' && sb.motivoCancelacionSat='03'))
                 order by sa.conceptoId desc limit 1";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetSingle();
@@ -212,9 +212,7 @@ class InvoiceService extends Cfdi{
                    $fecha_tope =  $item['inicioFactura'];
                } else {
                    $fechas = $this->getRangoFechaByPeriodicidad($item['periodicidad'], $firstDayInicioFactura);
-                   dd($fechas);
                    $fecha_tope = end($fechas);
-                   echo $fecha_tope;
                    $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
                }
                // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
@@ -394,7 +392,6 @@ class InvoiceService extends Cfdi{
         $this->setMonth13(false);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
-        exit;
         $result = $this->Generar($this->data);
         if(!$result){
             $this->setProcesoRealizado(false);
