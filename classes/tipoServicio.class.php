@@ -222,7 +222,7 @@ class TipoServicio extends Main
         global $User;
 
         //filtro departamento
-        if($User['departamentoId']!="1" && $User["roleId"]!=1)
+        if($User['departamentoId']!="1" && $User["roleId"]!=1 && !$this->accessAnyDepartament())
             $filtroDep=" AND a.departamentoId=".$User['departamentoId'];
 
         $this->Util()->DB()->setQuery("SELECT a.*, b.departamento  FROM tipoServicio a 
