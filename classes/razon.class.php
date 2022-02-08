@@ -108,8 +108,8 @@ class Razon extends Contract
        $row['allEmails'] = $emails;
        return $row;
    }
-   public function sendComprobante33($id_comprobante,$showErrors=false,$from33=false, $reenvio = false){
-       global $comprobante,$sendmail,$personal;
+   public function sendComprobante33($id_comprobante, $showErrors=false, $from33=false, $reenvio = false){
+       global $comprobante,$sendmail;
        $compInfo = $comprobante->GetInfoComprobante($id_comprobante);
        if(SEND_FACT_CUSTOMER=='SI'){
            $this->setContractId($compInfo['userId']);
@@ -124,7 +124,7 @@ class Razon extends Contract
        }else{
            $correos = array();
        }
-       //encontrar el encargado de administracion
+       //encontrar el encargado de cxc antes administracion
        $encargados = [];
        $contractRep = new ContractRep();
        $encargadosIds = $contractRep->encargadosCustomKey('departamentoId','personalId',$compInfo['userId']);
@@ -160,7 +160,7 @@ class Razon extends Contract
 
        /*** End Archivo PDF ***/
 
-       if($compInfo['tiposComprobanteId']==10)
+       if((int)$compInfo['tiposComprobanteId'] === 10)
        {
            $fromName = "COBRANZA B&H";
            $subjectPrefix  = PROJECT_STATUS === 'test'
@@ -169,8 +169,7 @@ class Razon extends Contract
            $subject  = $subjectPrefix.$serie.$folio;
 
 
-       }
-       else{
+       } else {
            $fromName = "FACTURACION B&H";
            $subjectPrefix  = PROJECT_STATUS === 'test'
                ? "ENVIO DE FACTURA EN TEST CON FOLIO No. "
@@ -222,12 +221,10 @@ class Razon extends Contract
            $body .= "Quedo de usted. Saludos cordiales! Gracias.<br><br><br>";
            $body .= "Favor de revisar el archivo adjunto para ver comprobante.\r\n";
            $body .= "<br><br>";
-           //$body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
        }else{
            $body .= "Gracias.<br>";
            $body .= "Favor de revisar el archivo adjunto para ver factura.\r\n";
            $body .= "<br><br>";
-          // $body .= "...::: NOTIFICACION AUTOMATICA --- NO RESPONDER :::...<br><br>";
        }
 
         if($from33)
