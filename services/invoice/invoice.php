@@ -133,7 +133,7 @@ class InvoiceService extends Cfdi{
         return $this->Util()->DB()->GetRow();
     }
     function GetExistsFacturaActual($servicioId, $contractId, $date) {
-        $sql = "select conceptoId from concepto sa
+       echo $sql = "select conceptoId from concepto sa
                 inner join comprobante sb ON sa.comprobanteId = sb.comprobanteId
                 where sa.servicioId='$servicioId' 
                 and sa.fechaCorrespondiente = '".$date."'  
@@ -212,17 +212,19 @@ class InvoiceService extends Cfdi{
                    $fecha_tope =  $item['inicioFactura'];
                } else {
                    $fechas = $this->getRangoFechaByPeriodicidad($item['periodicidad'], $firstDayInicioFactura);
+                   dd($fechas);
                    $fecha_tope = end($fechas);
+                   echo $fecha_tope;
                    $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
                }
-
+               // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
+               if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-02-01') {
+                   continue;
+               }
                $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $realDate);
 
                $fecha_tope_first_day = $this->Util()->getFirstDate($fecha_tope);
-               // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
-               if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-02-01') {
-                     continue;
-               }
+
 
                //$instancia   = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
                //if (!$instancia)
@@ -392,6 +394,7 @@ class InvoiceService extends Cfdi{
         $this->setMonth13(false);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
+        exit;
         $result = $this->Generar($this->data);
         if(!$result){
             $this->setProcesoRealizado(false);
@@ -496,7 +499,7 @@ class InvoiceService extends Cfdi{
             fclose($open);
             //enviar por correo el log solo si se crearon facturas
             $sendmail = new SendMail;
-            $sendmail->Prepare('LOG INVOICES','Logs invoices','isc061990@outlook.com','HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
+            $sendmail->Prepare('LOG INVOICES','Logs invoices',EMAIL_DEV,'HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
         }
     }
 
