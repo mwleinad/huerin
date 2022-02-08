@@ -2,7 +2,7 @@
 
 class Cfdi extends Comprobante
 {
-    public function Generar($data, $notaCredito = false)
+    public function Generar($data, $notaCredito = false, $sendCorreo = true)
     {
         $myData = urlencode(serialize($data));
         $empresa = $this->Info();
@@ -341,6 +341,9 @@ class Cfdi extends Comprobante
                 $data['procedencia'] = 'manual';
             break;
         }
+        $idParent = isset($data['parent'])
+                  ? "'".$data['parent']."'"
+                  : 'NULL';
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 			INSERT INTO `comprobante` (
 				`comprobanteId`,
@@ -381,7 +384,8 @@ class Cfdi extends Comprobante
 				`cadenaOriginal`,
 				`timbreFiscal`,
 				`procedencia`,
-				`servicioId`,				
+				`servicioId`,
+				`parentId`,
 				`version`
 			) VALUES
 			(
@@ -424,6 +428,7 @@ class Cfdi extends Comprobante
 				'".$cadenaOriginalTimbreSerialized."',
 				'".$data['procedencia']."',
 				'".$data['servicioId']."',
+				$idParent,
 				'3.3'
 			)");
         $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
@@ -484,10 +489,12 @@ class Cfdi extends Comprobante
             }
 
         }
-        //End notaVenta
-        //Enviar por correo despues de crear factura.
-        $razon =  new Razon;
-        $razon->sendComprobante33($comprobanteId,false,true);
+
+        // condicionar el envio de correo.
+        if ($sendCorreo) {
+            $razon = new Razon;
+            $razon->sendComprobante33($comprobanteId, false, true);
+        }
         return $comprobanteId;
     }//Generar
 
