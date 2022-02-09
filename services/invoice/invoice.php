@@ -606,6 +606,130 @@ class InvoiceService extends Cfdi{
                 'Se ha generado la factura correctamente con folio '. $dataResult['serie'].$dataResult['folio']);
             $this->Util()->PrintErrors();
             $dataReturn['res'] = true;
+            return $dataReturn;
         }
+    }
+
+    /*
+     * Funciones para sustitucion manual
+     */
+    function getInfoInvoiceByFolio ($serie, $folio) {
+       $sql  = "SELECT 
+                    a.comprobanteId, 
+                    date_format(a.fecha, '%Y-%m-%d') fecha,
+                    a.serie,
+                    a.folio,
+                    a.tasaIva,
+                    a.tiposComprobanteId, 
+                    a.rfcId,
+                    b.noCuenta,
+                    b.contractId,
+                    b.facturador,
+                    b.name,
+                    b.address,
+                    b.noExtAddress,
+                    b.noIntAddress,
+                    b.coloniaAddress,
+                    b.municipioAddress,
+                    b.cpAddress,
+                    b.estadoAddress,
+                    b.paisAddress,
+                    b.emailContactoAdministrativo,
+                    b.telefonoContactoAdministrativo,
+                    b.name razonSocial,
+                    b.rfc,
+                    b.contractId userId,
+                    b.paisAddress pais,
+                    b.address calle
+                 FROM comprobante a
+                 INNER JOIN contract b ON a.userId = b.contractId
+                 WHERE a.serie = '".trim($serie)."' AND a.folio = '".trim($folio)."' 
+                 AND  a.tiposComprobanteId = '1' AND a.status ='1'  
+                 ";
+
+        $this->Util()->DB()->setQuery($sql);
+        $row =  $this->Util()->DB()->GetRow();
+        if($row) {
+            $sql = "SELECT serieId FROM  serie WHERE serie = '".$row['serie']."'  AND rfcId = '".$row['rfcId']."'";
+            $this->Util()->DB()->setQuery($sql);
+            $serieId = $this->Util()->DB()->GetSingle();
+            $row['setTipoComprobante'] = $row['tiposComprobanteId']."-".$serieId;
+        }
+
+        return $row;
+    }
+
+    function getFullDataInvoiceByFolio($serie, $folio) {
+        global $months;
+        if(!$serie)
+            $this->Util()->setError(0, 'error', 'Ingrese serie');
+        if($this->Util()->PrintErrors())
+            return false;
+
+        if(!$folio)
+            $this->Util()->setError(0, 'error', 'Ingrese folio');
+        if($this->Util()->PrintErrors())
+            return false;
+        $row = $this->getInfoInvoiceByFolio($serie, $folio);
+        if(!$row)
+            $this->Util()->setError(0, 'error', 'No se encontro información con los datos proporcionados, verifique si la factura esta activa.');
+
+        if($this->Util()->PrintErrors())
+          return false;
+
+        $sql = "SELECT sa.`cantidad`,
+						sa.`unidad`,
+						sa.`noIdentificacion`,
+						sa.`descripcion`,
+						sa.`valorUnitario`,
+						sa.`excentoIva`,
+						sa.`importe`,
+						sa.`userId`,
+						sa.`empresaId`,
+						sa.`servicioId`,
+						sa.`fechaCorrespondiente`,
+                        sb.nombreServicio,
+                        sb.claveSat,
+                        sb.tipoServicioId
+				FROM concepto sa
+                INNER JOIN (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
+                            INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
+                ON sa.servicioId = sb.servicioId
+                WHERE sa.comprobanteId = '".$row['comprobanteId']."'
+				";
+        $this->Util()->DB()->setQuery($sql);
+        $dataConceptos = $this->Util()->DB()->GetResult();
+        $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
+        $conceptos = [];
+        foreach($dataConceptos as $item){
+            $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
+            $fecha = explode("-", $item['fechaCorrespondiente']);
+            $fechaText = " DE ".$months[$fecha[1]]." del ".$fecha["0"];
+            $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
+            if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
+                $claveProdServ =  trim($item['claveSat']);
+            else
+                $claveProdServ =  84111500;
+
+            $cad = [];
+            $cad["noIdentificacion"] = $item["tipoServicioId"];
+            $cad["servicioId"] = $item["servicioId"];
+            $cad["fechaCorrespondiente"] = $item['fechaCorrespondiente'];
+            $cad["cantidad"] = 1;
+            $cad["unidad"] = "No Aplica";
+            $cad["valorUnitario"] = $item["valorUnitario"];
+            $cad["importe"] = $item["valorUnitario"];
+            $cad["excentoIva"] = "no";
+            $cad["descripcion"] = $descripcion;
+            $cad["tasaIva"] = $row["tasaIva"];
+            $cad["claveProdServ"] = $claveProdServ;
+            $cad["claveUnidad"] = "E48";
+            $cad["importeTotal"] = $item["valorUnitario"];
+            $cad["totalIva"] = $iva;
+            $conceptos[] =$cad;
+        }
+        $row['conceptos'] = $conceptos;
+
+        return $row;
     }
 }

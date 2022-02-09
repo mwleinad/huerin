@@ -2,89 +2,87 @@ var DOC_ROOT = "../";
 var DOC_ROOT_TRUE = "../";
 var DOC_ROOT_SECTION = "../../";
 
-function SuggestUser()
-{
-    new Ajax.Request(WEB_ROOT+'/ajax/suggest.php',
+function SuggestUser() {
+    new Ajax.Request(WEB_ROOT + '/ajax/suggest.php',
         {
-            parameters: {value: $('rfc').value,activos:true},
-            method:'post',
-            onSuccess: function(transport){
+            parameters: {value: $('rfc').value, activos: true},
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('suggestionDiv').show();
                 $('suggestionDiv').innerHTML = response;
                 AddSuggestListenerInvoice();
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function FillRFCInvoice(elem, id)
-{
+function FillRFCInvoice(elem, id) {
     $('suggestionDiv').hide();
     FillDatosFacturacion(id);
 }
 
-function FillNoIdentificacion(elem, id)
-{
+function FillNoIdentificacion(elem, id) {
     $('noIdentificacion').value = id;
     $('suggestionProductDiv').hide();
     FillConceptoData();
 }
 
-function FillImpuestoId(elem, id)
-{
+function FillImpuestoId(elem, id) {
     $('impuestoId').value = id;
     $('suggestionImpuestoDiv').hide();
     FillImpuestoData();
 }
 
-function SuggestProduct()
-{
-    new Ajax.Request(WEB_ROOT+'/ajax/suggest_x.php',
+function SuggestProduct() {
+    new Ajax.Request(WEB_ROOT + '/ajax/suggest_x.php',
         {
             parameters: {value: $('noIdentificacion').value, type: "producto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('suggestionProductDiv').show();
                 $('suggestionProductDiv').innerHTML = response;
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function SuggestImpuesto()
-{
-    new Ajax.Request(WEB_ROOT+'/ajax/suggest_x.php',
+function SuggestImpuesto() {
+    new Ajax.Request(WEB_ROOT + '/ajax/suggest_x.php',
         {
             parameters: {value: $('impuestoId').value, type: "impuesto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('suggestionImpuestoDiv').show();
                 $('suggestionImpuestoDiv').innerHTML = response;
                 var elements = $$('span.resultSuggestImpuesto');
                 AddSuggestImpuestoListener(elements);
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function HideSuggestions()
-{
+function HideSuggestions() {
     $('suggestionDiv').hide();
 }
 
-function FillImpuestoData()
-{
-    $('loadingDivImpuesto').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
+function FillImpuestoData() {
+    $('loadingDivImpuesto').innerHTML = '<img src="' + WEB_ROOT + '/images/load.gif" />';
 
 //	$('suggestionProductDiv').hide();
-    new Ajax.Request(WEB_ROOT+'/ajax/fill_form.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/fill_form.php',
         {
             parameters: {value: $('impuestoId').value, type: "impuesto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
                 $('impuestoId').value = splitResponse[0];
@@ -93,19 +91,20 @@ function FillImpuestoData()
                 $('iva').value = splitResponse[3];
                 $('loadingDivImpuesto').innerHTML = '';
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 
 }
 
-function FillConceptoData()
-{
-    $('loadingDivConcepto').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-    new Ajax.Request(WEB_ROOT+'/ajax/fill_form.php',
+function FillConceptoData() {
+    $('loadingDivConcepto').innerHTML = '<img src="' + WEB_ROOT + '/images/load.gif" />';
+    new Ajax.Request(WEB_ROOT + '/ajax/fill_form.php',
         {
             parameters: {value: $('noIdentificacion').value, type: "producto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
                 $('descripcion').value = splitResponse[0];
@@ -114,13 +113,14 @@ function FillConceptoData()
                 $('loadingDivConcepto').innerHTML = '';
                 UpdateValorUnitarioConIva();
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 
 }
 
-function UpdateValorUnitarioConIva()
-{
+function UpdateValorUnitarioConIva() {
     var ish = parseInt($('ishConcepto').value) || 0;
     ish = ish / 100;
 
@@ -132,8 +132,7 @@ function UpdateValorUnitarioConIva()
     $('valorUnitarioCI').value = valorConIsh.toFixed(6);
 }
 
-function UpdateValorUnitarioSinIva(valor)
-{
+function UpdateValorUnitarioSinIva(valor) {
     var ish = parseInt($('ishConcepto').value) || 0;
     ish = ish / 100;
 
@@ -146,14 +145,13 @@ function UpdateValorUnitarioSinIva(valor)
     $('valorUnitario').value = valorSinIva.toFixed(6);
 }
 
-function FillDatosFacturacion(id)
-{
-    $('loadingDivDatosFactura').innerHTML = '<img src="'+WEB_ROOT+'/images/load.gif" />';
-    new Ajax.Request(WEB_ROOT+'/ajax/fill_form.php',
+function FillDatosFacturacion(id) {
+    $('loadingDivDatosFactura').innerHTML = '<img src="' + WEB_ROOT + '/images/load.gif" />';
+    new Ajax.Request(WEB_ROOT + '/ajax/fill_form.php',
         {
             parameters: {value: id, type: "datosFacturacion"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("{#}");
                 $('razonSocial').value = splitResponse[3];
@@ -163,58 +161,60 @@ function FillDatosFacturacion(id)
                 $('pais').value = splitResponse[7];
                 $('loadingDivDatosFactura').innerHTML = '';
 
-                var useServiceConcept =  confirm(' ¿ Desea cargar los sevicios facturables de esta empresa como conceptos?');
-                if(useServiceConcept)
+                var useServiceConcept = confirm(' ¿ Desea cargar los sevicios facturables de esta empresa como conceptos?');
+                if (useServiceConcept)
                     loadConceptosFromServices();
 
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 
 }
-function loadConceptosFromServices () {
-    $('conceptos').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /></div>';
-    new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php', {
-            method:'post',
-            parameters: { value: $('userId').value, type: "loadConceptoFromService" },
-            onSuccess: function(transport) {
-                var response = transport.responseText || "no response text";
-                var splitResponse = response.split("|");
-                if(splitResponse[0] == "fail")
-                {
-                    $('divStatus').innerHTML = splitResponse[1];
-                    $('centeredDiv').show();
-                    grayOut(true);
-                }
-                $('conceptos').innerHTML = splitResponse[2];
-                var elements = $$('span.linkBorrar');
-                AddBorrarConceptoListeners(elements);
-                UpdateTotalesDesglosados();
-            },
-            onFailure: function(){ alert('Something went wrong...') }
-        });
+
+function loadConceptosFromServices() {
+    $('conceptos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
+    new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php', {
+        method: 'post',
+        parameters: {value: $('userId').value, type: "loadConceptoFromService"},
+        onSuccess: function (transport) {
+            var response = transport.responseText || "no response text";
+            var splitResponse = response.split("|");
+            if (splitResponse[0] == "fail") {
+                $('divStatus').innerHTML = splitResponse[1];
+                $('centeredDiv').show();
+                grayOut(true);
+            }
+            $('conceptos').innerHTML = splitResponse[2];
+            var elements = $$('span.linkBorrar');
+            AddBorrarConceptoListeners(elements);
+            UpdateTotalesDesglosados();
+        },
+        onFailure: function () {
+            alert('Something went wrong...')
+        }
+    });
 }
-function UpdateIepsConcepto()
-{
+
+function UpdateIepsConcepto() {
     $('iepsConcepto').value = $('porcentajeIEPS').value;
 }
 
-function AgregarConcepto()
-{
+function AgregarConcepto() {
     var descripcion = $("descripcion").value;
-    descripcion = descripcion.replace("+","[%]MAS[%]");
+    descripcion = descripcion.replace("+", "[%]MAS[%]");
     $("descripcion").value = descripcion;
-    $('conceptos').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /></div>';
-    new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php',
+    $('conceptos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
+    new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
-            method:'post',
+            method: 'post',
             parameters: $('conceptoForm').serialize(true),
-            onSuccess: function(transport){
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("|");
 
-                if(splitResponse[0] == "fail")
-                {
+                if (splitResponse[0] == "fail") {
                     $('divStatus').innerHTML = splitResponse[1];
                     $('centeredDiv').show();
                     grayOut(true);
@@ -224,24 +224,24 @@ function AgregarConcepto()
                 AddBorrarConceptoListeners(elements);
                 UpdateTotalesDesglosados();
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function AgregarImpuesto()
-{
-    $('impuestos').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /></div>';
+function AgregarImpuesto() {
+    $('impuestos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
     var form = $('impuestoForm').serialize();
-    new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/sistema.php',
         {
             parameters: {form: form, type: "agregarImpuesto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("|");
 
-                if(splitResponse[0] == "fail")
-                {
+                if (splitResponse[0] == "fail") {
                     $('divStatus').innerHTML = splitResponse[1];
                     $('centeredDiv').show();
                     grayOut(true);
@@ -252,18 +252,19 @@ function AgregarImpuesto()
 
                 UpdateTotalesDesglosados();
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
 
-function BorrarConcepto(e, id)
-{
-    new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
+function BorrarConcepto(e, id) {
+    new Ajax.Request(WEB_ROOT + '/ajax/sistema.php',
         {
             parameters: {id: id, type: "borrarConcepto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('conceptos').innerHTML = response;
                 var elements = $$('span.linkBorrar');
@@ -271,18 +272,19 @@ function BorrarConcepto(e, id)
                 UpdateTotalesDesglosados();
 
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function BorrarImpuesto(e, id)
-{
+function BorrarImpuesto(e, id) {
     id = id.strip();
-    new Ajax.Request(WEB_ROOT+'/ajax/sistema.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/sistema.php',
         {
             parameters: {id: id, type: "borrarImpuesto"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('impuestos').innerHTML = response;
                 var elements = $$('span.linkBorrarImpuesto');
@@ -290,14 +292,15 @@ function BorrarImpuesto(e, id)
                 UpdateTotalesDesglosados();
 
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function AddBorrarConceptoListeners(elements)
-{
+function AddBorrarConceptoListeners(elements) {
     elements.each(
-        function(e) {
+        function (e) {
             var id = $(e).up(0).previous(8).innerHTML;
             console.log(id);
             Event.observe(e, "click", function (e) {
@@ -307,10 +310,9 @@ function AddBorrarConceptoListeners(elements)
     );
 }
 
-function AddBorrarImpuestosListeners(elements)
-{
+function AddBorrarImpuestosListeners(elements) {
     elements.each(
-        function(e) {
+        function (e) {
             var id = $(e).up(0).previous(4).innerHTML;
             Event.observe(e, "click", function (e) {
                 BorrarImpuesto(e, id);
@@ -319,29 +321,27 @@ function AddBorrarImpuestosListeners(elements)
     );
 }
 
-function UpdateTotalesDesglosados()
-{
+function UpdateTotalesDesglosados() {
     var form = $('nuevaFactura').serialize();
-    new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
             parameters: {form: form, type: "updateTotalesDesglosados"},
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('totalesDesglosadosDiv').innerHTML = response;
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function GenerarComprobante(format)
-{
+function GenerarComprobante(format) {
     var message = "Realmente deseas generar un comprobante. Asegurate de que lo estes generando para tu RFC Correcto.";
-    if(!confirm(message))
-    {
+    if (!confirm(message)) {
         return;
     }
-
 
 
     $('nuevaFactura').enable();
@@ -364,59 +364,59 @@ function GenerarComprobante(format)
     $('nuevaFactura').enable();
     $('usoCfdi').enable();
 
-    if($('reviso')) var reviso = $('reviso').value;
+    if ($('reviso')) var reviso = $('reviso').value;
     else var reviso = "";
 
-    if($('autorizo')) var autorizo = $('autorizo').value;
+    if ($('autorizo')) var autorizo = $('autorizo').value;
     else var autorizo = "";
 
-    if($('recibio')) var recibio = $('recibio').value;
+    if ($('recibio')) var recibio = $('recibio').value;
     else var recibio = "";
 
-    if($('vobo')) var vobo = $('vobo').value;
+    if ($('vobo')) var vobo = $('vobo').value;
     else var vobo = "";
 
-    if($('pago')) var pago = $('pago').value;
+    if ($('pago')) var pago = $('pago').value;
     else var pago = "";
 
-    if($('tiempoLimite')) var tiempoLimite = $('tiempoLimite').value;
+    if ($('tiempoLimite')) var tiempoLimite = $('tiempoLimite').value;
     else var tiempoLimite = "";
 
-    if($('fechaSobreDia')) var fechaSobreDia = $('fechaSobreDia').value;
+    if ($('fechaSobreDia')) var fechaSobreDia = $('fechaSobreDia').value;
     else var fechaSobreDia = "";
 
-    if($('fechaSobreMes')) var fechaSobreMes = $('fechaSobreMes').value;
+    if ($('fechaSobreMes')) var fechaSobreMes = $('fechaSobreMes').value;
     else var fechaSobreMes = "";
 
-    if($('fechaSobreAnio')) var fechaSobreAnio = $('fechaSobreAnio').value;
+    if ($('fechaSobreAnio')) var fechaSobreAnio = $('fechaSobreAnio').value;
     else var fechaSobreAnio = "";
 
-    if($('folioSobre')) var folioSobre = $('folioSobre').value;
+    if ($('folioSobre')) var folioSobre = $('folioSobre').value;
     else var folioSobre = "";
 
     //if($('cuentaPorPagar').checked) var cuentaPorPagar = $('cuentaPorPagar').value;
     //else var cuentaPorPagar = "";
     var cuentaPorPagar = "";
 
-    if($('formatoNormal')){
-        if($('formatoNormal').checked)
+    if ($('formatoNormal')) {
+        if ($('formatoNormal').checked)
             var formatoNormal = $('formatoNormal').value;
         else
             var formatoNormal = 0;
-    }else{
+    } else {
         var formatoNormal = 0;
     }
 
-    if($('banco')) var banco = $('banco').value;
+    if ($('banco')) var banco = $('banco').value;
     else var banco = 0;
 
-    if($('fechaDeposito')) var fechaDeposito = $('fechaDeposito').value;
+    if ($('fechaDeposito')) var fechaDeposito = $('fechaDeposito').value;
     else var fechaDeposito = 0;
 
-    if($('referencia')) var referencia = $('referencia').value;
+    if ($('referencia')) var referencia = $('referencia').value;
     else var referencia = 0;
 
-    new Ajax.Request(WEB_ROOT+'/ajax/cfdi33.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
             parameters: {
                 nuevaFactura: nuevaFactura,
@@ -431,140 +431,144 @@ function GenerarComprobante(format)
                 fechaSobreMes: fechaSobreMes,
                 fechaSobreAnio: fechaSobreAnio,
                 folioSobre: folioSobre,
-                tiempoLimite:tiempoLimite,
-                cuentaPorPagar:cuentaPorPagar,
-                formatoNormal:formatoNormal,
-                format:format,
-                banco:banco,
-                fechaDeposito:fechaDeposito,
-                referencia:referencia,
+                tiempoLimite: tiempoLimite,
+                cuentaPorPagar: cuentaPorPagar,
+                formatoNormal: formatoNormal,
+                format: format,
+                banco: banco,
+                fechaDeposito: fechaDeposito,
+                referencia: referencia,
             },
-            method:'post',
+            method: 'post',
             onLoading: function () {
-                $('showFactura').innerHTML = '<div align="center"><img src="'+WEB_ROOT+'/images/load.gif" /><br>Generando Comprobante, este proceso puede tardar unos segundos</div>';
-                $('reemplazarBoton').style.display='none';
+                $('showFactura').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /><br>Generando Comprobante, este proceso puede tardar unos segundos</div>';
+                $('reemplazarBoton').style.display = 'none';
             },
-            onSuccess: function(transport){
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("|");
                 $('showFactura').innerHTML = "";
-                $('reemplazarBoton').style.display='block';
-                if(splitResponse[0] == "ok"){
+                $('reemplazarBoton').style.display = 'block';
+                if (splitResponse[0] == "ok") {
                     $('showFactura').innerHTML = splitResponse[1];
-                    $('reemplazarBoton').style.display='block';
+                    $('reemplazarBoton').style.display = 'block';
                     if (splitResponse[2] === 'real')
                         $('reemplazarBoton').innerHTML = '<a class="button" href="javascript:;"  onclick="location.reload()" title="Generar nuevo comprobante"><span id="anonymous_element_1">Nuevo comprobante</span></a>';
-                }else{
+                } else {
                     $('divStatus').innerHTML = splitResponse[1];
                     $('centeredDiv').show();
                     grayOut(true);
                 }
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-function ShowPopUpDiv(id)
-{
+function ShowPopUpDiv(id) {
     grayOut(true);
     $('fview').show();
-    if(id == 0)
-    {
+    if (id == 0) {
         $('fview').hide();
         grayOut(false);
         return;
     }
 
-    new Ajax.Request(WEB_ROOT+'/ajax/popupdivtest.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/popupdivtest.php',
         {
-            method:'post',
-            onSuccess: function(transport){
+            method: 'post',
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 $('fview').innerHTML = response;
-                Event.observe($('closePopUpDiv'), "click", function(){ ShowPopUpDiv(0); });
-                new Draggable('fview',{scroll:window,handle:'popupheader'});
+                Event.observe($('closePopUpDiv'), "click", function () {
+                    ShowPopUpDiv(0);
+                });
+                new Draggable('fview', {scroll: window, handle: 'popupheader'});
 
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 }
 
-Event.observe(window, 'load', function() {
-    if($('rfc'))
-    {
-        Event.observe($('rfc'), "keyup", function(){ SuggestUser(); });
+Event.observe(window, 'load', function () {
+    if ($('rfc')) {
+        Event.observe($('rfc'), "keyup", function () {
+            SuggestUser();
+        });
     }
-    if($('rfc'))
-    {
-        Event.observe($('noIdentificacion'), "keyup", function(){ SuggestProduct(); FillConceptoData();});
+    if ($('rfc')) {
+        Event.observe($('noIdentificacion'), "keyup", function () {
+            SuggestProduct();
+            FillConceptoData();
+        });
     }
-    if($('rfc'))
-    {
+    if ($('rfc')) {
         Event.observe($('agregarConceptoDiv'), "click", AgregarConcepto);
     }
-    if($('rfc'))
-    {
-        Event.observe($('generarFactura'), "click", function() {
+    if ($('rfc')) {
+        Event.observe($('generarFactura'), "click", function () {
             GenerarComprobante('generar');
         });
     }
-    if($('rfc'))
-    {
-        if($('agregarImpuestoDiv'))
-        {
+    if ($('rfc')) {
+        if ($('agregarImpuestoDiv')) {
             Event.observe($('agregarImpuestoDiv'), "click", AgregarImpuesto);
         }
-        Event.observe($('vistaPrevia'), "click", function() {
+        Event.observe($('vistaPrevia'), "click", function () {
             GenerarComprobante('vistaPrevia');
         });
 
     }
 
-    if($('impuestoId'))
-    {
-        Event.observe($('impuestoId'), "keyup", function(){ SuggestImpuesto(); FillImpuestoData();});
+    if ($('impuestoId')) {
+        Event.observe($('impuestoId'), "keyup", function () {
+            SuggestImpuesto();
+            FillImpuestoData();
+        });
     }
 
-    if($$('span.linkBorrar'))
-    {
+    if ($$('span.linkBorrar')) {
         var elements = $$('span.linkBorrar');
     }
 
-    AddSuggestListenerInvoice = function(e) {
+    AddSuggestListenerInvoice = function (e) {
         var el = e.element();
         var del = el.hasClassName('suggestUserDiv');
         var id = el.identify();
-        if(del == true) {
+        if (del == true) {
             FillRFCInvoice(1, id);
             return;
         }
 
         del = el.hasClassName('suggestProductoDiv');
-        if(del == true){
+        if (del == true) {
             FillNoIdentificacion(1, id);
             return;
         }
 
         del = el.hasClassName('suggestImpuestoDiv');
-        if(del == true){
+        if (del == true) {
             FillImpuestoId(1, id);
             return;
         }
 
         del = el.hasClassName('closeSuggestUserDiv');
-        if(del == true){
+        if (del == true) {
             $('suggestionDiv').hide();
             return;
         }
 
         del = el.hasClassName('closeSuggestProductoDiv');
-        if(del == true){
+        if (del == true) {
             $('suggestionProductDiv').hide();
             return;
         }
 
         del = el.hasClassName('closeSuggestImpuestoDiv');
-        if(del == true){
+        if (del == true) {
             $('suggestionImpuestoDiv').hide();
             return;
         }
@@ -572,38 +576,93 @@ Event.observe(window, 'load', function() {
 
     }
 
-    if($('divForm')!= undefined)
-    {
+    if ($('divForm') != undefined) {
         $('divForm').observe("click", AddSuggestListenerInvoice);
     }
 });
 
-function regresarVentas(){
+function regresarVentas() {
     alert("hola");
-    window.location=WEB_ROOT+"/reporte-ventas";
+    window.location = WEB_ROOT + "/reporte-ventas";
 
 
 }
 
-function EnviarEmail(id){
+function EnviarEmail(id) {
 
-    new Ajax.Request(WEB_ROOT+'/ajax/manage-facturas.php',
+    new Ajax.Request(WEB_ROOT + '/ajax/manage-facturas.php',
         {
-            method:'post',
+            method: 'post',
             parameters: {type: 'enviar_email', id_comprobante: id},
-            onSuccess: function(transport){
+            onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
-                console.log(response);
-                //	alert(response);
                 var splitResponse = response.split("[#]");
-                if(splitResponse[0] == "ok"){
+                if (splitResponse[0] == "ok") {
                     ShowStatusPopUp(splitResponse[1])
                 }
 
             },
-            onFailure: function(){ alert('Something went wrong...') }
+            onFailure: function () {
+                alert('Something went wrong...')
+            }
         });
 
 }//EnviarEmail
 
+jQ(function() {
+    jQ(document).on('change', '#modo_factura', function() {
+        if(parseInt(this.value) === 1) {
+            jQ('.normalInvoice').removeClass('noShow')
+            jQ('.sustitucionInvoice').addClass('noShow')
+            jQ('#parent').val('')
+        } else if(parseInt(this.value) === 2) {
+            jQ('.normalInvoice').addClass('noShow')
+            jQ('.sustitucionInvoice').removeClass('noShow')
+            jQ('#parent').val('')
+        } else {
+            jQ('.normalInvoice').addClass('noShow')
+            jQ('.sustitucionInvoice').addClass('noShow')
+            jQ('#parent').val('')
+        }
+    })
+    jQ(document).on('click', '#btnLoadDataBefore', function () {
+        var $serie =  jQ('#serieAnterior').val();
+        var $folio =  jQ('#folioAnterior').val();
+        jQ.ajax(
+            {
+                url:WEB_ROOT+'/ajax/cfdi33.php',
+                type:'post',
+                data:{type:'loadConceptoAndDataCompany', serie:$serie, folio:$folio },
+                beforeSend: function () {
+                    jQ('#loading-cargar-dato').show()
+                    jQ('#btnLoadDataBefore').hide()
+                },
+                success:function (response) {
+                    jQ('#loading-cargar-dato').hide()
+                    jQ('#btnLoadDataBefore').show()
+                    var splitResponse = response.split('[#]');
+                    if(splitResponse[0] == 'fail') {
+                        ShowStatusPopUp(splitResponse[1])
+                        return
+                    }
 
+                    jQ('.normalInvoice').removeClass('noShow');
+                    jQ('.sustitucionInvoice').addClass('noShow')
+
+                    jQ('#parent').val(splitResponse[2]);
+                    jQ('#razonSocial').val(splitResponse[3]);
+                    jQ('#rfc').val(splitResponse[4]);
+                    jQ('#userId').val(splitResponse[5]);
+                    jQ('#calle').val(splitResponse[6]);
+                    jQ('#pais').val(splitResponse[7]);
+                    jQ('#tiposComprobanteId').val(splitResponse[8]);
+
+                    jQ('#conceptos').html(splitResponse[1]);
+                    var elements = $$('span.linkBorrar');
+                    AddBorrarConceptoListeners(elements);
+                    UpdateTotalesDesglosados();
+                }
+            }
+        )
+    })
+})

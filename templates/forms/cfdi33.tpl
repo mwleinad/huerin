@@ -6,56 +6,109 @@
         <input type="hidden" id="calle" name="calle" value="" />
         <input type="hidden" id="pais" name="pais" value="" />
         <input type="hidden" id="userId" name="userId" value="" />
+        <input type="hidden" id="parent" name="parent" value="" />
         <input type="hidden" id="ticketChain" name="ticketChain" value="{$ticketChain}" />
         {if isset($notaVentaId)}
         	<input type="hidden" id="notaVentaId" name="notaVentaId" value="{$notaVentaId}" />
         {/if}
     <fieldset>
-{if $version == "auto" && ($info.usuarioId == 272 || $info.empresaId == 165 || $info.empresaId == 180)}
-				<div>
-        	Sobrescribir Fecha y Folio
-        </div>
-        <div class="formLineFact" style="text-align:left;">
-        <div style="width:90px;float:left">Fecha:</div>
-        <div style="width:40px;float:left">D&iacute;a:</div>
-        <div style="width:60px;float:left"><input name="fechaSobreDia" id="fechaSobreDia" type="text" value="{$post.rfc}" size="2" class="largeInput" placeholder="dd" maxlength="2"/>
-        </div>
-
-        <div style="width:40px;float:left">Mes:</div>
-        <div style="width:60px;float:left"><input name="fechaSobreMes" id="fechaSobreMes" type="text" value="{$post.rfc}" size="2" class="largeInput" placeholder="mm" maxlength="2"/>
-        </div>
-
-        <div style="width:40px;float:left">A&ntilde;o:</div>
-        <div style="width:80px;float:left"><input name="fechaSobreAnio" id="fechaSobreAnio" type="text" value="{$post.rfc}" size="4" class="largeInput" placeholder="aaaa" maxlength="4"/>
-        </div>
-        <div style="width:90px;float:left">Folio:</div>
-        <div style="width:172px;float:left">
-        <input name="folioSobre" id="folioSobre" type="text" value="{$post.rfc}" size="20" class="largeInput"/>
-        </div>
-        <div style="clear:both"></div>
-        <br />
-				</div>
-{/if}
-				<div>
-        	<span id="loadingDivDatosFactura"></span>
-        </div>
-        <div class="formLineFact" style="text-align:left;">
-        <div class="titleLabel">B&uacute;sca RFC o Raz&oacute;n Social:</div>
-        <div class="controlMd"><input name="rfc" id="rfc" type="text" value="{$post.rfc}" class="largeInput" autocomplete="off"/>
-        <div style="position:relative">
-         		<div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv">
-        	 	</div>
+      <div class="formLineFact">
+         <div class="container_16">
+           <div class="grid_8">
+               <div class="fullWidthTitleFormControl">Modalidad de factura</div>
+               <div style="width:100%;float:left">
+                   <select name="modo_factura" id="modo_factura" class="largeInput">
+                       <option value="">-- seleccionar una opción --</option>
+                       <option value="1">Generar factura normal</option>
+                       <option value="2">Generar factura para sustitución</option>
+                   </select>
+               </div>
+           </div>
          </div>
-        </div>
-        <div class="titleLabel">Raz&oacute;n Social:</div>
-        <div class="controlLg">
-        <textarea name="razonSocial" id="razonSocial" disabled="disabled" style="background-color:#eee; overflow:auto;" cols="63" rows="5">{$post.razonSocial}&#10;{$post.calle} {$post.noExt}</textarea>
-        </div>
-       	<div style="clear:both"></div>
-
+          <div class="clearfix">
+      </div>
+      <div class=""><hr></div>
+      <div class="formLineFact sustitucionInvoice noShow">
+          <div class="container_16">
+              <div class="grid_4">
+                  <div class="fullWidthTitleFormControl">Serie</div>
+                  <div style="width:100%;float:left">
+                      <input type="text"
+                             id="serieAnterior"
+                             name="serieAnterior"
+                             placeholder="Capturar serie"
+                             class="largeInput">
+                  </div>
+              </div>
+              <div class="grid_4">
+                  <div class="fullWidthTitleFormControl">Folio</div>
+                  <div style="width:100%;float:left">
+                      <div style="width:100%;float:left">
+                          <input type="number"
+                                 id="folioAnterior"
+                                 name="folioAnterior"
+                                 placeholder="Capturar folio"
+                                 class="largeInput">
+                      </div>
+                  </div>
+              </div>
+              <div class="grid_4">
+                  <div id="loading-cargar-dato" class="noShow">
+                      <img src="{$WEB_ROOT}/images/loading.gif"/>
+                  </div>
+                  <div style="width:100%;float:left">&nbsp;</div>
+                  <div style="width:100%;float:left">
+                     <a class="button"
+                        id="btnLoadDataBefore"
+                        title="Cargar datos"><span>Cargar datos de la factura</span></a>
+                  </div>
+              </div>
+          </div>
+        <div class="clearfix"></div>
+          <div class=""><hr></div>
       </div>
 
-      <div class="formLineFact">
+      {if $version == "auto" && ($info.usuarioId == 272 || $info.empresaId == 165 || $info.empresaId == 180)}
+            <div>Sobrescribir Fecha y Folio</div>
+            <div class="formLineFact" style="text-align:left;">
+                <div style="width:90px;float:left">Fecha:</div>
+                <div style="width:40px;float:left">D&iacute;a:</div>
+                <div style="width:60px;float:left">
+                    <input name="fechaSobreDia" id="fechaSobreDia" type="text" value="{$post.rfc}" size="2" class="largeInput" placeholder="dd" maxlength="2"/>
+                </div>
+                <div style="width:40px;float:left">Mes:</div>
+                <div style="width:60px;float:left">
+                    <input name="fechaSobreMes" id="fechaSobreMes" type="text" value="{$post.rfc}" size="2" class="largeInput" placeholder="mm" maxlength="2"/>
+                </div>
+                <div style="width:40px;float:left">A&ntilde;o:</div>
+                <div style="width:80px;float:left">
+                    <input name="fechaSobreAnio" id="fechaSobreAnio" type="text" value="{$post.rfc}" size="4" class="largeInput" placeholder="aaaa" maxlength="4"/>
+                </div>
+                <div style="width:90px;float:left">Folio:</div>
+                <div style="width:172px;float:left">
+                    <input name="folioSobre" id="folioSobre" type="text" value="{$post.rfc}" size="20" class="largeInput"/>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+            {/if}
+      <div><span id="loadingDivDatosFactura"></span></div>
+      <div class="formLineFact normalInvoice noShow" style="text-align:left;">
+            <div class="titleLabel">B&uacute;sca RFC o Raz&oacute;n Social:</div>
+            <div class="controlMd"><input name="rfc" id="rfc" type="text" value="{$post.rfc}" class="largeInput" autocomplete="off"/>
+            <div style="position:relative">
+                <div style="display:none;position:absolute;top:-2px; left:2px; z-index:100" id="suggestionDiv"></div>
+            </div>
+        </div>
+        <div class="titleLabel">Raz&oacute;n Social:</div>
+            <div class="controlLg">
+                <textarea name="razonSocial" id="razonSocial" disabled="disabled"
+                          style="background-color:#eee; overflow:auto;"
+                          cols="63"
+                          rows="5">{$post.razonSocial}&#10;{$post.calle} {$post.noExt}</textarea>
+            </div>
+            <div style="clear:both"></div>
+      </div>
+      <div class="formLineFact normalInvoice noShow">
           <div class="titleLabel">Forma de Pago:(*)</div>
           <div class="controlLg">
             <select name="formaDePago" id="formaDePago"  class="largeInput">
@@ -66,26 +119,21 @@
             {/foreach}
             </select>
           </div>
-
           <div class="titleLabel">N&uacute;mero de Cuenta:</div>
           <div class="controlSm"><input name="NumCtaPago" id="NumCtaPago" type="text" value=""  size="4" maxlength="4" class="largeInput"/></div>
-
           <div  class="moreBtnControl" onclick="ToggleDiv('facturaOpciones')"><b>[+] M&aacute;s Opciones</b></div>
           <div style="clear:both"></div>
       </div>
-        <div class="formLine">
-            <hr />
-        </div>
-		<div id="facturaOpciones" style="display:none">
+      <div class="formLine noShow"><hr/></div>
+		<div id="facturaOpciones normalInvoice noShow" style="display:none">
             <div class="formLineFact">
                 <div class="titleLabel">% de IVA:</div>
                 <div class="controlSm">
                  <select name="tasaIva" id="tasaIva" class="largeInput" style="width:100px">
-                {foreach from=$ivas item=iva}
-                <option value="{$iva}">{$iva}</option> <br />
-                {/foreach}
+                    {foreach from=$ivas item=iva}
+                        <option value="{$iva}">{$iva}</option> <br />
+                    {/foreach}
                 </select></div>
-
                 <div class="titleLabel">Tipo de Moneda:</div>
                 <div class="controlSm">
                  <select name="tiposDeMoneda" id="tiposDeMoneda"  class="largeInput" >
@@ -147,12 +195,11 @@
 
                 <div style="clear:both"></div>
               </div>
-		</div>
-        <div class="formLine" id="jumpfacturaOpciones" style="display:none">
-            <hr />
-        </div>
-
-      <div class="formLineFact">
+      </div>
+      <div class="formLine noShow" id="jumpfacturaOpciones" style="display:none">
+        <hr />
+      </div>
+      <div class="formLineFact normalInvoice noShow">
           <div class="titleLabel">Seleccionar Serie:</div>
           <div class="controlLg">
               <select name="tiposComprobanteId" id="tiposComprobanteId"  class="largeInput" style="width:315px">
@@ -163,46 +210,37 @@
                   {/foreach}
               </select>
           </div>
-{*
-        <div style="width:190px;float:left">Generar cuenta por cobrar?<br>
-        <span style="color: #f00;">Por default la factura se considerara pagada</span></div>
-        <div style="width:40px;float:left">
-        	<input name="cuentaPorPagar" id="cuentaPorPagar" type="checkbox" value="yes" class="largeInput"/>
-		</div>
-*}
-        <div class="titleLabel"><label for="cuentaPorPagar">Si</label></div>
+          <div class="titleLabel"><label for="cuentaPorPagar">Si</label></div>
 				{if $SITENAME == "FACTURASE" && ($info.empresaId == 249 || $info.empresaId == 307 || $info.empresaId == 308 || $info.empresaId == 483 || $info.empresaId == 535)}
-        <div style="width:50px;float:left">Formato normal?:</div>
-        <div style="width:40px;float:left">
-        	<input name="formatoNormal" id="formatoNormal" type="checkbox" value="1" class="largeInput"/>
-			</div>
-    		{/if}
-      		<div style="clear:both"></div>
-        </div>
-
-      <div class="formLineFact">
+                    <div style="width:50px;float:left">Formato normal?:</div>
+                    <div style="width:40px;float:left">
+        	            <input name="formatoNormal" id="formatoNormal" type="checkbox" value="1" class="largeInput"/>
+			        </div>
+    		    {/if}
+      	  <div style="clear:both"></div>
+      </div>
+      <div class="formLineFact normalInvoice noShow">
           <div class="titleLabel">Uso CFDi:</div>
           <div class="controlLg">
-          <select name="usoCfdi" id="usoCfdi"  class="largeInput" style="width:315px">
-         	{foreach from=$usoCfdi item=uso}
-                <option value="{$uso.c_UsoCfdi}" {if $uso.c_UsoCfdi == 'G03'}selected{/if}>{$uso.descripcion}</option>
-            {/foreach}
-          </select></div>
-
-       		<div style="clear:both"></div>
-        </div>
-
-      <div class="formLineFact">
+              <select name="usoCfdi" id="usoCfdi"  class="largeInput" style="width:315px">
+                {foreach from=$usoCfdi item=uso}
+                    <option value="{$uso.c_UsoCfdi}" {if $uso.c_UsoCfdi == 'G03'}selected{/if}>{$uso.descripcion}</option>
+                {/foreach}
+              </select>
+          </div>
+       	 <div style="clear:both"></div>
+      </div>
+      <div class="formLineFact normalInvoice noShow">
           <div class="titleLabel">CFDi relacionado Serie:</div>
           <div class="controlSm">
-          <input name="cfdiRelacionadoSerie" id="cfdiRelacionadoSerie" type="text" value="" placeholder="A" class="largeInput" size="6"/></div>
-
+            <input name="cfdiRelacionadoSerie" id="cfdiRelacionadoSerie" type="text" value="" placeholder="A" class="largeInput" size="6"/>
+          </div>
           <div class="titleLabel">Folio:</div>
           <div class="controlSm">
-          <input name="cfdiRelacionadoFolio" id="cfdiRelacionadoFolio" type="text" value="" placeholder="125" class="largeInput"  size="6"/></div>
-
+            <input name="cfdiRelacionadoFolio" id="cfdiRelacionadoFolio" type="text" value="" placeholder="125" class="largeInput"  size="6"/>
+          </div>
           <div class="titleLabel" ">Tipo relacion:</div>
-          <div class="controlLg">
+      <div class="controlLg normalInvoice noShow">
           <select name="tipoRelacion" id="tipoRelacion"  class="largeInput" style="width:315px">
             <option value="">No tiene CFDi relacionado</option>
          	{foreach from=$tipoRelacion item=relacion}
@@ -210,42 +248,37 @@
             {/foreach}
           </select>
           <div style="clear:both"></div>
-        </div>
-
-        {if $info.empresaId == 113}
-        <div class="formLineFact">
-        	<div style="width:90px;float:left">Tiempo Limite:</div>
-          	<div style="width:135px;float:left">
-            <input name="tiempoLimite" id="tiempoLimite" type="text" value="" size="18"  class="largeInput"/>
+      </div>
+         {if $info.empresaId == 113}
+            <div class="formLineFact">
+                <div style="width:90px;float:left">Tiempo Limite:</div>
+                <div style="width:135px;float:left">
+                <input name="tiempoLimite" id="tiempoLimite" type="text" value="" size="18"  class="largeInput"/>
+                </div>
             </div>
-        </div>
-        {/if}
-
-{if $version == "auto" && ($info.empresaId == 39 || $info.empresaId == 180)}
-      <div class="formLineFact">
-          <div style="width:90px;float:left">% ISH:</div>
-          <div style="width:126px;float:left"><input name="porcentajeISH" id="porcentajeISH" type="text" value="2"  size="12"  class="largeInput"/></div>
-      		<div style="clear:both"></div>
-        </div>
-{/if}
-     <div class="formLine">
-        <hr />
-     </div>
-
-<span id="loadingDivConcepto"></span>
-      <div class="formLineFact">
-          <div class="colDiv">Cantidad</div>
-          <div class="colDiv"># Identificacion</div>
-          <div class="colDiv">Unidad</div>
-          <div class="colDiv">Precio S/IVA</div>
-          <div class="colDiv">Precio C/IVA</div>
-          <div class="colDiv">Exento Iva</div>
-      		<div style="clear:both"></div>
-        </div>
+         {/if}
+         {if $version == "auto" && ($info.empresaId == 39 || $info.empresaId == 180)}
+          <div class="formLineFact">
+              <div style="width:90px;float:left">% ISH:</div>
+              <div style="width:126px;float:left"><input name="porcentajeISH" id="porcentajeISH" type="text" value="2"  size="12"  class="largeInput"/></div>
+              <div style="clear:both"></div>
+          </div>
+     {/if}
+         <div class="formLine normalInvoice noShow"><hr /></div>
+         <span id="loadingDivConcepto normalInvoice noShow"></span>
+         <div class="formLineFact normalInvoice noShow">
+              <div class="colDiv">Cantidad</div>
+              <div class="colDiv"># Identificacion</div>
+              <div class="colDiv">Unidad</div>
+              <div class="colDiv">Precio S/IVA</div>
+              <div class="colDiv">Precio C/IVA</div>
+              <div class="colDiv">Exento Iva</div>
+              <div style="clear:both"></div>
+         </div>
 	</form>
-    <form id="conceptoForm" name="conceptoForm">
-            <input type="hidden" id="type" name="type" value="agregarConcepto" />		<!--enviar $totalconceptos-->
-				<input type="hidden" id="totalConceptos" value="$conceptos" >
+    <form id="conceptoForm" name="conceptoForm" class="normalInvoice noShow">
+            <input type="hidden" id="type" name="type" value="agregarConcepto" />
+			<input type="hidden" id="totalConceptos" value="$conceptos" >
       <div class="formLineFact">
           <div class="colDiv">
           <input name="cantidad" id="cantidad" type="text" value="{$post.cantidad}"  size="8" class="largeInput" placeholder="Cantidad"/></div>
@@ -263,11 +296,12 @@
           <div class="colDiv">
           <input name="valorUnitarioCI" id="valorUnitarioCI" type="text" value="{$post.valorUnitarioCI}"  size="8" class="largeInput"  placeholder="Valor C/I" onblur="UpdateValorUnitarioSinIva()"/></div>
           <div class="colDiv">
-          <select name="excentoIva" id="excentoIva" class="largeInput">
-         	{foreach from=$excentoIva item=iva}
-          <option value="{$iva}">{$iva}</option> <br />
-          {/foreach}
-          </select></div>
+              <select name="excentoIva" id="excentoIva" class="largeInput">
+                {foreach from=$excentoIva item=iva}
+                    <option value="{$iva}">{$iva}</option> <br />
+                {/foreach}
+              </select>
+          </div>
           <div class="colDiv">
               <div  id="agregarConceptoDiv" class="button">
                   <span>Agregar</span>
@@ -361,32 +395,30 @@
             <span style="color: #f00; font-weight: bold">Importante: Utilizar en la descripcion solo nombres de servicio presentes en catalogo.</span>
       </div>
 	  </form>
-    <div class="formLine">
+    <div class="formLine normalInvoice noShow">
         <hr />
     </div>
-      <b>Conceptos Cargados:</b>
-			<div id="conceptos">
+    <b>Conceptos Cargados:</b>
+    <div id="conceptos" class="normalInvoice noShow">
             {if $conceptos|count > 0}
-            	{include file="{$DOC_ROOT}/templates/lists/conceptos.tpl"}
+                {include file="{$DOC_ROOT}/templates/lists/conceptos.tpl"}
             {else}
-				Ninguno (Has click en Agregar para agregar un concepto)
-			{/if}
-
-      	</div>
-      <br /><br />
-     <div class="formLineFact">
+                Ninguno (Has click en Agregar para agregar un concepto)
+            {/if}
+    </div>
+    <br /><br />
+    <div class="formLineFact normalInvoice noShow">
           <div>Observaciones</div>
           <div><textarea placeholder="Observaciones" name="observaciones" cols="33" rows="5" id="observaciones" class="largeInput wide"></textarea></div>
-  	 </div>
-     <div class="formLine">
+  	</div>
+    <div class="formLine normalInvoice noShow">
         <hr />
-     </div>
-
+    </div>
     {if $info.moduloImpuestos == "Si"}
         {if $expiredImpuestos}
       	    Modulo de Impuestos Locales Congelado hasta confirmacion de Pago.
         {else}
-        <div class="formLineFact">
+        <div class="formLineFact normalInvoice noShow">
 		    <div style="width:300px;float:left; cursor:pointer" onclick="ToggleDiv('impuestosOpciones')">[+] Mostrar Formulario de Impuestos<br /><br /></div>
 		</div>
 		<span id="loadingDivImpuesto"></span>
@@ -459,10 +491,9 @@
         <div style="clear:both"></div>
             </div>
       {/if}
-{/if}
-            <div style="clear:both"></div>
-
-     	<div class="formLineFact">
+    {/if}
+        <div style="clear:both"></div>
+     	<div class="formLineFact normalInvoice noShow">
         	<div>Totales Desglosados</div>
           	<div id="totalesDesglosadosDiv">
 			{if $totalDesglosado|count > 0}
@@ -477,21 +508,15 @@
         <div class="formLine">
             <hr />
         </div>
-
-	    <div class="formLineFact" style="width: 100%;text-align:center;" id="reemplazarBoton">
-        <a class="button" id="generarFactura" name="generarFactura"><span>Generar Comprobante</span></a>
-        <a class="button" id="vistaPrevia" name="vistaPrevia"><span>Vista Previa</span></a>
-		{if $ticketId>0}
-		  <a class="button" id="regresarVentas" name="regresarVentas" onClick="regresarVentas();" ><span>Regresar</span></a>      {/if}
+	    <div class="formLineFact normalInvoice noShow" style="width: 100%;text-align:center;" id="reemplazarBoton">
+            <a class="button" id="generarFactura" name="generarFactura"><span>Generar Comprobante</span></a>
+            <a class="button" id="vistaPrevia" name="vistaPrevia"><span>Vista Previa</span></a>
+            {if $ticketId>0}
+              <a class="button" id="regresarVentas" name="regresarVentas" onClick="regresarVentas();" ><span>Regresar</span></a>
+            {/if}
      	</div>
       	<div style="clear:both"></div>
-        <div style="text-align:center">
-        <br />
-			{*}<a href="mailto:ventas@pascacio.com.mx?subject=quiero mas informacion"><img src="{$WEB_ROOT}/images/banner-web.jpg" /></a>{*}</div>
         </div>
-
   	</fieldset>
-
-
 </div>
 {/if}
