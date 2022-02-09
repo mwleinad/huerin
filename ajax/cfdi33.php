@@ -1,18 +1,15 @@
 <?php
-
 include_once('../init.php');
 include_once('../config.php');
-include_once(DOC_ROOT.'/libraries33.php');
+include_once(DOC_ROOT . '/libraries33.php');
 
-$smarty->assign("permisos",$_SESSION['permisos2']);
-$smarty->assign("nuevosPermisos",$_SESSION['nuevosPermisos2']);
+$smarty->assign("permisos", $_SESSION['permisos2']);
+$smarty->assign("nuevosPermisos", $_SESSION['nuevosPermisos2']);
 
-switch($_POST["type"])
-{
+switch ($_POST["type"]) {
     case "agregarImpuesto":
         $values = explode("&", $_POST["form"]);
-        foreach($values as $key => $val)
-        {
+        foreach ($values as $key => $val) {
             $values[$key] = explode("=", $values[$key]);
         }
         $producto->setTasa($values[0][1]);
@@ -22,30 +19,29 @@ switch($_POST["type"])
         $producto->setTasaIva($values[2][1]);
         $producto->setImporteImpuesto($values[3][1]);
 
-        if(!$producto->AgregarImpuesto())
-        {
+        if (!$producto->AgregarImpuesto()) {
             echo "fail|";
-            $smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
-        }
-        else
-        {
+            $smarty->display(DOC_ROOT . '/templates/boxes/status.tpl');
+        } else {
             echo "ok|ok";
         }
         echo "|";
         $smarty->assign("impuestos", $_SESSION["impuestos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/impuestos.tpl');
+        $smarty->display(DOC_ROOT . '/templates/lists/impuestos.tpl');
         break;
+
     case "sendEmail":
         $util->ValidateString($_POST['nombre'], 10000, 1, 'nombre');
         $util->ValidateString($_POST['correo'], 10000, 1, 'Correo');
         $util->ValidateString($_POST['telefono'], 10000, 1, 'telefono');
         $util->ValidateString($_POST['mensaje'], 10000, 1, 'telefono');
-        if($util->EnvEmail($_POST['nombre'],$_POST['correo'],$_POST['telefono'],$_POST['mensaje']))
+        if ($util->EnvEmail($_POST['nombre'], $_POST['correo'], $_POST['telefono'], $_POST['mensaje']))
             echo "ok";
         else
             echo "fail";
         break;
+
     case "agregarConcepto":
         $producto->setCantidad($_POST["cantidad"]);
         $producto->setNoIdentificacion($_POST["noIdentificacion"]);
@@ -61,74 +57,73 @@ switch($_POST["type"])
 
         $producto->setClaveProdServ($_POST["c_ClaveProdServ"]);
         $producto->setClaveUnidad($_POST["c_ClaveUnidad"]);
-        switch($_POST["fromAddenda"])
-        {
+        switch ($_POST["fromAddenda"]) {
             case "Pepsico":
-                $producto->setIdRecepcion($_POST["idRecepcion"]); break;
+                $producto->setIdRecepcion($_POST["idRecepcion"]);
+                break;
             case "Continental":
                 $producto->setIdRecepcion($_POST["idRecepcion"]);
-                $producto->setItem($_POST["item"]); break;
+                $producto->setItem($_POST["item"]);
+                break;
 
             case "Zepto":
                 $producto->setOrdenCompra($_POST["idRecepcion"]);
-                $producto->setItem($_POST["item"]); break;
+                $producto->setItem($_POST["item"]);
+                break;
         }
 
-        if($_POST["fromAgrario"] == "Si")
-        {
+        if ($_POST["fromAgrario"] == "Si") {
             $producto->setTipoGanado($_POST["tipoGanado"]);
             $producto->setPeso($_POST["peso"]);
         }
         $producto->setCategoriaConcepto($_POST["categoriaConcepto"]);
         $producto->setImporte();
-        if(!$producto->AgregarConcepto())
-        {
+        if (!$producto->AgregarConcepto()) {
             echo "fail|";
-            $smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
-        }
-        else
-        {
+            $smarty->display(DOC_ROOT . '/templates/boxes/status.tpl');
+        } else {
             echo "ok|ok";
         }
         echo "|";
         //print_r($_SESSION["conceptos"]);
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/conceptos.tpl');
+        $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
 
         break;
+
     case "borrarConcepto":
         $producto->BorrarConcepto($_POST["id"]);
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/conceptos.tpl');
+        $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
 
         break;
+
     case "borrarImpuesto":
         $producto->BorrarImpuesto($_POST["id"]);
         $smarty->assign("impuestos", $_SESSION["impuestos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/impuestos.tpl');
+        $smarty->display(DOC_ROOT . '/templates/lists/impuestos.tpl');
 
         break;
+
     case "updateTotalesDesglosados":
         $totalDesglosado = $producto->GetTotalDesglosado();
         $smarty->assign("impuestos", $totalDesglosado["impuestos"]);
         unset($totalDesglosado["impuestos"]);
-        if($totalDesglosado){
-            foreach($totalDesglosado as $key => $total)
-            {
+        if ($totalDesglosado) {
+            foreach ($totalDesglosado as $key => $total) {
                 $totalDesglosado[$key] = number_format($totalDesglosado[$key], 2);
             }
         }
         $smarty->assign("totalDesglosado", $totalDesglosado);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/boxes/total-desglosado.tpl');
+        $smarty->display(DOC_ROOT . '/templates/boxes/total-desglosado.tpl');
 
         break;
 
     case "generarComprobante":
-
         $data["datosFacturacion"] = $_POST["nuevaFactura"];
         $data["observaciones"] = $_POST["observaciones"];
 
@@ -150,27 +145,21 @@ switch($_POST["type"])
 
         $data["format"] = $_POST["format"];
 
-
-        if($_POST["fechaSobreDia"] && $_POST["fechaSobreMes"] && $_POST["fechaSobreAnio"])
-        {
-            $data["fechaSobre"] = $_POST["fechaSobreDia"]."-".$_POST["fechaSobreMes"]."-".$_POST["fechaSobreAnio"];
-        }
-        else
-        {
+        if ($_POST["fechaSobreDia"] && $_POST["fechaSobreMes"] && $_POST["fechaSobreAnio"]) {
+            $data["fechaSobre"] = $_POST["fechaSobreDia"] . "-" . $_POST["fechaSobreMes"] . "-" . $_POST["fechaSobreAnio"];
+        } else {
             $data["fechaSobre"] = "";
         }
 
         $values = explode("&", $data["datosFacturacion"]);
-        foreach($values as $key => $val)
-        {
+        foreach ($values as $key => $val) {
             $array = explode("=", $values[$key]);
             $data[$array[0]] = $array[1];
         }
 
         $data["folioSobre"] = $_POST["folioSobre"];
 
-        switch($data["fromAddenda"])
-        {
+        switch ($data["fromAddenda"]) {
             case "Continental":
             case "Pepsico":
                 $data["idPedido"] = $_POST["idPedido"];
@@ -184,8 +173,7 @@ switch($_POST["type"])
                 break;
         }
 
-        if($data["fromAgrario"] == "Si")
-        {
+        if ($data["fromAgrario"] == "Si") {
             $data["noRegistro"] = $_POST["idPedido"];
             $data["noGuiaTraslado"] = $_POST["idSolicitudDePago"];
             $data["uppOrigen"] = $_POST["referencia"];
@@ -195,17 +183,14 @@ switch($_POST["type"])
             $data["firmaVendedor"] = $_POST["firmaVendedor"];
         }
 
-        if(!$response = $cfdi->Generar($data))
-        {
+        if (!$response = $cfdi->Generar($data)) {
             echo "fail|";
-            $smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
-        }
-        else
-        {
-            if($data['format'] == 'vistaPrevia'){
+            $smarty->display(DOC_ROOT . '/templates/boxes/status.tpl');
+        } else {
+            if ($data['format'] == 'vistaPrevia') {
                 echo "ok|";
                 $smarty->assign("response", $response);
-                $smarty->display(DOC_ROOT.'/templates/boxes/cfdi33-vista-previa.tpl');
+                $smarty->display(DOC_ROOT . '/templates/boxes/cfdi33-vista-previa.tpl');
                 echo "|isVistaPrevia";
                 exit;
             }
@@ -215,15 +200,16 @@ switch($_POST["type"])
             $smarty->assign("info", $info);
             $comprobante = $comprobante->GetLastComprobante();
             $smarty->assign("comprobante", $comprobante);
-            $smarty->display(DOC_ROOT.'/templates/boxes/export-factura.tpl');
+            $smarty->display(DOC_ROOT . '/templates/boxes/export-factura.tpl');
             echo "|real";
         }
-
         break;
+
     case "cambiarRfcActivo":
         $rfc->setRfcId($_POST["rfcId"]);
         $rfc->SetAsActive();
         break;
+
     case 'loadConceptoFromService':
         $id = $_POST['value'];
         $contract->setContractId($id);
@@ -235,7 +221,24 @@ switch($_POST["type"])
         echo "ok|ok|";
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
-        $smarty->display(DOC_ROOT.'/templates/lists/conceptos.tpl');
+        $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
+    break;
+    case 'loadConceptoAndDataCompany':
+            $invoice = new InvoiceService();
+            $data = $invoice->getFullDataInvoiceByFolio($_POST['serie'], $_POST['folio']);
+            if(!$data) {
+                echo "fail[#]";
+                $smarty->display(DOC_ROOT."/templates/boxes/status_on_popup.tpl");
+            } else {
+                $_SESSION['conceptos'] = $data['conceptos'];
+                echo "ok[#]";
+                $smarty->assign("conceptos", $_SESSION["conceptos"]);
+                $smarty->assign("DOC_ROOT", DOC_ROOT);
+                $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
+                echo "[#]".$data['comprobanteId']."[#]".$data['razonSocial']."[#]".$data['rfc'];
+                echo "[#]".$data['userId']."[#]".$data['calle']."[#]".$data['pais'];
+                echo "[#]".$data['setTipoComprobante'];
+            }
     break;
 }
 

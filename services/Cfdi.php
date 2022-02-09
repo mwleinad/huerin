@@ -8,55 +8,52 @@ class Cfdi extends Comprobante
         $empresa = $this->Info();
         $values = explode("&", $data["datosFacturacion"]);
         unset($data["datosFacturacion"]);
-        foreach($values as $key => $val)
-        {
+        foreach($values as $key => $val) {
             $array = explode("=", $values[$key]);
             $data[$array[0]] = $array[1];
         }
+
         $tipoSerie = explode("-", $data["tiposComprobanteId"]);
         $data["tiposComprobanteId"] = $tipoSerie[0];
         $data["tiposSerieId"] = $tipoSerie[1];
 
-        $sql ="select empresaId,rfcId from serie where tiposComprobanteId = '".$data['tiposComprobanteId']."' and serieId = '".$data['tiposSerieId']."' ";
+        $sql ="SELECT empresaId, rfcId FROM serie 
+               WHERE tiposComprobanteId = '".$data['tiposComprobanteId']."' 
+               AND serieId = '".$data['tiposSerieId']."' ";
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $currentRfc = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         $empresa['empresaId'] = $currentRfc['empresaId'];
 
         $vs = new User;
-
         include_once(DOC_ROOT."/addendas/addenda_campos.php");
 
         if($vs->Util()->PrintErrors()){ return false; }
 
-        if(!is_numeric($data["numDiasPagados"]) && $data["fromNomina"])
-        {
+        if(!is_numeric($data["numDiasPagados"]) && $data["fromNomina"]) {
             $vs->Util()->setError(10041, "error", "El numero de dias pagados debe de ser un numero");
         }
 
-        if(strlen($data["formaDePago"]) <= 0)
-        {
+        if(strlen($data["formaDePago"]) <= 0) {
             $vs->Util()->setError(10041, "error", "");
         }
 
-        if(count($_SESSION["conceptos"]) < 1)
-        {
+        if(count($_SESSION["conceptos"]) < 1) {
             $vs->Util()->setError(10040, "error", "Debe agregar por lo menos un concepto");
         }
 
-        if($data["fechaSobre"] != "")
-        {
+        if($data["fechaSobre"] != "") {
             $vs->Util()->ValidateString($data["fechaSobre"], 10, 10, "Fecha Factura");
         }
 
-        if($data["folioSobre"] != "")
-        {
+        if($data["folioSobre"] != "") {
             $vs->Util()->ValidateInteger($data["folioSobre"], 1000000000, 1);
         }
 
         // sustitucion de cfdis previos, encontrar los workflowId para su actualizacion de comprobanteId
+        // corroborar si esto aun queda o se quitara definitivamente.
         if ($data['cfdiRelacionadoSerie'] != "" && $data['cfdiRelacionadoFolio'] != "" && $data['tiposComprobanteId'] == "1") {
             $rfolio = $data['cfdiRelacionadoSerie'].$data['cfdiRelacionadoFolio'];
-            $sql ="select comprobanteId, status from comprobante where lower(concat(serie,folio)) = '".strtolower($rfolio)."'";
+            $sql ="SELECT comprobanteId, status FROM comprobante WHERE LOWER(CONCAT(serie,folio)) = '".strtolower($rfolio)."'";
             $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
             $cfdiRelacionado = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
             if ($cfdiRelacionado) {
@@ -77,12 +74,10 @@ class Cfdi extends Comprobante
             } else {
                     $vs->Util()->setError(10040, "error", "El CFDI con folio ".$rfolio." no se encuentra registrado.");
             }
-
         }
         $sobreescribirFecha = false;
         $data["sobreescribirFecha"] = false;
-        if($data["fechaSobre"] != "" && $data["folioSobre"] > 0)
-        {
+        if($data["fechaSobre"] != "" && $data["folioSobre"] > 0) {
             $sobreescribirFecha = true;
             $data["sobreescribirFecha"] = true;
         }
@@ -97,89 +92,79 @@ class Cfdi extends Comprobante
         if($vs->Util()->PrintErrors()){ return false; }
 
         if(!$data["tipoDeCambio"])
-        {
             $data["tipoDeCambio"] = "1.00";
-        }
 
         if(!$data["porcentajeDescuento"])
-        {
             $data["porcentajeDescuento"] = "0";
-        }
 
         if(!$data["porcentajeIEPS"])
-        {
             $data["porcentajeIEPS"] = "0";
-        }
 
         //get active rfc
         $activeRfc = $currentRfc['rfcId'];
         //get datos serie de acuerdo al tipo de comprobabte expedido.
 
         if(!$data["metodoDePago"])
-        {
             $vs->Util()->setError(10047, "error", "El metodo de pago no puede ser vacio");
-        }
 
-        if($data["NumCtaPago"])
-        {
-            if(strlen($data["NumCtaPago"]) < 4)
-            {
+        if($data["NumCtaPago"]) {
+            if(strlen($data["NumCtaPago"]) < 4) {
                 $vs->Util()->setError(10047, "error", "El numero de cuenta debe de tener 4 digitos");
             }
         }
 
-        if(!$data["tiposComprobanteId"])
-        {
+        if(!$data["tiposComprobanteId"]) {
             $vs->Util()->setError(10047, "error","Tipo de comprobante no seleccionado");
         }
-        if($vs->Util()->PrintErrors()){ return false; }
+        if($vs->Util()->PrintErrors()) { return false; }
 
-        if($notaCredito)
-        {
-            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM serie WHERE tiposComprobanteId = '2' AND empresaId = ".$currentRfc["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1");
-        }
-        else
-        {
-            $sql = "SELECT * FROM serie WHERE tiposComprobanteId = ".$data["tiposComprobanteId"]." AND empresaId = ".$currentRfc["empresaId"]." AND rfcId = '".$activeRfc."' AND consecutivo <= folioFinal AND serieId = ".$data["tiposSerieId"]." ORDER BY serieId DESC LIMIT 1";
-
+        if($notaCredito) {
+            $sqlNc = "SELECT * FROM serie 
+                      WHERE tiposComprobanteId = '2' 
+                      AND empresaId = ".$currentRfc["empresaId"]." 
+                      AND rfcId = '".$activeRfc."' 
+                      AND consecutivo <= folioFinal 
+                      AND serieId = ".$data["tiposSerieId"]." 
+                      ORDER BY serieId DESC LIMIT 1";
+            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlNc);
+        } else {
+            $sql = "SELECT * FROM serie 
+                    WHERE tiposComprobanteId = ".$data["tiposComprobanteId"]." 
+                    AND empresaId = ".$currentRfc["empresaId"]." 
+                    AND rfcId = '".$activeRfc."' 
+                    AND consecutivo <= folioFinal 
+                    AND serieId = ".$data["tiposSerieId"]." 
+                    ORDER BY serieId DESC LIMIT 1";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         }
 
         $serie = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
         if(!$serie)
-        {
             $vs->Util()->setError(10047, "error","Serie inhabilitada");
-        }
 
-        if($vs->Util()->PrintErrors()){ return false; }
+        if($vs->Util()->PrintErrors())
+            return false;
 
         if($sobreescribirFecha === true)
-        {
             $folio = $data["folioSobre"];
-        }
         else
-        {
             $folio = $serie["consecutivo"];
-        }
+
         $fecha = $this->Util()->FormatDateAndTime(time() - 600);
         $fechaPago = $this->Util()->FormatDate(time());
 
         $data["fechaPago"] = $fechaPago;
-
         //el tipo de comprobante lo determina tiposComprobanteId
         $tipoDeComprobante = $this->GetTipoComprobante($data["tiposComprobanteId"]);
         $data["comprobante"] = $this->InfoComprobante($data["tiposComprobanteId"]);
 
-        //$fecha = "2017-10-12 19:57:09";
         $data["serie"] = $serie;
         $data["folio"] = $folio;
         $data["fecha"] = $fecha;
-//		return;
         $data["tipoDeComprobante"] = $tipoDeComprobante;
         $data["certificado"] = $serie["noCertificado"];
 
-        //build informacion nodo emisor
         $myEmpresa = new Empresa;
         $myEmpresa->setEmpresaId($_SESSION["empresaId"], 1);
         $myEmpresa->setSucursalId($data["sucursalId"]);
@@ -188,10 +173,9 @@ class Cfdi extends Comprobante
         $this->setRfcId($activeRfc);
         $nodoEmisorRfc = $this->InfoRfc();
         $data["nodoEmisor"]["sucursal"] = $nodoEmisor;
-        $data["nodoEmisor"]["rfc"] = $nodoEmisorRfc;
+        $data["nodoEmisor"]["rfc"]      = $nodoEmisorRfc;
 
-        if(!$data["nodoEmisor"]["rfc"]["regimenFiscal"])
-        {
+        if(!$data["nodoEmisor"]["rfc"]["regimenFiscal"]) {
             $vs->Util()->setError(10047, "error", "Necesitas el Regimen Fiscal, esto se actualiza en Datos Generales, en la opcion de edicion.");
             if($vs->Util()->PrintErrors()){ return false; }
         }
@@ -216,7 +200,7 @@ class Cfdi extends Comprobante
         $xml = new Xml($data);
 
         //TODO might move to constructor
-        if(!$xml->isNomina()){
+        if(!$xml->isNomina()) {
             $vs->setUserId($userId, 1);
             $nodoReceptor = $vs->GetUserForInvoice($userId);
             $nodoReceptor["rfc"] = str_replace("&AMP;", "&", $nodoReceptor["rfc"]);
@@ -227,17 +211,15 @@ class Cfdi extends Comprobante
         }
         $data["nodoReceptor"] = $nodoReceptor;
         //checar si nos falta unidad en alguno
-        foreach($_SESSION["conceptos"] as $concepto)
-        {
-            if($concepto["unidad"] == "")
-            {
+        foreach($_SESSION["conceptos"] as $concepto) {
+            if($concepto["unidad"] == "") {
                 $vs->Util()->setError(10048, "error", "El campo de Unidad no puede ser vacio");
             }
         }
         //workaround para mostrar observaciones en la vista previa
         $_SESSION['observaciones'] = $data["observaciones"];
 
-        if($data["reviso"]){
+        if($data["reviso"]) {
             $_SESSION['firmas']['reviso'] = [
                 "nombre" => 'REVISO',
                 "valor" => urldecode($data["reviso"])
@@ -290,7 +272,7 @@ class Cfdi extends Comprobante
         $this->setRfcId($currentRfc['rfcId']);
         $xmlConSello = $this->stamp($empresa, $serie, $data, $xml, $totales);
 
-        if($data['format'] == 'vistaPrevia'){
+        if($data['format'] == 'vistaPrevia') {
             return $xmlConSello;
         }
         //Timbrado PAC

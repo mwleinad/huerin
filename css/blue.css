@@ -1378,6 +1378,7 @@ ul.menu_arbol ul {
 	box-sizing: border-box;
 	padding-left: 15px;
 	padding-right: 15px;
+	font-weight: bold;
 }
 .formLineFact > .controlLg{
 	box-sizing: border-box;
@@ -1601,6 +1602,11 @@ ul.menu_arbol ul {
 	background-color: white;
 	display: none;
 	overflow: hidden;
+}
+.fullWidthTitleFormControl {
+	width:100%;
+	font-weight: bold;
+	text-align: left;
 }
 
 
