@@ -606,6 +606,7 @@ class InvoiceService extends Cfdi{
                 'Se ha generado la factura correctamente con folio '. $dataResult['serie'].$dataResult['folio']);
             $this->Util()->PrintErrors();
             $dataReturn['res'] = true;
+            return $dataReturn;
         }
     }
 
