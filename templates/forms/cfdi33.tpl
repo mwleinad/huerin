@@ -124,8 +124,8 @@
           <div  class="moreBtnControl" onclick="ToggleDiv('facturaOpciones')"><b>[+] M&aacute;s Opciones</b></div>
           <div style="clear:both"></div>
       </div>
-      <div class="formLine noShow"><hr/></div>
-		<div id="facturaOpciones normalInvoice noShow" style="display:none">
+      <div class="formLine normalInvoice noShow"><hr/></div>
+		<div id="facturaOpciones" style="display:none">
             <div class="formLineFact">
                 <div class="titleLabel">% de IVA:</div>
                 <div class="controlSm">
@@ -157,7 +157,7 @@
                     {foreach from=$metodosDePago item=metodoDePago}
                         <option value="{$metodoDePago.c_MetodoPago}"
                             {if $metodoDePago.c_MetodoPago == "PUE"} selected{/if}
-                        >{$metodoDePago.descripcion}</option> <br />
+                        >{$metodoDePago.descripcion}({$metodoDePago.c_MetodoPago})</option> <br />
                     {/foreach}
                     </select>
                 </div>
