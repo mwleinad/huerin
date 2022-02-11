@@ -98,7 +98,7 @@ class Bono extends Personal
         foreach ($res as $key => $row_serv) {
             $valid_instancias = [];
             if($ftr['departamento_id']) {
-                if($row_serv['departamento_id'] !== $encargado['departamentoId']) {
+                if((int)$row_serv['departamento_id'] !== (int) $encargado['departamentoId']) {
                     unset($res[$key]);
                     continue;
                 }
