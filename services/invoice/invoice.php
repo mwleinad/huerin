@@ -392,7 +392,7 @@ class InvoiceService extends Cfdi{
         $this->setMonth13(false);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
-        $result = $this->Generar($this->data);
+        $result = $this->Generar($this->data, false, false);
         if(!$result){
             $this->setProcesoRealizado(false);
             $this->logString .=chr(13).chr(10)." Error al generar factura para ".$this->currentContract['name']." con rfc = ".$this->currentContract['rfc'].chr(13).chr(10);
