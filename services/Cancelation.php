@@ -35,8 +35,8 @@ class Cancelation extends Main
 				'".$rTaxPayerId."',
 				'".$uuid."',
 				'".$total."',
-				'".$cancelationMotiveSat."',
 				'".$cancelationMotive."',
+				'".$cancelationMotiveSat."',
 				'".$uuidSubstitution."'
 
 		);");
@@ -75,13 +75,16 @@ class Cancelation extends Main
                               motivoCancelacionSat = '".$cfdi['cancelation_motive_sat']."',
                               uuidSustitucion = '".$cfdi['uuid_substitution']."',
                               status = '0', 
-                              fechaPedimento = '".date("Y-m-d")."',
+                              fechaPedimento = '".date("Y-m-d", strtotime($cfdi['date_petition']))."',
+                              fechaCancelacion = '".date("Y-m-d")."',
                               usuarioCancelacion='".$cfdi['user_cancelation']."'
                               WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
             $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
-            $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
-            $this->updateInstanciaIfExist($cfdi['cfdi_id']);
-            $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
+            $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+            if($affects > 0) {
+                $this->updateInstanciaIfExist($cfdi['cfdi_id']);
+                $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
+            }
         }
     }
     private function deleteCancelRequest($id) {
