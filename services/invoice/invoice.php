@@ -164,7 +164,7 @@ class InvoiceService extends Cfdi{
             case 'trimestral': $suma_periodicidad = ' +3 month '; break;
             case 'cuatrimestral': $suma_periodicidad = ' +4 month '; break;
             case 'semestral': $suma_periodicidad = ' +6 month '; break;
-            case 'anual': $suma_periodicidad = ' +1 year '; break;
+            case 'anual': $suma_periodicidad = ' +12 month '; break;
         }
         $fif_control = $fif;
         while ($fif_control <= date('Y-m-d')) {
