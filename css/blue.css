@@ -1425,6 +1425,15 @@ ul.menu_arbol ul {
 	padding-right: 15px;
 
 }
+.colDiv300{
+	position: relative;
+	box-sizing: border-box;
+	width: 300px;
+	float:left;
+	font-size: 15px;
+	padding-right: 15px;
+
+}
 /*estilos para los workflows*/
 /*estilo para cuadro de step*/
 .completeStep{
