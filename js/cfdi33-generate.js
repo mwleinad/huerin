@@ -305,6 +305,7 @@ function CargarConcepto(index) {
                 jQ('form#conceptoForm  #c_ClaveUnidad').val(response.claveUnidad)
                 jQ('form#conceptoForm  #descripcion').val(response.descripcion)
                 jQ('form#conceptoForm  #fechaCorrespondiente').val(response.fechaCorrespondiente)
+                jQ('form#conceptoForm  #nombreServicioOculto').val(response.nombreServicio)
                 jQ('#agregarConceptoDivSpan').html('Actualizar')
             }
         }
