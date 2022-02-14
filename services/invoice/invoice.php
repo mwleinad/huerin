@@ -620,6 +620,8 @@ class InvoiceService extends Cfdi{
                     a.tasaIva,
                     a.tiposComprobanteId, 
                     a.rfcId,
+                    a.formaDePago,
+                    a.metodoDePago,
                     b.noCuenta,
                     b.contractId,
                     b.facturador,
@@ -718,6 +720,7 @@ class InvoiceService extends Cfdi{
             $cad["valorUnitario"] = $item["valorUnitario"];
             $cad["importe"] = $item["valorUnitario"];
             $cad["excentoIva"] = "no";
+            $cad["nombreServicio"] = $item['nombreServicio'];
             $cad["descripcion"] = $descripcion;
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;

@@ -847,6 +847,116 @@ class Comprobante extends Producto
         }
     }//CancelarComprobante
 
+    function CancelarCfdiFromSustitucion($idAnterior, $idActual ) {
+        global $cancelation, $personal;
+        $sqlAnterior = "SELECT a.noCertificado, a.xml, b.rfc, a.rfcId, a.empresaId, a.rfcId,a.serie, a.folio,
+                               a.tiposComprobanteId,a.version, a.total, a.fecha, b.name, c.rfc rfcEmisor
+                        FROM comprobante a
+			            INNER JOIN contract b ON b.contractId = a.userId    
+                        INNER JOIN rfc c ON a.rfcId = c.rfcId
+			            WHERE a.comprobanteId = " . $idAnterior;
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlAnterior);
+        $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $sqlActual = "SELECT timbreFiscal, serie, folio FROM comprobante WHERE comprobanteId = " .$idActual;
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlActual);
+        $rowActual = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        $xml            = $row["xml"];
+        $noCertificado  = $row['noCertificado'];
+        $rfcActivo      = $row['rfcId'];
+        $empresaId      = $row['empresaId'];
+        $rfcEmisor      = $row['rfcEmisor'];
+        $rfcReceptor    = $row['rfc'];
+        $total          = $row['total'];
+        $motivoSat      = '02';
+        $folioAnterior  = strtoupper($row['serie'].$row['folio']);
+        $nombreEmpresa  = strtoupper($row['name']);
+        $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio '.strtoupper($rowActual['serie'].$rowActual['folio']);;
+
+
+        $xmlReaderService = new XmlReaderService;
+        $xmlPath = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
+        $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
+        $uuidToCancel = (string)$xmlData['timbreFiscal']['UUID'];
+        $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/" . $noCertificado . ".cer.pfx";
+
+        $user = USER_PAC;
+        $pw = PW_PAC;
+        $pac = new Pac;
+
+        $pathPassword = DOC_ROOT . "/empresas/" . $empresaId. "/certificados/" . $rfcActivo . "/password.txt";
+        $fh = fopen($pathPassword, 'r');
+        $password = fread($fh, filesize($pathPassword));
+        fclose($fh);
+
+
+        $timbreFiscal = unserialize($rowActual['timbreFiscal']);
+        $uuidSustitucion = $timbreFiscal["UUID"];
+
+        $response = $pac->CancelaCfdi2018($user,
+            $pw,
+            $rfcEmisor,
+            $rfcReceptor,
+            $uuidToCancel,
+            $total,
+            $path,
+            $password,
+            '02',
+            $uuidSustitucion);
+
+        if ($response['cancelado']) {
+            if ($response['conAceptacion']) {
+                $cancelation->addPetition($_SESSION['User']['userId'], $idActual, $rfcEmisor, $row['rfc'], $uuidToCancel, $total, $motivoSat , $uuidSustitucion, $motivoCancel);
+            } else {
+                $sqlQuery = 'UPDATE comprobante 
+                             SET 
+                                 motivoCancelacionSat = "' . $motivoSat . '",
+                                 motivoCancelacion = "' . $motivoCancel . '", 
+                                 uuidSustitucion = "' . $uuidSustitucion . '", 
+                                 status = "0", 
+                                 fechaPedimento = "' . date("Y-m-d") . '",
+                                 usuarioCancelacion="' . $_SESSION['User']['userId'] . '" 
+                             WHERE comprobanteId = ' . $idAnterior;
+                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+            }
+
+            // enviar por correo
+            $currentUser =  $personal->getCurrentUser();
+            $body = "";
+            $subjectPrefix  = FROM_FACTURA === 'test' ? "CANCELACION EN TEST DE " : "CANCELACION DE ";
+            $subject = $subjectPrefix.$row['tipoDocumento']." ".$folioAnterior;
+            $body .="<div style='width: 600px;text-align: justify'>";
+            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion de la factura con folio ".$folioAnterior." de la empresa ".$nombreEmpresa." </p>";
+            $body .="<p>Por el siguiente motivo:</p>";
+            $body .="<p><b>".$motivoCancel."</b></p>";
+            $body .="</div>";
+
+            $contractRep =  new ContractRep();
+            $contractRep->setContractId($row["userId"]);
+            $ftr["maxLevelRol"] = [4,5,6];
+            $ftr["departamentoId"] = [1,21];
+            $ftr["incluirJefes"] = true;
+            $ftr["sendBraun"] = false;
+            $ftr["senHuerin"] = false;
+            $correos = $contractRep->getEmailsEncargadosLevel($ftr);
+            $send = new SendMail();
+            if(!SEND_LOG_MOD){
+                $correos = [];
+            }
+            $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
+
+            $this->Util()->setError('', "complete", $response['message']);
+            $this->Util()->PrintErrors();
+            return true;
+        } else {
+            $this->Util()->setError('', "error", $response['message']);
+            $this->Util()->PrintErrors();
+            return false;
+        }
+    }
+
     function GetTotalDesglosado($data = [])
     {
         if (!$_SESSION["conceptos"]) {
@@ -950,7 +1060,6 @@ class Comprobante extends Producto
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT tipoDeComprobante FROM tiposComprobante WHERE tiposComprobanteId = " . $value . " LIMIT 1");
         return $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
     }
-
 
     function GenerarSello($cadenaOriginal, $md5)
     {
@@ -1941,7 +2050,6 @@ class Comprobante extends Producto
 
 }//Comprobante
 
-
 require(DOC_ROOT . '/pdf/fpdf.php');
 require(DOC_ROOT . '/pdf/fpdi.php');
 
@@ -2417,5 +2525,4 @@ class PDF_ImageAlpha extends PDF
         return array('w' => $w, 'h' => $h, 'cs' => $colspace, 'bpc' => $bpc, 'f' => 'FlateDecode', 'parms' => $parms, 'pal' => $pal, 'trns' => $trns, 'data' => $data);
     }
 }
-
 ?>

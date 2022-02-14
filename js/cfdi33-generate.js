@@ -109,6 +109,7 @@ function FillConceptoData() {
                 var splitResponse = response.split("{#}");
                 $('descripcion').value = splitResponse[0];
                 $('valorUnitario').value = splitResponse[1];
+                $('nombreServicioOculto').value = splitResponse[0];
                 $('unidad').value = splitResponse[2];
                 $('loadingDivConcepto').innerHTML = '';
                 UpdateValorUnitarioConIva();
@@ -221,6 +222,9 @@ function AgregarConcepto() {
                 }
                 $('conceptos').innerHTML = splitResponse[2];
                 var elements = $$('span.linkBorrar');
+                $('conceptoForm').reset()
+                $('agregarConceptoDivSpan').innerHTML = 'Agregar'
+                jQ('form#conceptoForm #conceptoId').val('')
                 AddBorrarConceptoListeners(elements);
                 UpdateTotalesDesglosados();
             },
@@ -228,6 +232,11 @@ function AgregarConcepto() {
                 alert('Something went wrong...')
             }
         });
+}
+
+function CancelarConcepto () {
+    $('conceptoForm').reset()
+    jQ('form#conceptoForm #conceptoId').val('')
 }
 
 function AgregarImpuesto() {
@@ -249,7 +258,6 @@ function AgregarImpuesto() {
                 $('impuestos').innerHTML = splitResponse[2];
                 var elements = $$('span.linkBorrarImpuesto');
                 AddBorrarImpuestosListeners(elements);
-
                 UpdateTotalesDesglosados();
             },
             onFailure: function () {
@@ -257,7 +265,6 @@ function AgregarImpuesto() {
             }
         });
 }
-
 
 function BorrarConcepto(e, id) {
     new Ajax.Request(WEB_ROOT + '/ajax/sistema.php',
@@ -276,6 +283,32 @@ function BorrarConcepto(e, id) {
                 alert('Something went wrong...')
             }
         });
+}
+
+function CargarConcepto(index) {
+    jQ.ajax(
+        {
+            url:WEB_ROOT+'/ajax/cfdi33.php',
+            type:'post',
+            dataType:'json',
+            data:{type:'getConcepto', index},
+            success:function (response) {
+                jQ('form#conceptoForm  #conceptoId').val(index)
+                jQ('form#conceptoForm  #cantidad').val(response.cantidad)
+                jQ('form#conceptoForm  #noIdentificacion').val(response.noIdentificacion)
+                jQ('form#conceptoForm  #unidad').val(response.unidad)
+                jQ('form#conceptoForm  #valorUnitario').val(response.valorUnitario)
+                var pUci = parseFloat(response.valorUnitario)+parseFloat(response.totalIva)
+                jQ('form#conceptoForm  #valorUnitarioCI').val(pUci)
+                jQ('form#conceptoForm  #excentoIva').val(response.excentoIva)
+                jQ('form#conceptoForm  #c_ClaveProdServ').val(response.claveProdServ)
+                jQ('form#conceptoForm  #c_ClaveUnidad').val(response.claveUnidad)
+                jQ('form#conceptoForm  #descripcion').val(response.descripcion)
+                jQ('form#conceptoForm  #fechaCorrespondiente').val(response.fechaCorrespondiente)
+                jQ('#agregarConceptoDivSpan').html('Actualizar')
+            }
+        }
+    );
 }
 
 function BorrarImpuesto(e, id) {
@@ -301,8 +334,7 @@ function BorrarImpuesto(e, id) {
 function AddBorrarConceptoListeners(elements) {
     elements.each(
         function (e) {
-            var id = $(e).up(0).previous(8).innerHTML;
-            console.log(id);
+            var id = $(e).up(0).previous(7).innerHTML;
             Event.observe(e, "click", function (e) {
                 BorrarConcepto(e, id);
             });
@@ -338,11 +370,14 @@ function UpdateTotalesDesglosados() {
 }
 
 function GenerarComprobante(format) {
-    var message = "Realmente deseas generar un comprobante. Asegurate de que lo estes generando para tu RFC Correcto.";
+    var modo_factura = $('modo_factura').value
+    var message = parseInt(modo_factura) === 2
+        ? "Estas a punto de generar una factura que sustituira el folio: " + $('serieAnterior').value+$('folioAnterior').value
+        + ', asegurate que la información este correcta.'
+        : "Realmente deseas generar un comprobante. asegurate de que lo estes generando sean con los datos correctos.";
     if (!confirm(message)) {
         return;
     }
-
 
     $('nuevaFactura').enable();
     var nuevaFactura = $('nuevaFactura').serialize();
@@ -394,8 +429,6 @@ function GenerarComprobante(format) {
     if ($('folioSobre')) var folioSobre = $('folioSobre').value;
     else var folioSobre = "";
 
-    //if($('cuentaPorPagar').checked) var cuentaPorPagar = $('cuentaPorPagar').value;
-    //else var cuentaPorPagar = "";
     var cuentaPorPagar = "";
 
     if ($('formatoNormal')) {
@@ -502,7 +535,7 @@ Event.observe(window, 'load', function () {
     if ($('rfc')) {
         Event.observe($('noIdentificacion'), "keyup", function () {
             SuggestProduct();
-            FillConceptoData();
+            //FillConceptoData();
         });
     }
     if ($('rfc')) {
@@ -656,6 +689,8 @@ jQ(function() {
                     jQ('#calle').val(splitResponse[6]);
                     jQ('#pais').val(splitResponse[7]);
                     jQ('#tiposComprobanteId').val(splitResponse[8]);
+                    jQ('#formaDePago').val(splitResponse[9]);
+                    jQ('#metodoDePago').val(splitResponse[10]);
 
                     jQ('#conceptos').html(splitResponse[1]);
                     var elements = $$('span.linkBorrar');
