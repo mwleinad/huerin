@@ -612,7 +612,7 @@ class InvoiceService extends Cfdi{
      * Funciones para sustitucion manual
      */
     function getInfoInvoiceByFolio ($serie, $folio) {
-       $sql  = "SELECT 
+      $sql  = "SELECT 
                     a.comprobanteId, 
                     date_format(a.fecha, '%Y-%m-%d') fecha,
                     a.serie,
@@ -643,7 +643,7 @@ class InvoiceService extends Cfdi{
                     b.address calle
                  FROM comprobante a
                  INNER JOIN contract b ON a.userId = b.contractId
-                 WHERE a.serie = '".trim($serie)."' AND a.folio = '".trim($folio)."' 
+                 WHERE lower(a.serie) = '".strtoupper(trim($serie))."' AND a.folio = '".trim($folio)."' 
                  AND  a.tiposComprobanteId = '1' AND a.status ='1'  
                  ";
 
@@ -677,6 +677,7 @@ class InvoiceService extends Cfdi{
         if($this->Util()->PrintErrors())
           return false;
 
+        $tipoInner = $row['fecha'] >= '2022-02-01' ? " INNER JOIN " : " LEFT JOIN ";
         $sql = "SELECT sa.`cantidad`,
 						sa.`unidad`,
 						sa.`noIdentificacion`,
@@ -692,11 +693,12 @@ class InvoiceService extends Cfdi{
                         sb.claveSat,
                         sb.tipoServicioId
 				FROM concepto sa
-                INNER JOIN (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
+                ".$tipoInner." (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
                             INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
                 ON sa.servicioId = sb.servicioId
                 WHERE sa.comprobanteId = '".$row['comprobanteId']."'
 				";
+
         $this->Util()->DB()->setQuery($sql);
         $dataConceptos = $this->Util()->DB()->GetResult();
         $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
@@ -721,7 +723,7 @@ class InvoiceService extends Cfdi{
             $cad["importe"] = $item["valorUnitario"];
             $cad["excentoIva"] = "no";
             $cad["nombreServicio"] = $item['nombreServicio'];
-            $cad["descripcion"] = $descripcion;
+            $cad["descripcion"] = $row['fecha'] >= '2022-02-01' ? $descripcion : $item['descripcion'];
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;
             $cad["claveUnidad"] = "E48";
