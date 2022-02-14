@@ -442,12 +442,6 @@ class Cfdi extends Comprobante
                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
            }
         }
-        if(isset($data['modo_factura'])) {
-            if ($data['modo_factura'] == 2 && $idParent) {
-                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
-            }
-        }
-
         if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()))
         {
             //insert conceptos
@@ -489,7 +483,11 @@ class Cfdi extends Comprobante
             }
 
         }
-
+        if(isset($data['modo_factura'])) {
+            if ($data['modo_factura'] == 2 && $idParent) {
+                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
+            }
+        }
         // condicionar el envio de correo.
         if ($sendCorreo) {
             $razon = new Razon;

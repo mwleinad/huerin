@@ -873,12 +873,15 @@ class Comprobante extends Producto
         $folioAnterior  = strtoupper($row['serie'].$row['folio']);
         $nombreEmpresa  = strtoupper($row['name']);
         $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio '.strtoupper($rowActual['serie'].$rowActual['folio']);;
-
+        $uuidToCancel   = "";
 
         $xmlReaderService = new XmlReaderService;
         $xmlPath = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
-        $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
-        $uuidToCancel = (string)$xmlData['timbreFiscal']['UUID'];
+        $xmlData = [];
+        if(is_file($xmlPath)) {
+            $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
+            $uuidToCancel = (string)$xmlData['timbreFiscal']['UUID'];
+        }
         $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/" . $noCertificado . ".cer.pfx";
 
         $user = USER_PAC;
