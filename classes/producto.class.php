@@ -276,6 +276,12 @@ class Producto extends Sucursal
 
 		end($_SESSION["conceptos"]);
 		$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
+		if($key >= 0) {
+			if($_SESSION["conceptos"][$conceptos]["noIdentificacion"] != $this->noIdentificacion)
+				if(isset($_SESSION["conceptos"][$conceptos]["servicioId"]))
+					unset($_SESSION["conceptos"][$conceptos]["servicioId"]);
+
+		}
 		$_SESSION["conceptos"][$conceptos]["noIdentificacion"] = $this->noIdentificacion;
 		$_SESSION["conceptos"][$conceptos]["cantidad"] = $this->cantidad;
 		$_SESSION["conceptos"][$conceptos]["unidad"] = $this->unidad;

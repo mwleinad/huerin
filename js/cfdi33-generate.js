@@ -166,6 +166,7 @@ function FillDatosFacturacion(id) {
                 var useServiceConcept = confirm(' ¿ Desea cargar los sevicios facturables de esta empresa como conceptos?');
                 if (useServiceConcept)
                     loadConceptosFromServices();
+                CancelarConcepto();
 
             },
             onFailure: function () {
@@ -242,8 +243,7 @@ function AgregarConcepto() {
     jQ("#descripcion").val(descripcion);
     var formData = new FormData(document.getElementById("conceptoForm"));
     formData.append('userId', idContractToFactura)
-
-    if(jQ('#vincularToServicio').is(':checked') && parseInt(idContractToFactura) <= 0) {
+    if(jQ('#vincularToServicio').is(':checked') && idContractToFactura === '') {
         alert('Elija una razon social, si pretende vincular el concepto.')
         return
     }
@@ -283,6 +283,7 @@ function CancelarConcepto () {
     $('conceptoForm').reset()
     jQ('form#conceptoForm #conceptoId').val('')
     jQ('form#conceptoForm .divVincularToServicio').val('')
+    jQ('form#conceptoForm  #nombreServicioOculto').val('')
 }
 
 function AgregarImpuesto() {
@@ -351,7 +352,7 @@ function CargarConcepto(index) {
                 jQ('form#conceptoForm  #c_ClaveUnidad').val(response.claveUnidad)
                 jQ('form#conceptoForm  #descripcion').val(response.descripcion)
                 jQ('form#conceptoForm  #fechaCorrespondiente').val(response.fechaCorrespondiente)
-                jQ('form#conceptoForm  #nombreServicioOculto').val(response.nombreServicio)
+                jQ('form#conceptoForm  #nombreServicioOculto').val(response.nombreServicioOculto)
                 parseInt(response.servicioId) > 0
                     ? jQ('form#conceptoForm  .divVincularToServicio').hide()
                     : jQ('form#conceptoForm  .divVincularToServicio').show()

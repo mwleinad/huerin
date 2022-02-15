@@ -723,6 +723,7 @@ class InvoiceService extends Cfdi{
             $cad["importe"] = $item["valorUnitario"];
             $cad["excentoIva"] = "no";
             $cad["nombreServicio"] = $item['nombreServicio'];
+            $cad["nombreServicioOculto"] = $item['nombreServicio'];
             $cad["descripcion"] = $row['fecha'] >= '2022-02-01' ? $descripcion : $item['descripcion'];
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;
