@@ -263,6 +263,7 @@ function AgregarConcepto() {
                 jQ('#divStatus').html(splitResponse[1])
                 jQ('#centeredDiv').show();
                 grayOut(true);
+                return
             }
             jQ('#conceptos').html(splitResponse[2])
             var elements = $$('span.linkBorrar');
