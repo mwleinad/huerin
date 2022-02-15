@@ -243,6 +243,11 @@ function AgregarConcepto() {
     var formData = new FormData(document.getElementById("conceptoForm"));
     formData.append('userId', idContractToFactura)
 
+    if(jQ('#vincularToServicio').is(':checked') && parseInt(idContractToFactura) <= 0) {
+        alert('Elija una razon social, si pretende vincular el concepto.')
+        return
+    }
+
     jQ.ajax({
         url: WEB_ROOT + '/ajax/cfdi33.php',
         type: 'post',
