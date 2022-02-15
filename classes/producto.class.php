@@ -282,6 +282,7 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["valorUnitario"] = $this->valorUnitario;
 		$_SESSION["conceptos"][$conceptos]["importe"] = $this->importe;
 		$_SESSION["conceptos"][$conceptos]["excentoIva"] = $this->excentoIva;
+		$_SESSION["conceptos"][$conceptos]["nombreServicioOculto"] = $_POST["nombreServicioOculto"];
 		if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
 			$fecha = explode("-", $this->fechaCorrespondiente);
 			$fechaText = strtoupper($months[$fecha[1]]." DEL ".$fecha["0"]);
