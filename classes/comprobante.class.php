@@ -952,11 +952,9 @@ class Comprobante extends Producto
 
             $this->Util()->setError('', "complete", $response['message']);
             $this->Util()->PrintErrors();
-            return true;
         } else {
             $this->Util()->setError('', "error", $response['message']);
             $this->Util()->PrintErrors();
-            return false;
         }
     }
 
