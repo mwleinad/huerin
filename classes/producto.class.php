@@ -273,6 +273,7 @@ class Producto extends Sucursal
 		global $months;
 		if($this->Util()->PrintErrors())
 			return false;
+
 		end($_SESSION["conceptos"]);
 		$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
 		$_SESSION["conceptos"][$conceptos]["noIdentificacion"] = $this->noIdentificacion;
@@ -293,6 +294,20 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
 		$_SESSION["conceptos"][$conceptos]["claveUnidad"] = $this->claveUnidad;
 		$_SESSION["conceptos"][$conceptos]["fechaCorrespondiente"] = $this->fechaCorrespondiente;
+		if(isset($_POST['vincularToServicio'])) {
+			$sql ="SELECT servicioId FROM servicio 
+				   WHERE tipoServicioId = '".$this->noIdentificacion."' 
+				   AND contractId='".$_POST['userId']."'
+				   AND status IN ('activo', 'bajaParcial') ";
+			$this->Util()->DB()->setQuery($sql);
+			$servicioExiste = $this->Util()->DB()->GetSingle();
+			if((int)$servicioExiste > 0) {
+				$_SESSION["conceptos"][$conceptos]["servicioId"] = (int)$servicioExiste;
+			} else{
+				if(isset($_SESSION["conceptos"][$conceptos]["servicioId"]))
+					unset($_SESSION["conceptos"][$conceptos]["servicioId"]);
+			}
+		}
 		return true;
 	}
 

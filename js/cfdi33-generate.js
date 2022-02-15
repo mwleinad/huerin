@@ -112,6 +112,7 @@ function FillConceptoData() {
                 $('nombreServicioOculto').value = splitResponse[0];
                 $('unidad').value = splitResponse[2];
                 $('loadingDivConcepto').innerHTML = '';
+                jQ('form#conceptoForm .divVincularToServicio').show()
                 UpdateValorUnitarioConIva();
             },
             onFailure: function () {
@@ -205,12 +206,13 @@ function UpdateIepsConcepto() {
 function AgregarConcepto() {
     var descripcion = $("descripcion").value;
     descripcion = descripcion.replace("+", "[%]MAS[%]");
+    var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
     $("descripcion").value = descripcion;
     $('conceptos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
     new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
             method: 'post',
-            parameters: $('conceptoForm').serialize(true),
+            parameters: $('conceptoForm').serialize(true) + '&userId=' + idContractToFactura,
             onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("|");
@@ -225,6 +227,7 @@ function AgregarConcepto() {
                 $('conceptoForm').reset()
                 $('agregarConceptoDivSpan').innerHTML = 'Agregar'
                 jQ('form#conceptoForm #conceptoId').val('')
+                jQ('form#conceptoForm .divVincularToServicio').show()
                 AddBorrarConceptoListeners(elements);
                 UpdateTotalesDesglosados();
             },
@@ -237,6 +240,7 @@ function AgregarConcepto() {
 function CancelarConcepto () {
     $('conceptoForm').reset()
     jQ('form#conceptoForm #conceptoId').val('')
+    jQ('form#conceptoForm .divVincularToServicio').val('')
 }
 
 function AgregarImpuesto() {
@@ -306,6 +310,9 @@ function CargarConcepto(index) {
                 jQ('form#conceptoForm  #descripcion').val(response.descripcion)
                 jQ('form#conceptoForm  #fechaCorrespondiente').val(response.fechaCorrespondiente)
                 jQ('form#conceptoForm  #nombreServicioOculto').val(response.nombreServicio)
+                parseInt(response.servicioId) > 0
+                    ? jQ('form#conceptoForm  .divVincularToServicio').hide()
+                    : jQ('form#conceptoForm  .divVincularToServicio').show()
                 jQ('#agregarConceptoDivSpan').html('Actualizar')
             }
         }
@@ -670,6 +677,7 @@ jQ(function() {
                 beforeSend: function () {
                     jQ('#loading-cargar-dato').show()
                     jQ('#btnLoadDataBefore').hide()
+                    $('conceptoForm').reset()
                 },
                 success:function (response) {
                     jQ('#loading-cargar-dato').hide()
