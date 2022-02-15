@@ -204,11 +204,11 @@ function UpdateIepsConcepto() {
 }
 
 function AgregarConcepto() {
-    var descripcion = $("descripcion").value;
+    /*var descripcion = $("descripcion").value;
     descripcion = descripcion.replace("+", "[%]MAS[%]");
     var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
     $("descripcion").value = descripcion;
-    $('conceptos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
+
     new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
             method: 'post',
@@ -235,6 +235,43 @@ function AgregarConcepto() {
                 alert('Something went wrong...')
             }
         });
+*/
+    var descripcion = jQ("form#conceptoForm #descripcion").val();
+    descripcion = descripcion.replace("+", "[%]MAS[%]");
+    var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
+    jQ("#descripcion").val(descripcion);
+    var formData = new FormData(jQ('form#conceptoForm'));
+    formData.append('userId', idContractToFactura)
+
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/cfdi33.php',
+        type: 'post',
+        contentType: false,
+        processData: false,
+        data: formData,
+        beforeSend: function () {
+            jQ('#conceptos').html('<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>')
+        },
+        success: function (response) {
+            var splitResponse = response.split("|");
+            if (splitResponse[0] === "fail") {
+                jQ('#divStatus').html(splitResponse[1])
+                jQ('#centeredDiv').show();
+                grayOut(true);
+            }
+            jQ('#conceptos').html(splitResponse[2])
+            var elements = $$('span.linkBorrar');
+            $('conceptoForm').reset()
+            jQ('#agregarConceptoDivSpan').html('Agregar');
+            jQ('form#conceptoForm #conceptoId').val('')
+            jQ('form#conceptoForm .divVincularToServicio').show()
+            AddBorrarConceptoListeners(elements);
+            UpdateTotalesDesglosados();
+        },
+        error: function () {
+            alert('Something went wrong...')
+        },
+    })
 }
 
 function CancelarConcepto () {
