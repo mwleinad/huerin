@@ -247,6 +247,10 @@ switch ($_POST["type"]) {
         $data = $_SESSION['conceptos'][$_POST['index']];
         echo json_encode($data);
     break;
+    case 'clenAllConcepto':
+        if(isset($_SESSION['conceptos']))
+            unset($_SESSION['conceptos']);
+    break;
 }
 
 ?>

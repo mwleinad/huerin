@@ -708,6 +708,18 @@ jQ(function() {
             jQ('.sustitucionInvoice').addClass('noShow')
             jQ('#parent').val('')
         }
+        // por cada cambio en el seleccionable limpiar conceptos.
+        jQ.ajax({
+                url:WEB_ROOT+'/ajax/cfdi33.php',
+                type:'post',
+                data:{type:'clenAllConcepto'},
+                success:function () {
+                    jQ('#conceptos').html('Ninguno (Has click en Agregar para agregar un concepto)')
+                    CancelarConcepto()
+                    UpdateTotalesDesglosados();
+                }
+            }
+        )
     })
     jQ(document).on('click', '#btnLoadDataBefore', function () {
         var $serie =  jQ('#serieAnterior').val();
