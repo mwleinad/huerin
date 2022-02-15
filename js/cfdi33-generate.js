@@ -240,7 +240,7 @@ function AgregarConcepto() {
     descripcion = descripcion.replace("+", "[%]MAS[%]");
     var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
     jQ("#descripcion").val(descripcion);
-    var formData = new FormData(jQ('form#conceptoForm'));
+    var formData = new FormData(document.getElementById("conceptoForm"));
     formData.append('userId', idContractToFactura)
 
     jQ.ajax({
