@@ -43,6 +43,10 @@ switch ($_POST["type"]) {
         break;
 
     case "agregarConcepto":
+        $idConcepto = -1;
+        if(isset($_POST['conceptoId']))
+            $idConcepto = $_POST['conceptoId'] !== '' ? $_POST['conceptoId'] : -1;
+
         $producto->setCantidad($_POST["cantidad"]);
         $producto->setNoIdentificacion($_POST["noIdentificacion"]);
         $producto->setUnidad($_POST["unidad"]);
@@ -78,14 +82,14 @@ switch ($_POST["type"]) {
         }
         $producto->setCategoriaConcepto($_POST["categoriaConcepto"]);
         $producto->setImporte();
-        if (!$producto->AgregarConcepto()) {
+        $producto->setFechaCorrespondiente($_POST['fechaCorrespondiente']);
+        if (!$producto->AgregarConcepto($idConcepto)) {
             echo "fail|";
             $smarty->display(DOC_ROOT . '/templates/boxes/status.tpl');
         } else {
             echo "ok|ok";
         }
         echo "|";
-        //print_r($_SESSION["conceptos"]);
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
         $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
@@ -97,7 +101,6 @@ switch ($_POST["type"]) {
         $smarty->assign("conceptos", $_SESSION["conceptos"]);
         $smarty->assign("DOC_ROOT", DOC_ROOT);
         $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
-
         break;
 
     case "borrarImpuesto":
@@ -182,8 +185,8 @@ switch ($_POST["type"]) {
             $data["uppDestino"] = $_POST["uppDestino"];
             $data["firmaVendedor"] = $_POST["firmaVendedor"];
         }
-
-        if (!$response = $cfdi->Generar($data)) {
+        // el envio de la factura por correo que lo realice un cronjob.
+        if (!$response = $cfdi->Generar($data, false, false)) {
             echo "fail|";
             $smarty->display(DOC_ROOT . '/templates/boxes/status.tpl');
         } else {
@@ -237,8 +240,12 @@ switch ($_POST["type"]) {
                 $smarty->display(DOC_ROOT . '/templates/lists/conceptos.tpl');
                 echo "[#]".$data['comprobanteId']."[#]".$data['razonSocial']."[#]".$data['rfc'];
                 echo "[#]".$data['userId']."[#]".$data['calle']."[#]".$data['pais'];
-                echo "[#]".$data['setTipoComprobante'];
+                echo "[#]".$data['setTipoComprobante']."[#]".$data['formaDePago']."[#]".$data['metodoDePago'];
             }
+    break;
+    case "getConcepto":
+        $data = $_SESSION['conceptos'][$_POST['index']];
+        echo json_encode($data);
     break;
 }
 

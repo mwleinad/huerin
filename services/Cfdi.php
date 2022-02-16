@@ -48,6 +48,19 @@ class Cfdi extends Comprobante
         if($data["folioSobre"] != "") {
             $vs->Util()->ValidateInteger($data["folioSobre"], 1000000000, 1);
         }
+        // validar nuevamente que el folio anterior que viene de factura manual, se encuentre registrado.
+        if(isset($data['modo_factura'])) {
+            if ($data['modo_factura'] == 2) {
+                $serifolioanterior = $data['serieAnterior'] . $data['folioAnterior'];
+                $sql = "SELECT comprobanteId FROM comprobante 
+                        WHERE LOWER(CONCAT(serie,folio)) = '" . strtolower($serifolioanterior) . "' 
+                        AND status ='1' ";
+                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+                $folioAnterior = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
+                if (!$folioAnterior)
+                    $vs->Util()->setError(10040, "error", "La factura con folio : " . $serifolioanterior . " no se encuentra en el sistema.");
+            }
+        }
 
         // sustitucion de cfdis previos, encontrar los workflowId para su actualizacion de comprobanteId
         // corroborar si esto aun queda o se quitara definitivamente.
@@ -429,6 +442,11 @@ class Cfdi extends Comprobante
                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
            }
         }
+        if(isset($data['modo_factura'])) {
+            if ($data['modo_factura'] == 2 && $idParent) {
+                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
+            }
+        }
 
         if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()))
         {
@@ -516,6 +534,4 @@ class Cfdi extends Comprobante
         return $response;
     }
 }
-
-
 ?>

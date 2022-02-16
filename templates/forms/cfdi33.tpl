@@ -125,7 +125,7 @@
           <div style="clear:both"></div>
       </div>
       <div class="formLine normalInvoice noShow"><hr/></div>
-		<div id="facturaOpciones" style="display:none">
+		<div id="facturaOpciones" style="display:none" class="normalInvoice noShow">
             <div class="formLineFact">
                 <div class="titleLabel">% de IVA:</div>
                 <div class="controlSm">
@@ -265,12 +265,12 @@
           </div>
      {/if}
          <div class="formLine normalInvoice noShow"><hr /></div>
-         <span id="loadingDivConcepto normalInvoice noShow"></span>
+         <span id="loadingDivConcepto"></span>
          <div class="formLineFact normalInvoice noShow">
-              <div class="colDiv">Cantidad</div>
-              <div class="colDiv"># Identificacion</div>
-              <div class="colDiv">Unidad</div>
-              <div class="colDiv">Precio S/IVA</div>
+              <div class="colDiv"><em style="color: #ff0000">*</em> Cantidad</div>
+              <div class="colDiv"><em style="color: #ff0000">*</em> # Identificacion</div>
+              <div class="colDiv"> <em style="color: #ff0000">*</em> Unidad</div>
+              <div class="colDiv"><em style="color: #ff0000">*</em> Precio S/IVA</div>
               <div class="colDiv">Precio C/IVA</div>
               <div class="colDiv">Exento Iva</div>
               <div style="clear:both"></div>
@@ -279,6 +279,8 @@
     <form id="conceptoForm" name="conceptoForm" class="normalInvoice noShow">
             <input type="hidden" id="type" name="type" value="agregarConcepto" />
 			<input type="hidden" id="totalConceptos" value="$conceptos" >
+			<input type="hidden" id="conceptoId" name="conceptoId" value="" >
+			<input type="hidden" id="nombreServicioOculto" name="nombreServicioOculto" value="">
       <div class="formLineFact">
           <div class="colDiv">
           <input name="cantidad" id="cantidad" type="text" value="{$post.cantidad}"  size="8" class="largeInput" placeholder="Cantidad"/></div>
@@ -304,12 +306,18 @@
           </div>
           <div class="colDiv">
               <div  id="agregarConceptoDiv" class="button">
-                  <span>Agregar</span>
+                  <span id="agregarConceptoDivSpan">Agregar</span>
+              </div>
+              <div style="padding-top: 3px"></div>
+              <div  id="cancelarConceptoDiv" class="button" onclick="CancelarConcepto()">
+                  <span id="cancelarConceptoDivSpan">Cancelar</span>
               </div>
           </div>
-      		<div style="clear:both"></div>
-        </div>
+          <div class="colDiv">
 
+          </div>
+      	  <div style="clear:both"></div>
+        </div>
       <div class="formLineFact">
           <div class="colDiv">Clv Prod o Serv</div>
           <div class="colDiv">Clave Unidad</div>
@@ -317,10 +325,8 @@
           <div class="colDiv">IEPS Tasa o Cuota</div>
           <div class="colDiv">IEPS</div>
           <div class="colDiv">ISH</div>
-
-      		<div style="clear:both"></div>
-        </div>
-
+      	  <div style="clear:both"></div>
+      </div>
       <div class="formLineFact">
           <div class="colDiv">
               <input name="c_ClaveProdServ" id="c_ClaveProdServ" type="text" value="84111500"  size="8" class="largeInput" placeholder=""/></div>
@@ -343,8 +349,6 @@
           <div class="colDiv">
             <input name="ishConcepto" id="ishConcepto" type="text" value="{$post.ish}"  size="8" class="largeInput"  placeholder="% ISH"/>
           </div>
-
-
       		<div style="clear:both"></div>
         </div>
 
@@ -369,7 +373,7 @@
                     </div>
                     <div style="clear:both"></div>
                 </div>
-<div class="formLineFact">
+                <div class="formLineFact">
                     <div style="width:300px;float:left">Amortizacion del anticipo</div>
                     <div style="width:200px;float:left">IVA Amortizacion</div>
                     <div style="clear:both"></div>
@@ -384,16 +388,33 @@
                 </div>
             {/if}
             {/if}
-
+        <div class="formLineFact">
+            <div class="colDiv300">Fecha correspondiente a facturar</div>
+            <div style="clear:both"></div>
+        </div>
       <div class="formLineFact">
+        <div class="colDiv300">
+            <input name="fechaCorrespondiente"
+                   id="fechaCorrespondiente"
+                   type="date"
+                   value=""
+                   class="largeInput"
+                   placeholder="Fecha correspondiente"
+            />
+        </div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="formLineFact">
+          <label><em style="color: #ff0000">*</em> Descripción</label>
           <div style="width:900px;float:left;">
-            <textarea placeholder="Escribe tu concepto aqui" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide" style="font-family: Courier New, Courier, monospace !important">{$post.descripcion}</textarea>
+            <textarea placeholder="Escribe tu concepto aquí" name="descripcion" id="descripcion" cols="33" rows="5" class="largeInput wide" style="font-family: Courier New, Courier, monospace !important">{$post.descripcion}</textarea>
           </div>
       		<div style="clear:both"></div>
-      		<span style="color: #f00; font-weight: bold">La descripcion solo puede tener un maximo de 1000 caracteres. Nueva regla del SAT! </span>
+      		<span style="color: #f00; font-weight: bold">La descripción solo puede tener un maximo de 1000 caracteres. Nueva regla del SAT! </span>
           <div style="clear:both"></div>
             <span style="color: #f00; font-weight: bold">Importante: Utilizar en la descripcion solo nombres de servicio presentes en catalogo.</span>
       </div>
+      <div class="formLineFact"></div>
 	  </form>
     <div class="formLine normalInvoice noShow">
         <hr />
