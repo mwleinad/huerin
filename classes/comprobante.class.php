@@ -747,8 +747,9 @@ class Comprobante extends Producto
 
     function CancelarCfdi($id_comprobante, $motivoSat, $notaCredito = false, $uuid_sustitucion = '', $motivo_cancelacion = '')
     {
-        global $cancelation;
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc, rfcId, comprobante.empresaId, comprobante.rfcId,
+        global $cancelation, $servicio;
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc,
+            comprobante.userId, comprobante.empresaId, comprobante.rfcId,
             comprobante.tiposComprobanteId,version,
             comprobante.total, comprobante.fecha
             FROM comprobante
@@ -814,6 +815,7 @@ class Comprobante extends Producto
                              WHERE comprobanteId = ' . $id_comprobante;
                 $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
                 $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                $servicio->resetDateLastProcessInvoice($row['userId']);
                 $cancelation->updateInstanciaIfExist($id_comprobante);
             }
             //si es version antes de 3.3 , stampar cancelado en el pdf.

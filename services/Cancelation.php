@@ -65,11 +65,11 @@ class Cancelation extends Main
         return $status['getCFDiStatusReturn'];
     }
     public function processCancelation($cfdi, $response) {
+        global $servicio;
         if($response['status'] === self::REJECTED || $response['isCancelable'] === self::NOCANCELABLE) {
             $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
         }
         if($response['status']=== self::CANCELLED) {
-            $date = date("Y-m-d");
             $sqlQuery = "UPDATE comprobante SET
                               motivoCancelacion = '".$cfdi['cancelation_motive']."', 
                               motivoCancelacionSat = '".$cfdi['cancelation_motive_sat']."',
@@ -81,6 +81,12 @@ class Cancelation extends Main
                               WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
             $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
             $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
+
+            $sQuery = "SELECT fecha, comprobanteId, userId FROM comprobante WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
+            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sQuery);
+            $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+            if($row)
+                $servicio->resetDateLastProcessInvoice($row['userId']);
             if($affects > 0) {
                 $this->updateInstanciaIfExist($cfdi['cfdi_id']);
                 $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
