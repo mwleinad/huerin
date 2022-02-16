@@ -164,7 +164,7 @@ class InvoiceService extends Cfdi{
             case 'trimestral': $suma_periodicidad = ' +3 month '; break;
             case 'cuatrimestral': $suma_periodicidad = ' +4 month '; break;
             case 'semestral': $suma_periodicidad = ' +6 month '; break;
-            case 'anual': $suma_periodicidad = ' +1 year '; break;
+            case 'anual': $suma_periodicidad = ' +12 month '; break;
         }
         $fif_control = $fif;
         while ($fif_control <= date('Y-m-d')) {
@@ -620,6 +620,8 @@ class InvoiceService extends Cfdi{
                     a.tasaIva,
                     a.tiposComprobanteId, 
                     a.rfcId,
+                    a.formaDePago,
+                    a.metodoDePago,
                     b.noCuenta,
                     b.contractId,
                     b.facturador,
@@ -718,6 +720,7 @@ class InvoiceService extends Cfdi{
             $cad["valorUnitario"] = $item["valorUnitario"];
             $cad["importe"] = $item["valorUnitario"];
             $cad["excentoIva"] = "no";
+            $cad["nombreServicio"] = $item['nombreServicio'];
             $cad["descripcion"] = $descripcion;
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;
