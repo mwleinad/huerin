@@ -85,18 +85,10 @@ class Pac extends Util
         require_once(DOC_ROOT . '/libs/nusoap.php');
         $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
         $client->useHTTPPersistentConnection();
-        // no se puede cancelar modo test asi que retornamos un resultado fake
-        if (PROJECT_STATUS == "test") {
+        if (PROJECT_STATUS == "test")
             $isTest = true;
-            $data['cancelado'] = true;
-            $data['conAceptacion'] = false;
-            $data['message'] = "Documento cancelado correctamente";
-            return $data;
-        }
         else
             $isTest = false;
-
-
 
         $params = array(
             'user' => $user,
