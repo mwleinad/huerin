@@ -114,11 +114,6 @@ class Producto extends Sucursal
 		$this->Util()->ValidateString($value, $max_chars=200, $minChars = 0, "Clave Unidad");
 		$this->claveUnidad = $value;
 	}
-	private $fechaCorrespondiente;
-	public function setFechaCorrespondiente($value)
-	{
-		$this->fechaCorrespondiente = $value;
-	}
 	private $iepsTasaOCuota;
 	public function setIepsTasaOCuota($value)
 	{
@@ -268,31 +263,25 @@ class Producto extends Sucursal
 
 	}
 
-	function AgregarConcepto($key = -1)
+	function AgregarConcepto()
 	{
-		global $months;
 		if($this->Util()->PrintErrors())
+		{
 			return false;
+		}
+
 		end($_SESSION["conceptos"]);
-		$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
+		$conceptos = key($_SESSION["conceptos"]) + 1;
 		$_SESSION["conceptos"][$conceptos]["noIdentificacion"] = $this->noIdentificacion;
 		$_SESSION["conceptos"][$conceptos]["cantidad"] = $this->cantidad;
 		$_SESSION["conceptos"][$conceptos]["unidad"] = $this->unidad;
 		$_SESSION["conceptos"][$conceptos]["valorUnitario"] = $this->valorUnitario;
 		$_SESSION["conceptos"][$conceptos]["importe"] = $this->importe;
 		$_SESSION["conceptos"][$conceptos]["excentoIva"] = $this->excentoIva;
-		if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
-			$fecha = explode("-", $this->fechaCorrespondiente);
-			$fechaText = strtoupper($months[$fecha[1]]." DEL ".$fecha["0"]);
-			$descripcion = $_POST["nombreServicioOculto"]." CORRESPONDIENTE AL MES ".$fechaText;
-		} else {
-			$descripcion = urldecode($this->descripcion);
-		}
-		$_SESSION["conceptos"][$conceptos]["descripcion"] = $descripcion;
+		$_SESSION["conceptos"][$conceptos]["descripcion"] = urldecode($this->descripcion);
 		$_SESSION["conceptos"][$conceptos]["categoriaConcepto"] = urldecode($this->categoriaConcepto);
 		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
 		$_SESSION["conceptos"][$conceptos]["claveUnidad"] = $this->claveUnidad;
-		$_SESSION["conceptos"][$conceptos]["fechaCorrespondiente"] = $this->fechaCorrespondiente;
 		return true;
 	}
 

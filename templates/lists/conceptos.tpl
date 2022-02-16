@@ -13,6 +13,7 @@
                 <th width="50" scope="col">Cant.</th>
                 <th width="100" scope="col">Unid.</th>
                 <th width="50" scope="col">Id.</th>
+                <th width="100" scope="col">Categoria</th>
                 <th width="500" scope="col">Descripcion</th>
                 <th width="100" scope="col">V. Unitario</th>
                 <th width="100" scope="col">Importe</th>
@@ -22,13 +23,12 @@
             </thead>
             <tbody>
 <div id="">
+
   <div style="clear:both"></div>
 </div>
 	{foreach from=$conceptos item=concepto key=key}
 		{include file="{$DOC_ROOT}/templates/items/concepto_base.tpl"}
 	{/foreach}
 {else}
-<div style="text-align: center">
-    No se encontraron conceptos
-</div>
+No se encontraron conceptos  
 {/if}
