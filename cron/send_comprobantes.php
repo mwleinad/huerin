@@ -18,7 +18,7 @@ if (!isset($_SESSION)) {
 $_SESSION['empresaId'] = IDEMPRESA;
 $sql  = "SELECT comprobanteId,serie,folio FROM comprobante";
 $sql .= " WHERE date_format(fecha,'%Y-%m-%d') > '2022-01-01'";
-$sql .= " AND status = '1' ";
+$sql .= " AND status = '1' AND tiposComprobanteId = 1";
 $sql .= " AND sent='no' ORDER BY comprobanteId ASC LIMIT 5";
 $db->setQuery($sql);
 $comprobantes = $db->GetResult();

@@ -59,6 +59,11 @@ class Cfdi extends Comprobante
                 $folioAnterior = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
                 if (!$folioAnterior)
                     $vs->Util()->setError(10040, "error", "La factura con folio : " . $serifolioanterior . " no se encuentra en el sistema.");
+                else {
+                    // Aseguramos que la factura a crear por sustitucion se genera con cfdi relacionado de tipo 04
+                    $data['cfdiRelacionadoId'] = $folioAnterior;
+                    $data['tipoRelacion'] = '04';
+                }
             }
         }
 
