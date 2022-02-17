@@ -738,28 +738,30 @@ class InvoiceService extends Cfdi{
 
                 $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
                 $strId  =  implode(',', $childs);
-                $sql    = "SELECT a.servicioId FROM (
+                $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
                                 SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
                                 INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
                             WHERE a.contractId ='".$item['userId']."' AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
                             ORDER BY a.servicioId DESC LIMIT 1 ";
                 $this->Util()->DB()->setQuery($sql);
-                $idServ = $this->Util()->DB()->GetSingle();
-                if((int)$idServ <= 0 && count($childs) > 0) {
-                    $sql    = "SELECT a.servicioId FROM (
+                $rowFind = $this->Util()->DB()->GetRow();
+                if(!$rowFind && count($childs) > 0) {
+                    $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
                                 SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
                                 INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
                             WHERE a.contractId IN(".$strId.") AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
                             ORDER BY a.servicioId DESC LIMIT 1 ";
                     $this->Util()->DB()->setQuery($sql);
-                    $idServ = $this->Util()->DB()->GetSingle();
+                    $rowFind = $this->Util()->DB()->GetRow();
                 }
-                $idServicio = $idServ;
-            } else
-                $idServicio = $item['servicioId'];
+                if($rowFind) {
+                    $item['servicioId'] = $rowFind['servicioId'];
+                    $item['nombreServicio'] = $rowFind['nombreServicio'];
+                }
+            }
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
-            $cad["servicioId"] = $idServicio;
+            $cad["servicioId"] = $item['servicioId'];
             $cad["fechaCorrespondiente"] = $item['fechaCorrespondiente'];
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
