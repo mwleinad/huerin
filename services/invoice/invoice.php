@@ -645,7 +645,7 @@ class InvoiceService extends Cfdi{
                  FROM comprobante a
                  INNER JOIN contract b ON a.userId = b.contractId
                  WHERE lower(a.serie) = '".strtoupper(trim($serie))."' AND a.folio = '".trim($folio)."' 
-                 AND  a.tiposComprobanteId = '1' AND a.status ='1'  
+                 AND  a.tiposComprobanteId = '1' 
                  ";
 
         $this->Util()->DB()->setQuery($sql);
