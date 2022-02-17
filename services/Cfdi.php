@@ -47,7 +47,7 @@ class Cfdi extends Comprobante
                     if((int)$itemConcepto['servicioId'] <= 0 ||
                         !$vs->Util()->isValidateDate($itemConcepto['fechaCorrespondiente'], 'Y-m-d')) {
                         $mensaje  = "Asegurate que el concepto <strong>".$itemConcepto['descripcion']."</strong>";
-                        $mensaje .= "este relacionado a un servicio de la empresa a facturar y con una fecha correspondiente valida.";
+                        $mensaje .= " este relacionado a un servicio de la empresa a facturar y con una fecha correspondiente valida.";
                         $vs->Util()->setError(0, "error", $mensaje);
                         break;
                     }
