@@ -426,6 +426,7 @@ function GenerarComprobante(format) {
         ? "Estas a punto de generar una factura que sustituira el folio: " + $('serieAnterior').value+$('folioAnterior').value
         + ', asegurate que la información este correcta.'
         : "Realmente deseas generar un comprobante. asegurate de que lo estes generando sean con los datos correctos.";
+
     if (!confirm(message)) {
         return;
     }

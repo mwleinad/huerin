@@ -622,6 +622,7 @@ class InvoiceService extends Cfdi{
                     a.rfcId,
                     a.formaDePago,
                     a.metodoDePago,
+                    a.status,
                     b.noCuenta,
                     b.contractId,
                     b.facturador,
@@ -654,7 +655,15 @@ class InvoiceService extends Cfdi{
             $this->Util()->DB()->setQuery($sql);
             $serieId = $this->Util()->DB()->GetSingle();
             $row['setTipoComprobante'] = $row['tiposComprobanteId']."-".$serieId;
+
+            //pending_cfdi_cancel si tiene un registro esta en proceso de cancelacion.
+            $sqlp = "SELECT count(*) FROM pending_cfdi_cancel WHERE cfdi_id= '".$row['comprobanteId']."' ";
+            $this->Util()->DB()->setQuery($sqlp);
+            $existProceso = $this->Util()->DB()->GetSingle();
+            if($existProceso > 0)
+                $row['status'] = '0';
         }
+
 
         return $row;
     }
@@ -673,7 +682,11 @@ class InvoiceService extends Cfdi{
         $row = $this->getInfoInvoiceByFolio($serie, $folio);
         if(!$row)
             $this->Util()->setError(0, 'error', 'No se encontro información con los datos proporcionados, verifique si la factura esta activa.');
+        else {
+            if($row['status'] == '0')
+                $this->Util()->setError(0, 'error', 'La factura ya se encuentra cancelada o en proceso de cancelación.');
 
+        }
         if($this->Util()->PrintErrors())
           return false;
 
@@ -712,10 +725,41 @@ class InvoiceService extends Cfdi{
                 $claveProdServ =  trim($item['claveSat']);
             else
                 $claveProdServ =  84111500;
+            // si es factura anterior a mes feb 2022 intentar encontrar los servicios por nombre
+            if($row['fecha '] < '2022-02-01' && (int)$item['servicioId'] <= 0) {
+                $descripcion_explode = explode('correspondiente', strtolower($item['descripcion']));
+                $nombre_serv_extract = trim($descripcion_explode[0]);
 
+                //revisar empresa si presta datos para facturacion
+                $sqlRev = "select contractId from contract where alternativeRzId = '".$row['userId']."' 
+                   and createSeparateInvoice = 0 and useAlternativeRzForInvoice = 1 ";
+                $this->Util()->DB()->setQuery($sqlRev);
+                $res = $this->Util()->DB()->GetResult();
+
+                $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
+                $strId  =  implode(',', $childs);
+                $sql    = "SELECT a.servicioId FROM (
+                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                                INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
+                            WHERE a.contractId ='".$item['userId']."' AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
+                            ORDER BY a.servicioId DESC LIMIT 1 ";
+                $this->Util()->DB()->setQuery($sql);
+                $idServ = $this->Util()->DB()->GetSingle();
+                if((int)$idServ <= 0 && count($childs) > 0) {
+                    $sql    = "SELECT a.servicioId FROM (
+                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                                INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
+                            WHERE a.contractId IN(".$strId.") AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
+                            ORDER BY a.servicioId DESC LIMIT 1 ";
+                    $this->Util()->DB()->setQuery($sql);
+                    $idServ = $this->Util()->DB()->GetSingle();
+                }
+                $idServicio = $idServ;
+            } else
+                $idServicio = $item['servicioId'];
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
-            $cad["servicioId"] = $item["servicioId"];
+            $cad["servicioId"] = $idServicio;
             $cad["fechaCorrespondiente"] = $item['fechaCorrespondiente'];
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
