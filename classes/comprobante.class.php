@@ -874,7 +874,7 @@ class Comprobante extends Producto
         $motivoSat      = '02';
         $folioAnterior  = strtoupper($row['serie'].$row['folio']);
         $nombreEmpresa  = strtoupper($row['name']);
-        $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio '.strtoupper($rowActual['serie'].$rowActual['folio']);;
+        $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio <strong>'.strtoupper($rowActual['serie'].$rowActual['folio']).'</strong>';
         $uuidToCancel   = "";
 
         $xmlReaderService = new XmlReaderService;
