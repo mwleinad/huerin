@@ -593,6 +593,10 @@ class InvoiceService extends Cfdi{
         $_SESSION["conceptos"] = $this->GenerateConceptos();
         $this->GenerateArrayData();
         $this->data['parent'] =  $beforeData['comprobanteId'];
+        // aseguramos que se genere con relacion tipo 04 y pasar el identificador del cfdi relacionado para que
+        //en el xml la inserte.
+        $this->data['cfdiRelacionadoId'] = $beforeData['comprobanteId'];
+        $this->data['tipoRelacion'] = '04';
         $idComprobante = $this->Generar($this->data, false, false);
         if(!$idComprobante){
             $this->Util()->setError(0, 'error', 'Error al generar factura, intente nuevamente.');
