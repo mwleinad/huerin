@@ -211,7 +211,12 @@ class InvoiceService extends Cfdi{
                    $realDate =  $item['inicioFactura'];
                    $fecha_tope =  $item['inicioFactura'];
                } else {
-                   $fechas = $this->getRangoFechaByPeriodicidad($item['periodicidad'], $firstDayInicioFactura);
+                    $currentPeriodicidad = $item['periodicidad'];
+                    // rifs es bimestral pero factura se genera mensual.
+                   if($item["tipoServicioId"] == RIF||$item["tipoServicioId"] == RIFAUDITADO)
+                       $currentPeriodicidad = 'mensual';
+
+                   $fechas = $this->getRangoFechaByPeriodicidad($currentPeriodicidad, $firstDayInicioFactura);
                    $fecha_tope = end($fechas);
                    $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
                }
