@@ -874,7 +874,7 @@ class Comprobante extends Producto
         $motivoSat      = '02';
         $folioAnterior  = strtoupper($row['serie'].$row['folio']);
         $nombreEmpresa  = strtoupper($row['name']);
-        $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio '.strtoupper($rowActual['serie'].$rowActual['folio']);;
+        $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio <strong>'.strtoupper($rowActual['serie'].$rowActual['folio']).'</strong>';
         $uuidToCancel   = "";
 
         $xmlReaderService = new XmlReaderService;
@@ -933,7 +933,7 @@ class Comprobante extends Producto
             $subjectPrefix  = FROM_FACTURA === 'test' ? "CANCELACION EN TEST DE " : "CANCELACION DE ";
             $subject = $subjectPrefix.$row['tipoDocumento']." ".$folioAnterior;
             $body .="<div style='width: 600px;text-align: justify'>";
-            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion de la factura con folio ".$folioAnterior." de la empresa ".$nombreEmpresa." </p>";
+            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion de la factura con folio <strong>".$folioAnterior."</strong> de la empresa <strong>".$nombreEmpresa."</strong> </p>";
             $body .="<p>Por el siguiente motivo:</p>";
             $body .="<p><b>".$motivoCancel."</b></p>";
             $body .="</div>";

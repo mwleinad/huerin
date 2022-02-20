@@ -714,7 +714,7 @@ class Empresa extends Main
             $subjectPrefix  = FROM_FACTURA === 'test' ? "CANCELACION EN TEST DE " : "CANCELACION DE ";
             $subject = $subjectPrefix.$row['tipoDocumento']." ".$row['serie'].$row['folio'];
             $body .="<div style='width: 600px;text-align: justify'>";
-            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion ".$row['tipoDocumento']." con folio ".$row['serie'].$row['folio']." de la razon social $razon </p>";
+            $body .="<p>El colaborador ".$currentUser['name']." ha realizado la cancelacion ".$row['tipoDocumento']." con folio <strong>".$row['serie'].$row['folio']."</strong> de la razon social <strong>".strtoupper($row['name'])."</strong> </p>";
             $body .="<p>Por el siguiente motivo:</p>";
             $body .="<p><b>".$motivo_cancelacion."</b></p>";
             $body .="</div>";
