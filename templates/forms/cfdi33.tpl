@@ -390,6 +390,7 @@
             {/if}
         <div class="formLineFact">
             <div class="colDiv300">Fecha correspondiente a facturar</div>
+            <div class="colDiv300 divVincularToServicio">Vincular concepto a servicio de empresa</div>
             <div style="clear:both"></div>
         </div>
       <div class="formLineFact">
@@ -400,6 +401,13 @@
                    value=""
                    class="largeInput"
                    placeholder="Fecha correspondiente"
+            />
+        </div>
+        <div class="colDiv300 divVincularToServicio">
+            <input name="vincularToServicio"
+                   id="vincularToServicio"
+                   type="checkbox"
+                   class="largeInput"
             />
         </div>
         <div style="clear:both"></div>

@@ -40,6 +40,20 @@ class Cfdi extends Comprobante
         if(count($_SESSION["conceptos"]) < 1) {
             $vs->Util()->setError(10040, "error", "Debe agregar por lo menos un concepto");
         }
+        // validar aca que si es modo factura 2  todos deben traer un servicio ligado
+        if(isset($data['modo_factura'])) {
+            if((int)$data['modo_factura'] === 2){
+                foreach($_SESSION['conceptos'] as $itemConcepto) {
+                    if((int)$itemConcepto['servicioId'] <= 0 ||
+                        !$vs->Util()->isValidateDate($itemConcepto['fechaCorrespondiente'], 'Y-m-d')) {
+                        $mensaje  = "Asegurate que el concepto <strong>".$itemConcepto['descripcion']."</strong>";
+                        $mensaje .= " este relacionado a un servicio de la empresa a facturar y con una fecha correspondiente valida.";
+                        $vs->Util()->setError(0, "error", $mensaje);
+                        break;
+                    }
+                }
+            }
+        }
 
         if($data["fechaSobre"] != "") {
             $vs->Util()->ValidateString($data["fechaSobre"], 10, 10, "Fecha Factura");
@@ -59,6 +73,11 @@ class Cfdi extends Comprobante
                 $folioAnterior = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
                 if (!$folioAnterior)
                     $vs->Util()->setError(10040, "error", "La factura con folio : " . $serifolioanterior . " no se encuentra en el sistema.");
+                else {
+                    // Aseguramos que la factura a crear por sustitucion se genera con cfdi relacionado de tipo 04
+                    $data['cfdiRelacionadoId'] = $folioAnterior;
+                    $data['tipoRelacion'] = '04';
+                }
             }
         }
 
@@ -442,12 +461,6 @@ class Cfdi extends Comprobante
                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
            }
         }
-        if(isset($data['modo_factura'])) {
-            if ($data['modo_factura'] == 2 && $idParent) {
-                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
-            }
-        }
-
         if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()))
         {
             //insert conceptos
@@ -489,7 +502,11 @@ class Cfdi extends Comprobante
             }
 
         }
-
+        if(isset($data['modo_factura'])) {
+            if ($data['modo_factura'] == 2 && $idParent) {
+                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
+            }
+        }
         // condicionar el envio de correo.
         if ($sendCorreo) {
             $razon = new Razon;

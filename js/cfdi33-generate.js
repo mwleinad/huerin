@@ -112,6 +112,7 @@ function FillConceptoData() {
                 $('nombreServicioOculto').value = splitResponse[0];
                 $('unidad').value = splitResponse[2];
                 $('loadingDivConcepto').innerHTML = '';
+                jQ('form#conceptoForm .divVincularToServicio').show()
                 UpdateValorUnitarioConIva();
             },
             onFailure: function () {
@@ -165,6 +166,7 @@ function FillDatosFacturacion(id) {
                 var useServiceConcept = confirm(' ¿ Desea cargar los sevicios facturables de esta empresa como conceptos?');
                 if (useServiceConcept)
                     loadConceptosFromServices();
+                CancelarConcepto();
 
             },
             onFailure: function () {
@@ -203,14 +205,15 @@ function UpdateIepsConcepto() {
 }
 
 function AgregarConcepto() {
-    var descripcion = $("descripcion").value;
+    /*var descripcion = $("descripcion").value;
     descripcion = descripcion.replace("+", "[%]MAS[%]");
+    var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
     $("descripcion").value = descripcion;
-    $('conceptos').innerHTML = '<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>';
+
     new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
         {
             method: 'post',
-            parameters: $('conceptoForm').serialize(true),
+            parameters: $('conceptoForm').serialize(true) + '&userId=' + idContractToFactura,
             onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("|");
@@ -225,6 +228,7 @@ function AgregarConcepto() {
                 $('conceptoForm').reset()
                 $('agregarConceptoDivSpan').innerHTML = 'Agregar'
                 jQ('form#conceptoForm #conceptoId').val('')
+                jQ('form#conceptoForm .divVincularToServicio').show()
                 AddBorrarConceptoListeners(elements);
                 UpdateTotalesDesglosados();
             },
@@ -232,11 +236,54 @@ function AgregarConcepto() {
                 alert('Something went wrong...')
             }
         });
+*/
+    var descripcion = jQ("form#conceptoForm #descripcion").val();
+    descripcion = descripcion.replace("+", "[%]MAS[%]");
+    var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
+    jQ("#descripcion").val(descripcion);
+    var formData = new FormData(document.getElementById("conceptoForm"));
+    formData.append('userId', idContractToFactura)
+    if(jQ('#vincularToServicio').is(':checked') && idContractToFactura === '') {
+        alert('Elija una razon social, si pretende vincular el concepto.')
+        return
+    }
+
+    jQ.ajax({
+        url: WEB_ROOT + '/ajax/cfdi33.php',
+        type: 'post',
+        contentType: false,
+        processData: false,
+        data: formData,
+        beforeSend: function () {
+            jQ('#conceptos').html('<div align="center"><img src="' + WEB_ROOT + '/images/load.gif" /></div>')
+        },
+        success: function (response) {
+            var splitResponse = response.split("|");
+            if (splitResponse[0] === "fail") {
+                jQ('#divStatus').html(splitResponse[1])
+                jQ('#centeredDiv').show();
+                grayOut(true);
+            }
+            jQ('#conceptos').html(splitResponse[2])
+            var elements = $$('span.linkBorrar');
+            $('conceptoForm').reset()
+            jQ('#agregarConceptoDivSpan').html('Agregar');
+            jQ('form#conceptoForm #conceptoId').val('')
+            jQ('form#conceptoForm .divVincularToServicio').show()
+            AddBorrarConceptoListeners(elements);
+            UpdateTotalesDesglosados();
+        },
+        error: function () {
+            alert('Something went wrong...')
+        },
+    })
 }
 
 function CancelarConcepto () {
     $('conceptoForm').reset()
     jQ('form#conceptoForm #conceptoId').val('')
+    jQ('form#conceptoForm .divVincularToServicio').val('')
+    jQ('form#conceptoForm  #nombreServicioOculto').val('')
 }
 
 function AgregarImpuesto() {
@@ -305,6 +352,10 @@ function CargarConcepto(index) {
                 jQ('form#conceptoForm  #c_ClaveUnidad').val(response.claveUnidad)
                 jQ('form#conceptoForm  #descripcion').val(response.descripcion)
                 jQ('form#conceptoForm  #fechaCorrespondiente').val(response.fechaCorrespondiente)
+                jQ('form#conceptoForm  #nombreServicioOculto').val(response.nombreServicioOculto)
+                parseInt(response.servicioId) > 0
+                    ? jQ('form#conceptoForm  .divVincularToServicio').hide()
+                    : jQ('form#conceptoForm  .divVincularToServicio').show()
                 jQ('#agregarConceptoDivSpan').html('Actualizar')
             }
         }
@@ -375,6 +426,7 @@ function GenerarComprobante(format) {
         ? "Estas a punto de generar una factura que sustituira el folio: " + $('serieAnterior').value+$('folioAnterior').value
         + ', asegurate que la información este correcta.'
         : "Realmente deseas generar un comprobante. asegurate de que lo estes generando sean con los datos correctos.";
+
     if (!confirm(message)) {
         return;
     }
@@ -657,6 +709,18 @@ jQ(function() {
             jQ('.sustitucionInvoice').addClass('noShow')
             jQ('#parent').val('')
         }
+        // por cada cambio en el seleccionable limpiar conceptos.
+        jQ.ajax({
+                url:WEB_ROOT+'/ajax/cfdi33.php',
+                type:'post',
+                data:{type:'clenAllConcepto'},
+                success:function () {
+                    jQ('#conceptos').html('Ninguno (Has click en Agregar para agregar un concepto)')
+                    CancelarConcepto()
+                    UpdateTotalesDesglosados();
+                }
+            }
+        )
     })
     jQ(document).on('click', '#btnLoadDataBefore', function () {
         var $serie =  jQ('#serieAnterior').val();
@@ -669,6 +733,7 @@ jQ(function() {
                 beforeSend: function () {
                     jQ('#loading-cargar-dato').show()
                     jQ('#btnLoadDataBefore').hide()
+                    $('conceptoForm').reset()
                 },
                 success:function (response) {
                     jQ('#loading-cargar-dato').hide()

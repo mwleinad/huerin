@@ -211,7 +211,12 @@ class InvoiceService extends Cfdi{
                    $realDate =  $item['inicioFactura'];
                    $fecha_tope =  $item['inicioFactura'];
                } else {
-                   $fechas = $this->getRangoFechaByPeriodicidad($item['periodicidad'], $firstDayInicioFactura);
+                    $currentPeriodicidad = $item['periodicidad'];
+                    // rifs es bimestral pero factura se genera mensual.
+                   if($item["tipoServicioId"] == RIF||$item["tipoServicioId"] == RIFAUDITADO)
+                       $currentPeriodicidad = 'mensual';
+
+                   $fechas = $this->getRangoFechaByPeriodicidad($currentPeriodicidad, $firstDayInicioFactura);
                    $fecha_tope = end($fechas);
                    $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
                }
@@ -612,7 +617,7 @@ class InvoiceService extends Cfdi{
      * Funciones para sustitucion manual
      */
     function getInfoInvoiceByFolio ($serie, $folio) {
-       $sql  = "SELECT 
+      $sql  = "SELECT 
                     a.comprobanteId, 
                     date_format(a.fecha, '%Y-%m-%d') fecha,
                     a.serie,
@@ -622,6 +627,7 @@ class InvoiceService extends Cfdi{
                     a.rfcId,
                     a.formaDePago,
                     a.metodoDePago,
+                    a.status,
                     b.noCuenta,
                     b.contractId,
                     b.facturador,
@@ -643,8 +649,8 @@ class InvoiceService extends Cfdi{
                     b.address calle
                  FROM comprobante a
                  INNER JOIN contract b ON a.userId = b.contractId
-                 WHERE a.serie = '".trim($serie)."' AND a.folio = '".trim($folio)."' 
-                 AND  a.tiposComprobanteId = '1' AND a.status ='1'  
+                 WHERE lower(a.serie) = '".strtoupper(trim($serie))."' AND a.folio = '".trim($folio)."' 
+                 AND  a.tiposComprobanteId = '1' 
                  ";
 
         $this->Util()->DB()->setQuery($sql);
@@ -654,7 +660,15 @@ class InvoiceService extends Cfdi{
             $this->Util()->DB()->setQuery($sql);
             $serieId = $this->Util()->DB()->GetSingle();
             $row['setTipoComprobante'] = $row['tiposComprobanteId']."-".$serieId;
+
+            //pending_cfdi_cancel si tiene un registro esta en proceso de cancelacion.
+            $sqlp = "SELECT count(*) FROM pending_cfdi_cancel WHERE cfdi_id= '".$row['comprobanteId']."' ";
+            $this->Util()->DB()->setQuery($sqlp);
+            $existProceso = $this->Util()->DB()->GetSingle();
+            if($existProceso > 0)
+                $row['status'] = '0';
         }
+
 
         return $row;
     }
@@ -673,10 +687,15 @@ class InvoiceService extends Cfdi{
         $row = $this->getInfoInvoiceByFolio($serie, $folio);
         if(!$row)
             $this->Util()->setError(0, 'error', 'No se encontro información con los datos proporcionados, verifique si la factura esta activa.');
+        else {
+            if($row['status'] == '0')
+                $this->Util()->setError(0, 'error', 'La factura ya se encuentra cancelada o en proceso de cancelación.');
 
+        }
         if($this->Util()->PrintErrors())
           return false;
 
+        $tipoInner = $row['fecha'] >= '2022-02-01' ? " INNER JOIN " : " LEFT JOIN ";
         $sql = "SELECT sa.`cantidad`,
 						sa.`unidad`,
 						sa.`noIdentificacion`,
@@ -692,11 +711,12 @@ class InvoiceService extends Cfdi{
                         sb.claveSat,
                         sb.tipoServicioId
 				FROM concepto sa
-                INNER JOIN (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
+                ".$tipoInner." (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
                             INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
                 ON sa.servicioId = sb.servicioId
                 WHERE sa.comprobanteId = '".$row['comprobanteId']."'
 				";
+
         $this->Util()->DB()->setQuery($sql);
         $dataConceptos = $this->Util()->DB()->GetResult();
         $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
@@ -710,10 +730,43 @@ class InvoiceService extends Cfdi{
                 $claveProdServ =  trim($item['claveSat']);
             else
                 $claveProdServ =  84111500;
+            // si es factura anterior a mes feb 2022 intentar encontrar los servicios por nombre
+            if($row['fecha '] < '2022-02-01' && (int)$item['servicioId'] <= 0) {
+                $descripcion_explode = explode('correspondiente', strtolower($item['descripcion']));
+                $nombre_serv_extract = trim($descripcion_explode[0]);
 
+                //revisar empresa si presta datos para facturacion
+                $sqlRev = "select contractId from contract where alternativeRzId = '".$row['userId']."' 
+                   and createSeparateInvoice = 0 and useAlternativeRzForInvoice = 1 ";
+                $this->Util()->DB()->setQuery($sqlRev);
+                $res = $this->Util()->DB()->GetResult();
+
+                $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
+                $strId  =  implode(',', $childs);
+                $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
+                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                                INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
+                            WHERE a.contractId ='".$item['userId']."' AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
+                            ORDER BY a.servicioId DESC LIMIT 1 ";
+                $this->Util()->DB()->setQuery($sql);
+                $rowFind = $this->Util()->DB()->GetRow();
+                if(!$rowFind && count($childs) > 0) {
+                    $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
+                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                                INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
+                            WHERE a.contractId IN(".$strId.") AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
+                            ORDER BY a.servicioId DESC LIMIT 1 ";
+                    $this->Util()->DB()->setQuery($sql);
+                    $rowFind = $this->Util()->DB()->GetRow();
+                }
+                if($rowFind) {
+                    $item['servicioId'] = $rowFind['servicioId'];
+                    $item['nombreServicio'] = $rowFind['nombreServicio'];
+                }
+            }
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
-            $cad["servicioId"] = $item["servicioId"];
+            $cad["servicioId"] = $item['servicioId'];
             $cad["fechaCorrespondiente"] = $item['fechaCorrespondiente'];
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
@@ -721,7 +774,8 @@ class InvoiceService extends Cfdi{
             $cad["importe"] = $item["valorUnitario"];
             $cad["excentoIva"] = "no";
             $cad["nombreServicio"] = $item['nombreServicio'];
-            $cad["descripcion"] = $descripcion;
+            $cad["nombreServicioOculto"] = $item['nombreServicio'];
+            $cad["descripcion"] = $row['fecha'] >= '2022-02-01' ? $descripcion : $item['descripcion'];
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;
             $cad["claveUnidad"] = "E48";

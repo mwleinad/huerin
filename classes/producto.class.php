@@ -273,14 +273,22 @@ class Producto extends Sucursal
 		global $months;
 		if($this->Util()->PrintErrors())
 			return false;
+
 		end($_SESSION["conceptos"]);
 		$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
+		if($key >= 0) {
+			if($_SESSION["conceptos"][$conceptos]["noIdentificacion"] != $this->noIdentificacion)
+				if(isset($_SESSION["conceptos"][$conceptos]["servicioId"]))
+					unset($_SESSION["conceptos"][$conceptos]["servicioId"]);
+
+		}
 		$_SESSION["conceptos"][$conceptos]["noIdentificacion"] = $this->noIdentificacion;
 		$_SESSION["conceptos"][$conceptos]["cantidad"] = $this->cantidad;
 		$_SESSION["conceptos"][$conceptos]["unidad"] = $this->unidad;
 		$_SESSION["conceptos"][$conceptos]["valorUnitario"] = $this->valorUnitario;
 		$_SESSION["conceptos"][$conceptos]["importe"] = $this->importe;
 		$_SESSION["conceptos"][$conceptos]["excentoIva"] = $this->excentoIva;
+		$_SESSION["conceptos"][$conceptos]["nombreServicioOculto"] = $_POST["nombreServicioOculto"];
 		if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
 			$fecha = explode("-", $this->fechaCorrespondiente);
 			$fechaText = strtoupper($months[$fecha[1]]." DEL ".$fecha["0"]);
@@ -293,6 +301,20 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
 		$_SESSION["conceptos"][$conceptos]["claveUnidad"] = $this->claveUnidad;
 		$_SESSION["conceptos"][$conceptos]["fechaCorrespondiente"] = $this->fechaCorrespondiente;
+		if(isset($_POST['vincularToServicio'])) {
+			$sql ="SELECT servicioId FROM servicio 
+				   WHERE tipoServicioId = '".$this->noIdentificacion."' 
+				   AND contractId='".$_POST['userId']."'
+				   AND status IN ('activo', 'bajaParcial') ";
+			$this->Util()->DB()->setQuery($sql);
+			$servicioExiste = $this->Util()->DB()->GetSingle();
+			if((int)$servicioExiste > 0) {
+				$_SESSION["conceptos"][$conceptos]["servicioId"] = (int)$servicioExiste;
+			} else{
+				if(isset($_SESSION["conceptos"][$conceptos]["servicioId"]))
+					unset($_SESSION["conceptos"][$conceptos]["servicioId"]);
+			}
+		}
 		return true;
 	}
 
