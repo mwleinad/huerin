@@ -261,6 +261,9 @@
                 {if $User.isRoot}
                     <li><a href="{$WEB_ROOT}/utileria" {if $includedTpl == "utileria"} class="current"{/if} target="_blank"><span>Herramientas y utilerias</span></a></li>
                 {/if}
+                {if in_array(56,$permissions) || $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/mantenimiento" {if $includedTpl == "mantenimiento"} class="current"{/if} target="_blank"><span>Mantenimiento de workflows</span></a></li>
+                {/if}
             {/if}
        </ul>
       {/if}
