@@ -241,6 +241,7 @@ if($info["moduloNomina"] == "Si")
 
 $ivaSistema = $subtotalSistema * IVA;
 $totalSistema = $subtotalSistema + $ivaSistema;
+$smarty->assign('mainMnu','invoices');
 $smarty->assign('subtotalSistema', $subtotalSistema);
 $smarty->assign('ivaSistema', $ivaSistema);
 $smarty->assign('totalSistema', $totalSistema);

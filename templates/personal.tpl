@@ -11,7 +11,7 @@
       <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
     {/if}
     {if in_array(12,$permissions) || $User.isRoot}
-      <a href="javascript:void(0)" class="inline_add" id="addPersonal">Agregar Contador</a>
+      <a href="javascript:void(0)" class="inline_add" id="addPersonal">Agregar Empleado</a>
     {/if}
     <div id="loadPrint">
     </div>

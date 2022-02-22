@@ -239,5 +239,5 @@
 
 //	$cliente->GetCountClientesByActiveRfc();
 	$smarty->assign('countClientes', 1);
-	$smarty->assign('mainMnu','admin-folios');
+	$smarty->assign('mainMnu','invoices');
 ?>

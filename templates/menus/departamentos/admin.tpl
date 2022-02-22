@@ -56,7 +56,7 @@
         {/if}
         {if in_array(5,$permissions)|| $User.isRoot}
         <li class="item middle" id="four">
-        	<a href="{$WEB_ROOT}/{$firstPages[5]}" class="main {if $mainMnu == "admin-folios"} current{/if}" target="_blank">
+        	<a href="{$WEB_ROOT}/{$firstPages[5]}" class="main {if $mainMnu == "invoices"} current{/if}" target="_blank">
             	<span class="outer">
                 	<span class="inner invoice">Facturacion</span>
                 </span>
