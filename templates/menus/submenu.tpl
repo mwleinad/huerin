@@ -29,7 +29,7 @@
                 <li><a href="{$WEB_ROOT}/personal" {if $page == "personal"}class="current"{/if} target="_blank">
                 <span>Empleados</span></a></li>
                 {/if}
-                {if in_array(127,$permissions)|| $User.isRoot}
+                {if in_array(111,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/rol" {if $page == "rol"}class="current"{/if} target="_blank">
                      <span>Roles de usuario</span></a></li>
                 {/if}
@@ -214,17 +214,13 @@
                     <span>Estado de cuenta saldos pendientes</span></a></li>
                 {/if}
             {/if}
-            {if $page == "sistema" || $page == "reporte-sat" || $page == "cfdi33-generate" || $page == "comp-from-xml"}
+            {if $mainMnu == "invoices"}
             <ul>
               {if in_array(131,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if} target="_blank"><span>Nuevo CFDi 3.3</span></a></li>
               {/if}
               {if in_array(132,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if} target="_blank"><span>Consultar Comprobantes</span></a></li>
-              {/if}
-              {if in_array(120,$permissions) || $User.isRoot}
-              <li><a href="{$WEB_ROOT}/comp-from-xml" {if $page == "comp-from-xml"}class="current"{/if} target="_blank">
-                    <span>Complemento de pago desde xml</span></a></li>
               {/if}
             </ul>
             {/if}
