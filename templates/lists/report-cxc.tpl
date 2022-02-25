@@ -2,6 +2,7 @@
 <thead>
 	<tr>
 		<th align="center" width="60"></th>
+		<th align="center" width="60">RFC</th>
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Nombre</th>
 		<th align="center" width="60">Facturador</th>
@@ -20,6 +21,7 @@
 			<span style="color: blue;" id="color_{$smarty.foreach.totales.iteration}">[+]</span>
 		</div>
     </td>
+	<td style="background: #9fd39c; text-align: center;" class="" title="{$cxc.rfc}">{$cxc.rfc}</td>
     <td style="background: #9fd39c; text-align: center;" class="" title="{$cxc.nameContact}">{$cxc.nameContact}</td>
     <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.nombre}">{$key}</td>
     <td  style="background: #9fd39c; text-align: center;" class="" title="{$cxc.responsable.name}">{$cxc.facturador}</td>
@@ -84,7 +86,7 @@
 	{/foreach}
 {foreachelse}
 <tr>
-	<td colspan="8" align="center">Ning&uacute;n registro encontrado.</td>
+	<td colspan="9" align="center">Ning&uacute;n registro encontrado.</td>
 </tr>
 {/foreach}
 </tbody>
