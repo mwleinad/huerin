@@ -56,7 +56,8 @@ $x .=
 	<thead>
         <tr>
             <th style=\"background:#E0E5E7;text-align:left\"><b></b></th>
-             <th style=\"background:#E0E5E7;text-align:left\"><b>CLIENTE</b></th>
+            <th style=\"background:#E0E5E7;text-align:left\"><b>RFC</b></th>
+            <th style=\"background:#E0E5E7;text-align:left\"><b>CLIENTE</b></th>
             <th style=\"background:#E0E5E7;text-align:left\"><b>NOMBRE</b></th>
             <th style=\"background:#E0E5E7;text-align:left\"><b>FACTURADOR</b></th>
             <th style=\"background:#E0E5E7;text-align:left\"><b>SALDO INICIAL</b></th>
@@ -75,6 +76,7 @@ foreach($totales as $key=>$cxc){
                     <span style=\"color:blue\">[+]</span>
                 </div>
             </td>
+            <td style='background-color: #9fd39c;color: #0f0f0f'>".$cxc['rfc']."</td>
              <td style='background-color: #9fd39c;color: #0f0f0f'>".$cxc['nameContact']."</td>
              <td style='background-color: #9fd39c;color: #0f0f0f'>".$key."</td>
              <td style='background-color: #9fd39c;color: #0f0f0f'>".$cxc['facturador']."</td>
@@ -132,7 +134,7 @@ foreach($totales as $key=>$cxc){
        } else{
            $x .="<tr>
                     <td colspan=\"2\"></td>
-                    <td colspan=\"5\" align='center'>No existe movimientos de pagos para esta factura.</td>
+                    <td colspan=\"6\" align='center'>No existe movimientos de pagos para esta factura.</td>
                 </tr>";
        }
 
