@@ -51,36 +51,10 @@
             </div>
         </td>
             <td align="center">
-                <select name="year" id="year"  class="smallInput"  style="min-width:60px">
-                    <option value="" selected="selected">Todos</option>
-                    <option value="2012" {if $year == "2012"} selected="selected" {/if}>2012</option>
-                    <option value="2013" {if $year == "2013"} selected="selected" {/if}>2013</option>
-                    <option value="2014" {if $year == "2014"} selected="selected" {/if}>2014</option>
-                    <option value="2015" {if $year == "2015"} selected="selected" {/if}>2015</option>
-                    <option value="2016" {if $year == "2016"} selected="selected" {/if}>2016</option>
-                    <option value="2017" {if $year == "2017"} selected="selected" {/if}>2017</option>
-                    <option value="2018" {if $year == "2018"} selected="selected" {/if}>2018</option>
-                    <option value="2019" {if $year == "2019"} selected="selected" {/if}>2019</option>
-                    <option value="2020" {if $year == "2020"} selected="selected" {/if}>2020</option>
-                </select>
-
+              {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
             </td>
             <td>
-                <select name="month" id="month"  class="smallInput"  style="min-width:100px">
-                    <option value="" selected="selected">Todos</option>
-                    <option value="1" {if $month == "1"} selected="selected" {/if}>Enero</option>
-                    <option value="2" {if $month == "2"} selected="selected" {/if}>Febrero</option>
-                    <option value="3" {if $month == "3"} selected="selected" {/if}>Marzo</option>
-                    <option value="4" {if $month == "4"} selected="selected" {/if}>Abril</option>
-                    <option value="5" {if $month == "5"} selected="selected" {/if}>Mayo</option>
-                    <option value="6" {if $month == "6"} selected="selected" {/if}>Junio</option>
-                    <option value="7" {if $month == "7"} selected="selected" {/if}>Julio</option>
-                    <option value="8" {if $month == "8"} selected="selected" {/if}>Agosto</option>
-                    <option value="9" {if $month == "9"} selected="selected" {/if}>Septiembre</option>
-                    <option value="10" {if $month == "10"} selected="selected" {/if}>Octubre</option>
-                    <option value="11" {if $month == "11"} selected="selected" {/if}>Noviembre</option>
-                    <option value="12" {if $month == "12"} selected="selected" {/if}>Diciembre</option>
-                </select>
+                {include file="{$DOC_ROOT}/templates/forms/comp-filter-month.tpl" nameField='month' clase='largeInput' all=true}
             </td>
             <td align="center">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="button_grey" id="btnAddCity" onclick="BuscarServiciosActivos()"><span>Buscar</span></a>

@@ -174,8 +174,8 @@ class CxC extends Producto
 
       $innerPer .=" inner join contractPermiso p ON co.contractId=p.contractId AND p.personalId IN (".implode(',',$values['respCuenta']).") ";
 
-      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,co.facturador,co.contractId
-                 from comprobante cm
+      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,
+                       co.facturador,co.contractId, co.rfc from comprobante cm
                  inner join contract co ON cm.userId=co.contractId $ffact
                  $innerPer
                  inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
@@ -190,6 +190,7 @@ class CxC extends Producto
             $card['serie']=$val['serie'];
             $card['folio']=$val['folio'];
             $card['nameContact']=$val['nameContact'];
+            $card['rfc']=$val['rfc'];
             $card['nombre']=$val['name'];
             $card['contractId']=$val['contractId'];
             $card['fecha'] = date('Y/m/d',strtotime($val['fecha']));
