@@ -43,6 +43,7 @@ foreach($listCxc['items'] as $key => $value)
     $totales[$value['nombre']]['payment']=$totales[$value['nombre']]['payment']+$value['payment'];
     $totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$value['saldo'];
     $totales[$value['nombre']]['nameContact']=$value['nameContact'];
+    $totales[$value['nombre']]['rfc']=$value['rfc'];
     $totales[$value['nombre']]['facturador']=$value['facturador'];
     $totales[$value['nombre']]['facturas'][]=$value;
     if(!in_array($value['contractId'],$contratos)){
