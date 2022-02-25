@@ -251,6 +251,36 @@ switch ($_POST["type"]) {
         if(isset($_SESSION['conceptos']))
             unset($_SESSION['conceptos']);
     break;
+    case 'modalRelacionEmpresa':
+
+        $key      = $_POST['id'];
+        $id_contrato = $_POST['contract'];
+        $data = $_SESSION['conceptos'][$key];
+        if(!$data) {
+            $util->setError(0, 'error', 'No se encontro información');
+            $util->PrintErrors();
+            echo "fail|";
+            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+
+        } else {
+            echo "ok|";
+            $serviciosEncontrados = $invoiceService->getListaCoincidenciaServicioContrato($data['noIdentificacion'], $id_contrato);
+            $data_send['title'] = 'Servicios encontrados';
+            $data_send['form'] = 'frm-coincidencia-servicio-encontrado';
+            $smarty->assign('servicios', $serviciosEncontrados);
+            $smarty->assign('data', $data_send);
+            $smarty->assign('current', $data);
+            $smarty->assign('key_concepto', $key);
+            $smarty->display(DOC_ROOT . '/templates/boxes/general-popup.tpl');
+        }
+    break;
+    case 'updateRelationToContract':
+        $key      = $_POST['key_concepto'];
+        $_SESSION['conceptos'][$key]['servicioId'] = $_POST['correct_service_id'];
+        $util->setError(0, 'complete', 'Relación actualizada correctamente');
+        $util->PrintErrors();
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+    break;
 }
 
 ?>

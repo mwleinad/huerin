@@ -205,38 +205,6 @@ function UpdateIepsConcepto() {
 }
 
 function AgregarConcepto() {
-    /*var descripcion = $("descripcion").value;
-    descripcion = descripcion.replace("+", "[%]MAS[%]");
-    var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
-    $("descripcion").value = descripcion;
-
-    new Ajax.Request(WEB_ROOT + '/ajax/cfdi33.php',
-        {
-            method: 'post',
-            parameters: $('conceptoForm').serialize(true) + '&userId=' + idContractToFactura,
-            onSuccess: function (transport) {
-                var response = transport.responseText || "no response text";
-                var splitResponse = response.split("|");
-
-                if (splitResponse[0] == "fail") {
-                    $('divStatus').innerHTML = splitResponse[1];
-                    $('centeredDiv').show();
-                    grayOut(true);
-                }
-                $('conceptos').innerHTML = splitResponse[2];
-                var elements = $$('span.linkBorrar');
-                $('conceptoForm').reset()
-                $('agregarConceptoDivSpan').innerHTML = 'Agregar'
-                jQ('form#conceptoForm #conceptoId').val('')
-                jQ('form#conceptoForm .divVincularToServicio').show()
-                AddBorrarConceptoListeners(elements);
-                UpdateTotalesDesglosados();
-            },
-            onFailure: function () {
-                alert('Something went wrong...')
-            }
-        });
-*/
     var descripcion = jQ("form#conceptoForm #descripcion").val();
     descripcion = descripcion.replace("+", "[%]MAS[%]");
     var idContractToFactura =  jQ('form#nuevaFactura #userId').val()
@@ -385,7 +353,7 @@ function BorrarImpuesto(e, id) {
 function AddBorrarConceptoListeners(elements) {
     elements.each(
         function (e) {
-            var id = $(e).up(0).previous(7).innerHTML;
+            var id = $(e).up(0).previous(7).id;
             Event.observe(e, "click", function (e) {
                 BorrarConcepto(e, id);
             });
@@ -669,8 +637,43 @@ Event.observe(window, 'load', function () {
 function regresarVentas() {
     alert("hola");
     window.location = WEB_ROOT + "/reporte-ventas";
+}
 
-
+function openRelacionEmpresa(id) {
+    var userId = jQ('#userId').val()
+    jQ.ajax({
+            url:WEB_ROOT+'/ajax/cfdi33.php',
+            type:'post',
+            data:{type:'modalRelacionEmpresa', id, contract:userId},
+            success:function (response) {
+                var responseSplit = response.split("|")
+                console.log(responseSplit)
+                if(responseSplit[0] == 'fail') {
+                    ShowErrorOnPopup(responseSplit[1]);
+                } else {
+                    grayOut(true);
+                    jQ('#fview').show();
+                    FViewOffSet(responseSplit[1]);
+                }
+            }
+        }
+    )
+}
+function actualizarRelacionServicio() {
+    var form = jQ(this).parents('form:first');
+    jQuery.ajax({
+        url: WEB_ROOT + '/ajax/cfdi33.php',
+        method: 'post',
+        data: form.serialize(true),
+        beforeSend: function () {
+            jQ('.spanUpdateRelation').hide();
+            jQ('#loader').show();
+        },
+        success: function (response) {
+            close_popup()
+            ShowStatusPopUp(response)
+        },
+    })
 }
 
 function EnviarEmail(id) {
@@ -695,6 +698,7 @@ function EnviarEmail(id) {
 }//EnviarEmail
 
 jQ(function() {
+    jQ(document).on('click','.spanUpdateRelation', actualizarRelacionServicio)
     jQ(document).on('change', '#modo_factura', function() {
         if(parseInt(this.value) === 1) {
             jQ('.normalInvoice').removeClass('noShow')

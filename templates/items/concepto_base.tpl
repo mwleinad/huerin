@@ -1,6 +1,13 @@
 <tr id="conceptoDiv{$key}">
-  <td {if $concepto.servicioId > 0}style="background:grey; font-weight: bold" title="Vinculado al servicio de la empresa" {/if}
-      id="conceptoBaseUserId{$key}">{$key}</td>
+  <td {if $concepto.servicioId > 0}
+        style="background:grey; font-weight: bold" title="Vinculado al servicio de la empresa" {/if}
+      id="{$key}">
+      <a href="javascript:;"
+         onclick="openRelacionEmpresa('{$key}')"
+        >
+          <img src="{$WEB_ROOT}/images/icons/planning.png">
+      </a>
+  </td>
   <td>{$concepto.cantidad|number_format:2:".":","}</td>
   <td>{$concepto.unidad}</td>
   <td>{$concepto.noIdentificacion}</td>
