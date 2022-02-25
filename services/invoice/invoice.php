@@ -750,16 +750,16 @@ class InvoiceService extends Cfdi{
 
                 $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
                 $strId  =  implode(',', $childs);
-                $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
-                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                $sql    = "SELECT a.servicioId, a.nombreServicio,a.tipoServicioId FROM (
+                                SELECT sa.servicioId,sa.contractId,sa.tipoServicioId, sb.nombreServicio FROM servicio sa
                                 INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
                             WHERE a.contractId ='".$item['userId']."' AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
                             ORDER BY a.servicioId DESC LIMIT 1 ";
                 $this->Util()->DB()->setQuery($sql);
                 $rowFind = $this->Util()->DB()->GetRow();
                 if(!$rowFind && count($childs) > 0) {
-                    $sql    = "SELECT a.servicioId, a.nombreServicio FROM (
-                                SELECT sa.servicioId,sa.contractId, sb.nombreServicio FROM servicio sa
+                    $sql    = "SELECT a.servicioId, a.nombreServicio, a.tipoServicioId FROM (
+                                SELECT sa.servicioId,sa.contractId,sa.tipoServicioId, sb.nombreServicio FROM servicio sa
                                 INNER JOIN tipoServicio sb ON sa.tipoServicioId = sb.tipoServicioId) a
                             WHERE a.contractId IN(".$strId.") AND a.nombreServicio LIKE '%".$nombre_serv_extract."%'  
                             ORDER BY a.servicioId DESC LIMIT 1 ";
@@ -769,6 +769,7 @@ class InvoiceService extends Cfdi{
                 if($rowFind) {
                     $item['servicioId'] = $rowFind['servicioId'];
                     $item['nombreServicio'] = $rowFind['nombreServicio'];
+                    $item['tipoServicioId'] = $rowFind['tipoServicioId'];
                 }
             }
             $cad = [];
@@ -793,5 +794,27 @@ class InvoiceService extends Cfdi{
         $row['conceptos'] = $conceptos;
 
         return $row;
+    }
+
+    function getListaCoincidenciaServicioContrato($tipoServicio, $contrato) {
+        $sql = "select contractId from contract where alternativeRzId = '" . $contrato . "' 
+                   and createSeparateInvoice = 0 and useAlternativeRzForInvoice = 1 ";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        $childs = $res ? $this->Util()->ConvertToLineal($res, 'contractId') : [];
+        array_push($childs, $contrato);
+        $strId  =  implode(',', $childs);
+
+        $sql  = "SELECT a.servicioId,b.name, c.nombreServicio,IF(WEEK(a.inicioFactura) is not null, date_format(a.inicioFactura, '%d-%m-%Y'), NULL) fif";
+        $sql .= ", a.status, CASE a.status WHEN 'baja' THEN 'Baja' WHEN 'readonly' THEN 'Activo solo lectura' ";
+        $sql .= "  WHEN 'activo' THEN 'Activo' WHEN 'bajaParcial' THEN 'Baja Temporal' END estatus ";
+        $sql .= ", IF(a.status ='bajaParcial', date_format(a.lastDateWorkflow, '%d-%m-%Y'), null) as lastDateWorkflow";
+        $sql .= ", IF(WEEK(a.inicioOperaciones) is not null, date_format(a.inicioOperaciones, '%d-%m-%Y'), null) fio FROM servicio a ";
+        $sql .= "INNER JOIN contract b ON a.contractId = b.contractId ";
+        $sql .= "INNER JOIN tipoServicio c ON a.tipoServicioId = c.tipoServicioId ";
+        $sql .= "WHERE a.contractId IN(".$strId.") AND a.tipoServicioId = '".$tipoServicio."' ";
+
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
     }
 }
