@@ -39,6 +39,10 @@
 	
 	$personals = $personal->Enumerate();
 	$smarty->assign("personals", $personals);
+
+    //Obtenemos los facturadores
+    $emisores = $rfc->listEmisores(false);
+    $smarty->assign("emisores", $emisores);
 	
 	if($_SESSION["search"])
 	{

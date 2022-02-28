@@ -32,13 +32,13 @@
 			<input name="deep" id="deep" type="checkbox"/>
 		</td>  
     	<td  style="width:15%; padding:0px 4px 4px 8px;" align="center">
-			<select id="facturador" class="largeInput" name="facturador">
-                    <option value="">Todos</option>
-                    <option value="BHSC">BHSC Contadores SC</option>
-                    <option value="Huerin">Braun Huerin SC</option>
-                    <option value="Braun">Jacobo Braun</option>
-                    <option value="Efectivo">Efectivo</option>
-			</select>
+            <select name="facturador" id="facturador" class="largeInput">
+                <option value="">Todos</option>
+                <option value="Efectivo">Efectivo</option>
+                {foreach from=$emisores  item=item key=key}
+                    <option value="{$item.claveFacturador}">{$item.claveFacturador}-{$item.razonSocial}</option>
+                {/foreach}
+            </select>
 		</td>
     <td style="width: 10%; padding:0px 4px 4px 8px;">
         {include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl" all=true}

@@ -158,8 +158,6 @@ class CxC extends Producto
 	  $mainFilter ="";
       if($values['facturador'])
           $ffact .="  AND co.facturador IN ('".$values['facturador']."')";
-      else
-          $ffact .= " AND co.facturador IN(".implode(',',unserialize(FACTURADOR)).")";
 
       if($values['serie'])
           $mainFilter .= "  AND cm.serie='".$values['serie']."' ";
