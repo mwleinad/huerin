@@ -167,7 +167,7 @@
         </tr>
         <tr class="border-right border-bottom">
             <td colspan="8" class="pad-left pre" style="font-family: monospace">
-                {$concepto.concepto.Descripcion|nl2br|replace:" ":"&nbsp;"|replace:"[%]MAS[%]":"+"}
+                {$concepto.concepto.Descripcion|wordwrap|nl2br|replace:" ":"&nbsp;"|replace:"[%]MAS[%]":"+"}
 
                 {if $xmlData.amortizacionData.amortizacionFiniquitoSubtotal > 0 || $xmlData.amortizacionData.amortizacion > 0}
                     <table width="100%" class="">

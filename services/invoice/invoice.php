@@ -104,25 +104,6 @@ class InvoiceService extends Cfdi{
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
-    function ProcessIfIsRif($serv,$date){
-        $mes =  (int)date('m',strtotime($date));
-        $year =  (int)date('Y',strtotime($date));
-        if($serv["tipoServicioId"] == RIF||$serv["tipoServicioId"] == RIFAUDITADO){
-            if($mes%2==0)
-                return false;
-
-            $sql ="SELECT comprobanteId FROM  comprobante WHERE procedencia='fromRifNoInstance' AND servicioId='".$serv['servicioId']."'
-                   AND YEAR(fecha)='".$year."' AND MONTH(fecha)='".$mes."' ";
-            $this->Util()->DB()->setQuery($sql);
-            $exist =  $this->Util()->DB()->GetSingle();
-            $ins["instanciaServicioId"] = 0;
-            $ins["comprobanteId"] = $exist;
-            $ins["date"] = $this->Util->getFirstDate(date("Y-m-d"));
-            $ins["isRifNoInstance"] =  true;
-            return $ins;
-        }
-         return false;
-    }
     function GetCurrentWorkflow($id,$date){
         $mes =  date('m',strtotime($date));
         $year =  date('Y',strtotime($date));
@@ -187,7 +168,7 @@ class InvoiceService extends Cfdi{
 
         array_push($childs, $id);
         $strId =  implode(',', $childs);
-        $sql = "select a.*,b.claveSat,b.nombreServicio, b.uniqueInvoice, b.periodicidad
+        $sql = "select a.*,b.claveSat,b.nombreServicio, b.uniqueInvoice, b.periodicidad,b.concepto_mes_vencido
                 from servicio a
                 inner join tipoServicio b on a.tipoServicioId = b.tipoServicioId 
                 where a.contractId in($strId) and b.status='1' 
@@ -205,10 +186,9 @@ class InvoiceService extends Cfdi{
            if($firstDayInicioFactura>$firstDayCurrentDate)
                 continue;
 
-           $fecha_tope = $firstDayCurrentDate;
+           $fecha_tope_first_day = $firstDayCurrentDate;
            if($validateInstance) {
                if (strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) {
-                   $realDate =  $item['inicioFactura'];
                    $fecha_tope =  $item['inicioFactura'];
                } else {
                     $currentPeriodicidad = $item['periodicidad'];
@@ -218,7 +198,6 @@ class InvoiceService extends Cfdi{
 
                    $fechas = $this->getRangoFechaByPeriodicidad($currentPeriodicidad, $firstDayInicioFactura);
                    $fecha_tope = end($fechas);
-                   $realDate = date('Y-m-d', strtotime($fecha_tope . " -1 month"));
                }
                $fecha_tope_first_day = $this->Util()->getFirstDate($fecha_tope);
                // que los conceptos con fechas anteriores a < 2022-02-01 ya no se generen por que se supone ya estan creadas.
@@ -228,14 +207,8 @@ class InvoiceService extends Cfdi{
                if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-02-01') {
                    continue;
                }
-               $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $realDate);
+               $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $fecha_tope_first_day);
 
-               //$instancia   = !$instancia ? $this->ProcessIfIsRif($item, date('Y-m-d')) : $instancia;
-               //if (!$instancia)
-                 //   continue;
-
-              // if((int)$instancia["comprobanteId"]>0)
-                //   continue;
                if($existFactura)
                    continue;
             }
@@ -249,12 +222,11 @@ class InvoiceService extends Cfdi{
                 continue;
            }
            // remove:: comprobar factura unica ocasion, quitar si no se seguira validando por instancia creada
+           // no deberia llegar aca los de unica ocasion, se deja de momento.
            if($this->validateIfGenerateUniqueInvoice($item))
               continue;
 
-           //$item["workflowId"] = $instancia["instanciaServicioId"];
-           $item["date"] = $fecha_tope;
-           //$item["isRifNoInstance"] = $instancia["isRifNoInstance"];
+           $item["date"] = $fecha_tope_first_day;
            $this->serviciosToConceptos[] = $item;
        }
     }
@@ -331,7 +303,7 @@ class InvoiceService extends Cfdi{
     }
 
     function GenerateConceptos($fromManual = false){
-        global $months;
+        global $monthsComplete;
         $conceptos = [];
         foreach($this->getServiciosToConceptos() as $item){
              if($item["isRifNoInstance"]&&!$this->month13){
@@ -345,17 +317,27 @@ class InvoiceService extends Cfdi{
             $iva = $item["costo"] * ($this->emisor["iva"] / 100);
             $subtotal += $item["costo"] + $iva;
 
-            if ($fromManual) {
-                $fecha_real_correspondiente = date('Y-m-d');
+
+            $fecha_real_correspondiente =(int)$item['concepto_mes_vencido'] === 1
+            ? date("Y-m-d",strtotime($item['date']." - 1 month"))
+            : $item['date'] ;
+
+            $fecha_corriente_explode = explode("-", $item['date']);
+            $fecha_explode = explode("-", $fecha_real_correspondiente);
+            if((int)$item['concepto_mes_vencido'] === 1) {
+                $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
+                $sufix = $this->month13
+                    ? " MES 13 DEL " . $fecha_explode[0]
+                    : " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = " CORRESPONDIENTES A ".$item["nombreServicio"] . "  " . $sufix;
+                $descripcion = $prefix.$descripcion;
             } else {
-                $fecha_real_correspondiente = (strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1)
-                ? $item['date']
-                : date("Y-m-d",strtotime($item['date']." - 1 month"));
+                $sufix = $this->month13
+                    ? " 13 DEL " . $fecha_explode[0] :
+                    " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = $item["nombreServicio"] . " CORRESPONDIENTE AL MES " . $sufix;
             }
 
-            $fecha = explode("-", $fecha_real_correspondiente);
-            $fechaText = $this->month13?" 13 del ".$fecha["0"]:" DE ".$months[$fecha[1]]." del ".$fecha["0"];
-            $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
                 $claveProdServ =  trim($item['claveSat']);
                 else
@@ -364,7 +346,7 @@ class InvoiceService extends Cfdi{
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
             $cad["servicioId"] = $item["servicioId"];
-            $cad["fechaCorrespondiente"] = $fecha_real_correspondiente;
+            $cad["fechaCorrespondiente"] = $item['date'];
             $cad["cantidad"] = 1;
             $cad["unidad"] = "No Aplica";
             $cad["valorUnitario"] = $item["costo"];
@@ -681,7 +663,7 @@ class InvoiceService extends Cfdi{
     }
 
     function getFullDataInvoiceByFolio($serie, $folio) {
-        global $months;
+        global $monthsComplete;
         if(!$serie)
             $this->Util()->setError(0, 'error', 'Ingrese serie');
         if($this->Util()->PrintErrors())
@@ -716,10 +698,13 @@ class InvoiceService extends Cfdi{
 						sa.`fechaCorrespondiente`,
                         sb.nombreServicio,
                         sb.claveSat,
-                        sb.tipoServicioId
+                        sb.tipoServicioId,
+                        sb.concepto_mes_vencido
 				FROM concepto sa
-                ".$tipoInner." (select a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId FROM servicio a
-                            INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
+                ".$tipoInner." (SELECT a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId,
+                                b.concepto_mes_vencido
+                                FROM servicio a
+                                INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
                 ON sa.servicioId = sb.servicioId
                 WHERE sa.comprobanteId = '".$row['comprobanteId']."'
 				";
@@ -730,9 +715,30 @@ class InvoiceService extends Cfdi{
         $conceptos = [];
         foreach($dataConceptos as $item){
             $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
-            $fecha = explode("-", $item['fechaCorrespondiente']);
-            $fechaText = " DE ".$months[$fecha[1]]." del ".$fecha["0"];
-            $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;
+            $fecha_real_correspondiente =(int)$item['concepto_mes_vencido'] === 1
+                ? date("Y-m-d",strtotime($item['fechaCorrespondiente']." - 1 month"))
+                : $item['fechaCorrespondiente'] ;
+
+            $fecha_corriente_explode = explode("-", $item['fechaCorrespondiente']);
+            $fecha_explode = explode("-", $fecha_real_correspondiente);
+            if((int)$item['concepto_mes_vencido'] === 1) {
+                $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
+                $sufix = $this->month13
+                    ? " MES 13 DEL " . $fecha_explode[0]
+                    : " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = " CORRESPONDIENTES A ".$item["nombreServicio"] . "  " . $sufix;
+                $descripcion = $prefix.$descripcion;
+            } else {
+                $sufix = $this->month13
+                    ? " 13 DEL " . $fecha_explode[0] :
+                    " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = $item["nombreServicio"] . " CORRESPONDIENTE AL MES " . $sufix;
+            }
+
+            /*$fecha = explode("-", $item['fechaCorrespondiente']);
+            $fechaText = " DE ".$monthsComplete[$fecha[1]]." del ".$fecha["0"];
+            $descripcion = $item["nombreServicio"]." CORRESPONDIENTE AL MES ".$fechaText;*/
+
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
                 $claveProdServ =  trim($item['claveSat']);
             else
@@ -772,6 +778,7 @@ class InvoiceService extends Cfdi{
                     $item['tipoServicioId'] = $rowFind['tipoServicioId'];
                 }
             }
+
             $cad = [];
             $cad["noIdentificacion"] = $item["tipoServicioId"];
             $cad["servicioId"] = $item['servicioId'];

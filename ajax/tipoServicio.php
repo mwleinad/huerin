@@ -30,6 +30,7 @@ switch($_POST["type"])
             $tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
         	$tipoServicio->setIsPrimary((int) $_POST['isPrimary'] );
+            $tipoServicio->setConceptoMesVencido(isset($_POST['concepto_mes_vencido']) ? 1 : 0);
 			if(!$tipoServicio->Save())
 			{
 				echo "fail[#]";
@@ -96,6 +97,7 @@ switch($_POST["type"])
 			$tipoServicio->setUniqueInvoice(isset($_POST['uniqueInvoice']) ? 1 : 0);
         	$tipoServicio->setClaveSat($_POST['claveSat']);
             $tipoServicio->setIsPrimary((int) $_POST['isPrimary']);
+            $tipoServicio->setConceptoMesVencido(isset($_POST['concepto_mes_vencido']) ? 1 : 0);
 			if(!$tipoServicio->Edit())
 			{
 				echo "fail[#]";

@@ -73,6 +73,15 @@
                 </div>
                 <div class="grid_16">
                     <div class="formLine" style=" width:100%;display: inline-block;">
+                        <div style="width:30%;float:left"> Generar concepto en factura a mes vencido:</div>
+                        <div style="width:20%;float: left;">
+                            <input name="concepto_mes_vencido" id="concepto_mes_vencido" type="checkbox" value="1" class="largeInput" {if $post.concepto_mes_vencido == "1"}checked{/if}/>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="grid_16">
+                    <div class="formLine" style=" width:100%;display: inline-block;">
                         <div style="width:30%;float:left"> * Clave SAT:</div>
                         <div style="width:20%;float: left;">
                             <input name="claveSat" id="claveSat" type="text" value="{$post.claveSat}" class="largeInput" />
