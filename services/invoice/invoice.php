@@ -327,15 +327,15 @@ class InvoiceService extends Cfdi{
             if((int)$item['concepto_mes_vencido'] === 1) {
                 $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
                 $sufix = $this->month13
-                    ? " MES 13 DEL " . $fecha_explode[0]
-                    : " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = " CORRESPONDIENTES A ".$item["nombreServicio"] . "  " . $sufix;
+                    ? "MES 13 DEL " . $fecha_explode[0]
+                    : "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = " CORRESPONDIENTES A ". trim($item["nombreServicio"]) . " " . $sufix;
                 $descripcion = $prefix.$descripcion;
             } else {
                 $sufix = $this->month13
-                    ? " 13 DEL " . $fecha_explode[0] :
-                    " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = $item["nombreServicio"] . " CORRESPONDIENTE AL MES " . $sufix;
+                    ? "13 DEL " . $fecha_explode[0] :
+                    "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = trim($item["nombreServicio"]) . " CORRESPONDIENTE AL MES " . $sufix;
             }
 
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
@@ -683,8 +683,9 @@ class InvoiceService extends Cfdi{
         }
         if($this->Util()->PrintErrors())
           return false;
-
-        $tipoInner = $row['fecha'] >= '2022-02-01' ? " INNER JOIN " : " LEFT JOIN ";
+        $fecha_fact = date('Y-m-d', strtotime($row['fecha']));
+        $fecha_fact_firts_day = $this->Util()->getFirstDate($fecha_fact);
+        $tipoInner = $fecha_fact_firts_day >= '2022-02-01' ? " INNER JOIN " : " LEFT JOIN ";
         $sql = "SELECT sa.`cantidad`,
 						sa.`unidad`,
 						sa.`noIdentificacion`,
@@ -715,10 +716,9 @@ class InvoiceService extends Cfdi{
         $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
         $conceptos = [];
         foreach($dataConceptos as $item) {
-            $fecha_fact = date('Y-m-d', strtotime($row['fecha']));
             $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
-            if($this->Util()->getFirstDate($fecha_fact) == '2022-02-01' && (int)$item['uniqueInvoice'] === 0)
-                $fecha_real_correspondiente = date("Y-m-d", strtotime($item['fechaCorrespondiente']." +1 month"));
+            if($fecha_fact_firts_day == '2022-02-01' && (int)$item['uniqueInvoice'] === 0)
+                $item['fechaCorrespondiente'] = date("Y-m-d", strtotime($item['fechaCorrespondiente']." + 1 month"));
 
             $fecha_real_correspondiente = (int)$item['concepto_mes_vencido'] === 1
                 ? date("Y-m-d",strtotime($item['fechaCorrespondiente']." - 1 month"))
@@ -729,15 +729,15 @@ class InvoiceService extends Cfdi{
             if((int)$item['concepto_mes_vencido'] === 1) {
                 $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
                 $sufix = $this->month13
-                    ? " MES 13 DEL " . $fecha_explode[0]
-                    : " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = " CORRESPONDIENTES A ".$item["nombreServicio"] . "  " . $sufix;
+                    ? "MES 13 DEL " . $fecha_explode[0]
+                    : "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = " CORRESPONDIENTES A ".trim($item["nombreServicio"])." " . $sufix;
                 $descripcion = $prefix.$descripcion;
             } else {
                 $sufix = $this->month13
-                    ? " 13 DEL " . $fecha_explode[0] :
-                    " DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = $item["nombreServicio"] . " CORRESPONDIENTE AL MES " . $sufix;
+                    ? "13 DEL " . $fecha_explode[0] :
+                    "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
+                $descripcion = trim(item["nombreServicio"]) . " CORRESPONDIENTE AL MES " . $sufix;
             }
 
             /*$fecha = explode("-", $item['fechaCorrespondiente']);
@@ -749,7 +749,7 @@ class InvoiceService extends Cfdi{
             else
                 $claveProdServ =  84111500;
             // si es factura anterior a mes feb 2022 intentar encontrar los servicios por nombre
-            if($this->Util()->getFirstDate($fecha_fact) < '2022-02-01' && (int)$item['servicioId'] <= 0) {
+            if($fecha_fact_firts_day < '2022-02-01' && (int)$item['servicioId'] <= 0) {
                 $descripcion_explode = explode('correspondiente', strtolower($item['descripcion']));
                 $nombre_serv_extract = trim($descripcion_explode[0]);
 
