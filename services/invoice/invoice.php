@@ -201,10 +201,10 @@ class InvoiceService extends Cfdi{
                }
                $fecha_tope_first_day = $this->Util()->getFirstDate($fecha_tope);
                // que los conceptos con fechas anteriores a < 2022-02-01 ya no se generen por que se supone ya estan creadas.
-               if($fecha_tope_first_day < '2022-02-01')
+               if($fecha_tope_first_day < '2022-03-01')
                    continue;
                // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
-               if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-02-01') {
+               if ((strtolower($item['periodicidad']) == 'eventual' || (int)$item['uniqueInvoice'] === 1) && $fecha_tope_first_day < '2022-03-01') {
                    continue;
                }
                $existFactura =  $this->GetExistsFacturaActual($item['servicioId'], $this->currentContract["contractId"], $fecha_tope_first_day);
@@ -699,10 +699,11 @@ class InvoiceService extends Cfdi{
                         sb.nombreServicio,
                         sb.claveSat,
                         sb.tipoServicioId,
-                        sb.concepto_mes_vencido
+                        sb.concepto_mes_vencido,
+                        sb.uniqueInvoice
 				FROM concepto sa
                 ".$tipoInner." (SELECT a.servicioId, b.nombreServicio, b.claveSat,b.tipoServicioId,
-                                b.concepto_mes_vencido
+                                b.concepto_mes_vencido, b.uniqueInvoice
                                 FROM servicio a
                                 INNER JOIN tipoServicio b ON a.tipoServicioId = b.tipoServicioId) sb
                 ON sa.servicioId = sb.servicioId
@@ -713,9 +714,12 @@ class InvoiceService extends Cfdi{
         $dataConceptos = $this->Util()->DB()->GetResult();
         $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
         $conceptos = [];
-        foreach($dataConceptos as $item){
+        foreach($dataConceptos as $item) {
             $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
-            $fecha_real_correspondiente =(int)$item['concepto_mes_vencido'] === 1
+            if($this->Util()->getFirstDate($row['fecha ']) == '2021-02-01' && (int)$item['uniqueInvoice'] === 0)
+                $fecha_real_correspondiente = date("Y-m-d", strtotime($item['fechaCorrespondiente']." +1 month"));
+
+            $fecha_real_correspondiente = (int)$item['concepto_mes_vencido'] === 1
                 ? date("Y-m-d",strtotime($item['fechaCorrespondiente']." - 1 month"))
                 : $item['fechaCorrespondiente'] ;
 
@@ -744,7 +748,7 @@ class InvoiceService extends Cfdi{
             else
                 $claveProdServ =  84111500;
             // si es factura anterior a mes feb 2022 intentar encontrar los servicios por nombre
-            if($row['fecha '] < '2022-02-01' && (int)$item['servicioId'] <= 0) {
+            if($this->Util()->getFirstDate($row['fecha ']) < '2022-02-01' && (int)$item['servicioId'] <= 0) {
                 $descripcion_explode = explode('correspondiente', strtolower($item['descripcion']));
                 $nombre_serv_extract = trim($descripcion_explode[0]);
 
