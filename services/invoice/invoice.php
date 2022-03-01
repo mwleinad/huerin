@@ -715,8 +715,9 @@ class InvoiceService extends Cfdi{
         $dataConceptos = !is_array($dataConceptos) ? [] : $dataConceptos;
         $conceptos = [];
         foreach($dataConceptos as $item) {
+            $fecha_fact = date('Y-m-d', strtotime($row['fecha']));
             $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
-            if($this->Util()->getFirstDate($row['fecha ']) == '2022-02-01' && (int)$item['uniqueInvoice'] === 0)
+            if($this->Util()->getFirstDate($fecha_fact) == '2022-02-01' && (int)$item['uniqueInvoice'] === 0)
                 $fecha_real_correspondiente = date("Y-m-d", strtotime($item['fechaCorrespondiente']." +1 month"));
 
             $fecha_real_correspondiente = (int)$item['concepto_mes_vencido'] === 1
@@ -748,7 +749,7 @@ class InvoiceService extends Cfdi{
             else
                 $claveProdServ =  84111500;
             // si es factura anterior a mes feb 2022 intentar encontrar los servicios por nombre
-            if($this->Util()->getFirstDate($row['fecha ']) < '2022-02-01' && (int)$item['servicioId'] <= 0) {
+            if($this->Util()->getFirstDate($fecha_fact) < '2022-02-01' && (int)$item['servicioId'] <= 0) {
                 $descripcion_explode = explode('correspondiente', strtolower($item['descripcion']));
                 $nombre_serv_extract = trim($descripcion_explode[0]);
 
@@ -794,7 +795,7 @@ class InvoiceService extends Cfdi{
             $cad["excentoIva"] = "no";
             $cad["nombreServicio"] = $item['nombreServicio'];
             $cad["nombreServicioOculto"] = $item['nombreServicio'];
-            $cad["descripcion"] = $row['fecha'] >= '2022-02-01' ? $descripcion : $item['descripcion'];
+            $cad["descripcion"] = $fecha_fact >= '2022-02-01' ? $descripcion : $item['descripcion'];
             $cad["tasaIva"] = $row["tasaIva"];
             $cad["claveProdServ"] = $claveProdServ;
             $cad["claveUnidad"] = "E48";
