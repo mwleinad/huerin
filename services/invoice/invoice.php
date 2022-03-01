@@ -716,7 +716,7 @@ class InvoiceService extends Cfdi{
         $conceptos = [];
         foreach($dataConceptos as $item) {
             $iva = $item["valorUnitario"] * ($row["tasaIva"] / 100);
-            if($this->Util()->getFirstDate($row['fecha ']) == '2021-02-01' && (int)$item['uniqueInvoice'] === 0)
+            if($this->Util()->getFirstDate($row['fecha ']) == '2022-02-01' && (int)$item['uniqueInvoice'] === 0)
                 $fecha_real_correspondiente = date("Y-m-d", strtotime($item['fechaCorrespondiente']." +1 month"));
 
             $fecha_real_correspondiente = (int)$item['concepto_mes_vencido'] === 1
