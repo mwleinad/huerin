@@ -200,7 +200,7 @@ class InvoiceService extends Cfdi{
                    $fecha_tope = end($fechas);
                }
                $fecha_tope_first_day = $this->Util()->getFirstDate($fecha_tope);
-               // que los conceptos con fechas anteriores a < 2022-02-01 ya no se generen por que se supone ya estan creadas.
+               // que los conceptos con fechas anteriores a < 2022-03-01 ya no se generen por que se supone ya estan creadas.
                if($fecha_tope_first_day < '2022-03-01')
                    continue;
                // asegurarse que eventuales y facturas de unica ocasion posteriores no se refacturen con la nueva modalidad.
