@@ -137,8 +137,14 @@ class TipoServicio extends Main
 	}
 
 	public function getIsPrimary () {
-    	return $this->isPrimary;
+		return $this->isPrimary;
 	}
+
+	private  $conceptoMesVencido;
+	public  function setConceptoMesVencido($value) {
+		$this->conceptoMesVencido =  $value;
+	}
+
 
 	public function Enumerate()
 	{
@@ -318,7 +324,8 @@ class TipoServicio extends Main
 				`costoVisual` = '".$this->costoVisual."',
 				`uniqueInvoice` = '".$this->uniqueInvoice."',
 				`mostrarCostoVisual` = '".$this->mostrarCostoVisual."',
-				`is_primary` = '".$this->isPrimary."'
+				`is_primary` = '".$this->isPrimary."',
+				`concepto_mes_vencido` = '".$this->conceptoMesVencido."'
 			WHERE tipoServicioId = '".$this->tipoServicioId."'");
 		$this->Util()->DB()->UpdateData();
 		if(isset($_POST['steps'])) {
@@ -363,7 +370,8 @@ class TipoServicio extends Main
 				costoVisual,
 			 	uniqueInvoice,
 				mostrarCostoVisual,
-			 	is_primary
+			 	is_primary,
+			 	concepto_mes_vencido
 		)
 		VALUES
 		(
@@ -377,7 +385,8 @@ class TipoServicio extends Main
 				'".$this->costoVisual."',
 				'".$this->uniqueInvoice."',
 				'".$this->mostrarCostoVisual."',
-				'".$this->isPrimary."'
+				'".$this->isPrimary."',
+				'".$this->conceptoMesVencido."',
 		);");
 		$id = $this->Util()->DB()->InsertData();
 		if(isset($_POST['steps'])) {
