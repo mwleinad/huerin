@@ -251,7 +251,7 @@ class SendMail extends Main
         $logSend = "Lista de correos enviados: ".chr(13).chr(10);;
         foreach($to as $email => $name) {
 
-            if($email == EMAILCOORDINADOR) continue;
+            //if($email == EMAILCOORDINADOR) continue;
 
             try {
                 $mail->addAddress($email, $name);
