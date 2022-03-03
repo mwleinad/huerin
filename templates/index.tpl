@@ -78,7 +78,7 @@
 <script src="{$WEB_ROOT}/js/functions.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/script-service.js?{$timestamp}" type="text/javascript"></script>
 <script src="{$WEB_ROOT}/js/datetimepicker.js" type="text/javascript"></script>
-{if $page eq 'prospect'}
+{if $page eq 'prospect' || $page eq 'question-service' || $page eq 'company'}
 	<script src="{$WEB_ROOT}/js/driverApi.js?{$timestamp}" type="text/javascript"></script>
 {/if}
 <script type="text/javascript" src="{$WEB_ROOT}/libs/sorter/js/fabtabulous.js?{$timestamp}"></script>
