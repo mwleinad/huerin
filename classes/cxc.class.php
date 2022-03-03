@@ -157,7 +157,7 @@ class CxC extends Producto
 	  $innerPer = "";
 	  $mainFilter ="";
       if($values['facturador'])
-          $ffact .="  AND co.facturador IN ('".$values['facturador']."')";
+          $mainFilter .=" AND cm.rfcId = '".$values['facturador']."' ";
 
       if($values['serie'])
           $mainFilter .= "  AND cm.serie='".$values['serie']."' ";
@@ -172,14 +172,19 @@ class CxC extends Producto
 
       $innerPer .=" inner join contractPermiso p ON co.contractId=p.contractId AND p.personalId IN (".implode(',',$values['respCuenta']).") ";
 
-      $sql =  " select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,
-                       co.facturador,co.contractId, co.rfc from comprobante cm
-                 inner join contract co ON cm.userId=co.contractId $ffact
-                 $innerPer
-                 inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
-                 where cm.status='1' AND cm.tiposComprobanteId not in(10)
-                 $mainFilter
-                 group by cm.comprobanteId order by trim(char(09) from trim(cu.nameContact)) ASC,trim(char(09) from trim(co.name)) ASC,cm.fecha DESC
+      $sql =  "select cm.comprobanteId,cm.serie,cm.folio,cm.fecha,cm.total,cu.nameContact,co.name,co.nombreComercial,
+                       cm.facturador,co.contractId, co.rfc 
+                from (SELECT suba.comprobanteId, suba.userId, suba.serie, suba.folio, suba.fecha, suba.total, suba.rfcId, 
+                      suba.status, suba.tiposComprobanteId,subb.claveFacturador facturador,
+                      subb.razonSocial, subb.rfc rfcFacturador
+                      FROM comprobante suba
+                      INNER JOIN rfc subb ON suba.rfcId = subb.rfcId) cm
+                inner join contract co ON cm.userId=co.contractId
+                $innerPer
+                inner join customer cu ON cu.customerId=co.customerId AND cu.active='1'
+                where cm.status='1' AND cm.tiposComprobanteId not in(10)
+                $mainFilter
+                group by cm.comprobanteId order by trim(char(09) from trim(cu.nameContact)) ASC,trim(char(09) from trim(co.name)) ASC,cm.fecha DESC
                 ";
         $this->Util()->DBSelect($id_empresa)->setQuery($sql);
         $comprobantes = $this->Util()->DBSelect($id_empresa)->GetResult();

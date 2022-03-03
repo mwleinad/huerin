@@ -36,7 +36,7 @@
                 <option value="">Todos</option>
                 <option value="Efectivo">Efectivo</option>
                 {foreach from=$emisores  item=item key=key}
-                    <option value="{$item.claveFacturador}">{$item.claveFacturador}-{$item.razonSocial}</option>
+                    <option value="{$item.rfcId}">{$item.claveFacturador}-{$item.razonSocial}</option>
                 {/foreach}
             </select>
 		</td>
