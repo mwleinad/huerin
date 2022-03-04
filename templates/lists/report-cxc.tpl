@@ -29,19 +29,18 @@
 </tr>
 <tr class="class-{$smarty.foreach.totales.index}" id="folio-{$smarty.foreach.totales.index}" style="display:none">
 	<td style="text-align:center;width: 1%;font-weight: bold" colspan="1">&nbsp</td>
-	<td style="background: #06b8f6;text-align:center;width: 1%;font-weight: bold" colspan="1">&nbsp</td>
 	<td style="background: #06b8f6;text-align:center;width: 3%;font-weight: bold">Folio</td>
 	<td style="background: #06b8f6;text-align:center;width: 3%;font-weight: bold">Facturador</td>
 	<td style="background: #06b8f6;text-align:center;font-weight: bold">Fecha</td>
 	<td style="background: #06b8f6;text-align:right;font-weight: bold">Importe</td>
 	<td style="background: #eae527;text-align:right;font-weight: bold">Pagos</td>
 	<td style="background: #06b8f6;text-align:right;font-weight: bold">Saldo</td>
+	<td>&nbsp</td>
 </tr>
 
 	{foreach from=$totales.$key.facturas item=factura key=kf name=facturas}
 	<tr class="class-{$smarty.foreach.totales.index}" id="{$smarty.foreach.totales.index}-{$smarty.foreach.facturas.index}"  style="display:none">
-		<td style="text-align:center;width: 1%;font-weight: bold" colspan="1">&nbsp</td>
-		<td colspan="1" title="pagos de factura {$factura.serie}{$factura.folio}" style="width: 1%;background: #3df5ff;">
+		<td colspan="1" title="pagos de factura {$factura.serie}{$factura.folio}" style="width: 1%">
 			<div id="{$smarty.foreach.facturas.index}-{$smarty.foreach.totales.index}" class="showPayment" style="cursor:pointer" >
 				<span style="color: blue;" id="color_py_{$smarty.foreach.facturas.iteration}">[+]</span>
 			</div>
@@ -52,6 +51,7 @@
 		<td align="right" style="background: #3df5ff" >${$factura.total_formato|number_format:2}</td>
 		<td align="right" style="background: #eae527" >${$factura.payment|number_format:2}</td>
 		<td align="right" style="background: #3df5ff" >${$factura.saldo|number_format:2}</td>
+		<td>&nbsp</td>
 	</tr>
 		<tr class="showPayment-{$smarty.foreach.facturas.index}-{$smarty.foreach.totales.index}" id="pagos-{$smarty.foreach.facturas.index}" style="display:none">
 			<td colspan="2"></td>

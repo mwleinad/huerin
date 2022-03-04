@@ -87,18 +87,16 @@ foreach($totales as $key=>$cxc){
     ";
     $x .="<tr>
             <td colspan=\"1\"></td>
-            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'></td>
             <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Folio</td>
             <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Facturador</td>
             <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Fecha</td>
             <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>Importe</td>
             <td style='background-color: #eae527;color: #0f0f0f;text-align: left;font-weight: bold'>Pagos</td>
-            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>saldo</td>
+            <td style='background-color: #06b8f6;color: #0f0f0f;text-align: left;font-weight: bold'>saldo</td> 
+            <td>&nbsp;</td>
         </tr>";
     foreach($cxc['facturas'] as $kf=>$factura){
         $x .="<tr>
-                 <td colspan=\"1\">
-                </td>
                 <td colspan=\"1\">
                     <div>
                         <span style=\"color:blue;\">[+]</span>
@@ -110,6 +108,7 @@ foreach($totales as $key=>$cxc){
                 <td  style='background-color:#3df5ff'>".number_format($factura['total'],2,'.',',')."</td>
                 <td  style='background-color:#eae527'>".number_format($factura['payment'],2,'.',',')."</td>
                 <td  style='background-color:#3df5ff'>".number_format($factura['saldo'],2,'.',',')."</td>
+                <td>&nbsp;</td>
               </tr> 
         ";
         $x .="<tr>
