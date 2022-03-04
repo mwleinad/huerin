@@ -59,6 +59,7 @@ switch($_POST["type"])
 				$totales[$value['nombre']]['payment']=$totales[$value['nombre']]['payment']+$value['payment'];
 				$totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$value['saldo'];
 				$totales[$value['nombre']]['nameContact']=$value['nameContact'];
+				$totales[$value['nombre']]['empresa']=$value['nombre'];
 				$totales[$value['nombre']]['facturador']=$value['facturador'];
 				$totales[$value['nombre']]['rfc']=$value['rfc'];
 				$totales[$value['nombre']]['facturas'][]=$value;
