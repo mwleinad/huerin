@@ -22,7 +22,7 @@ class TipoServicio extends Main
 
 	public function setperiodicidad($value)
 	{
-		$this->Util()->ValidateString($value, 10000, 1, 'Periodicidad');
+		$this->Util()->ValidateRequireField($value,  'Periodicidad');
 		$this->periodicidad = $value;
 	}
 
@@ -39,7 +39,7 @@ class TipoServicio extends Main
 
 	public function setDepartamentoId($value)
 	{
-		$this->Util()->ValidateInteger($value);
+		$this->Util()->ValidateRequireField($value, 'Departamento');
 		$this->departamentoId = $value;
 	}
 
