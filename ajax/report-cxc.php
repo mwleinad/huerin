@@ -54,7 +54,6 @@ switch($_POST["type"])
 			$contratos= [];
 			foreach($listCxc['items'] as $key => $value)
 			{
-
 				$totales[$value['nombre']]['total']=$totales[$value['nombre']]['total']+$value['total'];
 				$totales[$value['nombre']]['payment']=$totales[$value['nombre']]['payment']+$value['payment'];
 				$totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$value['saldo'];
@@ -65,7 +64,7 @@ switch($_POST["type"])
 				$totales[$value['nombre']]['facturas'][]=$value;
                 if(!in_array($value['contractId'],$contratos)){
 					array_push($contratos,$value['contractId']);
-                    $totales[$value['nombre']]['saldoAnterior']=$cxc->getSaldo((int)$values['year']-1,$value['contractId']);
+                    $totales[$value['nombre']]['saldoAnterior']=$cxc->getSaldo((int)$values['year']-1,$value['contractId'], $values);
                     $totales[$value['nombre']]['saldo']=$totales[$value['nombre']]['saldo']+$totales[$value['nombre']]['saldoAnterior'];
             	}
 			}
