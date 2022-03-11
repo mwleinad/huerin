@@ -426,10 +426,15 @@ class TipoServicio extends Main
 		$this->Util()->DBProspect()->setQuery("delete from secondary_service where service_id = ". $id);
 		$this->Util()->DBProspect()->UpdateData();
 
+		$this->Util()->DB()->setQuery("SELECT tipoServicioId FROM tipoServicio WHERE is_primary = 0");
+		$secundarios = $this->Util()->DB()->GetResult();
+		$secundarios = !is_array($secundarios) ? [] : array_column($secundarios, 'tipoServicioId');
+
 		$sql = "insert into secondary_service(service_id, secondary_id) VALUES";
 		$strComp ="";
 		foreach ($secondary_service as $service) {
-				$strComp .= "($id, $service),";
+				if(in_array($service, $secundarios))
+					$strComp .= "($id, $service),";
 		}
 		if($strComp!=="") {
 			$strComp = substr($strComp,0,strlen($strComp)-1);
