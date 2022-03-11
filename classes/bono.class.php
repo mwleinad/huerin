@@ -30,7 +30,7 @@ class Bono extends Personal
                               b.is_primary, b.lastDateWorkflow, b.fio, b.fif ";
         $select_nogroup     = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
         $select_group       = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
-                                 'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
+                                 'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId,'unique_invoice',b.uniqueInvoice, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
         $group_by           = " group by a.servicioId ";
         $order_by           = "order by a.date asc ";
 
@@ -38,7 +38,7 @@ class Bono extends Personal
                inner join (select servicio.servicioId,servicio.contractId, servicio.tipoServicioId, servicio.status, 
                            tipoServicio.nombreServicio, tipoServicio.periodicidad, tipoServicio.departamentoId,
                            tipoServicio.is_primary, servicio.lastDateWorkflow,servicio.inicioOperaciones as fio,
-                           inicioFactura as fif from servicio 
+                           inicioFactura as fif,tipoServicio.uniqueInvoice from servicio 
                            inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
                            where tipoServicio.status='1' and (servicio.status = 'bajaParcial' OR servicio.status = 'activo')) b on a.servicioId=b.servicioId
                inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
@@ -907,7 +907,9 @@ class Bono extends Personal
     function processInstancias ($row_serv, $instancias, $view) {
         global $workflow;
         $instancias_filtered = [];
+        $firstInicioFactura = $this->Util()->getFirstDate($row_serv['fif']);
         foreach($instancias as $inst) {
+            $firstDateWorkflow = $this->Util()->getFirstDate($inst['fecha']);
             $cad = $inst;
             // las instancias deben ser apartir de su fecha de inicio de operaciones en adelante si
             // es menor no debe tomarse encuenta
@@ -925,6 +927,12 @@ class Bono extends Personal
             }
             // si no es primario es secondario por default.
             $cad['costo'] = !$row_serv['is_primary'] ? 0 : $cad['costo'];
+
+            // setear a 0 costo de tipos de servicio que facturan de unica ocasion, en sus demas workflows.
+            $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
+                ? 0
+                : $cad['costo'];
+
             if($row_serv['is_primary']) {
                 $month = (int) date('m', strtotime($inst['fecha']));
                 $year = (int) date('Y', strtotime($inst['fecha']));
