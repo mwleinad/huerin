@@ -1479,10 +1479,6 @@ class Customer extends Main
         $sfSubquery = $sfQueryPermiso = $sfQuery = $sfLimit = "";
         $tipo = strtolower($filter['tipos']);
         switch ($tipo) {
-            case 'temporal':
-            case 'activos':
-                $sfQuery .= " and (a.active = '1') ";
-                break;
             case 'inactivos':
                 $sfQuery .= " and (a.active = '0') ";
                 break;
