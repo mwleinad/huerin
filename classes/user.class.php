@@ -140,10 +140,6 @@ class User extends Sucursal
 				$card['departamentoId'] = $row['departamentoId'];
 
 				$moreDep = [(int)$row['departamentoId']];
-				if ($row['departamentoId'] == 8 )
-					array_push($moreDep,24 );
-				if ($row['departamentoId'] == 24 )
-					array_push($moreDep,8 );
 
 				$card['moreDepartament'] =$moreDep;
 				$card['isLogged'] = true;
