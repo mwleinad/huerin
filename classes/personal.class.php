@@ -1380,7 +1380,7 @@ class Personal extends Main
             $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
         }
         foreach($premerge as $key => $value) {
-            foreach($premerge[$key] as $var) {
+            /*foreach($premerge[$key] as $var) {
                 if ((int)$var['level'] >= 1 && (int)$var['level'] <= 2) {
                     if(in_array($key, [21, 22])) {
                         if(!in_array($var['id'], array_column($premerge[21], 'id')))
@@ -1395,7 +1395,7 @@ class Personal extends Main
                             array_push($premerge[24], $var);
                     }
                 }
-            }
+            }*/
             $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
                 $premerge[$key], 'name'
             );
