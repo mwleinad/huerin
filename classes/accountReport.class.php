@@ -70,7 +70,7 @@ class AccountReport extends Personal
 
         $sql = "select a.*, b.nivel,c.departamento,b.name as nameRol, numberAccountsAllowed from personal a 
                 inner join roles b on a.roleId = b.rolId 
-                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
+                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel IN (2,3) $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
         foreach($gerentes as $key => $value) {
@@ -86,7 +86,8 @@ class AccountReport extends Personal
             $base = $this->generateDinamicHeaders($departamentos);
             $gerentes[$key]['headers'] = $base;
             $this->setPersonalId($value['personalId']);
-            $supervisores_subgerentes = $this->getSubordinadosNoDirectoByLevel([3,4]);
+            // obtener solo supervisores
+            $supervisores_subgerentes = $this->getSubordinadosNoDirectoByLevel([4]);
 
             $subordinadosId = [];
             array_push($subordinadosId, $value['personalId']);
