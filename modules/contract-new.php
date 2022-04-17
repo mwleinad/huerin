@@ -130,10 +130,10 @@
 	$smarty->assign("sociedades", $sociedades);
 
 	//Obtenemos los regimenes
-	$regimenes = $regimen->EnumerateAll("fisica");
+	$regimenes = $regimen->EnumerateAll(2);
 	$smarty->assign("regimenes", $regimenes);
 
-	$regimenesMoral = $regimen->EnumerateAll("moral");
+	$regimenesMoral = $regimen->EnumerateAll(1);
 	$smarty->assign("regimenesMoral", $regimenesMoral);
 
 

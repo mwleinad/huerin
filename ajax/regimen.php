@@ -9,6 +9,7 @@ switch($_POST["type"])
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-regimen-popup.tpl');
 		break;	
 	case "saveAddRegimen":
+			$regimen->setRegimenId($_POST['regimenId']);
 			$regimen->setRegimenName($_POST['regimenName']);
 			$regimen->setTipoDePersona($_POST['tipoDePersona']);
 			if(!$regimen->Save())

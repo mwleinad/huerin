@@ -5,17 +5,26 @@ class Regimen extends Main
 	private $regimenId;
 	private $regimenName;
 	private $tipoDePersona;
-
 	public function setTipoDePersona($value)
 	{
+        $this->Util()->ValidateRequireField($value, 'Tipo de persona');
 		$this->tipoDePersona = $value;
 	}
 
 	public function setRegimenId($value)
 	{
-		$this->Util()->ValidateInteger($value);
+        $this->Util()->ValidateRequireField($value, 'Clave');
+		$this->Util()->ValidateOnlyNumeric($value, 'Clave');
 		$this->regimenId = $value;
 	}
+
+    public function validarClaveExistente()
+    {
+        $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM regimen WHERE regimenId = '".$this->regimenId."' ");
+        $total =  $this->Util()->DB()->GetSingle();
+        if($total > 0)
+            $this->Util()->setError(0, 'error', 'La clave proporcionada ya se encuentra en uso');
+    }
 
 	public function getRegimenId()
 	{
@@ -24,7 +33,7 @@ class Regimen extends Main
 
 	public function setRegimenName($value)
 	{
-		$this->Util()->ValidateString($value, 10000, 1, '<br /> Nombre del regimen');
+		$this->Util()->ValidateString($value, 10000, 1, 'Nombre del regimen');
 		$this->regimenName = $value;
 	}
 
@@ -33,17 +42,20 @@ class Regimen extends Main
 		return $this->regimenName;
 	}
 
-	public function EnumerateAll($tipo = "")
+	public function EnumerateAll($tipo = 0)
 	{
-		if($tipo == "fisica")
-		{
-			$add = " WHERE tipoDePersona = 'Persona Fisica' ";
-		}
-		elseif($tipo == "moral")
-		{
-			$add = " WHERE tipoDePersona = 'Persona Moral' ";
-		}
-		$this->Util()->DB()->setQuery("SELECT * FROM regimen ".$add." ORDER BY tipoDePersona, nombreRegimen ASC");
+		$add =  $tipo > 0
+            ? " WHERE tax_purpose IN(3, $tipo)"
+            : "";
+
+        $sql = "SELECT *,
+                CASE tax_purpose
+                 WHEN 1 THEN 'Persona Moral'   
+                 WHEN 2 THEN 'Persona Fisica'
+                 ELSE 'Ambos'   
+                END as tipoDePersona
+                FROM regimen ".$add." ORDER BY tax_purpose ASC, nombreRegimen ASC";
+		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
 
 		return $result;
@@ -57,13 +69,16 @@ class Regimen extends Main
 		$pages = $this->Util->HandleMultipages($this->page, $total ,WEB_ROOT."/regimen");
 
 		$sql_add = "LIMIT ".$pages["start"].", ".$pages["items_per_page"];
-		$this->Util()->DB()->setQuery('SELECT * FROM regimen ORDER BY tipoDePersona, nombreRegimen ASC '.$sql_add);
+        $sql = "SELECT *,
+                CASE tax_purpose
+                 WHEN 1 THEN 'Persona Moral'   
+                 WHEN 2 THEN 'Persona Fisica'
+                 ELSE 'Ambos'   
+                END as tipoDePersona
+                FROM regimen ORDER BY regimenId ASC, nombreRegimen ASC ".$sql_add;
+		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
-		//$result = $this->Util()->DecodeResult($result);
 
-		foreach($result as $key => $row)
-		{
-		}
 		$data["items"] = $result;
 		$data["pages"] = $pages;
 		return $data;
@@ -86,7 +101,7 @@ class Regimen extends Main
 			SET
 				`regimenId` = '".$this->regimenId."',
 				`nombreRegimen` = '".$this->regimenName."',
-				`tipoDePersona` = '".$this->tipoDePersona."'
+				`tax_purpose` = '".$this->tipoDePersona."'
 			WHERE regimenId = '".$this->regimenId."'");
 		$this->Util()->DB()->UpdateData();
 
@@ -97,6 +112,7 @@ class Regimen extends Main
 
 	public function Save()
 	{
+        $this->validarClaveExistente();
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
@@ -105,7 +121,7 @@ class Regimen extends Main
 			(
 				`regimenId`,
 				`nombreRegimen`,
-				`tipoDePersona`
+				`tax_purpose`
 		)
 		VALUES
 		(

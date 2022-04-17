@@ -1,5 +1,6 @@
 {foreach from=$resRegimen.items item=item key=key}
 	<tr>
+		<td align="center">{$item.regimenId}</td>
 		<td align="center">{$item.nombreRegimen}</td>
 		<td align="center">{$item.tipoDePersona}</td>
 		<td class="act" align="center">
