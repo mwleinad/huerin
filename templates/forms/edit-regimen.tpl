@@ -8,8 +8,9 @@
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">Tipo de Persona:</div>
                 <select id="tipoDePersona" name="tipoDePersona" class="largeInput">
-                    <option value="Persona Fisica" {if $post.tipoDePersona == "Persona Fisica"} selected="selected"{/if}>Persona Fisica</option>
-                    <option value="Persona Moral" {if $post.tipoDePersona == "Persona Moral"} selected="selected"{/if}>Persona Moral</option>
+                    <option value="1" {if $post.tax_purpose == 1} selected="selected"{/if}>Persona Moral</option>
+                    <option value="2" {if $post.tax_purpose == 2} selected="selected"{/if}>Persona Fisica</option>
+                    <option value="3" {if $post.tax_purpose == 3} selected="selected"{/if}>Ambos</option>
                 </select>
             </div>
             <div style="clear:both"></div>
