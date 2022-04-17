@@ -1,8 +1,11 @@
 <div id="divForm">
     <form id="addRegimenForm" name="addRegimenForm" method="post" autocomplete="off">
         <input type="hidden" id="type" name="type" value="saveAddRegimen"/>
-        <input type="hidden" id="regimenId" name="regimenId" value="{$post.regimenId}"/>
         <fieldset>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left">* Clave:</div>
+                <input  class="largeInput medium2" name="regimenId" id="regimenId" type="text" value="{$post.regimenId}" size="10"/>
+            </div>
             <div class="formLine" style="width:100%; text-align:left">
                 <div style="width:30%;float:left">* Nombre del Regimen:</div>
                 <input  class="largeInput" name="regimenName" id="regimenName" type="text" value="{$post.regimenName}" size="50"/>

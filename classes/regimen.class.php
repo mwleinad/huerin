@@ -5,17 +5,26 @@ class Regimen extends Main
 	private $regimenId;
 	private $regimenName;
 	private $tipoDePersona;
-
 	public function setTipoDePersona($value)
 	{
+        $this->Util()->ValidateRequireField($value, 'Tipo de persona');
 		$this->tipoDePersona = $value;
 	}
 
 	public function setRegimenId($value)
 	{
-		$this->Util()->ValidateInteger($value);
+        $this->Util()->ValidateRequireField($value, 'Clave');
+		$this->Util()->ValidateOnlyNumeric($value, 'Clave');
 		$this->regimenId = $value;
 	}
+
+    public function validarClaveExistente()
+    {
+        $this->Util()->DB()->setQuery("SELECT COUNT(*) FROM regimen WHERE regimenId = '".$this->regimenId."' ");
+        $total =  $this->Util()->DB()->GetSingle();
+        if($total > 0)
+            $this->Util()->setError(0, 'error', 'La clave proporcionada ya se encuentra en uso');
+    }
 
 	public function getRegimenId()
 	{
@@ -103,6 +112,7 @@ class Regimen extends Main
 
 	public function Save()
 	{
+        $this->validarClaveExistente();
 		if($this->Util()->PrintErrors()){ return false; }
 
 		$this->Util()->DB()->setQuery("
