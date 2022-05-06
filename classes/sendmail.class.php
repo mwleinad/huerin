@@ -97,6 +97,7 @@ class SendMail extends Main
 
         return true;
 	}
+
     public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
         $mail = new PHPMailer();
@@ -137,6 +138,7 @@ class SendMail extends Main
             return false;
 
     }
+
     public function PrepareMultipleNotice($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
         //crear un objeto mail por cada correo
@@ -231,7 +233,7 @@ class SendMail extends Main
 
     }
 
-    public function SendMultipleNotice($subject, $body, $to, $archivos = [], $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false) {
+    public function SendMultipleNotice($subject, $body, $to, $archivos = [], $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema", $sendDesarrollador=false, $remitenteExterno = false) {
 
         $mail = new PHPMailer();
         $mail->addReplyTo($from, $fromName);
@@ -242,17 +244,14 @@ class SendMail extends Main
         $mail->SMTPAuth   = true;
         $mail->SMTPAutoTLS  = false;
         $mail->SMTPKeepAlive=true;
-        $mail->Host       = SMTP_HOST2;
-        $mail->Port       = SMTP_PORT2;
-        $mail->Username   = SMTP_USER2;
-        $mail->Password   = SMTP_PASS2;
+        $mail->Host       = $remitenteExterno ? SMTP_HOST : SMTP_HOST2;
+        $mail->Port       = $remitenteExterno ? SMTP_PORT : SMTP_PORT2;
+        $mail->Username   = $remitenteExterno ? SMTP_USER : SMTP_USER2;
+        $mail->Password   = $remitenteExterno ? SMTP_PASS : SMTP_PASS2;
         $mail->SMTPDebug=0;
 
         $logSend = "Lista de correos enviados: ".chr(13).chr(10);;
         foreach($to as $email => $name) {
-
-            //if($email == EMAILCOORDINADOR) continue;
-
             try {
                 $mail->addAddress($email, $name);
             } catch (Exception $e) {

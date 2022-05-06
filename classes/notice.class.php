@@ -278,7 +278,7 @@ class Notice extends Main
                     array_push($adjuntos, $cad);
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
-                $sendmail->SendMultipleNotice($subject, $body, $mails,  $adjuntos, 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
+                $sendmail->SendMultipleNotice($subject, $body, $mails, $adjuntos, 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
             }
         }
 
@@ -303,7 +303,7 @@ class Notice extends Main
             }
             //desactivar asta que confime rogelio
             $sendmail = new SendMail();
-            $sendmail->SendMultipleNotice($subject, $body, $clientesCorreos,  $adjuntos, 'noreply@braunhuerin.com.mx', 'BRAUN HUERIN', true);
+            $sendmail->SendMultipleNotice($subject, $body, $clientesCorreos, $adjuntos, 'noreply@braunhuerin.com.mx', 'BRAUN HUERIN', true, true);
         }
         $this->Util()->setError(0, 'complete', 'El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();
