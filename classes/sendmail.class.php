@@ -48,7 +48,7 @@ class SendMail extends Main
                 $mail->setFrom($from, $fromName);
                 foreach($to as $correo => $name)
                 {
-                    switch($name){
+                    switch($name) {
                         case 'Desarrollador':
                             if(count($to)>1)
                                 $mail->addBCC($correo, $name);
@@ -79,7 +79,7 @@ class SendMail extends Main
                 $mail->Port       = SMTP_PORT2;
                 $mail->Username   = SMTP_USER2;
                 $mail->Password   = SMTP_PASS2;
-                $mail->SMTPDebug=0;
+                $mail->SMTPDebug=2;
                 $mail->Timeout=3600;
                 if($attachment != "")
                 {
@@ -248,7 +248,7 @@ class SendMail extends Main
         $mail->Port       = $remitenteExterno ? SMTP_PORT : SMTP_PORT2;
         $mail->Username   = $remitenteExterno ? SMTP_USER : SMTP_USER2;
         $mail->Password   = $remitenteExterno ? SMTP_PASS : SMTP_PASS2;
-        $mail->SMTPDebug=0;
+        $mail->SMTPDebug  = 2;
 
         $logSend = "Lista de correos enviados: ".chr(13).chr(10);;
         foreach($to as $email => $name) {
