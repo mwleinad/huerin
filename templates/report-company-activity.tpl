@@ -3,10 +3,6 @@
     	<h1 class="reportes">Reporte de empresas y actividades economicas</h1>
     </div>
     <div class="grid_6" id="eventbox">
-		<a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')">
-        <img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
-  		<div id="loadPrint">
-  		</div>
   	</div>
 	<div class="clear"></div>
     <div id="portlets">
