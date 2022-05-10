@@ -14,7 +14,7 @@ define("RFC_DEFAULT", 30);
 switch($_SERVER['HTTP_HOST'])
 {
     case 'localhost':
-    case 'huerin.test':hbcruz@braunhuerin.com.mx
+    case 'huerin.test':
         define("SEND_TO", "");
         define("FROM_MAIL", "avisos@braunhuerin.com.mx");
         define("EMAILCOORDINADOR", "hbcruz@braunhuerin.com.mx");
