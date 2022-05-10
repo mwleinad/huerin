@@ -4,8 +4,9 @@ use PHPMailer\PHPMailer\Exception;
 
 class SendMail extends Main
 {
-	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
+	public function Prepare($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema")
 	{
+            $from = $from != 'avisos@braunhuerin.com.mx' ? 'avisos@braunhuerin.com.mx' : $from;
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
 		 	try{
                 $mail->addReplyTo($from, $fromName);
@@ -40,8 +41,9 @@ class SendMail extends Main
         return true;
 	}
 
-	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array())
+	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array())
 	{
+            $from = $from != 'avisos@braunhuerin.com.mx' ? 'avisos@braunhuerin.com.mx' : $from;
 			$mail = new PHPMailer(true); // defaults to using php "mail()"
             try{
                 $mail->addReplyTo($from, $fromName);
@@ -98,7 +100,7 @@ class SendMail extends Main
         return true;
 	}
 
-    public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
+    public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
         $mail = new PHPMailer();
 
@@ -139,8 +141,9 @@ class SendMail extends Main
 
     }
 
-    public function PrepareMultipleNotice($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
+    public function PrepareMultipleNotice($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
+        $from = $from != 'avisos@braunhuerin.com.mx' ? 'avisos@braunhuerin.com.mx' : $from;
         //crear un objeto mail por cada correo
         $mail = new PHPMailer(); // defaults to using php "mail()"
         $mail->addReplyTo($from, $fromName);
@@ -233,8 +236,8 @@ class SendMail extends Main
 
     }
 
-    public function SendMultipleNotice($subject, $body, $to, $archivos = [], $from = "sistema@braunhuerin.com.mx", $fromName = "Administrador del Sistema", $sendDesarrollador=false, $remitenteExterno = false) {
-
+    public function SendMultipleNotice($subject, $body, $to, $archivos = [], $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema", $sendDesarrollador=false, $remitenteExterno = false) {
+        $from = $remitenteExterno ? 'avisosbh@braunhuerin.com.mx' : 'avisos@braunhuerin.com.mx';
         $mail = new PHPMailer();
         $mail->addReplyTo($from, $fromName);
         $mail->setFrom($from, $fromName);
