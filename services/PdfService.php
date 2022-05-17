@@ -41,6 +41,12 @@ class PdfService extends Producto{
         $this->smarty->assign('DOC_ROOT', DOC_ROOT);
 
         $xmlPath = DOC_ROOT.'/empresas/'.$empresaId.'/certificados/'.$rfcActivo.'/facturas/xml/'.$fileName.".xml";
+         if(!file_exists($xmlPath)) {
+             if($type == 'email')
+                 return false;
+             echo "No se encontro el documento.";
+             exit(0);
+         }
         $xmlData = $xmlReaderService->execute($xmlPath, $empresaId,$compInfo['comprobanteId']);
         $this->smarty->assign('xmlData', $xmlData);
         $this->smarty->assign('empresaId', $empresaId);
@@ -73,7 +79,7 @@ class PdfService extends Producto{
         $dompdf->loadHtml($html);
 
 
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4');
 
         $dompdf->render();
 
@@ -98,6 +104,11 @@ class PdfService extends Producto{
 				WHERE claveRegimen = "'.$xmlData["emisor"]['RegimenFiscal'].'"';
         $this->Util()->DB()->setQuery($sql);
         $data["RegimenFiscal"] = strtoupper($this->Util()->DB()->GetSingle());
+
+        $sql = 'SELECT nombreRegimen FROM tipoRegimen
+				WHERE claveRegimen = "'.$xmlData["receptor"]['RegimenFiscalReceptor'].'"';
+        $this->Util()->DB()->setQuery($sql);
+        $data["RegimenFiscalReceptor"] = strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT * FROM c_Impuesto';
         $this->Util()->DB()->setQuery($sql);
