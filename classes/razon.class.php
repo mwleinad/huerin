@@ -135,8 +135,7 @@ class Razon extends Contract
        $id_empresa = $compInfo['empresaId'];
        $serie = $compInfo['serie'];
        $folio = $compInfo['folio'];
-
-       if($compInfo['version'] == '3.3') {
+       if(in_array($compInfo['version'], ['3.3','4.0'])) {
            include_once(DOC_ROOT."/services/PdfService.php");
            include_once(DOC_ROOT."/services/QrService.php");
            include_once(DOC_ROOT."/services/XmlReaderService.php");
@@ -148,6 +147,13 @@ class Razon extends Contract
            if(!is_dir(DOC_ROOT."/empresas/$id_empresa/certificados/$id_rfc/facturas/pdf"))
                mkdir(DOC_ROOT."/empresas/$id_empresa/certificados/$id_rfc/facturas/pdf",0777,true);
 
+           if (!$pdf) {
+               if($showErrors){
+                   $this->Util()->setError('', 'error', "El documento no existe ");
+                   $this->Util()->PrintErrors();
+               }
+               return false;
+           }
            $enlace = DOC_ROOT.'/empresas/'.$id_empresa.'/certificados/'.$id_rfc.'/facturas/pdf/'.$archivo;
            file_put_contents($enlace, $pdf);
        } else {
@@ -183,7 +189,7 @@ class Razon extends Contract
            $file1 = $archivo;
        } else {
            if($showErrors){
-               $this->Util()->setError('', 'complete', "El documento no existe ");
+               $this->Util()->setError('', 'error', "El documento no existe ");
                $this->Util()->PrintErrors();
            }
            return false;
