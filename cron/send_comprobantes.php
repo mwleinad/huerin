@@ -28,5 +28,5 @@ foreach($comprobantes as $Key => $factura) {
     if(!$razon->sendComprobante33($factura["comprobanteId"], false, true))
         echo 'Error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);
 }
-echo "Cron Completado Satisfactoriamente";
+echo "Cron Completado Satisfactoriamente".chr(13).chr(10);
 ?>
