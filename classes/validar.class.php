@@ -73,8 +73,12 @@ class Validar extends Main
                 }
 
                 if($columna['constraint'] === true && $row[$col] !== "") {
+                    $valorComparar = "";
+                    $valorComparar = str_replace(chr(10), '', $row[$col]);
+                    $valorComparar = str_replace(chr(13), '', $valorComparar);
+                    $valorComparar = trim($valorComparar);
                     $sql = "select ".$columna['field_return_foreign']." from  ".$columna['reference_table']."  
-                            where ".$columna['field_comparison_foreign']." = '".$row[$col]."'";
+                            where ".$columna['field_comparison_foreign']." = '".$valorComparar."'";
                     $this->Util()->DB(false)->setQuery($sql);
                     $find  = $this->Util()->DB(false)->GetRow();
                     if(!$find) {
