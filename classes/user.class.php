@@ -140,6 +140,10 @@ class User extends Sucursal
 				$card['departamentoId'] = $row['departamentoId'];
 
 				$moreDep = [(int)$row['departamentoId']];
+				if ($row['departamentoId'] == 1 )
+					array_push($moreDep,39 );
+				if ($row['departamentoId'] == 39 )
+					array_push($moreDep,1 );
 
 				$card['moreDepartament'] =$moreDep;
 				$card['isLogged'] = true;
@@ -216,7 +220,7 @@ class User extends Sucursal
 		$data = $myContract->Info();
 
 		$result["nombre"] = $data["nameFacturacion"];// nombre dinamico
-		$result["calle"] = $data["address"];;
+		$result["calle"] = $data["address"];
 		$result["noExt"] = $data["noExtAddress"];
 		$result["noInt"] = $data["noIntAddress"];
 		$result["colonia"] = $data["coloniaAddress"];
@@ -231,6 +235,7 @@ class User extends Sucursal
 		$result["rfc"] = $data["rfcFacturacion"]; // rfcDinamico;
 		$result["cxcSaldoFavor"] = $data["cxcSaldoFavor"];
 		$result["userId"] = $data['idFacturacion']; // id dinamico
+		$result["regimenFiscal"] = $data['regimenId']; // regimen dinamico
 		$result["customerId"] = $data["customerId"];
 
 		return $result;
