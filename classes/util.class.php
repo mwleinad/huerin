@@ -1662,7 +1662,12 @@ class Util extends CustomError
     {
         if (!$nameView || !$select)
             return false;
-        $sql = "DROP VIEW IF EXIST ".$nameView."; DROP TABLE IF EXISTS ".$nameView;
+        $sql = "DROP VIEW IF EXISTS ".$nameView;
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->ExecuteQuery();
+        $this->Util()->DB()->CleanQuery();
+
+        $sql = "DROP TABLE IF EXISTS ".$nameView;
         $this->Util()->DB()->setQuery($sql);
         $this->Util()->DB()->ExecuteQuery();
         $this->Util()->DB()->CleanQuery();
