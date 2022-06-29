@@ -99,8 +99,15 @@ class Bono extends Personal
                                WHERE contractPermiso.contractId = a.contract_id 
                                GROUP BY contractPermiso.contractId) permiso_detallado ";
 
-        $tienePermiso       = ", (SELECT COUNT(*) total FROM contractPermiso sd 
-                            WHERE sd.personalId IN(". $encargado['personalId'] .")
+        $encargados =  [];
+        $this->setPersonalId($encargado['personalId']);
+        $encargados =  $this->Subordinados();
+        $encargados =  !is_array($encargados) ? [] : array_column($encargados, 'personalId');
+        array_push($encargados, $encargado['personalId']);
+        $stringEncargados =  "0,".implode(',', $encargados);
+
+        $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
+                            WHERE sd.personalId IN(". $stringEncargados .")
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
         $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
@@ -207,14 +214,14 @@ class Bono extends Personal
             $cad['totales'] = $totales;
             array_push($consolidado_final, $cad);
             $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
-            foreach ($supervisor['childs'] as $child) {
+            /*foreach ($supervisor['childs'] as $child) {
                 $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row, $title_jerarquia);
                 $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
                 $cad2['data'] = $child;
                 $cad2['totales'] = $totales_child;
                 array_push($consolidado_final, $cad2);
-            }
+            }*/
 
             $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
             $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $title_jerarquia);
@@ -405,8 +412,13 @@ class Bono extends Personal
             $sum_col_devengado = 0;
             $sum_col_trabajado = 0;
             foreach ($months as $month) {
-                $key = array_search($month, array_column($propio['instancias_array'], 'mes'));
-                $month_row = $key === false ? [] : $propio['instancias_array'][$key];
+                $instanciasLineal = array_column($propio['instancias_array'], 'mes');
+                $key        = array_search($month, $instanciasLineal);
+                $keyBefore  = array_search($month - 1, $instanciasLineal);
+
+                $month_row      = $key === false ? [] : $propio['instancias_array'][$key];
+                // la periodicidad debe tomarse en cuenta para verificar el mes anterior ???
+                $month_before   = $keyBefore === false ? [] : $propio['instancias_array'][$keyBefore];
                 $month_complete = $month >= 10 ? $month : "0".$month;
                 if(($propio['status_service'] === 'bajaParcial' &&
                     $_POST['year']."-".$month_complete."-01" > $this->Util()->getFirstDate($propio['last_date_workflow'])) && empty($month_row)) {
@@ -419,8 +431,8 @@ class Bono extends Personal
                     ->getStyle($current_coordinate_month)->applyFromArray($style_general);
                 $col++;
 
-
-                if(in_array($month_row['class'], ['Completo', 'CompletoTardio']))
+                $isCompleteMonthBefore = !($month > 1) || in_array($month_before['class'], ['Completo', 'CompletoTardio']);
+                if (in_array($month_row['class'], ['Completo', 'CompletoTardio']) && $isCompleteMonthBefore)
                    $sum_col_trabajado +=$month_row['costo'];
 
                    $sum_col_devengado +=$month_row['costo'];
