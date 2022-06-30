@@ -435,8 +435,11 @@ class Bono extends Personal
                     (in_array($month_before['class'], ['Completo', 'CompletoTardio'])
                      && (int)$month_before['secondary_pending'] === 0);
 
-                if (in_array($month_row['class'], ['Completo', 'CompletoTardio']) && $isCompleteMonthBefore)
-                   $sum_col_trabajado +=$month_row['costo'];
+                if (in_array($month_row['class'], ['Completo', 'CompletoTardio'])
+                    && $isCompleteMonthBefore
+                    && (int)$month_row['secondary_pending'] === 0) {
+                    $sum_col_trabajado += $month_row['costo'];
+                }
 
                    $sum_col_devengado +=$month_row['costo'];
 
