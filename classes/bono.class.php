@@ -62,10 +62,12 @@ class Bono extends Personal
             $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro);
             $cad['propios'] = $propios_sub;
             $this->setPersonalId($sub['personalId']);
-            $childs           = $this->GetCascadeSubordinates();
-            $childs_filtrados = [];
+            $childs             = $this->GetCascadeSubordinates();
+            $total_sueldo_sub   = array_sum(array_column($childs, 'sueldo'));
+            $cad['sueldo']      = $cad['sueldo'] +  $total_sueldo_sub;
+            $childs_filtrados   = [];
 
-            foreach ($childs as $kc => $child) {
+            /*foreach ($childs as $kc => $child) {
                 $cad_child      = $child;
                 $propios_child  = $this->getRowsBySheet($child, $name_view, $filtro);
                 $cad_child['propios'] = $propios_child;
@@ -74,7 +76,7 @@ class Bono extends Personal
                     array_push($childs_filtrados, $cad_child);
             }
 
-            $cad['childs'] = $childs_filtrados;
+            $cad['childs'] = $childs_filtrados;*/
 
             if(count($propios_sub) > 0 || count($childs_filtrados) > 0)
                 array_push($subordinados_filtrados, $cad);
