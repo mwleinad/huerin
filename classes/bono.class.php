@@ -431,7 +431,10 @@ class Bono extends Personal
                     ->getStyle($current_coordinate_month)->applyFromArray($style_general);
                 $col++;
 
-                $isCompleteMonthBefore = !($month > 1) || in_array($month_before['class'], ['Completo', 'CompletoTardio']);
+                $isCompleteMonthBefore = !($month > 1) ||
+                    (in_array($month_before['class'], ['Completo', 'CompletoTardio'])
+                     && (int)$month_before['secondary_pending'] === 0);
+
                 if (in_array($month_row['class'], ['Completo', 'CompletoTardio']) && $isCompleteMonthBefore)
                    $sum_col_trabajado +=$month_row['costo'];
 
