@@ -223,7 +223,7 @@ class Bono extends Personal
                 array_push($consolidado_final, $cad2);
             }*/
 
-            $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
+            //$this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
             $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $title_jerarquia);
 
             if(!is_array($gran_consolidado_gerente[$title_sheet]))
