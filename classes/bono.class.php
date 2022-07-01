@@ -415,15 +415,18 @@ class Bono extends Personal
             $sum_col_trabajado = 0;
             foreach ($months as $month) {
                 $instanciasLineal = array_column($propio['instancias_array'], 'mes');
+                $month_complete = $month >= 10 ? $month : "0".$month;
+                $date_instancia = $_POST['year']."-".$month_complete."-01";
                 $key        = array_search($month, $instanciasLineal);
-                $keyBefore  = array_search($month - 1, $instanciasLineal);
-
                 $month_row      = $key === false ? [] : $propio['instancias_array'][$key];
                 // la periodicidad debe tomarse en cuenta para verificar el mes anterior ???
+
+                $keyBefore  = array_search($month - 1, $instanciasLineal);
+
                 $month_before   = $keyBefore === false ? [] : $propio['instancias_array'][$keyBefore];
-                $month_complete = $month >= 10 ? $month : "0".$month;
+
                 if(($propio['status_service'] === 'bajaParcial' &&
-                    $_POST['year']."-".$month_complete."-01" > $this->Util()->getFirstDate($propio['last_date_workflow'])) && empty($month_row)) {
+                    $date_instancia > $this->Util()->getFirstDate($propio['last_date_workflow'])) && empty($month_row)) {
                     $month_row['class'] = "Parcial";
                     $month_row['costo'] = '';
                 }
@@ -728,7 +731,7 @@ class Bono extends Personal
     function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $jerarquia, $prefix_sheet = '', &$gran_total_gerente = []) {
         global $global_config_style_cell;
 
-        $col_real =  count($jerarquia) + 2;
+        $col_real = $prefix_sheet === '' ? count($jerarquia) + 2 : 0;
         $col = $col_real + 1;
         $row_nombre = ++$row;
         $row_devengando = ++$row;
@@ -779,6 +782,10 @@ class Bono extends Personal
 
         $prefix_sheet = $prefix_sheet==='' ? '' : $prefix_sheet."!";
         $cordenada_base_devengando = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
+        $total_hor_devengado =  [];
+        $total_hor_trabajado =  [];
+        $total_hor_gasto =  [];
+        $total_hor_bono =  [];
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
@@ -787,6 +794,7 @@ class Bono extends Personal
 
             if(!is_array($gran_total_gerente['row_devengado'][$key_mes])) $gran_total_gerente['row_devengado'][$key_mes]= [];
             array_push($gran_total_gerente['row_devengado'][$key_mes], $cordinate_devengado);
+            array_push($total_hor_devengado, $cordinate_devengado);
 
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
             $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_trabajado'][$key_mes]))
@@ -794,6 +802,7 @@ class Bono extends Personal
 
             if(!is_array($gran_total_gerente['row_trabajado'][$key_mes])) $gran_total_gerente['row_trabajado'][$key_mes]= [];
             array_push($gran_total_gerente['row_trabajado'][$key_mes], $cordinate_trabajado);
+            array_push($total_hor_trabajado, $cordinate_trabajado);
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_gasto'][$key_mes]))
@@ -801,6 +810,7 @@ class Bono extends Personal
 
             if(!is_array($gran_total_gerente['row_gasto'][$key_mes])) $gran_total_gerente['row_gasto'][$key_mes]= [];
             array_push($gran_total_gerente['row_gasto'][$key_mes], $cordinate_gasto);
+            array_push($total_hor_gasto, $cordinate_gasto);
 
             $cordinate_utilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_utilidad;
             $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
@@ -818,6 +828,7 @@ class Bono extends Personal
 
             if(!is_array($gran_total_gerente['row_bono'][$key_mes])) $gran_total_gerente['row_bono'][$key_mes]= [];
             array_push($gran_total_gerente['row_bono'][$key_mes], $cordinate_bono);
+            array_push($total_hor_bono, $cordinate_bono);
 
             /*$cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
             $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
@@ -844,7 +855,43 @@ class Bono extends Personal
             $gran_total_gerente['cantidad_workflow_devengado'][$key_mes]['total'] +=$data['gran_cantidad_workflow_devengado'][$key_mes]['total'];
             $col++;
         }
-        $merges = PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + $col_real) . $row_nombre;
+
+        $coord_horizontal_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
+        $formula =  is_array($total_hor_devengado) ? "=".implode('+', $total_hor_devengado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
+            ->getStyle($coord_horizontal_devengado)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
+        $formula =  is_array($total_hor_trabajado) ? "=".implode('+', $total_hor_trabajado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
+            ->getStyle($coord_horizontal_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
+        $formula =  is_array($total_hor_gasto) ? "=".implode('+', $total_hor_gasto) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
+            ->getStyle($coord_horizontal_gasto)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_utilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_utilidad;
+        $formula = '='.$coord_horizontal_trabajado .'-'.$coord_horizontal_gasto;
+        $sheet->setCellValueByColumnAndRow($col, $row_utilidad, $formula)
+            ->getStyle($coord_horizontal_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
+        $formula = is_array($total_hor_bono) ? "=".implode('+', $total_hor_bono) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_bono, $formula)
+            ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_efectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
+        $formula = '=IFERROR(('.$coord_horizontal_trabajado .'/'.$coord_horizontal_devengado.'), 0)';
+        $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula)
+            ->getStyle($coord_horizontal_efectividad)->applyFromArray($global_config_style_cell['style_porcent']);
+
+        $coord_horizontal_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
+        $formula = '=IFERROR(('.$coord_horizontal_utilidad .'-'.$coord_horizontal_bono.')/'.$coord_horizontal_trabajado.', 0)';
+        $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, $formula)
+            ->getStyle($coord_horizontal_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
+
+        $merges = PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + 1 + $col_real) . $row_nombre;
         $book->getActiveSheet()->mergeCells($merges);
     }
 
@@ -859,7 +906,8 @@ class Bono extends Personal
         $sheet->setTitle($title_sheet);
         $col = 0;
         $row = 1;
-        $row_hide_init = $row;
+        $consolidado_final = [];
+       /* $row_hide_init = $row;
         foreach ($col_title_mix as $title_header) {
             $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
@@ -876,18 +924,17 @@ class Bono extends Personal
 
         $row++;
         $row_init_col_total = $row;
-        $consolidado_final = [];
         $totales_gerente = $this->drawRowsPropios($sheet, $months, $data, $row, $jerarquias);
         $cad['data'] = $data;
         $cad['totales'] = $totales_gerente;
         array_push($consolidado_final, $cad);
         $total_por_gerente = [];
         $this->drawRowTotal($sheet, $totales_gerente, $row, $months, $row_init_col_total, $total_por_gerente, $jerarquias);
-        $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_gerente, $row, $jerarquias);
+       // $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_gerente, $row, $jerarquias);
         $row_hide_end = $row;
         // ocultar filas, se utiliza para no reprogramar las formulas de totales.
         for($current_row = $row_hide_init; $current_row <= $row_hide_end; $current_row++)
-            $sheet->getRowDimension($current_row)->setVisible(false);
+            $sheet->getRowDimension($current_row)->setVisible(false);*/
 
 
         $gran_total_consolidado_gerente = [];
@@ -896,17 +943,16 @@ class Bono extends Personal
             $row += 1;
         }
         $row += 1;
-        $gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias);
+        $gran_total_only_gerente = [];
+        //$gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias);
         $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data, $jerarquias);
-        for($current_col = 0 ; $current_col < (count($jerarquias) + 2); $current_col++)
-            $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($current_col))->setVisible(false);
     }
 
     function drawGranTotalGerente (&$book, $sheet, $data, $data_gerente, $months, &$row, $info_grupo, $jerarquia) {
         global $global_config_style_cell;
 
-        $col_real   =  count($jerarquia) + 2;
-        $col        =  $col_real;
+        $col_real   =  0;
+        $col        =  $col_real + 1;
         $row_nombre     = ++$row;
         $row_devengando = ++$row;
         $row_trabajado  = ++$row;
