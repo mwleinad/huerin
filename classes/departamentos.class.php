@@ -49,7 +49,7 @@ class Departamentos extends Main
     }
     public function GetListDepartamentos()
     {
-        $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY departamento ASC ');
+        $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY ordenTmp ASC, departamento ASC ');
         $result = $this->Util()->DB()->GetResult();
         return $result;
     }

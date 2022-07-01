@@ -46,7 +46,7 @@ class Util extends CustomError
 
     function RoundNumber($number)
     {
-        return round($number, 6);
+        return round($number, 6); // RECORDAR::cambio de precision de 6 a 2 decimales como en la clase XML
     }
 
     function FormatSeconds($sec, $padHours = false)
@@ -1662,6 +1662,16 @@ class Util extends CustomError
     {
         if (!$nameView || !$select)
             return false;
+        $sql = "DROP VIEW IF EXISTS ".$nameView;
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->ExecuteQuery();
+        $this->Util()->DB()->CleanQuery();
+
+        $sql = "DROP TABLE IF EXISTS ".$nameView;
+        $this->Util()->DB()->setQuery($sql);
+        $this->Util()->DB()->ExecuteQuery();
+        $this->Util()->DB()->CleanQuery();
+
         $custom_name_fields = count($custom_fields) ? "(" . implode(',', $custom_fields) . ")" : "";
         $sql = "create or replace view " . $nameView . $custom_name_fields . " as " . $select;
         $this->Util()->DB()->setQuery($sql);
