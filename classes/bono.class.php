@@ -171,10 +171,11 @@ class Bono extends Personal
 
         foreach ($jerarquia_2022 as $item_jerarquia) {
             $key_departamento =  array_search($item_jerarquia, array_column($pila_departamentos, 'departamentoId'));
-            if ($key_departamento >= 0) {
-                $item_departamento =  $pila_departamentos[$key_departamento];
-                array_push($title_jerarquia, $item_departamento);
-            }
+            if (!$key_departamento)
+                 continue;
+
+            $item_departamento =  $pila_departamentos[$key_departamento];
+            array_push($title_jerarquia, $item_departamento);
         }
         $col_title_0 = ['Cliente','Razon Social'];
         $col_title_1 = array_column($title_jerarquia, 'departamento');
