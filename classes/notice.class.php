@@ -250,6 +250,15 @@ class Notice extends Main
                 $sqlQuery = "SELECT * FROM personal WHERE active='1' ";
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
+                // quitar a huerin
+                if(!SEND_LOG_HUERIN) {
+                    $personal = !is_array($personal) ? [] : $personal;
+                    $personalLine =  array_column($personal, 'personalId');
+                    $personalLine = !is_array($personalLine) ? [] : $personalLine;
+                    $keyFind = array_search(IDHUERIN, $personalLine);
+                    if($keyFind !== false)
+                        unset($personal[$keyFind]);
+                }
                 $subject = "AVISO  NUEVO DE " . $this->usuario;
                 $sendmail = new SendMail();
                 $mails = array();

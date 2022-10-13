@@ -81,7 +81,7 @@ class Log extends Util
         //componer mensaje de accion
         $wherehuerin="";
         $excluyehuerin=true;
-        $sendBraun = false;
+        $sendBraun = SEND_LOG_BRAUN;
         $defaultId= array();
         switch($this->action){
             case 'Insert':
@@ -689,8 +689,8 @@ class Log extends Util
         $encargados = $contractRep->encargadosArea($contractId);
 
         $ftr['incluirJefes'] = true;
-        $ftr['sendBraun']= false;
-        $ftr['sendHuerin']=true;
+        $ftr['sendBraun']= SEND_LOG_BRAUN;
+        $ftr['sendHuerin']=SEND_LOG_HUERIN;
         //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
         $ftr['level'] = 3;
         $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
