@@ -57,7 +57,7 @@ class Bono extends Personal
         $info = $this->InfoWhitRol();
         $subordinados = $this->getSubordinadosByLevel(4);
         $subordinados_filtrados = [];
-        foreach ($subordinados as $key => $sub) {
+        foreach ($subordinados as $sub) {
             $cad = $sub;
             $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro);
             $cad['propios'] = $propios_sub;
@@ -66,17 +66,6 @@ class Bono extends Personal
             $total_sueldo_sub   = array_sum(array_column($childs, 'sueldo'));
             $cad['sueldo']      = $cad['sueldo'] +  $total_sueldo_sub;
             $childs_filtrados   = [];
-
-            /*foreach ($childs as $kc => $child) {
-                $cad_child      = $child;
-                $propios_child  = $this->getRowsBySheet($child, $name_view, $filtro);
-                $cad_child['propios'] = $propios_child;
-
-                if(count($propios_child) > 0)
-                    array_push($childs_filtrados, $cad_child);
-            }
-
-            $cad['childs'] = $childs_filtrados;*/
 
             if(count($propios_sub) > 0 || count($childs_filtrados) > 0)
                 array_push($subordinados_filtrados, $cad);
@@ -124,8 +113,12 @@ class Bono extends Personal
         $permisos_empresa = [];
         foreach ($res as $key => $row_serv) {
             $valid_instancias = [];
-            if($ftr['departamento_id']) {
-                if((int)$row_serv['departamento_id'] !== (int) $encargado['departamentoId']) {
+            // si hay departamento_seleccionado aplicar filtro y fusionar nominas y seguridad social
+            $ftrDepartamentoId = (int)$ftr['departamento_id'];
+            if($ftrDepartamentoId > 0) {
+                $pilaDepartamento = in_array($ftrDepartamentoId, [ID_DEP_NOMINAS, ID_DEP_SS]) ? [ID_DEP_NOMINAS, ID_DEP_SS] : [$ftrDepartamentoId];
+                $rowServDepId     = (int)$row_serv['departamento_id'];
+                if(!in_array($rowServDepId, $pilaDepartamento)) { // (int)$row_serv['departamento_id'] !== (int) $encargado['departamentoId']
                     unset($res[$key]);
                     continue;
                 }
