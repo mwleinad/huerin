@@ -57,7 +57,7 @@ class Bono extends Personal
         $info = $this->InfoWhitRol();
         $subordinados = $this->getSubordinadosByLevel(4);
         $subordinados_filtrados = [];
-        foreach ($subordinados as $key => $sub) {
+        foreach ($subordinados as $sub) {
             $cad = $sub;
             $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro);
             $cad['propios'] = $propios_sub;
@@ -66,17 +66,6 @@ class Bono extends Personal
             $total_sueldo_sub   = array_sum(array_column($childs, 'sueldo'));
             $cad['sueldo']      = $cad['sueldo'] +  $total_sueldo_sub;
             $childs_filtrados   = [];
-
-            /*foreach ($childs as $kc => $child) {
-                $cad_child      = $child;
-                $propios_child  = $this->getRowsBySheet($child, $name_view, $filtro);
-                $cad_child['propios'] = $propios_child;
-
-                if(count($propios_child) > 0)
-                    array_push($childs_filtrados, $cad_child);
-            }
-
-            $cad['childs'] = $childs_filtrados;*/
 
             if(count($propios_sub) > 0 || count($childs_filtrados) > 0)
                 array_push($subordinados_filtrados, $cad);
@@ -124,8 +113,12 @@ class Bono extends Personal
         $permisos_empresa = [];
         foreach ($res as $key => $row_serv) {
             $valid_instancias = [];
-            if($ftr['departamento_id']) {
-                if((int)$row_serv['departamento_id'] !== (int) $encargado['departamentoId']) {
+            // si hay departamento_seleccionado aplicar filtro y fusionar nominas y seguridad social
+            $ftrDepartamentoId = (int)$ftr['departamento_id'];
+            if($ftrDepartamentoId > 0) {
+                $pilaDepartamento = in_array($ftrDepartamentoId, [ID_DEP_NOMINAS, ID_DEP_SS]) ? [ID_DEP_NOMINAS, ID_DEP_SS] : [$ftrDepartamentoId];
+                $rowServDepId     = (int)$row_serv['departamento_id'];
+                if(!in_array($rowServDepId, $pilaDepartamento)) { // (int)$row_serv['departamento_id'] !== (int) $encargado['departamentoId']
                     unset($res[$key]);
                     continue;
                 }
@@ -185,6 +178,10 @@ class Bono extends Personal
 
         $gran_consolidado_gerente = [];
         foreach ($supervisores as $supervisor) {
+            // si en filtro esta vacio sumar los sueldos de todos los empleados de seguridad social y nominas
+            $ftrDepId = (int)$_POST['departamentoId'];
+            $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
+
             $consolidado_final = [];
             $total_por_supervisor = [];
             if ($hoja != 0)
@@ -806,7 +803,9 @@ class Bono extends Personal
             array_push($total_hor_trabajado, $cordinate_trabajado);
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-            $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_gasto'][$key_mes]))
+            $gastosMes = $data['row_gasto'][$key_mes];
+            $gastoAdicional = $info_grupo['gasto_adicional'] * (1.40);
+            $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)."+".$gastoAdicional)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_gasto'][$key_mes])) $gran_total_gerente['row_gasto'][$key_mes]= [];
@@ -1106,5 +1105,15 @@ class Bono extends Personal
         $this->Util()->DB()->setQuery($sql);
         $complete_secondary = $this->Util()->DB()->GetSingle();
         return $complete_secondary;
+    }
+
+    function gastoAdicional() {
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_NOMINAS);
+        $totalSueldoNomina = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_SS);
+        $totalSueldoSs = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/8 FROM personal WHERE departamentoId =".ID_DEP_FISCAL);
+        $totalSueldoFiscal = $this->Util()->DB()->GetSingle();
+        return $totalSueldoFiscal + $totalSueldoNomina + $totalSueldoSs;
     }
 }
