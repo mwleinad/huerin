@@ -178,6 +178,10 @@ class Bono extends Personal
 
         $gran_consolidado_gerente = [];
         foreach ($supervisores as $supervisor) {
+            // si en filtro esta vacio sumar los sueldos de todos los empleados de seguridad social y nominas
+            $ftrDepId = (int)$_POST['departamentoId'];
+            $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
+
             $consolidado_final = [];
             $total_por_supervisor = [];
             if ($hoja != 0)
@@ -799,7 +803,9 @@ class Bono extends Personal
             array_push($total_hor_trabajado, $cordinate_trabajado);
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-            $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_gasto'][$key_mes]))
+            $gastosMes = $data['row_gasto'][$key_mes];
+            $gastoAdicional = $info_grupo['gasto_adicional'] * (1.40);
+            $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)."+".$gastoAdicional)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_gasto'][$key_mes])) $gran_total_gerente['row_gasto'][$key_mes]= [];
@@ -1099,5 +1105,15 @@ class Bono extends Personal
         $this->Util()->DB()->setQuery($sql);
         $complete_secondary = $this->Util()->DB()->GetSingle();
         return $complete_secondary;
+    }
+
+    function gastoAdicional() {
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_NOMINAS);
+        $totalSueldoNomina = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_SS);
+        $totalSueldoSs = $this->Util()->DB()->GetSingle();
+        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/8 FROM personal WHERE departamentoId =".ID_DEP_FISCAL);
+        $totalSueldoFiscal = $this->Util()->DB()->GetSingle();
+        return $totalSueldoFiscal + $totalSueldoNomina + $totalSueldoSs;
     }
 }
