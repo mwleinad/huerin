@@ -1108,11 +1108,19 @@ class Bono extends Personal
     }
 
     function gastoAdicional() {
-        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_NOMINAS);
+        $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_NOMINAS." AND nivel IN(4))";
+        $this->Util()->DB()->setQuery($sql);
         $totalSueldoNomina = $this->Util()->DB()->GetSingle();
-        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/4 FROM personal WHERE departamentoId =".ID_DEP_SS);
+
+        $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_SS." AND nivel IN(4))";
+        $this->Util()->DB()->setQuery($sql);
         $totalSueldoSs = $this->Util()->DB()->GetSingle();
-        $this->Util()->DB()->setQuery("SELECT SUM(sueldo)/8 FROM personal WHERE departamentoId =".ID_DEP_FISCAL);
+
+        $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_FISCAL." AND nivel IN(4))";
+        $this->Util()->DB()->setQuery($sql);
         $totalSueldoFiscal = $this->Util()->DB()->GetSingle();
         return $totalSueldoFiscal + $totalSueldoNomina + $totalSueldoSs;
     }
