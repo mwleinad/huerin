@@ -9,6 +9,7 @@ class XmlReaderService extends Comprobante
         $xml->registerXPathNamespace('c',$ns['cfdi']);
         $xml->registerXPathNamespace('t',$ns['tfd']);
         $xml->registerXPathNamespace('pago10',$ns['pago10']);
+        $xml->registerXPathNamespace('pago20',$ns['pago20']); // add v4
         $xml->registerXPathNamespace('impLocal',$ns['implocal']);
         $xml->registerXPathNamespace('nomina12',$ns['nomina12']);
         $xml->registerXPathNamespace('donat',$ns['donat']);
@@ -117,20 +118,27 @@ class XmlReaderService extends Comprobante
                 }
             }
         }
-
-        $pagos = $xml->xpath('//pago10:Pagos');
+        // cambio v4
+        $versionCFDI =  (string) $data['cfdi']['Version'];
+        $pagos = $versionCFDI == '4.0'
+            ? $xml->xpath('//pago20:Pagos')
+            : $xml->xpath('//pago10:Pagos');
 
         if(isset($pagos[0])){
-            $pagos = $pagos[0]->xpath('//pago10:Pago');
-
+            $pagos = $versionCFDI == '4.0'
+                ? $xml->xpath('//pago20:Pago')
+                : $xml->xpath('//pago10:Pago');
             foreach($pagos as $pago){
                 $card['data'] = $pagos[0];
                 $card['pago'] = $pago[0];
-                $card['doctoRelacionado'] =  $pago[0]->xpath('//pago10:DoctoRelacionado ')[0];
+                $card['doctoRelacionado'] =  $versionCFDI == '4.0'
+                    ? $pago[0]->xpath('//pago20:DoctoRelacionado ')[0]
+                    : $pago[0]->xpath('//pago10:DoctoRelacionado ')[0];
 
                 $data["pagos"][] = $card;
             }
         }
+        // end cambio v4
 
         $nomina = $xml->xpath('//nomina12:Nomina');
 
@@ -265,17 +273,17 @@ class XmlReaderService extends Comprobante
 
         //Cfdis relacionados
         //$data = [];
+        $cfdiRelacionados = $xml->xpath('//cfdi:CfdiRelacionados');
         $data["cfdiRelacionados"] = [];
-        $data["cfdiRelacionados"]['tipoRelacion'] = $xml->xpath('//cfdi:CfdiRelacionados')[0]['TipoRelacion'];
+        if (isset($cfdiRelacionados[0])) {
+            $data["cfdiRelacionados"]['tipoRelacion'] = $xml->xpath('//cfdi:CfdiRelacionados')[0]['TipoRelacion'];
 
-        //El punto hace que sea relativo al elemento, y solo una / es para buscar exactamente eso
-        foreach($xml->xpath('//cfdi:Comprobante//cfdi:CfdiRelacionados//cfdi:CfdiRelacionado') as $con){
-            $data["cfdiRelacionados"]["uuid"] = $con['UUID'];
+            //El punto hace que sea relativo al elemento, y solo una / es para buscar exactamente eso
+            foreach ($xml->xpath('//cfdi:Comprobante//cfdi:CfdiRelacionados//cfdi:CfdiRelacionado') as $con) {
+                $data["cfdiRelacionados"]["uuid"] = $con['UUID'];
+            }
         }
         return $data;
     }
 }
-
-
-
 ?>

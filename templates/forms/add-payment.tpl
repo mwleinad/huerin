@@ -32,7 +32,7 @@
 				<input class="largeInput medium" name="deposito" id="deposito" type="text" value="" size="50" maxlength="15"/>
 			</div>
 
-			{if $post.version == '3.3'}
+			{if $post.version == '3.3' ||  $post.version == '4.0'}
 				<div class="formLine" style="width:100%; text-align:left">
 					<div style="width:25%;float:left; color:#f00">Generar comprobante con complemento de pago por este importe?</div>
 					<!-- CAMPO generarComprobantePago   -->

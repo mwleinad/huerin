@@ -9,7 +9,7 @@
                 {/if}
                 <td width="90">{$fact.comprobanteId}<a href="javascript:void(0)">
                         {*ver factura*}
-                        {if $fact.version == '3.3'}
+                        {if $fact.version|in_array:['3.3','4.0']}
                             <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=SIGN_{$fact.xml}&type=view" title="Ver PDF">
                                 <img src="{$WEB_ROOT}/images/icons/ver_factura.png" height="16" width="16" border="0"/>
                             </a>
@@ -25,7 +25,7 @@
                         </a>
 
                         {*descargar pdf*}
-                        {if $fact.version == '3.3'}
+                        {if $fact.version >= '3.3'}
                             <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&filename=SIGN_{$fact.xml}&type=download">
                                 <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>
                             </a>

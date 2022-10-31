@@ -1,5 +1,4 @@
 <?php
-
 class Cfdi extends Comprobante
 {
     public function Generar($data, $notaCredito = false, $sendCorreo = true)
@@ -183,7 +182,7 @@ class Cfdi extends Comprobante
         else
             $folio = $serie["consecutivo"];
 
-        $fecha = $this->Util()->FormatDateAndTime(time() - 600);
+        $fecha = $this->Util()->FormatDateAndTime(time());
         $fechaPago = $this->Util()->FormatDate(time());
 
         $data["fechaPago"] = $fechaPago;
@@ -229,12 +228,14 @@ class Cfdi extends Comprobante
         }
 
         include_once(DOC_ROOT.'/services/Xml.php');
-        $xml = new Xml($data);
+        include_once(DOC_ROOT.'/services/Xml4/Xml4.php');
+        $isCfdi33 =  ((in_array($tipoDeComprobante, ['pago','P']) && $data['versionDR'] == '3.3') || (in_array($tipoDeComprobante, ['ingreso','I']) && VERSION_CFDI == 3.3));
+        $xml = $isCfdi33 ? new Xml($data) : new Xml4($data);
 
         //TODO might move to constructor
         if(!$xml->isNomina()) {
             $vs->setUserId($userId, 1);
-            $nodoReceptor = $vs->GetUserForInvoice($userId);
+            $nodoReceptor = $vs->GetUserForInvoice();
             $nodoReceptor["rfc"] = str_replace("&AMP;", "&", $nodoReceptor["rfc"]);
         } else {
             $usuario = new Usuario;
@@ -297,12 +298,16 @@ class Cfdi extends Comprobante
         }
 
         //XML sin sello
-        $xml = new Xml($data);
+        $xml = $isCfdi33
+            ? new Xml($data)
+            : new Xml4($data);
 
         $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
-        //XML con sello
+
         $this->setRfcId($currentRfc['rfcId']);
-        $xmlConSello = $this->stamp($empresa, $serie, $data, $xml, $totales);
+        $xmlConSello = $isCfdi33
+                        ? $this->stamp($empresa, $serie, $data, $xml, $totales)
+                        : $this->stampV4($empresa, $serie, $data, $xml, $totales);
 
         if($data['format'] == 'vistaPrevia') {
             return $xmlConSello;
@@ -321,7 +326,7 @@ class Cfdi extends Comprobante
             if($vs->Util()->PrintErrors()){ return false; }
         }
 
-        $timbreXml = $pac->ParseTimbre($xmlConSello['xmlSignedFile'], $data["sello"]);
+        $timbreXml = $pac->ParseTimbre($xmlConSello['xmlSignedFile']);
 
         $cadenaOriginalTimbre = $pac->GenerateCadenaOriginalTimbre($timbreXml);
         $cadenaOriginalTimbreSerialized = serialize($cadenaOriginalTimbre);
@@ -335,8 +340,6 @@ class Cfdi extends Comprobante
 
         $data["timbreFiscal"] = $cadenaOriginalTimbre;
 
-        //cambios 29 junio 2011
-        //insert new comprobante
         switch($data["tiposDeMoneda"])
         {
             case "MXN": $data["tiposDeMoneda"] = "peso"; break;
@@ -358,102 +361,57 @@ class Cfdi extends Comprobante
         $idParent = isset($data['parent'])
                   ? "'".$data['parent']."'"
                   : 'NULL';
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
-			INSERT INTO `comprobante` (
-				`comprobanteId`,
-				`userId`,
-				`formaDePago`,
-				`condicionesDePago`,
-				`metodoDePago`,
-				`tasaIva`,
-				`tipoDeMoneda`,
-				`tipoDeCambio`,
-				`porcentajeRetIva`,
-				`porcentajeRetIsr`,
-				`tiposComprobanteId`,
-				`porcentajeIEPS`,
-				`porcentajeDescuento`,
-				`empresaId`,
-				`sucursalId`,
-				`observaciones`,
-				`serie`,
-				`folio`,
-				`fecha`,
-				`sello`,
-				`noAprobacion`,
-				`anoAprobacion`,
-				`noCertificado`,
-				`certificado`,
-				`subtotal`,
-				`descuento`,
-				`motivoDescuento`,
-				`total`,
-				`tipoDeComprobante`,
-				`xml`,
-				`rfcId`,
-				`ivaTotal`,
-				`data`,
-				`conceptos`,
-				`impuestos`,
-				`cadenaOriginal`,
-				`timbreFiscal`,
-				`procedencia`,
-				`servicioId`,
-				`parentId`,
-				`version`
-			) VALUES
-			(
-			 	NULL,
-				'".$userId."',
-				'".$data["formaDePago"]."',
-				'".$data["condicionesDePago"]."',
-				'".$data["metodoDePago"]."',
-				'".$data["tasaIva"]."',
-				'".$data["tiposDeMoneda"]."',
-				'".$data["tipoDeCambio"]."',
-				'".$data["porcentajeRetIva"]."',
-				'".$data["porcentajeRetIsr"]."',
-				'".$data["tiposComprobanteId"]."',
-				'".$data["porcentajeIEPS"]."',
-				'".$data["porcentajeDescuento"]."',
-				'".$empresa["empresaId"]."',
-				'".$data["sucursalId"]."',
-				'".$data["observaciones"]."',
-				'".$serie["serie"]."',
-				'".$folio."',
-				'".$fecha."',
-				'".$data["sello"]."',
-				'".$serie["noAprobacion"]."',
-				'".$serie["anoAprobacion"]."',
-				'".$serie["noCertificado"]."',
-				'".$data["certificado"]."',
-				'".$totales["subtotal"]."',
-				'".$totales["descuento"]."',
-				'".$data["motivoDescuento"]."',
-				'".$totales["total"]."',
-				'".$tipoDeComprobante."',
-				'".$xmlConSello['fileName']."',
-				'".$data["nodoEmisor"]["rfc"]["rfcId"]."',
-				'".$totales["iva"]."',
-				'".$myData."',
-				'".$myConceptos."',
-				'".$myImpuestos."',
-				'".$data["cadenaOriginal"]."',
-				'".$cadenaOriginalTimbreSerialized."',
-				'".$data['procedencia']."',
-				'".$data['servicioId']."',
-				$idParent,
-				'3.3'
-			)");
-        $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT comprobanteId FROM comprobante ORDER BY comprobanteId DESC LIMIT 1");
+
+        $versionCFDI =  $isCfdi33 ? '3.3' : '4.0';
+        $sqlProc = " CALL sp_saveInvoice (";
+        $sqlProc .= $userId;
+	    $sqlProc .=	",'".$data["formaDePago"]."'";
+		$sqlProc .=	",'".$data["condicionesDePago"]."'";
+        $sqlProc .=	",'".$data["metodoDePago"]."'";
+        $sqlProc .=	",'".$data["tasaIva"]."'";
+		$sqlProc .=	",'".$data["tiposDeMoneda"]."'";
+		$sqlProc .=	",'".$data["tipoDeCambio"]."'";
+		$sqlProc .=	",'".$data["porcentajeRetIva"]."'";
+		$sqlProc .=	",'".$data["porcentajeRetIsr"]."'";
+		$sqlProc .=	",'".$data["tiposComprobanteId"]."'";
+		$sqlProc .=	",'".$data["porcentajeIEPS"]."'";
+		$sqlProc .=	",'".$data["porcentajeDescuento"]."'";
+		$sqlProc .=	",'".$empresa["empresaId"]."'";
+		$sqlProc .=	",'".$data["sucursalId"]."'";
+		$sqlProc .=	",'".$data["observaciones"]."'";
+		$sqlProc .=	",'".$serie["serie"]."'";
+		$sqlProc .=	",'".$folio."'";
+		$sqlProc .=	",'".$fecha."'";
+		$sqlProc .=	",'".$data["sello"]."'";
+		$sqlProc .=	",'".$serie["noAprobacion"]."'";
+		$sqlProc .=	",'".$serie["anoAprobacion"]."'";
+		$sqlProc .=	",'".$serie["noCertificado"]."'";
+		$sqlProc .=	",'".$data["certificado"]."'";
+		$sqlProc .=	",'".$totales["subtotal"]."'";
+	    $sqlProc .=	",'".$totales["descuento"]."'";
+        $sqlProc .=	",'".$data["motivoDescuento"]."'";
+        $sqlProc .=	",'".$totales["total"]."'";
+        $sqlProc .=	",'".$tipoDeComprobante."'";
+		$sqlProc .=	",'".$xmlConSello['fileName']."'";
+        $sqlProc .=	",'".$data["nodoEmisor"]["rfc"]["rfcId"]."'";
+		$sqlProc .=	",'".$totales["iva"]."'";
+        $sqlProc .=	",'".$myData."'";
+		$sqlProc .=	",'".$myConceptos."'";
+        $sqlProc .=	",'".$myImpuestos."'";
+		$sqlProc .=	",'".$data["cadenaOriginal"]."'";
+        $sqlProc .=	",'".$cadenaOriginalTimbreSerialized."'";
+		$sqlProc .=	",'".$data['procedencia']."'";
+        $sqlProc .=	",'".$data['servicioId']."'";
+        $sqlProc .= ",".$idParent;
+        $sqlProc .=	",'".$versionCFDI."'";
+		$sqlProc .=	",'".$serie["serieId"]."')";
+
+        // guardar registro en BD
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlProc);
         $comprobanteId = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
 
-        //finally we update the 'consecutivo
-        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE serie SET consecutivo = consecutivo + 1 WHERE serieId = ".$serie["serieId"]);
-        $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
 
-        if (count ($data['workflowsIdUpdateInvoice']) > 0) {
+        if (count ($data['workflowsIdUpdateInvoice']) > 0 && $comprobanteId > 0) {
            foreach($data['workflowsIdUpdateInvoice'] as $wupdate) {
                $idCompUpdate =  $wupdate['factura'] == 'Si' ? $comprobanteId : 0;
                $sqlCompUpdate =  "UPDATE instanciaServicio SET comprobanteId = '".$idCompUpdate."' where instanciaServicioId='".$wupdate['instanciaServicioId']."' ";
@@ -461,7 +419,7 @@ class Cfdi extends Comprobante
                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
            }
         }
-        if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()))
+        if(!isset($data['notaVentaId']) && !isset($_SESSION['ticketsId']) && (!$xml->isPago() && !$xml->isNomina()) && $comprobanteId > 0)
         {
             //insert conceptos
             foreach($_SESSION["conceptos"] as $concepto)
@@ -500,14 +458,14 @@ class Cfdi extends Comprobante
 						)");
                 $this->Util()->DBSelect($_SESSION["empresaId"])->InsertData();
             }
-
         }
+
         if(isset($data['modo_factura'])) {
             if ($data['modo_factura'] == 2 && $idParent) {
                 $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
             }
         }
-        // condicionar el envio de correo.
+        // condicionar el envio de correo, por default no se envia, se usa un cronjob para esto.
         if ($sendCorreo) {
             $razon = new Razon;
             $razon->sendComprobante33($comprobanteId, false, true);
@@ -533,7 +491,7 @@ class Cfdi extends Comprobante
         $selloObject = new Sello;
         $selloObject->setRfcId($this->getRfcId());
         $selloObject->setEmpresaId($empresa['empresaId']);
-;       $sello = $selloObject->generar($cadenaOriginal, $md5);
+        $sello = $selloObject->generar($cadenaOriginal, $md5);
         $data["sello"] = $sello["sello"];
         $data["certificado"] = $sello["certificado"];
 
@@ -547,6 +505,41 @@ class Cfdi extends Comprobante
         $response['zipFile'] = $root.$fileName.".zip";
         $response['zipSignedFile'] = $root.$fileName."_signed.zip";
 
+        $response['xmlSignedFile'] = $root."SIGN_".$fileName.".xml";
+        return $response;
+    }
+
+    private function stampV4($empresa, $serie, $data, $xml, $totales){
+        //despues de la generacion del xml, viene el timbrado.
+        $fileName = $empresa["empresaId"]."_".$serie["serie"]."_".$data["folio"];
+        $rfcActivo = $this->getRfcId();
+        $root = DOC_ROOT."/empresas/".$empresa["empresaId"]."/certificados/".$rfcActivo."/facturas/xml/";
+
+        $xmlFile = $root.$fileName.".xml";
+
+        $cadenaOriginal = $xml->cadenaOriginal($xmlFile);
+        //TODO acordarse que se le quito el utf8 decode
+        $data["cadenaOriginal"] = $cadenaOriginal;
+        $md5Cadena = $cadenaOriginal;
+
+        $md5 = hash( 'sha256', $md5Cadena );
+
+        $selloObject = new Sello;
+        $selloObject->setRfcId($this->getRfcId());
+        $selloObject->setEmpresaId($empresa['empresaId']);
+        $sello = $selloObject->generar($cadenaOriginal, $md5);
+        $data["sello"] = $sello["sello"];
+        $data["certificado"] = $sello["certificado"];
+
+        $xml = new Xml4($data);
+        $xml->Generate($totales, $_SESSION["conceptos"],$empresa);
+
+        $response['fileName'] = $fileName;
+        $response['fileNamePreview'] = $empresa["empresaId"]."_certificados_".$rfcActivo."_facturas_xml";
+        $response['root'] = $root;
+        $response['xmlFile'] = $root.$fileName.".xml";
+        $response['zipFile'] = $root.$fileName.".zip";
+        $response['zipSignedFile'] = $root.$fileName."_signed.zip";
         $response['xmlSignedFile'] = $root."SIGN_".$fileName.".xml";
         return $response;
     }

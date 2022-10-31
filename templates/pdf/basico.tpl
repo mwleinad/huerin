@@ -105,41 +105,49 @@
 </head>
 <body>
 <div id="page-wrap">
-
     <table width="100%">
         <tbody>
         <tr>
-            <td rowspan="2" width="20%" valign="top">
+            {if $logo}
+            <td width="20%" valign="top" style="vertical-align: middle">
                 <img src="{$logo}" width="130px">
             </td>
+            {/if}
             <td width="40%" valign="top">
-                <strong>Nombre emisor:</strong>{$xmlData.emisor.Nombre}<br>
-                <strong>RFC emisor:</strong> {$xmlData.emisor.Rfc}<br>
-                <strong>Nombre receptor:</strong> {$xmlData.receptor.Nombre}<br>
-                <strong>RFC receptor:</strong> {$xmlData.receptor.Rfc}<br>
-                <strong>Uso CFDI:</strong> {$xmlData.receptor.UsoCFDI} {$catalogos.UsoCFDI}<br>
-                {if $xmlData.cfdiRelacionados}
-                    <strong>CFDI Relacionado:</strong> {$xmlData.cfdiRelacionados.uuid} <br>
-                {/if}
-                {if $xmlData.escuela.noControl} <strong># Control:</strong> {$xmlData.escuela.noControl} {/if}<br>
-                {if $xmlData.escuela.carrera} <strong>Carrera:</strong> {$xmlData.escuela.carrera} {/if}<br>
+                <strong style="margin-top: 0px">Datos del emisor</strong>
+                <p style="line-height: 1.2; margin-top: 0px; margin-bottom: .5px">
+                    <span style="display:block"><strong>Nombre:</strong>{$xmlData.emisor.Nombre}</span>
+                    <span style="display:block"><strong>RFC:</strong>{$xmlData.emisor.Rfc}</span>
+                    <span style="display:block"><strong>Régimen fiscal:</strong>{$xmlData.emisor.RegimenFiscal} {$catalogos.RegimenFiscal}</span>
+                </p>
+                <strong>Datos del receptor</strong>
+                <p style="line-height: 1.2; margin-top: 0px">
+                    <span style="display: block"><strong>Nombre:</strong>{$xmlData.receptor.Nombre}</span>
+                    <span style="display: block"><strong>RFC:</strong>{$xmlData.receptor.Rfc}</span>
+                   {if $xmlData.receptor.RegimenFiscalReceptor}<span style="display: block"><strong>Régimen fiscal:</strong> {$xmlData.receptor.RegimenFiscalReceptor} {$catalogos.RegimenFiscalReceptor}</span>{/if}
+                   {if $xmlData.receptor.DomicilioFiscalReceptor}<span style="display: block"><strong>Domicilio fiscal:</strong> {$xmlData.receptor.DomicilioFiscalReceptor}</span>{/if}
+                </p>
             </td>
             <td width="40%" valign="top">
-                <strong>Folio fiscal:</strong> {$xmlData.timbreFiscal.UUID}<br>
-                <strong>No. de serie del CSD:</strong> {$xmlData.cfdi.NoCertificado}<br>
-                <strong>Lugar, fecha y hora de emisión:</strong> {$xmlData.cfdi.LugarExpedicion} {$xmlData.cfdi.Fecha|replace:'T':' '}<br>
-                <strong>Efecto de comprobante:</strong> {$xmlData.cfdi.TipoDeComprobante} {$catalogos.EfectoComprobante}<br>
-                <strong>Folio y serie:</strong> {$xmlData.cfdi.Serie} {$xmlData.cfdi.Folio}<br>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" width="100%" valign="top">
-                <strong>Régimen fiscal:</strong> {$xmlData.emisor.RegimenFiscal} {$catalogos.RegimenFiscal}
+                <span style="line-height: 1.2; margin-top: 0px"><strong>Folio fiscal:</strong> {$xmlData.timbreFiscal.UUID}</span>
+                <p style="line-height: 1.2; margin-top: 0px">
+                    <span style="display: block"> <strong>No. de serie del CSD:</strong> {$xmlData.cfdi.NoCertificado}</span>
+                    <span style="display: block"> <strong>Lugar, fecha y hora de emisión:</strong> {$xmlData.cfdi.LugarExpedicion} {$xmlData.cfdi.Fecha|replace:'T':' '}</span>
+                    <span style="display: block"> <strong>Efecto de comprobante:</strong> {$xmlData.cfdi.TipoDeComprobante} {$catalogos.EfectoComprobante}</span>
+                    <span style="display: block"> <strong>Folio y serie:</strong> {$xmlData.cfdi.Serie} {$xmlData.cfdi.Folio}</span>
+                    <span style="display: block"> <strong>Uso CFDI:</strong> {$xmlData.receptor.UsoCFDI} {$catalogos.UsoCFDI}</span>
+                    <span style="display: block">
+                        {if $xmlData.cfdiRelacionados}
+                            <strong>CFDI Relacionado:</strong> {$xmlData.cfdiRelacionados.uuid}
+                        {/if}
+                    </span>
+                    {if $xmlData.escuela.noControl}<span style="display: block"><strong># Control:</strong>{$xmlData.escuela.noControl}</span>{/if}
+                    {if $xmlData.escuela.carrera} <span style="display: block"><strong>Carrera:</strong> {$xmlData.escuela.carrera}</span> {/if}
+                </p>
             </td>
         </tr>
         </tbody>
     </table>
-
     {*{$xmlData.db.observaciones|urldecode|replace:"[%]MAS[%]":"+"}*}
     <p class="bold no-margin">Conceptos</p>
     {foreach from=$xmlData.conceptos item=concepto}
@@ -329,7 +337,6 @@
     {include file="{$DOC_ROOT}/templates/pdf/cadenasTimbres.tpl"}
 
     <p class="text-center small-height">Este documento es una representación impresa de un CFDI</p>
-    <p class="text-center small-height">www.comprobantedigital.mx</p>
 </div>
 </body>
 </html>

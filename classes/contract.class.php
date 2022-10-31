@@ -865,7 +865,7 @@ class Contract extends Main
         if($row) {
             $row['rfcFacturacion'] = $row['rfc'];
             $row['nameFacturacion'] = $row['name'];
-            $row['cpFacturacion'] = $row['cp'];
+            $row['cpFacturacion'] = $row['cpAddress'];
             $row['idFacturacion'] = $row['contractId'];
             if ((int)$row['useAlternativeRzForInvoice'] === 1) {
                 if ((int)$row['alternativeRzId'] > 0) {
@@ -874,7 +874,7 @@ class Contract extends Main
                     $alternativeData = $this->Util()->DB()->GetRow();
                     $row['rfcFacturacion'] = $alternativeData['rfc'];
                     $row['nameFacturacion'] = $alternativeData['name'];
-                    $row['cpFacturacion'] = $alternativeData['cp'];
+                    $row['cpFacturacion'] = $alternativeData['cpAddress'];
                     $row['idFacturacion'] = $alternativeData['contractId'];
                 } elseif ((int)$row['alternativeRzId'] === 0) {
                     $row['rfcFacturacion'] = $row['alternativeRfc'];
