@@ -7,6 +7,7 @@
           <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a" summary="Employee Pay Sheet">
             <thead>
               <tr>
+                <th width="5" scope="col"></th>
                 <th width="70" scope="col">RFC</th>
                 <th width="200" scope="col">Nombre</th>
                 <th width="109" scope="col">Fecha</th>

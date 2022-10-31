@@ -976,7 +976,7 @@ class Util extends CustomError
         foreach ($result as $k => $row) {
 
             foreach ($row as $key => $val) {
-                $info[$key] = utf8_decode($val);
+                $info[$key] = $this->isUtf8Aplly($val) ? $val : utf8_decode($val);
             }
 
             $card[$k] = $info;

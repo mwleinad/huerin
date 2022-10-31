@@ -1,4 +1,6 @@
               <tr>
+                <td title="Comprobante generado con version {$fact.version}">
+                    <small title="Comprobante generado con version {$fact.version}" style="color: darkgreen; font-weight: bold">v{$fact.version}</small></td>
                 <td width="34">{$fact.rfc}</td>
                 <td>{$fact.nombre}</td>
                 <td align="center">{$fact.fecha}</td>
