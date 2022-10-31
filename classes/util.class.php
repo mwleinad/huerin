@@ -852,7 +852,7 @@ class Util extends CustomError
     function CadenaOriginalVariableFormat($cadena, $formatNumber = false, $addPipe = true, $dec = 2)
     {
         //change tabs, returns and newlines into spaces
-        $cadena = utf8_encode(urldecode($cadena));
+        $cadena = $this->isUtf8Aplly($cadena) ? $cadena : utf8_encode(urldecode($cadena));
         $cadena = str_replace("|", "/", $cadena);
         $remove = array("\t", "\n", "\r\n", "\r");
         $cadena = str_replace($remove, ' ', $cadena);
@@ -1811,13 +1811,16 @@ class Util extends CustomError
 
     function checkUtf8($str){
         if( mb_detect_encoding($str,"UTF-8, ISO-8859-1")!="UTF-8" ){
-
             return  utf8_encode($str);
         }
         else{
             return $str;
         }
 
+    }
+
+    function isUtf8Aplly($str) {
+        return mb_detect_encoding($str,"UTF-8, ISO-8859-1") == "UTF-8";
     }
 }
 
