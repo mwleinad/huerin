@@ -14,7 +14,7 @@
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/donat11.xslt"/>
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/divisas.xslt"/>
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/implocal.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/leyendasFisc.xszlt"/>
+	<xsl:include href="/var/www/mainplatform/public_html/xslt/leyendasFisc.xslt"/>
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/pfic.xslt"/>
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/TuristaPasajeroExtranjero.xslt"/>
 	<xsl:include href="/var/www/mainplatform/public_html/xslt/nomina12.xslt"/>
