@@ -1275,7 +1275,7 @@ class Comprobante extends Producto
                      )  as instancias
                      FROM comprobante
 		             LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = comprobante.comprobanteId 
-	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC " . $sqlAdd;
+	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC, serie DESC, folio DESC " . $sqlAdd;
 
         $id_empresa = $_SESSION['empresaId'];
 
@@ -1400,7 +1400,7 @@ class Comprobante extends Producto
             $total = count($this->Util()->DB()->GetResult());
             $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/sistema/consultar-facturas");
             $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
-            $orderBy = " ORDER BY c.fecha DESC ";
+            $orderBy = " ORDER BY c.fecha DESC, c.serie DESC , c.folio DESC ";
         }
         $sqlQuery = "SELECT c.*, c.status AS status,c.comprobanteId AS comprobanteId, f.nombreServicio AS concepto,
                      a.name AS name, a.rfc AS rfc, a.contractId AS contractId, d.instanciaServicioId,

@@ -92,12 +92,13 @@ class ComprobantePago extends Comprobante {
             'cfdiRelacionadoId' => $comprobante["comprobanteId"],
             'tipoRelacion' => '04',
             'userId' => $comprobante['userId'],
-            'usoCfdi' => 'P01',
+            'usoCfdi' => $comprobante['version'] == '3.3' ? 'P01' : 'CP01',
             'formaDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
             'metodoDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
             'infoPago' => $infoPago,
             'tiposDeMonedaPago' => $comprobante['tipoDeMoneda'],
             'tiposDeCambioPago' => $comprobante['tipoDeCambio'],
+            'versionDR' => $comprobante['version'], // control interno para aplicar complemento 1.0 o 2.0
         ];
 
         if(!$comprobanteId = $cfdi->Generar($data)) {

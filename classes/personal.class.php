@@ -912,7 +912,7 @@ class Personal extends Main
         $db = new DB();
         $sql = "SELECT * FROM personal where personalId='" . $inputId . "'";
         $db->setQuery($sql);
-        $result = $db->GetResult($sql);
+        $result = $db->GetResult();
 
         if ($result) {
             $currentId = $result[0]["personalId"];

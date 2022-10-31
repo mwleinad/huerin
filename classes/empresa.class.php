@@ -37,6 +37,7 @@ class Empresa extends Main
 	private $nameFileCertificado;
 	private $nameFileKeyPrivate;
 	private $claveFacturador;
+	private $usoCfdi;
 
 	public function setNombre($value)
 	{
@@ -866,6 +867,15 @@ class Empresa extends Main
         if($file["extension"] != "key")
             $this->Util()->setError(0,"error","LLave privada invalida");
     }
+
+	public function getUsoCfdi($tipo, $regimen) {
+		$type = [
+			'personamoral' => 1,
+			'personafisica' => 2,
+		];
+		$taxPurpose =  $type[str_replace(" ", "",strtolower($tipo))];
+		$sql = "SELECT c_UsoCfdi FROM c_UsoCfdi WHERE tax_purpose IN(3, ".$taxPurpose.") AND FIND_IN_SET('".$regimen."' , regimen) > 0";
+	}
 
 
 }//empresa

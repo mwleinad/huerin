@@ -20,7 +20,7 @@
                 </td>
                 <td style="width:100px; word-wrap:break-word;">{$fact.uuid|wordwrap:20:"\n":true}</td>
                 <td width="90">{*ver factura*}
-                    {if $fact.version == '3.3'}
+                    {if $fact.version|in_array:['3.3','4.0']}
                         {if (in_array(134,$permissions)|| $User.isRoot)}
                         <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$fact.comprobanteId}&type=view" title="Ver PDF">
                             <img src="{$WEB_ROOT}/images/icons/ver_factura.png" height="16" width="16" border="0"/>
@@ -42,7 +42,7 @@
                     {/if}
 
                     {*descargar pdf*}
-                    {if $fact.version == '3.3'}
+                    {if $fact.version|in_array:['3.3','4.0']}
                         {if (in_array(135,$permissions)|| $User.isRoot)}
                         <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$fact.comprobanteId}&type=download">
                             <img src="{$WEB_ROOT}/images/pdf_icon.png" height="16" width="16" border="0" title="Descargar PDF"/>

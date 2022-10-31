@@ -249,7 +249,8 @@ class InvoiceService extends Cfdi{
         $this->data['cfdiRelacionadoSerie'] = null;
         $this->data['cfdiRelacionadoFolio'] = null;
         $this->data['tipoRelacion'] = '04';
-        $this->data['usoCfdi'] = 'G03';
+
+        $this->data['usoCfdi'] = $this->currentContract[''] === 'Persona Fisica' && $this->currentContract['regimenId'] == 616 ? 'S01' : 'G03';
 
         $sql  ="SELECT * FROM serie WHERE rfcId = '".$this->getRfcId()."' and tiposComprobanteId=1
                 ORDER BY serieId ASC LIMIT 1";
@@ -541,7 +542,7 @@ class InvoiceService extends Cfdi{
         if($facturaHijo) {
             $folio = $facturaHijo['serie'].$facturaHijo['folio'];
             $unserializeTimbre = unserialize($facturaHijo['timbreFiscal']);
-            $msj = 'Ya existe un comprobante generado anteriormente con fecha : <strong> '.$facturaHijo['fecha'].'</strong>, folio: <strong>'. $folio.'</strong>';
+            $msj = 'Ya existe un comprobante generado anteriormente relacionado a esta factura, con fecha : <strong> '.$facturaHijo['fecha'].'</strong>, folio: <strong>'. $folio.'</strong>';
             $msj .= ' y UUID: <strong>'.  $unserializeTimbre['UUID'].'</strong>';
             $this->Util()->setError(0,'error',  $msj);
             $dataReturn['uuid'] = $unserializeTimbre['UUID'];

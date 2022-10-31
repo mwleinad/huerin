@@ -217,7 +217,7 @@
             {if $mainMnu == "invoices"}
             <ul>
               {if in_array(131,$permissions) || $User.isRoot}
-                <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if} target="_blank"><span>Nuevo CFDi 3.3</span></a></li>
+                <li><a href="{$WEB_ROOT}/cfdi33-generate" {if $includedTpl == "cfdi33-generate"} class="current"{/if} target="_blank"><span>Nuevo CFDI</span></a></li>
               {/if}
               {if in_array(132,$permissions) || $User.isRoot}
                 <li><a href="{$WEB_ROOT}/sistema/consultar-facturas" {if $includedTpl == "sistema_consultar-facturas"} class="current"{/if} target="_blank"><span>Consultar Comprobantes</span></a></li>
