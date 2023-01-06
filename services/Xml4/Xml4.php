@@ -801,14 +801,6 @@ class Xml4 extends Producto{
 
         $fechaPago = $this->data['infoPago']->fecha.'T12:00:00';
 
-        switch($this->data['infoPago']->metodoPago) {
-            case "Efectivo": $metodoPago = "01";break;
-            case "Deposito": $metodoPago = "04";break;
-            case "Transferencia": $metodoPago = "03";break;
-            case "Cheque": $metodoPago = "02";break;
-            default: $metodoPago = "99";break;
-        }
-
         switch($this->data['tiposDeMonedaPago']) {
             case "peso": $tipoDeMoneda = "MXN"; break;
             case "dolar": $tipoDeMoneda = "USD"; break;
@@ -817,7 +809,7 @@ class Xml4 extends Producto{
 
         $pagoData = [
             "FechaPago" => $fechaPago,
-            "FormaDePagoP" => $metodoPago,
+            "FormaDePagoP" => $this->data['infoPago']->metodoPago,
             "TipoCambioP" => '1',
             "MonedaP" => $tipoDeMoneda,
             "Monto" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false),

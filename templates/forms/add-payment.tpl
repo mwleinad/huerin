@@ -4,15 +4,16 @@
 		<input type="hidden" id="efectivo" name="efectivo" value="{if isset($smarty.get.id)}0{else}1{/if}" class="largeInput"/>
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
-				<div style="width:30%;float:left">* Metodo de Pago:</div>
-        	<select name="metodoDePago" id="metodoDePago" class="largeInput">
-          	<option value="Efectivo">Efectivo</option>
-          	<option value="Bonificacion">Bonificacion</option>
-          	<option value="Deposito">Deposito</option>
-          	<option value="Transferencia">Transferencia</option>
-          	<option value="Cheque">Cheque</option>
-          	<option value="Saldo a Favor">Saldo a Favor</option>
-          </select>
+			<div style="width:30%;float:left">* Metodo de Pago:</div>
+			<select name="metodoDePago" id="metodoDePago" class="largeInput">
+					{foreach from=$formasDePago item=formaDePago}
+						{if $formaDePago.c_FormaPago != '99'}
+							<option value="{$formaDePago.c_FormaPago}"
+									{if $formaDePago.c_FormaPago == "01"} selected{/if}
+							>{$formaDePago.c_FormaPago}-{$formaDePago.descripcion}</option>
+						{/if}
+					{/foreach}
+		  </select>
         </div>		
 
 			<div class="formLine" style="width:100%; text-align:left">

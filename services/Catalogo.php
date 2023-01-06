@@ -5,7 +5,7 @@ class Catalogo extends Main {
     function formasDePago() {
         $this->Util()->DB()->setQuery("
 			SELECT * FROM c_FormaPago
-			ORDER BY descripcion");
+			ORDER BY c_FormaPago");
         $result = $this->Util()->DB()->GetResult();
 
         return $result;
