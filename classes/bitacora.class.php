@@ -192,7 +192,6 @@ class Bitacora extends Main {
                 }
                 unlink($file);
             }
-            break;
         }
 
         $this->Util()->setError(0,'complete', $count.' correos enviados.');
