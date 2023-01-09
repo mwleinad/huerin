@@ -1,6 +1,6 @@
 delimiter $$
 
-CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `vw_contract_customer_servicio` AS SELECT
+CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `huerin`.`vw_contract_customer_servicio` AS SELECT
 	`a`.`contractId` AS `contractId`,
 	`b`.`NAME` AS `NAME`,
 	`b`.`nameContact` AS `nameContact`,
@@ -14,16 +14,17 @@ CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURIT
 	`a`.`lastDateCreateWorkflow` AS `lastDateCreateWorkflow`,
 	`a`.`lastDateWorkflow` AS `lastDateWorkflow`,
 	`b`.`rfc` AS `rfc`,
-	`c`.`is_primary` AS `is_primary`, 
-	`c`.`periodicidad` 
+	`c`.`is_primary` AS `is_primary`,
+	`c`.`periodicidad`,
+	`c`.`uniqueInvoice`
 FROM
 	((
 			`servicio` `a`
 			JOIN `vw_customer_contract_activo` `b` ON ( `a`.`contractId` = `b`.`contractId` ))
-	JOIN `tipoServicio` `c` ON ( `a`.`tipoServicioId` = `c`.`tipoServicioId` )) 
+	JOIN `tipoServicio` `c` ON ( `a`.`tipoServicioId` = `c`.`tipoServicioId` ))
 WHERE
-	`a`.`status` IN ( 'activo', 'bajaParcial' ) 
-	AND `c`.`status` = '1' $$
+	`a`.`status` IN ( 'activo', 'bajaParcial' )
+	AND `c`.`status` = '1'$$
 
 
 DROP PROCEDURE IF EXISTS `sp_get_data_recotizacion`$$
@@ -50,6 +51,7 @@ BEGIN
 	DECLARE vDespues JSON;
 	DECLARE vFif DATE;
 	DECLARE vIsPrimary INT DEFAULT 0;
+	DECLARE vUnicaOcasion INT DEFAULT 0;
 	DECLARE vPeriodicidad VARCHAR(100) DEFAULT NULL;
 	DECLARE vBitacoraExist INT DEFAULT 0;
 	DECLARE vAllowInData INT DEFAULT 0;
@@ -70,7 +72,7 @@ BEGIN
 
 	OPEN cursor_servicio;
 			itera_servicio: REPEAT
-			FETCH cursor_servicio INTO vContractId, vServicioId, vName, vNameContact, vNombreServicio, vCosto, vFif, vRfc, vIsPrimary, vPeriodicidad;
+			FETCH cursor_servicio INTO vContractId, vServicioId, vName, vNameContact, vNombreServicio, vCosto, vFif, vRfc, vIsPrimary, vPeriodicidad, vUnicaOcasion;
 			SET vAntes = null;
 			SET vDespues = null;
 			SET vNameResponsable = null;
@@ -103,7 +105,7 @@ BEGIN
 				SET vCostoActual 	 = vCosto;
 			END IF;
 
-			IF vCostoActual > 0 && vIsPrimary > 0 && vAllowInData > 0 && vPeriodicidad <>'Eventual' THEN
+			IF vCostoActual > 0 && vIsPrimary > 0 && vAllowInData > 0 && vPeriodicidad <>'Eventual' && vUnicaOcasion = 0 THEN
 				IF (!ISNULL(WEEK(vFif))) THEN
 					INSERT INTO tmp_data_recotizacion(contractId, servicioId, `name`, nombreServicio, costoAnterior, costoActual, rfc, nameContact, nameResponsable, emailResponsable)
 					VALUES(vContractId, vServicioId, vName, vNombreServicio, vCostoAnterior, vCostoActual, vRfc, vNameContact, vNameResponsable, vEmailResponsable);
