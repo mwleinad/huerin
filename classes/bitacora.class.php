@@ -97,8 +97,8 @@ class Bitacora extends Main {
         $tableStyles = array(
             'borderSize' => 1,
             'borderColor' => '#00000',
-            'width' =>  '100',
-            'unit' => TblWidth::AUTO,
+            'width' =>  '100%',
+            'unit' => TblWidth::PERCENT,
             'alignment' => PhpOffice\PhpWord\SimpleType\JcTable::CENTER
 
         );
@@ -121,7 +121,10 @@ class Bitacora extends Main {
                   'size'=>16 ));
         $phpWord->setComplexValue('nombre_cliente', $nombre_cliente);
 
-        $phpWord->setValue('current_date', date('Y'));
+        $currentYear = date('Y', strtotime($data['fecha_importacion']));
+        $beforeYear  = date('Y', strtotime('-1 year', strtotime($data['fecha_importacion'])));
+        $phpWord->setValue('current_date', $currentYear);
+
 
         $nombre_empresa = new TextRun();
         $nombre_empresa->addText($data['name'],
@@ -134,16 +137,18 @@ class Bitacora extends Main {
         $table = new Table($tableStyles);
         $headerTable = array('name' => 'Tw Cen MT', 'size' => 12, 'bold' => true,'color'=>'767070');
         $table->addRow();
+        $table->addCell()->addText('Razón social', $headerTable);
         $table->addCell()->addText('Servicio', $headerTable);
-        $table->addCell()->addText('Costo Anterior', $headerTable);
-        $table->addCell()->addText('Costo Nuevo', $headerTable);
+        $table->addCell()->addText('Precio '.$beforeYear, $headerTable);
+        $table->addCell()->addText('Precio '.$currentYear, $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
-        $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true);
+        $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true, 'valign'=> 'center');
         $totalAnterior = 0;
         $totalActual = 0;
         foreach($data['servicios'] as $serv) {
             $table->addRow();
+            $table->addCell()->addText($data['name'], $bodyTable);
             $table->addCell()->addText($serv['nombreServicio'], $bodyTable);
             $table->addCell()->addText("$ ". number_format($serv['costoAnterior'], 2,'.', ','), $bodyTable);
             $table->addCell()->addText("$ ".number_format($serv['costoActual'], 2,'.', ','), $bodyTable);
@@ -151,7 +156,8 @@ class Bitacora extends Main {
             $totalActual =  $totalActual + $serv['costoActual'];
         }
         $table->addRow();
-        $table->addCell()->addText('TOTAL', $styleTotal);
+        $table->addCell()->addText('', $styleTotal);
+        $table->addCell()->addText('SUBTOTAL', $styleTotal);
         $table->addCell()->addText("$ ". number_format($totalAnterior, 2,'.', ','), $styleTotal);
         $table->addCell()->addText("$ ". number_format($totalActual, 2,'.', ','), $styleTotal);
         $phpWord->setComplexBlock('tabla_comparativa', $table);
@@ -176,7 +182,7 @@ class Bitacora extends Main {
             if($file) {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
-                $correo = PROJECT_STATUS === 'test' ? 'rzetina@braunhuerin.com.mx' : $item['emailResponsable'];
+                $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
@@ -186,6 +192,7 @@ class Bitacora extends Main {
                 }
                 unlink($file);
             }
+            break;
         }
 
         $this->Util()->setError(0,'complete', $count.' correos enviados.');
