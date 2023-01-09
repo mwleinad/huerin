@@ -97,8 +97,8 @@ class Bitacora extends Main {
         $tableStyles = array(
             'borderSize' => 1,
             'borderColor' => '#00000',
-            'width' =>  '100',
-            'unit' => TblWidth::AUTO,
+            'width' =>  '100%',
+            'unit' => TblWidth::PERCENT,
             'alignment' => PhpOffice\PhpWord\SimpleType\JcTable::CENTER
 
         );
@@ -137,13 +137,13 @@ class Bitacora extends Main {
         $table = new Table($tableStyles);
         $headerTable = array('name' => 'Tw Cen MT', 'size' => 12, 'bold' => true,'color'=>'767070');
         $table->addRow();
-        $table->addCell()->addText('Razon social', $headerTable);
+        $table->addCell()->addText('Razón social', $headerTable);
         $table->addCell()->addText('Servicio', $headerTable);
         $table->addCell()->addText('Precio '.$beforeYear, $headerTable);
         $table->addCell()->addText('Precio '.$currentYear, $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
-        $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true);
+        $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true, 'valign'=> 'center');
         $totalAnterior = 0;
         $totalActual = 0;
         foreach($data['servicios'] as $serv) {
