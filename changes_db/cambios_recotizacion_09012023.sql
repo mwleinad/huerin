@@ -59,7 +59,7 @@ BEGIN
 
 	DECLARE cursor_servicio CURSOR FOR
 	SELECT contractId, servicioId, name, nameContact, nombreServicio,
-	costo, inicioFactura, rfc, is_primary, periodicidad
+	costo, inicioFactura, rfc, is_primary, periodicidad, uniqueInvoice
 	FROM vw_contract_customer_servicio;
 
 	SELECT COUNT(*) FROM vw_contract_customer_servicio INTO vTotalRow;
