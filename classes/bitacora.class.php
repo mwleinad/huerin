@@ -183,7 +183,15 @@ class Bitacora extends Main {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
                 $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
+
+
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
+
+                if($correo == "rtomas@braunhuerin.com.mx") {
+                    $name   = "Cinthya Verónica Hernández Toledano";
+                    $correo = "chernandez@braunhuerin.com.mx";
+                }
+
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
                     $name, $file,$name_file, '','',
