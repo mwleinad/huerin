@@ -188,8 +188,8 @@ class Bitacora extends Main {
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
 
                 if($correo == "rtomas@braunhuerin.com.mx") {
-                    $name   = "Cinthya Verónica Hernández Toledano";
-                    $correo = "chernandez@braunhuerin.com.mx";
+                    $name   = "Leslie Daniela Garcia Diaz";
+                    $correo = "ldgarcia@braunhuerin.com.mx";
                 }
 
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
