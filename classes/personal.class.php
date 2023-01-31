@@ -230,7 +230,7 @@ class Personal extends Main
                     FROM personal a 
                     LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
                     LEFT JOIN roles d on a.roleId=d.rolId
-                    LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1
+                    LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE c.estatus=1 
                     $sqlFilter $sqlActive 
                     ORDER BY a.name ASC";
             $this->Util()->DB()->setQuery($sql);
@@ -298,12 +298,13 @@ class Personal extends Main
     {
         $filtro = "";
         $filtro .= (int)$_SESSION["User"]["level"] != 1 && !$this->accessAnyDepartament() ?
-            " where departamentoId = '" . $_SESSION["User"]["departamentoId"] . "' "
+            " AND departamentoId = '" . $_SESSION["User"]["departamentoId"] . "' "
             : "";
         $sql = "SELECT
                     *
                 FROM
                     departamentos
+                WHERE estatus =  1    
                     $filtro
                 ORDER BY
                     departamento
@@ -1370,7 +1371,7 @@ class Personal extends Main
 				)  as responsables
 				from (select a.personalId, a.name, a.departamentoId, b.nivel from personal a inner join roles b on a.roleId=b.rolId) as personal 	
 				inner join departamentos on departamentos.departamentoId = personal.departamentoId
-				where 1 
+				where departamentos.estatus=1   
 				group by personal.departamentoId order by personal.name asc
 				";
         $this->Util()->DB()->setQuery($sql);

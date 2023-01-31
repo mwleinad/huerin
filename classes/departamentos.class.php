@@ -49,7 +49,7 @@ class Departamentos extends Main
     }
     public function GetListDepartamentos()
     {
-        $this->Util()->DB()->setQuery('SELECT * FROM departamentos  ORDER BY ordenTmp ASC, departamento ASC ');
+        $this->Util()->DB()->setQuery('SELECT * FROM departamentos where estatus = 1 ORDER BY ordenTmp ASC, departamento ASC ');
         $result = $this->Util()->DB()->GetResult();
         return $result;
     }
@@ -65,7 +65,7 @@ class Departamentos extends Main
                 }
             }
         }
-		$this->Util()->DB()->setQuery("SELECT * FROM departamentos where 1 $strFiltro  ORDER BY departamento ASC ");
+		$this->Util()->DB()->setQuery("SELECT * FROM departamentos where estatus =1  $strFiltro  ORDER BY departamento ASC ");
 		$result = $this->Util()->DB()->GetResult();
 		//encontrar el permisoId de cada departamento
         foreach($result as $key=> $dep){
@@ -94,7 +94,7 @@ class Departamentos extends Main
         //$this->Util()->DB()->GetQuery();
         $single = $this->Util()->DB()->GetSingle();
 
-        $this->Util()->DB()->setQuery('SELECT departamentoId FROM departamentos  WHERE departamento="'.$single.'"');
+        $this->Util()->DB()->setQuery('SELECT departamentoId FROM departamentos  WHERE estatus =1 and departamento="'.$single.'" ');
         $depId = $this->Util()->DB()->GetSingle();
         return $depId;
     }
@@ -207,8 +207,8 @@ class Departamentos extends Main
         $this->Util()->DB()->setQuery("select departamento from departamentos where departamentoId = '".$this->departamentoId."' ");
         $currentDepartamento = $this->Util()->DB()->GetSingle();
         $this->Util()->DB()->setQuery("
-				DELETE FROM
-					departamentos
+				UPDATE departamentos
+				SET estatus = 0
 				WHERE
 					departamentoId = '".$this->departamentoId."'");
         $affect = $this->Util()->DB()->DeleteData();
