@@ -200,7 +200,7 @@ class TipoServicio extends Main
 				)  as servicios
 				from tipoServicio 	
 				inner join departamentos on departamentos.departamentoId = tipoServicio.departamentoId
-				where tipoServicio.status = '1' ".$ftr."
+				where tipoServicio.status = '1' AND departamentos.estatus = 1 ".$ftr."
 				group by tipoServicio.departamentoId order by departamentos.departamento asc, tipoServicio.nombreServicio asc
 				";
 		$this->Util()->DB()->setQuery($sql);
@@ -233,7 +233,7 @@ class TipoServicio extends Main
 
         $this->Util()->DB()->setQuery("SELECT a.*, b.departamento  FROM tipoServicio a 
 											  INNER JOIN departamentos b ON a.departamentoId = b.departamentoId
-											  WHERE a.status='1' ".$filtroDep." ORDER BY a.nombreServicio ASC ");
+											  WHERE a.status='1' and b.estatus = 1 ".$filtroDep." ORDER BY a.nombreServicio ASC ");
         $result = $this->Util()->DB()->GetResult();
 
         foreach($result as $key => $row)
