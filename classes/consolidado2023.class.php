@@ -1,0 +1,789 @@
+<?php
+
+class Consolidado2023 extends Personal
+{
+
+    private $nameReport;
+
+    public function getNameReport()
+    {
+        return $this->nameReport;
+    }
+
+    public function generateData()
+    {
+        $strFilter = '';
+        $months = $this->Util()->generateMonthUntil($_POST['period'], false);
+
+        $name_view = "instancia_" . $_POST['year'] . "_" . implode('_', $months);
+        $custom_fields = ['contract_id', 'name', 'customer', 'servicio_id', 'name_service', 'departamento_id',
+            'status_service', 'is_primary', 'last_date_workflow', 'instancias'];
+        $add_fields_no_group = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
+
+        $select_general = "select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
+                            b.is_primary, b.lastDateWorkflow ";
+        $select_nogroup = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
+        $select_group = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
+                      'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
+        $group_by = " group by a.servicioId ";
+        $order_by = "order by a.date asc ";
+
+        $base_sql = "from instanciaServicio a
+               inner join (select servicio.servicioId,servicio.contractId, servicio.tipoServicioId, servicio.status, 
+                           tipoServicio.nombreServicio, tipoServicio.periodicidad, tipoServicio.departamentoId,
+                           tipoServicio.is_primary, servicio.lastDateWorkflow from servicio 
+                           inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
+                           where tipoServicio.status='1') b on a.servicioId=b.servicioId
+               inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
+                           from contract inner join customer on contract.customerId = customer.customerId) c
+                           on b.contractId=c.contractId
+               where year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
+        $this->Util()->createOrReplaceView($name_view, $select_general . $select_group . $base_sql . $group_by . $order_by, $custom_fields);
+        array_pop($custom_fields);
+        $this->Util()->createOrReplaceView('nogroup_' . $name_view, $select_general . $select_nogroup . $base_sql . $order_by, array_merge($custom_fields, $add_fields_no_group));
+
+
+        if ($_POST["responsableCuenta"])
+            $strFilter .= " and a.personalId = '" . $_POST['responsableCuenta'] . "' ";
+
+        $sql = "select a.*, b.nivel,c.departamento, b.name as name_rol from personal a
+                inner join roles b on a.roleId = b.rolId
+                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $gerentes = $this->Util()->DB()->GetResult();
+
+        $cleaned_gerentes = [];
+        foreach ($gerentes as $gerente) {
+            $this->setPersonalId($gerente['personalId']);
+            $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
+            $item_gerente = $gerente;
+            $cleaned_subordinados = [];
+            $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view);
+            array_push($cleaned_subordinados, $gerente);
+            foreach ($subordinadosSubSup as $key => $subSup) {
+                $this->setPersonalId($subSup['personalId']);
+                $subordinados =  $this->GetCascadeSubordinates();
+                $subordinadosLineal =  is_array($subordinados) ?  array_column($subordinados, 'personalId') : [];
+                //$subordinadosLineal = [];
+                $sueldosSubs =  is_array($subordinados) ?  array_column($subordinados, 'sueldo') : [];
+                $subSup['sueldo'] = $subSup['sueldo'] + array_sum($sueldosSubs);
+                array_push($subordinadosLineal, $subSup['personalId']);
+
+                unset($subSup['children']);
+                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view);
+                array_push($cleaned_subordinados, $subSup);
+            }
+            if (count($cleaned_subordinados)) {
+                $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
+            }
+
+            /*$cleanedSubordinadosNomina = [];
+            $this->setPersonalId($gerente['personalId']);
+            $subordinadosNomina=  $this->SubordinadosDetailsAddPass();
+            foreach ($subordinadosNomina as  $subNomina) {
+                unset($subNomina['children']);
+                $subNomina['propios'] = $this->getRowsPropios($subNomina['personalId'], $name_view);
+                array_push($cleanedSubordinadosNomina, $subNomina);
+            }
+            if (count($cleanedSubordinadosNomina)) {
+                $item_gerente['subordinados_nomina'] = $cleanedSubordinadosNomina;
+            }*/
+            array_push($cleaned_gerentes, $item_gerente);
+        }
+
+        return $cleaned_gerentes;
+    }
+
+    public function getRowsPropios($id, $view)
+    {
+        $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
+        $id =  is_array($id) ?  implode(',', $id) : $id;
+
+        $sql = "select a.* from " . $view . " a 
+                inner join contractPermiso b on a.contract_id=b.contractId
+                where b.personalId in (" . $id . ") " . $ftr_departamento . " order by a.name asc, a.name_service asc ";
+        $this->Util()->DB()->setQuery($sql);
+        $res = $this->Util()->DB()->GetResult();
+        foreach ($res as $key => $row_serv) {
+            $instancias = json_decode($row_serv['instancias'], true);
+            $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
+            $res[$key]['instancias_array'] = $valid_instancias;
+            if (count($res[$key]['instancias_array']) <= 0)
+                unset($res[$key]);
+        }
+        return $res;
+    }
+
+    function processInstancias($row_serv, $instancias, $view)
+    {
+        global $workflow;
+        $instancias_filtered = [];
+        foreach ($instancias as $inst) {
+            $cad = $inst;
+            //los rif el dia que se abren deven valer doble
+            if (in_array((int)$inst['tipo_servicio_id'], [RIF, RIFAUDITADO]))
+                $cad['costo'] = $cad['costo'] * 2;
+
+            if ($row_serv['status_service'] === 'bajaParcial' && $this->Util()->getFirstDate($inst['fecha']) > $this->Util()->getFirstDate($row_serv['last_date_workflow'])) {
+                $cad['class'] = 'Parcial';
+                $cad['costo'] = 0;
+            }
+            // si no es primario es secondario por default.
+            $cad['costo'] = !$row_serv['is_primary'] ? 0 : $cad['costo'];
+            if ($row_serv['is_primary']) {
+                $month = (int)date('m', strtotime($inst['fecha']));
+                $year = (int)date('Y', strtotime($inst['fecha']));
+                $cad['secondary_pending'] = $this->verifySecondary($row_serv['contract_id'], $inst['tipo_servicio_id'], $month, $year, $view);
+            }
+            $cad2['finstancia'] = $cad['fecha'];
+            $cad2['tipoServicioId'] = $cad['tipo_servicio_id'];
+            $pasos = $workflow->validateStepTaskByWorkflow($cad2);
+            if (!count($pasos))
+                continue;
+            array_push($instancias_filtered, $cad);
+        }
+        return $instancias_filtered;
+    }
+
+    function verifySecondary($contract_id, $tipo_servicio_id, $month, $year, $view)
+    {
+        $database_prospect = SQL_DATABASE_PROSPECT;
+        $sql = "call sp_verify_secondary($contract_id, $tipo_servicio_id, $month, $year, 'nogroup_$view', '$database_prospect')";
+        $this->Util()->DB()->setQuery($sql);
+        $complete_secondary = $this->Util()->DB()->GetSingle();
+        return $complete_secondary;
+    }
+
+    public function calcularEstadoResultado()
+    {
+        global $comprobante;
+
+        $gerentes = $this->generateData();
+        $devengados = [];
+        $months = $this->Util()->generateMonthUntil($_POST['period'], false);
+        $gerentes_filtered = [];
+        foreach ($gerentes as $gerente) {
+            $cad_gerente = $gerente;
+            $totales_sub = [];
+            foreach ($gerente['subordinados_cascada'] as $data) {
+                $cad = $data;
+                $propios_meses = [];
+                foreach ($data['propios'] as $propio) {
+                    foreach ($months as $month) {
+                        $key = array_search($month, array_column($propio['instancias_array'], 'mes'));
+                        $month_row = $key === false ? [] : $propio['instancias_array'][$key];
+                        $month_complete = $month >= 10 ? $month : "0" . $month;
+                        if (($propio['status_service'] === 'bajaParcial' &&
+                                $_POST['year'] . "-" . $month_complete . "-01" > $this->Util()->getFirstDate($propio['last_date_workflow'])) && empty($month_row)) {
+                            $month_row['class'] = "Parcial";
+                            $month_row['costo'] = '';
+                        }
+                        $propios_meses[$month]['trabajado'] += in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0
+                            ? $month_row['costo']
+                            : 0;
+                        $propios_meses[$month]['devengado'] += $month_row['costo'];
+                        $saldo = $month_row['comprobante_id'] ? $comprobante->GetInfoComprobante($month_row['comprobante_id'])['saldo'] : 0;
+                        $propios_meses[$month]['cobrado'] += $saldo <= 0 && $month_row['comprobante_id']
+                            ? $month_row['costo'] : 0;
+                    }
+                }
+                $cad['meses_totales'] = $propios_meses;
+                unset($cad['propios']);
+                array_push($totales_sub, $cad);
+            }
+            $cad_gerente['subordinados_filtered'] = $totales_sub;
+
+            /*$totalesNomina = [];
+            foreach ($gerente['subordinados_nomina'] as $data2) {
+                $cad2 = $data2;
+                $propios_meses2 = [];
+                foreach ($data2['propios'] as $propio2) {
+                    foreach ($months as $month) {
+                        $key = array_search($month, array_column($propio2['instancias_array'], 'mes'));
+                        $month_row = $key === false ? [] : $propio2['instancias_array'][$key];
+                        $month_complete = $month >= 10 ? $month : "0" . $month;
+                        if (($propio2['status_service'] === 'bajaParcial' &&
+                                $_POST['year'] . "-" . $month_complete . "-01" > $this->Util()->getFirstDate($propio2['last_date_workflow'])) && empty($month_row)) {
+                            $month_row['class'] = "Parcial";
+                            $month_row['costo'] = '';
+                        }
+                        $propios_meses2[$month]['trabajado'] += in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0
+                            ? $month_row['costo']
+                            : 0;
+                        $propios_meses2[$month]['devengado'] += $month_row['costo'];
+                        $saldo = $month_row['comprobante_id'] ? $comprobante->GetInfoComprobante($month_row['comprobante_id'])['saldo'] : 0;
+                        $propios_meses2[$month]['cobrado'] += $saldo <= 0 && $month_row['comprobante_id']
+                            ? $month_row['costo'] : 0;
+                    }
+                }
+                $cad2['meses_totales'] = $propios_meses2;
+                unset($cad2['propios']);
+                array_push($totalesNomina, $cad2);
+            }
+            $cad_gerente['subordinados_nomina'] = $totalesNomina;*/
+
+            if (count($totales_sub))
+                array_push($gerentes_filtered, $cad_gerente);
+        }
+        return $gerentes_filtered;
+    }
+
+    public function generateReport()
+    {
+        global $global_config_style_cell;
+        $gerentes_filtered = $this->calcularEstadoResultado();
+
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $hoja = 0;
+        $sheet = $book->createSheet($hoja);
+        $months = $this->Util()->generateMonthUntil($_POST['period'], false);
+        $col_title = ['Area', 'Encargado'];
+        $col_month_title = $this->Util()->listMonthHeaderForReport($_POST['period']);
+        $col_title_mix = array_merge($col_title, $col_month_title);
+
+        // obtener gastos administrativos.
+
+        $totalConsolidado =  [];
+        foreach ($gerentes_filtered as $gerente) {
+            if ($hoja != 0)
+                $sheet = $book->createSheet($hoja);
+            $title_sheet = trim(strtoupper(substr($gerente["name"], 0, 6)));
+            $sheet->setTitle($title_sheet);
+            $col = 0;
+            $row = 1;
+            foreach ($col_title_mix as $title_header) {
+                $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+                if ($col > 1) {
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, '%')
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+                }
+                $col++;
+            }
+
+            $row++;
+            $data_total['devengado'] =  $this->drawSection($sheet, $row, $months, 'DEVENGADOS', $gerente['subordinados_filtered'], 'devengado');
+           // $data_total['trabajado'] = $this->drawSection($sheet, $row, $months, 'TRABAJADOS', $gerente['subordinados_filtered'], 'trabajado');
+            //$data_total['cobrado'] = $this->drawSection($sheet, $row, $months, 'COBRADOS', $gerente['subordinados_filtered'], 'cobrado');
+            $data_total['nomina'] = $this->drawSectionNomina($sheet, $row, $months, $gerente['subordinados_filtered']);
+            $data_total['nomina_adicional'] = $this->drawSectionNomina($sheet, $row, $months, $gerente['subordinados_filtered'], PORCENTAJE_AUMENTO);
+            $data_total['utilidad'] = $this->drawSectionUtilidad($sheet, $row, $months, $gerente['subordinados_filtered']);
+            $data_total['nomina_admin'] = $this->drawNominaAdmnistrativa($sheet, $row, $months, $gerente['subordinados_filtered']);
+            $data_total['nomina_admin_adicional'] = $this->drawNominaAdmnistrativa($sheet, $row, $months, $gerente['subordinados_filtered'],PORCENTAJE_AUMENTO);
+            $data_total['gasto_administrativo'] = $this->drawGastoAdministrativo($sheet, $row, $months, $gerente['subordinados_filtered']);
+            $data_total['utilidad_neta'] = $this->drawSectionUtilidadNeta($sheet, $row, $months,
+            $gerente['subordinados_filtered'], $data_total['utilidad'], $data_total['nomina_admin_adicional'], $data_total['gasto_administrativo']);
+
+            $gerente['totales'] = $data_total;
+            $gerente['sheet'] = $title_sheet;
+            array_push($totalConsolidado, $gerente);
+            //$this->drawGranTotal($sheet, $row, $months, $data_total);
+            $hoja++;
+        }
+        $sheet = $book->createSheet($hoja);
+        $sheet->setTitle('CONSOLIDADO');
+        $col = 0;
+        $row = 1;
+        $col_title_mix = array_merge(['Area', 'Nombre'], $col_month_title);
+        foreach ($col_title_mix as $title_header) {
+            $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            if ($col > 1) {
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, '%')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            }
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, '%')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+        $this->drawSectionConsolidado($sheet, $row, $months, 'DEVENGADO', $totalConsolidado, 'devengado');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA OPERATIVA', $totalConsolidado, 'nomina');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA OPERATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_adicional');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'UTILIDAD BRUTA', $totalConsolidado, 'utilidad');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA ADMINISTRATIVA', $totalConsolidado, 'nomina_admin');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA ADMINISTRATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_admin_adicional');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'GASTOS ADMINISTRATIVOS', $totalConsolidado, 'gasto_administrativo');
+        $this->drawSectionConsolidado($sheet, $row, $months, 'UTILIDAD NETA', $totalConsolidado, 'utilidad_neta');
+
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "EDO_RES_" . $_SESSION["User"]["userId"] . ".xlsx";
+        $this->nameReport = $nameFile;
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+    }
+    function drawSectionConsolidado(&$sheet, &$row, $months, $title_section, $data, $key) {
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, $title_section)
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data);
+        foreach($data as $data) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $data['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $data['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sumHor = [];
+            for($num=1; $num<=count($months); $num++) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                array_push($sumHor, $current_col_cordinate);
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=".$data['sheet']."!".$data['totales'][$key]['totales'][$num])
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(".implode(',', $sumHor).")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $row++;
+        }
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL ' . $title_section))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num =1; $num<= count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+            PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+        $row +=3;
+    }
+    function drawSection(&$sheet, &$row, $months, $title_section, $data, $key)
+    {
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, $title_section)
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data);
+        $coordenadas = [];
+        foreach ($data as $item) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            foreach ($item['meses_totales'] as $mes_total) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $sheet->setCellValueByColumnAndRow($col, $row, $mes_total[$key])
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL ' . $title_section))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num =1; $num<= count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+
+        $coordenadas['row_final'] = $row;
+        $row += 3;
+
+        return $coordenadas;
+    }
+
+    function drawSectionNomina(&$sheet, &$row, $months, $data, $adicional = 0)
+    {
+        $titulo =  $adicional > 0 ?  " (ADICIONAL ".$adicional." %)" : '';
+
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, 'NOMINA OPERATIVA'.strtoupper($titulo))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data);
+
+        $coordenadas = [];
+        foreach ($data as $item) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            for($num =1; $num<= count($item['meses_totales']); $num++) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $coordenadas['responsables'][$item['personalId']][$num] = $current_col_cordinate;
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $sheet->setCellValueByColumnAndRow($col, $row, (double)$item['sueldo'] * (1 + ((double)$adicional/100)))
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL NOMINA OPERATIVA'.strtoupper($titulo)))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num =1; $num<= count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $coordenadas['row_final'] = $row;
+        $row += 3;
+        return $coordenadas;
+    }
+
+    function drawSectionUtilidad(&$sheet, &$row, $months, $data)
+    {
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, 'UTILIDAD BRUTA')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data) - 1;
+
+        $coordenadas = [];
+        foreach ($data as $key => $item) {
+            if($key === 0)
+                continue;
+
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            foreach ($item['meses_totales'] as $key2 => $mes_total) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $coordenadas['responsables'][$item['personalId']][$key2] = $current_col_cordinate;
+
+
+                $nominaGerente =  intval($data[0]['sueldo']) > 0 ? ($data[0]['sueldo'] * (1 + (PORCENTAJE_AUMENTO/100))): 0;
+                $utilidad =  (double)$mes_total['devengado'] - ((double)$item['sueldo'] * (1 + (PORCENTAJE_AUMENTO/100))) - ($nominaGerente/(count($data)-1));
+                $sheet->setCellValueByColumnAndRow($col, $row, $utilidad)
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL UTILIDAD BRUTA'))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num=1; $num<=count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $coordenadas['row_final'] = $row;
+        $row += 3;
+
+        return $coordenadas;
+    }
+
+    function drawSectionUtilidadNeta(&$sheet, &$row, $months, $data, $coorUtil, $coorNomAdminAdic, $coorGastoAdmin)
+    {
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, 'UTILIDAD NETA')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data) -1;
+        $coordenadas = [];
+        foreach ($data as $key => $item) {
+            if($key === 0)
+                continue;
+
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+
+            foreach ($item['meses_totales'] as $key2 => $mes_total) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+
+                $coordenadaNominaAdmAdic =  $coorNomAdminAdic['responsables'][$item['personalId']][$key2];
+                $coordenadaGastoAdmin=  $coorGastoAdmin['responsables'][$item['personalId']][$key2];
+                $utilidadNeta = "=".$coorUtil['responsables'][$item['personalId']][$key2]."-SUM(".$coordenadaNominaAdmAdic.", ".$coordenadaGastoAdmin.")";
+                $sheet->setCellValueByColumnAndRow($col, $row, $utilidadNeta)
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL UTILIDAD NETA'))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num=1; $num<=count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $coordenadas['row_final'] = $row;
+        $row += 3;
+
+        return $coordenadas;
+    }
+
+    function drawNominaAdmnistrativa(&$sheet, &$row, $months, $data, $adicional=0)
+    {
+        $titulo =  $adicional > 0 ?  " (ADICIONAL ".$adicional." %)" : '';
+
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, 'NOMINA ADMINISTRATIVA'.strtoupper($titulo))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + (count($data) -1);
+        $filtroAreas = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
+        $matrizNomina =  $this->matrizNominaAdministrativa($filtroAreas);
+        $ponderacionNomina= is_array($matrizNomina) ?  array_column($matrizNomina, 'ponderacion'):  [];
+        $totalPonderacion = array_sum($ponderacionNomina);
+        $totalPonderacion = intval($adicional) > 0 ? ($totalPonderacion * (1 + ($adicional/100))) : $totalPonderacion;
+
+        $coordenadas = [];
+
+        foreach ($data as $key => $item) {
+            if($key == 0)
+                continue;
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            for($num=1; $num<=count($item['meses_totales']); $num++) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $coordenadas['responsables'][$item['personalId']][$num] = $current_col_cordinate;
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $sheet->setCellValueByColumnAndRow($col,$row, $totalPonderacion)
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL NOMINA ADMINISTRATIVA'.strtoupper($titulo)))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num=1; $num<=count($months); $num++)  {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section -1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $coordenadas['row_final'] = $row;
+        $row += 3;
+        return $coordenadas;
+    }
+
+    function drawGastoAdministrativo(&$sheet, &$row, $months, $data)
+    {
+        global $global_config_style_cell;
+        $sheet->setCellValueByColumnAndRow(1, $row, 'GASTOS ADMINISTRATIVOS')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+        $row++;
+
+        $row_initial_section = $row;
+        $row_end_section = $row + count($data) -1;
+        $totalGastoAdministrativo =  $_POST['gasto_administrativo'] ?? GASTO_ADMINISTRATIVO;
+        $numeroGrupo =  NUMERO_GRUPO > 0 ? NUMERO_GRUPO : $this->numeroGrupo();
+        $montoGastoAdmministrativo =  intval($totalGastoAdministrativo) > 0  && $numeroGrupo > 0 ? ($totalGastoAdministrativo/$numeroGrupo) : 0;
+
+        $coordenadadas = [];
+        foreach ($data as $key => $item) {
+            if($key === 0)
+                continue;
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $col++;
+            for($num=1; $num<=count($item['meses_totales']); $num++) {
+                $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $coordenadas['responsables'][$item['personalId']][$num] = $current_col_cordinate;
+
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
+                $sheet->setCellValueByColumnAndRow($col,$row, $montoGastoAdmministrativo)
+                    ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR(" . $current_col_cordinate . "/" . $current_col_total_section . ",0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+        $col = 2;
+        $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('TOTAL GASTOS ADMINISTRATIVOS'))
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+        for($num=1; $num<=count($months); $num++) {
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+            $coordenadas['totales'][$num] = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . $row_initial_section . ":" .
+                PHPExcel_Cell::stringFromColumnIndex($col) . ($row_end_section - 1) . ")")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+            $col++;
+        }
+        $coordenadadas['row_final'] = $row;
+        $row += 3;
+        return $coordenadas;
+    }
+
+    function drawGranTotal(&$sheet, &$row, $months, $row_final = [])
+    {
+
+        global $global_config_style_cell;
+        $row_devengado = $row;
+        foreach ($row_final as $key => $row_total) {
+            $col = 2;
+            $sheet->setCellValueByColumnAndRow(1, $row, strtoupper('gran total ' . $key))
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($global_config_style_cell['style_header']);
+
+            foreach ($months as $month) {
+                $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_total;
+                $current_col_total = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $current_col_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=+" . $current_col_total_section . "")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+" .$current_col_total."/".$current_col_devengado."),0)")
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+            }
+            $row++;
+        }
+
+    }
+
+    function matrizNominaAdministrativa($only = [], $except = []) {
+      $ftr = "";
+      $ftr .=  count($only) > 0 ? " AND b.departamento IN(".implode(',', $only).")" : "";
+      $ftr .=  count($except) > 0 ? " AND b.departamento NOT IN(".implode(',', $except).")" : "";
+
+      $sql = "SELECT b.departamento nombre,SUM(sueldo) total 
+              FROM personal a
+              INNER JOIN departamentos  b ON a.departamentoId=b.departamentoId
+              WHERE b.estatus = 1 ".$ftr."
+              GROUP BY a.departamentoId ";
+      $this->Util()->DB()->setQuery($sql);
+      $results = $this->Util()->DB()->GetResult();
+      $numeroGrupo =  NUMERO_GRUPO > 0 ? NUMERO_GRUPO : $this->numeroGrupo();
+      foreach($results as $key => $value) {
+          $results[$key]['ponderacion'] = intval($value['total']) > 0 && $numeroGrupo > 0 ? ($value['total']/$numeroGrupo) : 0;
+      }
+      return $results;
+    }
+
+    function numeroGrupo() {
+        $sql = "select count(*) total, grupo from personal group by grupo";
+        $this->Util()->DB()->setQuery($sql);
+        $grupos = $this->Util()->DB()->GetResult();
+        return count($grupos);
+    }
+}

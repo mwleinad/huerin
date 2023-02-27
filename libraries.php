@@ -267,6 +267,9 @@ $bonoCobranza = new BonoCobranza;
 include_once(DOC_ROOT."/classes/consolidado.class.php");
 $consolidado = new Consolidado();
 
+include_once(DOC_ROOT."/classes/consolidado2023.class.php");
+$consolidado2023 = new Consolidado2023();
+
 include_once(DOC_ROOT."/classes/clasificacion.class.php");
 $clasificacion = new Clasificacion;
 
