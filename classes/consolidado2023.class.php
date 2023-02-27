@@ -316,11 +316,11 @@ class Consolidado2023 extends Personal
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
-        foreach ($book->getAllSheets() as $sheet1) {
+        /*foreach ($book->getAllSheets() as $sheet1) {
             for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++) {
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
-        }
+        }*/
         $nameFile = "EDO_RES_" . $_SESSION["User"]["userId"] . ".xlsx";
         $this->nameReport = $nameFile;
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
