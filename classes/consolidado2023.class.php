@@ -282,35 +282,35 @@ class Consolidado2023 extends Personal
             //$this->drawGranTotal($sheet, $row, $months, $data_total);
             $hoja++;
         }
-        $sheet = $book->createSheet($hoja);
-        $sheet->setTitle('CONSOLIDADO');
+        $sheetLast = $book->createSheet($hoja);
+        $sheetLast->setTitle('CONSOLIDADO');
         $col = 0;
         $row = 1;
         $col_title_mix = array_merge(['Area', 'Nombre'], $col_month_title);
         foreach ($col_title_mix as $title_header) {
-            $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
+            $sheetLast->setCellValueByColumnAndRow($col, $row, $title_header)
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
             if ($col > 1) {
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, '%')
+                $sheetLast->setCellValueByColumnAndRow($col, $row, '%')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
             }
             $col++;
         }
-        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL')
+        $sheetLast->setCellValueByColumnAndRow($col, $row, 'TOTAL')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, '%')
+        $sheetLast->setCellValueByColumnAndRow($col, $row, '%')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
         $row++;
-        $this->drawSectionConsolidado($sheet, $row, $months, 'DEVENGADO', $totalConsolidado, 'devengado');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA OPERATIVA', $totalConsolidado, 'nomina');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA OPERATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_adicional');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'UTILIDAD BRUTA', $totalConsolidado, 'utilidad');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA ADMINISTRATIVA', $totalConsolidado, 'nomina_admin');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA ADMINISTRATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_admin_adicional');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'GASTOS ADMINISTRATIVOS', $totalConsolidado, 'gasto_administrativo');
-        $this->drawSectionConsolidado($sheet, $row, $months, 'UTILIDAD NETA', $totalConsolidado, 'utilidad_neta');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'DEVENGADO', $totalConsolidado, 'devengado');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'NOMINA OPERATIVA', $totalConsolidado, 'nomina');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'NOMINA OPERATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_adicional');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'UTILIDAD BRUTA', $totalConsolidado, 'utilidad');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'NOMINA ADMINISTRATIVA', $totalConsolidado, 'nomina_admin');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'NOMINA ADMINISTRATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_admin_adicional');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'GASTOS ADMINISTRATIVOS', $totalConsolidado, 'gasto_administrativo');
+        $this->drawSectionConsolidado($sheetLast, $row, $months, 'UTILIDAD NETA', $totalConsolidado, 'utilidad_neta');
         $hoja++;
 
         $book->setActiveSheetIndex(0);
