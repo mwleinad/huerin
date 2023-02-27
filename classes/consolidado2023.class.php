@@ -311,6 +311,7 @@ class Consolidado2023 extends Personal
         $this->drawSectionConsolidado($sheet, $row, $months, 'NOMINA ADMINISTRATIVA (ADICIONAL '.PORCENTAJE_AUMENTO.'%)', $totalConsolidado, 'nomina_admin_adicional');
         $this->drawSectionConsolidado($sheet, $row, $months, 'GASTOS ADMINISTRATIVOS', $totalConsolidado, 'gasto_administrativo');
         $this->drawSectionConsolidado($sheet, $row, $months, 'UTILIDAD NETA', $totalConsolidado, 'utilidad_neta');
+        $hoja++;
 
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
@@ -500,11 +501,11 @@ class Consolidado2023 extends Personal
         $row++;
 
         $row_initial_section = $row;
-        $row_end_section = $row + count($data) - 1;
+        $row_end_section = count($data) >  1 ? ($row + count($data) - 1) : ($row + count($data));
 
         $coordenadas = [];
         foreach ($data as $key => $item) {
-            if($key === 0)
+            if($key === 0 && count($data) > 1)
                 continue;
 
             $col = 0;
@@ -521,7 +522,9 @@ class Consolidado2023 extends Personal
 
 
                 $nominaGerente =  intval($data[0]['sueldo']) > 0 ? ($data[0]['sueldo'] * (1 + (PORCENTAJE_AUMENTO/100))): 0;
-                $utilidad =  (double)$mes_total['devengado'] - ((double)$item['sueldo'] * (1 + (PORCENTAJE_AUMENTO/100))) - ($nominaGerente/(count($data)-1));
+                $cantidad =  count($data) > 1 ? (count($data) - 1 ) : count($data);
+                $totalGerente = count($data) > 1 ? ($nominaGerente/$cantidad) : 0;
+                $utilidad =  (double)$mes_total['devengado'] - ((double)$item['sueldo'] * (1 + (PORCENTAJE_AUMENTO/100))) - $totalGerente;
                 $sheet->setCellValueByColumnAndRow($col, $row, $utilidad)
                     ->getStyle($current_col_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
                 $col++;
@@ -561,10 +564,11 @@ class Consolidado2023 extends Personal
         $row++;
 
         $row_initial_section = $row;
-        $row_end_section = $row + count($data) -1;
+        //$row_end_section = $row + count($data) -1;
+        $row_end_section = count($data) >  1 ? ($row + count($data) - 1) : ($row + count($data));
         $coordenadas = [];
         foreach ($data as $key => $item) {
-            if($key === 0)
+            if($key === 0 && count($data) > 1)
                 continue;
 
             $col = 0;
@@ -623,7 +627,8 @@ class Consolidado2023 extends Personal
         $row++;
 
         $row_initial_section = $row;
-        $row_end_section = $row + (count($data) -1);
+        //$row_end_section = $row + (count($data) -1);
+        $row_end_section = count($data) >  1 ? ($row + count($data) - 1) : ($row + count($data));
         $filtroAreas = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
         $matrizNomina =  $this->matrizNominaAdministrativa($filtroAreas);
         $ponderacionNomina= is_array($matrizNomina) ?  array_column($matrizNomina, 'ponderacion'):  [];
@@ -633,7 +638,7 @@ class Consolidado2023 extends Personal
         $coordenadas = [];
 
         foreach ($data as $key => $item) {
-            if($key == 0)
+            if($key == 0 && count($data) > 1)
                 continue;
             $col = 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
@@ -684,14 +689,15 @@ class Consolidado2023 extends Personal
         $row++;
 
         $row_initial_section = $row;
-        $row_end_section = $row + count($data) -1;
+        //$row_end_section = $row + count($data) -1;
+        $row_end_section = count($data) >  1 ? ($row + count($data) - 1) : ($row + count($data));
         $totalGastoAdministrativo =  $_POST['gasto_administrativo'] ?? GASTO_ADMINISTRATIVO;
         $numeroGrupo =  NUMERO_GRUPO > 0 ? NUMERO_GRUPO : $this->numeroGrupo();
         $montoGastoAdmministrativo =  intval($totalGastoAdministrativo) > 0  && $numeroGrupo > 0 ? ($totalGastoAdministrativo/$numeroGrupo) : 0;
 
         $coordenadadas = [];
         foreach ($data as $key => $item) {
-            if($key === 0)
+            if($key === 0 && count($data) > 1)
                 continue;
             $col = 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $item['tipoPersonal'])
