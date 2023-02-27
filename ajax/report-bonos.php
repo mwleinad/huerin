@@ -59,11 +59,11 @@ switch($_POST["type"]) {
                 $edoResultado->generateDetailedReport($_POST);
             break;
             default:
-                $consolidado->generateReport();
+                $consolidado2023->generateReport();
             break;
         }
 
-        $nameFile = $consolidado->getNameReport();
+        $nameFile = $consolidado2023->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
 	break;
@@ -80,5 +80,6 @@ switch($_POST["type"]) {
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
         break;
+
 }
 ?>
