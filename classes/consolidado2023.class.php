@@ -248,7 +248,7 @@ class Consolidado2023 extends Personal
         foreach ($gerentes_filtered as $gerente) {
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
-            $title_sheet = trim(strtoupper(substr($gerente["name"], 0, 6)));
+            $title_sheet = str_replace(' ','', trim(strtoupper(substr($gerente["name"], 0, 6))));
             $sheet->setTitle($title_sheet);
             $col = 0;
             $row = 1;
