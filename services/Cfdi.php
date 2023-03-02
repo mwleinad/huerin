@@ -229,7 +229,8 @@ class Cfdi extends Comprobante
 
         include_once(DOC_ROOT.'/services/Xml.php');
         include_once(DOC_ROOT.'/services/Xml4/Xml4.php');
-        $isCfdi33 =  ((in_array($tipoDeComprobante, ['pago','P']) && $data['versionDR'] == '3.3') || (in_array($tipoDeComprobante, ['ingreso','I']) && VERSION_CFDI == 3.3));
+        $cfdiEspecifico = $data['usarCfdiEspecifico'] ?? '';
+        $isCfdi33 =  ((in_array($tipoDeComprobante, ['pago','P']) && $data['versionDR'] == '3.3') || (in_array($tipoDeComprobante, ['ingreso','I']) && VERSION_CFDI == 3.3) || $cfdiEspecifico =='3.3');
         $xml = $isCfdi33 ? new Xml($data) : new Xml4($data);
 
         //TODO might move to constructor

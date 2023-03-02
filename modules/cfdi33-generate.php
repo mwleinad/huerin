@@ -166,6 +166,7 @@ $smarty->assign("formasDePago", $formasDePago);
 
 $metodosDePago = $catalogo->metodosDePago();
 $smarty->assign("metodosDePago", $metodosDePago);
+$smarty->assign("versionCFDIDefault", VERSION_CFDI);
 
 $usoCfdi = $catalogo->usoCfdi();
 $smarty->assign("usoCfdi", $usoCfdi);
