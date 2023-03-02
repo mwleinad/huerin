@@ -210,7 +210,13 @@
                   {/foreach}
               </select>
           </div>
-          <div class="titleLabel"><label for="cuentaPorPagar">Si</label></div>
+          <div class="titleLabel">Facturar con version :</div>
+          <div class="controlMd">
+              <select name="usarCfdiEspecifico" id="usarCfdiEspecifico"  class="largeInput" style="width:100px">
+                  <option value="3.3" {if $versionCFDIDefault == 3.3}selected{/if}> CFDI 3.3</option>
+                  <option value="4.0" {if $versionCFDIDefault == 4.0}selected{/if}> CFDI 4.0</option>
+              </select>
+          </div>
 				{if $SITENAME == "FACTURASE" && ($info.empresaId == 249 || $info.empresaId == 307 || $info.empresaId == 308 || $info.empresaId == 483 || $info.empresaId == 535)}
                     <div style="width:50px;float:left">Formato normal?:</div>
                     <div style="width:40px;float:left">
