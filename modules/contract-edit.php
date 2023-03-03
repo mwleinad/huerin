@@ -96,6 +96,7 @@
 			$contract->setSeparateInvoice(1);
 		}
         $contract->setQualification($_POST['idTipoClasificacion']);
+        $contract->setClaveUsoCfdi($_POST['claveUsoCfdi']);
 
 		$contract->UpdateMyContract();
 		$contract->setContractId($_GET["contId"]);
@@ -202,6 +203,9 @@
 
     $actividades_comerciales = $catalogue->ListActividadesComerciales($contractInfo['subsector_id']);
     $smarty->assign("actividades_comerciales", $actividades_comerciales);
+
+	$usosCfdi = $catalogue->ListUsoCFDI();
+	$smarty->assign("usosCfdi", $usosCfdi);
 
 	//Checamos los permisos para eliminar DOCs y Archivos
 

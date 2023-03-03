@@ -67,6 +67,7 @@ Event.observe(window, 'load', function() {
 		}
 	}
 	//$('contentObligaciones').observe("click", AddEditObligacionListeners);
+	loadUsoCfdi();
 
 });
 
@@ -366,6 +367,7 @@ function VerifyForm(){
 function LoadSubcontracts(){
 
 	var idContCat = $("contCatId").value;
+	loadUsoCfdi();
 
 	if(idContCat == 1){
 		$("infoArrendamiento").style.display = "block";
@@ -794,7 +796,27 @@ function CB_ExternalFunctionCBClose(){
 	});
 
 }
+function loadUsoCfdi(){
 
+	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
+		{
+			method:'post',
+			parameters: {action: "loadUsoCfdi",
+				'regimen': document.getElementById('regimenId').value,
+				'persona': document.getElementById('type').value,
+				'contractId': document.getElementById('contractId').value
+			    },
+			onSuccess: function(transport){
+				var response = transport.responseText || "no response text";
+				var splitResponse = response.split("[#]");
+
+				idDocBasic = splitResponse[0];
+
+				$('selectUsoCFDI').innerHTML = splitResponse[1];
+			},
+			onFailure: function(){ alert('Something went wrong...') }
+		});
+}
 function checkObligacion(obj, docGralId)
 {
 	if(obj.checked == false){

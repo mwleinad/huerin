@@ -92,6 +92,7 @@
             $contract->setSeparateInvoice(1);
         }
         $contract->setQualification($_POST['idTipoClasificacion']);
+        $contract->setClaveUsoCfdi($_POST['claveUsoCfdi']);
 
 		$contract->Save();
 		header("Location:".WEB_ROOT."/contract/id/".$_GET['id']);
@@ -157,7 +158,11 @@
     $clasificaciones = $catalogue->ListClasificacion();
     $smarty->assign("clasificaciones", $clasificaciones);
 
-	//Obtenemos la fecha actual para habilitar el calendario
+    $usosCfdi = $catalogue->ListUsoCFDI();
+    $smarty->assign("usosCfdi", $usosCfdi);
+
+
+//Obtenemos la fecha actual para habilitar el calendario
 	$cal['min'] = date('Ymd',strtotime('-5 years'));
 	$cal['max'] = date('Ymd');
 

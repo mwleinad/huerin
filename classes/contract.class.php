@@ -378,6 +378,12 @@ class Contract extends Main
         $this->separateInvoice = $value;
     }
 
+    private $claveUsoCfdi;
+    public function setClaveUsoCfdi($value)
+    {
+        $this->claveUsoCfdi = $value;
+    }
+
     private $contractId;
     private $customerId;
     private $personalId;
@@ -900,6 +906,7 @@ class Contract extends Main
             return false;
 
         $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
+        $usoCfdi = !strlen($this->claveUsoCfdi) ? 'NULL' : "'".$this->claveUsoCfdi."'";
         $this->Util()->DB()->setQuery(
             "INSERT INTO
           contract
@@ -956,6 +963,7 @@ class Contract extends Main
           fechaAlta,
           useAlternativeRzForInvoice,
           alternativeRzId,
+          claveUsoCfdi,
           alternativeRz,
           alternativeRfc,
           alternativeCp,
@@ -1016,6 +1024,7 @@ class Contract extends Main
           '".date('Y-m-d H:i:s')."',
           '" . $this->useAlternativeRzForInvoice . "',
           $valueRzid,
+          $usoCfdi,
           '" . $this->alternativeRz . "',
           '" . $this->alternativeRfc . "',
           '" . $this->alternativeCp . "',
@@ -1110,6 +1119,7 @@ class Contract extends Main
         $this->Util()->DB()->setQuery($sql);
         $oldData = $this->Util()->DB()->GetRow();
         $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
+        $usoCfdi = !strlen($this->claveUsoCfdi) ? 'NULL' : "'".$this->claveUsoCfdi."'";
         //Cuando se edita solo se actualiza los contactos modificados.
         $contactos = "";
         if (strlen($this->nombreComercial) > 0)
@@ -1194,6 +1204,7 @@ class Contract extends Main
 			  modifiedBy = '" . $_SESSION["User"]["username"] . "',
 			  useAlternativeRzForInvoice = '" .$this->useAlternativeRzForInvoice. "',
 			  alternativeRzId = $valueRzid,
+			  claveUsoCfdi = $usoCfdi,
 			  alternativeRz = '".$this->alternativeRz."',
 			  alternativeRfc = '".$this->alternativeRfc."',
 			  alternativeCp = '".$this->alternativeCp."',

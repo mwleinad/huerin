@@ -66,4 +66,9 @@ class Catalogue extends Main
         $this->Util()->DBProspect()->PrepareStmtQuery("select * from regimen where id = ? and tax_purpose in (?, '')", $params);
         return $this->Util()->DBProspect()->GetStmtRow();
     }
+
+    function ListUsoCFDI() {
+        $this->Util()->DB()->setQuery("select * from c_UsoCfdi where 1 order by c_UsoCfdi asc ");
+        return $this->Util()->DB()->GetResult();
+    }
 }
