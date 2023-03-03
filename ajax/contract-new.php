@@ -414,15 +414,16 @@ switch($_POST["action"])
 		   $contract->setContractId($contrato);
 		   $contractInfo = $contract->Info();
 	   }
-		$tipoPersona = '';
-		$ftr = "";
-		switch($tipoPersona) {
-			case 'Persona Moral': $ftr .=" AND tax_purpose IN(1,3) "; break;
-			case 'Persona Fisca': $ftr .=" AND tax_purpose IN(2,3) ";break;
-			default: $tipoPersona = ''; break;
-		}
-		$ftr = $regimen ? " AND regimen like '%".$regimen."%'" : '';
 
+		$ftr = "";
+		switch($persona) {
+			case 'Persona Moral': $ftr .=" AND tax_purpose IN(1,3) "; break;
+			case 'Persona Fisica': $ftr .=" AND tax_purpose IN(2,3) ";break;
+			default: $ftr = ''; break;
+		}
+		$ftr .= $regimen ? " AND regimen like '%".$regimen."%'" : '';
+
+		
 		$db->setQuery("SELECT * FROM c_UsoCfdi WHERE 1 ".$ftr);
 		$usosCfdi =  $db->GetResult();
 		echo 'ok[#]';

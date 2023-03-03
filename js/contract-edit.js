@@ -311,25 +311,26 @@ function ChangeTipo()
 {
 	if($('type').value == "Persona Moral")
 	{
-		$('tipoDeSociedad').show();
-		$('regimenesMorales').show();
-		$('regimenesFisicos').hide();
+		$('tipoDeSociedad')?.show();
+		$('regimenesMorales')?.show();
+		$('regimenesFisicos')?.hide();
 
-		$('box-table-a').show();
-		$('idse1').show();
-		$('idse2').show();
-		$('idse3').show();
+		$('box-table-a')?.show();
+		$('idse1')?.show();
+		$('idse2')?.show();
+		$('idse3')?.show();
 	}
 	else
 	{
-		$('tipoDeSociedad').hide();
-		$('regimenesMorales').hide();
-		$('regimenesFisicos').show();
-		$('box-table-a').hide();
-		$('idse1').hide();
-		$('idse2').hide();
-		$('idse3').hide();
+		$('tipoDeSociedad')?.hide();
+		$('regimenesMorales')?.hide();
+		$('regimenesFisicos')?.show();
+		$('box-table-a')?.hide();
+		$('idse1')?.hide();
+		$('idse2')?.hide();
+		$('idse3')?.hide();
 	}
+	loadUsoCfdi();
 }
 
 function VerifyForm(){
@@ -366,7 +367,7 @@ function VerifyForm(){
 
 function LoadSubcontracts(){
 
-	var idContCat = $("contCatId").value;
+	var idContCat = $("contCatId")?.value;
 	loadUsoCfdi();
 
 	if(idContCat == 1){
@@ -798,12 +799,15 @@ function CB_ExternalFunctionCBClose(){
 }
 function loadUsoCfdi(){
 
-	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
+
+	const persona = document.getElementById('type').value;
+	const regimen = persona === 'Persona Moral' ? document.getElementById('regimenIdMoral').value : document.getElementById('regimenId').value;
+		new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 		{
 			method:'post',
 			parameters: {action: "loadUsoCfdi",
-				'regimen': document.getElementById('regimenId').value,
-				'persona': document.getElementById('type').value,
+				'regimen': regimen,
+				'persona': persona,
 				'contractId': document.getElementById('contractId').value
 			    },
 			onSuccess: function(transport){
