@@ -249,7 +249,7 @@ class InvoiceService extends Cfdi{
         $this->data['cfdiRelacionadoSerie'] = null;
         $this->data['cfdiRelacionadoFolio'] = null;
         $this->data['tipoRelacion'] = '04';
-        
+
         if(strlen($this->currentContract['claveUsoCfdi'])>0)
             $this->data['usoCfdi'] = $this->currentContract['claveUsoCfdi'];
          else

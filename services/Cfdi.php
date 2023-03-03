@@ -237,7 +237,8 @@ class Cfdi extends Comprobante
         if(!$xml->isNomina()) {
             $vs->setUserId($userId, 1);
             $nodoReceptor = $vs->GetUserForInvoice();
-            $nodoReceptor["rfc"] = str_replace("&AMP;", "&", $nodoReceptor["rfc"]);
+            $nodoReceptor["rfc"] = str_replace(['&AMP;','&amp;'], ['&','&'], $nodoReceptor["rfc"]);
+            $nodoReceptor["nombre"] = str_replace(['&AMP;','&amp;'], ['&','&'], $nodoReceptor["nombre"]);
         } else {
             $usuario = new Usuario;
             $usuario->setUsuarioId($userId);
