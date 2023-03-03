@@ -96,6 +96,17 @@
             </select>
         </td>
     </tr>
+    <tr id="filaUsoCfdi" style="{if !$contractInfo}display:none{/if}">
+        <td align="left" width="40%"> * Uso de CFDI</td>
+        <td align="left" id="selectUsoCFDI">
+            <select name="claveUsoCfdi" id="claveUsoCfdi" class="smallInput">
+                <option value="">Seleccione....</option>
+                {foreach from=$usosCfdi item=item}
+                    <option value="{$item.c_UsoCfdi}" {if $contractInfo.claveUsoCfdi == $item.c_UsoCfdi} selected="selected" {/if}>{$item.descripcion}</option>
+                {/foreach}
+            </select>
+        </td>
+    </tr>
     {if in_array(223,$permissions) || $User.isRoot}
         <tr>
             <td align="left" width="40%">Nombre representante legal</td>

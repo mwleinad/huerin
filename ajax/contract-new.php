@@ -404,6 +404,32 @@ switch($_POST["action"])
 
 
 		break;
+	case 'loadUsoCfdi':
+		$regimen = $_POST['regimen'] ?? false;
+		$persona = $_POST['persona'] ?? false;
+		$contrato = $_POST['contractId'] ?? false;
+
+		$contratoInfo = [];
+       if($contrato) {
+		   $contract->setContractId($contrato);
+		   $contractInfo = $contract->Info();
+	   }
+		$tipoPersona = '';
+		$ftr = "";
+		switch($tipoPersona) {
+			case 'Persona Moral': $ftr .=" AND tax_purpose IN(1,3) "; break;
+			case 'Persona Fisca': $ftr .=" AND tax_purpose IN(2,3) ";break;
+			default: $tipoPersona = ''; break;
+		}
+		$ftr = $regimen ? " AND regimen like '%".$regimen."%'" : '';
+
+		$db->setQuery("SELECT * FROM c_UsoCfdi WHERE 1 ".$ftr);
+		$usosCfdi =  $db->GetResult();
+		echo 'ok[#]';
+		$smarty->assign("contractInfo", $contractInfo);
+		$smarty->assign("usosCfdi", $usosCfdi);
+		$smarty->display(DOC_ROOT.'/templates/forms/comp-uso-cfdi.tpl');
+		break;
 
 
 }
