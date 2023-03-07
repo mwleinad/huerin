@@ -475,7 +475,7 @@ class InvoiceService extends Cfdi{
                     nombre,
                     rfc,
                     error) VALUES (
-                    "'.$this->currentContract['contract_id'].'",
+                    "'.$this->currentContract['contractId'].'",
                     "'.$this->currentContract['name'].'",
                     "'.$this->currentContract['rfc'].'",
                     "'.$_SESSION['errorPac'].'"
