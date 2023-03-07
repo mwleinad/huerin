@@ -97,10 +97,14 @@ class InvoiceService extends Cfdi{
         if($id){
             $filtro .=" and a.customerId='$id' ";
         }
-        $sql = "select a.*,b.nameContact as cliente,b.noFactura13 from contract a
+        $sql = "select a.*,b.nameContact as cliente,b.noFactura13,
+                (SELECT count(id) FROM attempt_create_invoice 
+                 WHERE contract_id = a.contractId 
+                 AND date_format(fecha, '%Y-%m-%d')=date_format(now(), '%Y-%m-%d')) intento_dia
+                FROM contract a
                 inner join customer b on a.customerId = b.customerId
                 where b.active ='1' and a.activo='Si' 
-                and facturador != 'Efectivo' $filtro and a.lastProcessInvoice<'$firstDayCurrentMonth' order by a.customerId asc limit 15";
+                and facturador != 'Efectivo' $filtro and a.lastProcessInvoice<'$firstDayCurrentMonth'  HAVING intento_dia < 2 order by a.customerId asc limit 15";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
@@ -464,8 +468,23 @@ class InvoiceService extends Cfdi{
     }
 
     function ChangeLastProcessInvoice(){
-        if(!$this->procesoRealizado)
+        if(!$this->procesoRealizado){
+            //guardar intento del dia
+            $sql = 'INSERT INTO attempt_create_invoice(
+                    contract_id,
+                    nombre,
+                    rfc,
+                    error) VALUES (
+                    "'.$this->currentContract['contract_id'].'",
+                    "'.$this->currentContract['name'].'",
+                    "'.$this->currentContract['rfc'].'",
+                    "'.$_SESSION['errorPac'].'"
+                    )';
+            $this->Util()->DB()->setQuery($sql);
+            $this->Util()->DB()->InsertData();
             return false;
+        }
+
 
         $currentDate = date("Y-m-d");
         $sql = "UPDATE contract SET lastProcessInvoice = '$currentDate'
