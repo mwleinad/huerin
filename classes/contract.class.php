@@ -1220,6 +1220,15 @@ class Contract extends Main
 
         $this->Util()->setError(10030, "complete");
         $this->Util()->PrintErrors();
+
+
+        //reseteamos intentos del dia si se edita la empresa
+        $sqlDel = "DELETE FROM attempt_create_invoice 
+                WHERE contract_id = '" . $this->contractId . "'
+                AND date_format(fecha, '%Y-%m-%d')='".date('Y-m-d')."'";
+        $this->Util()->DB()->setQuery($sqlDel);
+        $this->Util()->DB()->DeleteData();
+
         //Obtenemos los nuevos datos ya actualizados para el Log
         $sql = "SELECT * FROM contract WHERE contractId = '" . $this->contractId . "'";
         $this->Util()->DB()->setQuery($sql);
