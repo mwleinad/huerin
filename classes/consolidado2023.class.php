@@ -99,9 +99,13 @@ class Consolidado2023 extends Personal
         $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
         $id =  is_array($id) ?  implode(',', $id) : $id;
 
-        $sql = "select a.* from " . $view . " a 
-                inner join contractPermiso b on a.contract_id=b.contractId
-                where b.personalId in (" . $id . ") " . $ftr_departamento . " order by a.name asc, a.name_service asc ";
+        $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
+                            WHERE sd.personalId IN(". $id .")
+                            AND   sd.contractId = a.contract_id) as tienePermiso ";
+
+        $sql = "select a.* ".$tienePermiso." from " . $view . " a 
+                HAVING tienePermiso > 0 " . $ftr_departamento . " 
+                order by a.name asc, a.name_service asc ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
         foreach ($res as $key => $row_serv) {
