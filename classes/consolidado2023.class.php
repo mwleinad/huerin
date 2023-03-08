@@ -118,7 +118,9 @@ class Consolidado2023 extends Personal
     {
         global $workflow;
         $instancias_filtered = [];
+        $firstInicioFactura = $this->Util()->getFirstDate($row_serv['fif']);
         foreach ($instancias as $inst) {
+            $firstDateWorkflow = $this->Util()->getFirstDate($inst['fecha']);
             $cad = $inst;
             //los rif el dia que se abren deven valer doble
             if (in_array((int)$inst['tipo_servicio_id'], [RIF, RIFAUDITADO]))
@@ -130,6 +132,11 @@ class Consolidado2023 extends Personal
             }
             // si no es primario es secondario por default.
             $cad['costo'] = !$row_serv['is_primary'] ? 0 : $cad['costo'];
+            // setear a 0 costo de tipos de servicio que facturan de unica ocasion, en sus demas workflows.
+            $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
+                ? 0
+                : $cad['costo'];
+            
             if ($row_serv['is_primary']) {
                 $month = (int)date('m', strtotime($inst['fecha']));
                 $year = (int)date('Y', strtotime($inst['fecha']));
