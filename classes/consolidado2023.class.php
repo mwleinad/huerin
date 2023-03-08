@@ -103,13 +103,22 @@ class Consolidado2023 extends Personal
                             WHERE sd.personalId IN(". $id .")
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
-        $sql = "select a.* ".$tienePermiso." from " . $view . " a 
+        $queryPermiso       = ",(SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
+                               departamentos.departamento, 'personal_id', contractPermiso.personalId, 'nombre', personal.name)), ']') 
+                               FROM contractPermiso
+                               INNER JOIN personal ON contractPermiso.personalId = personal.personalId  
+                               INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
+                               WHERE contractPermiso.contractId = a.contract_id 
+                               GROUP BY contractPermiso.contractId) permiso_detallado ";
+
+        $sql = "select a.* ".$queryPermiso.$tienePermiso." from " . $view . " a 
                 HAVING tienePermiso > 0 " . $ftr_departamento . " 
                 order by a.name asc, a.name_service asc ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
         foreach ($res as $key => $row_serv) {
             $instancias = json_decode($row_serv['instancias'], true);
+
             $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
             $res[$key]['instancias_array'] = $valid_instancias;
             if (count($res[$key]['instancias_array']) <= 0)
@@ -140,7 +149,7 @@ class Consolidado2023 extends Personal
                 $cad['costo'] = 0;
             }
             // si no es primario es secundario por default.
-            $cad['costo'] = !$row_serv['is_primary'] ? 0 : $cad['costo'];
+            $cad['costo'] = (int)$row_serv['is_primary'] ==0 ? 0 : $cad['costo'];
             // setear a 0 costo de tipos de servicio que facturan de unica ocasion, en sus demas workflows.
             $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
                 ? 0
