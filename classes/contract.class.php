@@ -491,7 +491,7 @@ class Contract extends Main
     public function setName($value)
     {
         if ($this->Util()->ValidateRequireField($value, 'Razon Social')) {
-            $this->Util()->ValidateString($value, $max_chars = 60, $minChars = 1, 'Razon Social');
+            $this->Util()->ValidateString($value, 1000, 1, 'Razon Social');
         }
         $this->name = $value;
     }
