@@ -258,8 +258,8 @@ class InvoiceService extends Cfdi{
         $vs->setUserId($this->currentContract['contractId']);
         $dataInvoice = $vs->GetUserForInvoice();
 
-        $this->data['usoCfdi'] = !strlen($dataInvoice['claveUsoCfdi']) ? 'G03' :  $dataInvoice['claveUsoCfdi'];
-        if(in_array(intval($this->currentContract['regimenId']), [616,605]) && VERSION_CFDI === 4.0)
+        $this->data['usoCfdi'] = strlen($dataInvoice['claveUsoCfdi']) <= 0 ? 'G03' :  $dataInvoice['claveUsoCfdi'];
+        if(in_array(intval($dataInvoice['regimenFiscal']), [616,605]) && VERSION_CFDI === 4.0)
             $this->data['usoCfdi'] = 'S01';
 
         $sql  ="SELECT * FROM serie WHERE rfcId = '".$this->getRfcId()."' and tiposComprobanteId=1
