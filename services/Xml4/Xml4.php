@@ -898,6 +898,9 @@ class Xml4 extends Producto{
         {
             mkdir($root, 0775);
         }
+        // si existe archivo elimnarlo por que causa conflicto.
+        if(is_file($root.$nufa.".xml"))
+            @unlink($root.$nufa.".xml");
         //print_r($this->xml);exit;
 
         return $this->xml->save($root.$nufa.".xml");
