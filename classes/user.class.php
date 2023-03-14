@@ -235,7 +235,9 @@ class User extends Sucursal
 		$result["rfc"] = $data["rfcFacturacion"]; // rfcDinamico;
 		$result["cxcSaldoFavor"] = $data["cxcSaldoFavor"];
 		$result["userId"] = $data['idFacturacion']; // id dinamico
-		$result["regimenFiscal"] = $data['regimenId']; // regimen dinamico
+		$result["regimenFiscal"] = $data['regimenFacturacion']; // regimen dinamico
+		$result["claveUsoCfdi"] = $data['usoCfdiFacturacion']; // uso cfdi dinamico
+		$result["type"] = $data['typeFacturacion']; // uso cfdi dinamico
 		$result["customerId"] = $data["customerId"];
 
 		return $result;

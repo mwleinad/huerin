@@ -76,13 +76,17 @@ switch($_POST["action"])
 				$contract->setAlterntiveRzId($_POST['alternative_rz_id']);
 				$contract->setSeparateInvoice(isset($_POST['createSeparateInvoice']) ? 1 : 0);
 				if($_POST['alternative_rz_id'] === '0') {
+					$contract->setAlternativeType($_POST['alternativeType']);
 					$contract->setAlternativeRz($_POST['alternativeRz']);
 					$contract->setAlternativeRfc($_POST['alternativeRfc']);
 					$contract->setAlternativeCp($_POST['alternativeCp']);
+					$contract->setAlternativeRegimen($_POST['alternativeRegimen']);
+					$contract->setAlternativeUsoCfdi($_POST['alternativeUsoCfdi']);
 					$contract->setSeparateInvoice(1);
 				}
 			}
-
+	        $contract->setQualification($_POST['idTipoClasificacion']);
+	        $contract->setClaveUsoCfdi($_POST['claveUsoCfdi']);
     		$validation = $contract->Validate();
 			if($validation)
 			{
@@ -408,6 +412,7 @@ switch($_POST["action"])
 		$regimen = $_POST['regimen'] ?? false;
 		$persona = $_POST['persona'] ?? false;
 		$contrato = $_POST['contractId'] ?? false;
+		$alterno = $_POST['alterno'] ?? false;
 
 		$contratoInfo = [];
        if($contrato) {
@@ -423,13 +428,49 @@ switch($_POST["action"])
 		}
 		$ftr .= $regimen ? " AND regimen like '%".$regimen."%'" : '';
 
-		
+
 		$db->setQuery("SELECT * FROM c_UsoCfdi WHERE 1 ".$ftr);
 		$usosCfdi =  $db->GetResult();
 		echo 'ok[#]';
-		$smarty->assign("contractInfo", $contractInfo);
+		$smarty->assign("nameId", $alterno ? 'alternativeUsoCfdi' : 'claveUsoCfdi');
+		$currentUsoCfdi =  null;
+		if(isset($contractInfo['contractId']))
+			$currentUsoCfdi  = $alterno ? $contractInfo['alternativeUsoCfdi'] :  $contractInfo['claveUsoCfdi'];
+
+		$smarty->assign("currentUsoCfdi", $currentUsoCfdi);
 		$smarty->assign("usosCfdi", $usosCfdi);
 		$smarty->display(DOC_ROOT.'/templates/forms/comp-uso-cfdi.tpl');
+	break;
+	case 'loadRegimen':
+		$persona = $_POST['persona'] ?? false;
+		$contrato = $_POST['contractId'] ?? false;
+		$alterno = $_POST['alterno'] ?? false;
+
+		$contratoInfo = [];
+		if($contrato) {
+			$contract->setContractId($contrato);
+			$contractInfo = $contract->Info();
+		}
+
+		$ftr = "";
+		switch($persona) {
+			case 'Persona Moral': $ftr .=" AND tax_purpose IN(1,3) "; break;
+			case 'Persona Fisica': $ftr .=" AND tax_purpose IN(2,3) ";break;
+			default: $ftr = ''; break;
+		}
+
+		$db->setQuery("SELECT * FROM regimen WHERE 1 ".$ftr);
+		$regimenes =  $db->GetResult();
+		echo 'ok[#]';
+		$smarty->assign("nameId", $alterno ? 'alternativeRegimen' : 'regimenId');
+		$currentRegimen =  null;
+		if(isset($contractInfo['contractId']))
+			$currentRegimen  = $alterno ? $contractInfo['alternativeRegimen'] :  $contractInfo['regimenId'];
+
+		$smarty->assign("currentRegimen", $currentRegimen);
+		$smarty->assign("actionChange", $alterno ? 'loadUsoCfdiAlternativo()':  false);
+		$smarty->assign("regimenes", $regimenes);
+		$smarty->display(DOC_ROOT.'/templates/forms/comp-regimen.tpl');
 		break;
 
 

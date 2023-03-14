@@ -366,6 +366,27 @@ class Contract extends Main
                 $this->Util()->ValidateString($value, $max_chars = 5, $minChars = 5, 'Codigo postal alternativa');
         $this->alternativeCp =  $value;
     }
+
+    private $alternativeRegimen;
+    public function setAlternativeRegimen($value) {
+        if($this->Util()->ValidateRequireField($value, 'Régimen fiscal alternativo'))
+            if($this->Util()->ValidateOnlyNumeric($value, 'Régimen fiscal'))
+                $this->Util()->ValidateString($value, 10, 3, 'Régimen fiscal');
+        $this->alternativeRegimen =  $value;
+    }
+    private $alternativeType;
+    public function setAlternativeType($value) {
+        if($this->Util()->ValidateRequireField($value, 'Tipo persona alternativa'))
+                $this->Util()->ValidateString($value, 50, 1, 'Tipo persona alternativa');
+        $this->alternativeType =  $value;
+    }
+
+    private $alternativeUsoCfdi;
+    public function setAlternativeUsoCfdi($value) {
+        if($this->Util()->ValidateRequireField($value, 'Uso CFDI alternativo'))
+                $this->Util()->ValidateString($value, 10, 1, 'Uso CFDI Alternativo');
+        $this->alternativeUsoCfdi =  $value;
+    }
     private $qualification;
     public function setQualification($value)
     {
@@ -381,6 +402,8 @@ class Contract extends Main
     private $claveUsoCfdi;
     public function setClaveUsoCfdi($value)
     {
+        if($this->Util()->ValidateRequireField($value, 'Uso de CFDI'))
+            $this->Util()->ValidateString($value, 10, 1, 'Uso de CFDI');
         $this->claveUsoCfdi = $value;
     }
 
@@ -873,19 +896,30 @@ class Contract extends Main
             $row['nameFacturacion'] = $row['name'];
             $row['cpFacturacion'] = $row['cpAddress'];
             $row['idFacturacion'] = $row['contractId'];
+            $row['regimenFacturacion'] = $row['regimenId'];
+            $row['usoCfdiFacturacion'] = $row['claveUsoCfdi'];
+            $row['typeFacturacion'] = $row['type'];
             if ((int)$row['useAlternativeRzForInvoice'] === 1) {
                 if ((int)$row['alternativeRzId'] > 0) {
                     $alternativeRzId = $row['alternativeRzId'];
-                    $this->Util()->DB()->setQuery("select contractId,rfc, name, cpAddress from contract where contractId = '$alternativeRzId' ");
+                    $sqlAlternative = "SELECT contractId,rfc, name, cpAddress,regimenId,claveUsoCfdi,type
+                                       FROM contract WHERE contractId = '$alternativeRzId' ";
+                    $this->Util()->DB()->setQuery($sqlAlternative);
                     $alternativeData = $this->Util()->DB()->GetRow();
                     $row['rfcFacturacion'] = $alternativeData['rfc'];
                     $row['nameFacturacion'] = $alternativeData['name'];
                     $row['cpFacturacion'] = $alternativeData['cpAddress'];
                     $row['idFacturacion'] = $alternativeData['contractId'];
+                    $row['regimenFacturacion'] = $alternativeData['regimenId'];
+                    $row['usoCfdiFacturacion'] = $alternativeData['claveUsoCfdi'];
+                    $row['typeFacturacion'] = $alternativeData['type'];
                 } elseif ((int)$row['alternativeRzId'] === 0) {
                     $row['rfcFacturacion'] = $row['alternativeRfc'];
                     $row['nameFacturacion'] = $row['alternativeRz'];
                     $row['cpFacturacion'] = $row['alternativeCp'];
+                    $row['regimenFacturacion'] = $row['alternativeRegimenId'];
+                    $row['usoCfdiFacturacion'] = $row['alternativeUsoCfdi'];
+                    $row['typeFacturacion'] = $row['alternativeType'];
                 }
             }
         }
@@ -907,6 +941,11 @@ class Contract extends Main
 
         $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
         $usoCfdi = !strlen($this->claveUsoCfdi) ? 'NULL' : "'".$this->claveUsoCfdi."'";
+
+        $alternativeType    = !strlen($this->alternativeType) ? 'NULL' : "'".$this->alternativeType."'";
+        $alternativeRegimen = !strlen($this->alternativeRegimen) ? 'NULL' : "'".$this->alternativeRegimen."'";
+        $alternativeUso     = !strlen($this->alternativeUsoCfdi) ? 'NULL' : "'".$this->alternativeUsoCfdi."'";
+
         $this->Util()->DB()->setQuery(
             "INSERT INTO
           contract
@@ -967,6 +1006,9 @@ class Contract extends Main
           alternativeRz,
           alternativeRfc,
           alternativeCp,
+          alternativeType,
+          alternativeRegimen,
+          alternativeUsoCfdi,
           createSeparateInvoice,
           idTipoClasificacion
         )
@@ -1028,6 +1070,9 @@ class Contract extends Main
           '" . $this->alternativeRz . "',
           '" . $this->alternativeRfc . "',
           '" . $this->alternativeCp . "',
+           $alternativeType,
+           $alternativeRegimen,
+           $alternativeUso,
           '" . $this->separateInvoice . "',
           '" . $this->qualification . "'
           
@@ -1120,6 +1165,11 @@ class Contract extends Main
         $oldData = $this->Util()->DB()->GetRow();
         $valueRzid = !strlen($this->alternativeRzId) ? 'NULL' : "'".$this->alternativeRzId."'";
         $usoCfdi = !strlen($this->claveUsoCfdi) ? 'NULL' : "'".$this->claveUsoCfdi."'";
+
+        $alternativeType    = !strlen($this->alternativeType) ? 'NULL' : "'".$this->alternativeType."'";
+        $alternativeRegimen = !strlen($this->alternativeRegimen) ? 'NULL' : "'".$this->alternativeRegimen."'";
+        $alternativeUso     = !strlen($this->alternativeUsoCfdi) ? 'NULL' : "'".$this->alternativeUsoCfdi."'";
+
         //Cuando se edita solo se actualiza los contactos modificados.
         $contactos = "";
         if (strlen($this->nombreComercial) > 0)
@@ -1208,6 +1258,9 @@ class Contract extends Main
 			  alternativeRz = '".$this->alternativeRz."',
 			  alternativeRfc = '".$this->alternativeRfc."',
 			  alternativeCp = '".$this->alternativeCp."',
+			  alternativeType = $alternativeType,
+			  alternativeRegimen = $alternativeRegimen,
+			  alternativeUsoCfdi = $alternativeUso,
 			  idTipoClasificacion = '".$this->qualification."'
 			  WHERE
 			  contractId = '" . $this->contractId . "'";

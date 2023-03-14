@@ -143,6 +143,38 @@
                      style="display: {if $contractInfo.alternativeRzId === '0' && $contractInfo.useAlternativeRzForInvoice eq '1'}block{else}none{/if}">
                     <div class="container_12">
                         <div class="grid_12">
+                            <label>* Tipo de persona alterna</label>
+                            <select name="alternativeType" id="alternativeType" class="smallInput" onchange="changeTipoPersonaAlterno()">
+                                <option value="">---selecciona una opcion---</option>
+                                <option value="Persona Fisica" {if $contractInfo.alternativeType == "Persona Fisica"} selected="selected" {/if}>Persona Física</option>
+                                <option value="Persona Moral" {if $contractInfo.alterntativeType == "Persona Moral"} selected="selected" {/if}>Persona Moral</option>
+                            </select>
+                        </div>
+                        <div class="grid_12">
+                            <label>* Regimen fiscal alterna</label>
+                            <div id="select-regimen-alterno">
+                                <select name="alternativeRegimen" id="alternativeRegimen" class="smallInput" onchange="loadUsoCfdiAlternativo()">
+                                    <option value="">Seleccione</option>
+                                    {foreach from=$regimenesAll item=item}
+                                        <option value="{$item.regimenId}" {if $contractInfo.alternativeRegimen == $item.regimenId} selected="selected" {/if}>{$item.tipoDePersona}
+                                            | {$item.nombreRegimen}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="grid_12" >
+                            <label>* Uso CFDI alterna</label>
+                            <div id="select-uso-cfdi-alterno">
+                                <select name="alternativeUsoCfdi" id="alternativeUsoCfdi" class="smallInput">
+                                    <option value="">Seleccione....</option>
+                                    {foreach from=$usosCfdi item=item}
+                                        <option value="{$item.c_UsoCfdi}" {if $contractInfo.alternativeUsoCfdi == $item.c_UsoCfdi} selected="selected" {/if}>{$item.descripcion}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid_12">
                             <label>* Nombre o razon social alternativa</label>
                             <input type="text" name="alternativeRz" id="alternativeRz" class="smallInput"
                                    value="{$contractInfo.alternativeRz}"/>
