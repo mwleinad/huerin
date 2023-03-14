@@ -1,5 +1,6 @@
 function ChangeTipo()
 {
+	loadUsoCfdi();
 	if($('type').value == "Persona Moral")
 	{
 		$('tipoDeSociedad').show();
@@ -21,7 +22,8 @@ function ChangeTipo()
 		$('idse2').hide();
 		$('idse3').hide();
 	}
-	loadUsoCfdi();
+
+
 }
 
 function VerifyForm(){
@@ -56,9 +58,8 @@ function VerifyForm(){
 }
 
 function LoadSubcontracts(){
-
-	var idContCat = $("contCatId").value;
 	loadUsoCfdi();
+	var idContCat = $("contCatId")?.value;
 
 	if(idContCat == 1){
 		$("infoArrendamiento").style.display = "block";
@@ -744,7 +745,7 @@ function CB_ExternalFunctionCBClose(){
 }
 
 function loadUsoCfdi(){
-
+	document.getElementById('filaUsoCfdi').style.display = '';
 	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
 		{
 			method:'post',
@@ -762,6 +763,57 @@ function loadUsoCfdi(){
 			onFailure: function(){ alert('Something went wrong...') }
 		});
 
+}
+function changeTipoPersonaAlterno() {
+	document.getElementById('alternativeRegimen').value = '';
+	loadRegimenes();
+	loadUsoCfdiAlternativo();
+}
+function loadRegimenes(){
+	const persona = document.getElementById('alternativeType').value;
+	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
+		{
+			method:'post',
+			parameters: {
+				action: "loadRegimen",
+				persona,
+				contractId: document.getElementById('contractId').value,
+				alterno:1,
+			},
+			onSuccess: function(transport){
+				var response = transport.responseText || "no response text";
+				var splitResponse = response.split("[#]");
+
+				idDocBasic = splitResponse[0];
+
+				$('select-regimen-alterno').innerHTML = splitResponse[1];
+			},
+			onFailure: function(){ alert('Something went wrong...') }
+		});
+}
+function loadUsoCfdiAlternativo(){
+	const persona = document.getElementById('alternativeType').value;
+	const regimen = document.getElementById('alternativeRegimen').value;
+	new Ajax.Request(WEB_ROOT+'/ajax/contract-new.php',
+		{
+			method:'post',
+			parameters: {
+				action: "loadUsoCfdi",
+				regimen,
+				persona,
+				contractId: document.getElementById('contractId').value,
+				alterno:1,
+			},
+			onSuccess: function(transport){
+				var response = transport.responseText || "no response text";
+				var splitResponse = response.split("[#]");
+
+				idDocBasic = splitResponse[0];
+
+				$('select-uso-cfdi-alterno').innerHTML = splitResponse[1];
+			},
+			onFailure: function(){ alert('Something went wrong...') }
+		});
 }
 
 function checkObligacion(obj, docGralId)

@@ -86,9 +86,12 @@
             $contract->setAlterntiveRzId($_POST['alternative_rz_id']);
             $contract->setSeparateInvoice(isset($_POST['createSeparateInvoice']) ? 1 : 0);
             if($_POST['alternative_rz_id'] === '0') {
+				$contract->setAlternativeType($_POST['alternativeType']);
                 $contract->setAlternativeRz($_POST['alternativeRz']);
                 $contract->setAlternativeRfc($_POST['alternativeRfc']);
                 $contract->setAlternativeCp($_POST['alternativeCp']);
+                $contract->setAlternativeRegimen($_POST['alternativeRegimen']);
+                $contract->setAlternativeUsoCfdi($_POST['alternativeUsoCfdi']);
 				$contract->setSeparateInvoice(1);
             }
         }else {
@@ -141,6 +144,10 @@
 	//Obtenemos los regimenes
 	$regimenes = $regimen->EnumerateAll(2);
 	$smarty->assign("regimenes", $regimenes);
+
+	//Obtenemos los regimenes
+	$regimenesAll = $regimen->EnumerateAll($contractInfo["customerId"] ?? 0);
+	$smarty->assign("regimenesAll", $regimenes);
 
 	$regimenesMoral = $regimen->EnumerateAll(1);
 	$smarty->assign("regimenesMoral", $regimenesMoral);
