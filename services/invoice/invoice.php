@@ -481,7 +481,7 @@ class InvoiceService extends Cfdi{
                     "'.$this->currentContract['contractId'].'",
                     "'.$this->currentContract['name'].'",
                     "'.$this->currentContract['rfc'].'",
-                    "'.$_SESSION['errorPac'].'"
+                    "'.$_SESSION['errorPac']." ".json_encode($this->data).'"
                     )';
             $this->Util()->DB()->setQuery($sql);
             $this->Util()->DB()->InsertData();
