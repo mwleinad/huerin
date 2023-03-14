@@ -917,7 +917,7 @@ class Contract extends Main
                     $row['rfcFacturacion'] = $row['alternativeRfc'];
                     $row['nameFacturacion'] = $row['alternativeRz'];
                     $row['cpFacturacion'] = $row['alternativeCp'];
-                    $row['regimenFacturacion'] = $row['alternativeRegimenId'];
+                    $row['regimenFacturacion'] = $row['alternativeRegimen'];
                     $row['usoCfdiFacturacion'] = $row['alternativeUsoCfdi'];
                     $row['typeFacturacion'] = $row['alternativeType'];
                 }
