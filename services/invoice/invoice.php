@@ -473,6 +473,7 @@ class InvoiceService extends Cfdi{
     function ChangeLastProcessInvoice(){
         if(!$this->procesoRealizado){
             //guardar intento del dia
+            $errormsj =  $_SESSION['errorPac']." ".json_encode($this->data, JSON_UNESCAPED_UNICODE);
             $sql = 'INSERT INTO attempt_create_invoice(
                     contract_id,
                     nombre,
@@ -481,7 +482,7 @@ class InvoiceService extends Cfdi{
                     "'.$this->currentContract['contractId'].'",
                     "'.$this->currentContract['name'].'",
                     "'.$this->currentContract['rfc'].'",
-                    "'.$_SESSION['errorPac'].' '.json_encode($this->data).'"
+                    "'.$errormsj.'"
                     )';
             $this->Util()->DB()->setQuery($sql);
             $this->Util()->DB()->InsertData();
