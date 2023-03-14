@@ -450,9 +450,9 @@ class Xml4 extends Producto{
     private function buildNodoReceptor() {
         $this->receptor = $this->xml->createElement("cfdi:Receptor");
         $this->receptor = $this->root->appendChild($this->receptor);
-        $domicilioFiscalReceptor = $this->data["nodoReceptor"]["rfc"] !== "XAXX010101000"
-            ? $this->data["nodoReceptor"]["cp"]
-            : $this->data["nodoEmisor"]["rfc"]["cp"];
+        $domicilioFiscalReceptor = in_array($this->data["nodoReceptor"]["rfc"], ["XAXX010101000","XEXX010101000"])
+            ? $this->data["nodoEmisor"]["rfc"]["cp"]
+            : $this->data["nodoReceptor"]["cp"];
 
         $receptorData = array(
             "Rfc"=>$this->Util()->CadenaOriginalVariableFormat($this->data["nodoReceptor"]["rfc"],false,false),
