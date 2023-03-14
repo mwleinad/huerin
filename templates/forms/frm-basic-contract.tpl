@@ -147,7 +147,7 @@
                             <select name="alternativeType" id="alternativeType" class="smallInput" onchange="changeTipoPersonaAlterno()">
                                 <option value="">---selecciona una opcion---</option>
                                 <option value="Persona Fisica" {if $contractInfo.alternativeType == "Persona Fisica"} selected="selected" {/if}>Persona Física</option>
-                                <option value="Persona Moral" {if $contractInfo.alterntativeType == "Persona Moral"} selected="selected" {/if}>Persona Moral</option>
+                                <option value="Persona Moral" {if $contractInfo.alternativeType == "Persona Moral"} selected="selected" {/if}>Persona Moral</option>
                             </select>
                         </div>
                         <div class="grid_12">
