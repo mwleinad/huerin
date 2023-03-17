@@ -605,6 +605,13 @@ class Contract extends Main
         $value = str_replace("&amp;", "&", $value);
         $this->rfc = $value;
     }
+    private $acuerdoComercial;
+    public function setAcuerdoComercial($value)
+    {
+        if ($this->Util()->ValidateRequireField($value, 'Acuerdo comercial')) {
+            $this->acuerdoComercial =$this->Util()->normalizeString($value);
+        }
+    }
 
     private function contratWithPermission($contrato, $respCuenta, $skip)
     {
@@ -2183,6 +2190,17 @@ class Contract extends Main
                                               and customerId = '".$this->customerId."' ORDER BY name ASC LIMIT 15");
         $result =  $this->Util()->DB()->GetResult();
         return $result;
+    }
+
+    public function guardarAcuerdoComercial () {
+        if($this->Util()->PrintErrors())
+            return false;
+
+        $this->Util()->DB()->setQuery("UPDATE contract SET acuerdo_comercial='".$this->acuerdoComercial."' WHERE contractId='".$this->contractId."'");
+        $this->Util()->DB()->UpdateData();
+        $this->Util()->setError(0, "complete", "Registro actualizado correctamente.");
+        $this->Util()->PrintErrors();
+        return true;
     }
 }
 ?>

@@ -11,17 +11,17 @@ $smarty->assign('User',$User);
 
 switch($_POST["type"])
 {
-	case "addContract": 
-			
+	case "addContract":
+
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-contract-popup.tpl');
-		
-		break;	
-		
+
+		break;
+
 	case "saveAddContract":
-			
-			$contract->setName($_POST['name']);			
-												
+
+			$contract->setName($_POST['name']);
+
 			if(!$contract->Save())
 			{
 				echo "fail[#]";
@@ -33,20 +33,20 @@ switch($_POST["type"])
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 				echo "[#]";
 				$resContracts = $contract->Enumerate();
-				
+
 				$contracts = $util->EncodeResult($resContracts);
 
-				$empleados = $personal->Enumerate();			
+				$empleados = $personal->Enumerate();
 				$smarty->assign("empleados", $empleados);
 				print_r($empleados);
-				
+
 				$smarty->assign("contracts", $contracts);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			}
-			
+
 		break;
-		
+
 	case "deleteContract":
 			$contract->setContractId($_POST['contractId']);
 			if($contract->Delete())
@@ -54,7 +54,7 @@ switch($_POST["type"])
 				echo "ok[#]";
 				$smarty->display(DOC_ROOT.'/templates/boxes/status.tpl');
 				echo "[#]";
-				
+
 				if($_POST["customer"])
 				{
 					$resContracts = $contract->Enumerate($_POST["customer"]);
@@ -69,27 +69,27 @@ switch($_POST["type"])
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			}
-			
+
 		break;
-		
-	case "editContract":	 
-			
+
+	case "editContract":
+
 			$contract->setContractId($_POST['contractId']);
 			$myContract = $contract->Info();
-			
+
 			$info = $util->EncodeRow($myContract);
-			
+
 			$smarty->assign("post", $info);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/edit-contract-popup.tpl');
-		
+
 		break;
-		
+
 	case "saveEditContract":
-			
+
 			$contract->setContractId($_POST['contractId']);
-			$contract->setName($_POST['name']);			
-						
+			$contract->setName($_POST['name']);
+
 			if(!$contract->Edit())
 			{
 				echo "fail[#]";
@@ -102,20 +102,20 @@ switch($_POST["type"])
 				echo "[#]";
 				$resContracts = $contract->Enumerate();
 				$contracts = $util->EncodeResult($resContracts);
-				
+
 				$smarty->assign("contracts", $contracts);
 				$smarty->assign("DOC_ROOT", DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
 			}
-			
+
 		break;
-	
+
 	case 'doSearch':
-			
+
 			echo 'ok[#]';
-			
+
 			$sql = '';
-			
+
 			if($_POST['name'])
 				$sql .= ' AND name LIKE "%'.$_POST['name'].'%"';
 			if($_POST['folio'])
@@ -124,29 +124,29 @@ switch($_POST["type"])
 				$sql .= ' AND contCatId = "'.$_POST['contCatId'].'"';
 			if($_POST['status'])
 				$sql .= ' AND status = "'.$_POST['status'].'"';
-								
+
 			$resContracts = $contract->Search($sql);
 
 			$contracts = array();
 			foreach($resContracts as $key => $val){
-				
+
 				$card = $val;
-				
+
 				$card['name'] = utf8_encode($val['name']);
-				
+
 				$contCat->setContCatId($val['contCatId']);
 				$card['tipo'] = $contCat->GetNameById();
-				
+
 				$card['status'] = ucfirst($card['status']);
-				
-				$contracts[$key] = $card;	
-				
+
+				$contracts[$key] = $card;
+
 			}
-			
+
 			$smarty->assign("contracts", $contracts);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/contract.tpl');
-			
+
 		break;
 	case 'openModalTransfer':
 		$clientes = $customer->getListCustomer(1);
@@ -181,6 +181,35 @@ switch($_POST["type"])
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 		}
 	break;
-		
+
+	case 'openModalAcuerdo':
+		$id =  $_POST['id'] ?? false;
+		$contract->setContractId($id);
+		$contrato =  $contract->Info();
+
+		if(isset($contrato['contractId'])){
+			$data['title']  = strlen($contrato['acuerdo_comercial']) > 0 ? 'Actualizar' : 'Agregar';
+			$data['title'] .= " acuerdo comercial";
+			$data['form']   = "frm-agregar-acuerdo";
+			$smarty->assign("data", $data);
+			$smarty->assign("contrato", $contrato);
+			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
+		}else{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		break;
+	case 'saveUpAcuerdo':
+		$id =  $_POST['id'] ?? false;
+		$contract->setContractId($id);
+		$contract->setAcuerdoComercial($_POST['acuerdo_comercial']);
+		if($contract->guardarAcuerdoComercial()){
+			echo "ok[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}else{
+			echo "fail[#]";
+			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
+		}
+		break;
 }
 ?>
