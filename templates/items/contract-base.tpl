@@ -79,8 +79,10 @@
             {if in_array(216,$permissions) || $User.isRoot}
                 <img src="{$WEB_ROOT}/images/icons/transbetweenuser.png" class="spanAll spanTransfer" id="{$item.contractId}" title="Transferir raazon a cliente" />
             {/if}
+            {if in_array(298,$permissions) || $User.isRoot}
             <a href="javascript:;" title="Agregar o actualizar acuerdo comercial">
                 <img src="{$WEB_ROOT}/images/icons/planning.png" class="spanAll spanAddUpAcuerdo" data-id="{$item.contractId}"/></a>
+            {/if}
         </td>
        {/if}
     </tr>
