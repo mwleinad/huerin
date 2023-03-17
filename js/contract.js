@@ -8,8 +8,14 @@ jQ(document).ready(function () {
  			return;
 		}
         var del = jQ(this).hasClass('spanDelete');
-        var id = this.id;
         if(del == true)
+		{
+			DeleteContractPopup(id);
+			return;
+		}
+
+		var del = jQ(this).hasClass('spanAdd');
+		if(del == true)
 		{
 			DeleteContractPopup(id);
 			return;
@@ -140,11 +146,11 @@ function AddContract()
 }
 
 function hideMessage(){
-	$("success").style.display = "none";	
+	$("success").style.display = "none";
 }
 
 function doSearch(){
-	
+
 	new Ajax.Request(WEB_ROOT+'/ajax/contract.php',
 	{
 		method:'post',
@@ -155,7 +161,7 @@ function doSearch(){
 		},
 		onSuccess: function(transport){
 			var response = transport.responseText || "no response text";
-			
+
 			var splitResponse = response.split("[#]");
 			if(splitResponse[0] == "fail")
 			{
@@ -170,7 +176,7 @@ function doSearch(){
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
-	
+
 }
 
 function UpdateCosto()
@@ -250,4 +256,49 @@ jQ(document).on('click','.spanUpdatePermisos',function () {
         }
        });
 });
+jQ(document).on('click', '.spanAddUpAcuerdo', function(){
+	var id = jQ(this).data('id');
+	jQ('#fview').show();
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/contract.php',
+		type:'post',
+		data:{type:'openModalAcuerdo',id:id},
+		success:function (response) {
+			FViewOffSet('');
+			FViewOffSet(response);
+			jQ('#closePopUpDiv').on('click',function(){
+				close_popup();
+			});
+			jQ('.btn-agregar-acuerdo').on('click',function(){
+				guardarAcuerdoComercial();
+			});
+		},
+		error:function(message){
+			alert(message)
+		}
+	});
+});
 
+function guardarAcuerdoComercial(){
+	jQ.ajax({
+		url:WEB_ROOT+"/ajax/contract.php",
+		data:jQ("#frmAcuerdoComercial").serialize(true),
+		type: 'POST',
+		beforeSend: function(){
+			jQ('#btn-agregar-acuerdo').hide();
+			jQ('#loading-img').show();
+		},
+		success: function(response){
+			var splitResp = response.split("[#]");
+			if(splitResp[0]==='ok'){
+				ShowStatusPopUp(splitResp[1]);
+				close_popup();
+			}
+			else{
+				jQ('#btn-agregar-acuerdo').show();
+				jQ('#loading-img').hide();
+				ShowStatusPopUp(splitResp[1]);
+			}
+		}
+	});
+}

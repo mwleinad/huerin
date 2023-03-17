@@ -1787,6 +1787,9 @@ class Util extends CustomError
         );
         return $string;
     }
+    function normalizeString($string) {
+        return addslashes($string);
+    }
 
     function csvToJson($fname, $customKey = [], $ignoreKey = []) {
         if (!($fp = fopen($fname, 'r'))) {
