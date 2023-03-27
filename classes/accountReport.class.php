@@ -111,7 +111,7 @@ class AccountReport extends Personal
                 $supge['services'] = $resultChild;
 
                 $this->setPersonalId($supge['personalId']);
-                $subordinados = $this->getSubordinadosByLevel([5,6,7,8]);
+                $subordinados = $this->getSubordinadosNoDirectoByLevel([5,6,7,8]);
                 $childLevel3 = [];
                 foreach($subordinados as $sub) {
                     $contratosLevel3 = $this->getContratosPropio([$sub['personalId']]);
