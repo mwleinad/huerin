@@ -1204,11 +1204,11 @@ class Contract extends Main
         if (strlen($this->telefonoCelularDirectivo) > 0)
             $contactos .= "telefonoCelularDirectivo = '" . $this->telefonoCelularDirectivo . "',";
 
-        if (strlen($this->nameRepresentanteLegal) > 0)
+        if (isset($_POST['nameRepresentanteLegal']))
             $contactos .= "nameRepresentanteLegal = '" . $this->nameRepresentanteLegal . "',";
-        if (strlen($this->emailRepresentanteLegal) > 0)
+        if (isset($_POST['emailRepresentanteLegal']))
             $contactos .= "emailRepresentanteLegal = '" . $this->emailRepresentanteLegal . "',";
-        if (strlen($this->telefonoRepresentanteLegal) > 0)
+        if (isset($_POST['telefonoRepresentanteLegal']))
             $contactos .= "telefonoRepresentanteLegal = '" . $this->telefonoRepresentanteLegal . "',";
 
         if (isset($_POST['claveCiec']))
