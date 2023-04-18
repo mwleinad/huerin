@@ -17,11 +17,11 @@ class Consolidado2023 extends Personal
 
         $name_view = "instancia_" . $_POST['year'] . "_" . implode('_', $months);
         $custom_fields = ['contract_id', 'name', 'customer', 'servicio_id', 'name_service', 'departamento_id',
-            'status_service', 'is_primary', 'last_date_workflow', 'instancias'];
+            'status_service', 'is_primary', 'last_date_workflow', 'fio', 'fif','instancias'];
         $add_fields_no_group = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
 
         $select_general = "select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
-                            b.is_primary, b.lastDateWorkflow ";
+                            b.is_primary, b.lastDateWorkflow,b.fio, b.fif  ";
         $select_nogroup = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
         $select_group = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
                       'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'unique_invoice',b.uniqueInvoice,'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
@@ -36,7 +36,8 @@ class Consolidado2023 extends Personal
                            inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
                            where tipoServicio.status='1') b on a.servicioId=b.servicioId
                inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
-                           from contract inner join customer on contract.customerId = customer.customerId) c
+                           from contract inner join customer on contract.customerId = customer.customerId where customer.active = '1'
+                           and contract.activo = 'Si') c
                            on b.contractId=c.contractId
                where year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
         $this->Util()->createOrReplaceView($name_view, $select_general . $select_group . $base_sql . $group_by . $order_by, $custom_fields);
@@ -97,7 +98,6 @@ class Consolidado2023 extends Personal
 
     public function getRowsPropios($id, $view)
     {
-        $ids = $id;
         $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
         $id =  is_array($id) ?  implode(',', $id) : $id;
 
@@ -120,6 +120,7 @@ class Consolidado2023 extends Personal
         $res = $this->Util()->DB()->GetResult();
 
         foreach ($res as $key => $row_serv) {
+
             $instancias = json_decode($row_serv['instancias'], true);
             $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
             $res[$key]['instancias_array'] = $valid_instancias;
@@ -127,6 +128,7 @@ class Consolidado2023 extends Personal
             if (count($res[$key]['instancias_array']) <= 0)
                 unset($res[$key]);
         }
+
         return $res;
     }
 
@@ -155,7 +157,7 @@ class Consolidado2023 extends Personal
             // si no es primario es secundario por default.
             $cad['costo'] = (int)$row_serv['is_primary'] ==0 ? 0 : $cad['costo'];
             // setear a 0 costo de tipos de servicio que facturan de unica ocasion, en sus demas workflows.
-            $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
+            $cad['costo'] = ((int)$inst['unique_invoice'] == 1 && $firstInicioFactura != $firstDateWorkflow)
                 ? 0
                 : $cad['costo'];
 
