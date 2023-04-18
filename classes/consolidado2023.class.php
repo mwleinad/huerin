@@ -34,12 +34,12 @@ class Consolidado2023 extends Personal
                            tipoServicio.is_primary, servicio.lastDateWorkflow,servicio.inicioOperaciones as fio,
                            inicioFactura as fif,tipoServicio.uniqueInvoice from servicio 
                            inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
-                           where tipoServicio.status='1') b on a.servicioId=b.servicioId
+                           where tipoServicio.status='1' and (servicio.status = 'bajaParcial' OR servicio.status = 'activo')) b on a.servicioId=b.servicioId
                inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
                            from contract inner join customer on contract.customerId = customer.customerId where customer.active = '1'
                            and contract.activo = 'Si') c
                            on b.contractId=c.contractId
-               where year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
+                           where year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
         $this->Util()->createOrReplaceView($name_view, $select_general . $select_group . $base_sql . $group_by . $order_by, $custom_fields);
         array_pop($custom_fields);
         $this->Util()->createOrReplaceView('nogroup_' . $name_view, $select_general . $select_nogroup . $base_sql . $order_by, array_merge($custom_fields, $add_fields_no_group));
