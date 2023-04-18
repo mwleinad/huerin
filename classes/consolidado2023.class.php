@@ -24,14 +24,15 @@ class Consolidado2023 extends Personal
                             b.is_primary, b.lastDateWorkflow ";
         $select_nogroup = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
         $select_group = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
-                      'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
+                      'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId, 'unique_invoice',b.uniqueInvoice,'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
         $group_by = " group by a.servicioId ";
         $order_by = "order by a.date asc ";
 
         $base_sql = "from instanciaServicio a
                inner join (select servicio.servicioId,servicio.contractId, servicio.tipoServicioId, servicio.status, 
                            tipoServicio.nombreServicio, tipoServicio.periodicidad, tipoServicio.departamentoId,
-                           tipoServicio.is_primary, servicio.lastDateWorkflow from servicio 
+                           tipoServicio.is_primary, servicio.lastDateWorkflow,servicio.inicioOperaciones as fio,
+                           inicioFactura as fif,tipoServicio.uniqueInvoice from servicio 
                            inner join tipoServicio on servicio.tipoServicioId=tipoServicio.tipoServicioId
                            where tipoServicio.status='1') b on a.servicioId=b.servicioId
                inner join (select contract.contractId, contract.name, customer.nameContact as customer_name
@@ -96,6 +97,7 @@ class Consolidado2023 extends Personal
 
     public function getRowsPropios($id, $view)
     {
+        $ids = $id;
         $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
         $id =  is_array($id) ?  implode(',', $id) : $id;
 
@@ -116,11 +118,12 @@ class Consolidado2023 extends Personal
                 order by a.name asc, a.name_service asc ";
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
+
         foreach ($res as $key => $row_serv) {
             $instancias = json_decode($row_serv['instancias'], true);
-
             $valid_instancias = $this->processInstancias($row_serv, $instancias, $view);
             $res[$key]['instancias_array'] = $valid_instancias;
+
             if (count($res[$key]['instancias_array']) <= 0)
                 unset($res[$key]);
         }
@@ -137,6 +140,7 @@ class Consolidado2023 extends Personal
             $cad = $inst;
             // las instancias deben ser apartir de su fecha de inicio de operaciones en adelante si
             // es menor no debe tomarse encuenta
+
             if ($firstDateWorkflow < $this->Util()->getFirstDate($row_serv['fio']))
                 continue;
 

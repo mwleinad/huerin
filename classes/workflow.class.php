@@ -1085,9 +1085,9 @@ class Workflow extends Servicio
                 $step['tasks'] = $filterTasks;
                 array_push($filterSteps, $step);
             }
-            return $filterSteps;
-        }
 
+        }
+        return $filterSteps;
     }
 }
 
