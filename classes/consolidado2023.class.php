@@ -62,6 +62,9 @@ class Consolidado2023 extends Personal
         foreach ($gerentes as $gerente) {
             $this->setPersonalId($gerente['personalId']);
             $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
+            if(count($subordinadosSubSup) <= 0)
+                continue;
+            
             $item_gerente = $gerente;
             $cleaned_subordinados = [];
             $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view);
