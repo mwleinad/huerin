@@ -47,9 +47,10 @@ class Consolidado2023 extends Personal
 
         if ($_POST["responsableCuenta"])
             $strFilter .= " and a.personalId = '" . $_POST['responsableCuenta'] . "' ";
-
-        //$areasAdmin = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
-        //$strFilter .=  count($areasAdmin) > 0 ? " AND c.departamento NOT IN(".implode(',', $areasAdmin).")" : "";
+        else {
+            $areasAdmin = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
+            $strFilter .=  count($areasAdmin) > 0 ? " AND c.departamento NOT IN(".implode(',', $areasAdmin).")" : "";
+        }
 
         $sql = "select a.*, b.nivel,c.departamento, b.name as name_rol from personal a
                 inner join roles b on a.roleId = b.rolId
