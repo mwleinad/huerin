@@ -48,6 +48,9 @@ class Consolidado2023 extends Personal
         if ($_POST["responsableCuenta"])
             $strFilter .= " and a.personalId = '" . $_POST['responsableCuenta'] . "' ";
 
+        //$areasAdmin = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
+        //$strFilter .=  count($areasAdmin) > 0 ? " AND c.departamento NOT IN(".implode(',', $areasAdmin).")" : "";
+
         $sql = "select a.*, b.nivel,c.departamento, b.name as name_rol from personal a
                 inner join roles b on a.roleId = b.rolId
                 inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
@@ -276,10 +279,10 @@ class Consolidado2023 extends Personal
         // obtener gastos administrativos.
 
         $totalConsolidado =  [];
-        foreach ($gerentes_filtered as $gerente) {
+        foreach ($gerentes_filtered as $hj => $gerente) {
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
-            $title_sheet = str_replace(' ','', trim(strtoupper(substr($gerente["name"], 0, 6))));
+            $title_sheet = ($hj + 1)."_". str_replace(' ','', trim(strtoupper(substr($gerente["name"], 0, 6))));
             $sheet->setTitle($title_sheet);
             $col = 0;
             $row = 1;
@@ -490,7 +493,8 @@ class Consolidado2023 extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
             $col++;
-            for($num =1; $num<= count($item['meses_totales']); $num++) {
+            $numeroColumnas = count($item['meses_totales']) > 0 ? count($item['meses_totales']) : count($months);
+            for($num =1; $num<= $numeroColumnas; $num++) {
                 $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $coordenadas['responsables'][$item['personalId']][$num] = $current_col_cordinate;
                 $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
@@ -678,7 +682,8 @@ class Consolidado2023 extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row, $item['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
             $col++;
-            for($num=1; $num<=count($item['meses_totales']); $num++) {
+            $numeroColumnas = count($item['meses_totales']) > 0 ? count($item['meses_totales']) : count($months);
+            for($num=1; $num <= $numeroColumnas; $num++) {
                 $current_col_cordinate = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $coordenadas['responsables'][$item['personalId']][$num] = $current_col_cordinate;
                 $current_col_total_section = PHPExcel_Cell::stringFromColumnIndex($col) . $row_end_section;
@@ -723,7 +728,7 @@ class Consolidado2023 extends Personal
         //$row_end_section = $row + count($data) -1;
         $row_end_section = count($data) >  1 ? ($row + count($data) - 1) : ($row + count($data));
         $totalGastoAdministrativo =  $_POST['gasto_administrativo'] ?? GASTO_ADMINISTRATIVO;
-        $numeroGrupo =  NUMERO_GRUPO > 0 ? NUMERO_GRUPO : $this->numeroGrupo();
+        $numeroGrupo =  $this->numeroGrupoOperativo();
         $montoGastoAdmministrativo =  intval($totalGastoAdministrativo) > 0  && $numeroGrupo > 0 ? ($totalGastoAdministrativo/$numeroGrupo) : 0;
 
         $coordenadadas = [];
@@ -810,17 +815,37 @@ class Consolidado2023 extends Personal
               GROUP BY a.departamentoId ";
       $this->Util()->DB()->setQuery($sql);
       $results = $this->Util()->DB()->GetResult();
-      $numeroGrupo =  NUMERO_GRUPO > 0 ? NUMERO_GRUPO : $this->numeroGrupo();
+      $numeroGrupo =  $this->numeroGrupoAdministrativo();
       foreach($results as $key => $value) {
           $results[$key]['ponderacion'] = intval($value['total']) > 0 && $numeroGrupo > 0 ? ($value['total']/$numeroGrupo) : 0;
       }
       return $results;
     }
 
-    function numeroGrupo() {
-        $sql = "select count(*) total, grupo from personal group by grupo";
+    function numeroGrupoAdministrativo() {
+        $areasAdmin = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
+        $ftr = "";
+        $ftr .=  count($areasAdmin) > 0 ? " AND b.departamento IN(".implode(',', $areasAdmin).")" : "";
+
+        $sql = "SELECT count(*) total FROM personal a
+                INNER JOIN departamentos b ON a.departamentoId = b.departamentoId
+                INNER JOIN roles c ON a.roleId = c.rolId
+                WHERE (a.name not like '%Curso Plataforma%' && a.name not like '%Capacitación%') ".$ftr;
         $this->Util()->DB()->setQuery($sql);
-        $grupos = $this->Util()->DB()->GetResult();
-        return count($grupos);
+        return $this->Util()->DB()->GetSingle();
+
+    }
+
+    function numeroGrupoOperativo() {
+
+        $areasAdmin = strlen(AREAS_EDO_RESULTADO) > 0  && AREAS_EDO_RESULTADO != "*" ? explode(',', AREAS_EDO_RESULTADO) : [];
+        $filtro =  count($areasAdmin) > 0 ? " AND b.departamento NOT IN(".implode(',', $areasAdmin).")" : "";
+        $sql = "SELECT count(*) total FROM personal a
+                INNER JOIN departamentos b ON a.departamentoId = b.departamentoId
+                INNER JOIN roles c ON a.roleId = c.rolId
+                WHERE c.nivel=4 AND (a.name not like '%Curso Plataforma%' && a.name not like '%Capacitación%') ".$filtro;
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetSingle();
+
     }
 }
