@@ -64,7 +64,7 @@ class Consolidado2023 extends Personal
             $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
             if(count($subordinadosSubSup) <= 0)
                 continue;
-            
+
             $item_gerente = $gerente;
             $cleaned_subordinados = [];
             $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view);
@@ -819,7 +819,7 @@ class Consolidado2023 extends Personal
               GROUP BY a.departamentoId ";
       $this->Util()->DB()->setQuery($sql);
       $results = $this->Util()->DB()->GetResult();
-      $numeroGrupo =  $this->numeroGrupoAdministrativo();
+      $numeroGrupo =  $this->numeroGrupoOperativo();
       foreach($results as $key => $value) {
           $results[$key]['ponderacion'] = intval($value['total']) > 0 && $numeroGrupo > 0 ? ($value['total']/$numeroGrupo) : 0;
       }
