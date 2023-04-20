@@ -900,7 +900,7 @@ class Bono extends Personal
         $sheet = $book->createSheet($hoja);
         $name_title =  substr($data["name"], 0, 6);
         $name_title =  $this->Util()->cleanString($name_title);
-        $name_title = str_replace(" ", "", $name_title);
+        $name_title = "0_".str_replace(" ", "", $name_title);
         $title_sheet = strtoupper($name_title);
 
         $sheet->setTitle($title_sheet);
