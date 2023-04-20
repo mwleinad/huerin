@@ -70,11 +70,15 @@ class Consolidado2023 extends Personal
             if(count($subordinadosSubSup) <= 0)
                 continue;
 
-            $item_gerente = $gerente;
+            $conRegistros  = 0;
+            $item_gerente  = $gerente;
             $cleaned_subordinados = [];
             $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view, $filtroDeps);
             if(count($gerente['propios']) > 0)
-                array_push($cleaned_subordinados, $gerente);
+                $conRegistros +=1;
+
+            array_push($cleaned_subordinados, $gerente);
+
             foreach ($subordinadosSubSup as $key => $subSup) {
                 $this->setPersonalId($subSup['personalId']);
                 $subordinados =  $this->GetCascadeSubordinates();
@@ -87,12 +91,15 @@ class Consolidado2023 extends Personal
                 unset($subSup['children']);
                 $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $filtroDeps);
                 if(count($subSup['propios']) > 0)
-                    array_push($cleaned_subordinados, $subSup);
+                    $conRegistros +=1;
+
+                array_push($cleaned_subordinados, $subSup);
             }
-            if (count($cleaned_subordinados)) {
-                $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
+            $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
+            
+            if ($conRegistros > 0)
                 array_push($cleaned_gerentes, $item_gerente);
-            }
+
         }
 
         return $cleaned_gerentes;
