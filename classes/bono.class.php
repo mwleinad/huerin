@@ -177,7 +177,7 @@ class Bono extends Personal
         $col_title_mix = array_merge($col_title_0, $col_title_1, $col_title_2, $col_month_title);
 
         $gran_consolidado_gerente = [];
-        foreach ($supervisores as $supervisor) {
+        foreach ($supervisores as $ksup => $supervisor) {
             // si en filtro esta vacio sumar los sueldos de todos los empleados de seguridad social y nominas
             $ftrDepId = (int)$_POST['departamentoId'];
             $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
@@ -189,7 +189,7 @@ class Bono extends Personal
             $name_title =  substr($supervisor["name"], 0, 6);
             $name_title =  $this->Util()->cleanString($name_title);
             $name_title = str_replace(" ", "", $name_title);
-            $title_sheet = strtoupper($name_title);
+            $title_sheet = ($ksup + 1)."_".strtoupper($name_title);
             $sheet->setTitle($title_sheet);
             $col = 0;
             $row = 1;
