@@ -96,7 +96,7 @@ class Consolidado2023 extends Personal
                 array_push($cleaned_subordinados, $subSup);
             }
             $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
-            
+
             if ($conRegistros > 0)
                 array_push($cleaned_gerentes, $item_gerente);
 
