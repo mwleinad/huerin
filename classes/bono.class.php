@@ -188,8 +188,8 @@ class Bono extends Personal
                 $sheet = $book->createSheet($hoja);
             $name_title =  substr($supervisor["name"], 0, 6);
             $name_title =  $this->Util()->cleanString($name_title);
-            $name_title = str_replace(" ", "", $name_title);
-            $title_sheet = ($ksup + 1)."_".strtoupper($name_title);
+            $name_title =  ($ksup + 1)."_" . str_replace(" ", "", $name_title);
+            $title_sheet = strtoupper($name_title);
             $sheet->setTitle($title_sheet);
             $col = 0;
             $row = 1;
