@@ -186,10 +186,11 @@ class Bono extends Personal
             $total_por_supervisor = [];
             if ($hoja != 0)
                 $sheet = $book->createSheet($hoja);
+
             $name_title =  substr($supervisor["name"], 0, 6);
             $name_title =  $this->Util()->cleanString($name_title);
-            $name_title =  ($ksup + 1)."_" . str_replace(" ", "", $name_title);
-            $title_sheet = strtoupper($name_title);
+            $name_title =  str_replace(" ", "", $name_title);
+            $title_sheet = "H_".$ksup."_".strtoupper($name_title);
             $sheet->setTitle($title_sheet);
             $col = 0;
             $row = 1;
@@ -900,7 +901,7 @@ class Bono extends Personal
         $sheet = $book->createSheet($hoja);
         $name_title =  substr($data["name"], 0, 6);
         $name_title =  $this->Util()->cleanString($name_title);
-        $name_title = "0_".str_replace(" ", "", $name_title);
+        $name_title = "H_0_".str_replace(" ", "", $name_title);
         $title_sheet = strtoupper($name_title);
 
         $sheet->setTitle($title_sheet);
