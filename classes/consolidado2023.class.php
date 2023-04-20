@@ -60,7 +60,10 @@ class Consolidado2023 extends Personal
 
         $cleaned_gerentes = [];
         foreach ($gerentes as $gerente) {
-            $depGerente = $gerente['departamentoId'];
+            $filtroDeps = [$gerente['departamentoId']];
+            if($gerente['departamentoId'] == 1)
+                array_push($filtroDeps, 31);
+
             $this->setPersonalId($gerente['personalId']);
             $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
 
@@ -69,7 +72,7 @@ class Consolidado2023 extends Personal
 
             $item_gerente = $gerente;
             $cleaned_subordinados = [];
-            $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view, $depGerente);
+            $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view, $filtroDeps);
             if(count($gerente['propios']) > 0)
                 array_push($cleaned_subordinados, $gerente);
             foreach ($subordinadosSubSup as $key => $subSup) {
@@ -82,7 +85,7 @@ class Consolidado2023 extends Personal
                 array_push($subordinadosLineal, $subSup['personalId']);
 
                 unset($subSup['children']);
-                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $depGerente);
+                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $filtroDeps);
                 if(count($subSup['propios']) > 0)
                     array_push($cleaned_subordinados, $subSup);
             }
@@ -95,11 +98,17 @@ class Consolidado2023 extends Personal
         return $cleaned_gerentes;
     }
 
-    public function getRowsPropios($id, $view, $suDepartamento = 0)
+    public function getRowsPropios($id, $view, $ftrDeps = [])
     {
-        $depPresente =  $_POST['departamentoId'] ?? $suDepartamento;
-        if($depPresente > 0)
-            $ftr_departamento = " and a.departamento_id in(" . $depPresente . ")";
+        $depPresente =  $_POST['departamentoId'] ?? 0;
+
+        if($depPresente > 0) {
+            $ftrDeps = [$depPresente];
+            if($depPresente == 1)
+                array_push($ftrDeps, 31);
+        }
+        if(count($ftrDeps) > 0)
+            $ftr_departamento = " and a.departamento_id in(" . implode(',', $ftrDeps) . ")";
 
 
         $id =  is_array($id) ?  implode(',', $id) : $id;
