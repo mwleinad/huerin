@@ -60,16 +60,20 @@ class Consolidado2023 extends Personal
 
         $cleaned_gerentes = [];
         foreach ($gerentes as $gerente) {
+            $depGerente = $gerente['departamentoId'];
             $this->setPersonalId($gerente['personalId']);
             $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
+
             if(count($subordinadosSubSup) <= 0)
                 continue;
 
             $item_gerente = $gerente;
             $cleaned_subordinados = [];
-            $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view);
-            array_push($cleaned_subordinados, $gerente);
+            $gerente['propios'] = $this->getRowsPropios($gerente['personalId'], $name_view, $depGerente);
+            if(count($gerente['propios']) > 0)
+                array_push($cleaned_subordinados, $gerente);
             foreach ($subordinadosSubSup as $key => $subSup) {
+                $depSupervisor = $subSup['departamentoId'];
                 $this->setPersonalId($subSup['personalId']);
                 $subordinados =  $this->GetCascadeSubordinates();
                 $subordinadosLineal =  is_array($subordinados) ?  array_column($subordinados, 'personalId') : [];
@@ -79,33 +83,26 @@ class Consolidado2023 extends Personal
                 array_push($subordinadosLineal, $subSup['personalId']);
 
                 unset($subSup['children']);
-                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view);
-                array_push($cleaned_subordinados, $subSup);
+                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $depSupervisor);
+                if(count($subSup['propios']) > 0)
+                    array_push($cleaned_subordinados, $subSup);
             }
             if (count($cleaned_subordinados)) {
                 $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
+                array_push($cleaned_gerentes, $item_gerente);
             }
-
-            /*$cleanedSubordinadosNomina = [];
-            $this->setPersonalId($gerente['personalId']);
-            $subordinadosNomina=  $this->SubordinadosDetailsAddPass();
-            foreach ($subordinadosNomina as  $subNomina) {
-                unset($subNomina['children']);
-                $subNomina['propios'] = $this->getRowsPropios($subNomina['personalId'], $name_view);
-                array_push($cleanedSubordinadosNomina, $subNomina);
-            }
-            if (count($cleanedSubordinadosNomina)) {
-                $item_gerente['subordinados_nomina'] = $cleanedSubordinadosNomina;
-            }*/
-            array_push($cleaned_gerentes, $item_gerente);
         }
 
         return $cleaned_gerentes;
     }
 
-    public function getRowsPropios($id, $view)
+    public function getRowsPropios($id, $view, $suDepartamento = 0)
     {
-        $ftr_departamento = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
+        $depPresente =  $_POST['departamentoId'] ?? $suDepartamento;
+        if($depPresente > 0)
+            $ftr_departamento = " and a.departamento_id in(" . $depPresente . ")";
+
+
         $id =  is_array($id) ?  implode(',', $id) : $id;
 
         $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
