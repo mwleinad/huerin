@@ -73,7 +73,6 @@ class Consolidado2023 extends Personal
             if(count($gerente['propios']) > 0)
                 array_push($cleaned_subordinados, $gerente);
             foreach ($subordinadosSubSup as $key => $subSup) {
-                $depSupervisor = $subSup['departamentoId'];
                 $this->setPersonalId($subSup['personalId']);
                 $subordinados =  $this->GetCascadeSubordinates();
                 $subordinadosLineal =  is_array($subordinados) ?  array_column($subordinados, 'personalId') : [];
@@ -83,7 +82,7 @@ class Consolidado2023 extends Personal
                 array_push($subordinadosLineal, $subSup['personalId']);
 
                 unset($subSup['children']);
-                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $depSupervisor);
+                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $depGerente);
                 if(count($subSup['propios']) > 0)
                     array_push($cleaned_subordinados, $subSup);
             }
