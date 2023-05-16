@@ -7,6 +7,7 @@ switch ($_POST["type"]) {
         $departamentos = $personal->ListDepartamentos();
         $smarty->assign("departamentos", $departamentos);
 
+        $personal->isShowAll();
         $miPersonal = $personal->Enumerate();
         $smarty->assign("personal", $miPersonal);
 
@@ -117,6 +118,7 @@ switch ($_POST["type"]) {
         }
         break;
     case "editPersonal":
+        $personal->isShowAll();
         $miPersonal = $personal->Enumerate();
         $smarty->assign("personal", $miPersonal);
 
