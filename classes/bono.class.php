@@ -46,7 +46,7 @@ class Bono extends Personal
                            from contract inner join customer on contract.customerId = customer.customerId where customer.active = '1'
                            and contract.activo = 'Si') c
                            on b.contractId=c.contractId
-                           where year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
+                           where a.status != 'baja' AND year(a.date)=" . $_POST['year'] . " and month(a.date) in (" . implode(',', $months) . ")";
 
         $this->Util()->createOrReplaceView($name_view, $select_general.$select_group.$base_sql.$group_by.$order_by, $custom_fields);
         array_pop($custom_fields);
