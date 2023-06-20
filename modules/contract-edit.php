@@ -146,8 +146,8 @@
 	$smarty->assign("regimenes", $regimenes);
 
 	//Obtenemos los regimenes
-	$regimenesAll = $regimen->EnumerateAll($contractInfo["customerId"] ?? 0);
-	$smarty->assign("regimenesAll", $regimenes);
+	$regimenesAll = $regimen->EnumerateAll();
+	$smarty->assign("regimenesAll", $regimenesAll);
 
 	$regimenesMoral = $regimen->EnumerateAll(1);
 	$smarty->assign("regimenesMoral", $regimenesMoral);

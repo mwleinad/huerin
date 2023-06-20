@@ -142,7 +142,7 @@
 
     //Obtenemos todos los regimenes
     $regimenesAll = $regimen->EnumerateAll();
-    $smarty->assign("regimenesAll", $regimenes);
+    $smarty->assign("regimenesAll", $regimenesAll);
 
     $empleados = $personal->EnumerateAll();
     $smarty->assign("empleados", $empleados);
