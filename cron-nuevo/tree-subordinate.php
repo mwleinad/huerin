@@ -26,6 +26,11 @@ if(!isset($_SESSION['User'])){
 $sql = "SELECT * FROM personal WHERE active='1' ORDER BY personalId  ASC  ";
 $db->setQuery($sql);
 $results = $db->GetResult();
+
+$sql = "SELECT name FROM porcentajesbonos ORDER BY categoria DESC";
+$db->setQuery($sql);
+$categorias = $db->GetResult();
+
 $new = array();
 foreach($results as $key => $value){
     $cad=$value;
@@ -34,11 +39,12 @@ foreach($results as $key => $value){
     $needle = strtolower(trim($info["nameLevel"]));
     $jefes=[];
     $personal->deepJefesArray($jefes,true);
-    $cad['contador'] = isset($jefes['Contador']) ? $jefes['Contador'] : '';
-    $cad['supervisor'] = isset($jefes['Supervisor']) ?  $jefes['Supervisor'] : '';
-    $cad['subgerente'] = isset($jefes['Subgerente']) ? $jefes['Subgerente'] : '';
-    $cad['gerente'] = !isset($jefes['Gerente']) ? $jefes['Coordinador'] : $jefes['Gerente']   ;
-    $cad['jefeMax'] = isset($jefes['Socio']) ? $jefes['Socio'] : '';
+
+    foreach($categorias as $cat) {
+        $cad[$cat['name']] = $jefes[$cat['name']] ?? '';
+
+    }
+    //$cad['Director'] = !isset($jefes['Director']) ? $jefes['Coordinador'] : $jefes['Director'];
     /*
      Al final se reemplaza, los numeros vienen del nivel del rol.
       1 = socio
@@ -50,14 +56,18 @@ foreach($results as $key => $value){
     */
     switch($needle){
         case 'coordinador':
-            $cad['gerente'] = $jefes['me']; break;
+            $cad['Director'] = $jefes['me']; break;
         case 'socio':
-            $cad['jefeMax'] = $jefes['me']; break;
+            $cad['Socio'] = $jefes['me']; break;
         default: $cad[$needle] = $jefes["me"]; break;
     }
 
     $new[] = $cad;
 }
+$sql = "SELECT name FROM porcentajesbonos ORDER BY categoria DESC";
+$db->setQuery($sql);
+$categorias = $db->GetResult();
+
 $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -97,6 +107,7 @@ $html = '<html>
 			</head>
 			';
 $smarty->assign("registros", $new);
+$smarty->assign("categorias", $categorias);
 $contents = $smarty->fetch(DOC_ROOT . '/templates/lists/rep-subordinado.tpl');
 $html .= $contents;
 $file = 'arbol-subordinados';
