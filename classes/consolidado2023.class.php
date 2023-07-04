@@ -65,7 +65,7 @@ class Consolidado2023 extends Personal
                 array_push($filtroDeps, 31);
 
             $this->setPersonalId($gerente['personalId']);
-            $subordinadosSubSup = $this->getSubordinadosByLevel([5]); //
+            $subordinadosSubSup = $this->getSubordinadosByLevel([4,5]); //
 
             if(count($subordinadosSubSup) <= 0)
                 continue;
