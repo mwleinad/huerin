@@ -230,7 +230,7 @@ class Personal extends Main
                     FROM personal a 
                     LEFT JOIN personal b ON a.jefeInmediato=b.personalId 
                     LEFT JOIN roles d on a.roleId=d.rolId
-                    LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE c.estatus=1 
+                    LEFT JOIN departamentos c ON a.departamentoId=c.departamentoId WHERE 1 
                     $sqlFilter $sqlActive 
                     ORDER BY a.name ASC";
             $this->Util()->DB()->setQuery($sql);
@@ -368,14 +368,10 @@ class Personal extends Main
     {
         $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.sueldo,a.jefeInmediato, a.departamentoId,
                                              CASE 
-                                             WHEN (b.nivel = 1 AND a.roleId = 5) THEN 'Coordinador' 
-                                             WHEN b.nivel = 1 THEN 'Socio' 
-                                             WHEN b.nivel = 2 THEN 'Gerente'
-                                             WHEN b.nivel = 3 THEN 'Subgerente'
-                                             WHEN b.nivel = 4 THEN 'Supervisor'
-                                             WHEN b.nivel = 5 THEN 'Contador'
-                                             WHEN b.nivel = 6 THEN 'Auxiliar'
-                                             WHEN b.nivel = 100 THEN 'Auxiliar' END AS nameLevel
+                                             WHEN (b.nivel = 1 AND a.roleId = 5) THEN 'Coordinador'
+                                             WHEN b.nivel = 100 THEN 'Auxiliar'
+                                             WHEN b.nivel < 100 THEN (SELECT name from porcentajesbonos WHERE categoria = b.nivel LIMIT 1)  
+                                                 END AS nameLevel
                                              FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '" . $this->personalId . "'");
         $row = $this->Util()->DB()->GetRow();
         $this->Util()->DB()->setQuery("select name from personal where personalId='" . $row['jefeInmediato'] . "' ");
