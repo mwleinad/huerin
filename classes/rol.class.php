@@ -477,7 +477,7 @@ class Rol extends main
                             " and nivel >= '".$_SESSION['User']['level']."' "
                             : " and (nivel > '".$_SESSION['User']['level']."' or lower(name) = 'asistente socio') ";
             }
-            $filtro .= "and nivel <= 6 ";
+            $filtro .= "and nivel < 100 ";
             $filtro .= !$this->accessAnyDepartament() ? " and departamentoId = '".$_SESSION['User']['departamentoId']."' " : "";
         }
         $sql ="SELECT * FROM roles WHERE status='activo' ".$filtro." ORDER BY name ASC";
