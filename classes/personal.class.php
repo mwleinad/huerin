@@ -370,7 +370,7 @@ class Personal extends Main
                                              CASE 
                                              WHEN (b.nivel = 1 AND a.roleId = 5) THEN 'Coordinador'
                                              WHEN b.nivel = 100 THEN 'Auxiliar'
-                                             WHEN b.nivel < 100 THEN (SELECT name from porcentajesbonos WHERE categoria = b.nivel LIMIT 1)  
+                                             WHEN b.nivel < 100 THEN (SELECT name from porcentajesBonos WHERE categoria = b.nivel LIMIT 1)  
                                                  END AS nameLevel
                                              FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '" . $this->personalId . "'");
         $row = $this->Util()->DB()->GetRow();

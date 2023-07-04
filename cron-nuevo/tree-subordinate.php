@@ -27,7 +27,7 @@ $sql = "SELECT * FROM personal WHERE active='1' ORDER BY personalId  ASC  ";
 $db->setQuery($sql);
 $results = $db->GetResult();
 
-$sql = "SELECT name FROM porcentajesbonos ORDER BY categoria DESC";
+$sql = "SELECT name FROM porcentajesBonos ORDER BY categoria DESC";
 $db->setQuery($sql);
 $categorias = $db->GetResult();
 
