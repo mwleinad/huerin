@@ -64,9 +64,6 @@ foreach($results as $key => $value){
 
     $new[] = $cad;
 }
-$sql = "SELECT name FROM porcentajesbonos ORDER BY categoria DESC";
-$db->setQuery($sql);
-$categorias = $db->GetResult();
 
 $html = '<html>
 			<head>
