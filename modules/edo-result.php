@@ -15,9 +15,9 @@ $departamentos = $departamentos->Enumerate();
 $smarty->assign("departamentos", $departamentos);
 
 $personal->isShowAll();
-$personal->setLevelRol(2);
-$gerentes = $personal->Enumerate();
 $personal->setLevelRol(3);
+$gerentes = $personal->Enumerate();
+$personal->setLevelRol(4);
 $subgerentes = $personal->Enumerate();
 $smarty->assign("personals", array_merge($gerentes, $subgerentes));
 
