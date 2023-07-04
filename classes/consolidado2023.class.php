@@ -54,7 +54,7 @@ class Consolidado2023 extends Personal
 
         $sql = "select a.*, b.nivel,c.departamento, b.name as name_rol from personal a
                 inner join roles b on a.roleId = b.rolId
-                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 2 $strFilter order by c.departamento ASC,a.name ASC";
+                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel = 3 $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
 
@@ -65,7 +65,7 @@ class Consolidado2023 extends Personal
                 array_push($filtroDeps, 31);
 
             $this->setPersonalId($gerente['personalId']);
-            $subordinadosSubSup = $this->getSubordinadosByLevel([4]); //
+            $subordinadosSubSup = $this->getSubordinadosByLevel([5]); //
 
             if(count($subordinadosSubSup) <= 0)
                 continue;
