@@ -36,7 +36,7 @@ foreach($results as $key => $value){
     $cad=$value;
     $personal->setPersonalId($value["personalId"]);
     $info = $personal->InfoWhitRol();
-    $needle = strtolower(trim($info["nameLevel"]));
+    $needle = trim($info["nameLevel"]);
     $jefes=[];
     $personal->deepJefesArray($jefes,true);
 
@@ -55,10 +55,8 @@ foreach($results as $key => $value){
       6 = auxiliar,recepcion
     */
     switch($needle){
-        case 'coordinador':
+        case 'Coordinador':
             $cad['Director'] = $jefes['me']; break;
-        case 'socio':
-            $cad['Socio'] = $jefes['me']; break;
         default: $cad[$needle] = $jefes["me"]; break;
     }
 
