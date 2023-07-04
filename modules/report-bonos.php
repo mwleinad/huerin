@@ -5,11 +5,11 @@ $user->allowAccess(163);//level 2
 $departamentos = $departamentos->Enumerate();
 $smarty->assign("departamentos", $departamentos);
 $personal->isShowAll();
-$personal->setLevelRol(2);
-$gerentes = $personal->Enumerate();
 $personal->setLevelRol(3);
+$gerentes = $personal->Enumerate();
+$personal->setLevelRol(4);
 $subgerentes = $personal->Enumerate();
-$smarty->assign("personals", array_merge($gerentes, $subgerentes));
+$smarty->assign("personals", $gerentes);
 
 $smarty->assign("year", date('Y'));
 $smarty->assign('mainMnu','reportes');

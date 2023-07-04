@@ -19,7 +19,7 @@ $personal->setLevelRol(3);
 $gerentes = $personal->Enumerate();
 $personal->setLevelRol(4);
 $subgerentes = $personal->Enumerate();
-$smarty->assign("personals", array_merge($gerentes, $subgerentes));
+$smarty->assign("personals", $gerentes);
 
 $smarty->assign("result",$result);
 $smarty->assign("year", $year);

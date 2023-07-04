@@ -55,7 +55,7 @@ class Bono extends Personal
         // crear vista no agrupada
         $this->setPersonalId($_POST['responsableCuenta']);
         $info = $this->InfoWhitRol();
-        $subordinados = $this->getSubordinadosByLevel(5);
+        $subordinados = $this->getSubordinadosNoDirectoByLevel(5);
         $subordinados_filtrados = [];
         foreach ($subordinados as $sub) {
             $cad = $sub;
