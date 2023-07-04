@@ -2,7 +2,7 @@
 {assign var='columnas' value="{$categorias|count}"}
 <thead>
     <tr rowspan="10">
-		<th colspan="{$columnas + 1}" class="divInside" align="center">
+		<th colspan="{$columnas}" class="divInside" align="center">
                DESGLOSE DE SUBORDINADOS
 		</th>
 	</tr>
@@ -22,7 +22,7 @@
 	 	</tr>
 {foreachelse}
 <tr>
-	<td colspan="{$columnas + 1}" align="center">Ning&uacute;n registro encontrado.</td>
+	<td colspan="{$columnas}" align="center">Ning&uacute;n registro encontrado.</td>
 </tr>
 {/foreach}
 </tbody>
