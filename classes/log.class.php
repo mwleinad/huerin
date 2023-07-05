@@ -319,8 +319,12 @@ class Log extends Util
             }
         }
         $encargados = array_merge($encargados,$correosJefes);
+
         if(!SEND_LOG_MOD)
             $encargados = [];
+
+        $encargados =  $this->verificarIgnorados($encargados);
+
         if(file_exists( DOC_ROOT."/sendFiles/$fileName")){
             $file = DOC_ROOT."/sendFiles/$fileName";
         }
@@ -726,6 +730,8 @@ class Log extends Util
         if(!SEND_LOG_MOD)
             $emails = [];
 
+        $emails =  $this->verificarIgnorados($emails);
+
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
         $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
@@ -885,8 +891,19 @@ class Log extends Util
         }
     }
 
-    public function sendLogFromArray (array $dataCustomer, array  $dataContract, array $services) {
+    public function verificarIgnorados(array $encargados) {
 
+        $emailIgnorados = explode(",", EMAIL_IGN_NOT_CAMBIO);
+        if(count($emailIgnorados) <= 0)
+            return $encargados;
 
+        $new = [];
+        foreach($encargados as $key => $val) {
+            if(in_array($key, $emailIgnorados) !== false)
+                continue;
+
+            $new[$key] = $val;
+        }
+        return $new;
     }
 }//Log
