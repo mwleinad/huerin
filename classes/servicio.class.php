@@ -200,7 +200,8 @@ class Servicio extends Contract
             $fecha = explode("-", $value["lastDateWorkflow"]);
             $result[$key]["formattedDateLastWorkflow"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
 
-            $result[$key]['dataJson'] =  json_encode($result[$key]);
+
+            $result[$key]['dataJson'] =  json_encode($result[$key], ENT_QUOTES);
 		}
 
 		return $result;
