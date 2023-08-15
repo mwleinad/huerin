@@ -52,7 +52,7 @@ class PacFinkok extends Util
         }
     }
 
-    function ParseTimbre($file, $sello)
+    function ParseTimbre($file)
     {
         $fh = fopen($file, 'r');
         $theData = fread($fh, filesize($file));
