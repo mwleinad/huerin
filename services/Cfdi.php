@@ -230,7 +230,7 @@ class Cfdi extends Comprobante
         include_once(DOC_ROOT.'/services/Xml.php');
         include_once(DOC_ROOT.'/services/Xml4/Xml4.php');
         $cfdiEspecifico = $data['usarCfdiEspecifico'] ?? '';
-        // quitar (in_array($tipoDeComprobante, ['pago','P']) && $data['versionDR'] == '3.3') ||
+
         $isCfdi33 =  ((in_array($tipoDeComprobante, ['ingreso','I']) && VERSION_CFDI == 3.3) || $cfdiEspecifico =='3.3');
         $xml = $isCfdi33 ? new Xml($data) : new Xml4($data);
 
@@ -319,9 +319,11 @@ class Cfdi extends Comprobante
         include_once(DOC_ROOT."/services/Pac.php");
         include_once(DOC_ROOT."/services/PacFinkok.php");
 
-        $pac =  $nodoEmisorRfc["rfc"] === 'BHC230207L10' ? new PacFinkok : new Pac33;
+        $useFinkok = in_array($nodoEmisorRfc['rfc'], ['BHC230207L10', 'IVD920810GU2']);
 
-        $response = $nodoEmisorRfc['rfc'] === 'BHC230207L10'
+        $pac =  $useFinkok ? new PacFinkok : new Pac33;
+
+        $response = $useFinkok
                   ? $pac->GetCfdi($xmlConSello['xmlFile'], $xmlConSello['xmlSignedFile'])
                   : $pac->GetCfdi($xmlConSello);
 

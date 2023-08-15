@@ -15,8 +15,6 @@ class PacFinkok extends Util
             ?   "http://demo-facturacion.finkok.com/servicios/soap/stamp.wsdl"
             :   "https://facturacion.finkok.com/servicios/soap/stamp.wsdl";
 
-        $xmlData = base64_encode($xmlData);
-
         try {
 
             $client = new SoapClient($url);
