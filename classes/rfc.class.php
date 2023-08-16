@@ -3,43 +3,43 @@
 class Rfc extends Empresa
 {
 	private $rfcId;
-	
+
 	public function setRfcId($value)
 	{
 		$this->Util()->ValidateInteger($value);
 		$this->rfcId = $value;
 	}
-	
+
 	public function getRfcId()
 	{
 		return $this->rfcId;
 	}
-	
+
 	function SetAsActive()
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE rfc SET activo = 'no' WHERE activo = 'si' AND empresaId = '".$_SESSION["empresaId"]."'");
 		//echo $this->Util()->DBSelect($_SESSION["empresaId"])->query;
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-		
+
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("UPDATE rfc SET activo = 'si' WHERE rfcId = '".$this->rfcId."' AND empresaId = '".$_SESSION["empresaId"]."'");
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
 
 		return true;
 	}
-	
+
 	function GetRfcsByEmpresa()
 	{
 		$this->Util()->DBSelect($this->empresaId)->setQuery("SELECT * FROM rfc WHERE empresaId ='".$this->getEmpresaId()."'");
 		//echo $this->Util()->DBSelect($this->empresaId)->query;
 		$empresaRfcs = $this->Util()->DBSelect($this->getEmpresaId())->GetResult();
-	
+
 		return $empresaRfcs;
 	}
-	
+
 	function getRfcActive(){
 		$id_empresa = $_SESSION['empresaId'];
 		$sqlQuery = "SELECT rfcId FROM rfc WHERE activo = 'si' AND rfcId = ".$this->getRfcId();
-		
+
 		$this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
 		$rfc = $this->Util()->DBSelect($id_empresa)->GetSingle();
 		return $rfc;
@@ -96,7 +96,7 @@ class Rfc extends Empresa
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT * FROM rfc WHERE rfc ='".$this->rfc."'");
 		$rfc = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-	
+
 		return $rfc;
 	}
     function InfoRfcByRfc2($rfc)
@@ -114,7 +114,7 @@ class Rfc extends Empresa
 		$ftr = $this->getRfcId() ? " and rfcId !='".$this->getRfcId()."' ":"";
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT COUNT(*) FROM rfc WHERE rfc ='".$value."' $ftr ");
 		$rfc = $this->Util()->DBSelect($_SESSION["empresaId"])->GetSingle();
-		
+
 		if($rfc && ($value != 'BCO160224ECA' && $value != 'BHU120320CQ1' && $value != 'BABJ701019LD7'))
 		{
 			return $this->Util()->setError(10042, "error", "Error en el RFC, es posible que ya se encuentre registrado");
@@ -144,7 +144,7 @@ class Rfc extends Empresa
 		}*/
 
 		if($this->Util()->PrintErrors()){ return false; }
-		
+
 		$this->setEmpresaId($_SESSION["empresaId"]);
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("
 			INSERT INTO `rfc` ( 
@@ -264,22 +264,22 @@ class Rfc extends Empresa
 	{
 		$this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("update rfc set activo = 'no' WHERE rfcId = '".$this->rfcId."' AND main='no'");
 		$this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-				
+
 		$this->Util()->setError(20006, "complete","Se ha realizado la baja correctamente");
 		$this->Util()->PrintErrors();
 		return true;
 	}
-	
+
 	function GetCertificadoByRfc(){
-	
+
 		$ruta_dir = DOC_ROOT.'/empresas/'.$this->getEmpresaId().'/certificados/'.$this->getRfcId();
 	    $nom_certificado = "";
 		if(is_dir($ruta_dir)){
 			if($gd = opendir($ruta_dir)){
-				while($archivo = readdir($gd)){				
+				while($archivo = readdir($gd)){
 					$info = pathinfo($ruta_dir.'/'.$archivo);
 					if($info['extension'] == 'cer'){
-						$nom_certificado = $info['filename'];						
+						$nom_certificado = $info['filename'];
 						break;
 					}//if
 				}//while
@@ -289,7 +289,7 @@ class Rfc extends Empresa
 
 		$this->setNameFileCertificado($nom_certificado);
 		return $nom_certificado;
-		
+
 	}
     function processCertificate(){
 	    global  $comprobante;
@@ -302,7 +302,7 @@ class Rfc extends Empresa
         $md5 = md5($cadenaOriginal);
 
         if(!is_dir($ruta_dir)){
-            mkdir($ruta_dir,0755,true);
+            mkdir($ruta_dir,0775,true);
         }
         $this->cleanDirEmpresaRfc($ruta_dir);
         $cer_name = $_FILES['file_certificado']['name'];
