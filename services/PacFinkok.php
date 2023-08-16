@@ -17,24 +17,26 @@ class PacFinkok extends Util
 
         try {
 
-            $client = new SoapClient($url);
+            require_once(DOC_ROOT.'/libs/nusoap.php');
+            $client = new nusoap_client($url, true);
 
             $params = array(
-                'xml' => $xmlData,
+                'xml' => base64_encode($xmlData),
                 'username' => $username,
                 'password' => $pw
             );
 
-            $response = $client->__soapcall("stamp", array($params));
-            if(count($response->stampResult->Incidencias->Incidencia)) {
+            $response = $client->call("stamp", array($params), $url);
+            //if(count($response->stampResult->Incidencias->Incidencia)) {
+            if($response["faultcode"]) {
 
                 $return['worked'] = false;
-                $return['response']['faultstring'] = utf8_decode($response->stampResult->Incidencias->Incidencia->MensajeIncidencia);
+                $return['response']['faultstring'] = $response['faultstring'];//utf8_decode($response->stampResult->Incidencias->Incidencia->MensajeIncidencia);
 
                 return $return;
             }
 
-            $data = $response->stampResult->xml;
+            $data = $response['stampResult']['xml'];
 
             $fh = fopen($signedXmlFile, 'w') or die("can't open file");
             fwrite($fh, $data);
