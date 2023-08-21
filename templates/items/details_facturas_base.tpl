@@ -9,7 +9,7 @@
                 <td width="90">
                         {*descargar xml*}
                         {*if in_array(128,$permissions) || $User.isRoot*}
-                            {if $fact.version == '3.3'}
+                            {if $fact.version|in_array:['3.3','4.0']}
                                 <a target="_blank" href="{$WEB_ROOT}/cfdi33-generate-pdf&identifier={$fact.comprobanteId}&type=view" class="spanAll">
                                     <img src="{$WEB_ROOT}/images/icons/pdf-18.png"  title="Ver factura"/>
                                 </a>
