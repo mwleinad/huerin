@@ -258,14 +258,14 @@ class TipoServicio extends Main
 		$this->Util()->DB()->setQuery("SELECT step.* FROM step 
             INNER JOIN tipoServicio ON step.servicioId = tipoServicio.tipoServicioId
             WHERE step.servicioId = '".$this->getTipoServicioId()."'					
-            ORDER BY step.stepId ASC");
+            ORDER BY step.position ASC");
 		$result = $this->Util()->DB()->GetResult();
 		foreach($result as $key => $value)
 		{
 			//get tasks
 			$this->Util()->DB()->setQuery("SELECT * FROM task
             WHERE stepId = '".$value["stepId"]."'					
-            ORDER BY taskId ASC");
+            ORDER BY taskPosition ASC");
 			$result[$key]["tasks"] = $this->Util()->DB()->GetResult();
 			$result[$key]["countTasks"] = count($result[$key]["tasks"]);
 
@@ -445,16 +445,20 @@ class TipoServicio extends Main
 	}
 	function saveSteps($id) {
 		$steps = is_array($_POST['steps']) ? $_POST['steps'] : [];
+		$countStep = 1;
 		foreach ($steps as $key => $step) {
 			if($this->Util()->isJson($step)) {
 				$stepObj = json_decode($step);
-				$sql = " insert into step(servicioId, nombreStep, descripcion) values('".$id."', '".$stepObj->nombreStep."', '".$stepObj->descripcion."')";
+				$sql = " insert into step(servicioId, nombreStep, descripcion, position) values('".$id."', '".$stepObj->nombreStep."', '".$stepObj->descripcion."', '". ($stepObj->position ?? $countStep)."')";
 				$this->Util()->DB()->setQuery($sql);
 				$idStep = $this->Util()->DB()->InsertData();
+				$countStep++;
 				$stpId =  $stepObj->stepId;
 				$tasks = is_array($_POST["tasks$stpId"]) ? $_POST["tasks$stpId"] : [];
-				$query = "insert into task(stepId, nombreTask, diaVencimiento, prorroga, control, extensiones) VALUES";
+				$query = "insert into task(stepId, nombreTask, diaVencimiento, prorroga, control, extensiones, taskPosition) VALUES";
 				$strComp ="";
+
+				$countTask = 1;
 				foreach ($tasks as $keyTask => $task) {
 					if($this->Util()->isJson($task) && $idStep) {
 						$taskObj = json_decode($task);
@@ -463,9 +467,13 @@ class TipoServicio extends Main
 											'".$taskObj->diaVencimiento."', 
 											'".$taskObj->prorroga."', 
 											'".$taskObj->control."', 
-											'".$taskObj->extensiones."'
+											'".$taskObj->extensiones."',
+											'".($taskObj->taskPosition ?? $countTask)."'
 										),";
+
+						$countTask++;
 					}
+
 				}
 				if($strComp!=="") {
 					$strComp = substr($strComp,0,strlen($strComp)-1);
@@ -473,6 +481,7 @@ class TipoServicio extends Main
 					$this->Util()->DB()->setQuery($sql);
 					$this->Util()->DB()->InsertData();
 				}
+
 			}
 		}
 	}
