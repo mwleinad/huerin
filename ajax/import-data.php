@@ -13,8 +13,11 @@ if ($_FILES['file']['error'] === 4) {
     $name = $_FILES['file']['name'];
     $ext = end(explode(".", $name));
 
-    if (strtoupper($ext) != "CSV") {
+    if (strtoupper($ext) != "CSV" && $_POST['type'] != 'recotizar-servicios') {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta CSV', 'Archivo');
+    }
+    if (strtoupper($ext) != "XLSX" && $_POST['type'] == 'recotizar-servicios') {
+        $util->setError(0, "error", 'Verificar extesion, solo se acepta XLSX', 'Archivo');
     }
 }
 if ($util->PrintErrors()) {
@@ -1047,6 +1050,51 @@ switch ($opcion[0]) {
             $data= $db->GetSingle();
             $data_explode = explode('|', $data);
             $util->setError(0, 'complete', "Se han actualizado " . $data_explode[1] . " registros correctamente.");
+        } else {
+            $util->setError(0, 'error','Error al actualizar registros');
+        }
+        echo $res ? 'ok[#]' : 'fail[#]';
+        $util->PrintErrors();
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+        break;
+    case 'recotizar-servicios':
+        include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        $archivo = $_FILES['file']['tmp_name'];
+        $inputFileType = PHPExcel_IOFactory::identify($archivo);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($archivo);
+        $sheet = $objPHPExcel->getSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
+        $keys = [];
+        foreach($headers[0] as $header) {
+            $header =  str_replace(' ', '_', $header);
+            $header =  str_replace('%', 'porcentaje', $header);
+            $header =  strtolower($header);
+            array_push($keys, $header);
+        }
+
+        $jsonData = [];
+        for ($row = 2; $row <= $highestRow; $row++){
+            $currentRows = $sheet->rangeToArray('A'.$row. ":" . $sheet->getHighestColumn() . $row);
+            $jsonData[] = array_combine($keys, $currentRows[0]);
+        }
+        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_SLASHES );
+
+        $pUsuario = $_SESSION['User']['name'];
+        echo $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$pUsuario."', @pData)";
+        $db->setQuery($store);
+        $res = 0;
+        if($res = $db->ExcuteConsulta()) {
+            $db->setQuery('select @pData');
+            $data= $db->GetSingle();
+            $data_explode = explode('|', $data);
+
+            if($data_explode[0] == 'ERROR')
+                $util->setError(0, 'error', "Error en SP$data_explode[1] al actualizar.");
+            else $util->setError(0, 'complete', "Se han actualizado " . $data_explode[1] . " registros correctamente.");
         } else {
             $util->setError(0, 'error','Error al actualizar registros');
         }

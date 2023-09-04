@@ -14,6 +14,7 @@
             <option value="update_customer#activos">Actualizar clientes principales existentes activos</option>
             <option value="update_customer#inactivos">Actualizar clientes principales existentes inactivos</option>
             <option value="layout-update-servicios">Actualizar servicios existentes</option>
+            <option value="layout-recotizar-servicios">Formato de recotización de servicios</option>
         </select>
         <div id="loadPrint" style="display: none">
             <img src="{$WEB_ROOT}/images/loading.gif"/> Generando archivo, espere un momento.
