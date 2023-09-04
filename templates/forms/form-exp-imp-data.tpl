@@ -18,6 +18,7 @@
                         <option value="add#customer">Importar nuevos clientes principales</option>
                         <option value="importar_servicios_nuevos">Importar nuevos servicios</option>
                         <option value="update-servicios">Actualizar servicios de clientes</option>
+                        <option value="recotizar-servicios">Recotizar servicios</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
