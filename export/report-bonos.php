@@ -15,8 +15,6 @@ if (PHP_MAJOR_VERSION >= 7) {
 date_default_timezone_set('America/Mexico_City');
 include_once(DOC_ROOT.'/libraries.php');
 $_POST['deep'] = 1;
-dd($bono->generateData());
-exit;
 $data = $reportebonos->generateReportBonosWhitLevel($_POST);
 $period = $_POST['period'];
 if($period== "efm"){

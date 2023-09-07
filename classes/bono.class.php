@@ -55,18 +55,32 @@ class Bono extends Personal
         // crear vista no agrupada
         $this->setPersonalId($_POST['responsableCuenta']);
         $info = $this->InfoWhitRol();
-        $subordinados = $this->getSubordinadosNoDirectoByLevel(5);
+        $subordinados = $this->getSubordinadosNoDirectoByLevel([4,5]);
         $subordinados_filtrados = [];
         foreach ($subordinados as $sub) {
             $cad = $sub;
+
+            $this->setPersonalId($sub['jefeInmediato']);
+            $cad['jefe'] = $this->InfoWhitRol();
+
             $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro);
             $cad['propios'] = $propios_sub;
             $this->setPersonalId($sub['personalId']);
             $childs             = $this->GetCascadeSubordinates();
             $total_sueldo_sub   = array_sum(array_column($childs, 'sueldo'));
             $cad['sueldo']      = $cad['sueldo'] +  $total_sueldo_sub;
-            $childs_filtrados   = [];
 
+            $childs_filtrados   = [];
+            foreach ($childs as $child) {
+
+                $cad_child =  $child;
+                $propios_child = $this->getRowsBySheet($child, $name_view, $filtro);
+                $cad_child['propios'] = $propios_child;
+                if(count($propios_child) > 0)
+                    array_push($childs_filtrados, $cad_child);
+            }
+
+            $cad['childs'] = $childs_filtrados;
             if(count($propios_sub) > 0 || count($childs_filtrados) > 0)
                 array_push($subordinados_filtrados, $cad);
         }
@@ -156,29 +170,53 @@ class Bono extends Personal
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
         $months = $this->Util()->generateMonthUntil($_POST['period'], false);
+
         // obtener la pila de departamentos
-        $pila_departamentos = $departamentos->GetListDepartamentos();
-        $jerarquia_2022 =  JERARQUIA_2022 === '*' ? array_column($pila_departamentos, 'departamentoId') : explode(',', JERARQUIA_2022);
-        $jerarquia_2022 = !is_array($jerarquia_2022) ? [] : $jerarquia_2022;
+        //$pila_departamentos = $departamentos->GetListDepartamentos();
+        //$jerarquia_2022 =  JERARQUIA_2022 === '*' ? array_column($pila_departamentos, 'departamentoId') : explode(',', JERARQUIA_2022);
+        //$jerarquia_2022 = !is_array($jerarquia_2022) ? [] : $jerarquia_2022;
         $title_jerarquia = [];
 
-        foreach ($jerarquia_2022 as $item_jerarquia) {
+       /* foreach ($jerarquia_2022 as $item_jerarquia) {
             $key_departamento =  array_search($item_jerarquia, array_column($pila_departamentos, 'departamentoId'));
             if (!$key_departamento)
                  continue;
 
             $item_departamento =  $pila_departamentos[$key_departamento];
             array_push($title_jerarquia, $item_departamento);
-        }
+        }*/
         $col_title_0 = ['Cliente','Razon Social'];
-        $col_title_1 = array_column($title_jerarquia, 'departamento');
-        $col_title_2 = ['Servicio'];
+        $col_title_1 = [];
+        $col_title_2 = ['Encargado de area', 'Servicio'];
         $col_month_title = $this->Util()->listMonthHeaderForReport($_POST['period']);
         $col_title_mix = array_merge($col_title_0, $col_title_1, $col_title_2, $col_month_title);
 
         $gran_consolidado_gerente = [];
+        $gran_consolidado_subgerente = [];
+        $subgerentes = [];
+        $subgerentesId = [];
+
         foreach ($supervisores as $ksup => $supervisor) {
-            // si en filtro esta vacio sumar los sueldos de todos los empleados de seguridad social y nominas
+
+            if($supervisor['nivel'] == 4) {
+
+                if(!in_array($supervisor['personalId'],$subgerentesId)) {
+
+                    array_push($subgerentesId, $supervisor['personalId']);
+                    $subgerentes[$supervisor['personalId']]['info'] = $supervisor;
+                }
+                continue;
+            }
+
+            $tieneSubgerente = $supervisor['jefe']['nivel'] == 4;
+            $jefe = $supervisor['jefe'];
+            if($tieneSubgerente && !in_array($jefe['personalId'],$subgerentesId) ) {
+
+                array_push($subgerentesId, $supervisor['personalId']);
+                $subgerentes[$supervisor['personalId']]['info'] = $supervisor;
+            }
+
+
             $ftrDepId = (int)$_POST['departamentoId'];
             $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
 
@@ -210,21 +248,24 @@ class Bono extends Personal
 
             $row++;
             $row_init_col_total = $row;
+            // Si tiene filas propias se muestra lo cual nunca debe pasar.
             $totales = $this->drawRowsPropios($sheet, $months, $supervisor, $row, $title_jerarquia);
             $cad['data'] = $supervisor;
             $cad['totales'] = $totales;
             array_push($consolidado_final, $cad);
             $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
-            /*foreach ($supervisor['childs'] as $child) {
+
+            // Crear filas de los subordinados del supervisor
+            foreach ($supervisor['childs'] as $child) {
                 $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row, $title_jerarquia);
                 $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
                 $cad2['data'] = $child;
                 $cad2['totales'] = $totales_child;
                 array_push($consolidado_final, $cad2);
-            }*/
+            }
 
-            //$this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
+            $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
             $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $title_jerarquia);
 
             if(!is_array($gran_consolidado_gerente[$title_sheet]))
@@ -234,11 +275,32 @@ class Bono extends Personal
             $cad_gran_consolidado['info_grupo'] = $supervisor;
             $cad_gran_consolidado['total_consolidado_grupo'] = $total_consolidado_grupo;
 
+            if($tieneSubgerente) {
+                if(!is_array($subgerentes[$jefe['personalId']]['supervisores'][$title_sheet])) {
+
+                    $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['info'] = [];
+                }
+
+                if(!is_array($subgerentes[$jefe['personalId']]['supervisores'][$title_sheet])) {
+
+                    $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['items'] = [];
+                }
+
+                $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['info'] = $supervisor;
+                $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['items'] = $total_consolidado_grupo;
+            }
+
             $gran_consolidado_gerente[$title_sheet] = $cad_gran_consolidado;
 
             $this->drawTotalesConsolidadoGrupo($book, $sheet, $total_consolidado_grupo, $months, $row, $supervisor, $title_jerarquia);
             $hoja++;
         }
+
+        //Crear hojas de subgerentes
+        if(count($subgerentes))
+            $this->drawSubgerentes($book, $hoja, $subgerentes, $months);
+
+        $gran_consolidado_gerente2  =  count($subgerentes) > 0 ?  $gran_consolidado_subgerente : $gran_consolidado_gerente;
 
         $this->drawPropiosGerente($book, $hoja, $data['gerente'], $col_title_mix, $months, $gran_consolidado_gerente, $title_jerarquia);
 
@@ -292,7 +354,7 @@ class Bono extends Personal
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(0) . $row_trabajado)->applyFromArray($style_text);
         $sheet->setCellValueByColumnAndRow(1, $row_trabajado, count($totales['total_contract']))
             ->getStyle($coordenada_num_empresa)->applyFromArray($style_text);
-        $total_jerarquia_trabajado = (count($jerarquia) + 2);
+        $total_jerarquia_trabajado = (count($jerarquia) + 3);
         for ($current_col = 2; $current_col <= $total_jerarquia_trabajado  ; $current_col++) {
             $sheet->setCellValueByColumnAndRow($current_col, $row_trabajado, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($current_col) . $row_trabajado)->applyFromArray($style_text);
@@ -306,7 +368,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow(1, $row_devengado, '')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row_devengado)->applyFromArray($style_text);
 
-        $total_jerarquia_dev = (count($jerarquia) + 2);
+        $total_jerarquia_dev = (count($jerarquia) + 3);
         for ($current_col_dev = 2; $current_col_dev <= $total_jerarquia_dev  ; $current_col_dev++) {
             $sheet->setCellValueByColumnAndRow($current_col_dev, $row_devengado, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($current_col_dev) . $row_devengado)->applyFromArray($style_text);
@@ -407,6 +469,8 @@ class Bono extends Personal
                 $sheet->setCellValueByColumnAndRow(++$col, $row, $nombre)
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_text);
             }
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $propio['permisos_normalizado'][$propio['departamento_id']]['nombre'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_text);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $propio['name_service'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($style_text);
             $col++;
@@ -491,12 +555,6 @@ class Bono extends Personal
     function drawsTotalesFinal(&$book, $sheet, $data, $months, &$row, $jerarquia)
     {
         global $global_config_style_cell, $global_bonos;
-        $stack_bono[1] = 5;
-        $stack_bono[2] = 4;
-        $stack_bono[3] = 3;
-        $stack_bono[4] = 3;
-        $stack_bono[5] = 2;
-        $stack_bono[6] = 1;
 
         $total_consolidado_grupo['row_devengado'] = [];
         $total_consolidado_grupo['row_trabajado'] = [];
@@ -505,7 +563,7 @@ class Bono extends Personal
         $total_consolidado_grupo['row_bono'] = [];
         $total_consolidado_grupo['gran_cantidad_workflow_trabajado'] = [];
         $total_consolidado_grupo['gran_cantidad_workflow_devengando'] = [];
-        $col_real = count($jerarquia) + 2;
+        $col_real = count($jerarquia) + 3;
         $row_hide_inicial = $row;
         foreach ($data as $total) {
             $row_nombre = $row;
@@ -530,19 +588,23 @@ class Bono extends Personal
             $row_utilidad = $row;
             $sheet->setCellValueByColumnAndRow($col_real, $row_utilidad, 'Utilidad')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_utilidad)->applyFromArray($global_config_style_cell['style_grantotal']);
-            /*$row++;
+            $row++;
             $row_porcent_bono = $row;
             $sheet->setCellValueByColumnAndRow(3, $row_porcent_bono, '% Bono')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_porcent_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
-            */
+
             $row++;
             $row_bono = $row;
-            $sheet->setCellValueByColumnAndRow($col_real, $row_bono, 'Bono entregado')
+            $sheet->setCellValueByColumnAndRow($col_real, $row_bono, 'Bono Mensual')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
-            /*$row++;
+            $row++;
             $row_bono_entregado = $row;
-            $sheet->setCellValueByColumnAndRow(3, $row_bono_entregado, 'Bono entregado')
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_bono_entregado)->applyFromArray($global_config_style_cell['style_grantotal']);*/
+            $sheet->setCellValueByColumnAndRow(3, $row_bono_entregado, 'Bono Anterior')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_bono_entregado)->applyFromArray($global_config_style_cell['style_grantotal']);
+            $row++;
+            $row_bono_diferencia = $row;
+            $sheet->setCellValueByColumnAndRow(3, $row_bono_diferencia, 'Diferencia bono')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_bono_diferencia)->applyFromArray($global_config_style_cell['style_grantotal']);
             $row++;
             $row_porcentefectividad = $row;
             $sheet->setCellValueByColumnAndRow($col_real, $row_porcentefectividad, 'Porcentaje de efectividad')
@@ -584,29 +646,31 @@ class Bono extends Personal
                 $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
                     ->getStyle($cordinate_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
-                /*$cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
-                $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, $stack_bono[$total['data']['nivel']] / 100)
+                $cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
+                $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, $global_bonos[$total['data']['nivel']]['porcentaje']/100)
                     ->getStyle($cordinate_porcent_bono)->applyFromArray($global_config_style_cell['style_porcent']);
-                if(!is_array($total_consolidado_grupo['row_porcent_bono'][$key_month])) $total_consolidado_grupo['row_porcent_bono'][$key_month]= [];
-                array_push($total_consolidado_grupo['row_porcent_bono'][$key_month], $cordinate_porcent_bono);*/
 
-                /*$formula_bono = $total_mes['total_devengando'] - $total_mes['total_trabajado'] <= 0
-                                ? '=+'.$global_bonos[$total['data']['nivel']]
-                                : 0;*/
-                $formula_bono = '=IF(('.$cordinate_devengado.'-'.$cordinate_trabajado.') <= 0,'.$global_bonos[$total['data']['nivel']].',0)';
-                $formula_bono = (($total_mes['cantidad_workflow_devengado'] - $total_mes['cantidad_workflow_trabajado']) == 0 && $total_mes['total_devengado'] > 0)
-                                ? $formula_bono
-                                : 0;
+                if(!is_array($total_consolidado_grupo['row_porcent_bono'][$key_month]))
+                    $total_consolidado_grupo['row_porcent_bono'][$key_month]= [];
 
+                array_push($total_consolidado_grupo['row_porcent_bono'][$key_month], $cordinate_porcent_bono);
+
+                $formula_bono = "=IF(($cordinate_utilidad > 0), $cordinate_utilidad*$cordinate_porcent_bono, 0)";
                 $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
-                $sheet->setCellValueByColumnAndRow($col, $row_bono, '')
+                $sheet->setCellValueByColumnAndRow($col, $row_bono, $formula_bono)
                     ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
-                if(!is_array($total_consolidado_grupo['row_bono'][$key_month])) $total_consolidado_grupo['row_bono'][$key_month]= [];
+
+                if(!is_array($total_consolidado_grupo['row_bono'][$key_month]))
+                    $total_consolidado_grupo['row_bono'][$key_month]= [];
                 array_push($total_consolidado_grupo['row_bono'][$key_month], $cordinate_bono);
 
-                /*$cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
+                $cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
                 $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
-                    ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
+                    ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);
+
+                $cordinate_bono_diferencia = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
+                $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, "=$cordinate_bono-$cordinate_bono_entregado")
+                    ->getStyle($cordinate_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
 
                 //$formula_efectividad = '=IFERROR((+'.$total_mes['cantidad_workflow_trabajado'].'/'.$total_mes['cantidad_workflow_devengado'].'),0)';
                 $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
@@ -637,9 +701,9 @@ class Bono extends Personal
             $row += 2;
             $row_hide_final = $row;
         }
-        for($current_row = $row_hide_inicial; $current_row <= $row_hide_final; $current_row ++)
+        /*for($current_row = $row_hide_inicial; $current_row <= $row_hide_final; $current_row ++)
             $sheet->getRowDimension($current_row)->setVisible(false);
-
+*/
         return $total_consolidado_grupo;
     }
 
@@ -659,7 +723,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow(1, $row_trabajado, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row_trabajado)->applyFromArray($style_currency);
 
-        $total_jerarquia_trabajado = (count($jerarquia) + 2);
+        $total_jerarquia_trabajado = (count($jerarquia) + 3);
         for ($current_col = 2; $current_col <= $total_jerarquia_trabajado  ; $current_col++) {
             $sheet->setCellValueByColumnAndRow($current_col, $row_trabajado, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($current_col) . $row_trabajado)->applyFromArray($style_text);
@@ -673,7 +737,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow(1, $row_devengado, '')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row_devengado)->applyFromArray($style_text);
 
-        $total_jerarquia_dev = (count($jerarquia) + 2);
+        $total_jerarquia_dev = (count($jerarquia) + 3);
         for ($current_col_dev = 2; $current_col_dev <= $total_jerarquia_dev  ; $current_col_dev++) {
             $sheet->setCellValueByColumnAndRow($current_col_dev, $row_devengado, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($current_col_dev) . $row_devengado)->applyFromArray($style_text);
@@ -727,19 +791,20 @@ class Bono extends Personal
         $row += 2;
     }
 
-    function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $jerarquia, $prefix_sheet = '', &$gran_total_gerente = []) {
-        global $global_config_style_cell;
+    function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $jerarquia, $prefix_sheet = '', &$gran_total_gerente = [], $acumular = false) {
+        global $global_config_style_cell, $global_bonos;
 
-        $col_real = $prefix_sheet === '' ? count($jerarquia) + 2 : 0;
+        $col_real = $prefix_sheet === '' ? count($jerarquia) + 3 : 0;
         $col = $col_real + 1;
         $row_nombre = ++$row;
         $row_devengando = ++$row;
         $row_trabajado = ++$row;
         $row_gasto = ++$row;
         $row_utilidad = ++$row;
-        /*$row_porcent_bono = ++$row;*/
-        $row_bono = ++$row;
-        //$row_bono_entregado = ++$row;
+        $row_porcent_bono = ++$row;
+        $row_bono_mensual = ++$row;
+        $row_bono_entregado = ++$row;
+        $row_bono_diferencia = ++$row;
         $row_porcentefectividad = ++$row;
         $row_porcentutilidad = ++$row;
         $row_porcentcrecimiento = ++$row;
@@ -761,14 +826,17 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col_real, $row_utilidad, 'Utilidad')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_utilidad)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        /*$sheet->setCellValueByColumnAndRow(3, $row_porcent_bono, '% Bono')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_porcent_bono)->applyFromArray($global_config_style_cell['style_grantotal']);*/
+        $sheet->setCellValueByColumnAndRow($col_real, $row_porcent_bono, '% Bono')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_porcent_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        $sheet->setCellValueByColumnAndRow($col_real, $row_bono, 'Bono entregado')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_mensual, 'Bono mensual')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_mensual)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        /*$sheet->setCellValueByColumnAndRow(3, $row_bono_entregado, 'Bono entregado')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row_bono_entregado)->applyFromArray($global_config_style_cell['style_grantotal']);*/
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_entregado, 'Bono anterior')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_entregado)->applyFromArray($global_config_style_cell['style_grantotal']);
+
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_diferencia, 'Diferencia de bono')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_diferencia)->applyFromArray($global_config_style_cell['style_grantotal']);
 
         $sheet->setCellValueByColumnAndRow($col_real, $row_porcentefectividad, 'Porcentaje efectividad')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_porcentefectividad)->applyFromArray($global_config_style_cell['style_grantotal']);
@@ -785,6 +853,7 @@ class Bono extends Personal
         $total_hor_trabajado =  [];
         $total_hor_gasto =  [];
         $total_hor_bono =  [];
+        $total_hor_bono_entregado =  [];
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
@@ -817,26 +886,37 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
                 ->getStyle($cordinate_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
-            /*$cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
-            $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_porcent_bono'][$key_mes]))
-                ->getStyle($cordinate_porcent_bono)->applyFromArray($global_config_style_cell['style_porcent']);*/
+            $cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
+            $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, $global_bonos[$info_grupo["nivel"]]['porcentaje']/100) // '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_porcent_bono'][$key_mes])
+                ->getStyle($cordinate_porcent_bono)->applyFromArray($global_config_style_cell['style_porcent']);
 
-            //$formula_bono = '=IF(('.$cordinate_devengado.'-'.$cordinate_trabajado.') <= 0,'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono'][$key_mes]).',0)';
-            $formula_bono = '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono'][$key_mes]);
-            $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
-            $sheet->setCellValueByColumnAndRow($col, $row_bono, $formula_bono)
+            $formula_bono = $acumular
+               ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono'][$key_mes])
+               : "=IF($cordinate_utilidad > 0,$cordinate_utilidad*$cordinate_porcent_bono, 0)";
+            $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual, $formula_bono)
                 ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
-            if(!is_array($gran_total_gerente['row_bono'][$key_mes])) $gran_total_gerente['row_bono'][$key_mes]= [];
+            if(!is_array($gran_total_gerente['row_bono'][$key_mes]))
+                $gran_total_gerente['row_bono'][$key_mes]= [];
             array_push($gran_total_gerente['row_bono'][$key_mes], $cordinate_bono);
             array_push($total_hor_bono, $cordinate_bono);
 
-            /*$cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
+            $cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
             $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
-                ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);*/
+                ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);
+
+            if(!is_array($gran_total_gerente['row_bono_entregado'][$key_mes]))
+                $gran_total_gerente['row_bono_entregado'][$key_mes]= [];
+            array_push($gran_total_gerente['row_bono_entregado'][$key_mes], $cordinate_bono_entregado);
+            array_push($total_hor_bono_entregado, $cordinate_bono_entregado);
+
+            $cordinate_bono_diferencia= PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, "=$cordinate_bono-$cordinate_bono_entregado")
+                ->getStyle($cordinate_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
 
             //$formula_efectividad = '=IFERROR((+'.$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['gran_cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
-            $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
+            $formula_efectividad = '=IFERROR(+'.$cordinate_trabajado.'/'.$cordinate_devengado.",0)";
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -877,10 +957,20 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col, $row_utilidad, $formula)
             ->getStyle($coord_horizontal_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
-        $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
+        $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
         $formula = is_array($total_hor_bono) ? "=".implode('+', $total_hor_bono) : '';
-        $sheet->setCellValueByColumnAndRow($col, $row_bono, $formula)
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual, $formula)
             ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
+        $formula = is_array($total_hor_bono_entregado) ? "=".implode('+', $total_hor_bono_entregado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, $formula)
+            ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono_diferencia = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
+        $formula = "=$coord_horizontal_bono-$coord_horizontal_bono_entregado";
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, $formula)
+            ->getStyle($coord_horizontal_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_efectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
         $formula = '=IFERROR(('.$coord_horizontal_trabajado .'/'.$coord_horizontal_devengado.'), 0)';
@@ -901,7 +991,7 @@ class Bono extends Personal
         $sheet = $book->createSheet($hoja);
         $name_title =  substr($data["name"], 0, 6);
         $name_title =  $this->Util()->cleanString($name_title);
-        $name_title = "H_0_".str_replace(" ", "", $name_title);
+        $name_title = "GERENTE_0_".str_replace(" ", "", $name_title);
         $title_sheet = strtoupper($name_title);
 
         $sheet->setTitle($title_sheet);
@@ -946,11 +1036,32 @@ class Bono extends Personal
         $row += 1;
         $gran_total_only_gerente = [];
         //$gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias);
-        $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data, $jerarquias);
+        $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data);
     }
 
-    function drawGranTotalGerente (&$book, $sheet, $data, $data_gerente, $months, &$row, $info_grupo, $jerarquia) {
-        global $global_config_style_cell;
+    function drawSubgerentes(&$book, &$hoja, $subgerentes, $months) {
+
+        foreach($subgerentes as $keysub => $subgerente) {
+            $sheet = $book->createSheet($hoja);
+            $name_title =  substr($subgerente['info']["name"], 0, 6);
+            $name_title =  $this->Util()->cleanString($name_title);
+            $name_title = "SUBGER_".$keysub."_".str_replace(" ", "", $name_title);
+            $title_sheet = strtoupper($name_title);
+            $sheet->setTitle($title_sheet);
+            $row = 1;
+            $gran_total_consolidadado_subgerente = [];
+            foreach ($subgerente['supervisores'] as $ksup => $value) {
+                $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['items'], $months, $row, $value['info'], [], $ksup, $gran_total_consolidadado_subgerente);
+                $row += 1;
+            }
+            $row += 1;
+            $gran_total_only_subgerente = [];
+            $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidadado_subgerente, $gran_total_only_subgerente, $months, $row, $subgerente['info'], 'SUBGERENTE');
+        }
+    }
+
+    function drawGranTotalGerente (&$book, $sheet, $data, $data_gerente, $months, &$row, $info_grupo, $preefix = "GERENTE") {
+        global $global_config_style_cell, $global_bonos;
 
         $col_real   =  0;
         $col        =  $col_real + 1;
@@ -959,16 +1070,18 @@ class Bono extends Personal
         $row_trabajado  = ++$row;
         $row_gasto      = ++$row;
         $row_utilidad   = ++$row;
-        $row_bono       = ++$row;
+        $row_porcent_bono = ++$row;
+        $row_bono_mensual = ++$row;
+        $row_bono_entregado = ++$row;
+        $row_bono_diferencia = ++$row;
         $row_porcentefectividad = ++$row;
         $row_porcentutilidad    = ++$row;
         $row_porcentcrecimiento = ++$row;
 
-
         $sheet->setCellValueByColumnAndRow($col_real, $row_nombre, 'Nombre')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        $sheet->setCellValueByColumnAndRow($col_real + 1, $row_nombre, "GRAN TOTAL GERENTE ". strtoupper($info_grupo['name']))
+        $sheet->setCellValueByColumnAndRow($col_real + 1, $row_nombre, "GRAN TOTAL $preefix ". strtoupper($info_grupo['name']))
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
         $sheet->setCellValueByColumnAndRow($col_real, $row_devengando, 'Ingreso devengado')
@@ -982,8 +1095,17 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col_real, $row_utilidad, 'Utilidad')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_utilidad)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        $sheet->setCellValueByColumnAndRow($col_real, $row_bono, 'Bono entregado')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
+        $sheet->setCellValueByColumnAndRow($col_real, $row_porcent_bono, '% Bono')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_porcent_bono)->applyFromArray($global_config_style_cell['style_grantotal']);
+
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_mensual, 'Bono mensual')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_mensual)->applyFromArray($global_config_style_cell['style_grantotal']);
+
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_entregado, 'Bono anterior')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_entregado)->applyFromArray($global_config_style_cell['style_grantotal']);
+
+        $sheet->setCellValueByColumnAndRow($col_real, $row_bono_diferencia, 'Diferencia bono')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_bono_diferencia)->applyFromArray($global_config_style_cell['style_grantotal']);
 
         $sheet->setCellValueByColumnAndRow($col_real, $row_porcentefectividad, 'Porcentaje efectividad')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_porcentefectividad)->applyFromArray($global_config_style_cell['style_grantotal']);
@@ -995,6 +1117,13 @@ class Bono extends Personal
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_grantotal']);
 
         $cordenada_base_devengando = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
+
+        $total_hor_devengado =  [];
+        $total_hor_trabajado =  [];
+        $total_hor_gasto =  [];
+        $total_hor_bono =  [];
+        $total_hor_bono_entregado =  [];
+
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
@@ -1025,11 +1154,25 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
                 ->getStyle($cordinate_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
-            $celdas_bono = array_merge_recursive($data['row_bono'][$key_mes], $data_gerente['row_bono'][$key_mes]);
-            $formula = count($celdas_bono) ? '=+'.implode('+', $celdas_bono) : '';
-            $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono;
-            $sheet->setCellValueByColumnAndRow($col, $row_bono,$formula)
+            $cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
+            $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, $global_bonos[$info_grupo['nivel']]['porcentaje'] > 0 ? $global_bonos[$info_grupo['nivel']]['porcentaje']/100 : 0)
+                ->getStyle($cordinate_porcent_bono)->applyFromArray($global_config_style_cell['style_porcent']);
+
+            //$celdas_bono = array_merge_recursive($data['row_bono'][$key_mes], $data_gerente['row_bono'][$key_mes]);
+            //$formula = count($celdas_bono) ? '=+'.implode('+', $celdas_bono) : '';
+            $formula = "=+$cordinate_utilidad*$cordinate_porcent_bono";
+            $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual,$formula)
                 ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+            $cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado,'')
+                ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);
+
+            $formula = "=+$cordinate_bono-$cordinate_bono_entregado";
+            $cordinate_diferencia_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia,$formula)
+                ->getStyle($cordinate_diferencia_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
 
             $cantidad_workflow_devengado = $data['cantidad_workflow_devengado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_devengado'][$key_mes]['total'];
@@ -1050,8 +1193,60 @@ class Bono extends Personal
             $sheet->setCellValueByColumnAndRow($col, $row_porcentcrecimiento, $valor)
                 ->getStyle($cordinate_porcentcrecimiento)->applyFromArray($global_config_style_cell['style_porcent']);
 
+            array_push($total_hor_devengado, $cordinate_devengado);
+            array_push($total_hor_trabajado, $cordinate_trabajado);
+            array_push($total_hor_gasto, $cordinate_gasto);
+            array_push($total_hor_bono, $cordinate_bono);
+            array_push($total_hor_bono_entregado, $cordinate_bono_entregado);
+
             $col++;
         }
+
+        $coord_horizontal_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
+        $formula =  is_array($total_hor_devengado) ? "=".implode('+', $total_hor_devengado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
+            ->getStyle($coord_horizontal_devengado)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
+        $formula =  is_array($total_hor_trabajado) ? "=".implode('+', $total_hor_trabajado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
+            ->getStyle($coord_horizontal_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
+        $formula =  is_array($total_hor_gasto) ? "=".implode('+', $total_hor_gasto) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
+            ->getStyle($coord_horizontal_gasto)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_utilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_utilidad;
+        $formula = '='.$coord_horizontal_trabajado .'-'.$coord_horizontal_gasto;
+        $sheet->setCellValueByColumnAndRow($col, $row_utilidad, $formula)
+            ->getStyle($coord_horizontal_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
+        $formula = is_array($total_hor_bono) ? "=".implode('+', $total_hor_bono) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual, $formula)
+            ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
+        $formula = is_array($total_hor_bono_entregado) ? "=".implode('+', $total_hor_bono_entregado) : '';
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, $formula)
+            ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_bono_diferencia = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
+        $formula = "=$coord_horizontal_bono-$coord_horizontal_bono_entregado";
+        $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, $formula)
+            ->getStyle($coord_horizontal_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
+
+        $coord_horizontal_efectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
+        $formula = '=IFERROR(('.$coord_horizontal_trabajado .'/'.$coord_horizontal_devengado.'), 0)';
+        $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula)
+            ->getStyle($coord_horizontal_efectividad)->applyFromArray($global_config_style_cell['style_porcent']);
+
+        $coord_horizontal_porcentutilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentutilidad;
+        $formula = '=IFERROR(('.$coord_horizontal_utilidad .'-'.$coord_horizontal_bono.')/'.$coord_horizontal_trabajado.', 0)';
+        $sheet->setCellValueByColumnAndRow($col, $row_porcentutilidad, $formula)
+            ->getStyle($coord_horizontal_porcentutilidad)->applyFromArray($global_config_style_cell['style_porcent']);
+
         $merges = PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + $col_real) . $row_nombre;
         $book->getActiveSheet()->mergeCells($merges);
     }
