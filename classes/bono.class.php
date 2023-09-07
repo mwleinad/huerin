@@ -272,8 +272,7 @@ class Bono extends Personal
                 $gran_consolidado_gerente[$title_sheet] = [];
 
 
-            $cad_gran_consolidado['info_grupo'] = $supervisor;
-            $cad_gran_consolidado['total_consolidado_grupo'] = $total_consolidado_grupo;
+
 
             if($tieneSubgerente) {
                 if(!is_array($subgerentes[$jefe['personalId']]['supervisores'][$title_sheet])) {
@@ -290,17 +289,18 @@ class Bono extends Personal
                 $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['items'] = $total_consolidado_grupo;
             }
 
-            $gran_consolidado_gerente[$title_sheet] = $cad_gran_consolidado;
 
-            $this->drawTotalesConsolidadoGrupo($book, $sheet, $total_consolidado_grupo, $months, $row, $supervisor, $title_jerarquia);
+            $consolidado_super = $this->drawTotalesConsolidadoGrupo($book, $sheet, $total_consolidado_grupo, $months, $row, $supervisor, $title_jerarquia);
+
+            $cad_gran_consolidado['info_grupo'] = $supervisor;
+            $cad_gran_consolidado['total_consolidado_grupo'] = $consolidado_super;
+            $gran_consolidado_gerente[$title_sheet] = $cad_gran_consolidado;
             $hoja++;
         }
 
         //Crear hojas de subgerentes
         if(count($subgerentes))
             $this->drawSubgerentes($book, $hoja, $subgerentes, $months);
-
-        $gran_consolidado_gerente2  =  count($subgerentes) > 0 ?  $gran_consolidado_subgerente : $gran_consolidado_gerente;
 
         $this->drawPropiosGerente($book, $hoja, $data['gerente'], $col_title_mix, $months, $gran_consolidado_gerente, $title_jerarquia);
 
@@ -854,6 +854,14 @@ class Bono extends Personal
         $total_hor_gasto =  [];
         $total_hor_bono =  [];
         $total_hor_bono_entregado =  [];
+
+        // CONSOLIDADO
+        $total_consolidado_grupo['row_devengado'] = [];
+        $total_consolidado_grupo['row_trabajado'] = [];
+        $total_consolidado_grupo['row_gasto'] = [];
+        $total_consolidado_grupo['row_porcent_bono'] = [];
+        $total_consolidado_grupo['row_bono'] = [];
+
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
@@ -864,6 +872,10 @@ class Bono extends Personal
             array_push($gran_total_gerente['row_devengado'][$key_mes], $cordinate_devengado);
             array_push($total_hor_devengado, $cordinate_devengado);
 
+            if(!is_array($total_consolidado_grupo['row_devengado'][$key_mes]))
+                $total_consolidado_grupo['row_devengado'][$key_mes]= [];
+            $total_consolidado_grupo['row_devengado'][$key_mes][] = $cordinate_devengado;
+
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
             $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_trabajado'][$key_mes]))
                 ->getStyle($cordinate_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
@@ -871,6 +883,10 @@ class Bono extends Personal
             if(!is_array($gran_total_gerente['row_trabajado'][$key_mes])) $gran_total_gerente['row_trabajado'][$key_mes]= [];
             array_push($gran_total_gerente['row_trabajado'][$key_mes], $cordinate_trabajado);
             array_push($total_hor_trabajado, $cordinate_trabajado);
+
+            if(!is_array($total_consolidado_grupo['row_trabajado'][$key_mes]))
+                $total_consolidado_grupo['row_trabajado'][$key_mes]= [];
+            $total_consolidado_grupo['row_trabajado'][$key_mes][] = $cordinate_trabajado;
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $gastosMes = $data['row_gasto'][$key_mes];
@@ -882,6 +898,10 @@ class Bono extends Personal
             array_push($gran_total_gerente['row_gasto'][$key_mes], $cordinate_gasto);
             array_push($total_hor_gasto, $cordinate_gasto);
 
+            if(!is_array($total_consolidado_grupo['row_gasto'][$key_mes]))
+                $total_consolidado_grupo['row_gasto'][$key_mes]= [];
+            $total_consolidado_grupo['row_gasto'][$key_mes][] = $cordinate_gasto;
+
             $cordinate_utilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_utilidad;
             $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
                 ->getStyle($cordinate_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
@@ -889,6 +909,10 @@ class Bono extends Personal
             $cordinate_porcent_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcent_bono;
             $sheet->setCellValueByColumnAndRow($col, $row_porcent_bono, $global_bonos[$info_grupo["nivel"]]['porcentaje']/100) // '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_porcent_bono'][$key_mes])
                 ->getStyle($cordinate_porcent_bono)->applyFromArray($global_config_style_cell['style_porcent']);
+
+            if(!is_array($total_consolidado_grupo['row_porcent_bono'][$key_mes]))
+                $total_consolidado_grupo['row_porcent_bono'][$key_mes]= [];
+            $total_consolidado_grupo['row_porcent_bono'][$key_mes][] = $cordinate_porcent_bono;
 
             $formula_bono = $acumular
                ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono'][$key_mes])
@@ -901,6 +925,10 @@ class Bono extends Personal
                 $gran_total_gerente['row_bono'][$key_mes]= [];
             array_push($gran_total_gerente['row_bono'][$key_mes], $cordinate_bono);
             array_push($total_hor_bono, $cordinate_bono);
+
+            if(!is_array($total_consolidado_grupo['row_bono'][$key_mes]))
+                $total_consolidado_grupo['row_bono'][$key_mes]= [];
+            $total_consolidado_grupo['row_bono'][$key_mes][] = $cordinate_bono;
 
             $cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
             $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
@@ -984,6 +1012,8 @@ class Bono extends Personal
 
         $merges = PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre . ":" . PHPExcel_Cell::stringFromColumnIndex(count($months) + 1 + $col_real) . $row_nombre;
         $book->getActiveSheet()->mergeCells($merges);
+
+        return $total_consolidado_grupo;
     }
 
     function drawPropiosGerente(&$book, $hoja, $data, $col_title_mix, $months, $gran_consolidado_gerente, $jerarquias) {
