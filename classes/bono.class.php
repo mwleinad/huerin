@@ -271,8 +271,7 @@ class Bono extends Personal
             if(!is_array($gran_consolidado_gerente[$title_sheet]))
                 $gran_consolidado_gerente[$title_sheet] = [];
 
-
-
+            $consolidado_super = $this->drawTotalesConsolidadoGrupo($book, $sheet, $total_consolidado_grupo, $months, $row, $supervisor, $title_jerarquia);
 
             if($tieneSubgerente) {
                 if(!is_array($subgerentes[$jefe['personalId']]['supervisores'][$title_sheet])) {
@@ -286,11 +285,8 @@ class Bono extends Personal
                 }
 
                 $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['info'] = $supervisor;
-                $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['items'] = $total_consolidado_grupo;
+                $subgerentes[$jefe['personalId']]['supervisores'][$title_sheet]['items'] = $consolidado_super;
             }
-
-
-            $consolidado_super = $this->drawTotalesConsolidadoGrupo($book, $sheet, $total_consolidado_grupo, $months, $row, $supervisor, $title_jerarquia);
 
             $cad_gran_consolidado['info_grupo'] = $supervisor;
             $cad_gran_consolidado['total_consolidado_grupo'] = $consolidado_super;
