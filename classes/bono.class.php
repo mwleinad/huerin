@@ -58,7 +58,7 @@ class Bono extends Personal
         $subordinados = $this->getSubordinadosNoDirectoByLevel([4,5]);
         $subordinados_filtrados = [];
         //Forzar que solo se obtenga  servicios del departamento del gerente.
-        $filtro['departamento_id'] = $_POST['departamentoId'] ?? $info['departamentoId'];
+        $filtro['departamento_id'] = $_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : $info['departamentoId'];
         foreach ($subordinados as $sub) {
             $cad = $sub;
 
@@ -199,7 +199,7 @@ class Bono extends Personal
         $subgerentesId = [];
 
         foreach ($supervisores as $ksup => $supervisor) {
-            $ftrDepId = $_POST['departamentoId'] ?? $supervisor['departamentoId'];
+            $ftrDepId = $_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : $supervisor['departamentoId'];
             if($supervisor['nivel'] == 4) {
 
                 if(!in_array($supervisor['personalId'],$subgerentesId)) {
