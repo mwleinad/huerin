@@ -252,9 +252,9 @@ class Bono extends Personal
             $row_init_col_total = $row;
             // Si tiene filas propias se muestra lo cual nunca debe pasar.
             $totales = $this->drawRowsPropios($sheet, $months, $supervisor, $row, $title_jerarquia);
-            $cad['data'] = $supervisor;
-            $cad['totales'] = $totales;
-            array_push($consolidado_final, $cad);
+            //$cad['data'] = $supervisor;
+            //$cad['totales'] = $totales;
+            //array_push($consolidado_final, $cad);
             $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
 
             // Crear filas de los subordinados del supervisor
@@ -571,7 +571,7 @@ class Bono extends Personal
             $row_nombre = $row;
             $sheet->setCellValueByColumnAndRow($col_real, $row, 'Nombre')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row)->applyFromArray($global_config_style_cell['style_grantotal']);
-            $sheet->setCellValueByColumnAndRow($col_real + 1, $row, $total['data']['name'])
+            $sheet->setCellValueByColumnAndRow($col_real + 1, $row, $total['data']['name']."(".$total['data']['nameLevel'].")")
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row)->applyFromArray($global_config_style_cell['style_grantotal']);
 
             $row++;
