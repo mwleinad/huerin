@@ -285,104 +285,145 @@ switch($_POST['type']){
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $sheet->setTitle('LayoutServicios');
-        $sheet->setCellValueByColumnAndRow(0,1,'id_contrato');
-        $sheet->setCellValueByColumnAndRow(1,1,'id_servicio');
-        $sheet->setCellValueByColumnAndRow(2,1,'cliente');
-        $sheet->setCellValueByColumnAndRow(3,1,'Razon social');
-        $sheet->setCellValueByColumnAndRow(4,1,'Servicio');
-        $sheet->setCellValueByColumnAndRow(5,1,'Inicio operaciones');
-        $sheet->setCellValueByColumnAndRow(6,1,'Inicio facturacion');
-        $sheet->setCellValueByColumnAndRow(7,1,'Estatus de servicio');
-        $sheet->setCellValueByColumnAndRow(8,1,'Ultimo workflow');
-        $sheet->setCellValueByColumnAndRow(9,1,'Responsable ATC');
-        $sheet->setCellValueByColumnAndRow(10,1,'Gerente del servicio');
-        $sheet->setCellValueByColumnAndRow(11,1,'Supervisor del servicio');
-        $sheet->setCellValueByColumnAndRow(12,1,'Precio en cartera');
-        $sheet->setCellValueByColumnAndRow(13,1,'Horas invertidas');
-        $sheet->setCellValueByColumnAndRow(14,1,'Numero empleado');
-        $sheet->setCellValueByColumnAndRow(15,1,'Costo actual');
-        $sheet->setCellValueByColumnAndRow(16,1,'Utilidad actual');
-        $sheet->setCellValueByColumnAndRow(17,1,'% Utilidad actual');
-        $sheet->setCellValueByColumnAndRow(18,1,'Precio lista');
-        $sheet->setCellValueByColumnAndRow(19,1,'Utilidad deseada');
-        $sheet->setCellValueByColumnAndRow(20,1,'% Utilidad deseada');
-        $sheet->setCellValueByColumnAndRow(21,1,'Factor');
-        $sheet->setCellValueByColumnAndRow(22,1,'Costo nuevo');
-        $sheet->setCellValueByColumnAndRow(23,1,'Costo nuevo final');
-        $sheet->setCellValueByColumnAndRow(24,1,'Utilidad final');
-        $sheet->setCellValueByColumnAndRow(25,1,'% Utilidad final');
-        $sheet->setCellValueByColumnAndRow(26,1,'Incremento');
-        $sheet->setCellValueByColumnAndRow(27,1,'% Incremento');
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col,1,'id_contrato');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'id_servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'cliente');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Razon social');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Supervisor del servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Precio en cartera');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Horas invertidas');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Numero empleado');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Precio lista');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad deseada');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad deseada');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Factor');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo nuevo');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo nuevo final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Incremento');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Incremento');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JH');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JB');
 
         $servicios =  $servicio->EnumerateServiceForInstances();
         $row=2;
-        foreach($servicios as $key=>$value){
-            $sheet->setCellValueByColumnAndRow(0,$row,$value['contractId']);
-            $sheet->setCellValueByColumnAndRow(1,$row,$value['servicioId']);
-            $sheet->setCellValueByColumnAndRow(2,$row,$value['clienteName']);
-            $sheet->setCellValueByColumnAndRow(3,$row,$value['razonSocialName']);
-            $sheet->setCellValueByColumnAndRow(4,$row,$value['nombreServicio']);
 
-            $sheet->setCellValueByColumnAndRow(5,$row,$value['inicioOperaciones']!='0000-00-00'
-            && !is_null($value['inicioOperaciones'])
-            && (int)date('Y',strtotime($value['inicioOperaciones'])) > 1989 ? date('d/m/Y',strtotime($value['inicioOperaciones'])): '');
+        foreach($servicios as $key=>$value) {
+            $col=0;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['contractId']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['servicioId']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['clienteName']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['razonSocialName']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['nombreServicio']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,'');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row, '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row, '');
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(6,$row,$value['inicioFactura']!='0000-00-00'
-            && !is_null($value['inicioFactura'])
-            && (int)date('Y',strtotime($value['inicioFactura'])) > 1989 ? date('d/m/Y',strtotime($value['inicioFactura'])):'');
+            $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['costo']);
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(7,$row,$value['status']);
+            $coorHorasTrabajo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row,'');
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(8,$row,$value['status']=='bajaParcial'
-            && !is_null($value['lastDateWorkflow'])
-            && (int)date('Y',strtotime($value['lastDateWorkflow'])) > 1989 ? date('d/m/Y',strtotime($value['lastDateWorkflow'])):'');
+            $sheet->setCellValueByColumnAndRow($col,$row, "");
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(9,$row,'');
-            $sheet->setCellValueByColumnAndRow(10,$row, '');
-            $sheet->setCellValueByColumnAndRow(11,$row, '');
+            $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorHorasTrabajo} * 250)");
+            $col++;
 
-            $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(12) . $row;
-            $sheet->setCellValueByColumnAndRow(12,$row,$value['costo']);
+            $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorPrecioCartera} - {$coorPrecioActual})");
+            $col++;
 
-            $coorHorasTrabajo = PHPExcel_Cell::stringFromColumnIndex(13) . $row;
-            $sheet->setCellValueByColumnAndRow(13,$row,'');
+            $sheet->setCellValueByColumnAndRow($col,$row, '=IFERROR((+'.$coorUtilidadActual.'/'.$coorPrecioCartera.'),0)');
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(14,$row, "");
+            $coorPrecioLista = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorPrecioActual*2.50),0)");
+            $col++;
 
-            $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex(15) . $row;
-            $sheet->setCellValueByColumnAndRow(15,$row, "=({$coorHorasTrabajo} * 250)");
+            $coorUtilidadDeseada = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row,"=IFERROR((+$coorPrecioLista-$coorPrecioActual),0)");
+            $col++;
 
-            $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex(16) . $row;
-            $sheet->setCellValueByColumnAndRow(16,$row, "=({$coorPrecioCartera} - {$coorPrecioActual})");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorPrecioLista),0)");
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(17,$row, '=IFERROR((+'.$coorUtilidadActual.'/'.$coorPrecioCartera.'),0)');
+            $coorFactor = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "");
+            $col++;
 
-            $coorPrecioLista = PHPExcel_Cell::stringFromColumnIndex(18) . $row;
-            $sheet->setCellValueByColumnAndRow(18,$row, "=IFERROR((+$coorPrecioActual*2.50),0)");
+            $coorCostoNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorPrecioActual*$coorFactor),0)");
+            $col++;
 
-            $coorUtilidadDeseada = PHPExcel_Cell::stringFromColumnIndex(19) . $row;
-            $sheet->setCellValueByColumnAndRow(19,$row,"=IFERROR((+$coorPrecioLista-$coorPrecioActual),0)");
+            $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $formula = "=CEILING.MATH($coorCostoNuevo,100)";
+            $sheet->setCellValueByColumnAndRow($col,$row, "=$coorCostoNuevo");
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(20,$row, "=IFERROR((+$coorUtilidadDeseada/$coorPrecioLista),0)");
+            $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioActual),0)");
+            $col++;
 
-            $coorFactor = PHPExcel_Cell::stringFromColumnIndex(21) . $row;
-            $sheet->setCellValueByColumnAndRow(21,$row, "");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorCostoNuevo),0)");
+            $col++;
 
-            $coorCostoNuevo = PHPExcel_Cell::stringFromColumnIndex(22) . $row;
-            $sheet->setCellValueByColumnAndRow(22,$row, "=IFERROR((+$coorPrecioActual*$coorFactor),0)");
+            $coorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioCartera),0)");
+            $col++;
 
-            $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex(23) . $row;
-            $sheet->setCellValueByColumnAndRow(23,$row, "=$coorCostoNuevo");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorIncremento/$coorCostoNuevo),0)");
+            $col++;
 
-            $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex(24) . $row;
-            $sheet->setCellValueByColumnAndRow(24,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioActual),0)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "");
+            $col++;
 
-            $sheet->setCellValueByColumnAndRow(25,$row, "=IFERROR((+$coorUtilidadDeseada/$coorCostoNuevo),0)");
-
-            $coorIncremento = PHPExcel_Cell::stringFromColumnIndex(26) . $row;
-            $sheet->setCellValueByColumnAndRow(26,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioCartera),0)");
-
-            $sheet->setCellValueByColumnAndRow(27,$row, "=IFERROR((+$coorIncremento/$coorCostoNuevo),0)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "");
 
             $row++;
         }
