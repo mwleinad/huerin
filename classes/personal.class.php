@@ -681,7 +681,13 @@ class Personal extends Main
 
     function GetCascadeSubordinates()
     {
-        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.name as nameRol, roles.nivel FROM personal
+        $sql = "SELECT personal.*, jefes.name AS jefeName, roles.name as nameRol, roles.nivel,
+                CASE 
+                 WHEN (roles.nivel = 1 AND personal.roleId = 5) THEN 'Coordinador'
+                 WHEN roles.nivel = 100 THEN 'Auxiliar'
+                 WHEN roles.nivel < 100 THEN (SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1)  
+                 END AS nameLevel
+               FROM personal
                LEFT JOIN personal AS jefes ON jefes.personalId = personal.jefeInmediato 
                INNER JOIN roles on personal.roleId = roles.rolId ORDER BY personal.name ASC";
         $this->Util()->DB()->setQuery($sql);
