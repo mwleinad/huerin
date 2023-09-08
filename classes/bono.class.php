@@ -57,6 +57,8 @@ class Bono extends Personal
         $info = $this->InfoWhitRol();
         $subordinados = $this->getSubordinadosNoDirectoByLevel([4,5]);
         $subordinados_filtrados = [];
+        //Forzar que solo se obtenga  servicios del departamento del gerente.
+        $filtro['departamento_id'] = $_POST['departamentoId'] ?? $info['departamentoId'];
         foreach ($subordinados as $sub) {
             $cad = $sub;
 
@@ -197,11 +199,11 @@ class Bono extends Personal
         $subgerentesId = [];
 
         foreach ($supervisores as $ksup => $supervisor) {
-
+            $ftrDepId = $_POST['departamentoId'] ?? $supervisor['departamentoId'];
             if($supervisor['nivel'] == 4) {
 
                 if(!in_array($supervisor['personalId'],$subgerentesId)) {
-
+                    $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional(4) : 0;
                     array_push($subgerentesId, $supervisor['personalId']);
                     $subgerentes[$supervisor['personalId']]['info'] = $supervisor;
                 }
@@ -217,7 +219,7 @@ class Bono extends Personal
             }
 
 
-            $ftrDepId = (int)$_POST['departamentoId'];
+
             $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
 
             $consolidado_final = [];
@@ -861,6 +863,8 @@ class Bono extends Personal
         $total_consolidado_grupo['row_gasto'] = [];
         $total_consolidado_grupo['row_porcent_bono'] = [];
         $total_consolidado_grupo['row_bono'] = [];
+        $total_consolidado_grupo['row_bono_entregado'] = [];
+        $total_consolidado_grupo['row_bono_diferencia'] = [];
 
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
@@ -931,7 +935,10 @@ class Bono extends Personal
             $total_consolidado_grupo['row_bono'][$key_mes][] = $cordinate_bono;
 
             $cordinate_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
-            $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, '')
+            $formula_bono_entregado = $acumular
+                ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono_entregado'][$key_mes])
+                : "";
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, $formula_bono_entregado)
                 ->getStyle($cordinate_bono_entregado)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_bono_entregado'][$key_mes]))
@@ -940,7 +947,10 @@ class Bono extends Personal
             array_push($total_hor_bono_entregado, $cordinate_bono_entregado);
 
             $cordinate_bono_diferencia= PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_diferencia;
-            $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, "=$cordinate_bono-$cordinate_bono_entregado")
+            $formula_bono_diferencia = $acumular
+                ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_bono_diferencia'][$key_mes])
+                : "=$cordinate_bono-$cordinate_bono_entregado";
+            $sheet->setCellValueByColumnAndRow($col, $row_bono_diferencia, $formula_bono_diferencia)
                 ->getStyle($cordinate_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
 
             //$formula_efectividad = '=IFERROR((+'.$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'].'/'.$data['gran_cantidad_workflow_devengado'][$key_mes]['total'].'),0)';
@@ -963,6 +973,15 @@ class Bono extends Personal
             $gran_total_gerente['cantidad_workflow_trabajado'][$key_mes]['total'] +=$data['gran_cantidad_workflow_trabajado'][$key_mes]['total'];
             $gran_total_gerente['cantidad_workflow_devengado'][$key_mes]['total'] +=$data['gran_cantidad_workflow_devengado'][$key_mes]['total'];
             $col++;
+
+            if(!is_array($total_consolidado_grupo['row_bono_entregado'][$key_mes]))
+                $total_consolidado_grupo['row_bono_entregado'][$key_mes]= [];
+            $total_consolidado_grupo['row_bono_entregado'][$key_mes][] = $cordinate_bono_entregado;
+
+
+            if(!is_array($total_consolidado_grupo['row_bono_diferencia'][$key_mes]))
+                $total_consolidado_grupo['row_bono_diferencia'][$key_mes]= [];
+            $total_consolidado_grupo['row_bono_diferencia'][$key_mes][] = $cordinate_bono_entregado;
         }
 
         $coord_horizontal_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
@@ -1165,6 +1184,8 @@ class Bono extends Personal
         $total_consolidado_grupo['row_gasto'] = [];
         $total_consolidado_grupo['row_porcent_bono'] = [];
         $total_consolidado_grupo['row_bono'] = [];
+        $total_consolidado_grupo['row_bono_entregado'] = [];
+        $total_consolidado_grupo['row_bono_diferencia'] = [];
 
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
@@ -1202,7 +1223,7 @@ class Bono extends Personal
 
             //$celdas_bono = array_merge_recursive($data['row_bono'][$key_mes], $data_gerente['row_bono'][$key_mes]);
             //$formula = count($celdas_bono) ? '=+'.implode('+', $celdas_bono) : '';
-            $formula = "=+$cordinate_utilidad*$cordinate_porcent_bono";
+            $formula = "=IF($cordinate_utilidad >0, $cordinate_utilidad*$cordinate_porcent_bono, 0)";
             $cordinate_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
             $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual,$formula)
                 ->getStyle($cordinate_bono)->applyFromArray($global_config_style_cell['style_currency']);
@@ -1260,6 +1281,14 @@ class Bono extends Personal
             if(!is_array($total_consolidado_grupo['row_bono'][$key_mes]))
                 $total_consolidado_grupo['row_bono'][$key_mes]= [];
             $total_consolidado_grupo['row_bono'][$key_mes][] = $cordinate_bono;
+
+            if(!is_array($total_consolidado_grupo['row_bono_entregado'][$key_mes]))
+                $total_consolidado_grupo['row_bono_entregado'][$key_mes]= [];
+            $total_consolidado_grupo['row_bono_entregado'][$key_mes][] = $cordinate_bono_entregado;
+
+            if(!is_array($total_consolidado_grupo['row_bono_diferencia'][$key_mes]))
+                $total_consolidado_grupo['row_bono_diferencia'][$key_mes]= [];
+            $total_consolidado_grupo['row_bono_diferencia'][$key_mes][] = $cordinate_bono_entregado;
 
             $col++;
         }
@@ -1367,19 +1396,19 @@ class Bono extends Personal
         return $complete_secondary;
     }
 
-    function gastoAdicional() {
+    function gastoAdicional($nivel = 5) {
         $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
-        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_NOMINAS." AND nivel IN(4))";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_NOMINAS." AND nivel IN($nivel))";
         $this->Util()->DB()->setQuery($sql);
         $totalSueldoNomina = $this->Util()->DB()->GetSingle();
 
         $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
-        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_SS." AND nivel IN(4))";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_SS." AND nivel IN($nivel))";
         $this->Util()->DB()->setQuery($sql);
         $totalSueldoSs = $this->Util()->DB()->GetSingle();
 
         $sql  = "SELECT SUM(sueldo)/count(*) FROM personal a ";
-        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_FISCAL." AND nivel IN(4))";
+        $sql .= "WHERE roleId IN(SELECT rolId FROM roles WHERE departamentoId =".ID_DEP_FISCAL." AND nivel IN($nivel))";
         $this->Util()->DB()->setQuery($sql);
         $totalSueldoFiscal = $this->Util()->DB()->GetSingle();
         return $totalSueldoFiscal + $totalSueldoNomina + $totalSueldoSs;
