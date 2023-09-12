@@ -1720,6 +1720,25 @@ class Util extends CustomError
         return $base;
     }
 
+    function getNumMesPorPeriodicidad($periodicidad) {
+
+        switch ($periodicidad) {
+            case "Mensual":
+                return 1;
+            case "Bimestral":
+                return 2;
+            case "Trimestral":
+               return 3;
+            case "Cuatrimestral":
+              return 4;
+            case "Semestral":
+               return 6;
+            case "Anual":
+               return 7;
+            default: return 0;
+        }
+    }
+
     function listMonthHeaderForReport($max_month)
     {
         global $monthsInt;
