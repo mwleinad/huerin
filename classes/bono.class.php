@@ -30,8 +30,8 @@ class Bono extends Personal
         $select_general     ="select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
                               b.is_primary, b.lastDateWorkflow, b.fio, b.fif ";
         $select_nogroup     = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
-        $select_group       = ", concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status, 'class',a.class, 
-                                 'costo', a.costoWorkflow,  'fecha', a.date, 'tipo_servicio_id', b.tipoServicioId,'unique_invoice',b.uniqueInvoice, 'comprobante_id', a.comprobanteId, 'mes', month(a.date))),  ']') as instancias ";
+        $select_group       = ",concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status,'class',a.class, 
+                                 'costo', a.costoWorkflow,'fecha',a.date,'tipo_servicio_id', b.tipoServicioId,'unique_invoice',b.uniqueInvoice,'periodicidad',b.periodicidad,'comprobante_id',a.comprobanteId,'mes', month(a.date))),']') as instancias ";
         $group_by           = " group by a.servicioId ";
         $order_by           = "order by a.date asc ";
 
@@ -110,6 +110,7 @@ class Bono extends Personal
         $this->setPersonalId($encargado['personalId']);
         $encargados =  $this->Subordinados();
         $encargados =  !is_array($encargados) ? [] : array_column($encargados, 'personalId');
+        $encargados = [];
         array_push($encargados, $encargado['personalId']);
         $stringEncargados =  "0,".implode(',', $encargados);
 
@@ -255,10 +256,12 @@ class Bono extends Personal
             //$cad['data'] = $supervisor;
             //$cad['totales'] = $totales;
             //array_push($consolidado_final, $cad);
-            $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
+            if(count($totales['total_contract']) > 0)
+                $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
 
             // Crear filas de los subordinados del supervisor
             foreach ($supervisor['childs'] as $child) {
+
                 $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row, $title_jerarquia);
                 $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
@@ -486,7 +489,10 @@ class Bono extends Personal
                 $month_row      = $key === false ? [] : $propio['instancias_array'][$key];
                 // la periodicidad debe tomarse en cuenta para verificar el mes anterior ???
 
-                $keyBefore  = array_search($month - 1, $instanciasLineal);
+                $numeroMesResta = $this->Util()->getNumMesPorPeriodicidad($month_row['periodicidad']);
+                $mesAnterior =  $numeroMesResta >= 10 ? $month : "0".$numeroMesResta;
+
+                $keyBefore  = array_search($mesAnterior, $instanciasLineal);
 
                 $month_before   = $keyBefore === false ? [] : $propio['instancias_array'][$keyBefore];
 
@@ -501,9 +507,13 @@ class Bono extends Personal
                     ->getStyle($current_coordinate_month)->applyFromArray($style_general);
                 $col++;
 
-                $isCompleteMonthBefore = !($month > 1) ||
-                    (in_array($month_before['class'], ['Completo', 'CompletoTardio'])
-                     && (int)$month_before['secondary_pending'] === 0);
+                $isCompleteMonthBefore =  true;
+                /*if(isset($month_before['class'])) {
+
+                    $isCompleteMonthBefore = !($month > 1) ||
+                        (in_array($month_before['class'], ['Completo', 'CompletoTardio'])
+                            && (int)$month_before['secondary_pending'] === 0);
+                }*/
 
                 if (in_array($month_row['class'], ['Completo', 'CompletoTardio'])
                     && $isCompleteMonthBefore
@@ -567,7 +577,23 @@ class Bono extends Personal
         $total_consolidado_grupo['gran_cantidad_workflow_devengando'] = [];
         $col_real = count($jerarquia) + 3;
         $row_hide_inicial = $row;
+
+        $coordenadasJefe['row_devengado'] = [];
+        $coordenadasJefe['row_trabajado'] = [];
+
+        $jefesId = [];
+        $jefesAdicionalAcumulado = [];
+
+
         foreach ($data as $total) {
+            //TODO aca se debe agregar el adicional a los jefes por supervisor es decir contador-auxiliar
+            if($total['data']['jefe']) {
+                if(!in_array($total['data']['jefe']['personalId'], $jefesId)) {
+                    array_push($jefesId, $total['data']['jefe']['personalId']);
+                    $jefesAdicionalAcumulado[$total['data']['jefe']['personalId']] = [];
+                }
+            }
+
             $row_nombre = $row;
             $sheet->setCellValueByColumnAndRow($col_real, $row, 'Nombre')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row)->applyFromArray($global_config_style_cell['style_grantotal']);
@@ -1376,7 +1402,7 @@ class Bono extends Personal
             if($row_serv['is_primary']) {
                 $month = (int) date('m', strtotime($inst['fecha']));
                 $year = (int) date('Y', strtotime($inst['fecha']));
-                $cad['secondary_pending'] = $this->verifySecondary($row_serv['contract_id'], $inst['tipo_servicio_id'], $month, $year, $view);
+                $cad['secondary_pending'] = 0;//$this->verifySecondary($row_serv['contract_id'], $inst['tipo_servicio_id'], $month, $year, $view);
             }
             $cad2['finstancia'] = $cad['fecha'];
             $cad2['tipoServicioId'] = $cad['tipo_servicio_id'];
