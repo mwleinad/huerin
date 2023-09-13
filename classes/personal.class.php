@@ -963,6 +963,22 @@ class Personal extends Main
         }
     }
 
+    function deepJefesByLevel(&$jefes = [], $me = false)
+    {
+        global $rol;
+        $employe = $this->InfoWhitRol();
+        if ($me)
+            $jefes['me'] = $employe['name'];
+
+        if ($employe["jefeInmediato"]) {
+            $this->setPersonalId($employe['jefeInmediato']);
+            $inmediato = $this->InfoWhitRol();
+            $jefes[$inmediato["nivel"]] = $inmediato["name"];
+            $this->setPersonalId($inmediato["personalId"]);
+            $this->deepJefesByLevel($jefes);
+        }
+    }
+
     function deepJefesAssoc(&$jefes = [], $me = false)
     {
         global $rol;

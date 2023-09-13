@@ -323,7 +323,14 @@ class Servicio extends Contract
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, IF(ISNULL(WEEK(servicio.inicioFactura)), NULL, servicio.inicioFactura) as inicioFactura,
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
 				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,tipoServicio.departamento,
-				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo,tipoServicio.is_primary
+				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo,tipoServicio.is_primary, tipoServicio.departamentoId,
+				(SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
+                               departamentos.departamento, 'personal_id', contractPermiso.personalId, 'nombre', personal.name)), ']') 
+                               FROM contractPermiso
+                               INNER JOIN personal ON contractPermiso.personalId = personal.personalId  
+                               INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
+                               WHERE contractPermiso.contractId = contract.contractId 
+                               GROUP BY contractPermiso.contractId) permiso_detallado
 				FROM servicio 
 				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  where a.status='1') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
 				INNER JOIN contract ON servicio.contractId = contract.contractId AND contract.permisos!=''
