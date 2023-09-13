@@ -342,6 +342,8 @@ switch($_POST['type']){
         $row=2;
 
         foreach($servicios as $key=>$value) {
+            if($value['is_primary'] != 1)
+                continue;
             $col=0;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['contractId']);
             $col++;

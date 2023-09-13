@@ -301,11 +301,13 @@ class Servicio extends Contract
     public function EnumerateServiceForInstances($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
     {
         global $User;
+        $sqlCustomer =  " AND customer.active = '1'";
         if($customer != 0)
-            $sqlCustomer = " AND customer.customerId = '".$customer."'";
+            $sqlCustomer .= " AND customer.customerId = '".$customer."'";
 
+        $sqlContract =  " AND contract.activo = 'Si' ";
         if($contract != 0)
-            $sqlContract = " AND contract.contractId = '".$contract."'";
+            $sqlContract .= " AND contract.contractId = '".$contract."'";
 
         if(strlen($rfc) > 3 && $customer == 0 && $contract == 0)
             $sqlContract = " AND (customer.nameContact LIKE '%".$rfc."%' OR contract.name LIKE '%".$rfc."%')";
@@ -321,11 +323,11 @@ class Servicio extends Contract
 				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, IF(ISNULL(WEEK(servicio.inicioFactura)), NULL, servicio.inicioFactura) as inicioFactura,
 				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
 				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,tipoServicio.departamento,
-				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo
+				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo,tipoServicio.is_primary
 				FROM servicio 
 				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  where a.status='1') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
-				INNER JOIN contract ON servicio.contractId = contract.contractId  AND contract.activo ='Si' AND contract.permisos!=''
-				INNER JOIN customer ON contract.customerId = customer.customerId AND customer.active = '1'
+				INNER JOIN contract ON servicio.contractId = contract.contractId AND contract.permisos!=''
+				INNER JOIN customer ON contract.customerId = customer.customerId
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
 				WHERE (servicio.status = 'activo' OR servicio.status ='bajaParcial')
 				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ORDER BY contract.name ASC,tipoServicio.nombreServicio ASC ";
