@@ -81,7 +81,7 @@ class Bono extends Personal
                 $cad_child =  $child;
                 $propios_child = $this->getRowsBySheet($child, $name_view, $filtro);
                 $cad_child['propios'] = $propios_child;
-                if(count($propios_child) > 0)
+                //if(count($propios_child) > 0)
                     array_push($childs_filtrados, $cad_child);
             }
 
@@ -265,7 +265,13 @@ class Bono extends Personal
 
                 $row_init_col_total = $row;
                 $totales_child = $this->drawRowsPropios($sheet, $months, $child, $row, $title_jerarquia);
-                $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
+
+                if(count($totales_child['total_contract']) > 0)
+                    $this->drawRowTotal($sheet, $totales_child, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
+                else {
+                    $totales_child =  $this->totalesFicticio($months);
+                }
+
                 $cad2['data'] = $child;
                 $cad2['totales'] = $totales_child;
                 array_push($consolidado_final, $cad2);
@@ -1510,5 +1516,22 @@ class Bono extends Personal
         $this->Util()->DB()->setQuery($sql);
         $totalSueldoFiscal = $this->Util()->DB()->GetSingle();
         return $totalSueldoFiscal + $totalSueldoNomina + $totalSueldoSs;
+    }
+
+    public function totalesFicticio($months) {
+
+        $return['totales_mes'] = [];
+        $return['total_contract'] = 0;
+
+        foreach($months as $month) {
+            $return['totales_mes'][$month]['coordenada_trabajado'] = [];
+            $return['totales_mes'][$month]['cantidad_workflow_trabajado'] = 0;
+            $return['totales_mes'][$month]['cantidad_workflow_devengado'] = 0;
+            $return['totales_mes'][$month]['coordenada_devengado'] = [];
+            $return['totales_mes'][$month]['total_trabajado'] = 0;
+            $return['totales_mes'][$month]['total_devengado'] = 0;
+        }
+
+        return $return;
     }
 }
