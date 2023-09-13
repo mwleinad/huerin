@@ -344,6 +344,42 @@ switch($_POST['type']){
         foreach($servicios as $key=>$value) {
             if($value['is_primary'] != 1)
                 continue;
+            // ENCONTRAR LOS EL RESPONSABLE DE ATC
+            $current_permisos = json_decode($value['permiso_detallado'], true);
+            $current_permisos =  !is_array($current_permisos) ? [] : $current_permisos;
+
+            $permisos_normalizado = [];
+            $permisos_normalizado2 = [];
+            foreach ($current_permisos as $current_permiso) {
+                $permisos_normalizado[strtolower($current_permiso['departamento'])] = $current_permiso;
+                $permisos_normalizado2[$current_permiso['departamento_id']] = $current_permiso;
+            }
+
+
+            //ENCONTRAR RESPONSABLES
+            $departamentoId = $value["departamentoId"];
+            $responsable = isset($permisos_normalizado2[$departamentoId]) > 0 ? $permisos_normalizado2[$departamentoId] : null ;
+
+            $serv = [];
+            if($responsable !== null){
+                $jefes = array();
+                $personal->setPersonalId($responsable['personal_id']);
+                $rolRes = $personal->InfoWhitRol();
+                $personal->deepJefesByLevel($jefes,true);
+                $serv["contador"] = $jefes[6];
+                $serv['supervisor'] = $jefes[5];
+                $serv['subgerente'] = $jefes[4];
+                $serv['gerente'] = $jefes[3];
+                $serv['jefeMax'] = $jefes[1];
+                $serv[strtolower($rolRes["nameLevel"])] = $jefes['me'];
+            }else {
+                $serv['auxiliar'] = 'No encontrado';
+                $serv['contador'] = 'No encontrado';
+                $serv['supervisor'] = 'No encontrado';
+                $serv['subgerente'] = 'No encontrado';
+                $serv['gerente'] = 'No encontrado';
+            }
+
             $col=0;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['contractId']);
             $col++;
@@ -355,11 +391,11 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['nombreServicio']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row,'');
+            $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, '');
+            $sheet->setCellValueByColumnAndRow($col,$row, $serv['gerente']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, '');
+            $sheet->setCellValueByColumnAndRow($col,$row, $serv['supervisor'] ?? $serv['subgerente'] );
             $col++;
 
             $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
