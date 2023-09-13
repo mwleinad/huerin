@@ -75,6 +75,9 @@ class Bono extends Personal
             $childs_filtrados   = [];
             foreach ($childs as $child) {
 
+                $this->setPersonalId($child['jefeInmediato']);
+                $child['jefe'] = $this->InfoWhitRol();
+
                 $cad_child =  $child;
                 $propios_child = $this->getRowsBySheet($child, $name_view, $filtro);
                 $cad_child['propios'] = $propios_child;
@@ -219,8 +222,6 @@ class Bono extends Personal
                 $subgerentes[$supervisor['personalId']]['info'] = $supervisor;
             }
 
-
-
             $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional() : 0;
 
             $consolidado_final = [];
@@ -271,7 +272,7 @@ class Bono extends Personal
             }
 
             $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_supervisor, $row, $title_jerarquia);
-            $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $title_jerarquia);
+            $total_consolidado_grupo = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $title_jerarquia, $supervisor);
 
             if(!is_array($gran_consolidado_gerente[$title_sheet]))
                 $gran_consolidado_gerente[$title_sheet] = [];
@@ -564,9 +565,9 @@ class Bono extends Personal
         return $return;
     }
 
-    function drawsTotalesFinal(&$book, $sheet, $data, $months, &$row, $jerarquia)
+    function drawsTotalesFinal(&$book, $sheet, $data, $months, &$row, $jerarquia, $supervisor)
     {
-        global $global_config_style_cell, $global_bonos;
+        global $global_config_style_cell, $global_bonos, $personal;
 
         $total_consolidado_grupo['row_devengado'] = [];
         $total_consolidado_grupo['row_trabajado'] = [];
@@ -584,15 +585,31 @@ class Bono extends Personal
         $jefesId = [];
         $jefesAdicionalAcumulado = [];
 
+        //TODO encontrar todos los subordinados inmediatos del supervisor.
+        $subInmediatosSupervisor = [];
+        $personal->setPersonalId($supervisor['personalId']);
+        $subsSupervisor =  $personal->SubordinadosDirectos();
+        $inmediatosSupLineal =  array_column($subsSupervisor, 'personalId');
+
+        $acumuladosSubSupervisor = [];
+        $acumuladosSubSupervisor['row_devengado'] = [];
+        $acumuladosSubSupervisor['row_trabajado'] = [];
+        $acumuladosSubSupervisor['row_gasto'] = [];
+        $acumuladosSubSupervisor['row_porcent_bono'] = [];
+        $acumuladosSubSupervisor['row_bono'] = [];
+
+        $subInmediatosSupervisor = [];
+        $coorRecalculables = [];
+
+        $personasLocales = [];
+        foreach ($data as $da) {
+            array_push($personasLocales, $da['data']['personalId']);
+        }
 
         foreach ($data as $total) {
-            //TODO aca se debe agregar el adicional a los jefes por supervisor es decir contador-auxiliar
-            if($total['data']['jefe']) {
-                if(!in_array($total['data']['jefe']['personalId'], $jefesId)) {
-                    array_push($jefesId, $total['data']['jefe']['personalId']);
-                    $jefesAdicionalAcumulado[$total['data']['jefe']['personalId']] = [];
-                }
-            }
+            $esInmediatoSup =  in_array($total['data']['personalId'],  $inmediatosSupLineal);
+            $inmediatoSupId =  $total['data']['personalId'];
+            $jefeInmediatoId =  $total['data']['jefe']['personalId'];
 
             $row_nombre = $row;
             $sheet->setCellValueByColumnAndRow($col_real, $row, 'Nombre')
@@ -652,10 +669,33 @@ class Bono extends Personal
 
                 $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
                 $formula = count($total_mes['coordenada_devengado']) ? '=+'.implode('+', $total_mes['coordenada_devengado']) : '';
+                $formula = $esInmediatoSup ? '' : $formula;
                 $sheet->setCellValueByColumnAndRow($col, $row_devengado, $formula)
                     ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
-                if(!is_array($total_consolidado_grupo['row_devengado'][$key_month])) $total_consolidado_grupo['row_devengado'][$key_month]= [];
-                array_push($total_consolidado_grupo['row_devengado'][$key_month], $cordinate_devengado);
+
+                if($esInmediatoSup) {
+
+                    $cadRecal['row'] = $row_devengado;
+                    $cadRecal['col'] = $col;
+                    $cadRecal['celdas'] = $total_mes['coordenada_devengado'];
+                    $coorRecalculables[$inmediatoSupId][$key_month] = $cadRecal;
+
+                    if(!is_array($total_consolidado_grupo['row_devengado'][$key_month]))
+                        $total_consolidado_grupo['row_devengado'][$key_month]= [];
+
+                    array_push($total_consolidado_grupo['row_devengado'][$key_month], $cordinate_devengado);
+                }
+                else {
+
+                    if(!in_array($jefeInmediatoId, $personasLocales)) {
+
+                        if(!is_array($total_consolidado_grupo['row_devengado'][$key_month])) $total_consolidado_grupo['row_devengado'][$key_month]= [];
+                        array_push($total_consolidado_grupo['row_devengado'][$key_month], $cordinate_devengado);
+                    } else {
+                        if($jefeInmediatoId > 0)
+                            array_push($coorRecalculables[$jefeInmediatoId][$key_month]['celdas'], $cordinate_devengado);
+                    }
+                }
 
                 $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
                 $formula = count($total_mes['coordenada_trabajado']) ? '=+'.implode('+', $total_mes['coordenada_trabajado']) : '';
@@ -728,6 +768,16 @@ class Bono extends Personal
             $book->getActiveSheet()->mergeCells($merges);
             $row += 2;
             $row_hide_final = $row;
+        }
+
+        foreach ($coorRecalculables as $coorRecalculable) {
+
+            foreach ($coorRecalculable as $recal) {
+                $formula    = count($recal['celdas']) > 0 ? '=+'.implode('+', $recal['celdas']) : '';
+                $current_cordinate = PHPExcel_Cell::stringFromColumnIndex($recal['col']) . $recal['row'];
+                $sheet->setCellValueByColumnAndRow($recal['col'],$recal['row'], $formula)
+                    ->getStyle($current_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+            }
         }
         /*for($current_row = $row_hide_inicial; $current_row <= $row_hide_final; $current_row ++)
             $sheet->getRowDimension($current_row)->setVisible(false);
