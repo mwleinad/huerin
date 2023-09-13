@@ -579,27 +579,17 @@ class Bono extends Personal
         $col_real = count($jerarquia) + 3;
         $row_hide_inicial = $row;
 
-        $coordenadasJefe['row_devengado'] = [];
-        $coordenadasJefe['row_trabajado'] = [];
 
-        $jefesId = [];
-        $jefesAdicionalAcumulado = [];
-
-        //TODO encontrar todos los subordinados inmediatos del supervisor.
         $subInmediatosSupervisor = [];
         $personal->setPersonalId($supervisor['personalId']);
         $subsSupervisor =  $personal->SubordinadosDirectos();
         $inmediatosSupLineal =  array_column($subsSupervisor, 'personalId');
 
         $acumuladosSubSupervisor = [];
-        $acumuladosSubSupervisor['row_devengado'] = [];
-        $acumuladosSubSupervisor['row_trabajado'] = [];
-        $acumuladosSubSupervisor['row_gasto'] = [];
-        $acumuladosSubSupervisor['row_porcent_bono'] = [];
-        $acumuladosSubSupervisor['row_bono'] = [];
 
         $subInmediatosSupervisor = [];
         $coorRecalculables = [];
+        $coorRecalculablesTrabajado = [];
 
         $personasLocales = [];
         foreach ($data as $da) {
@@ -701,8 +691,30 @@ class Bono extends Personal
                 $formula = count($total_mes['coordenada_trabajado']) ? '=+'.implode('+', $total_mes['coordenada_trabajado']) : '';
                 $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
-                if(!is_array($total_consolidado_grupo['row_trabajado'][$key_month])) $total_consolidado_grupo['row_trabajado'][$key_month]= [];
-                array_push($total_consolidado_grupo['row_trabajado'][$key_month], $cordinate_trabajado);
+
+                if($esInmediatoSup) {
+
+                    $cadRecal['row'] = $row_trabajado;
+                    $cadRecal['col'] = $col;
+                    $cadRecal['celdas'] = $total_mes['coordenada_trabajado'];
+                    $coorRecalculablesTrabajado[$inmediatoSupId][$key_month] = $cadRecal;
+
+                    if(!is_array($total_consolidado_grupo['row_trabajado'][$key_month]))
+                        $total_consolidado_grupo['row_trabajado'][$key_month]= [];
+
+                    array_push($total_consolidado_grupo['row_trabajado'][$key_month], $cordinate_trabajado);
+                }
+                else {
+
+                    if(!in_array($jefeInmediatoId, $personasLocales)) {
+
+                        if(!is_array($total_consolidado_grupo['row_trabajado'][$key_month])) $total_consolidado_grupo['row_trabajado'][$key_month]= [];
+                        array_push($total_consolidado_grupo['row_trabajado'][$key_month], $cordinate_trabajado);
+                    } else {
+                        if($jefeInmediatoId > 0)
+                            array_push($coorRecalculablesTrabajado[$jefeInmediatoId][$key_month]['celdas'], $cordinate_trabajado);
+                    }
+                }
 
                 $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
                 $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * (1.40))
@@ -777,6 +789,16 @@ class Bono extends Personal
                 $current_cordinate = PHPExcel_Cell::stringFromColumnIndex($recal['col']) . $recal['row'];
                 $sheet->setCellValueByColumnAndRow($recal['col'],$recal['row'], $formula)
                     ->getStyle($current_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
+            }
+        }
+
+        foreach ($coorRecalculablesTrabajado as $coorRecalculableT) {
+
+            foreach ($coorRecalculableT as $recalT) {
+                $formula = count($recalT['celdas']) > 0 ? '=+' . implode('+', $recalT['celdas']) : '';
+                $current_cordinateT = PHPExcel_Cell::stringFromColumnIndex($recalT['col']) . $recalT['row'];
+                $sheet->setCellValueByColumnAndRow($recalT['col'], $recalT['row'], $formula)
+                    ->getStyle($current_cordinateT)->applyFromArray($global_config_style_cell['style_currency']);
             }
         }
         /*for($current_row = $row_hide_inicial; $current_row <= $row_hide_final; $current_row ++)
