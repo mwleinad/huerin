@@ -585,26 +585,16 @@ class Bono extends Personal
         $col_real = count($jerarquia) + 3;
         $row_hide_inicial = $row;
 
-
-        $subInmediatosSupervisor = [];
         $personal->setPersonalId($supervisor['personalId']);
         $subsSupervisor =  $personal->SubordinadosDirectos();
         $inmediatosSupLineal =  array_column($subsSupervisor, 'personalId');
 
-        $acumuladosSubSupervisor = [];
-
-        $subInmediatosSupervisor = [];
         $coorRecalculables = [];
         $coorRecalculablesTrabajado = [];
         $coorRecalculablesGastos = [];
 
         $personasLocales = [];
 
-        $mesesPropiosSupervisor = [];
-
-        $coorRecalculablesPropios = [];
-        $coorRecalculablesTrabajadoPropios = [];
-        $coorRecalculablesGastosPropios = [];
         foreach ($data as $da) {
             array_push($personasLocales, $da['data']['personalId']);
 
@@ -1055,12 +1045,16 @@ class Bono extends Personal
             $total_consolidado_grupo['row_trabajado'][$key_mes][] = $cordinate_trabajado;
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-            $gastosMes = $data['row_gasto'][$key_mes];
-            $gastoAdicional = $info_grupo['sueldo'] * (1.40);// $info_grupo['gasto_adicional'] * (1.40);
+            $gastosMes = $data['row_gasto'][$key_mes] ?? [];
+            $gastoAdicional = $info_grupo['gasto_adicional'] * (1.40);
+            $sueldoPropio = $info_grupo['sueldo'] * (1.40);
 
-            $formulaGasto =  $sumarSueldoPropio
-                ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)."+".$gastoAdicional
-                : '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes);
+            if($sumarSueldoPropio)
+                array_push($gastosMes, $sueldoPropio);
+
+            $formulaGasto = "";
+            if(count($gastosMes) > 0)
+                $formulaGasto .= "=+".$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes);
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formulaGasto)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
