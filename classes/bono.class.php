@@ -735,14 +735,14 @@ class Bono extends Personal
                 }
 
                 $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-                $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * (1.40))
+                $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100)))
                     ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
                 if($esInmediatoSup) {
 
                     $cadRecal['row'] = $row_gasto;
                     $cadRecal['col'] = $col;
-                    $cadRecal['sueldo_propio'] = (double)$total['data']['sueldo'] * (1.40);
+                    $cadRecal['sueldo_propio'] = (double)$total['data']['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
                     $cadRecal['celdas'] = $total_mes['coordenada_gasto'] ?? [];
                     $coorRecalculablesGastos[$inmediatoSupId][$key_month] = $cadRecal;
 
@@ -1048,8 +1048,8 @@ class Bono extends Personal
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $gastosMes = $data['row_gasto'][$key_mes] ?? [];
-            $gastoAdicional = $info_grupo['gasto_adicional'] * (1.40);
-            $sueldoPropio = $info_grupo['sueldo'] * (1.40);
+            $gastoAdicional = $info_grupo['gasto_adicional'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
+            $sueldoPropio = $info_grupo['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
 
             if($sumarSueldoPropio)
                 array_push($gastosMes, $sueldoPropio);
@@ -1369,7 +1369,9 @@ class Bono extends Personal
 
             $data['row_gasto'][$key_mes] = !is_array($data['row_gasto'][$key_mes]) ? [] : $data['row_gasto'][$key_mes];
             $data_gerente['row_gasto'][$key_mes] = !is_array($data_gerente['row_gasto'][$key_mes]) ? [] : $data_gerente['row_gasto'][$key_mes];
-            $celdas_gasto = array_merge_recursive($data['row_gasto'][$key_mes], $data_gerente['row_gasto'][$key_mes]);
+
+            $sueldo_gerente = $info_grupo['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
+            $celdas_gasto = array_merge_recursive($data['row_gasto'][$key_mes], $data_gerente['row_gasto'][$key_mes], [$sueldo_gerente]);
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $formula = count($celdas_gasto) ? '=+'.implode('+', $celdas_gasto) : '';
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
