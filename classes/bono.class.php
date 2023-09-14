@@ -1021,7 +1021,8 @@ class Bono extends Personal
         foreach($data['row_devengado'] as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
-            $sheet->setCellValueByColumnAndRow($col, $row_devengando, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_devengado'][$key_mes]))
+            $formula =  count($data['row_devengado'][$key_mes]) > 0 ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_devengado'][$key_mes]) : 0;
+            $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
                 ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_devengado'][$key_mes])) $gran_total_gerente['row_devengado'][$key_mes]= [];
@@ -1033,7 +1034,8 @@ class Bono extends Personal
             $total_consolidado_grupo['row_devengado'][$key_mes][] = $cordinate_devengado;
 
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
-            $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_trabajado'][$key_mes]))
+            $formula =  count($data['row_trabajado'][$key_mes]) > 0 ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $data['row_trabajado'][$key_mes]) : 0;
+            $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                 ->getStyle($cordinate_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_trabajado'][$key_mes])) $gran_total_gerente['row_trabajado'][$key_mes]= [];
