@@ -70,7 +70,7 @@ class Bono extends Personal
             $this->setPersonalId($sub['personalId']);
             $childs             = $this->GetCascadeSubordinates();
             $total_sueldo_sub   = array_sum(array_column($childs, 'sueldo'));
-            $cad['sueldo']      = $cad['sueldo'] +  $total_sueldo_sub;
+            $cad['sueldo']      = $cad['sueldo'];
 
             $childs_filtrados   = [];
             foreach ($childs as $child) {
@@ -254,9 +254,9 @@ class Bono extends Personal
             $row_init_col_total = $row;
             // Si tiene filas propias se muestra lo cual nunca debe pasar.
             $totales = $this->drawRowsPropios($sheet, $months, $supervisor, $row, $title_jerarquia);
-            //$cad['data'] = $supervisor;
-            //$cad['totales'] = $totales;
-            //array_push($consolidado_final, $cad);
+            $cad['data'] = $supervisor;
+            $cad['totales'] = $totales;
+            array_push($consolidado_final, $cad);
             if(count($totales['total_contract']) > 0)
                 $this->drawRowTotal($sheet, $totales, $row, $months, $row_init_col_total, $total_por_supervisor, $title_jerarquia);
 
@@ -596,13 +596,34 @@ class Bono extends Personal
         $subInmediatosSupervisor = [];
         $coorRecalculables = [];
         $coorRecalculablesTrabajado = [];
+        $coorRecalculablesGastos = [];
 
         $personasLocales = [];
+
+        $mesesPropiosSupervisor = [];
+
+        $coorRecalculablesPropios = [];
+        $coorRecalculablesTrabajadoPropios = [];
+        $coorRecalculablesGastosPropios = [];
         foreach ($data as $da) {
             array_push($personasLocales, $da['data']['personalId']);
+
+            if($da['data']['personalId']== $supervisor['personalId']) {
+                foreach ($da['totales']['totales_mes'] as $km => $tmes) {
+                    if(count($tmes['coordenada_devengado']) > 0)
+                        $total_consolidado_grupo['row_devengado'][$km] = $tmes['coordenada_devengado'];
+
+                    if(count($tmes['coordenada_trabajado']) > 0)
+                        $total_consolidado_grupo['row_trabajado'][$km] = $tmes['coordenada_trabajado'];
+
+                }
+            }
         }
 
         foreach ($data as $total) {
+            if($total['data']['personalId']== $supervisor['personalId'])
+                continue;
+
             $esInmediatoSup =  in_array($total['data']['personalId'],  $inmediatosSupLineal);
             $inmediatoSupId =  $total['data']['personalId'];
             $jefeInmediatoId =  $total['data']['jefe']['personalId'];
@@ -673,6 +694,7 @@ class Bono extends Personal
 
                     $cadRecal['row'] = $row_devengado;
                     $cadRecal['col'] = $col;
+
                     $cadRecal['celdas'] = $total_mes['coordenada_devengado'];
                     $coorRecalculables[$inmediatoSupId][$key_month] = $cadRecal;
 
@@ -725,8 +747,33 @@ class Bono extends Personal
                 $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
                 $sheet->setCellValueByColumnAndRow($col, $row_gasto, (double)$total['data']['sueldo'] * (1.40))
                     ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
-                if(!is_array($total_consolidado_grupo['row_gasto'][$key_month])) $total_consolidado_grupo['row_gasto'][$key_month]= [];
-                array_push($total_consolidado_grupo['row_gasto'][$key_month], $cordinate_gasto);
+
+                if($esInmediatoSup) {
+
+                    $cadRecal['row'] = $row_gasto;
+                    $cadRecal['col'] = $col;
+                    $cadRecal['sueldo_propio'] = (double)$total['data']['sueldo'] * (1.40);
+                    $cadRecal['celdas'] = $total_mes['coordenada_gasto'] ?? [];
+                    $coorRecalculablesGastos[$inmediatoSupId][$key_month] = $cadRecal;
+
+                    if(!is_array($total_consolidado_grupo['row_gasto'][$key_month]))
+                        $total_consolidado_grupo['row_gasto'][$key_month]= [];
+
+                    array_push($total_consolidado_grupo['row_gasto'][$key_month], $cordinate_gasto);
+                }
+                else {
+
+                    if(!in_array($jefeInmediatoId, $personasLocales)) {
+
+                        if(!is_array($total_consolidado_grupo['row_gasto'][$key_month]))
+                            $total_consolidado_grupo['row_gasto'][$key_month]= [];
+
+                        array_push($total_consolidado_grupo['row_gasto'][$key_month], $cordinate_gasto);
+                    } else {
+                        if($jefeInmediatoId > 0)
+                            array_push($coorRecalculablesGastos[$jefeInmediatoId][$key_month]['celdas'], $cordinate_gasto);
+                    }
+                }
 
                 $cordinate_utilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_utilidad;
                 $sheet->setCellValueByColumnAndRow($col, $row_utilidad, '=+' . $cordinate_trabajado . "-" . $cordinate_gasto)
@@ -805,6 +852,17 @@ class Bono extends Personal
                 $current_cordinateT = PHPExcel_Cell::stringFromColumnIndex($recalT['col']) . $recalT['row'];
                 $sheet->setCellValueByColumnAndRow($recalT['col'], $recalT['row'], $formula)
                     ->getStyle($current_cordinateT)->applyFromArray($global_config_style_cell['style_currency']);
+            }
+        }
+
+        foreach ($coorRecalculablesGastos as $coorRecalculableG) {
+
+            foreach ($coorRecalculableG as $recalG) {
+                $formula = count($recalG['celdas']) > 0 ? '+' . implode('+', $recalG['celdas']) : '';
+                $formula1 = '=+' . $recalG['sueldo_propio'].$formula;
+                $current_cordinateG = PHPExcel_Cell::stringFromColumnIndex($recalG['col']) . $recalG['row'];
+                $sheet->setCellValueByColumnAndRow($recalG['col'], $recalG['row'], $formula1)
+                    ->getStyle($current_cordinateG)->applyFromArray($global_config_style_cell['style_currency']);
             }
         }
         /*for($current_row = $row_hide_inicial; $current_row <= $row_hide_final; $current_row ++)
@@ -897,7 +955,7 @@ class Bono extends Personal
         $row += 2;
     }
 
-    function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $jerarquia, $prefix_sheet = '', &$gran_total_gerente = [], $acumular = false, $prefix="SUPERVISOR") {
+    function drawTotalesConsolidadoGrupo(&$book, $sheet, $data, $months, &$row, $info_grupo, $jerarquia, $prefix_sheet = '', &$gran_total_gerente = [], $acumular = false, $prefix="SUPERVISOR", $sumarSueldoPropio = true) {
         global $global_config_style_cell, $global_bonos;
 
         $col_real = $prefix_sheet === '' ? count($jerarquia) + 3 : 0;
@@ -998,8 +1056,12 @@ class Bono extends Personal
 
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
             $gastosMes = $data['row_gasto'][$key_mes];
-            $gastoAdicional = $info_grupo['gasto_adicional'] * (1.40);
-            $sheet->setCellValueByColumnAndRow($col, $row_gasto, '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)."+".$gastoAdicional)
+            $gastoAdicional = $info_grupo['sueldo'] * (1.40);// $info_grupo['gasto_adicional'] * (1.40);
+
+            $formulaGasto =  $sumarSueldoPropio
+                ? '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)."+".$gastoAdicional
+                : '=+'.$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes);
+            $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formulaGasto)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_gasto'][$key_mes])) $gran_total_gerente['row_gasto'][$key_mes]= [];
@@ -1183,7 +1245,7 @@ class Bono extends Personal
 
         $gran_total_consolidado_gerente = [];
         foreach ($gran_consolidado_gerente as $key => $value) {
-            $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['total_consolidado_grupo'], $months, $row, $value['info_grupo'], $jerarquias, $key, $gran_total_consolidado_gerente, true, $prefixChild);
+            $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['total_consolidado_grupo'], $months, $row, $value['info_grupo'], $jerarquias, $key, $gran_total_consolidado_gerente, true, $prefixChild, false);
             $row += 1;
         }
         $row += 1;
@@ -1204,7 +1266,7 @@ class Bono extends Personal
             $row = 1;
             $gran_total_consolidadado_subgerente = [];
             foreach ($subgerente['supervisores'] as $ksup => $value) {
-                $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['items'], $months, $row, $value['info'], [], $ksup, $gran_total_consolidadado_subgerente, true);
+                $this->drawTotalesConsolidadoGrupo($book, $sheet, $value['items'], $months, $row, $value['info'], [], $ksup, $gran_total_consolidadado_subgerente, true, 'SUPERVISOR', false);
                 $row += 1;
             }
             $row += 1;
