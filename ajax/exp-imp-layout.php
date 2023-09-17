@@ -282,6 +282,7 @@ switch($_POST['type']){
     case 'layout-recotizar-servicios':
 
         $book =  new PHPExcel();
+        $global_config_style_cell['style_porcent']['borders'] = [];
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $sheet->setTitle('LayoutServicios');
@@ -417,7 +418,9 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorPrecioCartera} - {$coorPrecioActual})");
             $col++;
 
-            $sheet->setCellValueByColumnAndRow($col,$row, '=IFERROR((+'.$coorUtilidadActual.'/'.$coorPrecioCartera.'),0)');
+            $coorPorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, '=IFERROR((+'.$coorUtilidadActual.'/'.$coorPrecioCartera.'),0)')
+                ->getStyle($coorPorUtilidadActual)->applyFromArray($global_config_style_cell['style_porcent']);;
             $col++;
 
             $coorPrecioLista = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -428,7 +431,9 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row,"=IFERROR((+$coorPrecioLista-$coorPrecioActual),0)");
             $col++;
 
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorPrecioLista),0)");
+            $coorPorUtilidadDeseada = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorPrecioLista),0)")
+                ->getStyle($coorPorUtilidadDeseada)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
             $coorFactor = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -448,14 +453,18 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioActual),0)");
             $col++;
 
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorCostoNuevo),0)");
+            $coorPorUtilidadNuevo  = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorCostoNuevo),0)")
+                ->getStyle($coorPorUtilidadNuevo)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
             $coorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioCartera),0)");
             $col++;
 
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorIncremento/$coorCostoNuevo),0)");
+            $coorPorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorIncremento/$coorCostoNuevo),0)")
+                ->getStyle($coorPorIncremento)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
             $sheet->setCellValueByColumnAndRow($col,$row, "");
