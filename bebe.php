@@ -31,7 +31,6 @@
 $SFileName=$PHP_SELF;
 
 /* uncomment the two following variables if you want to use http
-   authentication. This will password protect your PHPShell */
 //$http_auth_user = "non";     	/*  HTTP Authorisation username, uncomment if you want to use this */
 //$http_auth_pass = "nonel";	/* HTTP Authorisation password, uncomment if you want to use this */	    
 
