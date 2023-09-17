@@ -1069,22 +1069,32 @@ switch ($opcion[0]) {
 
         $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
         $keys = [];
-        foreach($headers[0] as $header) {
+        $keysExcludes = ['razon_social','cliente'];
+        $indexExclude = [];
+        foreach($headers[0] as $kh => $header) {
             $header =  str_replace(' ', '_', $header);
             $header =  str_replace('%', 'porcentaje', $header);
             $header =  strtolower($header);
+            if(in_array($header, $keysExcludes)) {
+               array_push($indexExclude, $kh);
+               continue;
+            }
             array_push($keys, $header);
         }
 
         $jsonData = [];
         for ($row = 2; $row <= $highestRow; $row++){
             $currentRows = $sheet->rangeToArray('A'.$row. ":" . $sheet->getHighestColumn() . $row);
+            foreach ($indexExclude as $kex)
+                unset($currentRows[0][$kex]);
+            if($currentRows[0][1] <= 0)
+                continue;
             $jsonData[] = array_combine($keys, $currentRows[0]);
         }
-        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_SLASHES );
+        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_SLASHES);
 
         $pUsuario = $_SESSION['User']['name'];
-        echo $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$pUsuario."', @pData)";
+        $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$_SESSION['User']['userId']."', '".$pUsuario."', @pData)";
         $db->setQuery($store);
         $res = 0;
         if($res = $db->ExcuteConsulta()) {
@@ -1092,9 +1102,17 @@ switch ($opcion[0]) {
             $data= $db->GetSingle();
             $data_explode = explode('|', $data);
 
-            if($data_explode[0] == 'ERROR')
+            if($data_explode[0] == 'ERROR') {
+                $res = 0;
                 $util->setError(0, 'error', "Error en SP$data_explode[1] al actualizar.");
-            else $util->setError(0, 'complete', "Se han actualizado " . $data_explode[1] . " registros correctamente.");
+            }
+            else {
+
+                $mensaje = $data_explode[1] > 0
+                    ? "Proceso completado: $data_explode[1] registros actualizados correctamente."
+                    : "Proceso completado: no se han modificado registros por tener información correcta.";
+                $util->setError(0, 'complete', $mensaje);
+            }
         } else {
             $util->setError(0, 'error','Error al actualizar registros');
         }
