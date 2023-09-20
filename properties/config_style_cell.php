@@ -99,5 +99,10 @@ $global_config_style_cell = array(
                 'color' => array('rgb' => '000000')
             )
         )
-    )
+    ),
+    'style_date' => array(
+        'numberformat' => [
+            'code' => PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2,
+        ],
+    ),
 );

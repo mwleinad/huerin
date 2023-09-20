@@ -13,10 +13,10 @@ if ($_FILES['file']['error'] === 4) {
     $name = $_FILES['file']['name'];
     $ext = end(explode(".", $name));
 
-    if (strtoupper($ext) != "CSV" && $_POST['type'] != 'recotizar-servicios') {
+    if (strtoupper($ext) != "CSV" &&  !in_array($_POST['type'], ['recotizar-servicios','importar-inventario'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta CSV', 'Archivo');
     }
-    if (strtoupper($ext) != "XLSX" && $_POST['type'] == 'recotizar-servicios') {
+    if (strtoupper($ext) != "XLSX" && in_array($_POST['type'], ['recotizar-servicios','importar-inventario'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta XLSX', 'Archivo');
     }
 }
@@ -1115,6 +1115,69 @@ switch ($opcion[0]) {
             }
         } else {
             $util->setError(0, 'error','Error al actualizar registros');
+        }
+        echo $res ? 'ok[#]' : 'fail[#]';
+        $util->PrintErrors();
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+        break;
+    case 'importar-inventario':
+        include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        $archivo = $_FILES['file']['tmp_name'];
+        $inputFileType = PHPExcel_IOFactory::identify($archivo);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($archivo);
+        $sheet = $objPHPExcel->getSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
+        $keys = [];
+        $keysExcludes = [];
+        $indexExclude = [];
+        foreach($headers[0] as $kh => $header) {
+            $header =  str_replace(' ', '_', $header);
+            $header =  str_replace('%', 'porcentaje', $header);
+            $header =  strtolower($header);
+            if(in_array($header, $keysExcludes)) {
+                array_push($indexExclude, $kh);
+                continue;
+            }
+            array_push($keys, $header);
+        }
+
+        $jsonData = [];
+        for ($row = 2; $row <= $highestRow; $row++){
+            $currentRows = $sheet->rangeToArray('A'.$row. ":" . $sheet->getHighestColumn() . $row);
+            foreach ($indexExclude as $kex)
+                unset($currentRows[0][$kex]);
+            if(is_null($currentRows[0][1]))
+                continue;
+            $jsonData[] = array_combine($keys, $currentRows[0]);
+        }
+        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_SLASHES);
+
+        $pUsuario = $_SESSION['User']['name'];
+        $store =  "call sp_importar_inventario('".$jsonParam."', '".$pUsuario."', @pData)";
+        $db->setQuery($store);
+        $res = 0;
+        if($res = $db->ExcuteConsulta()) {
+            $db->setQuery('select @pData');
+            $data= $db->GetSingle();
+            $data_explode = explode('|', $data);
+
+            if($data_explode[0] == 'ERROR') {
+                $res = 0;
+                $util->setError(0, 'error', "Error en SP$data_explode[1] al importar.");
+            }
+            else {
+
+                $mensaje = $data_explode[1] > 0
+                    ? "Proceso completado: $data_explode[1] registros importados correctamente."
+                    : "Proceso completado: no se ha registrado información.";
+                $util->setError(0, 'complete', $mensaje);
+            }
+        } else {
+            $util->setError(0, 'error','Error al importar registros');
         }
         echo $res ? 'ok[#]' : 'fail[#]';
         $util->PrintErrors();

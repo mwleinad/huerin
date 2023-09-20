@@ -5,6 +5,40 @@ include_once(DOC_ROOT.'/libraries.php');
 
 session_start();
 include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+/**
+ * @param PHPExcel_Worksheet $sheet
+ * @param string $colTipoDispositivo
+ * @param int $row
+ * @param array $tiposSoftware
+ * @return void
+ * @throws PHPExcel_Exception
+ */
+function addFormula(PHPExcel_Worksheet $sheet, string $col, int $row, array $tipos)
+{
+    for($ii=$row;$ii<=1000;$ii++) {
+        $objValidation = $sheet->getCell($col . $ii)->getDataValidation();
+        $objValidation->setType(\PHPExcel_Cell_DataValidation::TYPE_LIST);
+        $objValidation->setErrorStyle(\PHPExcel_Cell_DataValidation::STYLE_INFORMATION);
+        $objValidation->setAllowBlank(false);
+        $objValidation->setShowInputMessage(true);
+        $objValidation->setShowDropDown(true);
+        $objValidation->setPromptTitle('Listado de opciones');
+        $objValidation->setPrompt('Por favor seleccione una opcion de la lista.');
+        $objValidation->setErrorTitle('Ocurrio un error');
+        $objValidation->setError('El valor no se encuentra en la lista');
+        $objValidation->setFormula1('"' . implode(',', $tipos) . '"');
+    }
+
+}
+
+function formatear(PHPExcel_Worksheet $sheet, string $col, int $row, array $format)
+{
+    for($ii=$row;$ii<=1000;$ii++) {
+        $sheet->getStyle($col.$ii)->applyFromArray($format);
+    }
+
+}
+
 switch($_POST['type']){
     case 'generate_layout':
         $book =  new PHPExcel();
@@ -297,6 +331,8 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Servicio');
         $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Periodicidad');
+        $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
@@ -343,7 +379,7 @@ switch($_POST['type']){
         $row=2;
 
         foreach($servicios as $key=>$value) {
-            if($value['is_primary'] != 1)
+            if($value['is_primary'] != 1 || $value['status'] == 'bajaParcial')
                 continue;
             // ENCONTRAR LOS EL RESPONSABLE DE ATC
             $current_permisos = json_decode($value['permiso_detallado'], true);
@@ -391,6 +427,8 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row,$value['razonSocialName']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['nombreServicio']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['periodicidad']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
@@ -484,6 +522,92 @@ switch($_POST['type']){
             }
         }
         $nameFile= "Formato recotizacion.xlsx";
+        if(!is_dir(DOC_ROOT."/sendFiles"))
+            mkdir(DOC_ROOT."/sendFiles", 765);
+        $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
+        break;
+
+    case 'layout-inventario':
+
+        $book =  new PHPExcel();
+        $global_config_style_cell['style_porcent']['borders'] = [];
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('Inventario');
+
+        $tiposSoftware    = ['aspel_coi','aspel_noi','aspel_sae','aspel_facture','admin_xml','adobe_photoshop', 'adobe_ilustrator'];
+        $tiposRecurso     = ['dispositivo','equipo_computo','software','inmobiliaria'];
+        $tiposDispositivo = ['nobreak','hdmi','hubusb','mousepad','ethernet','mouse','teclado','ventilador','monitor','cable_ventilador','convertidor_hdmi','convertidor_vga'];
+        $tiposEquipo      = ['escritorio','portatil'];
+
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col,1,'No inventario');
+        $col++;
+        $colTipoRecurso = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Tipo recurso');
+        $col++;
+        $colTipoDispositivo = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Tipo dispositivo');
+        $col++;
+        $colTipoEquipo = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Tipo equipo');
+        $col++;
+        $colTipoSoftware = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Tipo software');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Numero serie');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Numero licencia');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Codigo activacion');
+        $col++;
+        $colFechaAlta = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Fecha alta');
+        formatear($sheet, $colFechaAlta, 2, $global_config_style_cell['style_date']);
+        $col++;
+        $colFechaCompra = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Fecha compra');
+        formatear($sheet, $colFechaCompra, 2, $global_config_style_cell['style_date']);
+        $col++;
+        $colFechaVencimiento = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Fecha vencimiento');
+        formatear($sheet, $colFechaVencimiento, 2, $global_config_style_cell['style_date']);
+        $col++;
+        $colCostoCompra = PHPExcel_Cell::stringFromColumnIndex($col);
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo compra');
+        formatear($sheet, $colCostoCompra, 2, $global_config_style_cell['style_simple_text']);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo recuperacion');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Marca');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Modelo');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Procesador');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Memoria ram');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Disco duro');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Observaciones');
+
+        $row = 2;
+        addFormula($sheet, $colTipoSoftware, $row, $tiposSoftware);
+        addFormula($sheet, $colTipoRecurso, $row, $tiposRecurso);
+        addFormula($sheet, $colTipoDispositivo, $row, $tiposDispositivo);
+        addFormula($sheet, $colTipoEquipo, $row, $tiposEquipo);
+
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+
+        $nameFile= "Formato inventario.xlsx";
         if(!is_dir(DOC_ROOT."/sendFiles"))
             mkdir(DOC_ROOT."/sendFiles", 765);
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
