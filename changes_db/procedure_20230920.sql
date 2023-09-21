@@ -1,4 +1,5 @@
 DELIMITER //
+DROP PROCEDURE IF EXISTS `sp_importar_inventario`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_importar_inventario`(IN `pJsonParam` json, IN pUsuario VARCHAR(255), OUT pDataReturn VARCHAR(255))
 BEGIN
 
