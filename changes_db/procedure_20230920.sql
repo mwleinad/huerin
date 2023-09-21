@@ -204,4 +204,4 @@ END WHILE;
 COMMIT;
 SET pDataReturn = CONCAT_WS('|','OK', vTotalRegistro);
 END//
-DELIMITER;
+DELIMITER ;
