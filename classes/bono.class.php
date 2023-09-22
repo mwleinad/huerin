@@ -1512,6 +1512,13 @@ class Bono extends Personal
         global $workflow;
         $instancias_filtered = [];
         $firstInicioFactura = $this->Util()->getFirstDate($row_serv['fif']);
+        if(count($instancias) > 0) {
+
+            $instanciasLineal = array_column($instancias, 'fecha');
+            $primeraInstancia = $instanciasLineal[0];
+            $firstPrimeraInstancia = $this->Util()->getFirstDate($primeraInstancia);
+        }
+
         foreach($instancias as $inst) {
             $firstDateWorkflow = $this->Util()->getFirstDate($inst['fecha']);
             $cad = $inst;
@@ -1532,10 +1539,14 @@ class Bono extends Personal
             // si no es primario es secondario por default.
             $cad['costo'] = !$row_serv['is_primary'] ? 0 : $cad['costo'];
 
-            // setear a 0 costo de tipos de servicio que facturan de unica ocasion, en sus demas workflows.
-            $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
-                ? 0
-                : $cad['costo'];
+            // setear a 0 costo de tipos de servicio que facturan de unica ocasion y que tengan periodicidad diferente a eventual, en sus demas workflows.
+            if($inst['periodicidad'] != 'Eventual') {
+
+                $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstPrimeraInstancia != $firstDateWorkflow)
+                    ? 0
+                    : $cad['costo'];
+            }
+
 
             if($row_serv['is_primary']) {
                 $month = (int) date('m', strtotime($inst['fecha']));
