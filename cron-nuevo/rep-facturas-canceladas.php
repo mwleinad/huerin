@@ -100,7 +100,7 @@ foreach($razones as $key => $rfc){
     $file = str_replace(" ","",strtoupper(substr($rfc['razonSocial'],0,10))).'_FACTURAS_CANCELADAS_'.strtoupper($util->GetMonthByKey($mes));
     $excel->ConvertToExcel($html, 'xlsx', false,$file,true);
     $subject= $file;
-    $body   = " SE HACE LLEGAR EL REPORTE DE FACTURA CANCELADA DEL MES DE ".strtoupper($util->GetMonthByKey($mes))." DEL AÑO $anio
+    $body   = " SE HACE LLEGAR EL REPORTE DE FACTURAS CANCELADAS DEL LA EMPRESA ".strtoupper($rfc['razonSocial'])." DEL MES DE ".strtoupper($util->GetMonthByKey($mes))." DEL AÑO $anio
           <br><br>
           Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
