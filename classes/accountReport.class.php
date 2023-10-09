@@ -354,7 +354,7 @@ class AccountReport extends Personal
 
         $sql = "select a.*, b.nivel,c.departamento,b.name as nameRol, numberAccountsAllowed from personal a 
                 inner join roles b on a.roleId = b.rolId 
-                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel IN (2,3) $strFilter order by c.departamento ASC,a.name ASC";
+                inner join departamentos c on a.departamentoId = c.departamentoId where b.nivel IN (3) $strFilter order by c.departamento ASC,a.name ASC";
         $this->Util()->DB()->setQuery($sql);
         $gerentes = $this->Util()->DB()->GetResult();
 
@@ -372,8 +372,11 @@ class AccountReport extends Personal
             $gerentes[$key]['headers'] = $base;
             $this->setPersonalId($value['personalId']);
 
+            // obtener solo subgerentes
+            $subgerentes = $this->getSubordinadosNoDirectoByLevel([4]);
             // obtener solo supervisores
-            $supervisores_subgerentes = $this->getSubordinadosNoDirectoByLevel([4]);
+            $supervisores = $this->getSubordinadosNoDirectoByLevel([5]);
+
 
             $subordinadosId = [];
             array_push($subordinadosId, $value['personalId']);
@@ -384,9 +387,12 @@ class AccountReport extends Personal
             $result = array_replace_recursive($base, $result);
             $gerentes[$key]['services'] = $result;
 
+            $childLevel1 = [];
+            $devengadoSub = 0;
+
             $childLevel2 = [];
             $devengadoSup = 0;
-            foreach ($supervisores_subgerentes as $ksupge => $supge) {
+            foreach (array_merge($supervisores, $subgerentes) as $ksupge => $supge) {
 
                 $childrenSubId = [];
                 array_push($childrenSubId, $supge['personalId']);
@@ -455,6 +461,8 @@ class AccountReport extends Personal
         $row = 1;
         $col = 0;
         $sheet->setCellValueByColumnAndRow($col, $row, "Gerente")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+        $sheet->setCellValueByColumnAndRow($col, $row, "Subgerente")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
         $sheet->setCellValueByColumnAndRow(++$col, $row, "Supervisor")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
