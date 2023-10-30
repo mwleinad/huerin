@@ -463,6 +463,9 @@ class AccountReport extends Personal
                 if(in_array($sup['jefeInmediato'], $subgerentesId)) {
                     array_push($subgerentes[$sup['jefeInmediato']]['children'], $sup);
                 } else {
+                    if(!is_array($gerentes[$key]['children']))
+                        $gerentes[$key]['children'] = [];
+
                     array_push($gerentes[$key]['children'], $sup);
                 }
             }
