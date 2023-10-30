@@ -373,9 +373,39 @@ class AccountReport extends Personal
             $this->setPersonalId($value['personalId']);
 
             // obtener solo subgerentes
-            $subgerentes = $this->getSubordinadosNoDirectoByLevel([4]);
+            $resultados = $this->getSubordinadosNoDirectoByLevel([4]);
+            $gerentes[$key]['tieneSubgerente'] = count($resultados) > 0;
+            $subgerentes   = [];
+            $subgerentesId = [];
+
+            if($gerentes[$key]['tieneSubgerente']) {
+                $subgerentesId  = array_column($resultados, 'personalId');
+                foreach ($resultados as $resultado) {
+                    $childrenId = [];
+                    array_push($childrenId, $resultado['personalId']);
+                    $contratosSub = $this->getContratosPropio($childrenId);
+                    $totalSubCuenta = count($contratosSub);
+                    $resultado['totalCuentas'] = count($contratosSub);
+
+                    $resultChildSub = $this->getServiciosDetallado($contratosSub, $dep);;
+                    $resultChildSub = $this->Util()->changeKeyArray($resultChildSub, 'tipoServicioId');
+                    $resultChildSub = array_replace_recursive($base, $resultChildSub);
+                    $resultado['services'] = $resultChildSub;
+
+                    $costosSubServices = array_column($resultChildSub, 'costo');
+                    $devengadoSup += array_sum($costosSubServices);
+
+                    $resultado['totalDevengado'] = $devengadoSup;
+                    $resultado['totalNumCuenta'] = $totalSubCuenta;
+
+                    $resultado['children'] =  [];
+                    $subgerentes[$resultado['personalId']] = $resultado;
+                }
+            }
+
             // obtener solo supervisores
             $supervisores = $this->getSubordinadosNoDirectoByLevel([5]);
+            $tieneSupervisores =  count($supervisores) > 0;
 
 
             $subordinadosId = [];
@@ -387,29 +417,27 @@ class AccountReport extends Personal
             $result = array_replace_recursive($base, $result);
             $gerentes[$key]['services'] = $result;
 
-            $childLevel1 = [];
-            $devengadoSub = 0;
-
             $childLevel2 = [];
             $devengadoSup = 0;
-            foreach (array_merge($supervisores, $subgerentes) as $ksupge => $supge) {
+
+            foreach ($supervisores as $ksup => $sup) {
 
                 $childrenSubId = [];
-                array_push($childrenSubId, $supge['personalId']);
+                array_push($childrenSubId, $sup['personalId']);
                 $contratosSupge = $this->getContratosPropio($childrenSubId);
                 $totalSupCuenta = count($contratosSupge);
-                $supge['totalCuentas'] = count($contratosSupge);
+                $sup['totalCuentas'] = count($contratosSupge);
 
                 $resultChild = $this->getServiciosDetallado($contratosSupge, $dep);;
                 $resultChild = $this->Util()->changeKeyArray($resultChild, 'tipoServicioId');
                 $resultChild = array_replace_recursive($base, $resultChild);
-                $supge['services'] = $resultChild;
+                $sup['services'] = $resultChild;
 
                 $costosSupServices = array_column($resultChild, 'costo');
                 $devengadoSup += array_sum($costosSupServices);
 
-                $this->setPersonalId($supge['personalId']);
-                $subordinados = $this->getSubordinadosNoDirectoByLevel([5, 6, 7, 8]);
+                $this->setPersonalId($sup['personalId']);
+                $subordinados = $this->getSubordinadosNoDirectoByLevel([6, 7, 8]);
                 $childLevel3 = [];
 
                 foreach ($subordinados as $sub) {
@@ -428,12 +456,18 @@ class AccountReport extends Personal
                     $childLevel3[] = $sub;
                 }
 
-                $supge['totalDevengado'] = $devengadoSup;
-                $supge['totalNumCuenta'] = $totalSupCuenta;
-                $supge['children'] = $childLevel3;
-                $childLevel2[] = $supge;
+                $sup['totalDevengado'] = $devengadoSup;
+                $sup['totalNumCuenta'] = $totalSupCuenta;
+                $sup['children']       = $childLevel3;
+
+                if(in_array($sup['jefeInmediato'], $subgerentesId)) {
+                    array_push($subgerentes[$sup['jefeInmediato']]['children'], $sup);
+                } else {
+                    array_push($gerentes[$key]['children'], $sup);
+                }
             }
-            $gerentes[$key]['children'] = $childLevel2;
+            if($gerentes[$key]['tieneSubgerente'])
+                $gerentes[$key]['subgerentes'] =  $subgerentes;
         }
         return $gerentes;
     }
@@ -462,7 +496,7 @@ class AccountReport extends Personal
         $col = 0;
         $sheet->setCellValueByColumnAndRow($col, $row, "Gerente")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
-        $sheet->setCellValueByColumnAndRow($col, $row, "Subgerente")
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "Subgerente")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
         $sheet->setCellValueByColumnAndRow(++$col, $row, "Supervisor")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
@@ -476,18 +510,22 @@ class AccountReport extends Personal
         $coorCuentas = [];
         $coorDevengados = [];
 
+        $coorCuentasXgerente    = [];
+        $coorDevengadosXgerente = [];
         foreach ($gerentes as $gerente) {
-
+            $rowInicial = $row;
             $col = 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $gerente['name'])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
                 ->applyFromArray(["alignment" => ['vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER]]);
-
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row);
             $col++;
-            $rowInicial = $row;
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row);
+            $col++;
+
             $sheet->setCellValueByColumnAndRow($col, $row, $gerente['totalNumCuenta'] ?? 0)
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
                   ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
@@ -496,33 +534,114 @@ class AccountReport extends Personal
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
                   ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
             $row++;
-            foreach ($gerente['children'] as $supervisor) {
 
-                $col = 1;
-                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['name']);
-                $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['totalNumCuenta'])
-                      ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
-                      ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
-                $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['totalDevengado'])
-                      ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
-                      ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $row++;
+            if(!is_array($coorCuentasXgerente[$gerente['personalId']]))
+                $coorCuentasXgerente[$gerente['personalId']] = [];
+
+            if(!is_array($coorDevengadosXgerente[$gerente['personalId']]))
+                $coorDevengadosXgerente[$gerente['personalId']] = [];
+
+            $coorCuentasSub    = [];
+            $coorDevengadosSub = [];
+
+
+            //TODO dejar el espacio de subgerente aunque no tenga
+            if($gerente['tieneSubgerente']) {
+                foreach ($gerente['subgerentes'] as $subgerente) {
+
+                    $col = 1;
+                    $rowInicialSub =  $row;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $subgerente['name']);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, '');
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $subgerente['totalNumCuenta'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $subgerente['totalDevengado'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+                    $row++;
+                    if(count($subgerente['children']) > 0) {
+                        foreach($subgerente['children'] as $children) {
+                            $col = 2;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $children['name']);
+                            $col++;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $children['totalNumCuenta'])
+                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                                ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+                            $col++;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $children['totalDevengado'])
+                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                                ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+                            $row++;
+                        }
+                    }
+
+                    $col = 0;
+                    $sheet->setCellValueByColumnAndRow($col, $row, '')
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, '')
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, 'TOTALES')
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+                    $col++;
+                    $formulaTotalCuenta = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicialSub) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+                    $sheet->setCellValueByColumnAndRow($col, $row, $formulaTotalCuenta)
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+                    array_push($coorCuentasXgerente[$gerente['personalId']],PHPExcel_Cell::stringFromColumnIndex($col) . $row);
+
+                    $col++;
+                    $formulaTotalDev = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicialSub) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+                    $sheet->setCellValueByColumnAndRow($col, $row, $formulaTotalDev)
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    array_push($coorDevengadosXgerente[$gerente['personalId']],PHPExcel_Cell::stringFromColumnIndex($col) . $row);
+
+                    $sheet->mergeCells(PHPExcel_Cell::stringFromColumnIndex(1).$rowInicialSub . ":" .PHPExcel_Cell::stringFromColumnIndex(1).($row-1))
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row);
+
+                    $row++;
+                }
+            }
+            if(count($gerente['children']) > 0) {
+                foreach ($gerente['children'] as $supervisor) {
+
+                    $col = 2;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['name']);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['totalNumCuenta'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+                    array_push($coorCuentasXgerente[$gerente['personalId']],PHPExcel_Cell::stringFromColumnIndex($col) . $row);
+                    $col++;
+                    $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['totalDevengado'])
+                        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)
+                        ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    array_push($coorDevengadosXgerente[$gerente['personalId']],PHPExcel_Cell::stringFromColumnIndex($col) . $row);
+                    $row++;
+                }
             }
 
             $col = 0;
             $sheet->setCellValueByColumnAndRow($col, $row, '')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
             $col++;
-
-
-
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, 'TOTALES')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
             $col++;
-            $formulaTotalCuenta = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicial) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+            //$formulaTotalCuenta = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicial) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+            $formulaTotalCuenta = count($coorCuentasXgerente[$gerente['personalId']]) > 0 ? "=+".implode('+', $coorCuentasXgerente[$gerente['personalId']]) : 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $formulaTotalCuenta)
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
                   ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
@@ -530,7 +649,8 @@ class AccountReport extends Personal
 
 
             $col++;
-            $formulaTotalDev = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicial) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+            //$formulaTotalDev = "=SUM(" . PHPExcel_Cell::stringFromColumnIndex($col) . ($rowInicial) . ":" . PHPExcel_Cell::stringFromColumnIndex($col) . ($row - 1) . ")";
+            $formulaTotalDev = count($coorDevengadosXgerente[$gerente['personalId']]) > 0 ? "=+".implode('+', $coorDevengadosXgerente[$gerente['personalId']]) : 0;
             $sheet->setCellValueByColumnAndRow($col, $row, $formulaTotalDev)
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
                 ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
@@ -541,18 +661,26 @@ class AccountReport extends Personal
 
             $row++;
         }
-        // gran total suma
-        $sheet->setCellValueByColumnAndRow(0, $row, '')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(0) . $row)->applyFromArray($stylesHeader);
-        $sheet->setCellValueByColumnAndRow(1, $row, 'TOTAL GENERAL')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(1) . $row)->applyFromArray($stylesHeader);
 
-        $sheet->setCellValueByColumnAndRow(2, $row,"=SUM(" . implode('+', $coorCuentas).")")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(2) . $row)->applyFromArray($stylesHeader)
+        // gran total suma
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col, $row, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, '')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'TOTAL GENERAL')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader);
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row,"=SUM(" . implode('+', $coorCuentas).")")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
             ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
 
-        $sheet->setCellValueByColumnAndRow(3, $row, "=SUM(" . implode('+', $coorDevengados).")")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(3) . $row)->applyFromArray($stylesHeader)
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "=SUM(" . implode('+', $coorDevengados).")")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylesHeader)
             ->GetNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
         $book->setActiveSheetIndex(0);
