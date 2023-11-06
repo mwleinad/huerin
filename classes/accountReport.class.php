@@ -373,10 +373,10 @@ class AccountReport extends Personal
         foreach ($gerentes as $key => $value) {
 
             $departamentos = [(int)$value['departamentoId']];
-            if ((int)$value['departamentoId'] === 8)
+            /*if ((int)$value['departamentoId'] === 8)
                 array_push($departamentos, 24);
             if ((int)$value['departamentoId'] === 22)
-                array_push($departamentos, 21);
+                array_push($departamentos, 21);*/
 
             $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
 
