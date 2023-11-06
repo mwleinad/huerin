@@ -72,7 +72,7 @@ class AccountReport extends Personal
 
         $stringContratos = count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
 
-        $queryFormat = "select a.tipoServicioId, b.name, a.costo from servicio a
+        $queryFormat = "select a.tipoServicioId, b.name, a.costo,a.status,a.lastDateWorkflow from servicio a
                         inner join (select tipoServicio.tipoServicioId, tipoServicio.departamentoId, tipoServicio.nombreServicio as name, tipoServicio.status 
                                     from tipoServicio
                                     inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
@@ -82,9 +82,19 @@ class AccountReport extends Personal
         $query = sprintf($queryFormat, $stringContratos, $departamentos);
 
         $this->Util()->DB()->setQuery($query);
-        $result = $this->Util()->DB()->GetResult();
+        $results = $this->Util()->DB()->GetResult();
+        $resultsFiltrados = [];
+        foreach ($results as $result) {
 
-        return $result;
+            if($result['status'] === 'bajaParcial') {
+                $current = strtotime(date('Y-m'));
+                $last = strtotime(date('Y-m',strtotime($result['lastDateWorkflow'])));
+                if($last <= $current);
+                    $resultsFiltrados[] = $result;
+            }
+        }
+
+        return $resultsFiltrados;
 
     }
 
