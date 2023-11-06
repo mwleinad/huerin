@@ -333,6 +333,10 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Periodicidad');
         $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Inicio operación');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Inicio facturación');
+        $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
@@ -351,12 +355,6 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad actual');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'Precio lista');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad deseada');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad deseada');
-        $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Factor');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Costo nuevo');
@@ -374,6 +372,9 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JH');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JB');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS CH');
+
 
         $servicios =  $servicio->EnumerateServiceForInstances();
         $row=2;
@@ -430,6 +431,10 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['periodicidad']);
             $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['inicioOperaciones']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$value['inicioFactura']);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $serv['gerente']);
@@ -445,11 +450,12 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row,'');
             $col++;
 
+            $coorNumEmpleado = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col,$row, "");
             $col++;
 
             $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorHorasTrabajo} * 250)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorHorasTrabajo} * 250) + ({$coorNumEmpleado} * 80)");
             $col++;
 
             $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -461,19 +467,6 @@ switch($_POST['type']){
                 ->getStyle($coorPorUtilidadActual)->applyFromArray($global_config_style_cell['style_porcent']);;
             $col++;
 
-            $coorPrecioLista = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorPrecioActual*2.50),0)");
-            $col++;
-
-            $coorUtilidadDeseada = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row,"=IFERROR((+$coorPrecioLista-$coorPrecioActual),0)");
-            $col++;
-
-            $coorPorUtilidadDeseada = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorPrecioLista),0)")
-                ->getStyle($coorPorUtilidadDeseada)->applyFromArray($global_config_style_cell['style_porcent']);
-            $col++;
-
             $coorFactor = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col,$row, "");
             $col++;
@@ -483,8 +476,8 @@ switch($_POST['type']){
             $col++;
 
             $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $formula = "=CEILING.MATH($coorCostoNuevo,100)";
-            $sheet->setCellValueByColumnAndRow($col,$row, "=$coorCostoNuevo");
+            $formula = "=CEILING($coorCostoNuevo,100)";
+            $sheet->setCellValueByColumnAndRow($col,$row, $formula);
             $col++;
 
             $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -492,22 +485,24 @@ switch($_POST['type']){
             $col++;
 
             $coorPorUtilidadNuevo  = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadDeseada/$coorCostoNuevo),0)")
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevoFinal/$coorCostoNuevo),0)")
                 ->getStyle($coorPorUtilidadNuevo)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
             $coorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioCartera),0)");
+                    $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioCartera),0)");
             $col++;
 
             $coorPorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorIncremento/$coorCostoNuevo),0)")
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorIncremento/$coorPrecioCartera),0)")
                 ->getStyle($coorPorIncremento)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
             $sheet->setCellValueByColumnAndRow($col,$row, "");
             $col++;
 
+            $sheet->setCellValueByColumnAndRow($col,$row, "");
+            $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, "");
 
             $row++;
