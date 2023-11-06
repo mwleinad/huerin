@@ -77,7 +77,7 @@ class AccountReport extends Personal
                                     from tipoServicio
                                     inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
                                    ) b on a.tipoServicioId = b.tipoServicioId
-                        where a.status in ('activo', 'bajaParcial') 
+                        where a.status in ('activo') 
                         and a.contractId in(%s) and b.departamentoId in (%s) and b.status = '1' ";
         $query = sprintf($queryFormat, $stringContratos, $departamentos);
 
