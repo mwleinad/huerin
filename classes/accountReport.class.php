@@ -72,7 +72,7 @@ class AccountReport extends Personal
 
         $stringContratos = count($contratos) > 0 ? implode(',', array_column($contratos, 'contractId')) : '0';
 
-        $queryFormat = "select a.tipoServicioId, b.name, a.costo from servicio a
+        $queryFormat = "select a.tipoServicioId, b.name, a.costo,a.status,a.lastDateWorkflow from servicio a
                         inner join (select tipoServicio.tipoServicioId, tipoServicio.departamentoId, tipoServicio.nombreServicio as name, tipoServicio.status 
                                     from tipoServicio
                                     inner join departamentos on tipoServicio.departamentoId=departamentos.departamentoId
@@ -82,9 +82,19 @@ class AccountReport extends Personal
         $query = sprintf($queryFormat, $stringContratos, $departamentos);
 
         $this->Util()->DB()->setQuery($query);
-        $result = $this->Util()->DB()->GetResult();
+        $results = $this->Util()->DB()->GetResult();
+        $resultsFiltrados = [];
+        foreach ($results as $result) {
 
-        return $result;
+            if($result['status'] === 'bajaParcial') {
+                $current = strtotime(date('Y-m'));
+                $last = strtotime(date('Y-m',strtotime($result['lastDateWorkflow'])));
+                if($last <= $current);
+                    $resultsFiltrados[] = $result;
+            }
+        }
+
+        return $resultsFiltrados;
 
     }
 
@@ -381,21 +391,25 @@ class AccountReport extends Personal
             if($gerentes[$key]['tieneSubgerente']) {
                 $subgerentesId  = array_column($resultados, 'personalId');
                 foreach ($resultados as $resultado) {
+                    $devengadoSub = 0;
                     $childrenId = [];
                     array_push($childrenId, $resultado['personalId']);
                     $contratosSub = $this->getContratosPropio($childrenId);
                     $totalSubCuenta = count($contratosSub);
                     $resultado['totalCuentas'] = count($contratosSub);
 
-                    $resultChildSub = $this->getServiciosDetallado($contratosSub, $dep);;
+                    $departamentos = [(int)$resultado['departamentoId']];
+                    $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
+
+                    $resultChildSub = $this->getServiciosDetallado($contratosSub, $dep);
                     $resultChildSub = $this->Util()->changeKeyArray($resultChildSub, 'tipoServicioId');
                     $resultChildSub = array_replace_recursive($base, $resultChildSub);
                     $resultado['services'] = $resultChildSub;
 
                     $costosSubServices = array_column($resultChildSub, 'costo');
-                    $devengadoSup += array_sum($costosSubServices);
+                    $devengadoSub += array_sum($costosSubServices);
 
-                    $resultado['totalDevengado'] = $devengadoSup;
+                    $resultado['totalDevengado'] = $devengadoSub;
                     $resultado['totalNumCuenta'] = $totalSubCuenta;
 
                     $resultado['children'] =  [];
@@ -418,16 +432,18 @@ class AccountReport extends Personal
             $gerentes[$key]['services'] = $result;
 
             $childLevel2 = [];
-            $devengadoSup = 0;
+
 
             foreach ($supervisores as $ksup => $sup) {
-
+                $devengadoSup = 0;
                 $childrenSubId = [];
                 array_push($childrenSubId, $sup['personalId']);
                 $contratosSupge = $this->getContratosPropio($childrenSubId);
                 $totalSupCuenta = count($contratosSupge);
                 $sup['totalCuentas'] = count($contratosSupge);
 
+                $departamentos = [(int)$sup['departamentoId']];
+                $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
                 $resultChild = $this->getServiciosDetallado($contratosSupge, $dep);;
                 $resultChild = $this->Util()->changeKeyArray($resultChild, 'tipoServicioId');
                 $resultChild = array_replace_recursive($base, $resultChild);
@@ -444,7 +460,8 @@ class AccountReport extends Personal
                     $contratosLevel3 = $this->getContratosPropio([$sub['personalId']]);
                     $sub['totalCuentas'] = count($contratosLevel3);
                     $totalSupCuenta += count($contratosLevel3);
-
+                    $departamentos = [(int)$sub['departamentoId']];
+                    $dep = count($departamentos) > 0 ? implode(',', $departamentos) : '0';
                     $resultChildLevel3 = $this->getServiciosDetallado($contratosLevel3, $dep);;
                     $resultChildLevel3 = array_replace_recursive($base, $resultChildLevel3);
                     $sub['services'] = $resultChildLevel3;
