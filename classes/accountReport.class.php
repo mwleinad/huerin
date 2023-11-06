@@ -85,13 +85,15 @@ class AccountReport extends Personal
         $results = $this->Util()->DB()->GetResult();
         $resultsFiltrados = [];
         foreach ($results as $result) {
-
-            if($result['status'] === 'bajaParcial') {
+            $agregar = true;
+            if($result['status'] == 'bajaParcial') {
                 $current = strtotime(date('Y-m'));
                 $last = strtotime(date('Y-m',strtotime($result['lastDateWorkflow'])));
-                if($last <= $current);
-                    $resultsFiltrados[] = $result;
+                if($current > $last );
+                  $agregar = false;
             }
+            if($agregar)
+                array_push($resultsFiltrados, $result);
         }
 
         return $resultsFiltrados;
