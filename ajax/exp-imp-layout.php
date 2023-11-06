@@ -376,7 +376,7 @@ switch($_POST['type']){
         $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS CH');
 
 
-        $servicios =  $servicio->EnumerateServiceForInstances();
+        $servicios =  $servicio->EnumerateServiceForRecotizacion();
         $row=2;
 
         foreach($servicios as $key=>$value) {
@@ -472,7 +472,7 @@ switch($_POST['type']){
             $col++;
 
             $coorCostoNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorPrecioActual*$coorFactor),0)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorPrecioCartera*$coorFactor),0)");
             $col++;
 
             $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -481,7 +481,7 @@ switch($_POST['type']){
             $col++;
 
             $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevo-$coorPrecioActual),0)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioActual),0)");
             $col++;
 
             $coorPorUtilidadNuevo  = PHPExcel_Cell::stringFromColumnIndex($col) . $row;

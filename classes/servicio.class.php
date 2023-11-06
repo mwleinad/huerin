@@ -342,6 +342,51 @@ class Servicio extends Contract
         $result = $this->Util()->DB()->GetResult();
         return $result;
     }
+
+    public function EnumerateServiceForRecotizacion($customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
+    {
+        global $User;
+        $sqlCustomer =  " AND customer.active = '1'";
+        if($customer != 0)
+            $sqlCustomer .= " AND customer.customerId = '".$customer."'";
+
+        $sqlContract =  " AND contract.activo = 'Si' ";
+        if($contract != 0)
+            $sqlContract .= " AND contract.contractId = '".$contract."'";
+
+        if(strlen($rfc) > 3 && $customer == 0 && $contract == 0)
+            $sqlContract = " AND (customer.nameContact LIKE '%".$rfc."%' OR contract.name LIKE '%".$rfc."%')";
+
+        if($respCta)
+            $sqlRespCta = ' AND contract.responsableCuenta = '.$respCta;
+
+        if($departamentoId!="")
+            $depto = " AND tipoServicio.departamentoId='".$departamentoId."'";
+
+        $sql = "SELECT servicioId,  customer.nameContact AS clienteName,servicio.status, IF(ISNULL(WEEK(servicio.lastDateWorkflow)), NULL, servicio.lastDateWorkflow) as lastDateWorkflow,
+				contract.name AS razonSocialName, nombreServicio, servicio.costo, IF(ISNULL(WEEK(servicio.inicioOperaciones)), NULL, servicio.inicioOperaciones) as inicioOperaciones, periodicidad,
+				servicio.contractId, contract.encargadoCuenta, contract.responsableCuenta, IF(ISNULL(WEEK(servicio.inicioFactura)), NULL, servicio.inicioFactura) as inicioFactura,
+				responsableCuenta.email AS responsableCuentaEmail, responsableCuenta.name AS responsableCuentaName,
+				customer.customerId, customer.nameContact, contract.permisos, responsableCuenta.tipoPersonal,tipoServicio.departamento,
+				responsableCuenta.jefeContador, responsableCuenta.jefeSupervisor, responsableCuenta.jefeGerente, servicio.tipoServicioId, contract.activo,tipoServicio.is_primary, tipoServicio.departamentoId,
+				(SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
+                               departamentos.departamento, 'personal_id', contractPermiso.personalId, 'nombre', personal.name)), ']') 
+                               FROM contractPermiso
+                               INNER JOIN personal ON contractPermiso.personalId = personal.personalId  
+                               INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
+                               WHERE contractPermiso.contractId = contract.contractId 
+                               GROUP BY contractPermiso.contractId) permiso_detallado
+				FROM servicio 
+				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  where a.status='1') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
+				INNER JOIN contract ON servicio.contractId = contract.contractId AND contract.permisos!=''
+				INNER JOIN customer ON contract.customerId = customer.customerId
+				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
+				WHERE (servicio.status = 'activo' OR servicio.status ='bajaParcial') AND tipoServicio.periodicidad != 'Eventual'
+				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ORDER BY contract.name ASC,tipoServicio.nombreServicio ASC ";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        return $result;
+    }
 	public function EnumerateActiveSub($type ="subordinado",$customer = 0, $contract = 0, $rfc = "", $departamentoId="", $respCta = 0)
 	{
 		global $months, $User;
