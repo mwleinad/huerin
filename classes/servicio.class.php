@@ -925,7 +925,7 @@ class Servicio extends Contract
     public function doBajaTemporalServicesByContrato($conId,$fechaWorkflow,$initialState,$endState){
 	    global $log,$User,$smarty,$contractRep;
         //Hay que iterar servicio por servicio para guardar su historial.
-        $sql ="select a.servicioId,b.nombreServicio,a.inicioFactura,a.inicioOperaciones,a.costo 
+        $sql ="select a.servicioId,b.nombreServicio,a.inicioFactura,a.inicioOperaciones,a.costo,b.departamentoId 
               from servicio a 
               inner join tipoServicio b on a.tipoServicioId=b.tipoServicioId and b.status='1' where a.contractId='".$conId."' and a.status='".$initialState."' ";
         $this->Util()->DB()->setQuery($sql);
@@ -947,6 +947,7 @@ class Servicio extends Contract
             $who="Administrador de sistema";
 
         $serviciosAfectados =  [];
+        $departamentos = [];
         foreach($servicios as $key=>$value) {
             $servicioAfectado = [];
             $this->setServicioId($value['servicioId']);
@@ -969,12 +970,14 @@ class Servicio extends Contract
             $servicioAfectado= $value;
             $servicioAfectado['ultimoWorkflow'] = $fechaWorkflow;
             $serviciosAfectados[]=$servicioAfectado;
+            $departamentos[]=$value['departamentoId'];
         }
         if(!empty($serviciosAfectados)) {
             $filtros['sendBraun'] = false;
             $filtros['sendHuerin'] = true;
             $filtros['incluirJefes'] = true;
-            $filtros['level'] = 3;
+            $filtros['level'] = 5;
+            $filtros['departamentos'] = $departamentos;
             $this->setContractId($conId);
             $data = $this->findEmailEncargadosJefesByContractId($filtros);
             $encargados = $contractRep->encargadosArea($conId);

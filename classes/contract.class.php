@@ -2021,13 +2021,21 @@ class Contract extends Main
         $defaultId = [];
         $encargados = [];
         $data = [];
+        $departamentos = $filtros['departamentos'] ?? [];
         array_push($defaultId, IDHUERIN);
         array_push($defaultId, 319);
+
+        $filtroDep = "";
+        $filtroDepGen = "";
+        if(count($departamentos) > 0) {
+            $filtroDep = " AND a.departamentoId IN(" . implode(",", $departamentos) . ")";
+            $filtroDepGen = " AND departamentoId IN(" . implode(",", $departamentos) . ")";
+        }
 
         $sql = "SELECT a.name as razon,b.nameContact as cliente FROM contract a INNER JOIN customer b ON a.customerId=b.customerId WHERE a.contractId='" . $this->contractId . "' ";
         $this->Util()->DB()->setQuery($sql);
         $razonSocial = $this->Util()->DB()->GetRow();
-        $sqlp = "select a.personalId,b.email,b.name from contractPermiso a  left join personal b ON  a.personalId=b.personalId where a.contractId='" . $this->contractId . "' and a.departamentoId NOT IN(33,32) ";
+        $sqlp = "select a.personalId,b.email,b.name from contractPermiso a  left join personal b ON  a.personalId=b.personalId where a.contractId='" . $this->contractId . "' ".$filtroDep;
         $this->Util()->DB()->setQuery($sqlp);
         $permisos = $this->Util()->DB()->GetResult();
         foreach ($permisos as $permiso) {
@@ -2050,7 +2058,7 @@ class Contract extends Main
             if ($filtros['sendBraun'])
                 array_push($defaultId, IDBRAUN);
 
-            $sqlo = "SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (" . implode(',', $defaultId) . ") AND departamentoId NOT IN(32,33)";
+            $sqlo = "SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (" . implode(',', $defaultId) . ") ".$filtroDepGen;
             $this->Util()->DB()->setQuery($sqlo);
             $persons = $this->Util()->DB()->GetResult();
             foreach ($persons as $pers) {

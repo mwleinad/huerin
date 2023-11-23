@@ -179,7 +179,7 @@ class Log extends Util
                 if($sendBraun)
                     array_push($defaultId,IDBRAUN);
 
-                $sql  ="SELECT c.nombreServicio,b.name as razon,b.permisos FROM servicio a 
+                $sql  ="SELECT c.nombreServicio,b.name as razon,b.permisos,c.departamentoId FROM servicio a 
                                   INNER JOIN contract b ON a.contractId=b.contractId 
                                   INNER JOIN tipoServicio c ON a.tipoServicioId=c.tipoServicioId WHERE a.servicioId='".$this->tablaId."' ";
                 $this->Util()->DB()->setQuery($sql);
@@ -188,7 +188,7 @@ class Log extends Util
                 foreach($permisos as $perm){
                     list($dep,$per) = explode(',',$perm);
                     //recursos humanos y mensajeria excluidos. y solo le debe llegar el supervisor para arriba.
-                    if($dep==33||$dep==32)
+                    if($dep==33||$dep==32 || $dep != $registro['departamentoId'])
                         continue;
 
                     if($per>0)
@@ -212,7 +212,7 @@ class Log extends Util
                     $persons= $this->Util()->DB()->GetResult();
                     foreach($persons as $pers)
                     {
-                        if($pers['departamentoId']==33||$pers['departamentoId']==32)
+                        if($pers['departamentoId']==33||$pers['departamentoId']==32 || $pers['departamentoId'] != $registro['departamentoId'])
                         continue;
 
                         if($this->Util()->ValidateEmail($pers['email']))
