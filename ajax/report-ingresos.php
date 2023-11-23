@@ -19,7 +19,7 @@ switch($_POST["type"])
                     $departamentoId = $serv["departamentoId"];
                     $costoVisual = $serv["costoVisual"];
                     $coordinate =  count($value['responsables']) > 0 ? array_search($departamentoId, array_column($value['responsables'], 'departamentoId')) : null;
-                    $responsable = count($value['responsables']) > 0 ? $value['responsables'][$coordinate] : null ;
+                    $responsable = count($value['responsables']) > 0 && $coordinate !== false ? $value['responsables'][$coordinate] : null ;
 
                     switch($serv["servicioStatus"]){
                         case 'activo': $serv["nameStatusComplete"] = 'Activo'; break;
