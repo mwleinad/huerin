@@ -110,7 +110,7 @@ switch ($_POST["type"]) {
         $smarty->display(DOC_ROOT . '/templates/lists/impuestos.tpl');
 
         break;
-
+|
     case "updateTotalesDesglosados":
         $totalDesglosado = $producto->GetTotalDesglosado();
         $smarty->assign("impuestos", $totalDesglosado["impuestos"]);
