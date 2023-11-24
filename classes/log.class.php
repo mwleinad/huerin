@@ -688,6 +688,15 @@ class Log extends Util
         if(empty($cambios))
             return false;
 
+
+        $sql12 = "SELECT tipoServicio.departamentoId 
+                FROM servicio
+                INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+                WHERE servicioId IN(".implode(",", $cambios).")";
+
+        $this->Util()->DB()->setQuery($sql12);
+        $resultados =   $this->Util()->DB()->GetResult();
+
         $contract->setContractId($contractId);
         $contrato = $contract->Info();
         $encargados = $contractRep->encargadosArea($contractId);
@@ -695,8 +704,11 @@ class Log extends Util
         $ftr['incluirJefes'] = true;
         $ftr['sendBraun']= SEND_LOG_BRAUN;
         $ftr['sendHuerin']=SEND_LOG_HUERIN;
+        if(count($resultados) > 0)
+            $ftr['departamentos'] = array_column($resultados, 'departamentoId');
+
         //level es el nivel del rol, entre mayor es ,son mas bajos los privilegios si se pasa 0 se envia a todos
-        $ftr['level'] = 3;
+        $ftr['level'] = 5;
         $detalles= $contract->findEmailEncargadosJefesByContractId($ftr);
         $emails= $detalles['encargados'];
         $changes = $this->findHistoryLogServicio($cambios);
