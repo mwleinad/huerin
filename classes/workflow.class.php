@@ -647,7 +647,7 @@ class Workflow extends Servicio
             $razon = new Razon();
             $correos = [];
             if (key_exists(1, $encargados))
-                $correos = $razon->findEmailsAscByRespId($encargados[1], [3, 4, 5]);
+                $correos = $razon->findEmailsAscByRespId($encargados[1], [5,6,7,8]);
 
             if ($version > 1) {
                 $currentUser = $personal->getCurrentUser();
