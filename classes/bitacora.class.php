@@ -123,7 +123,8 @@ class Bitacora extends Main {
 
         $currentYear = date('Y', strtotime($data['fecha_importacion']));
         $beforeYear  = date('Y', strtotime('-1 year', strtotime($data['fecha_importacion'])));
-        $phpWord->setValue('current_date', $currentYear);
+        $nextYear  = date('Y', strtotime('+1 year', strtotime($data['fecha_importacion'])));
+        $phpWord->setValue('current_date', $nextYear);
 
 
         $nombre_empresa = new TextRun();
@@ -139,8 +140,9 @@ class Bitacora extends Main {
         $table->addRow();
         $table->addCell()->addText('Razón social', $headerTable);
         $table->addCell()->addText('Servicio', $headerTable);
-        $table->addCell()->addText('Precio '.$beforeYear, $headerTable);
         $table->addCell()->addText('Precio '.$currentYear, $headerTable);
+        $table->addCell()->addText('Precio '.$nextYear, $headerTable);
+        $table->addCell()->addText('Observaciones', $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
         $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true, 'valign'=> 'center');
@@ -152,6 +154,7 @@ class Bitacora extends Main {
             $table->addCell()->addText($serv['nombreServicio'], $bodyTable);
             $table->addCell()->addText("$ ". number_format($serv['costoAnterior'], 2,'.', ','), $bodyTable);
             $table->addCell()->addText("$ ".number_format($serv['costoActual'], 2,'.', ','), $bodyTable);
+            $table->addCell()->addText('', $bodyTable);
             $totalAnterior = $totalAnterior + $serv['costoAnterior'];
             $totalActual =  $totalActual + $serv['costoActual'];
         }
@@ -160,6 +163,7 @@ class Bitacora extends Main {
         $table->addCell()->addText('SUBTOTAL', $styleTotal);
         $table->addCell()->addText("$ ". number_format($totalAnterior, 2,'.', ','), $styleTotal);
         $table->addCell()->addText("$ ". number_format($totalActual, 2,'.', ','), $styleTotal);
+        $table->addCell()->addText('', $styleTotal);
         $phpWord->setComplexBlock('tabla_comparativa', $table);
 
         $name_file = uniqid();
