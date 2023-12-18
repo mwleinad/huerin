@@ -194,8 +194,7 @@ class Bitacora extends Main {
 
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
-                    $name, $file,$name_file, '','',
-                    'noreply@braunhuerin.com.mx')) {
+                    $name, $file,$name_file)) {
                     $count++;
                 }
                 unlink($file);
