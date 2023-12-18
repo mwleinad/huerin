@@ -1074,6 +1074,7 @@ switch ($opcion[0]) {
         foreach($headers[0] as $kh => $header) {
             $header =  str_replace(' ', '_', $header);
             $header =  str_replace('%', 'porcentaje', $header);
+            $header =  $util->cleanString($header);
             $header =  strtolower($header);
             if(in_array($header, $keysExcludes)) {
                array_push($indexExclude, $kh);
@@ -1081,7 +1082,6 @@ switch ($opcion[0]) {
             }
             array_push($keys, $header);
         }
-
         $jsonData = [];
         for ($row = 2; $row <= $highestRow; $row++){
             $currentRows = $sheet->rangeToArray('A'.$row. ":" . $sheet->getHighestColumn() . $row);
@@ -1091,7 +1091,10 @@ switch ($opcion[0]) {
                 continue;
             $jsonData[] = array_combine($keys, $currentRows[0]);
         }
-        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_SLASHES);
+        dd($jsonData);
+
+        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_UNICODE);
+        echo $jsonParam;
 
         $pUsuario = $_SESSION['User']['name'];
         $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$_SESSION['User']['userId']."', '".$pUsuario."', @pData)";
