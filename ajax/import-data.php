@@ -1091,11 +1091,7 @@ switch ($opcion[0]) {
                 continue;
             $jsonData[] = array_combine($keys, $currentRows[0]);
         }
-        dd($jsonData);
-
         $jsonParam = json_encode($jsonData,JSON_UNESCAPED_UNICODE);
-        echo $jsonParam;
-
         $pUsuario = $_SESSION['User']['name'];
         $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$_SESSION['User']['userId']."', '".$pUsuario."', @pData)";
         $db->setQuery($store);
