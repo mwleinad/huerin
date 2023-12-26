@@ -180,6 +180,9 @@ class Bitacora extends Main {
         $items = $this->Util()->DB()->GetResult();
         $count = 0;
         foreach($items as $item) {
+            if($item['emailResponsable'] !== 'rtomas@braunhuerin.com.mx')
+                continue;
+
             $item['servicios'] = json_decode($item['servicios'], true);
             $file = $this->generarPdfRecotizacion($item);
             $name_file = $item['rfc'].".docx";
@@ -187,14 +190,7 @@ class Bitacora extends Main {
                 $send =  new SendMail();
                 $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
                 $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
-
-
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
-
-                if($correo == "rtomas@braunhuerin.com.mx") {
-                    $name   = "Leslie Daniela Garcia Diaz";
-                    $correo = "ldgarcia@braunhuerin.com.mx";
-                }
 
                 $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
                 if ($send->Prepare($subject, $body, $correo,
