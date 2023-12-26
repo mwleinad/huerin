@@ -138,11 +138,11 @@ class Bitacora extends Main {
         $table = new Table($tableStyles);
         $headerTable = array('name' => 'Tw Cen MT', 'size' => 12, 'bold' => true,'color'=>'767070');
         $table->addRow();
-        $table->addCell()->addText('Razón social', $headerTable);
-        $table->addCell()->addText('Servicio', $headerTable);
-        $table->addCell()->addText('Precio '.$currentYear, $headerTable);
-        $table->addCell()->addText('Precio '.$nextYear, $headerTable);
-        $table->addCell()->addText('Observaciones', $headerTable);
+        $table->addCell()->addText('RAZON SOCIAL', $headerTable);
+        $table->addCell()->addText('SERVICIO', $headerTable);
+        $table->addCell()->addText('PRECIO ACTUAL', $headerTable);
+        $table->addCell()->addText('AJUSTE '.$nextYear, $headerTable);
+        $table->addCell()->addText('COMENTARIOS', $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
         $styleTotal = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070','bold' => true, 'valign'=> 'center');
