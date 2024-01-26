@@ -270,6 +270,9 @@ $consolidado = new Consolidado();
 include_once(DOC_ROOT."/classes/consolidado2023.class.php");
 $consolidado2023 = new Consolidado2023();
 
+include_once(DOC_ROOT."/classes/BonoConcentrado.class.php");
+$bonoConcentrado = new BonoConcentrado;
+
 include_once(DOC_ROOT."/classes/clasificacion.class.php");
 $clasificacion = new Clasificacion;
 

@@ -148,6 +148,20 @@ $monthsInt = array(
     11 => "Nov",
     12 => "Dic"
 );
+$monthsIntComplete = array(
+    1=> "Enero",
+    2 => "Febrero",
+    3 => "Marzo",
+    4 => "Abril",
+    5 => "Mayo",
+    6 => "Junio",
+    7 => "Julio",
+    8 => "Agosto",
+    9 => "Septiembre",
+    10=> "Octtubre",
+    11 => "Noviembre",
+    12 => "Diciembre"
+);
 
 $mime_types = array("323" => "text/h323",
 "acx" => "application/internet-property-stream",

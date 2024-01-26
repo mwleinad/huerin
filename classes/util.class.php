@@ -1751,6 +1751,18 @@ class Util extends CustomError
         return $base;
     }
 
+    function listMonthCompleteHeaderForReport($max_month)
+    {
+        global $monthsIntComplete;
+        $base = [];
+        $until = $max_month > 12 || $max_month <=0 ? 12 : (int) $max_month;
+        for ($ii = 1; $ii <= $until; $ii++) {
+            $base[] = $monthsIntComplete[$ii];
+        }
+
+        return $base;
+    }
+
     function cleanString($string)
     {
 
