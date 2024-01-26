@@ -81,5 +81,13 @@ switch($_POST["type"]) {
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
         break;
 
+    case 'generateBonoConsolidado':
+        $_POST['deep'] = 1;
+        $bonoConcentrado->generateReport();
+        $nameFile = $bonoConcentrado->getNameReport();
+        echo "ok[#]";
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+        break;
+
 }
 ?>

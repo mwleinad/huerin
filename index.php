@@ -80,6 +80,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-documentacion-permanente',
 		'report-archivos-permanente',
 		'report-bonos',
+		'report-bonos-consolidado',
 		'report-cobranza-mensual',
 		'report-invoice',
 		'log',
