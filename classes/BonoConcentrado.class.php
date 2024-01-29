@@ -34,13 +34,15 @@ class BonoConcentrado extends Personal
 
     public function acumularTotales($padre, $mes) {
 
-        $tree = $this->convertirToArbol($this->resultados, $padre);
+        $tree   = $this->convertirToArbol($this->resultados, $padre);
         $lineal =  $this->convertirToLineal($tree);
         $devengados = array_column($lineal, $mes);
         $trabajados = array_column($lineal, $mes."_trabajado");
+        $sueldos    = array_column($lineal, 'sueldo');
 
         $acumulados['devengado'] = array_sum($devengados);
         $acumulados['trabajado'] = array_sum($trabajados);
+        $acumulados['sueldo'] = array_sum($sueldos) *  (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
         return $acumulados;
     }
 
@@ -86,31 +88,66 @@ class BonoConcentrado extends Personal
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
 
-        $headersEstatico = ['No','Area', 'Puesto', 'Fecha ingreso', 'Nombre'];
+        $headersEstatico = ['No','AREA', 'PUESTO', 'FECHA INGRESO', 'NOMBRE'];
         $headersMeses = $this->Util()->listMonthCompleteHeaderForReport($_POST['period']);
 
         // Todos los headers realizados.
         $row =  4;
         $col = 0;
+        $styleHeaderDark = array_merge($global_config_style_cell['style_header'],array(
+            'fill' => array(
+                'type'  => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '000000')
+            ),
+            'font' => array(
+                'bold' => true,
+                'color' => array('rgb' => 'FFFFFF'),
+                'size' => 10,
+                'name' => 'Aptos',
+            )
+        ));
+        $styleHeaderBlue = array_merge($global_config_style_cell['style_header'],array(
+            'fill' => array(
+                'type'  => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '1F4E78')
+            ),
+            'font' => array(
+                'bold' => true,
+                'color' => array('rgb' => 'FFFFFF'),
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
+
+        $darkInicio = 'A1';
+        $darkFin = PHPExcel_Cell::stringFromColumnIndex(count($headersEstatico)-1).'3';
+        $sheet->setCellValueByColumnAndRow(1, 2, 'REPORTE CONSOLIDADO DE BONOS');
+        $sheet->getStyle($darkInicio.":".$darkFin)->applyFromArray($styleHeaderDark);
+        $col = 0;
         foreach ($headersEstatico  as $header) {
             $sheet->setCellValueByColumnAndRow($col, $row, $header)
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+                  ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleHeaderDark);
             $col++;
         }
-        $rowTituloMes = $row - 1;
-        $headersTotales =  ['DEVENGADO','TRABAJADO','% EFECTIVIDAD','SUELDO 40%','GASTO','UTILIDAD','BONO(%)','SUBTOTAL'];
+
+        $headersTotales =  ['DEVENGADO','TRABAJADO','% EFECTIVIDAD','SUELDO 40%','GASTO','UTILIDAD','UTILIDAD(%)','BONO(%)', 'BONO','SUBTOTAL'];
         foreach ($headersMeses  as $headerMes) {
-            $sheet->setCellValueByColumnAndRow($col, $rowTituloMes, $headerMes)
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $rowTituloMes)->applyFromArray($global_config_style_cell['style_header']);
+            $darkInicio = PHPExcel_Cell::stringFromColumnIndex($col).'1';
 
-            $merges = PHPExcel_Cell::stringFromColumnIndex($col) .$rowTituloMes . ":" . PHPExcel_Cell::stringFromColumnIndex($col + 7) . $rowTituloMes;
-            $sheet->mergeCells($merges);
-
+            $sheet->setCellValueByColumnAndRow($col, 3,'*CIFRAS ACUMULADAS');
+            $sheet->setCellValueByColumnAndRow($col + count($headersTotales)-1, 2, strtoupper($headerMes));
             foreach ($headersTotales as $headerTotal) {
-                $sheet->setCellValueByColumnAndRow($col, $row, $headerTotal)
-                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $headerTotal);
                 $col++;
             }
+
+            $darkFin = PHPExcel_Cell::stringFromColumnIndex($col - 1 + count($headersTotales)-1).'4';
+            $sheet->getStyle($darkInicio.":".$darkFin)->applyFromArray($styleHeaderBlue);
         }
 
         $row++;
@@ -166,8 +203,9 @@ class BonoConcentrado extends Personal
                             break;
                         case 1:
                             $totalTrabajado = $acumulados['trabajado'] + $resultado[strtolower($mes)."_trabajado"];
+                            $coorTrabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             $sheet->setCellValueByColumnAndRow($col, $row, $totalTrabajado)
-                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+                                ->getStyle($coorTrabajado)->applyFromArray($global_config_style_cell['style_currency']);
                             $colTrabajadoActual =  $col;
                             break;
                         case 2:
@@ -176,23 +214,41 @@ class BonoConcentrado extends Personal
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
                             break;
                         case 3:
-                            $sheet->setCellValueByColumnAndRow($col, $row, 0)
+                            $totalSueldo = $resultado['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
+                            $sheet->setCellValueByColumnAndRow($col, $row, $totalSueldo)
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
                             break;
                         case 4:
-                            $sheet->setCellValueByColumnAndRow($col, $row, 0)
-                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+                            $totalGasto = $acumulados['sueldo'] + ($resultado['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100)));
+                            $coorGasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $totalGasto)
+                                ->getStyle($coorGasto)->applyFromArray($global_config_style_cell['style_currency']);
                             break;
                         case 5:
-                            $sheet->setCellValueByColumnAndRow($col, $row, 0)
+                            $formula = "=IFERROR(+".$coorTrabajado."-".$coorGasto.",0)";
+                            $coorUtilidad = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $formula)
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
                             break;
                         case 6:
-                            $sheet->setCellValueByColumnAndRow($col, $row, 0)
-                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
+                            $formula = "=IFERROR(+".$coorUtilidad."/".$coorTrabajado.",0)";
+                            $sheet->setCellValueByColumnAndRow($col, $row, $formula)
+                                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_porcent']);
                             break;
                         case 7:
+                            $coorPorBono = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             $sheet->setCellValueByColumnAndRow($col, $row, 0)
+                                ->getStyle($coorPorBono)->applyFromArray($global_config_style_cell['style_porcent']);
+                            break;
+                        case 8:
+                            $formula = "=IFERROR(+".$coorUtilidad."*".$coorPorBono.",0)";
+                            $coorBono = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                            $sheet->setCellValueByColumnAndRow($col, $row, $formula)
+                                ->getStyle($coorBono)->applyFromArray($global_config_style_cell['style_currency']);
+                            break;
+                        case 9:
+                            $formula = "=IFERROR(+".$coorBono.",0)";
+                            $sheet->setCellValueByColumnAndRow($col, $row, $formula)
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_currency']);
                             break;
                     }

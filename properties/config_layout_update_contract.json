@@ -343,8 +343,8 @@
     "input_validate": true,
     "accepted_values" : [
       "A",
-      "AA",
-      "AAA"
+      "B",
+      "C"
     ],
     "field_excel": "qualification",
     "field_bd": "qualification",
