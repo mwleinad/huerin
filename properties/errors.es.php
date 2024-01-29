@@ -158,7 +158,7 @@ $monthsIntComplete = array(
     7 => "Julio",
     8 => "Agosto",
     9 => "Septiembre",
-    10=> "Octtubre",
+    10=> "Octubre",
     11 => "Noviembre",
     12 => "Diciembre"
 );

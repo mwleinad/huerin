@@ -288,7 +288,7 @@ switch ($_POST['type']) {
                 )
             );
             // calificaciones
-            $calificaciones = ['AAA', 'AA', 'A'];
+            $calificaciones = ['A', 'B', 'C'];
             $current_col_catalogue++;
             $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "CALIFICACIONES");
             $current_row_catalogue = 2;
