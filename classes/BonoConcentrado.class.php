@@ -90,6 +90,7 @@ class BonoConcentrado extends Personal
         $sheet->setTitle('CONSOLIDACION DE BONOS');
 
         $headersEstatico = ['No','AREA', 'PUESTO', 'FECHA INGRESO', 'NOMBRE'];
+        $_POST['period'] =  12;
         $headersMeses = $this->Util()->listMonthCompleteHeaderForReport($_POST['period']);
 
         $puestos = [
@@ -255,7 +256,6 @@ class BonoConcentrado extends Personal
             }
         }
         // ANUAL
-
         $coorInicialGranTotal = PHPExcel_Cell::stringFromColumnIndex($col) . '1';
         $sheet->setCellValueByColumnAndRow($col, 2, 'GRAN TOTAL ANUAL');
         $sheet->setCellValueByColumnAndRow($col, 4, 'TOTAL A PAGAR');
