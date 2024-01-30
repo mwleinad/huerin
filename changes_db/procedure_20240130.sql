@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 30/01/2024 13:14:57
+ Date: 30/01/2024 17:28:42
 */
 
 SET NAMES utf8mb4;
@@ -61,16 +61,20 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
+			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
-						SELECT tipoServicioId  
+						SELECT tipoServicio.tipoServicioId  
 						FROM tipoServicio 
+						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
 						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
 					  AND tipoServicio.is_primary = 1
 						AND tipoServicio.status = '1'
+						AND departamentos.estatus =1
 						AND tipoServicio.departamentoId = vDepartamentoId
 			)
 		)
+		AND instanciaServicio.status in ('activa','completa')
 		AND year(instanciaServicio.date) = pAnio
 		AND MONTH(instanciaServicio.date) = pMes  INTO vTotal;
  ELSE
@@ -97,16 +101,19 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
+			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
-						SELECT tipoServicioId  
+					SELECT tipoServicio.tipoServicioId  
 						FROM tipoServicio 
+						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
 						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
 					  AND tipoServicio.is_primary = 1
 						AND tipoServicio.status = '1'
-						AND tipoServicio.departamentoId = vDepartamentoId
+						AND departamentos.estatus =1
 			)
 		)
+		AND instanciaServicio.status in ('activa','completa')
 		AND year(instanciaServicio.date) = pAnio
 		AND MONTH(instanciaServicio.date) = pMes  INTO vTotal;
 		
@@ -167,18 +174,22 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
+			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
-						SELECT tipoServicioId  
+						SELECT tipoServicio.tipoServicioId  
 						FROM tipoServicio 
+						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
 						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-						AND tipoServicio.is_primary = 1
-						AND tipoServicio.`status` = '1'
+					  AND tipoServicio.is_primary = 1
+						AND tipoServicio.status = '1'
+						AND departamentos.estatus =1
 						AND tipoServicio.departamentoId = vDepartamentoId
 			)
 		) servicio ON instanciaServicio.servicioId = servicio.servicioId
 		AND year(instanciaServicio.date) = pAnio
 		AND MONTH(instanciaServicio.date) = pMes
+		AND instanciaServicio.status in ('activa','completa')
 		AND instanciaServicio.class IN ('Completo','CompletoTardio')
 		HAVING acumular = 1  INTO vTotal,vAcumulado;
  ELSE
@@ -208,17 +219,21 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
+			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
-						SELECT tipoServicioId  
+							SELECT tipoServicio.tipoServicioId  
 						FROM tipoServicio 
+						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
 						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-						AND tipoServicio.is_primary = 1
-						AND tipoServicio.`status` = '1'
+					  AND tipoServicio.is_primary = 1
+						AND tipoServicio.status = '1'
+						AND departamentos.estatus =1
 			)
 		) servicio ON instanciaServicio.servicioId = servicio.servicioId
 		AND year(instanciaServicio.date) = pAnio
 		AND MONTH(instanciaServicio.date) = pMes
+		AND instanciaServicio.status in ('activa','completa')
 	  AND instanciaServicio.class IN ('Completo','CompletoTardio')	
 		HAVING acumular = 1 INTO vTotal, vAcumulado;	
 	END IF;
