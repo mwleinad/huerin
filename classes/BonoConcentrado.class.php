@@ -178,7 +178,7 @@ class BonoConcentrado extends Personal
 
         $stylePorcentaje= array_merge($global_config_style_cell['style_porcent'],array(
             'numberformat' => [
-                'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE,
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00,
             ],
             'font' => array(
                 'size' => 10,
