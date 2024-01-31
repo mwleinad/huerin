@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 30/01/2024 17:28:42
+ Date: 30/01/2024 17:58:36
 */
 
 SET NAMES utf8mb4;
@@ -61,7 +61,7 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
+			AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
 						SELECT tipoServicio.tipoServicioId  
@@ -101,7 +101,7 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
+			AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
 					SELECT tipoServicio.tipoServicioId  
@@ -111,6 +111,7 @@ BEGIN
 					  AND tipoServicio.is_primary = 1
 						AND tipoServicio.status = '1'
 						AND departamentos.estatus =1
+	
 			)
 		)
 		AND instanciaServicio.status in ('activa','completa')
@@ -174,7 +175,7 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
+			AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
 						SELECT tipoServicio.tipoServicioId  
@@ -219,7 +220,7 @@ BEGIN
 					AND customer.active = '1'
 					AND contract.activo = 'Si'
 			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
+			AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
 			AND  servicio.status IN ('activo','bajaParcial')
 			AND  EXISTS( 
 							SELECT tipoServicio.tipoServicioId  
