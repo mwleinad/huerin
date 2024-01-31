@@ -1542,7 +1542,7 @@ class Bono extends Personal
             // setear a 0 costo de tipos de servicio que facturan de unica ocasion y que tengan periodicidad diferente a eventual, en sus demas workflows.
             if($inst['periodicidad'] != 'Eventual') {
 
-                $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstPrimeraInstancia != $firstDateWorkflow)
+                $cad['costo'] = ((int)$inst['unique_invoice'] === 1 && $firstInicioFactura != $firstDateWorkflow)
                     ? 0
                     : $cad['costo'];
             }

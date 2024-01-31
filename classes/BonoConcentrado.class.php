@@ -206,7 +206,8 @@ class BonoConcentrado extends Personal
 
         $darkInicio = 'A1';
         $darkFin = PHPExcel_Cell::stringFromColumnIndex(count($headersEstatico)-1).'3';
-        $sheet->setCellValueByColumnAndRow(1, 2, 'REPORTE CONSOLIDADO DE BONOS');
+        $sheet->setCellValueByColumnAndRow(1, 2, 'REPORTE CONSOLIDADO DE BONOS CORRESPONDIENTE AL AÑO FISCAL '.$_POST['year']);
+        $sheet->setCellValueByColumnAndRow(1, 3, 'FECHA Y HORA DE CONSULTA: '.date('d/m/Y H:i'));
         $sheet->getStyle($darkInicio.":".$darkFin)->applyFromArray($styleHeaderDark);
         $col = 0;
         foreach ($headersEstatico  as $header) {
@@ -275,12 +276,19 @@ class BonoConcentrado extends Personal
             $col = 0;
             switch ($resultado['puesto']) {
                 case 'Director':
-                            $color =  '219ebc';
+                            $color =  'ffc000';
                             $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
-
                 case 'Gerente':
-                    $color =  '2a9d8f';
+                    $color =  '808080';
+                    $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
+                    break;
+                case 'Supervisor':
+                    $color =  'BFBFBF';
+                    $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
+                    break;
+                case 'Contador':
+                    $color =  'D9D9D9';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 default:
@@ -289,25 +297,33 @@ class BonoConcentrado extends Personal
                     break;
             }
 
-            $global_config_style_cell['style_simple_text_whit_border']['fill'] = array(
-                'type' => $typeFill,
-                'color' => array('rgb' => $color)
+            $styleSimpleText2 = array_merge($styleSimpleText, array(
+                 'fill' => array(
+                     'type' => $typeFill,
+                     'color' => array('rgb' => $color))
+                )
+            );
+            $styleBorderRight2 = array_merge($styleSimpleText, array(
+                    'fill' => array(
+                        'type' => $typeFill,
+                        'color' => array('rgb' => $color))
+                )
             );
 
             $sheet->setCellValueByColumnAndRow($col, $row, 1)
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resultado['departamento'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $puestos[$resultado['puesto']] ?? $resultado['puesto'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resultado['fecha_ingreso'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resultado['nombre'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleBorderRight);
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleBorderRight2);
             $col++;
 
             $acumuladoBonoPagar     = [];
