@@ -11,11 +11,407 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 30/01/2024 17:28:42
+ Date: 31/01/2024 14:31:58
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Function structure for fn_acumulado_devengado
+-- ----------------------------
+DROP FUNCTION IF EXISTS `fn_acumulado_devengado`;
+delimiter ;;
+CREATE FUNCTION `fn_acumulado_devengado`(`pEmpleado` bigint,`pAnio` int,`pMes` int)
+ RETURNS decimal(20,2)
+  DETERMINISTIC
+BEGIN
+	#Routine body goes here...
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vTotalRow BIGINT DEFAULT 0;
+ DECLARE vCurrentRow BIGINT DEFAULT 0;
+
+ DECLARE vAcumulado	INT DEFAULT 0;
+ DECLARE vAcumularEventual	INT DEFAULT 0;
+ DECLARE vAcumularUnicaOcasion	INT DEFAULT 0;
+ 
+ DECLARE cursor_instancias CURSOR FOR 
+			SELECT
+				instanciaServicio.costoWorkflow costo,
+			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
+			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			FROM instanciaServicio
+			INNER JOIN(
+				SELECT
+						servicio.servicioId,
+						servicio.status,
+						servicio.lastDateWorkflow,
+						servicio.tipoServicioId,
+						servicio.inicioOperaciones,
+						servicio.inicioFactura,
+						tipoServicio.uniqueInvoice,
+						tipoServicio.periodicidad
+					FROM
+						servicio
+					INNER JOIN (
+						SELECT 
+									tipoServicio.tipoServicioId,
+									tipoServicio.uniqueInvoice,
+									tipoServicio.periodicidad
+								FROM tipoServicio 
+								INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
+								AND tipoServicio.is_primary = 1
+								AND tipoServicio.status = '1'
+								AND departamentos.estatus =1
+					) tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+					WHERE servicio.contractId IN(
+							SELECT contract.contractId  
+							FROM contract 
+							INNER JOIN customer ON contract.customerId =  customer.customerId 
+							WHERE EXISTS(
+								SELECT 
+								contractPermiso.personalId 
+								FROM contractPermiso 
+								WHERE 
+									contractPermiso.personalId IN (pEmpleado)
+								AND contractPermiso.contractId=contract.contractId
+							)
+							AND customer.active = '1'
+							AND contract.activo = 'Si'
+					)
+					AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
+					AND  servicio.status IN ('activo','bajaParcial')
+			)	servicio ON instanciaServicio.servicioId = servicio.servicioId
+			AND year(instanciaServicio.date) = pAnio
+			AND MONTH(instanciaServicio.date) = pMes
+			AND instanciaServicio.status in ('activa','completa')
+			HAVING (acumular = 1 and acumularUnicaOcasion = 1 and acumularEventual = 1);
+	
+	OPEN cursor_instancias;
+	select FOUND_ROWS() into vTotalRow;
+	
+	IF(vTotalRow <= 0) THEN
+	 RETURN vTotal;
+	END IF; 
+	
+	itera_instancia: REPEAT
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+			SET vTotal = vTotal+vCosto;
+		END IF;	
+		
+	SET vCurrentRow = vCurrentRow+1;
+	UNTIL (vCurrentRow >= vTotalRow)
+	END REPEAT itera_instancia;		
+	CLOSE cursor_instancias;
+
+	RETURN vTotal;
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Function structure for fn_acumulado_devengado_x_departamento
+-- ----------------------------
+DROP FUNCTION IF EXISTS `fn_acumulado_devengado_x_departamento`;
+delimiter ;;
+CREATE FUNCTION `fn_acumulado_devengado_x_departamento`(`pEmpleado` bigint,`pDepartamento` bigint,`pAnio` int,`pMes` int)
+ RETURNS decimal(20,2)
+  DETERMINISTIC
+BEGIN
+	#Routine body goes here...
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vTotalRow BIGINT DEFAULT 0;
+ DECLARE vCurrentRow BIGINT DEFAULT 0;
+
+ DECLARE vAcumulado	INT DEFAULT 0;
+ DECLARE vAcumularEventual	INT DEFAULT 0;
+ DECLARE vAcumularUnicaOcasion	INT DEFAULT 0;
+ 
+ DECLARE cursor_instancias CURSOR FOR 
+			SELECT
+				instanciaServicio.costoWorkflow costo,
+			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
+			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			FROM instanciaServicio
+			INNER JOIN(
+				SELECT
+						servicio.servicioId,
+						servicio.status,
+						servicio.lastDateWorkflow,
+						servicio.tipoServicioId,
+						servicio.inicioOperaciones,
+						servicio.inicioFactura,
+						tipoServicio.uniqueInvoice,
+						tipoServicio.periodicidad
+					FROM
+						servicio
+					INNER JOIN (
+						SELECT 
+									tipoServicio.tipoServicioId,
+									tipoServicio.uniqueInvoice,
+									tipoServicio.periodicidad
+								FROM tipoServicio 
+								INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
+								AND tipoServicio.is_primary = 1
+								AND tipoServicio.status = '1'
+								AND departamentos.estatus =1
+								AND departamentos.departamentoId =pDepartamento
+					) tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+					WHERE servicio.contractId IN(
+							SELECT contract.contractId  
+							FROM contract 
+							INNER JOIN customer ON contract.customerId =  customer.customerId 
+							WHERE EXISTS(
+								SELECT 
+								contractPermiso.personalId 
+								FROM contractPermiso 
+								WHERE 
+									contractPermiso.personalId IN (pEmpleado)
+								AND contractPermiso.contractId=contract.contractId
+							)
+							AND customer.active = '1'
+							AND contract.activo = 'Si'
+					)
+					AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
+					AND  servicio.status IN ('activo','bajaParcial')
+			)	servicio ON instanciaServicio.servicioId = servicio.servicioId
+			AND year(instanciaServicio.date) = pAnio
+			AND MONTH(instanciaServicio.date) = pMes
+			AND instanciaServicio.status in ('activa','completa')
+			HAVING (acumular = 1 and acumularUnicaOcasion = 1 and acumularEventual = 1);
+			
+	OPEN cursor_instancias;
+	select FOUND_ROWS() into vTotalRow;
+	
+	IF(vTotalRow <= 0) THEN
+	 RETURN vTotal;
+	END IF;
+	
+	itera_instancia: REPEAT
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+			SET vTotal = vTotal+vCosto;
+		END IF;	
+		
+	SET vCurrentRow = vCurrentRow+1;
+	UNTIL (vCurrentRow >= vTotalRow)
+	END REPEAT itera_instancia;		
+	CLOSE cursor_instancias;
+
+	RETURN vTotal;
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Function structure for fn_acumulado_trabajado
+-- ----------------------------
+DROP FUNCTION IF EXISTS `fn_acumulado_trabajado`;
+delimiter ;;
+CREATE FUNCTION `fn_acumulado_trabajado`(`pEmpleado` bigint,`pAnio` int,`pMes` int)
+ RETURNS decimal(20,2)
+  DETERMINISTIC
+BEGIN
+	#Routine body goes here...
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vTotalRow BIGINT DEFAULT 0;
+ DECLARE vCurrentRow BIGINT DEFAULT 0;
+
+ DECLARE vAcumulado	INT DEFAULT 0;
+ DECLARE vAcumularEventual	INT DEFAULT 0;
+ DECLARE vAcumularUnicaOcasion	INT DEFAULT 0;
+ 
+ DECLARE cursor_instancias CURSOR FOR 
+			SELECT
+				instanciaServicio.costoWorkflow costo,
+			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
+			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			FROM instanciaServicio
+			INNER JOIN(
+				SELECT
+						servicio.servicioId,
+						servicio.status,
+						servicio.lastDateWorkflow,
+						servicio.tipoServicioId,
+						servicio.inicioOperaciones,
+						servicio.inicioFactura,
+						tipoServicio.uniqueInvoice,
+						tipoServicio.periodicidad
+					FROM
+						servicio
+					INNER JOIN (
+						SELECT 
+									tipoServicio.tipoServicioId,
+									tipoServicio.uniqueInvoice,
+									tipoServicio.periodicidad
+								FROM tipoServicio 
+								INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
+								AND tipoServicio.is_primary = 1
+								AND tipoServicio.status = '1'
+								AND departamentos.estatus =1
+					) tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+					WHERE servicio.contractId IN(
+							SELECT contract.contractId  
+							FROM contract 
+							INNER JOIN customer ON contract.customerId =  customer.customerId 
+							WHERE EXISTS(
+								SELECT 
+								contractPermiso.personalId 
+								FROM contractPermiso 
+								WHERE 
+									contractPermiso.personalId IN (pEmpleado)
+								AND contractPermiso.contractId=contract.contractId
+							)
+							AND customer.active = '1'
+							AND contract.activo = 'Si'
+					)
+					AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
+					AND  servicio.status IN ('activo','bajaParcial')
+			)	servicio ON instanciaServicio.servicioId = servicio.servicioId
+			AND year(instanciaServicio.date) = pAnio
+			AND MONTH(instanciaServicio.date) = pMes
+			AND instanciaServicio.status in ('activa','completa')
+			AND instanciaServicio.class IN ('Completo','CompletoTardio')
+			HAVING (acumular = 1 and acumularUnicaOcasion = 1 and acumularEventual = 1);
+	
+	OPEN cursor_instancias;
+	select FOUND_ROWS() into vTotalRow;
+	
+	IF(vTotalRow <= 0) THEN
+	 RETURN vTotal;
+	END IF;
+	
+	itera_instancia: REPEAT
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+			SET vTotal = vTotal+vCosto;
+		END IF;	
+		
+	SET vCurrentRow = vCurrentRow+1;
+	UNTIL (vCurrentRow >= vTotalRow)
+	END REPEAT itera_instancia;		
+	CLOSE cursor_instancias;
+
+	RETURN vTotal;
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Function structure for fn_acumulado_trabajado_x_departamento
+-- ----------------------------
+DROP FUNCTION IF EXISTS `fn_acumulado_trabajado_x_departamento`;
+delimiter ;;
+CREATE FUNCTION `fn_acumulado_trabajado_x_departamento`(`pEmpleado` bigint,`pDepartamento` bigint,`pAnio` int,`pMes` int)
+ RETURNS decimal(20,2)
+  DETERMINISTIC
+BEGIN
+	#Routine body goes here...
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
+ 
+ DECLARE vTotalRow BIGINT DEFAULT 0;
+ DECLARE vCurrentRow BIGINT DEFAULT 0;
+
+ DECLARE vAcumulado	INT DEFAULT 0;
+ DECLARE vAcumularEventual	INT DEFAULT 0;
+ DECLARE vAcumularUnicaOcasion	INT DEFAULT 0;
+ 
+ DECLARE cursor_instancias CURSOR FOR 
+			SELECT
+				instanciaServicio.costoWorkflow costo,
+			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
+			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			FROM instanciaServicio
+			INNER JOIN(
+				SELECT
+						servicio.servicioId,
+						servicio.status,
+						servicio.lastDateWorkflow,
+						servicio.tipoServicioId,
+						servicio.inicioOperaciones,
+						servicio.inicioFactura,
+						tipoServicio.uniqueInvoice,
+						tipoServicio.periodicidad
+					FROM
+						servicio
+					INNER JOIN (
+						SELECT 
+									tipoServicio.tipoServicioId,
+									tipoServicio.uniqueInvoice,
+									tipoServicio.periodicidad
+								FROM tipoServicio 
+								INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
+								AND tipoServicio.is_primary = 1
+								AND tipoServicio.status = '1'
+								AND departamentos.estatus =1
+								AND departamentos.departamentoId =pDepartamento
+					) tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
+					WHERE servicio.contractId IN(
+							SELECT contract.contractId  
+							FROM contract 
+							INNER JOIN customer ON contract.customerId =  customer.customerId 
+							WHERE EXISTS(
+								SELECT 
+								contractPermiso.personalId 
+								FROM contractPermiso 
+								WHERE 
+									contractPermiso.personalId IN (pEmpleado)
+								AND contractPermiso.contractId=contract.contractId
+							)
+							AND customer.active = '1'
+							AND contract.activo = 'Si'
+					)
+					AND  DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')
+					AND  servicio.status IN ('activo','bajaParcial')
+			)	servicio ON instanciaServicio.servicioId = servicio.servicioId
+			AND year(instanciaServicio.date) = pAnio
+			AND MONTH(instanciaServicio.date) = pMes
+			AND instanciaServicio.status in ('activa','completa')
+			AND instanciaServicio.class IN ('Completo','CompletoTardio')
+			HAVING (acumular = 1 and acumularUnicaOcasion = 1 and acumularEventual = 1);
+			
+	OPEN cursor_instancias;
+	select FOUND_ROWS() into vTotalRow;
+	
+	IF(vTotalRow <= 0) THEN
+	 RETURN vTotal;
+	END IF;
+	
+	itera_instancia: REPEAT
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+			SET vTotal = vTotal+vCosto;
+		END IF;	
+		
+	SET vCurrentRow = vCurrentRow+1;
+	UNTIL (vCurrentRow >= vTotalRow)
+	END REPEAT itera_instancia;		
+	CLOSE cursor_instancias;
+
+	RETURN vTotal;
+END
+;;
+delimiter ;
 
 -- ----------------------------
 -- Function structure for get_total_acumulado_devengado
@@ -29,7 +425,10 @@ BEGIN
 	#Routine body goes here...
  # DEPARTAMENTO AL QUE PERTENECE
 	 
- DECLARE vTotal	DECIMAL DEFAULT 0;
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ DECLARE vAcumulado	DECIMAL(10,2) DEFAULT 0;
+ DECLARE vAcumularEventual	DECIMAL(10,2) DEFAULT 0;
+ DECLARE vAcumularUnicaOcasion	DECIMAL(10,2) DEFAULT 0;
  DECLARE vDepartamentoId	BIGINT DEFAULT 0;
  
  
@@ -38,86 +437,10 @@ BEGIN
  END IF;
  
  IF (vDepartamentoId > 0) THEN
-	SELECT 
-				SUM(instanciaServicio.costoWorkflow)
-		FROM instanciaServicio 
-		WHERE servicioId IN(
-			SELECT 
-				servicioId
-			FROM
-				servicio
-			WHERE servicio.contractId IN(
-					SELECT contract.contractId  
-					FROM contract 
-					INNER JOIN customer ON contract.customerId =  customer.customerId 
-					WHERE EXISTS(
-						SELECT 
-						contractPermiso.personalId 
-						FROM contractPermiso 
-						WHERE 
-							contractPermiso.personalId IN (pEmpleado)
-						AND contractPermiso.contractId=contract.contractId
-					)
-					AND customer.active = '1'
-					AND contract.activo = 'Si'
-			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
-			AND  servicio.status IN ('activo','bajaParcial')
-			AND  EXISTS( 
-						SELECT tipoServicio.tipoServicioId  
-						FROM tipoServicio 
-						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
-						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  AND tipoServicio.is_primary = 1
-						AND tipoServicio.status = '1'
-						AND departamentos.estatus =1
-						AND tipoServicio.departamentoId = vDepartamentoId
-			)
-		)
-		AND instanciaServicio.status in ('activa','completa')
-		AND year(instanciaServicio.date) = pAnio
-		AND MONTH(instanciaServicio.date) = pMes  INTO vTotal;
+	RETURN fn_acumulado_devengado_x_departamento(pEmpleado,vDepartamentoId,pAnio,pMes);
  ELSE
-	 SELECT 
-				SUM(instanciaServicio.costoWorkflow)
-		FROM instanciaServicio 
-		WHERE servicioId IN(
-			SELECT 
-				servicioId
-			FROM
-				servicio
-			WHERE servicio.contractId IN(
-					SELECT contract.contractId  
-					FROM contract 
-					INNER JOIN customer ON contract.customerId =  customer.customerId 
-					WHERE EXISTS(
-						SELECT 
-						contractPermiso.personalId 
-						FROM contractPermiso 
-						WHERE 
-							contractPermiso.personalId IN (pEmpleado)
-						AND contractPermiso.contractId=contract.contractId
-					)
-					AND customer.active = '1'
-					AND contract.activo = 'Si'
-			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
-			AND  servicio.status IN ('activo','bajaParcial')
-			AND  EXISTS( 
-					SELECT tipoServicio.tipoServicioId  
-						FROM tipoServicio 
-						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
-						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  AND tipoServicio.is_primary = 1
-						AND tipoServicio.status = '1'
-						AND departamentos.estatus =1
-			)
-		)
-		AND instanciaServicio.status in ('activa','completa')
-		AND year(instanciaServicio.date) = pAnio
-		AND MONTH(instanciaServicio.date) = pMes  INTO vTotal;
-		
-	END IF;
+	RETURN fn_acumulado_devengado(pEmpleado,pAnio,pMes);
+ END IF;
 	
 	return vTotal;
 END
@@ -137,8 +460,8 @@ BEGIN
  # DEPARTAMENTO AL QUE PERTENECE
  # Servicios en estatus bajaParcial debe ser acumulado hasta la fecha de su ultimo workflow.
 	 
- DECLARE vTotal	DECIMAL DEFAULT 0;
- DECLARE vAcumulado	DECIMAL DEFAULT 0;
+ DECLARE vTotal	DECIMAL(10,2) DEFAULT 0;
+ DECLARE vAcumulado	DECIMAL(20,2) DEFAULT 0;
  DECLARE vDepartamentoId	BIGINT DEFAULT 0;
  
  
@@ -147,98 +470,11 @@ BEGIN
  END IF;
  
  IF (vDepartamentoId > 0) THEN
-	SELECT 
-				SUM(instanciaServicio.costoWorkflow),
-				IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular
-		FROM instanciaServicio
-		INNER JOIN  
-		(
-			SELECT 
-				servicio.servicioId,
-				servicio.status,
-				servicio.lastDateWorkflow
-			FROM
-				servicio
-			WHERE servicio.contractId IN(
-					SELECT contract.contractId  
-					FROM contract 
-					INNER JOIN customer ON contract.customerId =  customer.customerId 
-					WHERE EXISTS(
-						SELECT 
-						contractPermiso.personalId 
-						FROM contractPermiso 
-						WHERE 
-							contractPermiso.personalId IN (pEmpleado)
-						AND contractPermiso.contractId=contract.contractId
-					)
-					AND customer.active = '1'
-					AND contract.activo = 'Si'
-			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
-			AND  servicio.status IN ('activo','bajaParcial')
-			AND  EXISTS( 
-						SELECT tipoServicio.tipoServicioId  
-						FROM tipoServicio 
-						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
-						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  AND tipoServicio.is_primary = 1
-						AND tipoServicio.status = '1'
-						AND departamentos.estatus =1
-						AND tipoServicio.departamentoId = vDepartamentoId
-			)
-		) servicio ON instanciaServicio.servicioId = servicio.servicioId
-		AND year(instanciaServicio.date) = pAnio
-		AND MONTH(instanciaServicio.date) = pMes
-		AND instanciaServicio.status in ('activa','completa')
-		AND instanciaServicio.class IN ('Completo','CompletoTardio')
-		HAVING acumular = 1  INTO vTotal,vAcumulado;
+	RETURN fn_acumulado_trabajado_x_departamento(pEmpleado,vDepartamentoId,pAnio,pMes);
  ELSE
-	 SELECT 
-				SUM(instanciaServicio.costoWorkflow),
-				IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular
-		FROM instanciaServicio 
-		INNER JOIN (
-			SELECT 
-				servicio.servicioId,
-				servicio.status,
-				servicio.lastDateWorkflow
-			FROM
-				servicio
-			WHERE servicio.contractId IN(
-					SELECT contract.contractId  
-					FROM contract 
-					INNER JOIN customer ON contract.customerId =  customer.customerId 
-					WHERE EXISTS(
-						SELECT 
-						contractPermiso.personalId 
-						FROM contractPermiso 
-						WHERE 
-							contractPermiso.personalId IN (pEmpleado)
-						AND contractPermiso.contractId=contract.contractId
-					)
-					AND customer.active = '1'
-					AND contract.activo = 'Si'
-			)
-			AND  DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m')>=DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m')
-			AND  servicio.status IN ('activo','bajaParcial')
-			AND  EXISTS( 
-							SELECT tipoServicio.tipoServicioId  
-						FROM tipoServicio 
-						INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId
-						WHERE tipoServicio.tipoServicioId = servicio.tipoServicioId
-					  AND tipoServicio.is_primary = 1
-						AND tipoServicio.status = '1'
-						AND departamentos.estatus =1
-			)
-		) servicio ON instanciaServicio.servicioId = servicio.servicioId
-		AND year(instanciaServicio.date) = pAnio
-		AND MONTH(instanciaServicio.date) = pMes
-		AND instanciaServicio.status in ('activa','completa')
-	  AND instanciaServicio.class IN ('Completo','CompletoTardio')	
-		HAVING acumular = 1 INTO vTotal, vAcumulado;	
+	 RETURN fn_acumulado_trabajado(pEmpleado,vDepartamentoId,pAnio,pMes);
 	END IF;
-	
-	return vTotal;
+
 END
 ;;
 delimiter ;
@@ -264,7 +500,6 @@ BEGIN
 		DECLARE vPorcentaje decimal(20,2);
 	
 		
-		
 		DECLARE cursor_empleados CURSOR FOR SELECT 
 		personal.personalId,
 		personal.name,
@@ -278,13 +513,8 @@ BEGIN
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
 		WHERE personal.active = '1' and roles.nivel > 1
-		ORDER BY roles.nivel ASC;
+		ORDER BY roles.nivel ASC, departamento ASC;
 		
-		SELECT COUNT(*)	FROM personal 
-		INNER JOIN roles ON personal.roleId = roles.rolId
-		WHERE personal.active = '1' and roles.nivel > 1
-	  INTO vTotalRow; 
-					 
 		DROP TEMPORARY TABLE IF EXISTS tmp_personal_bono;
 		
 		CREATE TEMPORARY TABLE IF NOT EXISTS tmp_personal_bono(
@@ -323,6 +553,8 @@ BEGIN
 		);
 		
 		OPEN cursor_empleados;
+		SELECT FOUND_ROWS() INTO vTotalRow; 
+		
 			itera_empleado: REPEAT
 				FETCH cursor_empleados INTO vPersonalId,VNombre,vJefe,vPuesto,vDepartamentoId,vDepartamento,vFechaIngreso,vSueldo,vPorcentaje;
 				
