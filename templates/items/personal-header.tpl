@@ -21,6 +21,7 @@
 		{if in_array(244,$permissions)|| $User.isRoot}<th width="">Tipo de usuario</th>{/if}
 		{if in_array(245,$permissions)|| $User.isRoot}<th width="">Departamento</th>{/if}
 		{if in_array(246,$permissions)|| $User.isRoot}<th width="">Jefe inmediato</th>{/if}
+		<th>Status</th>
 		<th>Acciones</th>
 	</tr>
 </thead>
