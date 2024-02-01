@@ -346,17 +346,16 @@ class BonoConcentrado extends Personal
                             $coorDevengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             $sheet->setCellValueByColumnAndRow($col, $row, $totalDevengado)
                                 ->getStyle($coorDevengado)->applyFromArray($styleCurrency);
-                            $colDevegandoActual =  $col;
                             break;
                         case 1:
                             $totalTrabajado = $acumulados['trabajado'] + $resultado[strtolower($mes)."_trabajado"];
                             $coorTrabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             $sheet->setCellValueByColumnAndRow($col, $row, $totalTrabajado)
                                 ->getStyle($coorTrabajado)->applyFromArray($styleCurrency);
-                            $colTrabajadoActual =  $col;
                             break;
                         case 2:
-                            $formula = "=IFERROR(+".PHPExcel_Cell::stringFromColumnIndex($colTrabajadoActual) . $row."/".PHPExcel_Cell::stringFromColumnIndex($colDevegandoActual).$row.",0)";
+                            $formula = "=IFERROR(+".$coorTrabajado."/".$coorDevengado.",0)";
+                            $coorPorEfectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             $sheet->setCellValueByColumnAndRow($col, $row, $formula)
                                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($stylePorcentaje);
                             break;
@@ -389,7 +388,7 @@ class BonoConcentrado extends Personal
                                 ->getStyle($coorPorBono)->applyFromArray($stylePorcentaje);
                             break;
                         case 8:
-                            $formula = "=IFERROR(IF(AND(".$coorUtilidad.">0,".$coorPorUtilidad.">=90%),".$coorUtilidad."*(".$coorPorBono."),0), 0)";
+                            $formula = "=IFERROR(IF(AND(".$coorUtilidad.">0,".$coorPorEfectividad.">=90%),".$coorUtilidad."*(".$coorPorBono."),0), 0)";
                             $coorBonoPagar = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             array_push($acumuladoBonoPagar, $coorBonoPagar);
                             $sheet->setCellValueByColumnAndRow($col, $row, $formula)
