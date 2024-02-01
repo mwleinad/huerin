@@ -111,7 +111,7 @@ jQ(document).ready(function(){
             ? "generate_report_razon_social"
             : "generate_layout";
 
-           if(['layout-update-servicios','layout-recotizar-servicios','layout-inventario'].includes(tipo))
+           if(['layout-update-servicios','layout-recotizar-servicios','layout-reporte-recotizar','layout-inventario'].includes(tipo))
                type = tipo
 
            jQ.ajax({

@@ -15,6 +15,7 @@
             <option value="update_customer#inactivos">Actualizar clientes principales existentes inactivos</option>
             <option value="layout-update-servicios">Actualizar servicios existentes</option>
             <option value="layout-recotizar-servicios">Formato de recotización de servicios</option>
+            <option value="layout-reporte-recotizar">Reporte de recotización de servicios</option>
             <option value="layout-inventario">Formato de inventarios</option>
         </select>
         <div id="loadPrint" style="display: none">
