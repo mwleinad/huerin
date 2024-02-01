@@ -347,7 +347,7 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Horas invertidas');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'Numero empleado');
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo por hora');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Costo actual');
         $col++;
@@ -446,16 +446,19 @@ switch($_POST['type']){
             $sheet->setCellValueByColumnAndRow($col,$row,$value['costo']);
             $col++;
 
-            $coorHorasTrabajo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            $coorHorasInvertida = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col,$row,'');
             $col++;
 
-            $coorNumEmpleado = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+            //TODO encontrar sumatoria general del sueldo del gerente.
+
+
+            $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
             $sheet->setCellValueByColumnAndRow($col,$row, "");
             $col++;
 
             $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=({$coorHorasTrabajo} * 250) + ({$coorNumEmpleado} * 80)");
+            $sheet->setCellValueByColumnAndRow($col,$row, "=+({$coorHorasInvertida} * {$coorCostoPorHora})");
             $col++;
 
             $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -603,6 +606,283 @@ switch($_POST['type']){
         }
 
         $nameFile= "Formato inventario.xlsx";
+        if(!is_dir(DOC_ROOT."/sendFiles"))
+            mkdir(DOC_ROOT."/sendFiles", 765);
+        $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
+        echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/".$nameFile;
+        break;
+
+    case 'layout-reporte-recotizar':
+
+        $book =  new PHPExcel();
+        $global_config_style_cell['style_porcent']['borders'] = [];
+        $styleSimpleText = array_merge($global_config_style_cell['style_simple_text_whit_border'],array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_GENERAL,
+            ],
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
+        $styleTotalCliente = array_merge($styleSimpleText, array(
+                'font' => array(
+                    'bold' => true,
+                    'size' => 10,
+                    'name' => 'Aptos',
+                ),
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => 'BFBFBF'))
+            )
+        );
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('LayoutServicios');
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col,1,'id_contrato');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'id_servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'cliente');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Razon social');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Periodicidad');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Inicio operación');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Inicio facturación');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Supervisor del servicio');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Precio en cartera');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Horas invertidas');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo por hora');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad actual');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Factor');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo nuevo');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Costo nuevo final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Utilidad final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Utilidad final');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Incremento');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'% Incremento');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JH');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS JB');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'COMENTARIOS CH');
+
+
+        $servicios =  $servicio->EnumerateServiceForRecotizacion();
+
+
+        $clientesId = array_column($servicios, 'customerId');
+        $clientesId = array_values(array_unique($clientesId));
+
+        $clientes = [];
+        foreach ($clientesId as $clienteId) {
+            $currentCliente = current(array_filter($servicios, fn($elemento) => $elemento['customerId'] === $clienteId));
+            $cadCliente['customerId'] = $currentCliente['customerId'];
+            $cadCliente['nombre'] = $currentCliente['clienteName'];
+            $cadCliente['servicios'] =  array_filter($servicios, fn($elemento) => $elemento['customerId'] === $clienteId);
+            $clientes[] = $cadCliente;
+        }
+
+        $row=2;
+        foreach($clientes as $cliente) {
+            $rowInicioGrupoCliente = $row;
+            foreach ($cliente['servicios'] as $servicio) {
+                if ($servicio['is_primary'] != 1 || $servicio['status'] == 'bajaParcial')
+                    continue;
+
+                // ENCONTRAR LOS EL RESPONSABLE DE ATC
+                $current_permisos = json_decode($servicio['permiso_detallado'], true);
+                $current_permisos = !is_array($current_permisos) ? [] : $current_permisos;
+
+                $permisos_normalizado = [];
+                $permisos_normalizado2 = [];
+                foreach ($current_permisos as $current_permiso) {
+                    $permisos_normalizado[strtolower($current_permiso['departamento'])] = $current_permiso;
+                    $permisos_normalizado2[$current_permiso['departamento_id']] = $current_permiso;
+                }
+
+
+                //ENCONTRAR RESPONSABLES
+                $departamentoId = $servicio["departamentoId"];
+                $responsable = isset($permisos_normalizado2[$departamentoId]) > 0 ? $permisos_normalizado2[$departamentoId] : null;
+
+                $serv = [];
+                if ($responsable !== null) {
+                    $jefes = array();
+                    $personal->setPersonalId($responsable['personal_id']);
+                    $rolRes = $personal->InfoWhitRol();
+                    $personal->deepJefesByLevel($jefes, true);
+                    $serv["contador"] = $jefes[6];
+                    $serv['supervisor'] = $jefes[5];
+                    $serv['subgerente'] = $jefes[4];
+                    $serv['gerente'] = $jefes[3];
+                    $serv['jefeMax'] = $jefes[1];
+                    $serv[strtolower($rolRes["nameLevel"])] = $jefes['me'];
+                } else {
+                    $serv['auxiliar'] = 'No encontrado';
+                    $serv['contador'] = 'No encontrado';
+                    $serv['supervisor'] = 'No encontrado';
+                    $serv['subgerente'] = 'No encontrado';
+                    $serv['gerente'] = 'No encontrado';
+                }
+
+                $col = 0;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['contractId']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['servicioId']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $cliente['nombre']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['razonSocialName']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['nombreServicio']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['periodicidad']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioOperaciones']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioFactura']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $serv['gerente']);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $serv['supervisor'] ?? $serv['subgerente']);
+                $col++;
+
+                $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['costo']);
+                $col++;
+
+                $coorHorasInvertida = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, '');
+                $col++;
+
+                $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $col++;
+
+                $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=+({$coorHorasInvertida} * {$coorCostoPorHora})");
+                $col++;
+
+                $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=({$coorPrecioCartera} - {$coorPrecioActual})");
+                $col++;
+
+                $coorPorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, '=IFERROR((+' . $coorUtilidadActual . '/' . $coorPrecioCartera . '),0)')
+                    ->getStyle($coorPorUtilidadActual)->applyFromArray($global_config_style_cell['style_porcent']);;
+                $col++;
+
+                $coorFactor = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $col++;
+
+                $coorCostoNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorPrecioCartera*$coorFactor),0)");
+                $col++;
+
+                $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $formula = "=CEILING($coorCostoNuevo,100)";
+                $sheet->setCellValueByColumnAndRow($col, $row, $formula);
+                $col++;
+
+                $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioActual),0)");
+                $col++;
+
+                $coorPorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal/$coorCostoNuevo),0)")
+                    ->getStyle($coorPorUtilidadNuevo)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+
+                $coorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioCartera),0)");
+                $col++;
+
+                $coorPorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorIncremento/$coorPrecioCartera),0)")
+                    ->getStyle($coorPorIncremento)->applyFromArray($global_config_style_cell['style_porcent']);
+                $col++;
+
+                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $col++;
+
+                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, "");
+
+                $row++;
+            }
+            $rowFinGrupoCliente =  $row - 1;
+
+            for($ii=0; $ii <= 8; $ii++) {
+                $sheet->setCellValueByColumnAndRow($ii, $row,'')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
+            }
+            $sheet->setCellValueByColumnAndRow(9, $row,$cliente['nombre'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(9) . $row)->applyFromArray($styleTotalCliente);
+            $sheet->setCellValueByColumnAndRow(10, $row,'TOTALES')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(10) . $row)->applyFromArray($styleTotalCliente);
+
+            for($ii=11; $ii < 24; $ii++) {
+                $coorInicio = PHPExcel_Cell::stringFromColumnIndex($ii) . $rowInicioGrupoCliente;
+                $coorFin    = PHPExcel_Cell::stringFromColumnIndex($ii) . $rowFinGrupoCliente;
+                $formula = "=SUM({$coorInicio}:{$coorFin})";
+                $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
+            }
+            for($ii=25; $ii <= 27; $ii++) {
+                $sheet->setCellValueByColumnAndRow($ii, $row,'')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
+            }
+            $row++;
+
+
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet->getHighestDataColumn()); $col++)
+            {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile= "Reporte_de_recotizacion.xlsx";
         if(!is_dir(DOC_ROOT."/sendFiles"))
             mkdir(DOC_ROOT."/sendFiles", 765);
         $writer->save(DOC_ROOT."/sendFiles/".$nameFile);
