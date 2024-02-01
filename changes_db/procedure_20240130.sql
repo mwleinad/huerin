@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 31/01/2024 14:31:58
+ Date: 01/02/2024 12:57:53
 */
 
 SET NAMES utf8mb4;
@@ -512,7 +512,7 @@ BEGIN
 		(SELECT porcentaje from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as porcentaje
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
-		WHERE personal.active = '1' and roles.nivel > 1
+		WHERE roles.nivel > 1
 		ORDER BY roles.nivel ASC, departamento ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_personal_bono;

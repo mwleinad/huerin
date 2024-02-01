@@ -54,14 +54,16 @@ class BonoConcentrado extends Personal
         $this->Util()->DB()->setQuery($sql);
         $resultados  = $this->Util()->DB()->GetResult();
         $this->resultados = $resultados;
-        $directores =  array_filter($resultados, fn($item) => ($item['puesto'] === 'Director' && $item['departamento'] !== 'Socios'));
+        $directores =  array_filter($resultados, fn($item) => ($item['departamento'] !== 'Socios'));
         $new = [];
         foreach($directores as $director) {
+            $newLineal =  array_column($new, 'id');
+            if(in_array($director['id'], $newLineal))
+                continue;
 
             $new[] = $director;
             $subordinados =  $this->convertirToArbol($resultados, $director['id']);
-
-           $subordinadosCascada = $this->convertirToLineal($subordinados);
+            $subordinadosCascada = $this->convertirToLineal($subordinados);
             $new = array_merge($new, $subordinadosCascada);
         }
 
@@ -207,8 +209,9 @@ class BonoConcentrado extends Personal
         $darkInicio = 'A1';
         $darkFin = PHPExcel_Cell::stringFromColumnIndex(count($headersEstatico)-1).'3';
         $sheet->setCellValueByColumnAndRow(1, 2, 'REPORTE CONSOLIDADO DE BONOS CORRESPONDIENTE AL AÑO FISCAL '.$_POST['year']);
-        $sheet->setCellValueByColumnAndRow(1, 3, 'FECHA Y HORA DE CONSULTA: '.date('d/m/Y H:i'));
         $sheet->getStyle($darkInicio.":".$darkFin)->applyFromArray($styleHeaderDark);
+        $sheet->setCellValueByColumnAndRow(1, 3, 'FECHA Y HORA DE CONSULTA: '.date('d/m/Y H:i'))
+              ->getStyle('B3')->applyFromArray($styleHeaderDark);
         $col = 0;
         foreach ($headersEstatico  as $header) {
             $sheet->setCellValueByColumnAndRow($col, $row, $header)
