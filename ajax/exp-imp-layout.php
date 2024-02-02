@@ -738,48 +738,56 @@ switch($_POST['type']){
                 $departamentoId = $servicio["departamentoId"];
                 $responsable = isset($permisos_normalizado2[$departamentoId]) > 0 ? $permisos_normalizado2[$departamentoId] : null;
 
-                $serv = [];
-                if ($responsable !== null) {
-                    $jefes = array();
-                    $personal->setPersonalId($responsable['personal_id']);
-                    $rolRes = $personal->InfoWhitRol();
-                    $personal->deepJefesByLevel($jefes, true);
-                    $serv["contador"] = $jefes[6];
-                    $serv['supervisor'] = $jefes[5];
-                    $serv['subgerente'] = $jefes[4];
-                    $serv['gerente'] = $jefes[3];
-                    $serv['jefeMax'] = $jefes[1];
-                    $serv[strtolower($rolRes["nameLevel"])] = $jefes['me'];
-                } else {
-                    $serv['auxiliar'] = 'No encontrado';
-                    $serv['contador'] = 'No encontrado';
-                    $serv['supervisor'] = 'No encontrado';
-                    $serv['subgerente'] = 'No encontrado';
-                    $serv['gerente'] = 'No encontrado';
+                $sueldoAcumulado = 0;
+                $gerente = null;
+                $supervisor =  null;
+
+                if ($responsable) {
+                    $superiores = $personal->superiores($responsable['personal_id']);
+                    $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+                    $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+                }
+                $sueldoAcumulado = 0;
+                if(isset($gerente['id'])) {
+                    $inferiores        = $personal->inferiores($gerente['id']);
+                    $sueldosInferiores = array_column($inferiores, 'sueldo');
+                    $sueldoAcumulado   = array_sum($sueldosInferiores) + $gerente['sueldo'];
                 }
 
+                $coorRowInicial =
                 $col = 0;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['contractId']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['contractId'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['servicioId']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['servicioId'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $cliente['nombre']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $cliente['nombre'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['razonSocialName']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['razonSocialName'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['nombreServicio']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['nombreServicio'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['periodicidad']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['periodicidad'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioOperaciones']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioOperaciones'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioFactura']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioFactura'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre'])
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $serv['gerente']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? 'Sin gerente en linea de mando')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $serv['supervisor'] ?? $serv['subgerente']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
 
                 $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -790,8 +798,10 @@ switch($_POST['type']){
                 $sheet->setCellValueByColumnAndRow($col, $row, '');
                 $col++;
 
+                //TODO salario de los subordinados
+                $formula = "=+((((".$sueldoAcumulado."*(".PORCENTAJE_AUMENTO_SALARIO."/100))/30)/8)/6)";
                 $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $sheet->setCellValueByColumnAndRow($col, $row, $formula);
                 $col++;
 
                 $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -847,7 +857,7 @@ switch($_POST['type']){
 
                 $row++;
             }
-            $rowFinGrupoCliente =  $row - 1;
+            $rowFinGrupoCliente = count($cliente['servicios']) > 1 ? ($row - 1) : $row;
 
             for($ii=0; $ii <= 8; $ii++) {
                 $sheet->setCellValueByColumnAndRow($ii, $row,'')
@@ -870,9 +880,8 @@ switch($_POST['type']){
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
             }
             $row++;
-
-
         }
+
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
         $writer= PHPExcel_IOFactory::createWriter($book, 'Excel2007');

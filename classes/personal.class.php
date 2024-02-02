@@ -995,6 +995,59 @@ class Personal extends Main
         }
     }
 
+    function getListaPersonalPuestoAsc() {
+
+        $sql = "SELECT
+            personal.personalId id,
+            personal.name nombre,
+            personal.roleId rol_id,
+            personal.sueldo sueldo,
+            personal.jefeInmediato jefe,
+            departamentos.departamento,
+            (SELECT name FROM porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) puesto
+            FROM personal
+            INNER JOIN roles ON personal.roleId = roles.rolId
+            LEFT JOIN departamentos ON personal.departamentoId = departamentos.departamentoId               
+            ORDER BY roles.nivel ASC
+        ";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
+    }
+    function superiores($id) {
+
+        $resultados = $this->getListaPersonalPuestoAsc();
+        $deep = [];
+        $this->superioresRecursivo($resultados, $id, $deep);
+
+        return $deep;
+    }
+
+    function superioresRecursivo(array $nodos, $id, &$nested)
+    {
+        $current = current(array_filter($nodos, fn($item) => $item['id'] == $id));
+        array_push($nested, $current);
+        if($current['jefe']) {
+            $this->superioresRecursivo($nodos, $current['jefe'], $nested);
+        }
+    }
+
+    function inferiores($id) {
+        $resultados = $this->getListaPersonalPuestoAsc();
+        return $this->inferioresRecursivo($resultados, $id);
+    }
+
+    function inferioresRecursivo(array $nodos, $padre)
+    {
+        $nested = [];
+        foreach($nodos as $nodo) {
+            if($nodo['jefe'] == $padre)  {
+                $nested [] = $nodo;
+                $nested = array_merge($nested, $this->inferioresRecursivo($nodos,$nodo['id']));
+            }
+        }
+        return $nested;
+    }
+
     public function changePassword()
     {
         $sendmail = new SendMail;
