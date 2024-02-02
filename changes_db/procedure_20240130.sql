@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 01/02/2024 12:57:53
+ Date: 01/02/2024 21:31:07
 */
 
 SET NAMES utf8mb4;
@@ -31,8 +31,10 @@ BEGIN
  
  DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
  
+ DECLARE vTipoServicioId BIGINT DEFAULT 0;
  DECLARE vTotalRow BIGINT DEFAULT 0;
  DECLARE vCurrentRow BIGINT DEFAULT 0;
+ DECLARE vTotalStep BIGINT DEFAULT 0;
 
  DECLARE vAcumulado	INT DEFAULT 0;
  DECLARE vAcumularEventual	INT DEFAULT 0;
@@ -43,7 +45,8 @@ BEGIN
 				instanciaServicio.costoWorkflow costo,
 			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
 			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
-			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual,
+			servicio.tipoServicioId
 			FROM instanciaServicio
 			INNER JOIN(
 				SELECT
@@ -99,9 +102,19 @@ BEGIN
 	END IF; 
 	
 	itera_instancia: REPEAT
-		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual,vTipoServicioId;
 		
-		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+		## validar si tiene pasos y tareas vigentes los servicios
+		SELECT count(task.taskId) FROM task 
+		INNER JOIN step ON task.stepId =step.stepId
+		WHERE step.servicioId = vTipoServicioId
+		AND (IF(step.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(step.effectiveDate,'%Y-%m')),1)) = 1
+		AND	(IF(step.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(step.finalEffectiveDate,'%Y-%m')),1)) = 1
+		AND (IF(task.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(task.effectiveDate,'%Y-%d')),1)) = 1
+		AND	(IF(task.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(task.finalEffectiveDate,'%Y-%m')),1)) = 1
+		INTO vTotalStep;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1 AND vTotalStep > 0) THEN
 			SET vTotal = vTotal+vCosto;
 		END IF;	
 		
@@ -129,8 +142,10 @@ BEGIN
  
  DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
  
+ DECLARE vTipoServicioId BIGINT DEFAULT 0;
  DECLARE vTotalRow BIGINT DEFAULT 0;
  DECLARE vCurrentRow BIGINT DEFAULT 0;
+ DECLARE vTotalStep BIGINT DEFAULT 0;
 
  DECLARE vAcumulado	INT DEFAULT 0;
  DECLARE vAcumularEventual	INT DEFAULT 0;
@@ -139,9 +154,10 @@ BEGIN
  DECLARE cursor_instancias CURSOR FOR 
 			SELECT
 				instanciaServicio.costoWorkflow costo,
-			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
-			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
-			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+				IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
+				IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
+				IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual,
+				servicio.tipoServicioId
 			FROM instanciaServicio
 			INNER JOIN(
 				SELECT
@@ -198,9 +214,19 @@ BEGIN
 	END IF;
 	
 	itera_instancia: REPEAT
-		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual,vTipoServicioId;
 		
-		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+		## validar si tiene pasos y tareas vigentes los servicios
+		SELECT count(task.taskId) FROM task 
+		INNER JOIN step ON task.stepId =step.stepId
+		WHERE step.servicioId = vTipoServicioId
+		AND (IF(step.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(step.effectiveDate,'%Y-%m')),1)) = 1
+		AND	(IF(step.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(step.finalEffectiveDate,'%Y-%m')),1)) = 1
+		AND (IF(task.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(task.effectiveDate,'%Y-%d')),1)) = 1
+		AND	(IF(task.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(task.finalEffectiveDate,'%Y-%m')),1)) = 1
+		INTO vTotalStep;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1 AND vTotalStep > 0) THEN
 			SET vTotal = vTotal+vCosto;
 		END IF;	
 		
@@ -228,8 +254,10 @@ BEGIN
  
  DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
  
+ DECLARE vTipoServicioId BIGINT DEFAULT 0;
  DECLARE vTotalRow BIGINT DEFAULT 0;
  DECLARE vCurrentRow BIGINT DEFAULT 0;
+ DECLARE vTotalStep BIGINT DEFAULT 0;
 
  DECLARE vAcumulado	INT DEFAULT 0;
  DECLARE vAcumularEventual	INT DEFAULT 0;
@@ -240,7 +268,8 @@ BEGIN
 				instanciaServicio.costoWorkflow costo,
 			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
 			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
-			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual,
+			servicio.tipoServicioId
 			FROM instanciaServicio
 			INNER JOIN(
 				SELECT
@@ -297,9 +326,19 @@ BEGIN
 	END IF;
 	
 	itera_instancia: REPEAT
-		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual,vTipoServicioId;
 		
-		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+		## validar si tiene pasos y tareas vigentes los servicios
+		SELECT count(task.taskId) FROM task 
+		INNER JOIN step ON task.stepId =step.stepId
+		WHERE step.servicioId = vTipoServicioId
+		AND (IF(step.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(step.effectiveDate,'%Y-%m')),1)) = 1
+		AND	(IF(step.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(step.finalEffectiveDate,'%Y-%m')),1)) = 1
+		AND (IF(task.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(task.effectiveDate,'%Y-%d')),1)) = 1
+		AND	(IF(task.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(task.finalEffectiveDate,'%Y-%m')),1)) = 1
+		INTO vTotalStep;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1 AND vTotalStep > 0) THEN
 			SET vTotal = vTotal+vCosto;
 		END IF;	
 		
@@ -327,8 +366,10 @@ BEGIN
  
  DECLARE vCosto	DECIMAL(10,2) DEFAULT 0;
  
+ DECLARE vTipoServicioId BIGINT DEFAULT 0;
  DECLARE vTotalRow BIGINT DEFAULT 0;
  DECLARE vCurrentRow BIGINT DEFAULT 0;
+ DECLARE vTotalStep BIGINT DEFAULT 0;
 
  DECLARE vAcumulado	INT DEFAULT 0;
  DECLARE vAcumularEventual	INT DEFAULT 0;
@@ -339,7 +380,8 @@ BEGIN
 				instanciaServicio.costoWorkflow costo,
 			IF(servicio.`status` = 'bajaParcial',DATE_FORMAT(instanciaServicio.date,'%Y-%m') <= DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m'),1) acumular,
 			IF(servicio.`uniqueInvoice` = 1,DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioFactura,'%Y-%m'),1) acumularUnicaOcasion,
-			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual
+			IF(servicio.`periodicidad` = 'Eventual',DATE_FORMAT(instanciaServicio.date,'%Y-%m') = DATE_FORMAT(servicio.inicioOperaciones,'%Y-%m'),1) acumularEventual,
+			servicio.tipoServicioId
 			FROM instanciaServicio
 			INNER JOIN(
 				SELECT
@@ -397,9 +439,19 @@ BEGIN
 	END IF;
 	
 	itera_instancia: REPEAT
-		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual;
+		FETCH cursor_instancias INTO vCosto,vAcumulado,vAcumularUnicaOcasion,vAcumularEventual,vTipoServicioId;
 		
-		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1) THEN
+		## validar si tiene pasos y tareas vigentes los servicios
+		SELECT count(task.taskId) FROM task 
+		INNER JOIN step ON task.stepId =step.stepId
+		WHERE step.servicioId = vTipoServicioId
+		AND (IF(step.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(step.effectiveDate,'%Y-%m')),1)) = 1
+		AND	(IF(step.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(step.finalEffectiveDate,'%Y-%m')),1)) = 1
+		AND (IF(task.effectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') >= DATE_FORMAT(task.effectiveDate,'%Y-%d')),1)) = 1
+		AND	(IF(task.finalEffectiveDate IS NOT NULL,(DATE_FORMAT(STR_TO_DATE(CONCAT_WS('-',pAnio,pMes),'%Y-%m'),'%Y-%m') <= DATE_FORMAT(task.finalEffectiveDate,'%Y-%m')),1)) = 1
+		INTO vTotalStep;
+		
+		IF(vAcumulado = 1 AND vAcumularUnicaOcasion =1 AND vAcumularEventual = 1 AND vTotalStep > 0) THEN
 			SET vTotal = vTotal+vCosto;
 		END IF;	
 		
