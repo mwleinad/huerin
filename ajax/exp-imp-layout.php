@@ -735,6 +735,10 @@ switch($_POST['type']){
         $row=2;
         foreach($clientes as $cliente) {
             $rowInicioGrupoCliente = $row;
+            $serviciosActivos = array_filter($cliente['servicios'] ?? [], fn($item) => (in_array($item['status'], ['Activo','activo']) && $item['is_primary'] == 1));
+            if(count($serviciosActivos) <= 0)
+                continue;
+
             foreach ($cliente['servicios'] as $servicio) {
                 if ($servicio['is_primary'] != 1 || $servicio['status'] == 'bajaParcial')
                     continue;
@@ -882,6 +886,7 @@ switch($_POST['type']){
 
                 $row++;
             }
+
             $rowFinGrupoCliente = count($cliente['servicios']) > 1 ? ($row - 1) : $row;
 
             for($ii=0; $ii <= 8; $ii++) {
