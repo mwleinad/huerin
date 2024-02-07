@@ -630,7 +630,24 @@ switch($_POST['type']){
                 )
             )
         ));
+        $styleNumberDecimal = array_merge($global_config_style_cell['style_simple_text_whit_border'],array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            ],
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
         $styleTotalCliente = array_merge($styleSimpleText, array(
+                'numberformat' => [
+                    'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                ],
                 'font' => array(
                     'bold' => true,
                     'size' => 10,
@@ -791,7 +808,8 @@ switch($_POST['type']){
                 $col++;
 
                 $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['costo']);
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['costo'])
+                ->getStyle($coorPrecioCartera)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorHorasInvertida = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -801,37 +819,43 @@ switch($_POST['type']){
                 //TODO salario de los subordinados
                 $formula = "=+((((".$sueldoAcumulado."*(".PORCENTAJE_AUMENTO_SALARIO."/100))/30)/8)/6)";
                 $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, $formula);
+                $sheet->setCellValueByColumnAndRow($col, $row, $formula)
+                    ->getStyle($coorCostoPorHora)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "=+({$coorHorasInvertida} * {$coorCostoPorHora})");
+                $sheet->setCellValueByColumnAndRow($col, $row, "=+({$coorHorasInvertida} * {$coorCostoPorHora})")
+                    ->getStyle($coorPrecioActual)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "=({$coorPrecioCartera} - {$coorPrecioActual})");
+                $sheet->setCellValueByColumnAndRow($col, $row, "=({$coorPrecioCartera} - {$coorPrecioActual})")
+                    ->getStyle($coorUtilidadActual)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorPorUtilidadActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $sheet->setCellValueByColumnAndRow($col, $row, '=IFERROR((+' . $coorUtilidadActual . '/' . $coorPrecioCartera . '),0)')
-                    ->getStyle($coorPorUtilidadActual)->applyFromArray($global_config_style_cell['style_porcent']);;
+                    ->getStyle($coorPorUtilidadActual)->applyFromArray($global_config_style_cell['style_porcent']);
                 $col++;
 
                 $coorFactor = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "");
+                $sheet->setCellValueByColumnAndRow($col, $row, 1.05);
                 $col++;
 
                 $coorCostoNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorPrecioCartera*$coorFactor),0)");
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorPrecioCartera*$coorFactor),0)")
+                    ->getStyle($coorCostoNuevo)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $formula = "=CEILING($coorCostoNuevo,100)";
-                $sheet->setCellValueByColumnAndRow($col, $row, $formula);
+                $sheet->setCellValueByColumnAndRow($col, $row, $formula)
+                    ->getStyle($coorCostoNuevoFinal)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioActual),0)");
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioActual),0)")
+                    ->getStyle($coorUtilidadNuevo)->applyFromArray($styleNumberDecimal);
                 $col++;
 
                 $coorPorUtilidadNuevo = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -840,7 +864,8 @@ switch($_POST['type']){
                 $col++;
 
                 $coorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioCartera),0)");
+                $sheet->setCellValueByColumnAndRow($col, $row, "=IFERROR((+$coorCostoNuevoFinal-$coorPrecioCartera),0)")
+                    ->getStyle($coorIncremento)->applyFromArray($styleNumberDecimal);;
                 $col++;
 
                 $coorPorIncremento = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
