@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 01/02/2024 21:31:07
+ Date: 07/02/2024 15:07:51
 */
 
 SET NAMES utf8mb4;
@@ -550,6 +550,7 @@ BEGIN
 	  DECLARE vFechaIngreso VARCHAR(255);
 	  DECLARE vSueldo decimal(20,2);
 		DECLARE vPorcentaje decimal(20,2);
+		DECLARE vMontoBonoEfectivo decimal(20,2);
 	
 		
 		DECLARE cursor_empleados CURSOR FOR SELECT 
@@ -561,7 +562,8 @@ BEGIN
 		(SELECT departamento from departamentos WHERE departamentoId = personal.departamentoId LIMIT 1) as departamento,
 		personal.fechaIngreso,
 		personal.sueldo,
-		(SELECT porcentaje from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as porcentaje
+		(SELECT porcentaje from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as porcentaje,
+		(SELECT monto from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as monto_bono_efectivo
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
 		WHERE roles.nivel > 1
@@ -578,6 +580,7 @@ BEGIN
 			fecha_ingreso VARCHAR(255) NULL DEFAULT NULL, 
 			sueldo decimal(20,2) DEFAULT 0, 
 			porcentaje decimal(20,2) DEFAULT 0, 
+			monto_bono_efectivo decimal(20,2) DEFAULT 0, 
 			enero decimal(20,2),
 			febrero decimal(20,2),
 			marzo decimal(20,2),
@@ -608,7 +611,7 @@ BEGIN
 		SELECT FOUND_ROWS() INTO vTotalRow; 
 		
 			itera_empleado: REPEAT
-				FETCH cursor_empleados INTO vPersonalId,VNombre,vJefe,vPuesto,vDepartamentoId,vDepartamento,vFechaIngreso,vSueldo,vPorcentaje;
+				FETCH cursor_empleados INTO vPersonalId,VNombre,vJefe,vPuesto,vDepartamentoId,vDepartamento,vFechaIngreso,vSueldo,vPorcentaje,vMontoBonoEfectivo;
 				
 				IF (vFechaIngreso = '' && vFechaIngreso = '0000-00-00') THEN
 					SET vFechaIngreso =  NULL;
@@ -623,6 +626,7 @@ BEGIN
 					fecha_ingreso,
 					sueldo,
 					porcentaje,
+					monto_bono_efectivo,
 					enero,
 					febrero,
 					marzo,
@@ -657,6 +661,7 @@ BEGIN
 					vFechaIngreso,
 					vSueldo,
 					vPorcentaje,
+					vMontoBonoEfectivo,
 					get_total_acumulado_devengado(vPersonalId,pAnio,1,0,pDepartamentoPropio),
 					get_total_acumulado_devengado(vPersonalId,pAnio,2,0,pDepartamentoPropio),
 					get_total_acumulado_devengado(vPersonalId,pAnio,3,0,pDepartamentoPropio),
