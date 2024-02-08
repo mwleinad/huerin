@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 08/02/2024 11:54:42
+ Date: 08/02/2024 12:27:26
 */
 
 SET NAMES utf8mb4;
@@ -567,7 +567,7 @@ BEGIN
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
 		WHERE roles.nivel > 1
-		ORDER BY roles.nivel ASC, departamento ASC, personal.name ASC;
+		ORDER BY roles.nivel ASC, departamento ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_personal_bono;
 		
