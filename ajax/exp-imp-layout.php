@@ -928,11 +928,6 @@ switch($_POST['type']){
                 $coorTotalIncremento = PHPExcel_Cell::stringFromColumnIndex(22) . $row;
 
                 switch($ii) {
-                    case 15:
-                        $formula =  "=IFERROR(".$coorTotalPrecioCartera."-".$coorTotalCostoActual.",0)";
-                        $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;
                     case 16:
                         $formula =  "=IFERROR(".$coorTotalUtilidadActual."/".$coorTotalPrecioCartera.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
@@ -943,7 +938,7 @@ switch($_POST['type']){
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
                         break;
-                    case 18:
+                    /*case 18:
                         $formula = $formula =  "=IFERROR(".$coorTotalPrecioCartera."*".$coorTotalFactor.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
@@ -957,17 +952,17 @@ switch($_POST['type']){
                         $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."-".$coorTotalCostoActual.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;
+                        break;*/
                     case 21:
                         $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."/".$coorTotalUtilidadFinal.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalClientePorcentaje);
                         break;
-                    case 22:
+                   /* case 22:
                         $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."-".$coorTotalPrecioCartera.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;
+                        break;*/
                     case 23:
                         $formula =  "=IFERROR(".$coorTotalIncremento."/".$coorTotalPrecioCartera.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
