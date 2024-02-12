@@ -129,7 +129,7 @@
             {/if}
             {if in_array(244,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Tipo de Usuario:</div>
+                    <div style="width:30%;float:left">Nombre del puesto:</div>
                     <select name="tipoPersonal" id="tipoPersonal" class="smallInput medium">
                         <option value="">Seleccionar...</option>
                         {foreach from=$roles item=item key=key}
