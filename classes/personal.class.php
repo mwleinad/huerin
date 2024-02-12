@@ -210,7 +210,7 @@ class Personal extends Main
 
     public function setTipoPersonal($value)
     {
-        $this->Util()->ValidateString($value, $max_chars = 60, $minChars = 0, "Tipo Personal");
+        $this->Util()->ValidateString($value, $max_chars = 60, $minChars = 0, "Nombre del puesto");
         $this->tipoPersonal = $value;
     }
 
