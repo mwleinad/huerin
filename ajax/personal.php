@@ -35,6 +35,9 @@ switch ($_POST["type"]) {
             $personal->setSueldo($_POST['sueldo']);
         if (isset($_POST["phone"]))
             $personal->setPhone($_POST['phone']);
+        if (isset($_POST["ext"]))
+            $personal->setExt($_POST['ext']);
+
         if (isset($_POST["celphone"]))
             $personal->setCelphone($_POST['celphone']);
         if (isset($_POST["email"]))
@@ -57,6 +60,10 @@ switch ($_POST["type"]) {
         }
         if (isset($_POST["grupo"]))
             $personal->setGrupo($_POST['grupo']);
+        if (isset($_POST["mail_grupo"]))
+            $personal->setMailGrupo($_POST['mail_grupo']);
+        if (isset($_POST["lista_distribucion"]))
+            $personal->setListaDistribucion($_POST['lista_distribucion']);
         if (isset($_POST["userComputadora"]))
             $personal->setUserComputadora($_POST['userComputadora']);
         if (isset($_POST["passwordComputadora"]))
@@ -88,6 +95,9 @@ switch ($_POST["type"]) {
 
         if (isset($_POST["numberAccountsAllowed"]))
             $personal->setNumberAccountsAllowed($_POST['numberAccountsAllowed']);
+
+        if (isset($_POST["cuenta_inhouse"]))
+            $personal->setCuentaInhouse($_POST['cuenta_inhouse']);
 
         if (!$personal->Save()) {
             echo "fail[#]";
@@ -176,8 +186,13 @@ switch ($_POST["type"]) {
             $personal->setSueldo($_POST['sueldo']);
         if (isset($_POST["phone"]))
             $personal->setPhone($_POST['phone']);
+
+        if (isset($_POST["ext"]))
+            $personal->setExt($_POST['ext']);
+
         if (isset($_POST["celphone"]))
             $personal->setCelphone($_POST['celphone']);
+
         if (isset($_POST["email"]))
             $personal->setEmail($_POST['email']);
         if (isset($_POST["skype"]))
@@ -196,6 +211,13 @@ switch ($_POST["type"]) {
         }
         if (isset($_POST["grupo"]))
             $personal->setGrupo($_POST['grupo']);
+
+        if (isset($_POST["mail_grupo"]))
+            $personal->setMailGrupo($_POST['mail_grupo']);
+
+        if (isset($_POST["lista_distribucion"]))
+            $personal->setListaDistribucion($_POST['lista_distribucion']);
+
         if (isset($_POST["userComputadora"]))
             $personal->setUserComputadora($_POST['userComputadora']);
         if (isset($_POST["passwordComputadora"]))
@@ -223,6 +245,10 @@ switch ($_POST["type"]) {
 
         if (isset($_POST["numberAccountsAllowed"]))
             $personal->setNumberAccountsAllowed($_POST['numberAccountsAllowed']);
+
+        if (isset($_POST["cuenta_inhouse"]))
+            $personal->setCuentaInhouse($_POST['cuenta_inhouse']);
+
 
         if ($_POST['active'])
             $personal->setActive(1);

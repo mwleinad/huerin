@@ -22,7 +22,8 @@ switch($_POST["type"])
 		$data['nameForm'] = "addCustomerForm";
 		$empleados = $personal->Enumerate();
 		$smarty->assign("data", $data);
-		$smarty->assign("partners", $catalogue->ListAssociated());
+		//$smarty->assign("partners", $catalogue->ListAssociated());
+		$smarty->assign("clasificaciones", $catalogue->EnumerateCatalogue('tipo_clasificacion_cliente'));
 		$smarty->assign("empleados", $empleados);
 		$smarty->assign("tipo", $_POST["tipo"]);
 		$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
@@ -48,6 +49,7 @@ switch($_POST["type"])
 					$customer->setNameReferrer($_POST['name_referrer']);
 
 			}
+			$customer->setTipoClasificacionCliente($_POST['tipo_clasificacion_cliente_id']);
 			echo $customer->Save() ? 'ok[#]' : 'fail[#]';
 			$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 			echo "[#]";
@@ -75,7 +77,8 @@ switch($_POST["type"])
 
 			$smarty->assign("valur", $_POST["valur"]);
 			$smarty->assign("tipo", $_POST["tipo"]);
-			$smarty->assign("partners", $catalogue->ListAssociated());
+			//$smarty->assign("partners", $catalogue->ListAssociated());
+			$smarty->assign("clasificaciones", $catalogue->EnumerateCatalogue('tipo_clasificacion_cliente'));
 			$smarty->assign("post", $info);
 			$smarty->assign("data", $data);
 			$smarty->display(DOC_ROOT.'/templates/boxes/general-popup.tpl');
@@ -102,6 +105,8 @@ switch($_POST["type"])
 					$customer->setNameReferrer($_POST['name_referrer']);
 
 			}
+
+		    $customer->setTipoClasificacionCliente($_POST['tipo_clasificacion_cliente_id']);
 
 			$info = $customer->Info();
 			$_POST['password'] != $info["password"] && $_POST["password"] != ""

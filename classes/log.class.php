@@ -320,8 +320,10 @@ class Log extends Util
         }
         $encargados = array_merge($encargados,$correosJefes);
 
-        if(!SEND_LOG_MOD)
+        if(!SEND_LOG_MOD) {
             $encargados = [];
+            $encargados['hbcruz@braunhuerin.com.mx'] = 'Dev Local';
+        }
 
         $encargados =  $this->verificarIgnorados($encargados);
 
@@ -442,6 +444,12 @@ class Log extends Util
                          $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion WHERE id='".$afterUnserialize[$key]."' ");
                          $valorAfter = $this->Util()->DB()->GetSingle();
                          break;
+                     case 'tipo_clasificacion_cliente_id':
+                         $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion_cliente WHERE id='".$beforeUnserialize[$key]."' ");
+                         $valorBefore = $this->Util()->DB()->GetSingle();
+                         $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion_cliente WHERE id='".$afterUnserialize[$key]."' ");
+                         $valorAfter = $this->Util()->DB()->GetSingle();
+                         break;
                      case 'permisos':
                          $this->Util()->DB()->setQuery("SELECT departamentoId, departamento FROM departamentos where lower(departamento) not like '%mensajeria%' order by departamento ASC ");
                          $arrayDeps = $this->Util()->DB()->GetResult();
@@ -548,6 +556,10 @@ class Log extends Util
                 break;
                 case 'idTipoClasificacion':
                     $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion WHERE id='".$allElements[$key]."' ");
+                    $valorBefore = $this->Util()->DB()->GetSingle();
+                    break;
+                case 'tipo_clasificacion_cliente_id':
+                    $this->Util()->DB()->setQuery("SELECT nombre FROM tipo_clasificacion_cliente WHERE id='".$allElements[$key]."' ");
                     $valorBefore = $this->Util()->DB()->GetSingle();
                     break;
                 case 'tipoServicioId':
@@ -739,8 +751,10 @@ class Log extends Util
         $output =  $dompdf->output();
         file_put_contents(DOC_ROOT."/sendFiles/$fileName", $output);
 
-        if(!SEND_LOG_MOD)
+        if(!SEND_LOG_MOD) {
             $emails = [];
+            $emails['hbcruz@braunhuerin.com.mx'] = "Dev Local";
+        }
 
         $emails =  $this->verificarIgnorados($emails);
 
@@ -748,7 +762,7 @@ class Log extends Util
         $file = DOC_ROOT."/sendFiles/$fileName";
         $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $send->PrepareMultipleNotice($subject,$body,$emails,"",$file,$fileName,"","","noreply@braunhuerin.com.mx","Administrador plataforma",true);
-        @unlink($file);
+       // @unlink($file);
     }
     function sendLogUpdateServicios($cambios = []){
 
@@ -896,6 +910,7 @@ class Log extends Util
         $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
         $body ="<p>Se han realizado cambios masivos por el colaborador ".$current_user['name'].". </p>";
         $body .="<p>En el archivo adjunto encontrara la informacion detallada. </p>";
+
         if(is_file($file1)) {
             $sendmail = new SendMail();
             $sendmail->PrepareMultipleNotice($subject,$body,[],"",$file1,$fileName, "", "",'sistema@braunhuerin.com.mx','Administrador de plataforma',true);

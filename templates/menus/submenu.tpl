@@ -182,8 +182,10 @@
                     <span>Bitacoras</span></a></li>
                 {/if}
                 {if in_array(178,$permissions) || $User.isRoot}
-                    <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if} title="Reporte de Organigrama" target="_blank">
-                    <span>Reporte Organigrama</span></a></li>
+                    <li><a href="{$WEB_ROOT}/organigrama" {if $page == "organigrama"}class="current"{/if} title="Organigrama" target="_blank">
+                            <span>Organigrama</span></a></li>
+                    <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if} title="Arbol de mando" target="_blank">
+                    <span>Arbol de mando</span></a></li>
                 {/if}
                 {if in_array(249,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-exp-employe" {if $page == "report-exp-employe"}class="current"{/if} title="Reporte de Expedientes de Colaboradores" target="_blank">

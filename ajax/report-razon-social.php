@@ -2,6 +2,7 @@
 include_once('../init.php');
 include_once('../config.php');
 include_once(DOC_ROOT . '/libraries.php');
+$catalogoGeneral = $catalogue;
 
 session_start();
 include_once(DOC_ROOT . '/libs/excel/PHPExcel.php');
@@ -48,6 +49,9 @@ switch ($_POST['type']) {
             }
 
             switch($head['field_excel']){
+               case "clasificacionCliente":
+                    $colClasificacionCliente = $lastCol;
+               break;
                case "nombreRegimen":
                  $colRegimen = $lastCol;
                break;
@@ -71,6 +75,9 @@ switch ($_POST['type']) {
                break;
                case "qualification":
                 $colQualification = $lastCol;
+               break;
+               case "tipoClasificacion":
+                $colClasificacion = $lastCol;
                break;
             }
             $margin_left_comment +=150;
@@ -172,6 +179,29 @@ switch ($_POST['type']) {
             }
             $currentRow++;
         }
+
+        //range clasificacion clientes
+        $current_col_catalogue++;
+        $clasificacionesCliente = $catalogoGeneral->EnumerateCatalogue('tipo_clasificacion_cliente');
+
+        $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "CLASIFICACIÓNES CLIENTE");
+        $current_row_catalogue = 2;
+        $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+        foreach($clasificacionesCliente as $clasificacionCliente) {
+            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $clasificacionCliente['nombre']);
+            $current_row_catalogue++;
+        }
+        $current_end_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
+        $book->addNamedRange(
+            new PHPExcel_NamedRange(
+                "clasificaciones_cliente",
+                $catalogue,
+                "$current_init_range:$current_end_range"
+            )
+        );
+
+
+
         if($_POST['type_report'] !== 'update_customer') {
             //range regimenes
             $current_col_catalogue++;
@@ -287,25 +317,26 @@ switch ($_POST['type']) {
                     "$current_init_range:$current_end_range"
                 )
             );
-            // calificaciones
-            $calificaciones = ['A', 'B', 'C'];
+            // CLASIFICACIONES
+
             $current_col_catalogue++;
-            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "CALIFICACIONES");
+            $clasificaciones = $catalogoGeneral->EnumerateCatalogue('tipo_clasificacion');
+            $catalogue->setCellValueByColumnAndRow($current_col_catalogue, 1, "CLASIFICACIONES");
             $current_row_catalogue = 2;
             $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
-            foreach($calificaciones as $calificacion) {
-                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $calificacion);
+            foreach($clasificaciones as $clasificacion) {
+                $catalogue->setCellValueByColumnAndRow($current_col_catalogue, $current_row_catalogue, $clasificacion['nombre']);
                 $current_row_catalogue++;
             }
             $current_end_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
             $book->addNamedRange(
                 new PHPExcel_NamedRange(
-                    "calificaciones",
+                    "clasificaciones",
                     $catalogue,
                     "$current_init_range:$current_end_range"
                 )
             );
-            //end calificaciones
+            //end CLASIFICACIONES
             foreach ($data_range_resp as $data_resp) {
                 $init = $data_resp['col_string'] . "2";
                 $end = $data_resp['col_string'] . $currentRow;
@@ -325,6 +356,7 @@ switch ($_POST['type']) {
                 $sheet->setDataValidation("$init:$end", $objList);
                 unset($objList);
             }
+
             if($colRegimen!="") {
                 $init = PHPExcel_Cell::stringFromColumnIndex($colRegimen) . "2";
                 $end = PHPExcel_Cell::stringFromColumnIndex($colRegimen) . $currentRow;
@@ -436,6 +468,25 @@ switch ($_POST['type']) {
             }
         }
 
+        if($colClasificacionCliente!="") {
+            $init = PHPExcel_Cell::stringFromColumnIndex($colClasificacionCliente) . "2";
+            $end = PHPExcel_Cell::stringFromColumnIndex($colClasificacionCliente) . $currentRow;
+            $objList = $sheet->getCell($init)->getDataValidation();
+            $objList->setType(PHPExcel_Cell_DataValidation::TYPE_LIST);
+            $objList->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION);
+            $objList->setAllowBlank(false);
+            $objList->setShowInputMessage(true);
+            $objList->setShowErrorMessage(true);
+            $objList->setShowDropDown(true);
+            $objList->setErrorTitle('Error!!');
+            $objList->setError('Clasificación cliente seleccionado no se encuentra en la lista.');
+            $objList->setPromptTitle('Seleccione una clasificación cliente de la lista');
+            $objList->setPrompt('Seleccione una clasificación cliente de la lista.');
+            $objList->setFormula1("=clasificaciones_cliente"); //note this!
+            $sheet->setDataValidation("$init:$end", $objList);
+            unset($objList);
+        }
+
         if($colNoFactura!=""){
             $init = PHPExcel_Cell::stringFromColumnIndex($colNoFactura) . "2";
             $end = PHPExcel_Cell::stringFromColumnIndex($colNoFactura) . $currentRow;
@@ -454,9 +505,10 @@ switch ($_POST['type']) {
             $sheet->setDataValidation("$init:$end", $objList);
             unset($objList);
         }
-        if($colQualification!=""){
-            $init = PHPExcel_Cell::stringFromColumnIndex($colQualification) . "2";
-            $end = PHPExcel_Cell::stringFromColumnIndex($colQualification) . $currentRow;
+
+        if($colClasificacion!=""){
+            $init = PHPExcel_Cell::stringFromColumnIndex($colClasificacion) . "2";
+            $end = PHPExcel_Cell::stringFromColumnIndex($colClasificacion) . $currentRow;
             $objList = $sheet->getCell($init)->getDataValidation();
             $objList->setType(PHPExcel_Cell_DataValidation::TYPE_LIST);
             $objList->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION);
@@ -468,10 +520,11 @@ switch ($_POST['type']) {
             $objList->setError('Valor seleccionado no se encuentra en la lista.');
             $objList->setPromptTitle('Seleccione un valor de la lista');
             $objList->setPrompt('Seleccione un valor de la lista.');
-            $objList->setFormula1("=calificaciones"); //note this!
+            $objList->setFormula1("=clasificaciones"); //note this!
             $sheet->setDataValidation("$init:$end", $objList);
             unset($objList);
         }
+
         if( $_POST['type_report'] === 'update_customer' ||  $_POST['type_report'] === 'update_contract') {
             $sheet->getCommentByColumnAndRow(0, 2)
                 ->setVisible(true)

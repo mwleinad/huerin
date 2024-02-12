@@ -22,6 +22,12 @@
                            size="50"/>
                     <hr/>
                 </div>
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:100%;float:left">Extensión:</div>
+                    <input style="width: 20%!important;" class="smallInput medium" name="ext" id="ext" type="text" value="{$post.ext}"
+                           size="50"/>
+                    <hr/>
+                </div>
             {/if}
             {if in_array(232,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
@@ -88,14 +94,7 @@
                     <hr/>
                 </div>
             {/if}
-            {if in_array(247,$permissions)|| $User.isRoot}
-                <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Grupo de Trabajo:</div>
-                    <input class="smallInput medium" name="grupo" id="grupo" type="text" value="{$post.grupo}"
-                           size="50"/>
-                    <hr/>
-                </div>
-            {/if}
+
             {if in_array(278,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Usuario Computadora</div>
@@ -142,13 +141,31 @@
             {/if}
             {if in_array(245,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left" id="departamentoDiv">
-                    <div style="width:30%;float:left">Departamento:</div>
+                    <div style="width:30%;float:left">Área:</div>
                     <select name="departamentoId" id="departamentoId" class="smallInput medium">
                         <option value="0">Seleccione...</option>
                         {foreach from=$departamentos item=departamento}
                             <option value="{$departamento.departamentoId}" {if $departamento.departamentoId == $post.departamentoId} selected="selected"{/if}>{$departamento.departamento}</option>
                         {/foreach}
                     </select>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(247,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Departamento:</div>
+                    <input class="smallInput medium" name="grupo" id="grupo" type="text" value="{$post.grupo}"
+                           size="50"/>
+                    <hr/>
+                </div>
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Mail Grupo:</div>
+                    <input class="smallInput medium" name="mail_grupo" id="mail_grupo" type="text" value="{$post.mailGrupo}"/>
+                    <hr/>
+                </div>
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Listas distribución:</div>
+                    <input class="smallInput medium" name="lista_distribucion" id="lista_distribucion" type="text" value="{$post.listaDistribucion}"/>
                     <hr/>
                 </div>
             {/if}
@@ -164,16 +181,18 @@
                     <hr/>
                 </div>
             {/if}
-            <div class="formLine" style="width:100%; text-align:left">
-                <div style="width:30%;float:left">Activo:</div>
-                <input name="active" id="active" type="checkbox" {if $post.active eq '1' || !$post}checked{/if} value="1""/>
-                <hr/>
-            </div>
+
             {if in_array(283, $permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Numero de empresas por administrar:</div>
+                    <div style="width:40%;float:left">Numero de empresas por administrar:</div>
                     <input style="width: 20%!important;" class="smallInput medium" name="numberAccountsAllowed" id="numberAccountsAllowed"
                            type="text" value="{$post.numberAccountsAllowed}">
+                    <hr/>
+                </div>
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Cuenta:</div>
+                    <input class="smallInput medium" name="cuenta_inhouse" id="cuenta_inhouse"
+                           type="text" value="{$post.cuentaInhouse}">
                     <hr/>
                 </div>
             {/if}
@@ -192,6 +211,11 @@
                         <option value="{$item.office_resource_id}" {if $item.office_resource_id eq $post.resource.office_resource_id}selected{/if}>{$item.marca}_{$item.modelo}_{$item.no_serie}({$item.tipo_equipo})</option>
                     {/foreach}
                 </select>
+                <hr/>
+            </div>
+            <div class="formLine" style="width:100%; text-align:left">
+                <div style="width:30%;float:left">Activo:</div>
+                <input name="active" id="active" type="checkbox" {if $post.active eq '1' || !$post}checked{/if} value="1""/>
                 <hr/>
             </div>
             {if in_array(240,$permissions)|| $User.isRoot}

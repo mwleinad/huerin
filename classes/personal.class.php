@@ -72,6 +72,13 @@ class Personal extends Main
         $this->numberAccountsAllowed = $value;
     }
 
+    private $cuentaInhouse;
+    public function setCuentaInhouse($value)
+    {
+        $this->Util()->ValidateString($value, 255,0, 'Cuenta');
+        $this->cuentaInhouse = $value;
+    }
+
     private $puesto;
 
     public function setPuesto($value)
@@ -126,6 +133,19 @@ class Personal extends Main
     {
         $this->Util()->ValidateString($value, $max_chars = 60, $minChars = 0, "Grupo");
         $this->grupo = $value;
+    }
+
+    private $mailGrupo;
+    public function setMailGrupo($value)
+    {
+        $this->Util()->ValidateString($value,  60, 0, "Mail grupo");
+        $this->mailGrupo = $value;
+    }
+    private $listaDistribucion;
+    public function setListaDistribucion($value)
+    {
+        $this->Util()->ValidateString($value,60, 0, "Listas distribución");
+        $this->listaDistribucion = $value;
     }
 
     private $userComputadora;
@@ -432,6 +452,10 @@ class Personal extends Main
             $strUpdate .= " passwordComputadora='" . $this->passwordComputadora . "', ";
         if (strlen($this->grupo) > 0)
             $strUpdate .= " grupo='" . $this->grupo . "', ";
+        if (strlen($this->mailGrupo) > 0)
+            $strUpdate .= " mailGrupo='" . $this->mailGrupo . "', ";
+        if (strlen($this->listaDistribucion) > 0)
+            $strUpdate .= " listaDistribucion='" . $this->listaDistribucion . "', ";
         if (strlen($this->tipoPersonal) > 0)
             $strUpdate .= " tipoPersonal='" . $this->tipoPersonal . "', ";
         if (strlen($this->roleId) > 0)
@@ -446,6 +470,9 @@ class Personal extends Main
 
         if (strlen($this->numberAccountsAllowed) > 0)
             $strUpdate .= " numberAccountsAllowed='" . $this->numberAccountsAllowed . "', ";
+
+        if (strlen($this->cuentaInhouse) > 0)
+            $strUpdate .= " cuentaInhouse='" . $this->cuentaInhouse . "', ";
 
         $this->Util()->DB()->setQuery("
             UPDATE
@@ -540,7 +567,10 @@ class Personal extends Main
                 lastChangePassword,
                 active,
                 fechaCompra,
-                numberAccountsAllowed
+                numberAccountsAllowed,
+                mailGrupo,
+                listaDistribucion,
+                cuentaInhouse
         )
         VALUES
         (
@@ -569,7 +599,10 @@ class Personal extends Main
                 '" . $this->fechaIngreso . "',
                 '" . $this->active . "',
                 '" . $fechaCompra . "',
-                '" . $this->numberAccountsAllowed . "'
+                '" . $this->numberAccountsAllowed . "',
+                '" . $this->mailGrupo. "',
+                '" . $this->listaDistribucion. "',
+                '" . $this->cuentaInhouse. "'
         );");
         $id = $this->Util()->DB()->InsertData();
         if (isset($_POST["expe"])) {
