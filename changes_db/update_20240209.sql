@@ -26,7 +26,7 @@ ADD COLUMN `cuentaInhouse` varchar(255) CHARACTER SET latin1 COLLATE latin1_swed
 
 ALTER TABLE `customer`
     ADD COLUMN `tipo_clasificacion_cliente_id` bigint UNSIGNED NULL DEFAULT NULL AFTER `name_referrer`;
-INSERT INTO `namefields` (`clave`, `name`) VALUES ('tipo_clasificacion_cliente_id', 'Clasificacion');
+INSERT INTO `nameFields` (`clave`, `name`) VALUES ('tipo_clasificacion_cliente_id', 'Clasificacion');
 
 ALTER TABLE `customer`
     MODIFY COLUMN `name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL AFTER `customerId`,
