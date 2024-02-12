@@ -90,6 +90,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'historialContract',
 		'historialCustomer',
 		'tree-subordinate',
+		'organigrama',
 		'report-walmart',
 		'report-cobranza',
 		'docs-files',

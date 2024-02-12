@@ -250,6 +250,17 @@ class Customer extends Main
         return $this->name_referrer;
     }
 
+    private $tipoClasificacionClienteId;
+    public function setTipoClasificacionCliente($value)
+    {
+        $this->tipoClasificacionClienteId = $value;
+    }
+
+    public function getTipoClasificacionCliente()
+    {
+        return $this->tipoClasificacionClienteId;
+    }
+
 
     public function Search($tipo = "subordinado", $type = "")
     {
@@ -765,26 +776,29 @@ class Customer extends Main
 
         $oldData = $this->Info();
 
+        $partner = $this->partner_id > 0 ? $this->partner_id : 'NULL';
+        $clasificacion = $this->tipoClasificacionClienteId > 0 ? $this->tipoClasificacionClienteId : 'NULL';
         $this->Util()->DB()->setQuery(
             "
-      UPDATE
-        customer
-      SET        
-        `name` = '" . $this->name . "',
-        phone = '" . $this->phone . "',
-        email = '" . $this->email . "',        
-        nameContact = '" . $this->nameContact . "',        
-        password = '" . $this->password . "',        
-        noFactura13 = '" . $this->noFactura13 . "',        
-        encargadoCuenta = '" . $this->encargadoCuenta . "',        
-        responsableCuenta = '" . $this->responsableCuenta . "', 
-        observacion = '" . $this->observacion . "',        
-        fechaAlta = '" . $this->fechaAlta . "', 
-        is_referred = '" . $this->is_referred . "', 
-        type_referred = '" . $this->type_referred . "', 
-        partner_id = '" . $this->partner_id . "', 
-        name_referrer = '" . $this->name_referrer . "'   
-      WHERE customerId = '" . $this->customerId . "'"
+                      UPDATE
+                        customer
+                      SET        
+                        `name` = '" . $this->name . "',
+                        phone = '" . $this->phone . "',
+                        email = '" . $this->email . "',        
+                        nameContact = '" . $this->nameContact . "',        
+                        password = '" . $this->password . "',        
+                        noFactura13 = '" . $this->noFactura13 . "',        
+                        encargadoCuenta = '" . $this->encargadoCuenta . "',        
+                        responsableCuenta = '" . $this->responsableCuenta . "', 
+                        observacion = '" . $this->observacion . "',        
+                        fechaAlta = '" . $this->fechaAlta . "', 
+                        is_referred = '" . $this->is_referred . "', 
+                        type_referred = '" . $this->type_referred . "', 
+                        partner_id = $partner, 
+                        name_referrer = '" . $this->name_referrer . "',   
+                        tipo_clasificacion_cliente_id = $clasificacion   
+                      WHERE customerId = '" . $this->customerId . "'"
         );
         $this->Util()->DB()->UpdateData();
 
@@ -839,6 +853,8 @@ class Customer extends Main
             return false;
         }
 
+        $partner = $this->partner_id > 0 ? $this->partner_id : 'NULL';
+        $clasificacion = $this->tipoClasificacionClienteId > 0 ? $this->tipoClasificacionClienteId : 'NULL';
         $this->Util()->DB()->setQuery("
           INSERT INTO
             customer
@@ -856,7 +872,8 @@ class Customer extends Main
             type_referred,
             partner_id,
             name_referrer,
-            noFactura13
+            noFactura13,
+            tipo_clasificacion_cliente_id
         )
         VALUES
         (
@@ -871,27 +888,29 @@ class Customer extends Main
             '" . $this->fechaAlta . "', 
             '" . $this->is_referred . "', 
             '" . $this->type_referred . "', 
-            '" . $this->partner_id . "', 
+            $partner, 
             '" . $this->name_referrer . "',
-            '" . $this->noFactura13 . "'
+            '" . $this->noFactura13 . "',
+            $clasificacion
                    
         );");
         $customerId = $this->Util()->DB()->InsertData();
 
-        $sql = "SELECT * FROM customer WHERE customerId = '" . $customerId . "'";
-        $this->Util()->DB()->setQuery($sql);
-        $newData = $this->Util()->DB()->GetRow();
-        //Guardamos el Log
-        $log->setPersonalId($User['userId']);
-        $log->setFecha(date('Y-m-d H:i:s'));
-        $log->setTabla('customer');
-        $log->setTablaId($customerId);
-        $log->setAction('Insert');
-        $log->setOldValue('');
-        $log->setNewValue(serialize($newData));
-        $saveAndSendLog ? $log->Save() : $log->SaveOnly();
+        if($customerId > 0) {
+            $sql = "SELECT * FROM customer WHERE customerId = '" . $customerId . "'";
+            $this->Util()->DB()->setQuery($sql);
+            $newData = $this->Util()->DB()->GetRow();
+            //Guardamos el Log
+            $log->setPersonalId($User['userId']);
+            $log->setFecha(date('Y-m-d H:i:s'));
+            $log->setTabla('customer');
+            $log->setTablaId($customerId);
+            $log->setAction('Insert');
+            $log->setOldValue('');
+            $log->setNewValue(serialize($newData));
+            $saveAndSendLog ? $log->Save() : $log->SaveOnly();
 
-        $this->Util()->DB()->setQuery("
+            $this->Util()->DB()->setQuery("
 			INSERT INTO
 				customerChanges
 			(
@@ -909,10 +928,14 @@ class Customer extends Main
 				'" . urlencode(serialize($newData)) . "',
 				'" . $User["userId"] . "'
 		);");
-        $this->Util()->DB()->InsertData();
-        $this->Util()->setError(10045, "complete", "El cliente fue agregado correctamente.");
-        $this->Util()->PrintErrors();
-        return $customerId;
+            $this->Util()->DB()->InsertData();
+            $this->Util()->setError(10045, "complete", "El cliente fue agregado correctamente.");
+            $this->Util()->PrintErrors();
+        } else {
+            $this->Util()->setError(10045, "error", "Error al guardar intente nuevamente.");
+            $this->Util()->PrintErrors();
+        }
+        return $customerId > 0 ;
     }
 
     public function Delete()
@@ -1217,7 +1240,10 @@ class Customer extends Main
             $findEncargados = true;
         }
 
-        $sql = "SELECT  b.customerId, b.nameContact, b.phone, b.email, b.password,b.noFactura13,
+        $sql = "SELECT  b.customerId, b.nameContact,
+             b.tipo_clasificacion_cliente_id,   
+             (SELECT nombre from tipo_clasificacion_cliente WHERE tipo_clasificacion_cliente.id = b.tipo_clasificacion_cliente_id limit 1) clasificacionCliente,   
+             b.phone, b.email, b.password,b.noFactura13,
              b.fechaAlta as fechaAltaCustomer,b.observacion,b.active, a.*
              FROM (SELECT contract.contractId, contract.name, contract.customerId, contract.type, contract.rfc,
                   contract.regimenId, contract.activo, contract.nombreComercial, contract.direccionComercial,

@@ -134,12 +134,23 @@ switch ($opcion[0]) {
                 continue;
             }
 
-            $fields_string = implode(',', $fields);
             $values_string = "";
+            $fields_string = "";
 
-            foreach ($values as $value)
-                $values_string .= " '$value',";
+            foreach ($var['fields_update'] as $fieldUp) {
+                $value = $fieldUp['value'];
+                $campo = $fieldUp['field'];
 
+                $fields_string .= "$campo,";
+                $values_string .= in_array($fieldUp['columna']['type_column'] ?? '', ['integer'])
+                    ? "$value," : "'$value',";
+            }
+
+            //$fields_string = implode(',', $fields);
+            //foreach ($values as $value)
+                //$values_string .= " '$value',";
+
+            $fields_string = substr($fields_string, 0, -1);
             $values_string = substr($values_string, 0, -1);
 
             if ($var['table'] === 'contract') {

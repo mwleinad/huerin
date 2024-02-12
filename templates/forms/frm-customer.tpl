@@ -10,6 +10,16 @@
                            value="{$post.nameContact}" size="50"/>
                     <hr/>
                 </div>
+                <div class="formLine field_list_partner" style="width:100%; text-align:left;">
+                    <div style="width:30%;float:left">Clasificación cliente</div>
+                    <select class="largeInput medium" name="tipo_clasificacion_cliente_id" id="tipo_clasificacion_cliente_id">
+                        <option value="">---Seleccionar---</option>
+                        {foreach from=$clasificaciones item=item key=key}
+                            <option value="{$item.id}" {if $post.tipo_clasificacion_cliente_id eq $item.id}selected{/if}>{$item.nombre}</option>
+                        {/foreach}
+                    </select>
+                    <hr />
+                </div>
 
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Tel&eacute;fono Contacto Directivo:</div>

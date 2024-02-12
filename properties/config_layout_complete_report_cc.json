@@ -6,6 +6,12 @@
     "field_bd": "nameContact"
   },
   {
+    "name": "Clasificación cliente",
+    "comment": "Clasificación cliente",
+    "field_excel": "clasificacionCliente",
+    "field_bd": "clasificacionCliente"
+  },
+  {
     "name": "Telefono contacto",
     "comment": "",
     "field_excel": "phone",
@@ -278,7 +284,7 @@
     "field_bd": "noCuenta"
   },
   {
-    "name": "Clasificacion",
+    "name": "Clasificación",
     "comment": "",
     "field_excel": "tipoClasificacion",
     "field_bd": "idTipoClasificacion"

@@ -113,6 +113,8 @@ class Validar extends Main
                 $card['field'] =  $columna['field_bd'];
                 $card['value'] =  $columna['constraint'] ?
                                   isset($find[$columna['field_return_foreign']]) ?  $find[$columna['field_return_foreign']] : '0' : htmlspecialchars_decode($row[$col]);
+                $card['value']  = ($columna['type_column'] ?? '') == 'integer' ? intval($card['value']) : $card['value'];
+                $card['columna'] = $columna;
                 array_push($fields, $card);
             }
             $card_main['primary_key'] = $columnas[$col_primary_key]['field_bd'];

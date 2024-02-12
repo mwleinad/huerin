@@ -1,6 +1,6 @@
 <div class="grid_16" id="content">
   <div class="grid_9">
-  <h1 class="catalogos">Contadores</h1>
+  <h1 class="catalogos">Empleados</h1>
   </div>
   <div class="grid_6" id="eventbox">
     {if in_array(250,$permissions) || $User.isRoot}

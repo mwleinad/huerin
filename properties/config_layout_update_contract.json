@@ -22,6 +22,22 @@
     "constraint": false
   },
   {
+    "name": "Clasificación cliente",
+    "type_column": "integer",
+    "required": false,
+    "comment": "Campo informativo, no se tomara en cuenta para la actualización",
+    "field_excel": "clasificacionCliente",
+    "field_bd": "tipo_clasificacion_cliente_id",
+    "fillable": false,
+    "constraint": true,
+    "reference_table": "tipo_clasificacion_cliente",
+    "field_comparison_foreign": "nombre",
+    "field_return_foreign": "id",
+    "foreign_key": "tipo_clasificacion_cliente_id",
+    "generate_range": true,
+    "name_range": "Clasificaciones_cliente"
+  },
+  {
     "name": "Nombre / Razon social",
     "required": true,
     "comment": "Ingresar el nombre o razon social, evitar el uso de los siguientes caracteres especiales comas(,), comilla simple('), comillas dobles(\"\").",
@@ -337,21 +353,19 @@
     "constraint": false
   },
   {
-    "name": "Clasificacion",
+    "name": "Clasificación",
+    "type_column": "integer",
     "required": false,
     "comment": "Selecciona un valor presente en la lista de cada fila.",
-    "input_validate": true,
-    "accepted_values" : [
-      "A",
-      "B",
-      "C"
-    ],
-    "field_excel": "qualification",
-    "field_bd": "qualification",
+    "field_excel": "tipoClasificacion",
+    "field_bd": "idTipoClasificacion",
     "fillable": true,
-    "constraint": false,
+    "constraint": true,
+    "reference_table": "tipo_clasificacion",
+    "field_comparison_foreign": "nombre",
+    "field_return_foreign": "id",
+    "foreign_key": "idTipoClasificacionId",
     "generate_range": true,
-    "field_comparison_foreign": "name",
-    "name_range": "clasificacion"
+    "name_range": "clasificaciones"
   }
 ]
