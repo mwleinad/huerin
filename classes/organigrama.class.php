@@ -119,6 +119,17 @@ class organigrama extends Personal
             'Fiscal',
             'Sistemas'
         ];
+        $areasNoSumarPorDepartamento = [
+            'Administración',
+            'Administracion',
+            'Atención al Cliente',
+            'Atencion al Cliente',
+            'Cuentas por cobrar',
+            'Finanzas',
+            'Desarrollo Organizacional',
+            'Fiscal',
+            'Sistemas'
+        ];
 
         $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array($depa['departamento'], $areasAdministrativas));
         $areasOperativas =  array_column($areasOperativas, 'departamento');
@@ -377,12 +388,12 @@ class organigrama extends Personal
                 $styleCurrency['fill']['color']['rgb'] = 'FF0000';
             }
 
-            $sheet->setCellValueByColumnAndRow($col, $row, $resultado['departamento'])
+            $sheet->setCellValueByColumnAndRow($col, $row, trim($resultado['departamento']))
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
 
             //NOMENCLATURA DEL PUESTO
-            $explodeNombre  = explode(' ', $resultado['nombre']);
+            $explodeNombre  = explode(' ', trim($resultado['nombre']));
             $sheet->setCellValueByColumnAndRow($col, $row, $explodeNombre[0])
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
@@ -437,29 +448,42 @@ class organigrama extends Personal
 
             $colInicial = PHPExcel_Cell::stringFromColumnIndex(0).$row;
             $colFinal   = PHPExcel_Cell::stringFromColumnIndex($col-1).$row;
-            if($resultados[$next]['departamento'] !== $resultado['departamento']) {
+            $flag = in_array(trim($resultado['area']), $areasNoSumarPorDepartamento)
+            ? trim($resultados[$next]['area']) !== trim($resultado['area'])
+            : trim($resultados[$next]['departamento']) !== trim($resultado['departamento']);
+
+            if($flag) {
 
                 // CANTIDAD
                 $coorInicioCantSueldoVertical = PHPExcel_Cell::stringFromColumnIndex(0).$rowInicial;
                 $coorFinCantSueldoVertical    = PHPExcel_Cell::stringFromColumnIndex(0).($row -1);
 
-                $coorInicioCriterioVertical = PHPExcel_Cell::stringFromColumnIndex(2).$rowInicial;
-                $coorFinCriterioVertical    = PHPExcel_Cell::stringFromColumnIndex(2).($row -1);
 
-                $formula = "=SUMIFS({$coorInicioCantSueldoVertical}:{$coorFinCantSueldoVertical},{$coorInicioCriterioVertical}:{$coorFinCriterioVertical},\"{$resultado['departamento']}\")";
+                $coorInicioCriterioVertical = PHPExcel_Cell::stringFromColumnIndex(in_array(trim($resultado['area']), $areasNoSumarPorDepartamento) ? 1:2).$rowInicial;
+                $coorFinCriterioVertical    = PHPExcel_Cell::stringFromColumnIndex(in_array(trim($resultado['area']), $areasNoSumarPorDepartamento) ? 1:2).($row -1);
+
+                $criterioSubtotal = in_array(trim($resultado['area']), $areasNoSumarPorDepartamento)
+                    ? trim($resultado['area'])
+                    : trim($resultado['departamento']);
+
+                $formula = "=SUMIFS({$coorInicioCantSueldoVertical}:{$coorFinCantSueldoVertical},{$coorInicioCriterioVertical}:{$coorFinCriterioVertical},\"*{$criterioSubtotal}*\")";
                 $sheet->setCellValueByColumnAndRow(0, $row, $formula);
                 $sheet->getStyle("{$colInicial}:{$colFinal}")->applyFromArray($styleSubtotalDepartamento);
                 $sheet->getStyle( PHPExcel_Cell::stringFromColumnIndex(0).$row)->applyFromArray($styleSubtotalDepartamento);
 
                 // SUBTOTAL
-                $sheet->setCellValueByColumnAndRow(6, $row, "SUBTOTAL ".mb_strtoupper($resultado['departamento']));
+                $sufixTotal = in_array(trim($resultado['area']), $areasNoSumarPorDepartamento)
+                ? mb_strtoupper(trim($resultado['area']))
+                : mb_strtoupper(trim($resultado['departamento']));
+
+                $sheet->setCellValueByColumnAndRow(6, $row, "SUBTOTAL ".$sufixTotal);
                 $coorInicioSubtotalSueldoVertical = PHPExcel_Cell::stringFromColumnIndex(7).$rowInicial;
                 $coorFinSubtotalSueldoVertical    = PHPExcel_Cell::stringFromColumnIndex(7).($row -1);
 
-                $coorInicioCriterioVertical = PHPExcel_Cell::stringFromColumnIndex(2).$rowInicial;
-                $coorFinCriterioVertical    = PHPExcel_Cell::stringFromColumnIndex(2).($row -1);
+                $coorInicioCriterioVertical = PHPExcel_Cell::stringFromColumnIndex(in_array(trim($resultado['area']), $areasNoSumarPorDepartamento) ? 1:2).$rowInicial;
+                $coorFinCriterioVertical    = PHPExcel_Cell::stringFromColumnIndex(in_array(trim($resultado['area']), $areasNoSumarPorDepartamento) ? 1:2).($row -1);
 
-                $formula = "=SUMIFS({$coorInicioSubtotalSueldoVertical}:{$coorFinSubtotalSueldoVertical},{$coorInicioCriterioVertical}:{$coorFinCriterioVertical},\"{$resultado['departamento']}\")";
+                $formula = "=SUMIFS({$coorInicioSubtotalSueldoVertical}:{$coorFinSubtotalSueldoVertical},{$coorInicioCriterioVertical}:{$coorFinCriterioVertical},\"*{$criterioSubtotal}*\")";
                 $sheet->setCellValueByColumnAndRow(7, $row, $formula);
                 $sheet->getStyle("{$colInicial}:{$colFinal}")->applyFromArray($styleSubtotalDepartamento);
                 $sheet->getStyle( PHPExcel_Cell::stringFromColumnIndex(7).$row)->applyFromArray($styleCurrencySubtotal);
