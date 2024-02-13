@@ -222,7 +222,7 @@ class organigrama extends Personal
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 default:
-                    $color = '';
+                    $color = 'FFFFFF';
                     $colorFont = '000000';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
