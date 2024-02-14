@@ -133,6 +133,7 @@ class organigrama extends Personal
 
         $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array(trim($depa['departamento']), $areasAdministrativas));
         $areasOperativas =  array_column($areasOperativas, 'departamento');
+        $areasOperativas =  array_map( fn($item) => trim($item),$areasOperativas);
 
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
