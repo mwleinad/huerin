@@ -374,7 +374,7 @@ class organigrama extends Personal
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
             //AREA
-            $sheet->setCellValueByColumnAndRow($col, $row, $resultado['area'])
+            $sheet->setCellValueByColumnAndRow($col, $row, trim($resultado['area']))
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
 
