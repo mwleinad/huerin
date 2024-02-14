@@ -131,7 +131,7 @@ class organigrama extends Personal
             'Sistemas'
         ];
 
-        $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array($depa['departamento'], $areasAdministrativas));
+        $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array(trim($depa['departamento']), $areasAdministrativas));
         $areasOperativas =  array_column($areasOperativas, 'departamento');
 
         $book = new PHPExcel();
