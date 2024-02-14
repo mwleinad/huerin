@@ -215,26 +215,37 @@ class organigrama extends Personal
             switch ($resultado['puesto']) {
                 case 'Director':
                     $color = '000000';
+                    $bold = false;
                     $colorFont = 'FFFFFF';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 case 'Gerente':
                     $color = '2E1304';
+                    $bold = false;
                     $colorFont = 'FFFFFF';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 case 'Subgerente':
                     $color = '833C0C';
+                    $bold = false;
                     $colorFont = 'FFFFFF';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 case 'Supervisor':
                     $color = 'FFDCC1';
+                    $bold = false;
+                    $colorFont = '000000';
+                    $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
+                    break;
+                case 'Contador':
+                    $color = 'FFFFFF';
+                    $bold = true;
                     $colorFont = '000000';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
                 default:
                     $color = 'FFFFFF';
+                    $bold = false;
                     $colorFont = '000000';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
@@ -255,7 +266,7 @@ class organigrama extends Personal
 
             $styleSimpleText2 = array_merge($styleSimpleText, array(
                     'font' => array(
-                        'bold' => false,
+                        'bold' => $bold,
                         'color' => array('rgb' => $colorFont),
                         'size' => 10,
                         'name' => 'Aptos',
@@ -276,7 +287,7 @@ class organigrama extends Personal
 
             $styleCurrency = array_merge($global_config_style_cell['style_currency'], array(
                 'font' => array(
-                    'bold' => false,
+                    'bold' => $bold,
                     'color' => array('rgb' => $colorFont),
                     'size' => 10,
                     'name' => 'Aptos',
