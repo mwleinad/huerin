@@ -13,10 +13,10 @@ if ($_FILES['file']['error'] === 4) {
     $name = $_FILES['file']['name'];
     $ext = end(explode(".", $name));
 
-    if (strtoupper($ext) != "CSV" &&  !in_array($_POST['type'], ['recotizar-servicios','importar-inventario'])) {
+    if (strtoupper($ext) != "CSV" &&  !in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta CSV', 'Archivo');
     }
-    if (strtoupper($ext) != "XLSX" && in_array($_POST['type'], ['recotizar-servicios','importar-inventario'])) {
+    if (strtoupper($ext) != "XLSX" && in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta XLSX', 'Archivo');
     }
 }
@@ -1192,5 +1192,87 @@ switch ($opcion[0]) {
         echo $res ? 'ok[#]' : 'fail[#]';
         $util->PrintErrors();
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+        break;
+    case 'actualizar-mail-linea-empleado':
+
+        include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        $archivo = $_FILES['file']['tmp_name'];
+        $inputFileType = PHPExcel_IOFactory::identify($archivo);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($archivo);
+        $sheet = $objPHPExcel->getSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        $db_connection = new DB(false);
+
+        $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
+        $keys = [];
+        $keysExcludes = ['razon_social','cliente'];
+        $indexExclude = [];
+        foreach($headers[0] as $kh => $header) {
+            $header =  str_replace(' ', '_', $header);
+            $header =  str_replace('%', 'porcentaje', $header);
+            $header =  $util->cleanString($header);
+            $header =  strtolower($header);
+            if(in_array($header, $keysExcludes)) {
+                array_push($indexExclude, $kh);
+                continue;
+            }
+            array_push($keys, $header);
+        }
+        if(!in_array('nombre', $keys)) {
+            $util->setError(0, 'error', 'No se encontro la columna nombre');
+            echo 'fail[#]';
+            $util->PrintErrors();
+            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+        } else {
+
+
+            $empleados = [];
+            for ($row = 2; $row <= $highestRow; $row++) {
+                $currentRows = $sheet->rangeToArray('A' . $row . ":" . $sheet->getHighestColumn() . $row);
+                foreach ($indexExclude as $kex)
+                    unset($currentRows[0][$kex]);
+
+                $empleados[] = array_combine($keys, $currentRows[0]);
+            }
+
+
+            $actualizados = 0;
+            $noActualizados = 0;
+            foreach ($empleados as $empleado) {
+
+                $mailGrupo = $empleado['email_grupo'];
+                $listaDistribucion = $empleado['lista_distribucion'];
+                $nombre = $empleado['nombre'];
+
+                $nombre = isset($empleado['nomenclatura_del_puesto'])
+                    ? trim($empleado['nomenclatura_del_puesto'])." ".$nombre
+                    : $nombre;
+
+
+                $sql = "update personal set ";
+                $sql .= " mailGrupo = '$mailGrupo',";
+                $sql .= " listaDistribucion = '$listaDistribucion' ";
+                $sql .= " where name = '$nombre' ";
+                $db_connection->setQuery($sql);
+                $actualizado = $db_connection->UpdateData();
+
+
+                if ($actualizado > 0)
+                    $actualizados++;
+                else
+                    $noActualizados++;
+
+            }
+
+            $mensaje = "Proceso completado: $actualizados registros actualizados correctamente y $noActualizados registros ignorados.";
+            $util->setError(0, 'complete', $mensaje);
+            echo 'ok[#]';
+            $util->PrintErrors();
+            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+        }
+
         break;
 }

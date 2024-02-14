@@ -20,6 +20,7 @@
                         <option value="update-servicios">Actualizar servicios de clientes</option>
                         <option value="recotizar-servicios">Recotizar servicios</option>
                         <option value="importar-inventario">Importar inventario</option>
+                        <option value="actualizar-mail-linea-empleado">Actualizar mail grupo y linea distribucion de empleados</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
