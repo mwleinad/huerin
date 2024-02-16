@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 12/02/2024 09:21:16
+ Date: 16/02/2024 12:08:11
 */
 
 SET NAMES utf8mb4;
@@ -26,7 +26,7 @@ CREATE PROCEDURE `sp_get_empleados`()
 BEGIN
 	
 	  DECLARE vTotalRow BIGINT DEFAULT 0;
-	  DECLARE vCurrentRow BIGINT DEFAULT 1;
+	  DECLARE vCurrentRow BIGINT DEFAULT 0;
 	  DECLARE vPersonalId BIGINT;
 	  DECLARE vNombre VARCHAR(255);
 	  DECLARE vEmail VARCHAR(255);
@@ -73,7 +73,7 @@ BEGIN
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
 		WHERE roles.nivel > 1
-		ORDER BY roles.nivel ASC, departamento ASC, personal.name ASC;
+        ORDER BY roles.nivel ASC, area ASC ,departamento ASC, personal.name ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_empleados;
 		
