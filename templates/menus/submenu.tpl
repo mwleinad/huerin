@@ -181,9 +181,11 @@
                     <li><a href="{$WEB_ROOT}/bitacora" {if $page == "bitacora"}class="current"{/if} target="_blank">
                     <span>Bitacoras</span></a></li>
                 {/if}
-                {if in_array(178,$permissions) || $User.isRoot}
+                {if in_array(303,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/organigrama" {if $page == "organigrama"}class="current"{/if} title="Organigrama" target="_blank">
                             <span>Organigrama</span></a></li>
+                {/if}
+                {if in_array(178,$permissions) || $User.isRoot}
                     <li><a href="{$WEB_ROOT}/tree-subordinate" {if $page == "tree-subordinate"}class="current"{/if} title="Arbol de mando" target="_blank">
                     <span>Arbol de mando</span></a></li>
                 {/if}
