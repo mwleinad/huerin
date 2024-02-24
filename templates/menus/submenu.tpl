@@ -150,7 +150,7 @@
                     <li><a href="{$WEB_ROOT}/report-bonos" {if $page == "report-bonos"}class="current"{/if} target="_blank">
                       <span>Bonos</span></a></li>
                 {/if}
-                {if in_array(163,$permissions)|| $User.isRoot}
+                {if in_array(304,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-bonos-consolidado" {if $page == "report-bonos-consolidado"}class="current"{/if} target="_blank">
                             <span>Bonos consolidado</span></a></li>
                 {/if}
