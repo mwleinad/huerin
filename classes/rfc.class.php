@@ -364,7 +364,7 @@ class Rfc extends Empresa
         }//if
     }
 
-	function aplicarPermiso($ruta_dir = "", $permiso = 775){
+	function aplicarPermiso($ruta_dir = "", $permiso = 0775){
 		if(is_dir($ruta_dir)){
 			if($gd = opendir($ruta_dir)){
 				while($archivo = readdir($gd)){
