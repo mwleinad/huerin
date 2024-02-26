@@ -325,6 +325,7 @@ class Rfc extends Empresa
             fwrite($fh, $stringData);
             $cer_name = substr($cer_name, 0, -4);
             $certNuevo = $this->Util()->GetNoCertificado($ruta_dir, $cer_name);
+			$this->aplicarPermiso($ruta_dir);
             $sqlQuery = "UPDATE serie SET noCertificado = '$certNuevo' WHERE  rfcId = '".$this->getRfcId()."' ";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
             $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
@@ -362,5 +363,16 @@ class Rfc extends Empresa
             }//if
         }//if
     }
+
+	function aplicarPermiso($ruta_dir = "", $permiso = 775){
+		if(is_dir($ruta_dir)){
+			if($gd = opendir($ruta_dir)){
+				while($archivo = readdir($gd)){
+					@chmod($ruta_dir.'/'.$archivo, $permiso);
+				}//while
+				closedir($gd);
+			}//if
+		}//if
+	}
 }
 ?>
