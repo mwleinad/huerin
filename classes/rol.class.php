@@ -121,7 +121,7 @@ class Rol extends main
     }
     public function Enumerate(){
         $where ="";
-        $where .=!$_SESSION["User"]["isRoot"] ?
+        /*$where .=!$_SESSION["User"]["isRoot"] ?
                  ((int)$_SESSION["User"]["level"] != 1 ?
                  " and a.nivel >= '".$_SESSION['User']['level']."' "
                  :(strtolower($_SESSION["User"]["tipoPers"]) == 'asistente socio' ?
@@ -130,12 +130,25 @@ class Rol extends main
                  :"";
         $where .= (int)$_SESSION["User"]["level"] != 1 ?
                    " and a.nivel <= 6 and a.departamentoId = '".$_SESSION["User"]["departamentoId"]."' "
-                   : "";
+                   : "";*/
+
+        if(!$_SESSION['User']['isRoot']) {
+            if($this->accessAnyRol()) {
+                $where .= " and (nivel >= 1  or lower(name) = 'asistente socio') ";
+            }else {
+                $where .= $_SESSION['User']['level'] !== '1' ?
+                    " and nivel >= '".$_SESSION['User']['level']."' "
+                    : " and (nivel > '".$_SESSION['User']['level']."' or lower(name) = 'asistente socio') ";
+            }
+            $where .= "and nivel < 100 ";
+            $where .= !$this->accessAnyDepartament() ? " and departamentoId = '".$_SESSION['User']['departamentoId']."' " : "";
+        }
 
        $sql ="SELECT a.*,
               CASE 
               WHEN a.departamentoId is null  THEN 'SIN DEPARTAMENTO'
               WHEN a.departamentoId <=0 THEN 'SIN DEPARTAMENTO'
+              WHEN b.departamentoId is null THEN 'SIN DEPARTAMENTO'
               ELSE b.departamento END AS departamento
               FROM roles a LEFT JOIN departamentos b ON a.departamentoId=b.departamentoId WHERE a.status='activo' ".$where." ORDER BY b.departamento ASC,a.name ASC";
        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
