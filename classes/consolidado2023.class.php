@@ -187,9 +187,9 @@ class Consolidado2023 extends Personal
             }
             $cad2['finstancia'] = $cad['fecha'];
             $cad2['tipoServicioId'] = $cad['tipo_servicio_id'];
-            $pasos = $workflow->validateStepTaskByWorkflow($cad2);
-            if (!count($pasos))
-                continue;
+            //$pasos = $workflow->validateStepTaskByWorkflow($cad2);
+            //if (!count($pasos))
+              //  continue;
             array_push($instancias_filtered, $cad);
         }
         return $instancias_filtered;
