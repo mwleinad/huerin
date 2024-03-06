@@ -419,7 +419,7 @@ class BonoConcentrado extends Personal
                             $coorBonoEfectivoTmp = PHPExcel_Cell::stringFromColumnIndex($col+1) . $row;
                             $formula = in_array($resultado['departamento'], $departamentosSinFormula)
                             ? "=".$coorBonoEfectivoTmp
-                            : "=IFERROR(IF(AND(".$coorUtilidad.">0,".$coorPorEfectividad.">=90%),".$coorUtilidad."*(".$coorPorBono."),0), 0)";
+                            : "=IFERROR(IF(AND(".$coorUtilidad.">0,".$coorPorEfectividad.OPERADOR_EFECTIVIDAD_MINIMA.PORCENTAJE_EFECTIVIDAD_MINIMA."),".$coorUtilidad."*(".$coorPorBono."),0), 0)";
                             $coorBonoPagar = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                             array_push($acumuladoBonoPagar, $coorBonoPagar);
                             $sheet->setCellValueByColumnAndRow($col, $row, $formula)
