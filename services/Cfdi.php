@@ -319,7 +319,9 @@ class Cfdi extends Comprobante
         include_once(DOC_ROOT."/services/Pac.php");
         include_once(DOC_ROOT."/services/PacFinkok.php");
 
-        $useFinkok = is_array(RFC_CON_FINKOK) ? in_array($nodoEmisorRfc['rfc'], RFC_CON_FINKOK) : RFC_CON_FINKOK === '*';
+        $arrayRfcConFinkok = RFC_CON_FINKOK === '*' ? RFC_CON_FINKOK : explode(',', RFC_CON_FINKOK);
+        
+        $useFinkok = is_array($arrayRfcConFinkok) ? in_array($nodoEmisorRfc['rfc'], $arrayRfcConFinkok) : $arrayRfcConFinkok === '*';
 
         $pac =  $useFinkok ? new PacFinkok : new Pac33;
 
