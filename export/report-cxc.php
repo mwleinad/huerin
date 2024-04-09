@@ -1,9 +1,7 @@
 <?php
-if(!isset($_SESSION)){
-    session_start();
-}
 date_default_timezone_set('America/Mexico_City');
 include_once('../config.php');
+include_once('../init.php');
 include_once(DOC_ROOT.'/libraries.php');
 ini_set('memory_limit','3G');
 
@@ -38,6 +36,8 @@ $totales =  array();
 $contratos= [];
 foreach($listCxc['items'] as $key => $value)
 {
+    if (!isset($totales[$value['nombre']]))
+        $totales[$value['nombre']] = [];
 
     $totales[$value['nombre']]['total']=$totales[$value['nombre']]['total']+$value['total'];
     $totales[$value['nombre']]['payment']=$totales[$value['nombre']]['payment']+$value['payment'];
@@ -147,10 +147,6 @@ header("Content-type:   application/x-msexcel; charset=utf-8");
 header("Content-Disposition: attachment; filename=".$name.".xls");
 header("Pragma: no-cache");
 header("Expires: 0");
-
 echo $x;
-
-
 exit;
-
 ?>
