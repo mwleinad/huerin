@@ -8,7 +8,7 @@ session_start();
 ini_set('memory_limit','3G');
 $html = $_POST["contenido"];
 $html = str_replace('$','', $html);
-$html = str_replace(',','', $html);
+//$html = str_replace(',','', $html);
 $wrap = $_POST['type'] === 'pdf' ?  false : true;
 $excel->ConvertToExcel($html, $_POST["type"],false,'exportar',$wrap,45);
 
