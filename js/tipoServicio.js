@@ -112,3 +112,24 @@ jQ(document).on('click','div#stepTask input[type="checkbox"]',function(){
 jQ(document).on('change', '#isPrimary', function () {
   jQ('.field_secondary').toggle(parseInt(this.value) === 1)
 });
+
+function ExportCatalogoServicio()
+{
+	var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+	if(!resp)
+		return;
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/tipoServicio.php',
+		type:'post',
+		data:{ 'type':'exportarExcel'},
+		beforeSend: function () {
+
+		},
+		success:function (response) {
+			window.location = response
+		},
+		error:function () {
+			alert("Error al mostrar informacion!!");
+		}
+	});
+}

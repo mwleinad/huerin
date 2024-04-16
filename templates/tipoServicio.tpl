@@ -7,6 +7,7 @@
   <div class="grid_6" id="eventbox">
       {if in_array(29,$permissions)}
           <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
+          <a style="cursor:pointer" title="Exportar catalogo de servicio" onclick="ExportCatalogoServicio()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
           <a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')"><img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
       {/if}
       {if in_array(25,$permissions)}
