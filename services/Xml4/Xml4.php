@@ -784,11 +784,11 @@ class Xml4 extends Producto{
         // se agrega nodo totales ->
         $this->totalesPagos = $this->xml->createElement("pago20:Totales");
         $this->totalesPagos = $this->pagos->appendChild($this->totalesPagos);
-        // solo manejamos un monto y metodo de pago, no hay sumatoria acumulada.
+
         $totalesData = [
-            "MontoTotalPagos" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false)
+            "MontoTotalPagos"  => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false)
         ];
-        $this->CargaAtt($this->totalesPagos, $totalesData);
+
         // fin cambio v4
 
         $this->CargaAtt($this->pagos, array(
@@ -840,7 +840,7 @@ class Xml4 extends Producto{
             "Folio" => $this->data['cfdiRelacionadoFolio'],
             "MonedaDR" => $tipoDeMoneda,
             "EquivalenciaDR" => '1', // add cambio v4
-            "ObjetoImpDR" => '01', // add cambio v4
+            "ObjetoImpDR" => DESGLOSAR_IMPUESTOS_COMPLEMENTO_PAGO ? '02' : '01', // add cambio v4
             "NumParcialidad" => $infoPagos['numParcialidad'],
             'ImpSaldoAnt' => $this->Util()->CadenaOriginalFormat($infoPagos['impSaldoAnt'],2,false),
             'ImpPagado' => $this->Util()->CadenaOriginalFormat($infoPagos['impPagado'],2,false),
@@ -852,6 +852,109 @@ class Xml4 extends Producto{
         }
 
         $this->CargaAtt($doctoRelacionado, $doctoRelacionadoData);
+
+        $impuestosTraslados = $this->data['infoPago']->impuestosDR['traslados'] ?? [];
+        $totalTrasladosBaseIva16 = 0;
+        $totalTrasladosImpuestoIva16 = 0;
+        $totalTrasladosBaseIva8      = 0;
+        $totalTrasladosImpuestoIva8  = 0;
+        $totalTrasladosBaseIva0      = 0;
+        $totalTrasladosImpuestoIva0  = 0;
+        $totalTrasladosBaseIvaExento= 0;
+
+        if(count($impuestosTraslados) > 0) {
+
+            $impuestosDr = $this->xml->createElement("pago20:ImpuestosDR");
+            $impuestosDr = $doctoRelacionado->appendChild($impuestosDr);
+
+            $trasladosDr = $this->xml->createElement("pago20:TrasladosDR");
+            $trasladosDr = $impuestosDr->appendChild($trasladosDr);
+
+            $impuestosP  = $this->xml->createElement("pago20:ImpuestosP");
+            $impuestosP  = $pago->appendChild($impuestosP);
+
+
+            $trasladosP  = $this->xml->createElement("pago20:TrasladosP");
+            $trasladosP  = $impuestosP->appendChild($trasladosP);
+
+
+            foreach ($impuestosTraslados as $item) {
+
+                $trasladoDr = $this->xml->createElement("pago20:TrasladoDR");
+                $trasladoDr = $trasladosDr->appendChild($trasladoDr);
+
+                $trasladoP = $this->xml->createElement("pago20:TrasladoP");
+                $trasladoP = $trasladosP->appendChild($trasladoP);
+
+                switch ($item['ImpuestoDR']) {
+                    case '002':
+                        if ($item['TipoFactorDR'] === 'Exento') {
+                            $totalTrasladosBaseIvaExento += $item['BaseDR'];
+                        } elseif ($item['TipoFactorDR'] === 'Tasa') {
+                            $porcentaje = number_format($item['TasaOCuotaDR'] * 100, 2);
+                            if ($porcentaje == 16.00) {
+                                $totalTrasladosBaseIva16 += $item['BaseDR'];
+                                $totalTrasladosImpuestoIva16 += $item['ImporteDR'];
+                            }
+
+                            if ($porcentaje == 8.00) {
+                                $totalTrasladosBaseIva8 += $item['BaseDR'];
+                                $totalTrasladosImpuestoIva8 += $item['ImporteDR'];
+                            }
+
+                            if ($porcentaje == 0.00) {
+                                $totalTrasladosBaseIva0 += $item['BaseDR'];
+                                $totalTrasladosImpuestoIva0 += $item['ImporteDR'];
+                            }
+                        }
+                        break;
+                }
+
+                $item['BaseDR'] = $this->Util()->CadenaOriginalFormat($item['BaseDR'],2,false);
+                $item['ImporteDR'] = $this->Util()->CadenaOriginalFormat($item['ImporteDR'],6,false);
+
+                $this->CargaAtt($trasladoDr, $item);
+
+                $itemP['BaseP']       = $item['BaseDR'];
+                $itemP['ImpuestoP']   = $item['ImpuestoDR'];
+                $itemP['TipoFactorP'] = $item['TipoFactorDR'];
+
+                if ($itemP['TipoFactorP'] !== 'Exento') {
+
+                    $itemP['TasaOCuotaP'] = $item['TasaOCuotaDR'];
+                    $itemP['ImporteP'] = $item['ImporteDR'];
+                }
+
+                $this->CargaAtt($trasladoP, $itemP);
+            }
+
+            if ($totalTrasladosBaseIva16 > 0) {
+
+                $totalesData['TotalTrasladosBaseIVA16'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva16, 2, false);
+                $totalesData['TotalTrasladosImpuestoIVA16'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva16, 2, false);
+            }
+
+            if ($totalTrasladosBaseIva8 > 0) {
+
+                $totalesData['TotalTrasladosBaseIVA8'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva8, 2, false);
+                $totalesData['TotalTrasladosImpuestoIVA8'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva8, 2, false);
+            }
+
+            if ($totalTrasladosBaseIva0 > 0) {
+
+                $totalesData['TotalTrasladosBaseIVA0'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva0, 2, false);
+                $totalesData['TotalTrasladosImpuestoIVA0'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva0, 2, false);
+            }
+
+            if ($totalTrasladosBaseIvaExento > 0) {
+
+                $totalesData['TotalTrasladosBaseIVAExento'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIvaExento, 2, false);
+            }
+        }
+
+        $this->CargaAtt($this->totalesPagos, $totalesData);
+
+
     }
 
     private function buildNodoComplementos() {

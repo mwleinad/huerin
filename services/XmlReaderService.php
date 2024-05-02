@@ -128,15 +128,32 @@ class XmlReaderService extends Comprobante
             $pagos = $versionCFDI == '4.0'
                 ? $xml->xpath('//pago20:Pago')
                 : $xml->xpath('//pago10:Pago');
+
+            $impuestosP = [];
             foreach($pagos as $pago){
                 $card['data'] = $pagos[0];
                 $card['pago'] = $pago[0];
-                $card['doctoRelacionado'] =  $versionCFDI == '4.0'
-                    ? $pago[0]->xpath('//pago20:DoctoRelacionado ')[0]
-                    : $pago[0]->xpath('//pago10:DoctoRelacionado ')[0];
+                $doctoRelacionado = $versionCFDI == '4.0'
+                    ? $pago[0]->xpath('//pago20:DoctoRelacionado ')
+                    : $pago[0]->xpath('//pago10:DoctoRelacionado ');;
+                $card['doctoRelacionado'] =  $doctoRelacionado[0];
+
+
+                if($versionCFDI === '4.0') {
+
+                    $trasladosDR =  $doctoRelacionado[0]->xpath('//pago20:ImpuestosDR//pago20:TrasladosDR');
+                    foreach ($trasladosDR as $trasladoDr)
+                        $card['TrasladosDR'][] = $trasladoDr[0]->xpath('//pago20:TrasladoDR')[0];
+
+                    $trasladosP  = $pago[0]->xpath('//pago20:ImpuestosP//pago20:TrasladosP');
+                    foreach ($trasladosP as $trasladoP)
+                        $impuestosP[] = $trasladoP[0]->xpath('//pago20:TrasladoP')[0];
+
+                }
 
                 $data["pagos"][] = $card;
             }
+            $data['impuestosP'] =  $impuestosP;
         }
         // end cambio v4
 

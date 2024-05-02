@@ -550,6 +550,51 @@ class CxC extends Producto
 		else
 			$compInfo = $comprobante->GetInfoComprobante($id);
 
+        $xmlReader = new XmlReaderService;
+        $empresaId = $compInfo['empresaId'];
+        $rfcActivo = $compInfo['rfcId'];
+        $fileName  = "SIGN_".$compInfo['xml'];
+        $xmlPath = DOC_ROOT.'/empresas/'.$empresaId.'/certificados/'.$rfcActivo.'/facturas/xml/'.$fileName.".xml";
+
+        if(!file_exists($xmlPath)) {
+            $this->Util()->setError(10046, "error", "Documento relacionado no encontrado");
+            $this->Util()->PrintErrors();
+            return false;
+        }
+
+        // Revisión B de Complemento de pago
+        // leer los tipos de impuestos de tipo traslados que tiene la factura y calcularlo sobre el monto pagado
+        $xmlData = $xmlReader->execute($xmlPath, $empresaId,$compInfo['comprobanteId']);
+        $totalDR = $xmlData['cfdi']['Total'];
+
+        $retenciones = [];
+        $traslados   = [];
+
+        if(DESGLOSAR_IMPUESTOS_COMPLEMENTO_PAGO) {
+            foreach ($xmlData['impuestos']['traslados'] ?? [] as $traslado) {
+                $tras = array_values(json_decode(json_encode($traslado), true));
+                $currentTraslado = $tras[0];
+                $porcentaje = (($currentTraslado['Base'] + $currentTraslado['Importe']) / $totalDR);
+                $montoProporcional = $amount * $porcentaje;
+
+                // Todos los impuestos son  TipoFactor  = "Tasa"
+                $trasladoP['BaseDR'] = $montoProporcional / (1 + ($currentTraslado['TasaOCuota']));
+                $trasladoP['ImpuestoDR'] = $currentTraslado['Impuesto'];
+                $trasladoP['TipoFactorDR'] = $currentTraslado['TipoFactor'];
+
+                if ($trasladoP['TipoFactorDR'] !== 'Exento') {
+                    $trasladoP['TasaOCuotaDR'] = $currentTraslado['TasaOCuota'];
+                    $trasladoP['ImporteDR'] = $trasladoP['BaseDR'] * $trasladoP['TasaOCuotaDR'];
+                }
+                $traslados[] = $trasladoP;
+            }
+        }
+
+        $impuestos = [
+            'retenciones' => $retenciones,
+            'traslados'   => $traslados
+        ];
+
 		$user = new User;
 
 		if($efectivo)
@@ -583,9 +628,8 @@ class CxC extends Producto
 		if($comprobantePago){
 			$comprobantePago = new ComprobantePago();
 
-
 			$infoPago = new stdClass();
-
+            $infoPago->impuestosDR = $impuestos;
 			$infoPago->fecha = $fecha;
 			$infoPago->amount = $amount;
 			$infoPago->metodoPago = $metodoDePago;
