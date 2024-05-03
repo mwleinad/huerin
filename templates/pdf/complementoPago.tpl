@@ -62,7 +62,7 @@
                                     {foreach from=$pago.TrasladosDR item=traslado}
                                         <tr class="border-right font-smallest">
                                             <td class="center border-bottom border-left">{$traslado.BaseDR|number}</td>
-                                            <td class="center border-bottom border-left">Traslado ({$catalogos.impuestos[{$traslado.ImpuestoDR}]})s</td>
+                                            <td class="center border-bottom border-left">Traslado ({$catalogos.impuestos[{$traslado.ImpuestoDR}]})</td>
                                             <td class="center border-bottom">{$traslado.TipoFactorDR}</td>
                                             <td class="center border-bottom">{$traslado.TasaOCuotaDR}</td>
                                             <td class="center border-bottom">{$traslado.ImporteDR|number}</td>
