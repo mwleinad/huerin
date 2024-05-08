@@ -64,6 +64,11 @@ switch($_POST['type']){
             $smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
         }
     break;
+    case 'listResource':
+        echo "ok[#]";
+        $smarty->assign("registros",$inventory->enumerateResource());
+        $smarty->display(DOC_ROOT."/templates/lists/resource-office.tpl");
+        break;
     case 'updateResource':
         $inventory->setId($_POST['office_resource_id']);
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
@@ -380,5 +385,12 @@ switch($_POST['type']){
         $nameFile = $acuseResource->getNameReport();
         echo "ok[#]";
         echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+    break;
+
+    case "openImportarResource":
+        $data['title']= "Importar inventario";
+        $data["form"] = "frm-importar-inventory";
+        $smarty->assign("data",$data);
+        $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
 }
