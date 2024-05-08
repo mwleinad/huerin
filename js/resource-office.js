@@ -60,7 +60,7 @@ jQ(document).on('click', ".spanDeleteResponsable", function () {
 jQ(document).on('change', "#tipo_recurso", function () {
     var selected = jQ(this).children('option:selected').val();
 
-    if (['equipo_computo', 'software', 'dispositivo', 'inmobiliaria'].indexOf(selected) === -1) {
+    if (['Computadora', 'Sistemas', 'Accesorios'].indexOf(selected) === -1) {
         jQ('.shared_field').hide()
         return
     }
