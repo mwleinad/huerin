@@ -355,7 +355,7 @@ class Inventory extends Articulo
         return $this->Util()->DB()->GetResult();
     }
 
-    public function listResourceInStock($type = 'dispositivo')
+    public function listResourceInStock($type = 'Accesorios')
     {
         $this->Util()->DB()->setQuery("SELECT office_resource_id, marca, modelo,no_serie, tipo_dispositivo, tipo_software, no_licencia, codigo_activacion 
                                               FROM office_resource 

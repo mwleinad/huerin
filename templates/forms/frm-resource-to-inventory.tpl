@@ -12,9 +12,9 @@
 				<div style="width:70%;float: left;">
 					<select class="largeInput" name="tipo_recurso" id="tipo_recurso">
                         <option value="">Seleccionar...</option>
-						<option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Accesorios</option>
-						<option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Computadora</option>
-						<option value="software" {if $post.tipo_recurso eq "software"}selected{/if}>Sistemas</option>
+						<option value="Accesorios" {if $post.tipo_recurso eq "Accesorios"}selected{/if}>Accesorios</option>
+						<option value="Computadora" {if $post.tipo_recurso eq "Computadora"}selected{/if}>Computadora</option>
+						<option value="Sistemas" {if $post.tipo_recurso eq "Sistemas"}selected{/if}>Sistemas</option>
 					</select>
 				</div>
 				<hr>
@@ -28,8 +28,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Procesador</div>
@@ -39,8 +39,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left">Velocidad de Procesador</div>
@@ -50,8 +50,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Memoria Ram</div>
@@ -61,8 +61,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left">Tipo de Memoria Ram</div>
@@ -72,8 +72,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> * Capacidad Disco Duro</div>
@@ -83,8 +83,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left">Tipo de Disco Duro</div>
@@ -95,8 +95,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo inmobiliaria
-						{if !in_array($post.tipo_recurso, ['equipo_computo', 'inmobiliaria'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}"">
 					<div class="formLine" style="width:100%;  display: inline-block;">
 						<div style="width:30%;float:left"> No. fisico</div>
@@ -107,8 +107,8 @@
 					</div>
 					<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo
-						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="grid_16">
 					<div class="formLine" style="width:100%;  display: inline-block;">
@@ -116,16 +116,16 @@
 						<div style="width:70%;float: left;">
 							<select class="largeInput" id="tipo_equipo" name="tipo_equipo">
 								<option value="">Seleccionar..</option>
-								<option value="escritorio" {if $post.tipo_equipo eq "escritorio"}selected{/if}>Escritorio</option>
-								<option value="portatil" {if $post.tipo_equipo eq "portatil"}selected{/if}>Portatil</option>
+								<option value="Escritorio" {if $post.tipo_equipo eq "Escritorio"}selected{/if}>Escritorio</option>
+								<option value="Portatil" {if $post.tipo_equipo eq "Portatil"}selected{/if}>Portatil</option>
 							</select>
 						</div>
 					</div>
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field dispositivo
-									{if !in_array($post.tipo_recurso, ['dispositivo'])}
+			<div class="grid_16 shared_field Accesorios
+									{if !in_array($post.tipo_recurso, ['Accesorios'])}
 									noShow{/if}">
 				<div class="grid_16">
 					<div class="formLine" style="width:100%;  display: inline-block;">
@@ -133,21 +133,22 @@
 						<div style="width:70%;float: left;">
 							<select class="largeInput" id=tipo_dispositivo name="tipo_dispositivo">
 								<option value="">Seleccionar..</option>
-								<option value="hdmi" {if $post.tipo_dispositivo eq "hdmi"}selected{/if}>HDMI</option>
-								<option value="mousepad" {if $post.tipo_dispositivo eq "mousepad"}selected{/if}>Mousepad</option>
-								<option value="mouse" {if $post.tipo_dispositivo eq "mouse"}selected{/if}>Mouse</option>
-								<option value="teclado" {if $post.tipo_dispositivo eq "teclado"}selected{/if}>Teclado</option>
-								<option value="ventilador" {if $post.tipo_dispositivo eq "ventilador"}selected{/if}>Ventilador</option>
-								<option value="monitor" {if $post.tipo_dispositivo eq "monitor"}selected{/if}>Monitor</option>
-								<option value="vga" {if $post.tipo_dispositivo eq "cable_ventilador"}selected{/if}>Cable VGA</option>
+								<option value="Hdmi" {if $post.tipo_dispositivo eq "Hdmi"}selected{/if}>HDMI</option>
+								<option value="Mousepad" {if $post.tipo_dispositivo eq "Mousepad"}selected{/if}>Mousepad</option>
+								<option value="Mouse" {if $post.tipo_dispositivo eq "Mouse"}selected{/if}>Mouse</option>
+								<option value="Teclado" {if $post.tipo_dispositivo eq "Teclado"}selected{/if}>Teclado</option>
+								<option value="Ventilador" {if $post.tipo_dispositivo eq "Ventilador"}selected{/if}>Ventilador</option>
+								<option value="Monitor" {if $post.tipo_dispositivo eq "Monitor"}selected{/if}>Monitor</option>
+								<option value="Cable VGA" {if $post.tipo_dispositivo eq "Cable VGA"}selected{/if}>Cable VGA</option>
+								<option value="Adicionales" {if $post.tipo_dispositivo eq "Adicionales"}selected{/if}>Cable VGA</option>
 							</select>
 						</div>
 					</div>
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field software
-									{if !in_array($post.tipo_recurso, ['software'])}
+			<div class="grid_16 shared_field Sistemas
+									{if !in_array($post.tipo_recurso, ['Sistemas'])}
 									noShow{/if}">
 				<div class="grid_16">
 					<div class="formLine" style="width:100%;  display: inline-block;">
@@ -155,12 +156,12 @@
 						<div style="width:70%;float: left;">
 							<select class="largeInput" id=tipo_software name="tipo_software">
 								<option value="">Seleccionar..</option>
-								<option value="aspel_coi" {if $post.tipo_software eq "aspel_coi"}selected{/if}>Aspel COI</option>
-								<option value="aspel_noi" {if $post.tipo_software eq "aspel_noi"}selected{/if}>Aspel NOI</option>
-								<option value="aspel_facture" {if $post.tipo_software eq "aspel_facture"}selected{/if}>Aspel Facture</option>
-								<option value="admin_xml" {if $post.tipo_software eq "admin_xml"}selected{/if}>Admin XML</option>
-								<option value="licencia_windows" {if $post.tipo_software eq "licencia_windows"}selected{/if}>Licencia de windows</option>
-								<option value="office" {if $post.tipo_software eq "office"}selected{/if}>Office</option>
+								<option value="Aspel COI" {if $post.tipo_software eq "Aspel COI"}selected{/if}>Aspel COI</option>
+								<option value="Aspel NOI" {if $post.tipo_software eq "Aspel NOI"}selected{/if}>Aspel NOI</option>
+								<option value="Aspel Facture" {if $post.tipo_software eq "Aspel Facture"}selected{/if}>Aspel Facture</option>
+								<option value="Admin XML" {if $post.tipo_software eq "Admin XML"}selected{/if}>Admin XML</option>
+								<option value="Licencia de Windows" {if $post.tipo_software eq "Licencia de Windows"}selected{/if}>Licencia de Windows</option>
+								<option value="Office" {if $post.tipo_software eq "Office"}selected{/if}>Office</option>
 							</select>
 						</div>
 					</div>
@@ -224,7 +225,7 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo software {if !in_array($post.tipo_recurso, ['equipo_computo', 'software'])}noShow{/if}">
+			<div class="grid_16 shared_field Computadora software {if !in_array($post.tipo_recurso, ['Computadora', 'Sistemas'])}noShow{/if}">
 				<div class="grid_8">
 					<div class="formLine" style="width:100%;  display: inline-block;">
 						<div style="width:30%;float:left"> No. licencia</div>
@@ -243,7 +244,7 @@
 				</div>
 				<hr>
 			</div>
-            <div class="grid_16 shared_field software {if !in_array($post.tipo_recurso, ['software'])}noShow{/if}">
+            <div class="grid_16 shared_field Sistemas {if !in_array($post.tipo_recurso, ['Sistemas'])}noShow{/if}">
                 <div class="grid_8">
                     <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:30%;float:left"> Fecha de vencimiento</div>
@@ -257,7 +258,7 @@
                 </div>
                 <hr>
             </div>
-			<div class="grid_16 shared_field equipo_computo {if !in_array($post.tipo_recurso, ['equipo_computo'])}noShow{/if}">
+			<div class="grid_16 shared_field Computadora {if !in_array($post.tipo_recurso, ['Computadora'])}noShow{/if}">
 				<div class="grid_16">
 					<div style="text-align: left; padding-bottom:5px">Vincular dispositivos con el equipo de computo.</div>
 				</div>
@@ -286,7 +287,7 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo {if !in_array($post.tipo_recurso, ['equipo_computo'])}noShow{/if}">
+			<div class="grid_16 shared_field Computadora {if !in_array($post.tipo_recurso, ['Computadora'])}noShow{/if}">
 				<div class="grid_16">
 					<div style="text-align: left; padding-bottom:5px">Vincular softwares con el equipo de computo.</div>
 				</div>
@@ -315,8 +316,8 @@
 				</div>
 				<hr>
 			</div>
-			<div class="grid_16 shared_field equipo_computo inmobiliaria
-						{if !in_array($post.tipo_recurso, ['equipo_computo', 'inmobiliaria'])}
+			<div class="grid_16 shared_field Computadora
+						{if !in_array($post.tipo_recurso, ['Computadora'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
 					<div style="width:30%;float:left"> Observaciones</div>

@@ -19,12 +19,12 @@ switch($_POST['type']){
         $smarty->assign("data",$data);
         $smarty->assign("consecutive",$inventory->getConsecutiveIdResource());
         $smarty->assign("devices",$inventory->listResourceInStock());
-        $smarty->assign("softwares",$inventory->listResourceInStock('software'));
+        $smarty->assign("softwares",$inventory->listResourceInStock('Sistemas'));
         $smarty->display(DOC_ROOT."/templates/boxes/general-popup.tpl");
     break;
     case 'saveResource':
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
-        if(in_array($_POST['tipo_recurso'], ['equipo_computo', 'inmobiliaria']))
+        if(in_array($_POST['tipo_recurso'], ['Computadora']))
             $inventory->setDescripcion($_POST['descripcion']);
 
 
@@ -36,17 +36,17 @@ switch($_POST['type']){
         $inventory->setMarca($_POST['marca']);
         $inventory->setModelo($_POST['modelo']);
         $inventory->setProcesador($_POST['procesador']);
-        if($_POST['tipo_recurso'] === 'equipo_computo') {
+        if($_POST['tipo_recurso'] === 'Computadora') {
             $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
             $inventory->setMemoriaRam($_POST['memoria_ram']);
             $inventory->setDiscoDuro($_POST['disco_duro']);
         }
 
-        if($_POST['tipo_recurso'] === 'dispositivo')
+        if($_POST['tipo_recurso'] === 'Accesorios')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
 
-        if($_POST['tipo_recurso'] === 'software') {
+        if($_POST['tipo_recurso'] === 'Sistemas') {
             $inventory->setTipoSoftware($_POST['tipo_software']);
             $inventory->setFechaVencimiento($_POST['vencimiento']);
         }
@@ -73,7 +73,7 @@ switch($_POST['type']){
         $inventory->setId($_POST['office_resource_id']);
         $inventory->setTipoRecurso($_POST['tipo_recurso']);
         //$inventory->setNombre($_POST['nombre']);
-        if(in_array($_POST['tipo_recurso'], ['equipo_computo', 'inmobiliaria']))
+        if(in_array($_POST['tipo_recurso'], ['Computadora']))
             $inventory->setDescripcion($_POST['descripcion']);
 
         $inventory->setFechaCompra($_POST['fecha_compra']);
@@ -85,17 +85,17 @@ switch($_POST['type']){
         $inventory->setModelo($_POST['modelo']);
         $inventory->setProcesador($_POST['procesador']);
 
-        if($_POST['tipo_recurso'] === 'equipo_computo') {
+        if($_POST['tipo_recurso'] === 'Computadora') {
             $inventory->setNoInventario($_POST['no_inventario']);
             $inventory->setTipoEquipo($_POST['tipo_equipo']);
             $inventory->setMemoriaRam($_POST['memoria_ram']);
             $inventory->setDiscoDuro($_POST['disco_duro']);
         }
 
-        if($_POST['tipo_recurso'] === 'dispositivo')
+        if($_POST['tipo_recurso'] === 'Accesorios')
             $inventory->setTipoDispositivo($_POST['tipo_dispositivo']);
 
-        if($_POST['tipo_recurso'] === 'software') {
+        if($_POST['tipo_recurso'] === 'Sistemas') {
             $inventory->setTipoSoftware($_POST['tipo_software']);
             $inventory->setFechaVencimiento($_POST['vencimiento']);
         }
