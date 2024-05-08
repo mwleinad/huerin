@@ -12,11 +12,19 @@
 				<div style="width:70%;float: left;">
 					<select class="largeInput" name="tipo_recurso" id="tipo_recurso">
                         <option value="">Seleccionar...</option>
-						<option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Dispositivo</option>
-						<option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Equipo de computo</option>
-						<option value="software" {if $post.tipo_recurso eq "software"}selected{/if}>Software</option>
-						<option value="inmobiliaria" {if $post.tipo_recurso eq "inmobiliaria"}selected{/if}>Inmobiliaria</option>
+						<option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Accesorios</option>
+						<option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Computadora</option>
+						<option value="software" {if $post.tipo_recurso eq "software"}selected{/if}>Sistemas</option>
 					</select>
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16">
+				<div class="formLine" style="width:100%;  display: inline-block;">
+					<div style="width:30%;float:left"> * Ubicación</div>
+					<div style="width:70%;float: left;">
+						<input name="ubicacion" id="ubicacion" class="largeInput" value="{$post.ubicacion}" />
+					</div>
 				</div>
 				<hr>
 			</div>
@@ -28,7 +36,6 @@
 					<div style="width:70%;float: left;">
 						<input name="procesador" id="procesador" class="largeInput" value="{$post.procesador}" />
 					</div>
-
 				</div>
 				<hr>
 			</div>
@@ -36,11 +43,32 @@
 						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
 						noShow{/if}">
 				<div class="formLine" style="width:100%;  display: inline-block;">
-					<div style="width:30%;float:left"> * Tamaño de Memoria Ram</div>
+					<div style="width:30%;float:left">Velocidad de Procesador</div>
+					<div style="width:70%;float:left;">
+						<input name="velocidad_procesador" id="velocidad_procesador" class="largeInput" value="{$post.velocidad_procesador}" />
+					</div>
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo
+						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+						noShow{/if}">
+				<div class="formLine" style="width:100%;  display: inline-block;">
+					<div style="width:30%;float:left"> * Memoria Ram</div>
 					<div style="width:70%;float: left;">
 						<input name="memoria_ram" id="memoria_ram" class="largeInput" value="{$post.memoria_ram}" />
 					</div>
-
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo
+						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+						noShow{/if}">
+				<div class="formLine" style="width:100%;  display: inline-block;">
+					<div style="width:30%;float:left">Tipo de Memoria Ram</div>
+					<div style="width:70%;float: left;">
+						<input name="tipo_memoria_ram" id="tipo_memoria_ram" class="largeInput" value="{$post.tipo_memoria_ram}" />
+					</div>
 				</div>
 				<hr>
 			</div>
@@ -52,6 +80,17 @@
 					<div style="width:70%;float: left;">
 						<input name="disco_duro" id="disco_duro" class="largeInput" value="{$post.disco_duro}" />
 					</div>
+				</div>
+				<hr>
+			</div>
+			<div class="grid_16 shared_field equipo_computo
+						{if !in_array($post.tipo_recurso, ['equipo_computo'])}
+						noShow{/if}">
+				<div class="formLine" style="width:100%;  display: inline-block;">
+					<div style="width:30%;float:left">Tipo de Disco Duro</div>
+					<div style="width:70%;float: left;">
+						<input name="tipo_disco_duro" id="tipo_disco_duro" class="largeInput" value="{$post.tipo_disco_duro}" />
+					</div>
 
 				</div>
 				<hr>
@@ -60,7 +99,7 @@
 						{if !in_array($post.tipo_recurso, ['equipo_computo', 'inmobiliaria'])}
 						noShow{/if}"">
 					<div class="formLine" style="width:100%;  display: inline-block;">
-						<div style="width:30%;float:left"> No. inventario</div>
+						<div style="width:30%;float:left"> No. fisico</div>
 						<div style="width:70%;float: left;">
 							<input name="no_inventario" id="no_inventario" class="largeInput" value="{$post.no_inventario}"
 									{if $post.tipo_recurso eq 'dispositivo' && $post.no_inventario}readonly{/if} />
@@ -94,18 +133,13 @@
 						<div style="width:70%;float: left;">
 							<select class="largeInput" id=tipo_dispositivo name="tipo_dispositivo">
 								<option value="">Seleccionar..</option>
-								<option value="nobreak" {if $post.tipo_dispositivo eq "nobreak"}selected{/if}>No Break</option>
 								<option value="hdmi" {if $post.tipo_dispositivo eq "hdmi"}selected{/if}>HDMI</option>
-								<option value="hubusb" {if $post.tipo_dispositivo eq "hubusb"}selected{/if}>Hubusb</option>
 								<option value="mousepad" {if $post.tipo_dispositivo eq "mousepad"}selected{/if}>Mousepad</option>
-								<option value="ethernet" {if $post.tipo_dispositivo eq "ethernet"}selected{/if}>Ethernet</option>
 								<option value="mouse" {if $post.tipo_dispositivo eq "mouse"}selected{/if}>Mouse</option>
 								<option value="teclado" {if $post.tipo_dispositivo eq "teclado"}selected{/if}>Teclado</option>
 								<option value="ventilador" {if $post.tipo_dispositivo eq "ventilador"}selected{/if}>Ventilador</option>
 								<option value="monitor" {if $post.tipo_dispositivo eq "monitor"}selected{/if}>Monitor</option>
-								<option value="cable_ventilador" {if $post.tipo_dispositivo eq "cable_ventilador"}selected{/if}>Cable Ventilador</option>
-								<option value="convertidor_hdmi" {if $post.tipo_dispositivo eq "cable_ventilador"}selected{/if}>Convertidor HDMI</option>
-								<option value="convertidor_vga" {if $post.tipo_dispositivo eq "cable_ventilador"}selected{/if}>Convertidor VGA</option>
+								<option value="vga" {if $post.tipo_dispositivo eq "cable_ventilador"}selected{/if}>Cable VGA</option>
 							</select>
 						</div>
 					</div>
@@ -124,10 +158,9 @@
 								<option value="aspel_coi" {if $post.tipo_software eq "aspel_coi"}selected{/if}>Aspel COI</option>
 								<option value="aspel_noi" {if $post.tipo_software eq "aspel_noi"}selected{/if}>Aspel NOI</option>
 								<option value="aspel_facture" {if $post.tipo_software eq "aspel_facture"}selected{/if}>Aspel Facture</option>
-								<option value="aspel_sae" {if $post.tipo_software eq "aspel_sae"}selected{/if}>Aspel SAE</option>
 								<option value="admin_xml" {if $post.tipo_software eq "admin_xml"}selected{/if}>Admin XML</option>
-								<option value="adobe_photoshop" {if $post.tipo_software eq "adobe_photoshop"}selected{/if}>Adobe Photoshop</option>
-								<option value="adobe_ilustrator" {if $post.tipo_software eq "adobe_ilustrator"}selected{/if}>Adobe Ilustrator</option>
+								<option value="licencia_windows" {if $post.tipo_software eq "licencia_windows"}selected{/if}>Licencia de windows</option>
+								<option value="office" {if $post.tipo_software eq "office"}selected{/if}>Office</option>
 							</select>
 						</div>
 					</div>

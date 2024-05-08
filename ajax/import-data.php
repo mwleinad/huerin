@@ -1140,6 +1140,18 @@ switch ($opcion[0]) {
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
 
+        $columnasRequeridas = [
+            'tipo_recurso',
+            'no_fisico',
+            'estatus',
+            'ubicacion',
+            'fecha_compra',
+            'costo_compra',
+            'fecha_alta',
+            'fecha_vencimiento',
+            'costo_recuperacion'
+        ];
+
         $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
         $keys = [];
         $keysExcludes = [];
@@ -1155,12 +1167,18 @@ switch ($opcion[0]) {
             array_push($keys, $header);
         }
 
+        foreach ($columnasRequeridas as $columna) {
+            if(!in_array($columna, $keys)) {
+                $util->setError(0, 'error','La columna '.$columna. ' es requerida');
+            }
+        }
         $jsonData = [];
         for ($row = 2; $row <= $highestRow; $row++){
             $currentRows = $sheet->rangeToArray('A'.$row. ":" . $sheet->getHighestColumn() . $row);
             foreach ($indexExclude as $kex)
                 unset($currentRows[0][$kex]);
-            if(is_null($currentRows[0][1]))
+
+            if(is_null($currentRows[0][0]))
                 continue;
             $jsonData[] = array_combine($keys, $currentRows[0]);
         }
@@ -1170,6 +1188,17 @@ switch ($opcion[0]) {
         $store =  "call sp_importar_inventario('".$jsonParam."', '".$pUsuario."', @pData)";
         $db->setQuery($store);
         $res = 0;
+        if(count($jsonData)<= 0) {
+            $util->setError(0, 'error','Error al importar registros, verifique el archivo excel');
+        }
+
+        if ($util->PrintErrors()) {
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+            exit;
+        }
+
+
         if($res = $db->ExcuteConsulta()) {
             $db->setQuery('select @pData');
             $data= $db->GetSingle();
@@ -1187,7 +1216,7 @@ switch ($opcion[0]) {
                 $util->setError(0, 'complete', $mensaje);
             }
         } else {
-            $util->setError(0, 'error','Error al importar registros');
+            $util->setError(0, 'error','Error al importar registros, verifique el archivo excel');
         }
         echo $res ? 'ok[#]' : 'fail[#]';
         $util->PrintErrors();

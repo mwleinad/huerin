@@ -5,6 +5,7 @@
     </div>
     <div class="grid_6" id="eventbox">
         {if in_array(255,$permissions)|| $User.isRoot}
+            <a style="cursor:pointer" title="Importar inventario" id="openImportar"><img src="{$WEB_ROOT}/images/upCloud24.png" width="16" /></a>
             <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
             <div id="loadPrint">
             </div>

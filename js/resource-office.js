@@ -116,6 +116,19 @@ function searchResource() {
     });
 }
 
+function listResource() {
+    jQ.ajax({
+        url: AJAX_PATH,
+        method: 'post',
+        data: { type:'listResource'},
+        success: function (response) {
+            var splitResp = response.split("[#]");
+            jQ('#contenido').html(splitResp[1]);
+        }
+    });
+}
+
+
 function executeFunResource() {
     var form = jQ(this).parents('form:first');
     var fd = new FormData(form[0]);
@@ -304,3 +317,76 @@ jQ(document).on('click', '.spanDownloadAcuse', function () {
         }
     })
 })
+
+jQ(document).on('click', '#openImportar', function () {
+    jQ('#fview').show();
+    jQ.ajax({
+        url: AJAX_PATH,
+        method: 'post',
+        data: {type: 'openImportarResource'},
+        success: function (response) {
+            FViewOffSet('');
+            FViewOffSet(response);
+            jQ('#closePopUpDiv').on('click', function () {
+                close_popup();
+            });
+            jQ('#btn-importar-resource').on('click', executeFunResource);
+        }
+    });
+});
+
+
+jQ(document).on('click','#btn-importar-resource', function() {
+    var id = this.id;
+    var form = jQ(this).parents('form:first');
+    var fd = new FormData(form[0]);
+    fd.set('type', 'importar-inventario');
+    jQ.ajax({
+        url: WEB_ROOT+'/ajax/import-data.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        beforeSend: function () {
+            jQ('#loading-img').show();
+            jQ('#btn-importar-resource').hide();
+        },
+        success: function (response) {
+            jQ('#btn-importar-resource').show();
+            var splitResp = response.split("[#]");
+            if(splitResp[0]=='ok'){
+                jQ('#loading-img').hide();
+                ShowStatusPopUp(splitResp[1]);
+                listResource();
+                close_popup();
+            }
+            else{
+                jQ('#btn-importar-resource').show();
+                ShowStatusPopUp(splitResp[1]);
+            }
+        },
+        error: function () {
+            jQ('#btn-importar-resource').show();
+            jQ('#loading-img').hide();
+            form[0].reset();
+            ShowErrorOnPopup("Error al importar",true)
+        }
+    });
+});
+
+jQ(document).on('click', '#btn-descargar-layout', function () {
+    jQ.ajax({
+        url: WEB_ROOT+'/ajax/exp-imp-layout.php',
+        method: 'post',
+        data: { type: 'layout-inventario' },
+        beforeSend: function() {
+            jQ("#loading-layout").show();
+            jQ("#btn-descargar-layout").hide();
+        },
+        success: function (response) {
+            jQ("#loading-layout").hide();
+            jQ("#btn-descargar-layout").show();
+            window.location=response;
+        }
+    });
+});
