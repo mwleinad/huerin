@@ -130,6 +130,11 @@
                     <li><a href="{$WEB_ROOT}/report-cxc" {if $page == "report-cxc"}class="current"{/if} target="_blank">
                     <span>Reporte CxC</span></a></li>
                 {/if}
+
+                {if in_array(305,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-cobranza-detallado" {if $page == "report-cobranza-detallado"}class="current"{/if} target="_blank">
+                            <span>Cobranza detallado</span></a></li>
+                {/if}
                 {if in_array(157,$permissions)|| $User.isRoot}
                 <li><a href="{$WEB_ROOT}/report-documentacion-permanente" {if $page == "report-documentacion-permanente"}class="current"{/if} target="_blank">
                     <span>Documentos Permanentes</span></a></li>

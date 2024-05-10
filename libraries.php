@@ -282,6 +282,9 @@ $clasificacion = new Clasificacion;
 include_once(DOC_ROOT."/classes/bitacora.class.php");
 $bitacora = new Bitacora;
 
+include_once(DOC_ROOT."/classes/CobranzaDetallado.class.php");
+$cobranzaDetallado = new CobranzaDetallado;
+
 
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
