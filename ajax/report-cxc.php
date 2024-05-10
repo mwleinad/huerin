@@ -139,7 +139,14 @@ switch($_POST["type"])
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/add-email-popup.tpl');
 			
-		break;
+	break;
+	case 'generarReporteDetallado':
+
+		$cobranzaDetallado->generateReport($_POST['year']);
+		$nameFile = $cobranzaDetallado->getNameReport();
+		echo "ok[#]";
+		echo WEB_ROOT."/download.php?file=".WEB_ROOT."/sendFiles/$nameFile";
+	break;
 				
 }
 

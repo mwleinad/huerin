@@ -74,6 +74,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		//Reportes
 		'report-cliente',
 		'report-cobranza-new',
+		'report-cobranza-detallado',
 		'report-servicio-mensual',
 		'report-servicio-auditoria',
 		'report-cxc',
