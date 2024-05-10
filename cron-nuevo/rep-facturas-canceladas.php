@@ -108,7 +108,11 @@ foreach($razones as $key => $rfc){
     if(REP_STATUS=='test')
         $to = array(EMAIL_DEV=>'Desarrollador');
     else
-        $to = array('rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',EMAIL_DEV=>'Desarrollador');
+        $to = array(
+            'rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',
+             EMAIL_DEV=>'Desarrollador',
+            'brivera@braunhuerin.com.mx'=>'Beatriz Edith Rivera Ortega'
+        );
 
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
     $sendmail->PrepareMultiple($subject, utf8_decode($body), $to, $toName, $attachment, $file.".xlsx", $file_zip, $file_name,'noreply@braunhuerin.com.mx' , "FACTURACION PLATAFORMA") ;
