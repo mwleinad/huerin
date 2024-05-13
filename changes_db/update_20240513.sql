@@ -65,6 +65,9 @@ OPEN cursor_comprobantes;
 itera_comprobante: REPEAT
 			FETCH cursor_comprobantes INTO vComprobanteId,vFecha,vSerie,vFolio,vTotalFactura,vCliente,vRazon,vResponsables;
 
+
+			set vRazon = REPLACE( TRIM( vRazon ), '&amp;', '&' );
+
 			IF !JSON_VALID(vResponsables)  THEN
 			 SET vResponsables =  null;
 
