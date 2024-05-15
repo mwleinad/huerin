@@ -89,7 +89,8 @@ END IF;
 SELECT servicio.status,tipoServicio.nombreServicio,(SELECT departamento FROM departamentos WHERE departamentoId = tipoServicio.departamentoId LIMIT 1) area FROM servicio INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
 WHERE servicio.servicioId = vServicioId  INTO vStatusServicio,vNombreServicio,vArea;
 
-SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId INTO vPagosAfactura;
+
+SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' INTO vPagosAfactura;
 
 CASE vStatusServicio
 								WHEN vStatusServicio = 'activo' THEN
