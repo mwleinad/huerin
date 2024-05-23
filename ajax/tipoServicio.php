@@ -329,7 +329,7 @@ switch($_POST["type"])
 
         $row +=2;
 
-        $sheet->setCellValueByColumnAndRow(6, $row, '')
+        $sheet->setCellValueByColumnAndRow(6, $row, 10)
             ->getStyleByColumnAndRow(6, $row)->getFont()->setBold(true);
         $coorPorDescuento = PHPExcel_Cell::stringFromColumnIndex(6).$row;
 
