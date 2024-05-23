@@ -195,7 +195,7 @@ switch($_POST["type"])
                     from tipoServicio
                 where status = '1' 
                 AND nombreServicio 
-                NOT LIKE '%Z*%' HAVING area != ''
+                NOT LIKE '%Z*%' HAVING area != '' ORDER BY area
         ";
 
         $db->setQuery($sql);
@@ -225,4 +225,184 @@ switch($_POST["type"])
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
 
     break;
+
+    case 'matrizServicio':
+        global $global_config_style_cell;
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('Matriz de servicios');
+
+        $styleHeader =array(
+            'fill' => array(
+                'type'  => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '666666')
+            ),
+            'font' => array(
+                'bold' => true,
+                'color' => array('rgb' => 'FFFFFF'),
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        );
+
+        $stylePorcentaje= array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00,
+            ],
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        );
+
+        $styleSimpleText = array_merge($global_config_style_cell['style_simple_text_whit_border'],array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_GENERAL,
+            ],
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
+
+        $styleCurrency = array_merge($global_config_style_cell['style_currency'],array(
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
+
+        $row=1;
+        $darkInicio = PHPExcel_Cell::stringFromColumnIndex() . $row;
+
+        $sheet->setCellValueByColumnAndRow(0, $row, 'Area')
+            ->getStyleByColumnAndRow()->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(1, $row, 'Persona')
+            ->getStyleByColumnAndRow(1, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(2, $row, 'Periodicidad')
+            ->getStyleByColumnAndRow(2, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(3, $row, 'Nomenclatura')
+            ->getStyleByColumnAndRow(3, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(4, $row, 'Servicio')
+            ->getStyleByColumnAndRow(4, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(5, $row, 'Cuota minima')
+            ->getStyleByColumnAndRow(5, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(6, $row, 'Cuota con descuento')
+            ->getStyleByColumnAndRow(6, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(7, $row, 'Documentación')
+            ->getStyleByColumnAndRow(7, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(8, $row, 'Cotización')
+            ->getStyleByColumnAndRow(8, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(9, $row, 'Presupuesto')
+            ->getStyleByColumnAndRow(9, $row)->getFont()->setBold(true);
+
+
+        $row +=2;
+
+        $sheet->setCellValueByColumnAndRow(6, $row, '')
+            ->getStyleByColumnAndRow(6, $row)->getFont()->setBold(true);
+        $coorPorDescuento = PHPExcel_Cell::stringFromColumnIndex(6).$row;
+
+        $darkFin = PHPExcel_Cell::stringFromColumnIndex(9) . $row;
+        $sheet->getStyle($darkInicio . ":" . $darkFin)->applyFromArray($styleHeader);
+        $sheet->getStyle($coorPorDescuento)->applyFromArray($stylePorcentaje);
+
+        $row++;
+
+
+        $sql = "select 
+                    (select departamento from departamentos where departamentos.departamentoId = tipoServicio.departamentoId limit 1) as area, 
+                    SUBSTRING_INDEX(nombreServicio,' ',1) nomenclatura, 
+                    TRIM(SUBSTRING(nombreServicio, LENGTH(SUBSTRING_INDEX(nombreServicio,' ',1))+1, LENGTH(nombreServicio))) as nombre,
+                    claveSat clave_sat,
+                    periodicidad,
+                    periodicidad periodicidad_de_facturacion,
+                    costoVisual costo
+                    from tipoServicio
+                where status = '1' 
+                AND nombreServicio 
+                NOT LIKE '%Z*%' HAVING area != '' ORDER BY area
+        ";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['area'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['periodicidad'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nomenclatura'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombre'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $coorCosto = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['costo'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleCurrency);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, "=$coorCosto-($coorCosto*$coorPorDescuento)")
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleCurrency);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "matriz_de_servicios.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+
+        break;
 }

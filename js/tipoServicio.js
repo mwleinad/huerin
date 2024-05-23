@@ -133,3 +133,24 @@ function ExportCatalogoServicio()
 		}
 	});
 }
+
+function ExportMatrizServicio()
+{
+	var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+	if(!resp)
+		return;
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/tipoServicio.php',
+		type:'post',
+		data:{ 'type':'matrizServicio'},
+		beforeSend: function () {
+
+		},
+		success:function (response) {
+			window.location = response
+		},
+		error:function () {
+			alert("Error al mostrar informacion!!");
+		}
+	});
+}
