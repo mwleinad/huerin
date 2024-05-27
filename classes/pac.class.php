@@ -262,6 +262,16 @@ class Pac extends Util
         return $data;
     }
 
+    function Cancelar(array $data) {
+
+        try {
+            $client = new SoapClient(FINKOK_URL_CANCELACION, ['trace' => 1]);
+            return $client->__soapCall('cancel', array($data));
+        } catch( Throwable $e ) {
+            return false;
+        }
+    }
+
     function GenerateCadenaOriginalTimbre($data)
     {
         $cadenaOriginal = "||";

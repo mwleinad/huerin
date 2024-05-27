@@ -745,10 +745,12 @@ class Comprobante extends Producto
         return true;
     }//GenerarComprobante
 
-    function CancelarCfdi($id_comprobante, $motivoSat, $notaCredito = false, $uuid_sustitucion = '', $motivo_cancelacion = '')
+    function CancelarCfdi($id_comprobante, $motivoSat, $notaCredito = false, $uuidSustitucion = '', $motivo_cancelacion = '')
     {
         global $cancelation, $servicio;
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery("SELECT noCertificado, xml, rfc,
+            (select rfc from rfc where rfcId = comprobante.rfcId limit 1) rfc_emisor,
+            (select noCertificado from serie where rfcId = comprobante.rfcId limit 1) noCertificado,
             comprobante.userId, comprobante.empresaId, comprobante.rfcId,
             comprobante.tiposComprobanteId,version,
             comprobante.total, comprobante.fecha
@@ -759,65 +761,77 @@ class Comprobante extends Producto
         $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
         $xml = $row["xml"];
 
-        $sql = "select noCertificado from serie where rfcId = '" . $row['rfcId'] . "' limit 1";
-        $this->Util()->DB()->setQuery($sql);
-        $row['noCertificado'] = $this->Util()->DB()->GetSingle();
-
-        $rfcActivo = $this->getRfcActive();
+        $rfcActivo = $row["rfcId"];
 
         $xmlReaderService = new XmlReaderService;
         $xmlPath = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
         $xmlData = $xmlReaderService->execute($xmlPath, $_SESSION["empresaId"]);
         $uuid = (string)$xmlData['timbreFiscal']['UUID'];
 
-        $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/" . $row["noCertificado"] . ".cer.pfx";
-
-        $user = USER_PAC;
-        $pw = PW_PAC;
-        $pac = new Pac;
-
-        //get password
-        $root = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/password.txt";
-        $fh = fopen($root, 'r');
-        $password = fread($fh, filesize($root));
-
+        $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/" . $row["noCertificado"] . ".cer.pem";
+        $fh = fopen($path, 'r');
+        $contentCer = fread($fh, filesize($path));
         fclose($fh);
 
+        $root = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/". $rfcActivo . "/password.txt";
+        $fh = fopen($root, 'r');
+        $password = fread($fh, filesize($root));
+        fclose($fh);
+
+        exec("openssl rsa -in ".DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".key.pem -des3 -out ". DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc -passout pass:".FINKOK_PASS);
+
+        $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc";
+        $fh = fopen($path, 'r');
+        $contentKey = fread($fh, filesize($path));
+        fclose($fh);
+
+        $pac = new Pac;
         if (!$password) {
             $this->Util()->setError('', "error", "Tienes que actualizar tu certificado para que podamos obtener el password");
             $this->Util()->PrintErrors();
             return false;
         }
-        $this->setRfcId($rfcActivo);
-        $nodoEmisorRfc = $this->InfoRfc();
-        $response = $pac->CancelaCfdi2018($user,
-            $pw,
-            $nodoEmisorRfc["rfc"],
-            $row['rfc'],
-            $uuid,
-            $row['total'],
-            $path,
-            $password,
-            $motivoSat,
-            $uuid_sustitucion);
-        if ($response['cancelado']) {
-            if ($response['conAceptacion']) {
-                $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $nodoEmisorRfc["rfc"], $row['rfc'], $uuid, $row['total'],$motivoSat, $uuid_sustitucion, $motivo_cancelacion);
-            } else {
-                $sqlQuery = 'UPDATE comprobante 
+        $uuidItem = [
+            "UUID" => $uuid,
+            "Motivo" => $motivoSat,
+            "FolioSustitucion" => $uuidSustitucion
+        ];
+
+        $uuids = ['UUID' => $uuidItem];
+
+        $data = [
+            "UUIDS" => $uuids,
+            "username" => FINKOK_USER,
+            "password" => FINKOK_PASS,
+            "taxpayer_id" => $row["rfc_emisor"],
+            "cer" => $contentCer,
+            "key" => $contentKey
+        ];
+
+        $response = $pac->Cancelar($data);
+        if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201,202])) {
+
+            switch ($response->cancelResult->Folios->Folio->EstatusUUID) {
+                case 201:
+                     $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'],$motivoSat, $uuidSustitucion, $motivo_cancelacion);
+                    break;
+                case 202:
+                    $sqlQuery = 'UPDATE comprobante 
                              SET 
                                  motivoCancelacionSat = "'.$motivoSat.'",
                                  motivoCancelacion = "' . $motivo_cancelacion . '", 
-                                 uuidSustitucion = "' . $uuid_sustitucion . '", 
+                                 uuidSustitucion = "' . $uuidSustitucion . '", 
                                  status = "0", 
                                  fechaPedimento = "' . date("Y-m-d") . '",
                                  usuarioCancelacion="' . $_SESSION['User']['userId'] . '" 
                              WHERE comprobanteId = ' . $id_comprobante;
-                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
-                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
-                $servicio->resetDateLastProcessInvoice($row['userId']);
-                $cancelation->updateInstanciaIfExist($id_comprobante);
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                    $servicio->resetDateLastProcessInvoice($row['userId']);
+                    $cancelation->updateInstanciaIfExist($id_comprobante);
+                    break;
             }
+
             //si es version antes de 3.3 , stampar cancelado en el pdf.
             if ($row["version"] == "2.0") {
                 $fileName = $xml . ".pdf";
@@ -839,17 +853,18 @@ class Comprobante extends Producto
                 $pdf->Cell(20, 10, "CANCELADO", 0, 0, 'L');
                 $pdf->Output($path, 'F');
             }
-            $this->Util()->setError('', "complete", $response['message']);
+            $this->Util()->setError('', "complete", 'Cancelación realizado correctamente.');
             $this->Util()->PrintErrors();
             return true;
         } else {
-            $this->Util()->setError('', "error", $response['message']);
+            $this->Util()->setError('', "error", $response);
             $this->Util()->PrintErrors();
             return false;
         }
     }//CancelarComprobante
 
     function CancelarCfdiFromSustitucion($idAnterior, $idActual ) {
+
         global $cancelation, $personal;
         $sqlAnterior = "SELECT a.noCertificado, a.xml, b.rfc, a.rfcId, a.empresaId, a.rfcId,a.serie, a.folio,
                                a.tiposComprobanteId,a.version, a.total, a.fecha, b.name, c.rfc rfcEmisor
@@ -879,52 +894,72 @@ class Comprobante extends Producto
 
         $xmlReaderService = new XmlReaderService;
         $xmlPath = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
-        $xmlData = [];
+
         if(is_file($xmlPath)) {
             $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
             $uuidToCancel = (string)$xmlData['timbreFiscal']['UUID'];
         }
-        $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/" . $noCertificado . ".cer.pfx";
 
-        $user = USER_PAC;
-        $pw = PW_PAC;
-        $pac = new Pac;
-
-        $pathPassword = DOC_ROOT . "/empresas/" . $empresaId. "/certificados/" . $rfcActivo . "/password.txt";
-        $fh = fopen($pathPassword, 'r');
-        $password = fread($fh, filesize($pathPassword));
+        $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/" . $noCertificado . ".cer.pem";
+        $fh = fopen($path, 'r');
+        $contentCer = fread($fh, filesize($path));
         fclose($fh);
 
+        $root = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/". $rfcActivo . "/password.txt";
+        $fh = fopen($root, 'r');
+        $password = fread($fh, filesize($root));
+        fclose($fh);
+
+        exec("openssl rsa -in ".DOC_ROOT ."/empresas/" . $empresaId . "/certificados/".$rfcActivo."/". $noCertificado . ".key.pem -des3 -out ". DOC_ROOT ."/empresas/" . $empresaId . "/certificados/".$rfcActivo."/". $noCertificado . ".enc -passout pass:".FINKOK_PASS);
+
+        $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/".$rfcActivo."/". $noCertificado . ".enc";
+        $fh = fopen($path, 'r');
+        $contentKey = fread($fh, filesize($path));
+        fclose($fh);
+
+        $pac = new Pac;
 
         $timbreFiscal = unserialize($rowActual['timbreFiscal']);
         $uuidSustitucion = $timbreFiscal["UUID"];
 
-        $response = $pac->CancelaCfdi2018($user,
-            $pw,
-            $rfcEmisor,
-            $rfcReceptor,
-            $uuidToCancel,
-            $total,
-            $path,
-            $password,
-            '02',
-            $uuidSustitucion);
+        $uuidItem = [
+            "UUID" => $uuidToCancel,
+            "Motivo" => '02',
+            "FolioSustitucion" => $uuidSustitucion
+        ];
 
-        if ($response['cancelado']) {
-            if ($response['conAceptacion']) {
-                $cancelation->addPetition($_SESSION['User']['userId'], $idActual, $rfcEmisor, $row['rfc'], $uuidToCancel, $total, $motivoSat , $uuidSustitucion, $motivoCancel);
-            } else {
-                $sqlQuery = 'UPDATE comprobante 
+        $uuids = ['UUID' => $uuidItem];
+
+        $data = [
+            "UUIDS" => $uuids,
+            "username" => FINKOK_USER,
+            "password" => FINKOK_PASS,
+            "taxpayer_id" => $rfcEmisor,
+            "cer" => $contentCer,
+            "key" => $contentKey
+        ];
+
+        $response = $pac->Cancelar($data);
+
+        if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201,202])) {
+
+            switch ($response->cancelResult->Folios->Folio->EstatusUUID) {
+                case 201:
+                    $cancelation->addPetition($_SESSION['User']['userId'], $idAnterior, $rfcEmisor, $row['rfc'], $uuidToCancel, $total, $motivoSat, $uuidSustitucion, $motivoCancel);
+                    break;
+                case 202:
+                    $sqlQuery = 'UPDATE comprobante 
                              SET 
-                                 motivoCancelacionSat = "' . $motivoSat . '",
+                                 motivoCancelacionSat = "'.$motivoSat.'",
                                  motivoCancelacion = "' . $motivoCancel . '", 
                                  uuidSustitucion = "' . $uuidSustitucion . '", 
                                  status = "0", 
                                  fechaPedimento = "' . date("Y-m-d") . '",
                                  usuarioCancelacion="' . $_SESSION['User']['userId'] . '" 
                              WHERE comprobanteId = ' . $idAnterior;
-                $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
-                $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+                    $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
+                    break;
             }
 
             // enviar por correo
@@ -952,10 +987,10 @@ class Comprobante extends Producto
             }
             $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
 
-            $this->Util()->setError('', "complete", $response['message']);
+            $this->Util()->setError('', "complete", 'Proceso correctamente finalizado');
             $this->Util()->PrintErrors();
         } else {
-            $this->Util()->setError('', "error", $response['message']);
+            $this->Util()->setError('', "error",'Ha ocurrido un error, intente nuevamente.');
             $this->Util()->PrintErrors();
         }
     }
