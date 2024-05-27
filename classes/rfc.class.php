@@ -325,7 +325,18 @@ class Rfc extends Empresa
             fwrite($fh, $stringData);
             $cer_name = substr($cer_name, 0, -4);
             $certNuevo = $this->Util()->GetNoCertificado($ruta_dir, $cer_name);
+
+			//Renombrar por seguridad
+			$nombreCerNuevo    = $certNuevo.".cer";
+			$nombreCerPemNuevo = $certNuevo.".cer.pem";
+			$nombreKeyNuevo    = $certNuevo.".key";
+			$nombreKeyPemNuevo = $certNuevo.".key.pem";
+			rename($ruta_dir."/".$cer_name.".cer", $ruta_dir."/".$nombreCerNuevo);
+			rename($ruta_dir."/".$cer_name.".cer.pem", $ruta_dir."/".$nombreCerPemNuevo);
+			rename($ruta_dir."/".$llave_name, $ruta_dir."/".$nombreKeyNuevo);
+			rename($ruta_dir."/".$llave_name.".pem", $ruta_dir."/".$nombreKeyPemNuevo);
 			$this->aplicarPermiso($ruta_dir);
+
             $sqlQuery = "UPDATE serie SET noCertificado = '$certNuevo' WHERE  rfcId = '".$this->getRfcId()."' ";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
             $this->Util()->DBSelect($_SESSION["empresaId"])->UpdateData();
