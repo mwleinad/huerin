@@ -83,8 +83,7 @@ class Pac extends Util
         $zipFileEncoded = base64_encode($theData);
         fclose($fh);
         require_once(DOC_ROOT . '/libs/nusoap.php');
-        $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
-        $client->useHTTPPersistentConnection();
+
         // no se puede cancelar modo test asi que retornamos un resultado fake
         if (PROJECT_STATUS == "test") {
             $isTest = true;
@@ -112,55 +111,63 @@ class Pac extends Util
             'test' => $isTest
         );
         $data = [];
-        $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-        if ($response['cancelCFDiAsyncReturn']['status'] == 201) { // remove $response['detail']['fault']['cod']==201
-            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-            $data['cancelado'] = true;
-            switch ($cancelado['getCFDiStatusReturn']['status']) {
-                case 'Vigente':
-                    $data['conAceptacion'] = true;
-                    $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
-                    if ($cancelado['getCFDiStatusReturn']['isCancelable'] == 'No Cancelable') {
-                        $data['cancelado'] = false;
-                        $data['message'] = "Factura no cancelable, verificar documentos relacionados.";
-                    }
-                    break;
-                case 'Cancelado':
-                    $data['conAceptacion'] = false;
-                    $data['message'] = "Documento cancelado correctamente";
-                    break;
-            }
-        } else {
-            $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-            if (isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']) && $response['cancelCFDiAsyncReturn']['cancelQueryData']['status'] != 'No Encontrado') {
-                switch ($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']) {
-                    case 'Cancelado':
-                        $data['cancelado'] = true;
-                        $data['message'] = "Documento cancelado correctamente.";
+        try {
+
+            $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
+            $client->useHTTPPersistentConnection();
+            $response = $client->call('cancelCFDiAsync', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+            if ($response['cancelCFDiAsyncReturn']['status'] == 201) { // remove $response['detail']['fault']['cod']==201
+                $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+                $data['cancelado'] = true;
+                switch ($cancelado['getCFDiStatusReturn']['status']) {
+                    case 'Vigente':
+                        $data['conAceptacion'] = true;
+                        $data['message'] = "La solicitud de cancelacion ha sido enviado correctamente. Este proceso puede tardar hasta 72 horas.";
+                        if ($cancelado['getCFDiStatusReturn']['isCancelable'] == 'No Cancelable') {
+                            $data['cancelado'] = false;
+                            $data['message'] = "Factura no cancelable, verificar documentos relacionados.";
+                        }
                         break;
-                    default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
-                        $data['cancelado'] = false;
-                        $data['message'] = "Error al cancelar: " . $cancelado['getCFDiStatusReturn']['status'] . " " . $cancelado['getCFDiStatusReturn']['statusCode'];
-                        if ($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable'] == 'No Cancelable') {
-                            $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
-                        }
-                        if ($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'] === 'En proceso') {
-                            $data['cancelado'] = true;
-                            $data['conAceptacion'] = true;
-                            $data['message'] = "Factura en proceso de cancelación";
-                        }
+                    case 'Cancelado':
+                        $data['conAceptacion'] = false;
+                        $data['message'] = "Documento cancelado correctamente";
                         break;
                 }
             } else {
-                if (isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus']) && strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'], 'Cancelado') !== false) {
-                    $data['cancelado'] = true;
-                    $data['message'] = "Documento cancelado correctamente.";
+                $cancelado = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
+                if (isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']) && $response['cancelCFDiAsyncReturn']['cancelQueryData']['status'] != 'No Encontrado') {
+                    switch ($response['cancelCFDiAsyncReturn']['cancelQueryData']['status']) {
+                        case 'Cancelado':
+                            $data['cancelado'] = true;
+                            $data['message'] = "Documento cancelado correctamente.";
+                            break;
+                        default: //aqui se atrapa todo tipo de respuesta ,se da por echo que fue error,en caso de que el campo isCancelable diga no cancelable  se cambia el mensaje.
+                            $data['cancelado'] = false;
+                            $data['message'] = "Error al cancelar: " . $cancelado['getCFDiStatusReturn']['status'] . " " . $cancelado['getCFDiStatusReturn']['statusCode'];
+                            if ($response['cancelCFDiAsyncReturn']['cancelQueryData']['isCancelable'] == 'No Cancelable') {
+                                $data['message'] = "Factura no cancelable, verificar si cuenta con documentos relacionados e intentar nuevamente.";
+                            }
+                            if ($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'] === 'En proceso') {
+                                $data['cancelado'] = true;
+                                $data['conAceptacion'] = true;
+                                $data['message'] = "Factura en proceso de cancelación";
+                            }
+                            break;
+                    }
                 } else {
-                    $data['cancelado'] = false;
-                    $data['message'] = "Error al cancelar: " . $cancelado['getCFDiStatusReturn']['status'] . " " . $cancelado['getCFDiStatusReturn']['statusCode'];
+                    if (isset($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus']) && strpos($response['cancelCFDiAsyncReturn']['cancelQueryData']['cancelStatus'], 'Cancelado') !== false) {
+                        $data['cancelado'] = true;
+                        $data['message'] = "Documento cancelado correctamente.";
+                    } else {
+                        $data['cancelado'] = false;
+                        $data['message'] = "Error al cancelar: " . $cancelado['getCFDiStatusReturn']['status'] . " " . $cancelado['getCFDiStatusReturn']['statusCode'];
+                    }
                 }
-            }
 
+            }
+        } catch(Throwable $e) {
+            $data['cancelado'] = false;
+            $data['message'] = $e->getMessage();
         }
         //errors
         return $data;
