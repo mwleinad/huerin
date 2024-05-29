@@ -42,51 +42,14 @@ class Cancelation extends Main
 		);");
         return $this->Util()->DB()->InsertData();
     }
-
-    public function getStatusEdicom($rfcE, $rfcR, $uuid, $total) {
-
-        require_once(DOC_ROOT.'/libs/nusoap.php');
-        $client = new nusoap_client('https://cfdiws.sedeb2b.com/EdiwinWS/services/CFDi?wsdl', true);
-        $client->useHTTPPersistentConnection();
-
-        if(PROJECT_STATUS == "test")
-            $isTest = true;
-        else
-            $isTest = false;
-
-        $params = array(
-            'user' => USER_PAC,
-            'password' => PW_PAC,
-            'rfcE' => $rfcE,
-            'rfcR' => $rfcR,
-            'uuid' => $uuid,
-            'total' => $total,
-            'test'=>$isTest
-        );
-
-        try {
-
-            $status = $client->call('getCFDiStatus', $params, 'http://cfdi.service.ediwinws.edicom.com/');
-            return $status['getCFDiStatusReturn'];
-
-        } catch( Throwable $e ) {
-            return false;
-        }
-    }
     public function getStatus($rfcE, $rfcR, $uuid, $total) {
 
-        $params = array(
-            'username' => FINKOK_USER,
-            'password' => FINKOK_PASS,
-            'taxpayer_id' => $rfcE,
-            'rtaxpayer_id' => $rfcR,
-            'uuid' => $uuid,
-            'total' => $total,
-        );
+        $qr="?re=$rfcE&rr=$rfcR&tt=$total&id=$uuid";
+        $consulta= array('expresionImpresa'=>$qr);
 
         try {
-            $client = new SoapClient(FINKOK_URL_CANCELACION, ['trace' => 1]);
-            $response =  $client->__soapCall('get_sat_status', array($params));
+            $client = new SoapClient('https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?WSDL');
+            $response =  $client->Consulta($consulta);
             return $response;
         } catch( Throwable $e ) {
             return false;
@@ -98,10 +61,10 @@ class Cancelation extends Main
         if(!$response)
             return false;
 
-        if($response->get_sat_statusResult->sat->EstatusCancelacion === self::REJECTED || $response->get_sat_statusResult->EsCancelable === self::NOCANCELABLE) {
+        if($response->ConsultaResult->EstatusCancelacion === self::REJECTED || $response->ConsultaResult->EsCancelable === self::NOCANCELABLE) {
             $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
         }
-        if($response->get_sat_statusResult->sat->Estado === self::CANCELLED) {
+        if($response->ConsultaResult->Estado === self::CANCELLED) {
 
             $sqlQuery = "UPDATE comprobante SET
                               motivoCancelacion = '".$cfdi['cancelation_motive']."', 
@@ -127,41 +90,6 @@ class Cancelation extends Main
         }
     }
 
-    public function processCancelationEdicom($cfdi, $response) {
-        global $servicio;
-
-        if(!$response)
-            return false;
-
-        if($response['status'] === self::REJECTED || $response['isCancelable'] === self::NOCANCELABLE) {
-            $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
-        }
-
-        if($response['status']=== self::CANCELLED) {
-
-            $sqlQuery = "UPDATE comprobante SET
-                              motivoCancelacion = '".$cfdi['cancelation_motive']."', 
-                              motivoCancelacionSat = '".$cfdi['cancelation_motive_sat']."',
-                              uuidSustitucion = '".$cfdi['uuid_substitution']."',
-                              status = '0', 
-                              fechaPedimento = '".date("Y-m-d", strtotime($cfdi['date_petition']))."',
-                              fechaCancelacion = '".date("Y-m-d")."',
-                              usuarioCancelacion='".$cfdi['user_cancelation']."'
-                              WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
-            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlQuery);
-            $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->UpdateData();
-
-            $sQuery = "SELECT fecha, comprobanteId, userId FROM comprobante WHERE comprobanteId = '".$cfdi['cfdi_id']."' ";
-            $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sQuery);
-            $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
-            if($row)
-                $servicio->resetDateLastProcessInvoice($row['userId']);
-            if($affects > 0) {
-                $this->updateInstanciaIfExist($cfdi['cfdi_id']);
-                $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
-            }
-        }
-    }
     private function deleteCancelRequest($id) {
         $this->Util()->DB()->setQuery("
 			DELETE FROM
