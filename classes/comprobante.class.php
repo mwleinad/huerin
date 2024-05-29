@@ -835,9 +835,10 @@ class Comprobante extends Producto
         }
 
         $response = $pac->Cancelar($data, $metodo);
-        if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201, 202])) {
+        $responseCancel = $metodo === 'cancel' ?  $response->cancelResult : $response->out_cancelResult;
+        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201, 202])) {
 
-            switch ($response->cancelResult->Folios->Folio->EstatusUUID) {
+            switch ($responseCancel->Folios->Folio->EstatusUUID) {
                 case 201:
                     $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
                     break;
@@ -850,7 +851,7 @@ class Comprobante extends Producto
             $this->Util()->PrintErrors();
             return true;
         } else {
-            $this->Util()->setError('', "error", "Ha ocurrido un error, intente nuevamente. ". ($response->cancelResult->CodEstatus ?? ''));
+            $this->Util()->setError('', "error", "Ha ocurrido un error, intente nuevamente. ". ($responseCancel->CodEstatus ?? ''));
             $this->Util()->PrintErrors();
             return false;
         }
