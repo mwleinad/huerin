@@ -269,11 +269,11 @@ class Pac extends Util
         return $data;
     }
 
-    function Cancelar(array $data) {
+    function Cancelar(array $data, $metodo='cancel') {
 
         try {
             $client = new SoapClient(FINKOK_URL_CANCELACION, ['trace' => 1]);
-            return $client->__soapCall('cancel', array($data));
+            return $client->__soapCall($metodo, array($data));
         } catch( Throwable $e ) {
             return false;
         }

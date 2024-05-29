@@ -44,21 +44,13 @@ foreach($result as $key => $row) {
     $xmlData = $xmlReaderService->execute($xmlPath, $comp['empresaId']);
     $rfcProvCertif = (string)$xmlData['timbreFiscal']['RfcProvCertif'];
 
-    if($rfcProvCertif === 'EME000602QR9') {
-
-        $response = $cancelation->getStatusEdicom($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
-        $cancelation->processCancelationEdicom($row, $response);
-        echo "UUID: ".$row['uuid']." => ".$response['status'].chr(13).chr(10);
-
-    } else {
-
-        $response = $cancelation->getStatus($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
-        if (!$response) {
-            echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => ha ocurrido un error,se intentara nuevamente mas tarde " . chr(13) . chr(10);
-            continue;
-        }
-
-        $cancelation->processCancelation($row, $response);
-        echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => " . $response->get_sat_statusResult->sat->EstatusCancelacion . chr(13) . chr(10);
+    $response = $cancelation->getStatus($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
+    if (!$response) {
+        echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => ha ocurrido un error,se intentara nuevamente mas tarde " . chr(13) . chr(10);
+        continue;
     }
+
+    $cancelation->processCancelation($row, $response);
+    echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => " . $response->get_sat_statusResult->sat->EstatusCancelacion . chr(13) . chr(10);
+
 }

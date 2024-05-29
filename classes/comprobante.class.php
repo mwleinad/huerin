@@ -766,6 +766,10 @@ class Comprobante extends Producto
 
         $xmlReaderService = new XmlReaderService;
         $xmlPath = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
+        $fh = fopen($xmlPath, 'r');
+        $contentXml = fread($fh, filesize($xmlPath));
+        fclose($fh);
+
         $xmlData = $xmlReaderService->execute($xmlPath, $_SESSION["empresaId"]);
         $uuid = (string)$xmlData['timbreFiscal']['UUID'];
         $rfcProvCertif = (string)$xmlData['timbreFiscal']['RfcProvCertif'];
@@ -787,67 +791,30 @@ class Comprobante extends Producto
             return false;
         }
 
+        exec("openssl rsa -in ".DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".key.pem -des3 -out ". DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc -passout pass:".FINKOK_PASS);
+
+        $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc";
+        $fh = fopen($path, 'r');
+        $contentKey = fread($fh, filesize($path));
+        fclose($fh);
+
+        $metodo = 'cancel';
         if($rfcProvCertif === 'EME000602QR9') {
 
-            $user = USER_PAC;
-            $pw = PW_PAC;
-            $response = $pac->CancelaCfdi2018($user,
-                $pw,
-                $row["rfc_emisor"],
-                $row['rfc'],
-                $uuid,
-                $row['total'],
-                $path,
-                $password,
-                $motivoSat,
-                $uuidSustitucion);
+            $data = [
+                'xml' => $contentXml,
+                "username" => FINKOK_USER,
+                "password" => FINKOK_PASS,
+                "taxpayer_id" => $row["rfc_emisor"],
+                "cer" => $contentCer,
+                "key" => $contentKey,
+                "store_pending" => true,
+                "motivo" => $motivoSat,
+                "folio_sustitucion" => $uuidSustitucion
+            ];
+            $metodo = 'out_cancel';
 
-            if ($response['cancelado']) {
-
-                if ($response['conAceptacion'])
-                    $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
-                else
-                    $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
-
-                //si es version antes de 3.3 , stampar cancelado en el pdf.
-                if ($row["version"] == "2.0") {
-                    $fileName = $xml . ".pdf";
-                    $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/facturas/pdf/" . $fileName;
-                    $pdf = new FPDI();
-
-                    $pagecount = $pdf->setSourceFile($path);
-                    $tplidx = $pdf->importPage(1, '/MediaBox');
-
-                    $pdf->addPage();
-                    $pdf->useTemplate($tplidx, 0, 0, 210);
-
-                    $pdf->AddFont('verdana', '', 'verdana.php');
-                    $pdf->SetFont('verdana', '', 72);
-
-                    $pdf->SetY(100);
-                    $pdf->SetX(10);
-                    $pdf->SetTextColor(200, 0, 0);
-                    $pdf->Cell(20, 10, "CANCELADO", 0, 0, 'L');
-                    $pdf->Output($path, 'F');
-                }
-
-
-                $this->Util()->setError('', "complete", 'Cancelación realizado correctamente.');
-                $this->Util()->PrintErrors();
-                return true;
-            } else {
-                $this->Util()->setError('', "error", $response['message']);
-                $this->Util()->PrintErrors();
-                return false;
-            }
         } else {
-
-            exec("openssl rsa -in ".DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".key.pem -des3 -out ". DOC_ROOT ."/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc -passout pass:".FINKOK_PASS);
-
-            $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/".$rfcActivo."/". $row["noCertificado"] . ".enc";
-            $fh = fopen($path, 'r');
-            $contentKey = fread($fh, filesize($path));
-            fclose($fh);
 
             $uuidItem = [
                 "UUID" => $uuid,
@@ -865,27 +832,27 @@ class Comprobante extends Producto
                 "cer" => $contentCer,
                 "key" => $contentKey
             ];
+        }
 
-            $response = $pac->Cancelar($data);
-            if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201, 202])) {
+        $response = $pac->Cancelar($data, $metodo);
+        if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201, 202])) {
 
-                switch ($response->cancelResult->Folios->Folio->EstatusUUID) {
-                    case 201:
-                        $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
-                        break;
-                    case 202:
-                        $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
-                        break;
-                }
-
-                $this->Util()->setError('', "complete", 'Cancelación realizado correctamente.');
-                $this->Util()->PrintErrors();
-                return true;
-            } else {
-                $this->Util()->setError('', "error", $response->cancelResult->CodEstatus);
-                $this->Util()->PrintErrors();
-                return false;
+            switch ($response->cancelResult->Folios->Folio->EstatusUUID) {
+                case 201:
+                    $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
+                    break;
+                case 202:
+                    $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
+                    break;
             }
+
+            $this->Util()->setError('', "complete", 'Cancelación realizado correctamente.');
+            $this->Util()->PrintErrors();
+            return true;
+        } else {
+            $this->Util()->setError('', "error", "Ha ocurrido un error, intente nuevamente. ". ($response->cancelResult->CodEstatus ?? ''));
+            $this->Util()->PrintErrors();
+            return false;
         }
     }//CancelarComprobante
 
@@ -936,23 +903,23 @@ class Comprobante extends Producto
         $nombreEmpresa  = strtoupper($row['name']);
         $motivoCancel   = 'Cancelacion de comprobantes emitidos con relacion, factura sustituyente con folio <strong>'.strtoupper($rowActual['serie'].$rowActual['folio']).'</strong>';
         $uuidToCancel   = "";
+        $rfcProvCertif  = "";
 
         $xmlReaderService = new XmlReaderService;
         $xmlPath = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/facturas/xml/SIGN_" . $xml . ".xml";
+        $fh = fopen($xmlPath, 'r');
+        $contentXml = fread($fh, filesize($xmlPath));
+        fclose($fh);
 
         if(is_file($xmlPath)) {
             $xmlData = $xmlReaderService->execute($xmlPath, $empresaId);
             $uuidToCancel = (string)$xmlData['timbreFiscal']['UUID'];
+            $rfcProvCertif = (string)$xmlData['timbreFiscal']['RfcProvCertif'];
         }
 
         $path = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/" . $rfcActivo . "/" . $noCertificado . ".cer.pem";
         $fh = fopen($path, 'r');
         $contentCer = fread($fh, filesize($path));
-        fclose($fh);
-
-        $root = DOC_ROOT . "/empresas/" . $empresaId . "/certificados/". $rfcActivo . "/password.txt";
-        $fh = fopen($root, 'r');
-        $password = fread($fh, filesize($root));
         fclose($fh);
 
         exec("openssl rsa -in ".DOC_ROOT ."/empresas/" . $empresaId . "/certificados/".$rfcActivo."/". $noCertificado . ".key.pem -des3 -out ". DOC_ROOT ."/empresas/" . $empresaId . "/certificados/".$rfcActivo."/". $noCertificado . ".enc -passout pass:".FINKOK_PASS);
@@ -967,24 +934,43 @@ class Comprobante extends Producto
         $timbreFiscal = unserialize($rowActual['timbreFiscal']);
         $uuidSustitucion = $timbreFiscal["UUID"];
 
-        $uuidItem = [
-            "UUID" => $uuidToCancel,
-            "Motivo" => '02',
-            "FolioSustitucion" => $uuidSustitucion
-        ];
+        $metodo = 'cancel';
+        if($rfcProvCertif === 'EME000602QR9') {
 
-        $uuids = ['UUID' => $uuidItem];
+            $data = [
+                'xml' => $contentXml,
+                "username" => FINKOK_USER,
+                "password" => FINKOK_PASS,
+                "taxpayer_id" => $row["rfc_emisor"],
+                "cer" => $contentCer,
+                "key" => $contentKey,
+                "store_pending" => true,
+                "motivo" => "02",
+                "folio_sustitucion" => $uuidSustitucion
+            ];
+            $metodo = 'out_cancel';
 
-        $data = [
-            "UUIDS" => $uuids,
-            "username" => FINKOK_USER,
-            "password" => FINKOK_PASS,
-            "taxpayer_id" => $rfcEmisor,
-            "cer" => $contentCer,
-            "key" => $contentKey
-        ];
+        } else {
 
-        $response = $pac->Cancelar($data);
+            $uuidItem = [
+                "UUID" => $uuidToCancel,
+                "Motivo" => '02',
+                "FolioSustitucion" => $uuidSustitucion
+            ];
+
+            $uuids = ['UUID' => $uuidItem];
+
+            $data = [
+                "UUIDS" => $uuids,
+                "username" => FINKOK_USER,
+                "password" => FINKOK_PASS,
+                "taxpayer_id" => $rfcEmisor,
+                "cer" => $contentCer,
+                "key" => $contentKey
+            ];
+        }
+
+        $response = $pac->Cancelar($data, $metodo);
 
         if (in_array($response->cancelResult->Folios->Folio->EstatusUUID, [201,202])) {
 
