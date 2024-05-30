@@ -51,6 +51,6 @@ foreach($result as $key => $row) {
     }
 
     $cancelation->processCancelation($row, $response);
-    echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => " . $response->get_sat_statusResult->sat->EstatusCancelacion . chr(13) . chr(10);
+    echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => " . $response->ConsultaResult->EstatusCancelacion . chr(13) . chr(10);
 
 }
