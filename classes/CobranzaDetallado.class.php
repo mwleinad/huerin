@@ -49,7 +49,7 @@ class CobranzaDetallado extends Personal
             'CLIENTE',
             'RAZÓN SOCIAL',
             'ESTATUS RS(ACTIVO/SUSPENDIDO)',
-            'FACTURADOR CTE)',
+            'FACTURADOR CTE',
             'SERVICIO',
             'ÁREA',
             'SUBTOTAL',
