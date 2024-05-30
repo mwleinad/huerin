@@ -44,9 +44,12 @@ class CobranzaDetallado extends Personal
 
         $headersEstatico = [
             'FOLIO FACTURA',
+            'FACTURADOR BH',
             'FECHA',
             'CLIENTE',
             'RAZÓN SOCIAL',
+            'ESTATUS RS(ACTIVO/SUSPENDIDO)',
+            'FACTURADOR CTE)',
             'SERVICIO',
             'ÁREA',
             'SUBTOTAL',
@@ -54,6 +57,7 @@ class CobranzaDetallado extends Personal
             'TOTAL',
             'PAGOS',
             'SALDO',
+            'FECHA DE PAGO',
             'ESTATUS DEL SERVICIO'
         ];
 
@@ -149,6 +153,10 @@ class CobranzaDetallado extends Personal
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
             $col++;
 
+            $sheet->setCellValueByColumnAndRow($col,$row,$result['facturador'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+
             $sheet->setCellValueByColumnAndRow($col,$row,$result['fecha'])
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
             $col++;
@@ -159,6 +167,15 @@ class CobranzaDetallado extends Personal
 
             $sheet->setCellValueByColumnAndRow($col,$row,$result['razon_social'])
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+
+            $sheet->setCellValueByColumnAndRow($col,$row,$result['estatus_rs'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+
+            $datosFacturacion = json_decode($result['datos_facturacion'], true);
+            $sheet->setCellValueByColumnAndRow($col,$row,$datosFacturacion['nombre'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
             $col++;
 
             $sheet->setCellValueByColumnAndRow($col,$row,$result['servicio'])
@@ -192,6 +209,11 @@ class CobranzaDetallado extends Personal
             $sheet->setCellValueByColumnAndRow($col,$row, "=".$colTotal.$row."-".$colPagos.$row)
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleCurrency);
             $col++;
+
+            $sheet->setCellValueByColumnAndRow($col,$row,$result['fecha_pago'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
+            $col++;
+
             $sheet->setCellValueByColumnAndRow($col,$row, $result['estatus_servicio'])
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText);
 
