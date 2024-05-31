@@ -835,13 +835,15 @@ class Comprobante extends Producto
         }
 
         $response = $pac->Cancelar($data, $metodo);
+
         $responseCancel = $metodo === 'cancel' ?  $response->cancelResult : $response->out_cancelResult;
-        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201, 202])) {
+        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201, 202,798])) {
 
             switch ($responseCancel->Folios->Folio->EstatusUUID) {
                 case 201:
                     $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
                     break;
+                case 708:
                 case 202:
                     $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
                     break;
