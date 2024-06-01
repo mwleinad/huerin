@@ -44,22 +44,12 @@ foreach($results as $key => $value){
         $cad[$cat['name']] = $jefes[$cat['name']] ?? '';
 
     }
-    //$cad['Director'] = !isset($jefes['Director']) ? $jefes['Coordinador'] : $jefes['Director'];
-    /*
-     Al final se reemplaza, los numeros vienen del nivel del rol.
-      1 = socio
-      2 = gerente
-      3 = subgerente
-      4 = supervisor,gestoria,sistemas
-      5 = contador,cxc,cuentas,asistente
-      6 = auxiliar,recepcion
-    */
+
     switch($needle){
         case 'Coordinador':
             $cad['Director'] = $jefes['me']; break;
         default: $cad[$needle] = $jefes["me"]; break;
     }
-
     $new[] = $cad;
 }
 

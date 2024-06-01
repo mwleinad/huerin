@@ -819,10 +819,8 @@ class Contract extends Main
             $whitPermiso = $this->Util()->DB()->GetSingle();
 
             if (!$whitPermiso) {
-                $showCliente = false;
-                $rol->setRolId($User['roleId']);
-                $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','subgerente','supervisor', 'contador', 'auxiliar'), ['Juridico RRHH','socio','Recepcion','Gerente de administracion']);
-                if (($showCliente === false && !$unlimited)) {
+                $unlimited = $this->accessAnyContract();
+                if (!$unlimited) {
                     unset($result[$key]);
                     continue;
                 }

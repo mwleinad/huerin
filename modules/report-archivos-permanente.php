@@ -15,8 +15,8 @@
     $user->allowAccess(7);  //level 1
     $user->allowAccess(159);//level 2
     /* end Session Control Modules*/
-    $rol->setRolId($User['roleId']);
-    $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar'),array('Gerente de Juridico'));
+
+    $unlimited = $rol->accessAnyContract();
 
   	$personals = $personal->Enumerate();
 	$departamentos = $departamentos->Enumerate();

@@ -127,11 +127,13 @@ class Main
 		return $this->Util;
 	}
 
-    public function accessAnyContract() {
-        if(!$_SESSION['User']['roleId'])
+    public function accessAnyContract($id=0) {
+        if(!$_SESSION['User']['roleId'] && $id == 0)
             return false;
 
-        $sql = "SELECT allow_visualize_any_contract FROM roles WHERE rolId='".$_SESSION['User']['roleId']."' AND status='activo' ";
+		$rolId = $id > 0 ? $id : $_SESSION['User']['roleId'];
+
+        $sql = "SELECT allow_visualize_any_contract FROM roles WHERE rolId='".$rolId."' AND status='activo' ";
         $this->Util()->DB()->setQuery($sql);
         $row = $this->Util()->DB()->GetRow();
         return $row ? $row['allow_visualize_any_contract'] : false;

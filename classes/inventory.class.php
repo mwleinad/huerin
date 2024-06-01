@@ -427,6 +427,7 @@ class Inventory extends Articulo
         $typeSoftwares = ['aspel_coi', 'aspel_noi', 'aspel_facture', 'aspel_sae', 'admin_xml', 'adobe_photoshop', 'adobe_ilustrator', 'microsoft_office'];
         $data = $this->searchResource();
         $new = [];
+        $puestos = $personal->getPuestos();
         foreach ($data['items'] as $key => $var) {
             $devices = $var['tipo_recurso'] === 'equipo_computo'
                 ? $this->getDeviceResource($var['office_resource_id'])
@@ -446,17 +447,12 @@ class Inventory extends Articulo
                 $info = $personal->InfoWhitRol();
                 $needle = strtolower(trim($info["nameLevel"]));
                 $personal->deepJefesArray($jefes,true);
-                $cad["jefes"]['contador'] = isset($jefes['Contador']) ? $jefes['Contador'] : '';
-                $cad["jefes"]['supervisor'] = isset($jefes['Supervisor']) ?  $jefes['Supervisor'] : '';
-                $cad["jefes"]['subgerente'] = isset($jefes['Subgerente']) ? $jefes['Subgerente'] : '';
-                $cad["jefes"]['gerente'] = !isset($jefes['Gerente']) ? $jefes['Coordinador'] : $jefes['Gerente']   ;
-                $cad["jefes"]['jefeMax'] = isset($jefes['Socio']) ? $jefes['Socio'] : '';
-                switch($needle){
-                    case 'coordinador':
-                        $cad['jefes']['gerente'] = $jefes['me']; break;
-                    case 'socio':
-                        $cad['jefes']['jefeMax'] = $jefes['me']; break;
-                    default: $cad['jefes'][$needle] = $jefes["me"]; break;
+
+                foreach($puestos as $puesto) {
+                   $cad['jefes'][$puesto['name']] = $jefes[$puesto['name']] ?? '';
+                }
+                if($needle === 'coordinador') {
+                    $cad['jefes'][$needle] =  $jefes['me'];
                 }
             }
             foreach ($typeDispositivos as $val)

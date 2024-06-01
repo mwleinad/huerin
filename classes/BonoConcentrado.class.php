@@ -315,7 +315,7 @@ class BonoConcentrado extends Personal
                     $color =  'BFBFBF';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
-                case 'Contador':
+                case 'Encargado Jr':
                     $color =  'D9D9D9';
                     $typeFill = PHPExcel_Style_Fill::FILL_SOLID;
                     break;
