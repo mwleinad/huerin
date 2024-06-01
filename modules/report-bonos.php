@@ -13,7 +13,7 @@ $smarty->assign("personals", $gerentes);
 
 $smarty->assign("year", date('Y'));
 $smarty->assign('mainMnu','reportes');
-$rol->setRolId($User['roleId']);
-$unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'));
+
+$unlimited = $rol->accessAnyContract();
 $smarty->assign('unlimited',$unlimited);
 ?>

@@ -389,7 +389,7 @@ class Personal extends Main
         $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.sueldo,a.jefeInmediato, a.departamentoId,
                                              CASE 
                                              WHEN (b.nivel = 1 AND a.roleId = 5) THEN 'Coordinador'
-                                             WHEN b.nivel = 100 THEN 'Auxiliar'
+                                             WHEN b.nivel = 100 THEN (SELECT name from porcentajesBonos order by categoria DESC LIMIT 1)
                                              WHEN b.nivel < 100 THEN (SELECT name from porcentajesBonos WHERE categoria = b.nivel LIMIT 1)  
                                                  END AS nameLevel
                                              FROM personal a INNER JOIN roles b ON a.roleId=b.rolId WHERE a.personalId = '" . $this->personalId . "'");
@@ -398,6 +398,7 @@ class Personal extends Main
         $row["nameJefeInmediato"] = $this->Util()->DB()->GetSingle();
         $this->Util()->DB()->setQuery("select porcentaje from porcentajesBonos where categoria='" . $row['nivel'] . "' ");
         $row["porcentajeBono"] = $this->Util()->DB()->GetSingle();
+
         return $row;
     }
 
@@ -717,7 +718,7 @@ class Personal extends Main
         $sql = "SELECT personal.*, jefes.name AS jefeName, roles.name as nameRol, roles.nivel,
                 CASE 
                  WHEN (roles.nivel = 1 AND personal.roleId = 5) THEN 'Coordinador'
-                 WHEN roles.nivel = 100 THEN 'Auxiliar'
+                 WHEN roles.nivel = 100 THEN (SELECT name from porcentajesBonos order by categoria DESC LIMIT 1)
                  WHEN roles.nivel < 100 THEN (SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1)  
                  END AS nameLevel
                FROM personal
@@ -815,38 +816,8 @@ class Personal extends Main
 
     function GetRoleId($tipoPersonal)
     {
-        switch ($tipoPersonal) {
-            case "Socio":
-                $roleId = 1;
-                break;
-            case "Gerente":
-                $roleId = 2;
-                break;
-            case "Supervisor":
-                $roleId = 3;
-                break;
-            case "Contador":
-                $roleId = 3;
-                break;
-            case "Auxiliar":
-                $roleId = 3;
-                break;
-            case "Asistente":
-                $roleId = 1;
-                break;
-            case "Recepcion":
-                $roleId = 1;
-                break;
-            case "Cliente":
-                $roleId = 4;
-                break;
-            case "Nomina":
-                $roleId = 1;
-                //$User['subRoleId'] = "Nomina";
-                break;
-        }
-
-        return $roleId;
+        $this->Util()->DB()->setQuery("select rolId from roles where name='".$tipoPersonal."'");
+        return $this->Util()->DB()->GetSingle();
     }
 
     function Jerarquia(array $elements, $parentId = 0)
@@ -982,7 +953,6 @@ class Personal extends Main
 
     function deepJefesArray(&$jefes = [], $me = false)
     {
-        global $rol;
         $employe = $this->InfoWhitRol();
         if ($me)
             $jefes['me'] = $employe['name'];
@@ -1148,53 +1118,50 @@ class Personal extends Main
 
     public function findSupervisor($id, $associative = false)
     {
-        global $rol;
         $this->setPersonalId($id);
-        $infP = $this->InfoWhitRol();
         $jefes = [];
         if ($associative)
             $this->deepJefesAssoc($jefes, true);
         else
             $this->deepJefesArray($jefes, true);
 
-        $supervisor = "";
-        switch ($infP["nameLevel"]) {
-            case 'Contador':
-            case 'Auxiliar':
-                $supervisor = $jefes['Supervisor'];
-                break;
-            default:
-                $supervisor = $jefes['me'];
-                break;
-        }
-        return $supervisor;
+        return $jefes['Supervisor'] ?? $jefes['me'];
     }
 
     public function getOrdenJefes()
     {
+        $puestos =  $this->getPuestos();
         $ordenJefes = [];
         $this->setPersonalId($this->personalId);
         $infP = $this->InfoWhitRol();
         $needle = strtolower($infP["nameLevel"]);
+
         if (!empty($infP)) {
+
             $jefes = array();
             $this->deepJefesArray($jefes, true);
-            $ordenJefes['contador'] = $jefes['Contador'];
-            $ordenJefes['supervisor'] = $jefes['Supervisor'];
-            $ordenJefes['subgerente'] = $jefes['Subgerente'];
-            $ordenJefes['gerente'] = $jefes['Gerente'];
-            $ordenJefes['jefeMax'] = $jefes['Socio'];
+            foreach ($puestos as $puesto) {
+               $ordenJefes[$puesto['name']] = $jefes[$puesto['name']] ?? 'NE';
+            }
             $ordenJefes[$needle] = $jefes['me'];
+
         } else {
-            $ordenJefes['auxiliar'] = 'N/E';
-            $ordenJefes['contador'] = 'N/E';
-            $ordenJefes['supervisor'] = 'N/E';
-            $ordenJefes['subgerente'] = 'N/E';
-            $ordenJefes['gerente'] = 'N/E';
+
+            foreach ($puestos as $puesto) {
+                $ordenJefes[$puesto['name']] = 'NE';
+            }
         }
         return $ordenJefes;
     }
 
+    public function getPuestos()
+    {
+        $sql = "SELECT name,categoria FROM porcentajesBonos ORDER BY categoria DESC";
+        $this->Util()->DB()->setQuery($sql);
+        $results = $this->Util()->DB()->GetResult();
+
+        return array_column($results, null, 'categoria');
+    }
     public function ListSocios()
     {
         if ($this->active)
@@ -1485,25 +1452,11 @@ class Personal extends Main
             $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
         }
         foreach($premerge as $key => $value) {
-            /*foreach($premerge[$key] as $var) {
-                if ((int)$var['level'] >= 1 && (int)$var['level'] <= 2) {
-                    if(in_array($key, [21, 22])) {
-                        if(!in_array($var['id'], array_column($premerge[21], 'id')))
-                            array_push($premerge[21], $var);
-                        if(!in_array($var['id'], array_column($premerge[22], 'id')))
-                            array_push($premerge[22], $var);
-                    }
-                    if(in_array($key, [8, 24])) {
-                        if(!in_array($var['id'], array_column($premerge[8], 'id')))
-                            array_push($premerge[8], $var);
-                        if(!in_array($var['id'], array_column($premerge[24], 'id')))
-                            array_push($premerge[24], $var);
-                    }
-                }
-            }*/
-            $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
-                $premerge[$key], 'name'
-            );
+            if(isset($premerge[$key])) {
+                $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
+                    $premerge[$key], 'name'
+                );
+            }
         }
         return $premerge;
     }

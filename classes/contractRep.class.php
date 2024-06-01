@@ -436,8 +436,7 @@ class ContractRep extends Main
         $encargados = $personal->GetIdResponsablesSubordinados($fil);
         $encargadosString =  implode(",",$encargados);
 
-        $rol->setRolId($_SESSION['User']['roleId']);
-        $unlimited = $rol->ValidatePrivilegiosRol(array('gerente','supervisor','contador','auxiliar','cliente'),array('Juridico RRHH','Supervisor de Juridico'));
+        $unlimited = $this->accessAnyContract();
         if($unlimited){
             if($ftr['responsableCuenta']>0)
                 $join =  " INNER JOIN ";

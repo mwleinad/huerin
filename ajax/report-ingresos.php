@@ -13,6 +13,8 @@ switch($_POST["type"])
             $filter['tipos'] = 'activos';
             $contracts = $contract->Suggest($filter, false, true);
             $totalPeriodo = 0;
+            $puestos =  $personal->getPuestos();
+
             foreach($contracts as $key => $value) {
                 $servicios = array();
                 foreach($value['servicios'] as $serv) {
@@ -32,18 +34,15 @@ switch($_POST["type"])
                         $personal->setPersonalId($responsable['personalId']);
                         $rolRes = $personal->InfoWhitRol();
                         $personal->deepJefesArray($jefes,true);
-                        $serv["contador"] = $jefes['Contador'];
-                        $serv['supervisor'] = $jefes['Supervisor'];
-                        $serv['subgerente'] = $jefes['Subgerente'];
-                        $serv['gerente'] = $jefes['Gerente'];
-                        $serv['jefeMax'] = $jefes['Socio'];
-                        $serv[strtolower($rolRes["nameLevel"])] = $jefes['me'];
+                        foreach ($puestos as $puesto) {
+                            $serv[$puesto['name']] = $jefes[$puesto['name']] ?? 'NE';
+                        }
+
+                        $serv[$rolRes["nameLevel"]] = $jefes['me'];
                     }else {
-                        $serv['auxiliar'] = 'N/E';
-                        $serv['contador'] = 'N/E';
-                        $serv['supervisor'] = 'N/E';
-                        $serv['subgerente'] = 'N/E';
-                        $serv['gerente'] = 'N/E';
+                        foreach ($puestos as $puesto) {
+                            $serv[$puesto['name']] = 'NE';
+                        }
                     }
                     $serv['responsable'] = $responsable['name'];
                     $serv['costo'] = number_format($serv['costo'],2,'.','');
@@ -69,9 +68,11 @@ switch($_POST["type"])
                 }//foreach
                 $contracts[$key]['servicios'] = $servicios;
             }
+
 			$smarty->assign('totalMensual', $totalMensual);
 			$smarty->assign('totalPeriodo', $totalPeriodo);
 			$smarty->assign("contracts", $contracts);
+			$smarty->assign("puestos", $puestos);
 			$smarty->assign("DOC_ROOT", DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/lists/report-ingresos.tpl');
 		break;
@@ -340,7 +341,7 @@ switch($_POST["type"])
                             $vmod["responsable"] = $encargados[$vmod['departamentoId']];
                             $personal->setPersonalId($encargados2[$vmod["departamentoId"]]);
                             $ordeJefes = $personal->getOrdenJefes();
-                            $vmod["supervisor"] = $ordeJefes["supervisor"];
+                            $vmod["supervisor"] = $ordeJefes["Supervisor"];
                             switch ($vmod["status"]) {
                                 case 'activo':
                                     $vmod["currentState"] = "Activo";

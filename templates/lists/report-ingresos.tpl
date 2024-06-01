@@ -11,11 +11,10 @@
         <th align="center" width="60">Ultimo Workflow</th>
 		<th align="center" width="60">Costo por Periodo</th>
         <th align="center" width="60">Costo Informativo</th>
-        <th align="center" width="60">Auxiliar</th>
-        <th align="center" width="60">Contador</th>
-        <th align="center" width="60">Supervisor</th>
-        <th align="center" width="60">Subgerente</th>
-        <th align="center" width="60">Gerente</th>
+        {foreach from=$puestos item=puesto key=keyPuesto}
+        <th align="center" width="60">{$puesto.name}</th>
+
+        {/foreach}
 	</tr>
 </thead>
 <tbody>
@@ -32,11 +31,9 @@
         <td align="center">{if $servicio.servicioStatus eq 'bajaParcial'}{$servicio.lastDateWorkflow}{else}N/A{/if}</td>
         <td align="center">${$servicio.costo|number_format:2}</td>
         <td align="center">${$servicio.costoVisual}</td>
-        <td align="center">{if $servicio.auxiliar eq ''}--{else}{$servicio.auxiliar}{/if}</td>
-        <td align="center">{if $servicio.contador eq ''}--{else}{$servicio.contador}{/if}</td>
-        <td align="center">{if $servicio.supervisor eq ''}--{else}{$servicio.supervisor}{/if}</td>
-        <td align="center">{if $servicio.subgerente eq ''}--{else}{$servicio.subgerente}{/if}</td>
-        <td align="center">{if $servicio.gerente eq ''}--{else}{$servicio.gerente}{/if}</td>
+        {foreach from=$puestos item=puesto key=keyPuesto}
+            <th align="center" width="60">{if $servicio[$puesto.name] eq ''}--{else}{$servicio[$puesto.name]} {/if}</th>
+        {/foreach}
     </tr>
     {/foreach}
 {foreachelse}
