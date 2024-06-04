@@ -214,6 +214,13 @@ class Personal extends Main
         $this->tipoPersonal = $value;
     }
 
+    var $nivel;
+    public function setNivel($value)
+    {
+        $this->Util()->ValidateRequireField($value, "Nivel del puesto");
+        $this->nivel = $value;
+    }
+
     var $departamentoId;
 
     public function setDepartamentoId($value)
@@ -459,6 +466,8 @@ class Personal extends Main
             $strUpdate .= " listaDistribucion='" . $this->listaDistribucion . "', ";
         if (strlen($this->tipoPersonal) > 0)
             $strUpdate .= " tipoPersonal='" . $this->tipoPersonal . "', ";
+        if (strlen($this->nivel) > 0)
+            $strUpdate .= " nivel='" . $this->nivel . "', ";
         if (strlen($this->roleId) > 0)
             $strUpdate .= " roleId='" . $this->roleId . "', ";
         if (strlen($this->departamentoId) > 0)
@@ -562,6 +571,7 @@ class Personal extends Main
                 userComputadora,
                 passwordComputadora,
                 tipoPersonal,
+                nivel,
                 roleId,
                 departamentoId,
                 fechaIngreso,
@@ -594,6 +604,7 @@ class Personal extends Main
                 '" . $this->userComputadora . "',
                 '" . $this->passwordComputadora . "',
                 '" . trim($this->tipoPersonal) . "',
+                '" . trim($this->nivel) . "',
                 '" . trim($this->roleId) . "',
                 '" . $this->departamentoId . "',
                 '" . $this->fechaIngreso . "',

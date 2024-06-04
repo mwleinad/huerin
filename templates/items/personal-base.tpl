@@ -18,6 +18,7 @@
 		{if in_array(279,$permissions)|| $User.isRoot}<td align="center">{$item.userAspel}</td>{/if}
 		{if in_array(235,$permissions)|| $User.isRoot}<td align="center">{$item.passwordAspel}</td>{/if}
 		{if in_array(244,$permissions)|| $User.isRoot}<td align="center">{$item.tipoPersonal}</td>{/if}
+		{if in_array(244,$permissions)|| $User.isRoot}<td align="center">{$item.nivel}</td>{/if}
 		{if in_array(245,$permissions)|| $User.isRoot}<td align="center">{$item.departamento}</td>{/if}
 		{if in_array(246,$permissions)|| $User.isRoot}<td align="center">{$item.nombreJefe}</td>{/if}
 		<td>{if $item.active eq 1} <span style="background: green; color:#ffffff;font-weight: bold;padding: 2px;border-radius: 2px;">Activo</span>{else} <span style="background: red;color:#ffffff;font-weight: bold;padding: 2px;border-radius: 2px;">Inactivo</span> {/if}</td>
