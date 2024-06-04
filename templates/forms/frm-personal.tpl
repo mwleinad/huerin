@@ -103,7 +103,7 @@
                     <hr/>
                 </div>
             {/if}
-            {if in_array(239,$permissions)|| $User.isRoot}
+            {if in_array(239,$permissions)|| $User.isRoot}f
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Contraseña Computadora</div>
                     <input class="smallInput medium" name="passwordComputadora" id="passwordComputadora" type="text"
@@ -135,6 +135,17 @@
                         {foreach from=$roles item=item key=key}
                             <option value="{$item.name}" {if $post.tipoPersonal eq $item.name || $post.roleId eq $item.rolId} selected="selected" {/if}>{$item.name}</option>
                         {/foreach}
+                    </select>
+                    <hr/>
+                </div>
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Nivel del puesto:</div>
+                    <select name="nivel" id="nivel" class="smallInput medium">
+                        <option value="">Seleccionar...</option>
+                        <option value="Nivel 1" {if $post.nivel eq "Nivel 1"} selected="selected" {/if}>Nivel 1</option>
+                        <option value="Nivel 2" {if $post.nivel eq "Nivel 2"} selected="selected" {/if}>Nivel 2</option>
+                        <option value="Nivel 3" {if $post.nivel eq "Nivel 3"} selected="selected" {/if}>Nivel 3</option>
+                        <option value="Nivel 4" {if $post.nivel eq "Nivel 4"} selected="selected" {/if}>Nivel 4</option>
                     </select>
                     <hr/>
                 </div>

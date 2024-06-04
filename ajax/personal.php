@@ -80,6 +80,10 @@ switch ($_POST["type"]) {
             $roleId = $rol->GetIdByName();
             $personal->setRole($roleId);
         }
+
+        if(isset($_POST["nivel"]))
+            $personal->setNivel($_POST['nivel']);
+
         if (isset($_POST["departamentoId"]))
             $personal->setDepartamentoId($_POST['departamentoId']);
         if (isset($_POST["jefeInmediato"]))
@@ -235,6 +239,10 @@ switch ($_POST["type"]) {
             $roleId = $rol->GetIdByName();
             $personal->setRole($roleId);
         }
+
+        if(isset($_POST["nivel"]))
+            $personal->setNivel($_POST['nivel']);
+
         if (isset($_POST["departamentoId"]))
             $personal->setDepartamentoId($_POST['departamentoId']);
         if (isset($_POST["jefeInmediato"]))
