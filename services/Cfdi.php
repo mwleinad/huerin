@@ -190,7 +190,7 @@ class Cfdi extends Comprobante
         else
             $folio = $serie["consecutivo"];
 
-        $fecha = $this->Util()->FormatDateAndTime();
+        $fecha = $this->Util()->FormatDateAndTime(time());
         $fechaPago = $this->Util()->FormatDate(time());
 
         $data["fechaPago"] = $fechaPago;
