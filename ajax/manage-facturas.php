@@ -67,19 +67,12 @@
                 if($comprobantes["items"])
                 {
                     foreach($comprobantes["items"] as $res){
-                        if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
+                        if(in_array($res['tiposComprobanteId'], [1,2,3,4]))
                         {
                             $total += $res['total'];
                             $subtotal += $res['subTotal'];
                             $iva += $res['ivaTotal'];
                             $isr += $res['isrRet'];
-                        }
-                        else
-                        {
-                            $total -= $res['total'];
-                            $subtotal -= $res['subTotal'];
-                            $iva -= $res['ivaTotal'];
-                            $isr -= $res['isrRet'];
                         }
                     }
                 }
@@ -103,8 +96,15 @@
 			}//else
 		break;
 		case 'buscar':
+
+				if(isset($_SESSION['filtroFactura']))
+					unset($_SESSION['filtroFactura']);
+
+				$values = [];
+
 				foreach($_POST as $key => $val){
 					$values[$key] = $val;
+					$_SESSION['filtroFactura'][$key] = $val;
 				}
 				$comprobantes = array();
 				$comprobante->setPage(0);
@@ -116,19 +116,12 @@
 				{
 					foreach($comprobantes["items"] as $key => $res){
 						$comprobantes["items"][$key]['instanciasLigados'] = json_decode($res['instancias'], true);
-						if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
+						if(in_array($res['tiposComprobanteId'], [1,2,3,4]))
 						{
 							$total += $res['total'];
 							$subtotal += $res['subTotal'];
 							$iva += $res['ivaTotal'];
 							$isr += $res['isrRet'];
-						}
-						else
-						{
-							$total -= $res['total'];
-							$subtotal -= $res['subTotal'];
-							$iva -= $res['ivaTotal'];
-							$isr -= $res['isrRet'];
 						}
 					}
 				}
@@ -175,7 +168,6 @@
 				$data .= "Serie,Folio,RFC,Razon Social,Fecha,Subtotal,% Descuento,Descuento,Iva,Total,Tipo Moneda,Tipo de Cambio,% Retencion Iva,% Retencion ISR,% IEPS \n";
 				foreach($comprobantes["items"] as $comprobante)
 				{
-					print_r($comprobante);
 					foreach($comprobante as $key => $value)
 					{
 						$comprobante[$key] = str_replace(",", " ", $value);
