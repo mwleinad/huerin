@@ -115,7 +115,11 @@ foreach($emisores as $key => $var) {
     if (REP_STATUS == 'test')
         $to = array(EMAIL_DEV => 'Desarrollador');
     else
-        $to = array('rzetina@braunhuerin.com.mx' => 'ROGELIO ZETINA', EMAIL_DEV => 'Desarrollador');
+        $to = array(
+            'rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',
+            EMAIL_DEV=>'Desarrollador',
+            'brivera@braunhuerin.com.mx'=>'Beatriz Edith Rivera Ortega'
+        );
 
     $attachment = DOC_ROOT . "/sendFiles/" . $file . ".xlsx";
     $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file . ".xlsx", $file_zip, $file_name, 'noreply@braunhuerin.com.mx', "REPORTE DE COBRANZA");
