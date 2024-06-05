@@ -145,7 +145,6 @@
                         <option value="Nivel 1" {if $post.nivel eq "Nivel 1"} selected="selected" {/if}>Nivel 1</option>
                         <option value="Nivel 2" {if $post.nivel eq "Nivel 2"} selected="selected" {/if}>Nivel 2</option>
                         <option value="Nivel 3" {if $post.nivel eq "Nivel 3"} selected="selected" {/if}>Nivel 3</option>
-                        <option value="Nivel 4" {if $post.nivel eq "Nivel 4"} selected="selected" {/if}>Nivel 4</option>
                     </select>
                     <hr/>
                 </div>
