@@ -25,10 +25,10 @@
             </thead>
             <tbody>
               <tr>
-                <td align="center"><input type="text" size="3" name="folio" id="folio" class="largeInput" value="{{$filtros.folio}}" /></td>
-                <td align="center"><input type="text" size="3" name="folioA" id="folioA" class="largeInput" value="{{$filtros.folioA}}" /></td>
-                <td align="center"><input type="text" size="8" name="rfc" id="rfc" class="largeInput" value="{{$filtros.rfc}}" /></td>
-                <td align="center"><input type="text" size="10" name="nombre" id="nombre" class="largeInput" value="{{$filtros.nombre}}" /></td>
+                <td align="center"><input type="text" size="3" name="folio" id="folio" class="largeInput" value="{$filtros.folio}" /></td>
+                <td align="center"><input type="text" size="3" name="folioA" id="folioA" class="largeInput" value="{$filtros.folioA}" /></td>
+                <td align="center"><input type="text" size="8" name="rfc" id="rfc" class="largeInput" value="{$filtros.rfc}" /></td>
+                <td align="center"><input type="text" size="10" name="nombre" id="nombre" class="largeInput" value="{$filtros.nombre}" /></td>
                 <td align="center">
                     <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
                         {if $User.level eq 1 || $User.allow_visualize_any_contract || $User.allow_any_employee}
@@ -46,7 +46,7 @@
                         <option value="{$item.id}" {if $filtros.mes == $item.id} selected {/if}>{$item.nombre}</option>
                     {/foreach}
                 </select></td>
-                <td align="center"><input type="text" size="3" name="anio" id="anio"  class="largeInput" {if $filtros.anio}{$filtros.anio}{/if}/></td>
+                <td align="center"><input type="text" size="3" name="anio" id="anio"  class="largeInput" {if $filtros.anio} value="{$filtros.anio}" {/if}/></td>
                 <td align="center"><select name="status_activo" id="status_activo"  class="largeInput" >
                     <option value="">Todos</option>
                     <option value="1" {if $filtros.status_activo == "1"} selected {/if}>Activos</option>
