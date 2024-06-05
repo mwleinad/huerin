@@ -6,6 +6,7 @@
 		<div class="portlet-content nopadding">
         <form name="frmBusqueda" id="frmBusqueda" method="post" action="">
      		<input type="hidden" name="type" id="type" value="buscar" />
+     		<input type="hidden" name="addComplemento" id="addComplemento" value="1" />
           <table width="100%" cellpadding="0" cellspacing="0" id="box-table-a" summary="Employee Pay Sheet">
             <thead>
               <tr>
@@ -24,37 +25,44 @@
             </thead>
             <tbody>
               <tr>
-                <td align="center"><input type="text" size="3" name="folio" id="folio" class="largeInput" /></td>
-                <td align="center"><input type="text" size="3" name="folioA" id="folioA" class="largeInput" /></td>
-                <td align="center"><input type="text" size="8" name="rfc" id="rfc" class="largeInput" /></td>
-                <td align="center"><input type="text" size="10" name="nombre" id="nombre" class="largeInput" /></td>
+                <td align="center"><input type="text" size="3" name="folio" id="folio" class="largeInput" value="{{$filtros.folio}}" /></td>
+                <td align="center"><input type="text" size="3" name="folioA" id="folioA" class="largeInput" value="{{$filtros.folioA}}" /></td>
+                <td align="center"><input type="text" size="8" name="rfc" id="rfc" class="largeInput" value="{{$filtros.rfc}}" /></td>
+                <td align="center"><input type="text" size="10" name="nombre" id="nombre" class="largeInput" value="{{$filtros.nombre}}" /></td>
                 <td align="center">
-                    {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
+                    <select name="responsableCuenta" id="responsableCuenta"  class="largeInput">
+                        {if $User.level eq 1 || $User.allow_visualize_any_contract || $User.allow_any_employee}
+                            <option value="0" selected="selected">Todos...</option>
+                        {/if}
+                        {foreach from=$personals item=personal}
+                            <option value="{$personal.personalId}" {if $filtros.responsableCuenta == $personal.personalId} selected="selected" {/if} >{$personal.name}</option>
+                        {/foreach}
+                    </select>
                 </td>
-                <td align="center"><input type="checkbox" name="deep" id="deep"/></td>
+                <td align="center"><input type="checkbox" name="deep" id="deep" {if $filtros.deep}checked{/if}/></td>
                 <td align="center"><select name="mes" id="mes"  class="largeInput" >
                     <option value="0">Todos</option>
                     {foreach from=$meses item=item key=key}
-                        <option value="{$item.id}">{$item.nombre}</option>
+                        <option value="{$item.id}" {if $filtros.mes == $item.id} selected {/if}>{$item.nombre}</option>
                     {/foreach}
                 </select></td>
-                <td align="center"><input type="text" size="3" name="anio" id="anio"  class="largeInput"  /></td>
+                <td align="center"><input type="text" size="3" name="anio" id="anio"  class="largeInput" {if $filtros.anio}{$filtros.anio}{/if}/></td>
                 <td align="center"><select name="status_activo" id="status_activo"  class="largeInput" >
                     <option value="">Todos</option>
-                    <option value="1">Activos</option>
-                    <option value="0">Cancelados</option>
+                    <option value="1" {if $filtros.status_activo == "1"} selected {/if}>Activos</option>
+                    <option value="0" {if $filtros.status_activo == "0"} selected {/if}>Cancelados</option>
                 </select></td>
                 <td align="center"><select name="comprobante" id="comprobante"  class="largeInput" >
                     <option value="0">Todos</option>
                     {foreach from=$tipos_comprobantes item=item key=key}
-                        <option value="{$item.tiposComprobanteId}">{$item.nombre}</option>
+                        <option value="{$item.tiposComprobanteId}" {if $filtros.comprobante == $item.tiposComprobanteId}} selected {/if}>{$item.nombre}</option>
                     {/foreach}
                 </select></td>
                 <td align="center">
                     <select name="facturador" id="facturador"  class="largeInput" >
                       <option value="">Todos</option>
                         {foreach from=$emisores item=item key=key}
-                            <option value="{$item.rfcId}">{$item.razonSocial}</option>
+                            <option value="{$item.rfcId}" {if $filtros.facturador == $item.rfcId}} selected {/if}>{$item.razonSocial}</option>
                         {/foreach}
                     </select>
                 </td>

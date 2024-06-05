@@ -47,8 +47,20 @@
             $user->allowAccess(132);
 
 			$comprobantes = array();
+
+			$filtros = ['addComplemento' => 1];
+			if(!isset($_GET["p"])) {
+
+				unset($_SESSION["filtroFactura"]);
+
+			} elseif (isset($_SESSION['filtroFactura'])) {
+
+				foreach ($_SESSION['filtroFactura'] as $key => $val) {
+					$filtros[$key] = $val;
+				}
+			}
 			$comprobante->SetPage($_GET["p"]);
-			$result = $comprobante->GetComprobantesByRfc();
+			$result = $comprobante->SearchComprobantesByRfc($filtros);
 			$totalFacturas = $result["total"];
 
 			if($result)
@@ -64,20 +76,13 @@
 			if($comprobantes["items"])
 			{
 				foreach($comprobantes["items"] as $key => $res){
-                    $comprobantes["items"][$key]['instanciasLigados'] = json_decode($res['instancias'], true);
-					if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
+
+					if(in_array($res['tiposComprobanteId'], [1,2,3,4]))
 					{
 						$total += $res['total'];
 						$subtotal += $res['subTotal'];
 						$iva += $res['ivaTotal'];
 						$isr += $res['isrRet'];
-					}
-					else
-					{
-						$total -= $res['total'];
-						$subtotal -= $res['subTotal'];
-						$iva -= $res['ivaTotal'];
-						$isr -= $res['isrRet'];
 					}
 				}
 			}
@@ -87,6 +92,7 @@
 			$iva = number_format($iva,2,'.',',');
 			$isr = number_format($isr,2,'.',',');
 			$smarty->assign('comprobantes',$comprobantes);
+			$smarty->assign('filtros',$filtros);
 			$smarty->assign('totalFacturas',$totalFacturas);
 			$smarty->assign('total',$total);
 			$smarty->assign('subtotal',$subtotal);

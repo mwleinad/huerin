@@ -48,7 +48,7 @@ switch ($_POST['type']) {
             if($comprobantes["items"])
             {
                 foreach($comprobantes["items"] as $res){
-                    if($res["tiposComprobanteId"]==1 || $res["tiposComprobanteId"]==3 ||$res["tiposComprobanteId"]==4)
+                    if(in_array($res['tiposComprobanteId'], [1,2,3,4]))
                     {
                         $total += $res['total'];
                         $subtotal += $res['subTotal'];

@@ -82,26 +82,34 @@ class Cfdi extends Comprobante
 
         // sustitucion de cfdis previos, encontrar los workflowId para su actualizacion de comprobanteId
         // corroborar si esto aun queda o se quitara definitivamente.
-        if ($data['cfdiRelacionadoSerie'] != "" && $data['cfdiRelacionadoFolio'] != "" && $data['tiposComprobanteId'] == "1") {
+        if ($data['cfdiRelacionadoSerie'] != "" && $data['cfdiRelacionadoFolio'] != "" && in_array($data['tiposComprobanteId'], [1,2])) {
+
             $rfolio = $data['cfdiRelacionadoSerie'].$data['cfdiRelacionadoFolio'];
             $sql ="SELECT comprobanteId, status FROM comprobante WHERE LOWER(CONCAT(serie,folio)) = '".strtolower($rfolio)."'";
             $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
             $cfdiRelacionado = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
             if ($cfdiRelacionado) {
-                if ($cfdiRelacionado['status'] == '1') {
-                    $vs->Util()->setError(10040, "error", "El CFDI relacionado debe estar cancelado: " . $rfolio);
-                } else {
-                    $data['cfdiRelacionadoId'] =  $cfdiRelacionado['comprobanteId'];
-                    $sql ="select instanciaServicio.instanciaServicioId, servicio.inicioFactura, instanciaServicio.factura from instanciaServicio 
+                if($data['tiposComprobanteId'] == 1) {
+                    if ($cfdiRelacionado['status'] == '1') {
+                        $vs->Util()->setError(10040, "error", "El CFDI relacionado debe estar cancelado: " . $rfolio);
+                    } else {
+                        $data['cfdiRelacionadoId'] = $cfdiRelacionado['comprobanteId'];
+                        $sql = "select instanciaServicio.instanciaServicioId, servicio.inicioFactura, instanciaServicio.factura from instanciaServicio 
                            inner join servicio on instanciaServicio.servicioId=servicio.servicioId
-                           where instanciaServicio.comprobanteId = '".$cfdiRelacionado['comprobanteId']."' ";
-                    $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-                    $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
-                    $data['workflowsIdUpdateInvoice'] = $affects;
+                           where instanciaServicio.comprobanteId = '" . $cfdiRelacionado['comprobanteId'] . "' ";
+                        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+                        $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+                        $data['workflowsIdUpdateInvoice'] = $affects;
+                    }
+
+                } else  {
+                    $data['cfdiRelacionadoId'] = $cfdiRelacionado['comprobanteId'];
                 }
-                if($data["tipoRelacion"] == "") {
+
+                if ($data["tipoRelacion"] == "") {
                     $vs->Util()->setError(0, "error", "Seleccionar un tipo de relacion, para el cfdi relacionado");
                 }
+
             } else {
                     $vs->Util()->setError(10040, "error", "El CFDI con folio ".$rfolio." no se encuentra registrado.");
             }
@@ -182,7 +190,7 @@ class Cfdi extends Comprobante
         else
             $folio = $serie["consecutivo"];
 
-        $fecha = $this->Util()->FormatDateAndTime(time());
+        $fecha = $this->Util()->FormatDateAndTime();
         $fechaPago = $this->Util()->FormatDate(time());
 
         $data["fechaPago"] = $fechaPago;

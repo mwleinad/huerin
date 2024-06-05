@@ -1443,55 +1443,74 @@ class Comprobante extends Producto
         }
         switch ($values['generateby']) {
             case 'automatico':
-                $sqlSearch .= ' AND d.comprobanteId is not null';
+                $sqlSearch .= ' AND c.procedencia = "fromInstance"';
                 break;
             case 'manual':
-                $sqlSearch .= ' AND d.comprobanteId is  null';
+                $sqlSearch .= ' AND c.procedencia = "manual"';
                 break;
 
         }
         if (!isset($values['addComplemento']) && !isset($values['comprobante']))
             $sqlSearch .= ' AND c.tiposComprobanteId!=10 ';
         //orden por default cuando venga de reporte.
-        $orderBy = " ORDER BY c.serie ASC, c.fecha DESC, c.comprobanteId DESC ";
+        $orderBy = " ORDER BY c.fecha DESC, c.serie ASC, c.folio DESC";
         if (is_numeric($this->page)) {
             $orderBy = "";
             $sqlQuery = " SELECT c.comprobanteId
                         FROM comprobante as c
                         LEFT JOIN contract a ON a.contractId = c.userId 
                         $innerpermisos
-                        LEFT JOIN customer b ON b.customerId = a.customerId
-                        LEFT JOIN instanciaServicio d ON d.comprobanteId = c.comprobanteId
-                        LEFT JOIN servicio e ON e.servicioId = d.servicioId
-                        LEFT JOIN tipoServicio f ON f.tipoServicioId = e.tipoServicioId
-                        WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId ";
+                        WHERE 1 $wherepermisos $sqlSearch ";
             $this->Util()->DB()->setQuery($sqlQuery);
             $total = count($this->Util()->DB()->GetResult());
             $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/sistema/consultar-facturas");
             $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
-            $orderBy = " ORDER BY c.fecha DESC, c.serie DESC , c.folio DESC ";
+            $orderBy = " ORDER BY c.fecha DESC, c.serie ASC , c.folio DESC ";
         }
-        $sqlQuery = "SELECT c.*, c.status AS status,c.comprobanteId AS comprobanteId, f.nombreServicio AS concepto,
-                     a.name AS name, a.rfc AS rfc, a.contractId AS contractId, d.instanciaServicioId,
-                    CONCAT(
+        $sqlQuery = "SELECT 
+                     c.comprobanteId,
+                     c.serie,
+                     c.folio,
+                     c.fecha,
+                     c.fechaPedimento,
+                     c.subTotal,
+                     c.porcentajeDescuento,
+                     c.descuento,
+                     c.ivaTotal,
+                     c.total,
+                     c.subTotal,
+                     c.tipoDeMoneda,
+                     c.tipoDeCambio,
+                     c.porcentajeRetIva,
+                     c.porcentajeRetIsr,
+                     c.porcentajeIEPS,
+                     c.tiposComprobanteId,
+                     c.version,
+                     c.xml,
+                     c.version,
+                     c.procedencia,
+                     c.status AS status,
+                     c.comprobanteId AS comprobanteId, 
+                     c.timbreFiscal,
+                     a.name AS name, 
+                     a.rfc AS rfc, 
+                     a.contractId AS contractId,
+                     (select CONCAT(
                        '[',
                         GROUP_CONCAT(
                             CONCAT(
                                 '{\"id',
                                 '\":\"',
-                                d.instanciaServicioId,
+                                instanciaServicio.instanciaServicioId,
                                 '\"}'
                             )
                         ),
                       ']'      
-                     )  as instancias
+                     )  FROM instanciaServicio where instanciaServicio.comprobanteId = c.comprobanteId GROUP BY instanciaServicio.comprobanteId ) as instancias,
+                    (SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = c.comprobanteId limit 1) cfdi_cancel_status
                     FROM comprobante as c
                     LEFT JOIN contract a ON a.contractId = c.userId 
                     $innerpermisos
-                    LEFT JOIN customer b ON b.customerId = a.customerId
-                    LEFT JOIN instanciaServicio d ON d.comprobanteId = c.comprobanteId
-                    LEFT JOIN servicio e ON e.servicioId = d.servicioId
-                    LEFT JOIN tipoServicio f ON f.tipoServicioId = e.tipoServicioId
                     WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId $orderBy " . $sqlAdd;
         $this->Util()->DB()->setQuery($sqlQuery);
         $comprobantes = $this->Util()->DB()->GetResult();
@@ -1522,12 +1541,12 @@ class Comprobante extends Producto
             $card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
             $card['procedencia'] = $val['procedencia'];
-            $card['instancias'] = $val['instancias'];
-            $card['instanciaServicioId'] = $val['instanciaServicioId'];
+            $card['instancias'] = json_decode($val['instancias'], true);
+            $card['instanciasLigados'] = json_decode($val['instancias'], true);
+            $card['instanciaServicioId'] = count( $card['instancias']);
             $timbreFiscal = unserialize($val['timbreFiscal']);
             $card["uuid"] = $timbreFiscal["UUID"];
-            $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '" . $val['comprobanteId'] . "' ");
-            $card["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
+            $card["cfdi_cancel_status"] = $val['cfdi_cancel_status'];
             $info[$key] = $card;
         }//foreach
         $data["items"] = $info;
