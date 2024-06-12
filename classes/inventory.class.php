@@ -311,11 +311,9 @@ class Inventory extends Articulo
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
-    private function getSoftwareResource($id)
+    private function getSoftwareResource($noInventario)
     {
-        $sql = "select a.id,a.software_id, b.* from software_resource a
-                inner join office_resource b on a.software_id = b.office_resource_id
-                where a.office_resource_id='" . $id . "' ";
+        $sql= "select * from office_resource where tipo_recurso = 'Sistemas' AND no_inventario = '" . $noInventario . "' AND fecha_baja is null ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         foreach($result as $key => $var)
@@ -331,7 +329,7 @@ class Inventory extends Articulo
         $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/resource-office");
         $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];*/
 
-        $this->Util()->DB()->setQuery('SELECT * FROM office_resource ORDER BY office_resource_id DESC ' . $sql_add);
+        $this->Util()->DB()->setQuery('SELECT * FROM office_resource ORDER BY no_inventario DESC, office_resource_id ASC' . $sql_add);
         $result = $this->Util()->DB()->GetResult();
 
         foreach ($result as $key => $var) {
@@ -726,7 +724,7 @@ class Inventory extends Articulo
 
         foreach ($_SESSION['software_resource'] as $var) {
             if ($var['deleteAction']) {
-                $idResource = $var['software_id'];
+                $idResource = $var['office_resource_id'];
                 $set = $var['typeDelete'] === 'deleteSoftwareFromStock'
                     ? " status = 'Baja', motivo_baja='Baja realizada desde equipo de computo', fecha_baja=now(), usuario_baja='" . $_SESSION['User']['username'] . "' "
                     : " no_inventario='' ";
@@ -738,7 +736,7 @@ class Inventory extends Articulo
                /* $sql = "delete from software_resource where id='" . $var['id'] . "' ";
                 $this->Util()->DB()->setQuery($sql);
                 $this->Util()->DB()->UpdateData();*/
-            } elseif (!$var['id']) {
+            } else {
                /* $sql = "insert into software_resource(office_resource_id, software_id)
                     values('" . $lastId . "','" . $var['office_resource_id'] . "')";
                 $this->Util()->DB()->setQuery($sql);
