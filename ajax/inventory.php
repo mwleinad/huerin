@@ -346,7 +346,6 @@ switch($_POST['type']){
             end($_SESSION['software_resource']);
             $key = isset($_POST['key']) ? $_POST['key'] : key($_SESSION['software_resource']) + 1;
             $_SESSION['software_resource'][$key] =  $resource;
-            $_SESSION['software_resource'][$key]['id'] = !$_POST['key'] ? null : $_SESSION['software_resource'][$key]['id'];
             $smarty->assign('listSoftware', $_SESSION['software_resource']);
             $json['status'] = 'ok';
             $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/lists/computo_software.tpl");

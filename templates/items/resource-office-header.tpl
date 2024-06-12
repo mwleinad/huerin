@@ -1,6 +1,7 @@
 <thead>
 	<tr>
 		<th style="width:10%; text-align: left">No. Fisico</th>
+		<th style="width: 10%; text-align: left">Recurso</th>
 		<th style="width: 10%; text-align: left">Tipo</th>
 		<th style="width:10%; text-align: left">Marca</th>
 		<th style="width:10%; text-align: left">Modelo</th>

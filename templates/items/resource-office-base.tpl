@@ -2,11 +2,12 @@
     <td  style="width:10%;">{if $res.no_inventario eq ''}En bodega{else}{$res.no_inventario}{/if}</td>
     <td  style="width:5%;">{if $res.tipo_recurso eq "equipo_computo"}Equipo de computo / {$res.tipo_equipo|ucfirst}{else}{$res.tipo_recurso|ucfirst}{/if}
     </td>
+    <td  style="width:10%;">{if $res.tipo_recurso eq 'Computadora'}{$res.tipo_equipo}{elseif $res.tipo_recurso eq 'Accesorios'}{$res.tipo_dispositivo}{else}{$res.tipo_software}{/if}</td>
     <td  style="width:10%;">{$res.marca}</td>
     <td  style="width:10%;">{$res.modelo}</td>
     <td  style="width:10%;">{$res.fecha_compra|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
-    <td  style="width:10%;">{if $res.status}{$res.status}{else}{/if}</td>
+    <td  style="width:10%;">{if $res.status == 'null'}{else}{$res.status}{/if}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>
     <td style="width:10%;">
         <div style="min-width: 80px;float: left">
