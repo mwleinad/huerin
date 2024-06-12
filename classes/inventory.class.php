@@ -118,7 +118,7 @@ class Inventory extends Articulo
         if ($this->Util()->PrintErrors())
             return false;
         $actualizables = "";
-        if(in_array($this->getTipoRecurso(), ['equipo_computo', 'inmobiliaria']))
+        if(in_array($this->getTipoRecurso(), ['Computadora']))
             $actualizables .= "no_inventario = '" . $this->getNoInventario() . "',";
         $vencimiento = $this->Util()->isValidateDate($this->getFechaVencimiento(), 'Y-m-d') ? "'".$this->getFechaVencimiento()."'" : 'null';
         $sql = " UPDATE office_resource SET
@@ -275,12 +275,12 @@ class Inventory extends Articulo
             if ($responsables) {
                 $info["responsables"] = $responsables;
             }
-            $devices = $this->getDeviceResource($info['office_resource_id']);
+            $devices = $this->getDeviceResource($info['no_inventario']);
             if ($devices) {
                 $info["device_resource"] = $devices;
             }
 
-            $softwares = $this->getSoftwareResource($info['office_resource_id']);
+            $softwares = $this->getSoftwareResource($info['no_inventario']);
             if ($softwares) {
                 $info["software_resource"] = $softwares;
             }
@@ -305,11 +305,9 @@ class Inventory extends Articulo
         return $this->Util()->DB()->GetRow();
     }
 
-    private function getDeviceResource($id)
+    private function getDeviceResource($noInventario)
     {
-        $sql = "select a.id,a.device_id, b.* from device_resource a
-                inner join office_resource b on a.device_id = b.office_resource_id
-                where a.office_resource_id='" . $id . "' ";
+        $sql= "select * from office_resource where tipo_recurso = 'Accesorios' AND no_inventario = '" . $noInventario . "' AND fecha_baja is null ";
         $this->Util()->DB()->setQuery($sql);
         return $this->Util()->DB()->GetResult();
     }
@@ -333,7 +331,7 @@ class Inventory extends Articulo
         $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/resource-office");
         $sql_add = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];*/
 
-        $this->Util()->DB()->setQuery('SELECT * FROM office_resource WHERE status="Activo" ORDER BY office_resource_id DESC ' . $sql_add);
+        $this->Util()->DB()->setQuery('SELECT * FROM office_resource ORDER BY office_resource_id DESC ' . $sql_add);
         $result = $this->Util()->DB()->GetResult();
 
         foreach ($result as $key => $var) {
@@ -351,7 +349,7 @@ class Inventory extends Articulo
 
     public function listResource()
     {
-        $this->Util()->DB()->setQuery("SELECT office_resource_id, marca,modelo,no_serie,tipo_equipo FROM office_resource WHERE status='Activo' ORDER BY nombre ASC ");
+        $this->Util()->DB()->setQuery("SELECT office_resource_id, marca,modelo,no_serie,tipo_equipo FROM office_resource ORDER BY nombre ASC ");
         return $this->Util()->DB()->GetResult();
     }
 
@@ -359,7 +357,7 @@ class Inventory extends Articulo
     {
         $this->Util()->DB()->setQuery("SELECT office_resource_id, marca, modelo,no_serie, tipo_dispositivo, tipo_software, no_licencia, codigo_activacion 
                                               FROM office_resource 
-                                              WHERE status='Activo' and tipo_recurso= '".$type."'  and (no_inventario='' or no_inventario is null)
+                                              WHERE tipo_recurso= '".$type."'  and (no_inventario='' or no_inventario is null)
                                               ORDER BY office_resource_id ASC ");
         return $this->Util()->DB()->GetResult();
     }
@@ -394,7 +392,7 @@ class Inventory extends Articulo
 
         $sql = "SELECT count(DISTINCT(a.office_resource_id)) FROM office_resource a 
                  LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId  WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
-                 WHERE a.status='Activo' $filtro";
+                 WHERE 1 $filtro";
 
         if (!isset($_POST['showAll'])) {
             $this->Util()->DB()->setQuery($sql);
@@ -404,7 +402,7 @@ class Inventory extends Articulo
         }
         $sql = "SELECT a.* FROM office_resource a 
                  LEFT JOIN (SELECT c.office_resource_id,d.name AS nombre,c.status FROM responsables_resource_office c INNER JOIN personal d ON c.personalId=d.personalId WHERE c.status ='Activo') b ON a.office_resource_id = b.office_resource_id
-                 WHERE a.status = 'Activo' $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC " . $sql_add;
+                 WHERE 1 $filtro GROUP BY a.office_resource_id  ORDER BY a.office_resource_id DESC " . $sql_add;
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         /*foreach ($result as $key => $var) {
@@ -691,12 +689,12 @@ class Inventory extends Articulo
 
     private function syncDeviceToKit($lastId)
     {
-        if (count($_SESSION['device_resource']) <= 0 || $this->getTipoRecurso() !== 'equipo_computo')
+        if (count($_SESSION['device_resource']) <= 0 || $this->getTipoRecurso() !== 'Computadora')
             return false;
 
         foreach ($_SESSION['device_resource'] as $var) {
             if ($var['deleteAction']) {
-                $idResource = $var['device_id'];
+                $idResource = $var['office_resource_id'];
                 $set = $var['typeDelete'] === 'deleteFromStock'
                     ? " status = 'Baja', motivo_baja='Baja definitiva realizada desde equipo de computo', fecha_baja=now(), usuario_baja='" . $_SESSION['User']['username'] . "' "
                     : " no_inventario='' ";
@@ -705,14 +703,14 @@ class Inventory extends Articulo
                 $this->Util()->DB()->setQuery($sql);
                 $this->Util()->DB()->UpdateData();
 
-                $sql = "delete from device_resource where id='" . $var['id'] . "' ";
+               /* $sql = "delete from device_resource where id='" . $var['id'] . "' ";
                 $this->Util()->DB()->setQuery($sql);
-                $this->Util()->DB()->UpdateData();
-            } elseif (!$var['id']) {
-                $sql = "insert into device_resource(office_resource_id, device_id)
+                $this->Util()->DB()->UpdateData();*/
+            } else{
+               /* $sql = "insert into device_resource(office_resource_id, device_id)
                     values('" . $lastId . "','" . $var['office_resource_id'] . "')";
                 $this->Util()->DB()->setQuery($sql);
-                $this->Util()->DB()->InsertData();
+                $this->Util()->DB()->InsertData();*/
 
                 $sql = "update office_resource set no_inventario='" . $this->getNoInventario() . "' where office_resource_id='" . $var['office_resource_id'] . "' ";
                 $this->Util()->DB()->setQuery($sql);
@@ -737,14 +735,14 @@ class Inventory extends Articulo
                 $this->Util()->DB()->setQuery($sql);
                 $this->Util()->DB()->UpdateData();
 
-                $sql = "delete from software_resource where id='" . $var['id'] . "' ";
+               /* $sql = "delete from software_resource where id='" . $var['id'] . "' ";
                 $this->Util()->DB()->setQuery($sql);
-                $this->Util()->DB()->UpdateData();
+                $this->Util()->DB()->UpdateData();*/
             } elseif (!$var['id']) {
-                $sql = "insert into software_resource(office_resource_id, software_id)
+               /* $sql = "insert into software_resource(office_resource_id, software_id)
                     values('" . $lastId . "','" . $var['office_resource_id'] . "')";
                 $this->Util()->DB()->setQuery($sql);
-                $this->Util()->DB()->InsertData();
+                $this->Util()->DB()->InsertData();*/
 
                 $sql = "update office_resource set no_inventario='" . $this->getNoInventario() . "' where office_resource_id='" . $var['office_resource_id'] . "' ";
                 $this->Util()->DB()->setQuery($sql);

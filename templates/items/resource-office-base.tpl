@@ -6,10 +6,11 @@
     <td  style="width:10%;">{$res.modelo}</td>
     <td  style="width:10%;">{$res.fecha_compra|date_format:'%d-%m-%Y'}</td>
     <td  style="width:10%;">{$res.fecha_alta|date_format:'%d-%m-%Y'}</td>
+    <td  style="width:10%;">{if $res.status}{$res.status}{else}{/if}</td>
     <td  style="width:10%;">{$res.usuario_alta}</td>
     <td style="width:10%;">
         <div style="min-width: 80px;float: left">
-            {if $res.tipo_recurso eq "equipo_computo"}
+            {if $res.tipo_recurso eq "Computadora"}
                 <a href="javascript:;" class="spanDownloadAcuse" data-id="{$res.office_resource_id}" data-type="generateResponsiva" title="Descargar responsiva">
                     <img src="{$WEB_ROOT}/images/icons/doc.png"/>
                 </a>
@@ -25,7 +26,7 @@
             {if in_array(254,$permissions)|| $User.isRoot}
                 <img src="{$WEB_ROOT}/images/icons/action_delete.gif" class="spanDelete" title="Eliminar" id="{$res.office_resource_id}"/>
             {/if}
-            {if in_array(258,$permissions)|| $User.isRoot}
+            {if (in_array(258,$permissions)|| $User.isRoot) && $res.tipo_recurso eq "Computadora"}
                 <a href="{$WEB_ROOT}/responsables-resource/id/{$res.office_resource_id}" onclick="return parent.GB_show('Responsables activos e inactivos', this.href,500,970) "  class="spanAll">
                     <img src="{$WEB_ROOT}/images/icon_users.png" title="Ver responsables" width="16"/>
                 </a>
