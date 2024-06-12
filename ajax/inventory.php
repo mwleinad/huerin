@@ -292,7 +292,6 @@ switch($_POST['type']){
             end($_SESSION['device_resource']);
             $key = isset($_POST['key']) ? $_POST['key'] : key($_SESSION['device_resource']) + 1;
             $_SESSION['device_resource'][$key] =  $resource;
-            $_SESSION['device_resource'][$key]['id'] = !$_POST['key'] ? null : $_SESSION['device_resource'][$key]['id'];
             $smarty->assign('listDevices', $_SESSION['device_resource']);
             $json['status'] = 'ok';
             $json['template'] = $smarty->fetch(DOC_ROOT . "/templates/lists/computo_device.tpl");
@@ -303,7 +302,7 @@ switch($_POST['type']){
     case "deleteFromResource":
         //
         $item = $_SESSION['device_resource'][$_POST['key']];
-        if($item['id']) {
+        if($item['no_inventario']) {
             $_SESSION['device_resource'][$_POST['key']]['deleteAction'] = true;
             $_SESSION['device_resource'][$_POST['key']]['typeDelete'] = 'deleteFromResource';
         }

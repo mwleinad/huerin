@@ -3,6 +3,7 @@
 	<thead>
 		<tr>
 			<th>Dispositivo</th>
+			<th>No. inventario</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -11,6 +12,7 @@
 		{if !$item.deleteAction}
 		<tr>
 			<td>{$item.tipo_dispositivo|upper} {$item.marca} {$item.modelo} {$item.no_serie}</td>
+			<td>{$item.no_inventario}</td>
 			<td>
 				<a href="javascript:;" title="Eliminar de equipo" class="spanDeleteFromResource" data-type="deleteFromResource" data-key="{$key}">
 					<img src="{$WEB_ROOT}/images/icons/softdelete.png">
