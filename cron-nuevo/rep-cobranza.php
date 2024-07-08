@@ -118,7 +118,6 @@ foreach($emisores as $key => $var) {
         $to = array(
             'rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',
             EMAIL_DEV=>'Desarrollador',
-            'brivera@braunhuerin.com.mx'=>'Beatriz Edith Rivera Ortega'
         );
 
     $attachment = DOC_ROOT . "/sendFiles/" . $file . ".xlsx";
