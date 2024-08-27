@@ -21,6 +21,7 @@
                         <option value="recotizar-servicios">Recotizar servicios</option>
                         <option value="importar-inventario">Importar inventario</option>
                         <option value="actualizar-mail-linea-empleado">Actualizar mail grupo y listas distribución de empleados</option>
+                        <option value="importar-paso-tarea-servicio">Importar nuevos registros a catalogo de servicios(incluyendo pasos y tareas)</option>
                         <!--option value="imp-new-customer">Importar clientes nuevos</--option>
                         <option value="imp-new-contract">Importar razones sociales nuevos</option>
                         <option value="update-only-encargado">Actualizar encargados de area</option>
