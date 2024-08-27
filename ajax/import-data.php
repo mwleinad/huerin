@@ -13,10 +13,10 @@ if ($_FILES['file']['error'] === 4) {
     $name = $_FILES['file']['name'];
     $ext = end(explode(".", $name));
 
-    if (strtoupper($ext) != "CSV" &&  !in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado'])) {
+    if (strtoupper($ext) != "CSV" &&  !in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado','importar-paso-tarea-servicio'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta CSV', 'Archivo');
     }
-    if (strtoupper($ext) != "XLSX" && in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado'])) {
+    if (strtoupper($ext) != "XLSX" && in_array($_POST['type'], ['recotizar-servicios','importar-inventario','actualizar-mail-linea-empleado','importar-paso-tarea-servicio'])) {
         $util->setError(0, "error", 'Verificar extesion, solo se acepta XLSX', 'Archivo');
     }
 }
@@ -1304,4 +1304,129 @@ switch ($opcion[0]) {
         }
 
         break;
+    case 'importar-paso-tarea-servicio':
+
+        include_once(DOC_ROOT.'/libs/excel/PHPExcel.php');
+        $archivo = $_FILES['file']['tmp_name'];
+        $inputFileType = PHPExcel_IOFactory::identify($archivo);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($archivo);
+        $sheet = $objPHPExcel->getSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
+        $camposRequeridos = ['area','nomenclatura_de_servicio','servicio','nombre_de_paso','nombre_de_tarea','documento_aceptado'];
+        $keysExcludes = [];
+        $indexExclude = [];
+
+        $keys = [];
+
+        foreach($headers[0] as $kh => $header) {
+            $header =  str_replace(' ', '_', $header);
+            $header =  str_replace('%', 'porcentaje', $header);
+            $header =  $util->cleanString($header);
+            $header =  strtolower($header);
+            if(in_array($header, $keysExcludes)) {
+                array_push($indexExclude, $kh);
+                continue;
+            }
+            array_push($keys, $header);
+        }
+
+
+        foreach ($camposRequeridos as $ky ) {
+
+            if(!in_array($ky, $keys)) {
+
+                $util->setError(0, 'error', 'No se encontro la columna '.$ky.' en el archivo');
+                echo 'fail[#]';
+                $util->PrintErrors();
+                $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+                exit;
+            }
+        }
+
+        $registros = [];
+        for ($row = 2; $row <= $highestRow; $row++) {
+            $currentRow = $sheet->rangeToArray('A' . $row . ":" . $sheet->getHighestColumn() . $row);
+            foreach ($indexExclude as $kex)
+                unset($currentRow[0][$kex]);
+
+            $registros[] = array_combine($keys, $currentRow[0]);
+        }
+
+
+        if(count($registros) <= 0) {
+            $util->setError(0, 'error','El excel no cuenta con registros a importar');
+        }
+
+        $db_connection = new DB(false);
+        foreach($registros as $key => $registro) {
+
+
+            if (!$registro['nomenclatura_de_servicio']) {
+                $util->setError(0, 'error','La columna Nomenclatura de servicio de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+            if (!$registro['servicio']) {
+                $util->setError(0, 'error','La columna Servicio de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+            if (!$registro['nombre_de_paso']) {
+                $util->setError(0, 'error','La columna Nombre de paso de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+
+            if (!$registro['nombre_de_tarea']) {
+                $util->setError(0, 'error','La columna Nombre de tarea de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+            if (!$registro['area']) {
+                $util->setError(0, 'error','La columna Area de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+
+            $db_connection->setQuery("SELECT departamentoId from departamentos where departamento='".$registro['area']."'");
+            $existeDepartamento = $db_connection->GetSingle();
+            if (!$existeDepartamento) {
+                $util->setError(0, 'error','El valor proporcinado en la columna Area de la fila '.($key+2). " no se encuentra registrado");
+                break;
+            }
+
+        }
+
+
+        if ($util->PrintErrors()) {
+            echo "fail[#]";
+            $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+            exit;
+        }
+        $jsonParam = json_encode($registros,JSON_UNESCAPED_SLASHES);
+        $pUsuario = $_SESSION['User']['name'];
+        $store =  "call sp_importar_pasos_tareas_servicio('".$jsonParam."', '".$pUsuario."', @pData)";
+        $db->setQuery($store);
+        $res = 0;
+
+        if($res = $db->ExcuteConsulta()) {
+            $db->setQuery('select @pData');
+            $data= $db->GetSingle();
+            $data_explode = explode('|', $data);
+
+            if($data_explode[0] == 'ERROR') {
+                $res = 0;
+                $util->setError(0, 'error', "Error en SP$data_explode[1] al importar.");
+            }
+            else {
+
+                $mensaje = "Proceso completado: Se han registrado ".($data_explode[1] ?? 0). " servicios, ".($data_explode[2] ?? 0)." pasos y ".($data_explode[3] ?? 0)." tareas.";
+                $util->setError(0, 'complete', $mensaje);
+            }
+        } else {
+            $util->setError(0, 'error','Error al importar, verifique el archivo excel');
+        }
+        echo $res ? 'ok[#]' : 'fail[#]';
+        $util->PrintErrors();
+        $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
+    break;
 }
