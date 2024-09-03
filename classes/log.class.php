@@ -309,12 +309,20 @@ class Log extends Util
                     unset($jefes[$index]);
             }
 
-            $ids = implode(',',$jefes);
-            $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN('.$ids.') AND active="1" ');
-            $resultJefes = $this->Util()->DB()->GetResult();
-            foreach($resultJefes as $var){
-                if($this->Util()->ValidateEmail(trim($var['email']))){
-                    $correosJefes[trim($var['email'])] =$var['name'];
+            if(!$sendBraun){
+                $index = array_search(IDBRAUN,$jefes);
+                if($index)
+                    unset($jefes[$index]);
+            }
+
+            if (count($jefes) > 0) {
+                $ids = implode(',', $jefes);
+                $this->Util()->DB()->setQuery('SELECT email,name FROM personal WHERE personalId IN(' . $ids . ') AND active="1" ');
+                $resultJefes = $this->Util()->DB()->GetResult();
+                foreach ($resultJefes as $var) {
+                    if ($this->Util()->ValidateEmail(trim($var['email']))) {
+                        $correosJefes[trim($var['email'])] = $var['name'];
+                    }
                 }
             }
         }
