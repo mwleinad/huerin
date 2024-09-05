@@ -1205,38 +1205,45 @@ class Bono extends Personal
         $name_title = "GERENTE_0_".str_replace(" ", "", $name_title);
         $title_sheet = strtoupper($name_title);
 
+        $tienePropios = count($data['propios'] ?? []) > 0;
+
         $sheet->setTitle($title_sheet);
         $col = 0;
         $row = 1;
         $consolidado_final = [];
-       /* $row_hide_init = $row;
-        foreach ($col_title_mix as $title_header) {
-            $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
+
+        // Condicional tiene propios
+        if ($tienePropios) {
+
+            $row_hide_init = $row;
+            foreach ($col_title_mix as $title_header) {
+                $sheet->setCellValueByColumnAndRow($col, $row, $title_header)
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+                $col++;
+            }
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Total devengado')
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
             $col++;
-        }
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Total devengado')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Total trabajado')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Diferencia')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Total trabajado')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, 'Diferencia')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($global_config_style_cell['style_header']);
 
-        $row++;
-        $row_init_col_total = $row;
-        $totales_gerente = $this->drawRowsPropios($sheet, $months, $data, $row, $jerarquias);
-        $cad['data'] = $data;
-        $cad['totales'] = $totales_gerente;
-        array_push($consolidado_final, $cad);
-        $total_por_gerente = [];
-        $this->drawRowTotal($sheet, $totales_gerente, $row, $months, $row_init_col_total, $total_por_gerente, $jerarquias);
-       // $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_gerente, $row, $jerarquias);
-        $row_hide_end = $row;
-        // ocultar filas, se utiliza para no reprogramar las formulas de totales.
-        for($current_row = $row_hide_init; $current_row <= $row_hide_end; $current_row++)
-            $sheet->getRowDimension($current_row)->setVisible(false);*/
+            $row++;
+            $row_init_col_total = $row;
+            $totales_gerente = $this->drawRowsPropios($sheet, $months, $data, $row, $jerarquias);
+            $cad['data'] = $data;
+            $cad['totales'] = $totales_gerente;
+            array_push($consolidado_final, $cad);
+            $total_por_gerente = [];
+            $this->drawRowTotal($sheet, $totales_gerente, $row, $months, $row_init_col_total, $total_por_gerente, $jerarquias);
+            // $this->drawRowTotalConsolidadoPorSupervisor($sheet, $total_por_gerente, $row, $jerarquias);
+            $row_hide_end = $row;
+            // ocultar filas, se utiliza para no reprogramar las formulas de totales.
+            //for ($current_row = $row_hide_init; $current_row <= $row_hide_end; $current_row++)
+              //  $sheet->getRowDimension($current_row)->setVisible(false);
+        } // Finaliza condicional
 
 
         $gran_total_consolidado_gerente = [];
@@ -1246,7 +1253,9 @@ class Bono extends Personal
         }
         $row += 1;
         $gran_total_only_gerente = [];
-        //$gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias);
+        // Condicionar solo si gerente tiene directamente  registros.
+        if ($tienePropios)
+            $gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias,$data);
         $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data);
     }
 
