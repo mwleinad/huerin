@@ -1288,7 +1288,7 @@ class Bono extends Personal
     function drawGranTotalGerente (&$book, $sheet, $data, $data_gerente, $months, &$row, $info_grupo, $preefix = "GERENTE") {
         global $global_config_style_cell, $global_bonos;
 
-        $col_real   =  0;
+        $col_real   = count($data_gerente) > 0 ? 3 : 0;
         $col        =  $col_real + 1;
         $row_nombre     = ++$row;
         $row_devengando = ++$row;
