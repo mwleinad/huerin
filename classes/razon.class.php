@@ -128,8 +128,19 @@ class Razon extends Contract
        $encargados = [];
        $contractRep = new ContractRep();
        $encargadosIds = $contractRep->encargadosCustomKey('departamentoId','personalId',$compInfo['userId']);
-       if(key_exists(21,$encargadosIds))
-            $encargados = $this->findEmailsAscByRespId($encargadosIds[21],[4,5,6]);
+       if(key_exists(21,$encargadosIds)) {
+           //$encargados = $this->findEmailsAscByRespId($encargadosIds[21], [4, 5, 6]);
+           if($encargadosIds[21]) {
+
+               $sql = "select name,email from personal where active='1' and personalId ='".$encargadosIds[21]."'";
+               $this->Util()->DB()->setQuery($sql);
+               $responsable = $this->Util()->DB()->GetRow();
+
+               if(isset($responsable['email']))
+                 if($this->Util()->ValidateEmail($responsable["email"]))
+                   $encargados[$responsable["email"]] = $responsable["name"];
+           }
+       }
 
        $id_rfc = $compInfo['rfcId'];
        $id_empresa = $compInfo['empresaId'];
