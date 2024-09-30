@@ -54,6 +54,12 @@ switch ($_POST["type"]) {
         if (isset($_POST["extension_webex"]))
             $personal->setExtensionWebex($_POST['extension_webex']);
 
+        if (isset($_POST["fecha_promocion"])) {
+            $fechaPromocion = $_POST['fecha_promocion'] ? date('Y-m-d', strtotime($_POST['fecha_promocion'])) : '';
+            $personal->setFechaPromocion($fechaPromocion);
+        }
+
+
         if (isset($_POST["numero_celular_institucional"]))
             $personal->setSkype($_POST['numero_celular_institucional']);
         if (isset($_POST["numero_telefono_webex"]))
@@ -227,6 +233,11 @@ switch ($_POST["type"]) {
         if (isset($_POST["extension_webex"]))
             $personal->setExtensionWebex($_POST['extension_webex']);
 
+        if (isset($_POST["fecha_promocion"])) {
+            $fechaPromocion = $_POST['fecha_promocion'] ? date('Y-m-d', strtotime($_POST['fecha_promocion'])) : null;
+            $personal->setFechaPromocion($fechaPromocion);
+        }
+
         if (isset($_POST["systemAspel"]))
             $personal->setSystemAspel($_POST['systemAspel']);
         if (isset($_POST["userAspel"]))
@@ -386,6 +397,9 @@ switch ($_POST["type"]) {
         $sheet->setCellValueByColumnAndRow(++$col, $row, 'Extension webex')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Fecha de Promoción')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, 'Sueldo')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
@@ -433,6 +447,8 @@ switch ($_POST["type"]) {
                 numeroCelularInstitucional,
                 numeroTelefonicoWebex,
                 extensionWebex,
+                extensionWebex,
+                fechaPromocion,
                 sueldo,
                 userComputadora,
                 passwordComputadora,
@@ -463,6 +479,7 @@ switch ($_POST["type"]) {
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numeroCelularInstitucional']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numeroTelefonicoWebex']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['extensionWebex']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['fechaPromocion']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['sueldo']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userComputadora']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordComputadora']);

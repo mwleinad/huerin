@@ -79,6 +79,13 @@ class Personal extends Main
         $this->extensionWebex = $value;
     }
 
+    private $fechaPromocion =  null;
+
+    public function setFechaPromocion($value)
+    {
+        $this->fechaPromocion = $value;
+    }
+
     private $resourceId;
 
     public function setResource($value)
@@ -454,6 +461,8 @@ class Personal extends Main
                 $this->sueldo = 0;
             $strUpdate .= " sueldo = '" . $this->sueldo . "', ";
         }
+
+
         if (strlen($this->phone) > 0)
             $strUpdate .= " phone='" . $this->phone . "', ";
         if (isset($_POST['email']))
@@ -480,6 +489,10 @@ class Personal extends Main
             $strUpdate .= " numeroTelefonicoWebex ='" . $this->numeroTelefonicoWebex . "', ";
         if (!is_null($this->extensionWebex))
             $strUpdate .= " extensionWebex ='" . $this->extensionWebex . "', ";
+        if (!is_null($this->fechaPromocion)) {
+            $fechaPromocion = $this->fechaPromocion === ''? 'NULL' : "'".$this->fechaPromocion."'";
+            $strUpdate .= " fechaPromocion =". $fechaPromocion.",";
+        }
         if (strlen($this->horario) > 0)
             $strUpdate .= " horario='" . $this->horario . "', ";
         if (strlen($this->fechaIngreso) > 0)
@@ -576,7 +589,8 @@ class Personal extends Main
         if (!is_numeric($this->sueldo))
             $this->sueldo = 0;
 
-        $fechaCompra = $this->Util()->isValidateDate($_POST['fechaCompra'], 'd-m-Y') ? $this->Util()->FormatDateMySql($_POST['fechaCompra']) : '';
+        $fechaCompra    = $this->Util()->isValidateDate($_POST['fechaCompra']) ? $this->Util()->FormatDateMySql($_POST['fechaCompra']) : '';
+        $fechaPromocion = $this->fechaPromocion === ''? 'NULL' : "'".$this->fechaPromocion."'";
 
         $this->Util()->DB()->setQuery("
             INSERT INTO
@@ -614,7 +628,8 @@ class Personal extends Main
                 cuentaInhouse,
                 numeroCelularInstitucional,
                 numeroTelefonicoWebex,
-                extensionWebex
+                extensionWebex,
+                fechaPromocion
         )
         VALUES
         (
@@ -650,7 +665,8 @@ class Personal extends Main
                 '" . $this->cuentaInhouse. "',
                 '" . $this->numeroCelularInstitucional. "',
                 '" . $this->numeroTelefonicoWebex. "',
-                '" . $this->extensionWebex. "'
+                '" . $this->extensionWebex. "',
+                $fechaPromocion
         );");
         $id = $this->Util()->DB()->InsertData();
         if (isset($_POST["expe"])) {

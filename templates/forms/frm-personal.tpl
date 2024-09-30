@@ -82,6 +82,22 @@
                     <hr/>
                 </div>
             {/if}
+            {if in_array(309,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Fecha de Promoción:</div>
+                    <input style="width: 20%!important;" class="smallInput medium"
+                           name="fecha_promocion"
+                           id="fecha_promocion"
+                           onclick="CalendarioSimple(this)"
+                           type="text"
+                           value="{$post.fechaPromocion|date_format:'%d-%m-%Y'}"
+                           size="50"
+                           maxlength="10"
+                           readonly="readonly"/>
+                    <hr/>
+                </div>
+            {/if}
+
             {if in_array(234,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Numero de Equipo:</div>
