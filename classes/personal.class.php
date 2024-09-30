@@ -55,6 +55,30 @@ class Personal extends Main
         $this->skype = $value;
     }
 
+    private $numeroCelularInstitucional = null;
+
+    public function setNumeroCelularInstitucional($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars = 60, $minChars = 0, "Número celular institucional");
+        $this->numeroCelularInstitucional = $value;
+    }
+
+    private $numeroTelefonicoWebex = null;
+
+    public function setNumeroTelefonicoWebex($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars = 20, $minChars = 0, "Número telefónico de Webex");
+        $this->numeroTelefonicoWebex = $value;
+    }
+
+    private $extensionWebex =  null;
+
+    public function setExtensionWebex($value)
+    {
+        $this->Util()->ValidateString($value, $max_chars = 10, $minChars = 0, "Extensión de Webex");
+        $this->extensionWebex = $value;
+    }
+
     private $resourceId;
 
     public function setResource($value)
@@ -450,6 +474,12 @@ class Personal extends Main
             $strUpdate .= " passwordAspel='" . $this->passwordAspel . "', ";
         if (strlen($this->skype) > 0)
             $strUpdate .= " skype='" . $this->skype . "', ";
+        if (!is_null($this->numeroCelularInstitucional))
+            $strUpdate .= " numeroCelularInstitucional ='" . $this->numeroCelularInstitucional . "', ";
+        if (!is_null($this->numeroTelefonicoWebex))
+            $strUpdate .= " numeroTelefonicoWebex ='" . $this->numeroTelefonicoWebex . "', ";
+        if (!is_null($this->extensionWebex))
+            $strUpdate .= " extensionWebex ='" . $this->extensionWebex . "', ";
         if (strlen($this->horario) > 0)
             $strUpdate .= " horario='" . $this->horario . "', ";
         if (strlen($this->fechaIngreso) > 0)
@@ -581,7 +611,10 @@ class Personal extends Main
                 numberAccountsAllowed,
                 mailGrupo,
                 listaDistribucion,
-                cuentaInhouse
+                cuentaInhouse,
+                numeroCelularInstitucional,
+                numeroTelefonicoWebex,
+                extensionWebex
         )
         VALUES
         (
@@ -614,7 +647,10 @@ class Personal extends Main
                 '" . $this->numberAccountsAllowed . "',
                 '" . $this->mailGrupo. "',
                 '" . $this->listaDistribucion. "',
-                '" . $this->cuentaInhouse. "'
+                '" . $this->cuentaInhouse. "',
+                '" . $this->numeroCelularInstitucional. "',
+                '" . $this->numeroTelefonicoWebex. "',
+                '" . $this->extensionWebex. "'
         );");
         $id = $this->Util()->DB()->InsertData();
         if (isset($_POST["expe"])) {

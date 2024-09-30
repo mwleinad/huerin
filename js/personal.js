@@ -386,6 +386,26 @@ function saveWorkTeam() {
         }
     });
 }
+function ExportToExcel()
+{
+    var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+    if(!resp)
+        return;
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/personal.php',
+        type:'post',
+        data:{ 'type':'exportarExcel'},
+        beforeSend: function () {
+
+        },
+        success:function (response) {
+            window.location = response
+        },
+        error:function () {
+            alert("Error al mostrar informacion!!");
+        }
+    });
+}
 jQ(document).on('click', '#btnWorkTeam', saveWorkTeam);
 jQ(document).on('click', '.spanEditWorkTeam',openEditWorkTeam);
 jQ(document).on('click', '.spanDelWorkTeam',deleteWorkTeam);

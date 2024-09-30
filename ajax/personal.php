@@ -45,6 +45,22 @@ switch ($_POST["type"]) {
         if (isset($_POST["skype"]))
             $personal->setSkype($_POST['skype']);
 
+        if (isset($_POST["numero_celular_institucional"]))
+            $personal->setNumeroCelularInstitucional($_POST['numero_celular_institucional']);
+
+        if (isset($_POST["numero_telefonico_webex"]))
+            $personal->setNumeroTelefonicoWebex($_POST['numero_telefonico_webex']);
+
+        if (isset($_POST["extension_webex"]))
+            $personal->setExtensionWebex($_POST['extension_webex']);
+
+        if (isset($_POST["numero_celular_institucional"]))
+            $personal->setSkype($_POST['numero_celular_institucional']);
+        if (isset($_POST["numero_telefono_webex"]))
+            $personal->setSkype($_POST['numero_telefono_webex']);
+        if (isset($_POST["numero_celular_institucional"]))
+            $personal->setSkype($_POST['numero_celular_institucional']);
+
         if (isset($_POST["systemAspel"]))
             $personal->setSystemAspel($_POST['systemAspel']);
         if (isset($_POST["userAspel"]))
@@ -201,6 +217,16 @@ switch ($_POST["type"]) {
             $personal->setEmail($_POST['email']);
         if (isset($_POST["skype"]))
             $personal->setSkype($_POST['skype']);
+
+        if (isset($_POST["numero_celular_institucional"]))
+            $personal->setNumeroCelularInstitucional($_POST['numero_celular_institucional']);
+
+        if (isset($_POST["numero_telefonico_webex"]))
+            $personal->setNumeroTelefonicoWebex($_POST['numero_telefonico_webex']);
+
+        if (isset($_POST["extension_webex"]))
+            $personal->setExtensionWebex($_POST['extension_webex']);
+
         if (isset($_POST["systemAspel"]))
             $personal->setSystemAspel($_POST['systemAspel']);
         if (isset($_POST["userAspel"]))
@@ -324,6 +350,145 @@ switch ($_POST["type"]) {
         $results = $personal->GenerateReportExpediente();
         $smarty->assign("results", $results);
         $smarty->display(DOC_ROOT . '/templates/lists/report-exp-employe.tpl');
+        break;
+    case 'exportarExcel':
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('Listado de empleados');
+
+        $row=1;
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Codigo')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Nombre')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Fecha de ingreso')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Telefono celular')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Telefono')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Extension')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Numero celular institucional')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Numero telefonico webex')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Extension webex')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Sueldo')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Usuario computadora')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Password computadora')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Email grupo')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Lista distribucion')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Numero maximo de empresa a cargo')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Email')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Paswword')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Cuenta inhouse')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Sistema aspel')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Usuario aspel')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Paswword aspel')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $row++;
+
+        $sql = "select personalId codigo, 
+                TRIM(SUBSTRING(name, LENGTH(SUBSTRING_INDEX(name,' ',1))+1, LENGTH(name))) as nombre,
+                fechaIngreso,
+                celphone,
+                phone,
+                ext extension,
+                numeroCelularInstitucional,
+                numeroTelefonicoWebex,
+                extensionWebex,
+                sueldo,
+                userComputadora,
+                passwordComputadora,
+                mailGrupo,
+                listaDistribucion,
+                numberAccountsAllowed,
+                email, 
+                cuentaInhouse,
+                systemAspel,
+                userAspel,
+                passwordAspel
+                from personal
+                where active = '1' 
+                ORDER BY nombre
+        ";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['codigo']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['nombre']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['fechaIngreso']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['celphone']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['phone']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['extension']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numeroCelularInstitucional']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numeroTelefonicoWebex']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['extensionWebex']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['sueldo']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userComputadora']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordComputadora']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['mailGrupo']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['listaDistribucion']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numberAccountsAllowed']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['email']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, '');
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['cuentaInhouse']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['systemAspel']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userAspel']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordAspel']);
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "Listado de empleados.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+
         break;
 
 }
