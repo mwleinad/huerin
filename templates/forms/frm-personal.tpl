@@ -7,6 +7,14 @@
                        {if $post && !(in_array(257,$permissions)|| $User.isRoot)}readonly{/if}/>
                 <hr/>
             </div>
+            {if in_array(232,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Teléfono Celular:</div>
+                    <input class="smallInput medium" name="celphone" id="celphone" type="text" value="{$post.celphone}"
+                           size="50"/>
+                    <hr/>
+                </div>
+            {/if}
             {if in_array(230,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Sueldo(mensual)</div>
@@ -29,19 +37,48 @@
                     <hr/>
                 </div>
             {/if}
-            {if in_array(232,$permissions)|| $User.isRoot}
-                <div class="formLine" style="width:100%; text-align:left">
-                    <div style="width:30%;float:left">Telefono Celular:</div>
-                    <input class="smallInput medium" name="celphone" id="celphone" type="text" value="{$post.celphone}"
-                           size="50"/>
-                    <hr/>
-                </div>
-            {/if}
+
             {if in_array(233,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Correo electr&oacute;nico:</div>
                     <input class="smallInput medium" name="email" id="email" type="text" value="{$post.email}"
                            size="50"/>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(306,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Número de celular institucional:</div>
+                    <input class="smallInput medium"
+                           name="numero_celular_institucional"
+                           id="numero_celular_institucional"
+                           type="text"
+                           value="{$post.numeroCelularInstitucional}"
+                           size="20"/>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(307,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Número telefónico de Webex:</div>
+                    <input class="smallInput medium"
+                           name="numero_telefonico_webex"
+                           id="numero_telefonico_webex"
+                           type="text"
+                           value="{$post.numeroTelefonicoWebex}"
+                           size="20"/>
+                    <hr/>
+                </div>
+            {/if}
+            {if in_array(308,$permissions)|| $User.isRoot}
+                <div class="formLine" style="width:100%; text-align:left">
+                    <div style="width:30%;float:left">Extensión de Webex:</div>
+                    <input class="smallInput medium"
+                           name="extension_webex"
+                           id="extension_webex"
+                           type="text"
+                           value="{$post.extensionWebex}"
+                           size="10"/>
                     <hr/>
                 </div>
             {/if}
@@ -103,7 +140,7 @@
                     <hr/>
                 </div>
             {/if}
-            {if in_array(239,$permissions)|| $User.isRoot}f
+            {if in_array(239,$permissions)|| $User.isRoot}
                 <div class="formLine" style="width:100%; text-align:left">
                     <div style="width:30%;float:left">Contraseña Computadora</div>
                     <input class="smallInput medium" name="passwordComputadora" id="passwordComputadora" type="text"
