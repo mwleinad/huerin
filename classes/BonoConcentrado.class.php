@@ -92,7 +92,8 @@ class BonoConcentrado extends Personal
                 'Atencion al Cliente',
                 'Cuentas por cobrar',
                 'Finanzas',
-                'Fiscal',
+                'Desarrollo organizacional',
+                'Desarrollo Organizacional',
                 'Sistemas'
         ];
 
