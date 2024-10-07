@@ -66,11 +66,15 @@ class SendMail extends Main
                 {
                     foreach($cc as $ccEmail => $ccName)
                     {
-                        $mail->addBCC($ccEmail, $ccName);
+                        // Si ubo addAddress antes arriba
+                        if (count($to) > 0)
+                            $mail->addBCC($ccEmail, $ccName);
+                        else
+                            $mail->addAddress($ccEmail, $ccName);
                     }
-                    $mail->addBCC(EMAIL_DEV,'COPIA CARBON');
+                    $mail->addBCC(EMAIL_DEV,'COPIA A DESARROLLO ');
                 }else{
-                    $mail->addAddress(EMAIL_DEV, 'DEVELOPER');
+                    $mail->addAddress(EMAIL_DEV, 'DESARROLLO');
                 }
                 $mail->Subject    = $subject;
                 $mail->msgHTML($body);
