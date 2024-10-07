@@ -1405,7 +1405,7 @@ class Comprobante extends Producto
         if ($values['rfc'])
             $sqlSearch .= ' AND a.rfc LIKE "%' . $values['rfc'] . '%"';
         if ($values['nombre'])
-            $sqlSearch .= ' AND (b.nameContact LIKE "%' . $values['nombre'] . '%" OR a.name LIKE "%' . $values['nombre'] . '%") ';
+            $sqlSearch .= ' AND (a.nameContact LIKE "%' . $values['nombre'] . '%" OR a.name LIKE "%' . $values['nombre'] . '%") ';
 
         if ($values['mes'] && $values['status_activo'] != '0') {
             $sqlSearch .= ' AND EXTRACT(MONTH FROM c.fecha) = ' . $values['mes'];
@@ -1458,7 +1458,7 @@ class Comprobante extends Producto
             $orderBy = "";
             $sqlQuery = " SELECT c.comprobanteId
                         FROM comprobante as c
-                        LEFT JOIN contract a ON a.contractId = c.userId 
+                        LEFT JOIN (select contract.contractId,contract.name,contract.rfc,customer.nameContact FROM contract INNER JOIN customer on contract.customerId = customer.customerId) a ON a.contractId = c.userId 
                         $innerpermisos
                         WHERE 1 $wherepermisos $sqlSearch ";
             $this->Util()->DB()->setQuery($sqlQuery);
@@ -1467,7 +1467,7 @@ class Comprobante extends Producto
             $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
             $orderBy = " ORDER BY c.fecha DESC, c.serie ASC , c.folio DESC ";
         }
-        $sqlQuery = "SELECT 
+         $sqlQuery = "SELECT 
                      c.comprobanteId,
                      c.serie,
                      c.folio,
@@ -1509,7 +1509,7 @@ class Comprobante extends Producto
                      )  FROM instanciaServicio where instanciaServicio.comprobanteId = c.comprobanteId GROUP BY instanciaServicio.comprobanteId ) as instancias,
                     (SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = c.comprobanteId limit 1) cfdi_cancel_status
                     FROM comprobante as c
-                    LEFT JOIN contract a ON a.contractId = c.userId 
+                    LEFT JOIN (select contract.contractId,contract.name,contract.rfc,customer.nameContact FROM contract INNER JOIN customer on contract.customerId = customer.customerId) a ON a.contractId = c.userId 
                     $innerpermisos
                     WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId $orderBy " . $sqlAdd;
         $this->Util()->DB()->setQuery($sqlQuery);
