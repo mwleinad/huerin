@@ -31,4 +31,5 @@ foreach($comprobantes as $Key => $factura) {
         echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);
 }
 echo "------------ FIN DE CRONJON ".date("Y-m-d H:i:s")." -------------------".chr(13).chr(10);
+echo "------------------------------------------------- ----------------------------".chr(13).chr(10);
 ?>
