@@ -36,6 +36,19 @@ class SendMail extends Main
                 $mail->send();
 
             } catch (Exception $e){
+
+                // Guardar exception en logs de correos
+                $file = DOC_ROOT."/sendFiles/phpmailer.log";
+                $open = fopen($file,"a+");
+                $entry = "EXCEPTION PREPARE: ".date('d-m-Y H:i:s').chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= $e->getMessage().chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                if ( $open ) {
+                    fwrite($open,$entry);
+                    fclose($open);
+                }
                 return false;
             }
         return true;
@@ -98,6 +111,18 @@ class SendMail extends Main
                 }
                 $mail->send();
             } catch (Exception $e){
+                // Guardar exception en logs de correos
+                $file = DOC_ROOT."/sendFiles/phpmailer.log";
+                $open = fopen($file,"a+");
+                $entry = "EXCEPTION PREPARE MULTIPLE: ".date('d-m-Y H:i:s').chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= $e->getMessage().chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                if ( $open ) {
+                    fwrite($open,$entry);
+                    fclose($open);
+                }
                 return false;
             }
 
