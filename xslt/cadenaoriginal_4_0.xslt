@@ -6,39 +6,39 @@
   <!--
 		En esta sección se define la inclusión de las plantillas de utilerías para colapsar espacios
 	-->
-  <xsl:include href="/var/www/mainplatform/public_html/xslt/utilerias.xslt"/>
+  <xsl:include href="C:/laragon/www/huerin/xslt/utilerias.xslt"/>
   <!-- 
 		En esta sección se define la inclusión de las demás plantillas de transformación para 
 		la generación de las cadenas originales de los complementos fiscales 
 	-->
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/donat11.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/divisas.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/implocal.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/leyendasFisc.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/pfic.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/TuristaPasajeroExtranjero.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/nomina12.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/cfdiregistrofiscal.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/pagoenespecie.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/aerolineas.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/valesdedespensa.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/notariospublicos.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/vehiculousado.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/servicioparcialconstruccion.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/renovacionysustitucionvehiculos.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/certificadodedestruccion.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/obrasarteantiguedades.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/ComercioExterior11.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/ine11.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/iedu.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/ventavehiculos11.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/detallista.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/ecc12.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/consumodeCombustibles11.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/GastosHidrocarburos10.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/IngresosHidrocarburos.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/CartaPorte20.xslt"/>
-	<xsl:include href="/var/www/mainplatform/public_html/xslt/Pagos20.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/donat11.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/divisas.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/implocal.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/leyendasFisc.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/pfic.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/TuristaPasajeroExtranjero.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/nomina12.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/cfdiregistrofiscal.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/pagoenespecie.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/aerolineas.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/valesdedespensa.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/notariospublicos.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/vehiculousado.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/servicioparcialconstruccion.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/renovacionysustitucionvehiculos.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/certificadodedestruccion.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/obrasarteantiguedades.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/ComercioExterior11.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/ine11.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/iedu.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/ventavehiculos11.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/detallista.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/ecc12.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/consumodeCombustibles11.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/GastosHidrocarburos10.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/IngresosHidrocarburos.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/CartaPorte20.xslt"/>
+	<xsl:include href="C:/laragon/www/huerin/xslt/Pagos20.xslt"/>
 
   <!-- Aquí iniciamos el procesamiento de la cadena original con su | inicial y el terminador || -->
   <xsl:template match="/">|<xsl:apply-templates select="/cfdi:Comprobante"/>||</xsl:template>
