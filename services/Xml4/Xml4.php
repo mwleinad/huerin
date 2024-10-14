@@ -200,7 +200,7 @@ class Xml4 extends Producto{
         $this->cfdiInformacionGlobal = $this->root->appendChild($this->cfdiInformacionGlobal);
 
         $cfdiInformacionGlobalData = array(
-            "Periodicidad"=>$this->Util()->CadenaOriginalVariableFormat("04",false,false),
+            "Periodicidad"=>$this->Util()->CadenaOriginalVariableFormat(date("m"),false,false),
             "Meses"=>$this->Util()->CadenaOriginalVariableFormat(date('m'),false,false),
             "Año"=>$this->Util()->CadenaOriginalVariableFormat(date('Y'),false,false),
         );
