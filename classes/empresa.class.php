@@ -736,6 +736,10 @@ class Empresa extends Main
 
 		   $fechaActual = str_replace("-", "_", date("Y-m-d"));
 		   $file = DOC_ROOT . "/logs/cancelaciones/log_cancelaciones_" . $fechaActual . ".log";
+		   $dirname = dirname($file);
+		   if (!is_dir($dirname))
+			   mkdir($dirname, 0755, true);
+
 		   $open = fopen($file, "a+");
 		   $entry = "INICIO CANCELACION:" . date('Y-m-d H:i:s') . chr(10);
 		   $entry .= "SOLICITANTE:" . $currentUser['name'] . chr(10);

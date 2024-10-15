@@ -507,14 +507,16 @@ class InvoiceService extends Cfdi{
         $endTime = date("d-m-Y").' a las '.date('H:i:s');
         $entry = "Cron ejecutado desde ".$this->initTimeExecution." hasta $endTime Hrs.".chr(13).chr(10);
         $entry .=$this->logString;
-        $file = DOC_ROOT."/sendFiles/logInvoices.txt";
-        $open = fopen($file,"w");
-        if ( $open ) {
-            fwrite($open,$entry);
+        $fechaActual = str_replace("-", "_", date("Y-m-d"));
+        $file = DOC_ROOT . "/logs/facturacion/automatico_" . $fechaActual . ".log";
+        $dirname = dirname($file);
+        if (!is_dir($dirname))
+            mkdir($dirname, 0755, true);
+
+        $open = fopen($file, "a+");
+        if ($open) {
+            fwrite($open, $entry);
             fclose($open);
-            //enviar por correo el log solo si se crearon facturas
-            $sendmail = new SendMail;
-            $sendmail->Prepare('LOG INVOICES','Logs invoices',EMAIL_DEV,'HBKRUZPE',$file,'logInvoices.txt','','',FROM_MAIL);
         }
     }
 
