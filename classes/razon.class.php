@@ -136,9 +136,12 @@ class Razon extends Contract
                $this->Util()->DB()->setQuery($sql);
                $responsable = $this->Util()->DB()->GetRow();
 
-               if(isset($responsable['email']))
-                 if($this->Util()->ValidateEmail($responsable["email"]))
-                   $encargados[$responsable["email"]] = $responsable["name"];
+               if(isset($responsable['email'])) {
+                   $respon = explode("@",$responsable['email']);
+                   $dominio = $respon[1] ?? '';
+                   if ($this->Util()->ValidateEmail($responsable["email"]) && $dominio === 'braunhuerin.com.mx')
+                       $encargados[$responsable["email"]] = $responsable["name"];
+               }
            }
        }
 

@@ -344,7 +344,7 @@ class Log extends Util
         }
         $mail = new SendMail();
         $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $mail->PrepareMultipleNotice($subject,utf8_decode($body),$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma',true);
+        $mail->PrepareMultipleNotice($subject,utf8_decode($body),$encargados,'',$file,$fileName,"","",'noreply@braunhuerin.com.mx','Administrador de plataforma');
         if(file_exists( $file)) {
            unlink($file);
         }
@@ -769,7 +769,7 @@ class Log extends Util
         $send =  new SendMail();
         $file = DOC_ROOT."/sendFiles/$fileName";
         $subject = PROJECT_STATUS === 'test' ? 'NOTIFICACION DE CAMBIOS EN TEST' : 'NOTIFICACION DE CAMBIOS EN PLATAFORMA';
-        $send->PrepareMultipleNotice($subject,$body,$emails,"",$file,$fileName,"","","noreply@braunhuerin.com.mx","Administrador plataforma",true);
+        $send->PrepareMultipleNotice($subject,$body,$emails,"",$file,$fileName,"","","noreply@braunhuerin.com.mx","Administrador plataforma");
        // @unlink($file);
     }
     function sendLogUpdateServicios($cambios = []){
@@ -921,7 +921,7 @@ class Log extends Util
 
         if(is_file($file1)) {
             $sendmail = new SendMail();
-            $sendmail->PrepareMultipleNotice($subject,$body,[],"",$file1,$fileName, "", "",'sistema@braunhuerin.com.mx','Administrador de plataforma',true);
+            $sendmail->PrepareMultipleNotice($subject,$body,[],"",$file1,$fileName, "", "",'sistema@braunhuerin.com.mx','Administrador de plataforma');
             //unlink($file1);
         }
     }

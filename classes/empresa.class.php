@@ -732,7 +732,24 @@ class Empresa extends Main
 		   if(!SEND_LOG_MOD){
                $correos = [];
            }
-		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION",true);
+
+
+		   $fechaActual = str_replace("-", "_", date("Y-m-d"));
+		   $file = DOC_ROOT . "/logs/cancelaciones/log_cancelaciones_" . $fechaActual . ".log";
+		   $open = fopen($file, "a+");
+		   $entry = "INICIO CANCELACION:" . date('Y-m-d H:i:s') . chr(10);
+		   $entry .= "SOLICITANTE:" . $currentUser['name'] . chr(10);
+		   $entry .= "EMPRESA AFECTADA:" . strtoupper($row['name']) . chr(10);
+		   $entry .= "TIPO DOCUMENTO, SERIE Y FOLIO:" . $row['tipoDocumento'] . " " . $row['serie'] . $row['folio'] . chr(10);
+		   $entry .= "MOTIVO:" . $motivo_cancelacion . chr(10);
+		   $entry .= chr(10) . chr(13);
+		   if ($open) {
+			   fwrite($open, $entry);
+			   fclose($open);
+		   }
+
+
+		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION");
 		   return true;
         }
 	}
