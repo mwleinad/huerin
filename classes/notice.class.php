@@ -312,7 +312,7 @@ class Notice extends Main
             }
             //desactivar asta que confime rogelio
             $sendmail = new SendMail();
-            $sendmail->SendMultipleNotice($subject, $body, $clientesCorreos, $adjuntos, 'noreply@braunhuerin.com.mx', 'BRAUN HUERIN', true, true);
+            $sendmail->SendMultipleNotice($subject, $body, $clientesCorreos, $adjuntos, 'noreply@braunhuerin.com.mx', 'BRAUN HUERIN', false, true);
         }
         $this->Util()->setError(0, 'complete', 'El aviso se ha agregado correctamente');
         $this->Util()->PrintErrors();

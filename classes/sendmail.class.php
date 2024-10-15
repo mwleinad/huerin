@@ -61,11 +61,12 @@ class SendMail extends Main
             try{
                 $mail->addReplyTo($from, $fromName);
                 $mail->setFrom($from, $fromName);
+
                 foreach($to as $correo => $name)
                 {
                     switch($name) {
                         case 'Desarrollador':
-                            if(count($to)>1)
+                            if(count($to) > 1)
                                 $mail->addBCC($correo, $name);
                             else
                                 $mail->addAddress($correo, $name);
@@ -75,20 +76,22 @@ class SendMail extends Main
                             break;
                     }
                 }
+
                 if(count($cc)>0)
                 {
                     foreach($cc as $ccEmail => $ccName)
                     {
-                        // Si ubo addAddress antes arriba
                         if (count($to) > 0)
                             $mail->addBCC($ccEmail, $ccName);
                         else
                             $mail->addAddress($ccEmail, $ccName);
                     }
-                    $mail->addBCC(EMAIL_DEV,'COPIA A DESARROLLO ');
-                }else{
-                    $mail->addAddress(EMAIL_DEV, 'DESARROLLO');
+
                 }
+                if( count($cc) <= 0 && count($to) <= 0)
+                    $mail->addAddress(EMAIL_DEV, 'DESARROLLADOR');
+
+
                 $mail->Subject    = $subject;
                 $mail->msgHTML($body);
                 $mail->isSMTP();
@@ -128,47 +131,6 @@ class SendMail extends Main
 
         return true;
 	}
-
-    public function PrepareMultipleHidden($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
-    {
-        $mail = new PHPMailer();
-
-        $mail->addReplyTo($from, $fromName);
-        $mail->setFrom($from, $fromName);
-        foreach($to as $correo => $name)
-        {
-           $mail->addBCC($correo, $name);
-        }
-        if($sendDesarrollador)
-            $mail->addBCC(EMAIL_DEV,'Desarrollador');
-
-        $mail->Subject    = $subject;
-        $mail->msgHTML($body);
-        $mail->isSMTP();
-        $mail->SMTPAuth   = true;
-        $mail->Host       = SMTP_HOST2;
-        $mail->SMTPAutoTLS  = false;
-        $mail->Port       = SMTP_PORT2;
-        $mail->Username   = SMTP_USER2;
-        $mail->Password   = SMTP_PASS2;
-        $mail->Timeout=300;
-        $mail->SMTPDebug= SMTP_DEBUG;;
-
-        if($attachment != "")
-        {
-            $mail->addAttachment($attachment, $fileName);
-        }
-
-        if($attachment2 != "")
-        {
-            $mail->addAttachment($attachment2, $fileName2);
-        }
-        if($mail->send())
-            return true;
-        else
-            return false;
-
-    }
 
     public function PrepareMultipleNotice($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$sendDesarrollador=false)
     {
@@ -237,7 +199,7 @@ class SendMail extends Main
             $mail->clearAllRecipients();
             if ($sendDesarrollador) {
                 if ($totalCorreo > 0) {
-                    $file = trim('logcorreos_' . strtotime(date('Y-m-d H:i:s')) . ".txt");
+                    $file = trim('LISTADO_CORREOS_ENVIADOS_' . strtotime(date('Y-m-d H:i:s')) . ".txt");
                     $filePath = DOC_ROOT . "/sendFiles/" . $file;
                     $open = fopen($filePath, "w");
                     if ($open) {
@@ -322,7 +284,7 @@ class SendMail extends Main
         }
 
         if($sendDesarrollador) {
-            $file = trim('logcorreos_'.strtotime(date('Y-m-d H:i:s')).".txt");
+            $file = trim('LISTADO_DE_CORREOS_ENVIADOS_'.strtotime(date('Y-m-d H:i:s')).".txt");
             $filePath = DOC_ROOT."/sendFiles/".$file;
             $open = fopen($filePath,"w");
             if ( $open ) {
@@ -338,9 +300,9 @@ class SendMail extends Main
             }
 
             if(PROJECT_STATUS=='test'){
-                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR');
             }else{
-                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR '.date('Y-m-d H:i:s',time()));
+                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR');
             }
 
             $mail->send();
