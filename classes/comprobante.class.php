@@ -845,7 +845,7 @@ class Comprobante extends Producto
                 case 201:
                     $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
                     break;
-                case 708:
+                case 798:
                 case 202:
                     $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
                     break;
