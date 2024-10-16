@@ -192,19 +192,18 @@ class Xml4 extends Producto{
 
     private function buildNodoInformacionGlobal() {
 
-        if($this->data["nodoReceptor"]["rfc"] !== "XAXX010101000" || $this->isPago()) {
-            return;
+        if($this->data["nodoReceptor"]["rfc"] === "XAXX010101000" && in_array(mb_strtoupper($this->data['nodoReceptor']['nombre']),['PÚBLICO EN GENERAL','PUBLICO EN GENERAL'])) {
+
+            $this->cfdiInformacionGlobal = $this->xml->createElement("cfdi:InformacionGlobal");
+            $this->cfdiInformacionGlobal = $this->root->appendChild($this->cfdiInformacionGlobal);
+
+            $cfdiInformacionGlobalData = array(
+                "Periodicidad" => $this->Util()->CadenaOriginalVariableFormat(date("m"), false, false),
+                "Meses" => $this->Util()->CadenaOriginalVariableFormat(date('m'), false, false),
+                "Año" => $this->Util()->CadenaOriginalVariableFormat(date('Y'), false, false),
+            );
+            $this->CargaAtt($this->cfdiInformacionGlobal, $cfdiInformacionGlobalData);
         }
-
-        $this->cfdiInformacionGlobal = $this->xml->createElement("cfdi:InformacionGlobal");
-        $this->cfdiInformacionGlobal = $this->root->appendChild($this->cfdiInformacionGlobal);
-
-        $cfdiInformacionGlobalData = array(
-            "Periodicidad"=>$this->Util()->CadenaOriginalVariableFormat(date("m"),false,false),
-            "Meses"=>$this->Util()->CadenaOriginalVariableFormat(date('m'),false,false),
-            "Año"=>$this->Util()->CadenaOriginalVariableFormat(date('Y'),false,false),
-        );
-        $this->CargaAtt($this->cfdiInformacionGlobal, $cfdiInformacionGlobalData);
     }
 
     private function buildNodoCfdisRelacionados() {
