@@ -4,6 +4,8 @@ class Cancelation extends Main
 {
     const REJECTED = 'Solicitud rechazada';
     const CANCELLED = 'Cancelado';
+    const CANCELLED_WITHOUT_ACCEPT = 'Cancelado con aceptación';
+    const CANCELLED_WITH_ACCEPT = 'Cancelado sin aceptación';
     const NOCANCELABLE = 'No cancelable';
     public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotiveSat, $uuidSubstitution, $cancelationMotive){
         $sql = "delete from pending_cfdi_cancel where cfdi_id = '".$cfdiId."' ";
@@ -64,7 +66,9 @@ class Cancelation extends Main
         if($response->ConsultaResult->EstatusCancelacion === self::REJECTED || $response->ConsultaResult->EsCancelable === self::NOCANCELABLE) {
             $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
         }
-        if($response->ConsultaResult->Estado === self::CANCELLED) {
+        if($response->ConsultaResult->Estado === self::CANCELLED
+            || $response->ConsultaResult->Estado === self::CANCELLED_WITHOUT_ACCEPT
+            || $response->ConsultaResult->Estado === self::CANCELLED_WITH_ACCEPT) {
 
             $sqlQuery = "UPDATE comprobante SET
                               motivoCancelacion = '".$cfdi['cancelation_motive']."', 
