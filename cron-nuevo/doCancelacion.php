@@ -43,8 +43,10 @@ foreach($result as $key => $row) {
 
     $xmlData = $xmlReaderService->execute($xmlPath, $comp['empresaId']);
     $rfcProvCertif = (string)$xmlData['timbreFiscal']['RfcProvCertif'];
+    $rfcReceptor = (string)$xmlData['receptor']['Rfc'];
+    $rfcEmisor = (string)$xmlData['emisor']['Rfc'];
 
-    $response = $cancelation->getStatus($row['rfc_e'], $row['rfc_r'], $row['uuid'], $row['total']);
+    $response = $cancelation->getStatus($rfcEmisor, $rfcReceptor, $row['uuid'], $row['total']);
     if (!$response) {
         echo date('Y-m-d H:i:s') . ", UUID: " . $row['uuid'] . " => ha ocurrido un error,se intentara nuevamente mas tarde " . chr(13) . chr(10);
         continue;
