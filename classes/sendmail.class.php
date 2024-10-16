@@ -149,7 +149,7 @@ class SendMail extends Main
             $mail->Port = SMTP_PORT2;
             $mail->Username = SMTP_USER2;
             $mail->Password = SMTP_PASS2;
-            $mail->SMTPDebug = SMTP_DEBUG;
+            $mail->SMTPDebug = 0;
             $mail->SMTPKeepAlive = true;
 
             if ($attachment != "") {

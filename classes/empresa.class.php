@@ -752,8 +752,7 @@ class Empresa extends Main
 			   fclose($open);
 		   }
 
-
-		   $send->PrepareMultipleNotice($subject,$body,$correos,"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION");
+		   $send->PrepareMultiple($subject,$body,[],"varios","","","","","noreply@braunhuerin.com.mx","DEP. FACTURACION", $correos);
 		   return true;
         }
 	}
