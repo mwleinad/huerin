@@ -773,6 +773,8 @@ class Comprobante extends Producto
         $xmlData = $xmlReaderService->execute($xmlPath, $_SESSION["empresaId"]);
         $uuid = (string)$xmlData['timbreFiscal']['UUID'];
         $rfcProvCertif = (string)$xmlData['timbreFiscal']['RfcProvCertif'];
+        $rfcReceptor = (string)$xmlData['receptor']['Rfc'];
+        $rfcEmisor = (string)$xmlData['emisor']['Rfc'];
 
         $path = DOC_ROOT . "/empresas/" . $row["empresaId"] . "/certificados/" . $rfcActivo . "/" . $row["noCertificado"] . ".cer.pem";
         $fh = fopen($path, 'r');
@@ -837,11 +839,11 @@ class Comprobante extends Producto
         $response = $pac->Cancelar($data, $metodo);
 
         $responseCancel = $metodo === 'cancel' ?  $response->cancelResult : $response->out_cancelResult;
-        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201, 202,798])) {
+        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201,202,798])) {
 
             switch ($responseCancel->Folios->Folio->EstatusUUID) {
                 case 201:
-                    $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $row["rfc_emisor"], $row['rfc'], $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
+                    $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
                     break;
                 case 708:
                 case 202:
