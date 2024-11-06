@@ -1203,7 +1203,8 @@ class Bono extends Personal
         $sheet = $book->createSheet($hoja);
         $name_title =  substr($data["name"], 0, 6);
         $name_title =  $this->Util()->cleanString($name_title);
-        $name_title = "GERENTE_0_".str_replace(" ", "", $name_title);
+        $name_title = str_replace(" ", "", $name_title);
+        $name_title = "GERENTE_0_".str_replace("-", "_", $name_title);
         $title_sheet = strtoupper($name_title);
 
         $tienePropios = count($data['propios'] ?? []) > 0;
@@ -1266,7 +1267,8 @@ class Bono extends Personal
             $sheet = $book->createSheet($hoja);
             $name_title =  substr($subgerente['info']["name"], 0, 6);
             $name_title =  $this->Util()->cleanString($name_title);
-            $name_title = "SUBGER_".$keysub."_".str_replace(" ", "", $name_title);
+            $name_title = str_replace(" ", "", $name_title);
+            $name_title = "SUBGER_".$keysub."_".str_replace("-", "_", $name_title);
             $title_sheet = strtoupper($name_title);
             $sheet->setTitle($title_sheet);
             $row = 1;
