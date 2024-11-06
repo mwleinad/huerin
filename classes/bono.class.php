@@ -232,6 +232,7 @@ class Bono extends Personal
             $name_title =  substr($supervisor["name"], 0, 6);
             $name_title =  $this->Util()->cleanString($name_title);
             $name_title =  str_replace(" ", "", $name_title);
+            $name_title =  str_replace("-", "_", $name_title);
             $title_sheet = "H_".$ksup."_".strtoupper($name_title);
             $sheet->setTitle($title_sheet);
             $col = 0;
