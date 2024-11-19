@@ -391,14 +391,20 @@ class Workflow extends Servicio
         if ($this->tipoOperacion == "reporteMensual")
             $add = " AND instanciaServicio.status != 'baja'";
 
-        $this->Util()->DB()->setQuery("SELECT *, customer.name AS customerName, contract.name AS contractName,
+        $sql =  "SELECT *, customer.name AS customerName, contract.name AS contractName,
 		instanciaServicio.status AS status  FROM instanciaServicio 
 		LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
 		LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 		LEFT JOIN contract ON contract.contractid = servicio.contractId
 		LEFT JOIN customer ON customer.customerId = contract.customerId
-		WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'" . $add . "");
+		WHERE instanciaServicioId = '" . $this->instanciaServicioId . "'" . $add ;
+
+        $this->Util()->DB()->setQuery($sql);
         $row = $this->Util()->DB()->GetRow();
+
+        if (!$row)
+            return [];
+        
         $date = explode("-", $row["date"]);
         $contabilidad2015 = false;
 
@@ -409,8 +415,10 @@ class Workflow extends Servicio
             $this->Util()->DB()->setQuery("SELECT * FROM step 
 		    WHERE stepId != 103 AND servicioId = '" . $row["tipoServicioId"] . "' order by position asc");
         } else {
-            $this->Util()->DB()->setQuery("SELECT * FROM step 
-		    WHERE servicioId = '" . $row["tipoServicioId"] . "' order by position asc");
+            $sql = "SELECT * FROM step 
+		    WHERE servicioId = '" . $row["tipoServicioId"] . "' order by position asc";
+
+            $this->Util()->DB()->setQuery($sql);
 
         }
         $strFiltroStepTask = "";
@@ -431,6 +439,7 @@ class Workflow extends Servicio
         }
         //Get Steps
         $row["steps"] = $this->Util()->DB()->GetResult();
+
         //Get Tasks
         $ii = 1;
         $row["completedSteps"] = 0;

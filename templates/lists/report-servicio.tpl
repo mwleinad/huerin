@@ -86,16 +86,16 @@
 						  {/if}
 						"
 					  title="{$item.nombreServicio} {if $instanciaServicio.status neq 'inactiva'}{if $instanciaServicio.class eq 'CompletoTardio'}{'Completo'}{else}{if $instanciaServicio.class eq 'Iniciado'}{'PorCompletar'}{else}{$instanciaServicio.class}{/if}{/if}{/if}">
-					<div style="cursor:pointer;" {if in_array(100,$permissions)||$User.isRoot}onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
+					<div  {if $instanciaServicio.instanciaServicioId && (in_array(100,$permissions)||$User.isRoot)}style="cursor:pointer;" style="cursor:pointer;" onclick="GoToWorkflow('report-servicios', '{$instanciaServicio.instanciaServicioId}')"{/if}>
 					{$item.nombreServicio|truncate:5:""}
-						{if $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696;"><b>(Inactivo)</b></span>{/if}
+						{if $instanciaServicio.instanciaServicioId && $instanciaServicio.status eq 'inactiva'}<span style="color:#DA9696;"><b>(Inactivo)</b></span>{/if}
 					</div>
-						{if in_array(99,$permissions)||$User.isRoot}
+						{if $instanciaServicio.instanciaServicioId && (in_array(99,$permissions)||$User.isRoot)}
 							<a href="javascript:;" class="spanDownloadFiles spanAll" data-id="{$instanciaServicio.instanciaServicioId}" data-month="{$instanciaServicio.mes}" data-type="downloadFilesMonth" data-contrato="{$item.contractId}" data-year="{$item.anio}" style="color:#FFF;font-weight:700;" title="Descargar archivos del mes">Archivos</a>
 						{/if}
 					</td>
 				{/foreach}
-			{if in_array(248,$permissions)||$User.isRoot}
+			{if $instanciaServicio.instanciaServicioId && (in_array(248,$permissions)||$User.isRoot)}
 				<td>
 					<a href="javascript:;" class="spanDownloadFiles spanAll" title="Descargar archivos anual" data-id="{$item.servicioId}" data-month="" data-type="downloadFilesYear" data-contrato="{$item.contractId}" data-year="{$item.anio}">
 						<img src="{$WEB_ROOT}/images/icons/downFile.png" class="no-clickable">
