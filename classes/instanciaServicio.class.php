@@ -101,14 +101,7 @@ class InstanciaServicio extends Servicio
         }
 
         $sql = "SELECT 
-                CASE tipoServicioId 
-                    WHEN 16 THEN ''
-                    WHEN 17 THEN ''
-                    WHEN 24 THEN ''
-                    ELSE
-                    class
-                END 
-                AS class,
+                class,
                 MONTH(instanciaServicio.date) as mes,instanciaServicioId, instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio 
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
