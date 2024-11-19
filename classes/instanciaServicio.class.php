@@ -47,15 +47,7 @@ class InstanciaServicio extends Servicio
             $sinceMonth = " and MONTH(instanciaServicio.date)>=" . (int)$fecha[1];
 
         $sql = "SELECT 
-                CASE tipoServicioId 
-                WHEN 16 THEN ''
-                WHEN 17 THEN ''
-                WHEN 24 THEN ''
-                ELSE
-                class
-                END 
-                AS class
-                ,MONTH(instanciaServicio.date) as mes,instanciaServicio.date as finstancia,instanciaServicioId, 
+                class,MONTH(instanciaServicio.date) as mes,instanciaServicio.date as finstancia,instanciaServicioId, 
                 instanciaServicio.status, servicio.tipoServicioId
 				FROM instanciaServicio
 				LEFT JOIN servicio ON servicio.servicioId = instanciaServicio.servicioId
