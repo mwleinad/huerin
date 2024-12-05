@@ -267,11 +267,11 @@ class SendMail extends Main
                         $mail->addAttachment($archivo['url'], $archivo['name']);
                 }
                 $mail->send();
-                $logSend = "Enviado:: a ".$name."(".$email.")".chr(13).chr(10);
+                $logSend .= "Enviado:: a ".$name."(".$email.")".chr(13).chr(10);
 
             } catch(Exception $e) {
 
-                $logSend = "Error:: al enviar a ".$name."(".$email.")".chr(13).chr(10);
+                $logSend .= "Error:: al enviar a ".$name."(".$email.")".chr(13).chr(10);
                 $mail->getSMTPInstance()->reset();
 
                 $file = DOC_ROOT."/sendFiles/phpmailer.log";
