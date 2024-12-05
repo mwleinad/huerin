@@ -255,30 +255,38 @@ class SendMail extends Main
         $mail->Port       = $remitenteExterno ? SMTP_PORT : SMTP_PORT2;
         $mail->Username   = $remitenteExterno ? SMTP_USER : SMTP_USER2;
         $mail->Password   = $remitenteExterno ? SMTP_PASS : SMTP_PASS2;
-        $mail->SMTPDebug  = SMTP_DEBUG;
+        $mail->SMTPDebug  = 0;
 
-        $logSend = "Lista de correos enviados: ".chr(13).chr(10);;
+        //Enviar de manera individual
+        $logSend = "Lista de correos enviados: ".chr(13).chr(10);
         foreach($to as $email => $name) {
             try {
                 $mail->addAddress($email, $name);
-            } catch (Exception $e) {
+                foreach ($archivos as $archivo) {
+                    if (is_file($archivo['url']))
+                        $mail->addAttachment($archivo['url'], $archivo['name']);
+                }
+                $mail->send();
+                $logSend = "Enviado:: a ".$name."(".$email.")".chr(13).chr(10);
+
+            } catch(Exception $e) {
+
+                $logSend = "Error:: al enviar a ".$name."(".$email.")".chr(13).chr(10);
+                $mail->getSMTPInstance()->reset();
+
+                $file = DOC_ROOT."/sendFiles/phpmailer.log";
+                $open = fopen($file,"a+");
+                $entry = "EXCEPTION SEND MULTIPLE NOTICE: ".date('d-m-Y H:i:s').chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= $e->getMessage().chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                if ( $open ) {
+                    fwrite($open,$entry);
+                    fclose($open);
+                }
                 continue;
             }
-
-            foreach ($archivos as $archivo) {
-                if (is_file($archivo['url']))
-                    $mail->addAttachment($archivo['url'], $archivo['name']);
-            }
-
-            try {
-               if ($mail->send())
-                    $logSend .="Se envia a ".$name."(".$email.")".chr(13).chr(10);
-               else
-                   $logSend .="Hubo un error en el envio a ".$name."(".$email.")".chr(13).chr(10);
-            } catch (Exception $e) {
-               $mail->getSMTPInstance()->reset();
-            }
-
             $mail->clearAddresses();
             $mail->clearAttachments();
         }
@@ -286,29 +294,45 @@ class SendMail extends Main
         if($sendDesarrollador) {
             $file = trim('LISTADO_DE_CORREOS_ENVIADOS_'.strtotime(date('Y-m-d H:i:s')).".txt");
             $filePath = DOC_ROOT."/sendFiles/".$file;
-            $open = fopen($filePath,"w");
-            if ( $open ) {
-                fwrite($open, $logSend);
-                fclose($open);
-                if (is_file($filePath))
+
+            try {
+
+                $open = fopen($filePath,"w");
+                if ( $open ) {
+                    fwrite($open, $logSend);
+                    fclose($open);
                     $mail->addAttachment($filePath, $file);
-            }
+                }
 
-            foreach ($archivos as $archivo) {
-                if (is_file($archivo['url']))
-                    $mail->addAttachment($archivo['url'], $archivo['name']);
-            }
+                foreach ($archivos as $archivo) {
+                    if (is_file($archivo['url']))
+                        $mail->addAttachment($archivo['url'], $archivo['name']);
+                }
 
-            if(PROJECT_STATUS=='test'){
                 $mail->addAddress(EMAIL_DEV,'DESARROLLADOR');
-            }else{
-                $mail->addAddress(EMAIL_DEV,'DESARROLLADOR');
+
+                $mail->send();
+                $mail->clearAllRecipients();
+
+                if(is_file($filePath))
+                    @unlink($filePath);
+
+            } catch (Exception $e) {
+
+                $file = DOC_ROOT."/sendFiles/phpmailer.log";
+                $open = fopen($file,"a+");
+                $entry = "EXCEPTION SEND MULTIPLE NOTICE: ".date('d-m-Y H:i:s').chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+                $entry .= "No se pudo enviar log a desarrollador ".chr(10).chr(13);
+                $entry .= $e->getMessage().chr(10).chr(13);
+                $entry .= chr(10).chr(13);
+
+                if ( $open ) {
+                    fwrite($open,$entry);
+                    fclose($open);
+                }
             }
 
-            $mail->send();
-            $mail->clearAllRecipients();
-            if(is_file($filePath))
-                @unlink($filePath);
         }
         unset($mail);
     }
