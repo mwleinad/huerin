@@ -18,7 +18,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP PROCEDURE IF EXISTS `sp_importar_pasos_tareas_servicio`;
-
+delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_importar_pasos_tareas_servicio`(IN `pJsonParam` json, IN pUsuario VARCHAR(255), OUT pDataReturn VARCHAR(255))
 BEGIN
 
