@@ -134,6 +134,27 @@ function ExportCatalogoServicio()
 	});
 }
 
+function ExportCatalogoPasosTareas()
+{
+	var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+	if(!resp)
+		return;
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/tipoServicio.php',
+		type:'post',
+		data:{ 'type':'exportarPasosTareas'},
+		beforeSend: function () {
+
+		},
+		success:function (response) {
+			window.location = response
+		},
+		error:function () {
+			alert("Error al mostrar informacion!!");
+		}
+	});
+}
+
 function ExportMatrizServicio()
 {
 	var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");

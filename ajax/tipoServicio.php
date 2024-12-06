@@ -405,4 +405,130 @@ switch($_POST["type"])
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
 
         break;
+
+    case 'exportarPasosTareas':
+
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('Pasos y tareas');
+
+        $row=1;
+
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Area')
+            ->getStyleByColumnAndRow()->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Nomenclatura de servicio')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Servicio')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Nombre de paso')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Descripcion de paso')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Inicio vigencia paso')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Fin vigencia paso')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Nombre de tarea')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Descripcion de tarea')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Inicio vigencia tarea')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Fin vigencia tarea')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $col++;
+
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Documentos aceptados')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+
+        $row++;
+
+        $sql = "SELECT
+                    departamentos.departamento,
+                    SUBSTRING_INDEX(tipoServicio.nombreServicio,' ',1) nomenclatura, 
+                    TRIM(SUBSTRING(tipoServicio.nombreServicio, LENGTH(SUBSTRING_INDEX(tipoServicio.nombreServicio,' ',1))+1, LENGTH(tipoServicio.nombreServicio))) as nombreServicio,
+                    step.nombreStep,
+                    step.descripcion,
+                    IF((ISNULL( STR_TO_DATE( step.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', step.effectiveDate ) effectiveDatePaso,
+                    IF((ISNULL( STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', step.finalEffectiveDate ) finalEffectiveDatePaso,
+                    task.nombreTask,
+                    task.control,
+                   	(SELECT GROUP_CONCAT(name) FROM mime_types where FIND_IN_SET(extension,task.extensiones) > 0) as documentos_aceptados,
+                    IF((ISNULL( STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', task.effectiveDate) effectiveDateTarea,
+                    IF((ISNULL( STR_TO_DATE( task.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', task.finalEffectiveDate) finalEffectiveDateTarea 
+                FROM
+                    task
+                    INNER JOIN step ON task.stepId = step.stepId
+                    INNER JOIN tipoServicio ON step.servicioId = tipoServicio.tipoServicioId
+                    INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId 
+                WHERE
+                    tipoServicio.`status` = '1' 
+                ORDER BY
+                    departamentos.departamento ASC,
+                    tipoServicio.nombreServicio ASC,
+                    step.position DESC,
+                    task.taskPosition DESC";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['departamento']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nomenclatura']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombreServicio']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombreStep']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['descripcion']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['effectiveDatePaso']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['finalEffectiveDatePaso']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombreTask']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['control']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['effectiveDateTarea']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['finalEffectiveDateTarea']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['documentos_aceptados']);
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "catalogo_pasos_y_tareas.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
 }
