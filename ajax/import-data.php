@@ -1316,7 +1316,7 @@ switch ($opcion[0]) {
         $highestColumn = $sheet->getHighestColumn();
 
         $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
-        $camposRequeridos = ['area','nomenclatura_de_servicio','servicio','nombre_de_paso','nombre_de_tarea','documento_aceptado'];
+        $camposRequeridos = ['area','nomenclatura_de_servicio','servicio','nombre_de_paso','nombre_de_tarea','documentos_aceptados','inicio_vigencia_paso','fin_vigencia_paso','inicio_vigencia_tarea','fin_vigencia_tarea'];
         $keysExcludes = [];
         $indexExclude = [];
 
@@ -1387,6 +1387,16 @@ switch ($opcion[0]) {
                 break;
             }
 
+            if (!$registro['inicio_vigencia_paso']) {
+                $util->setError(0, 'error','La columna Inicio vigencia paso de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+
+            if (!$registro['inicio_vigencia_tarea']) {
+                $util->setError(0, 'error','La columna Inicio vigencia tarea de la fila '.($key+2). " debe contener un valor");
+                break;
+            }
+
             $db_connection->setQuery("SELECT departamentoId from departamentos where departamento='".$registro['area']."'");
             $existeDepartamento = $db_connection->GetSingle();
             if (!$existeDepartamento) {
@@ -1419,8 +1429,10 @@ switch ($opcion[0]) {
             }
             else {
 
-                $mensaje = "Proceso completado: Se han registrado ".($data_explode[1] ?? 0). " servicios, ".($data_explode[2] ?? 0)." pasos y ".($data_explode[3] ?? 0)." tareas.";
-                $util->setError(0, 'complete', $mensaje);
+                $util->setError(0, 'complete', "Se ha completado el proceso de importación.");
+                $util->setError(0, 'complete', "Se han registrado ".($data_explode[1] ?? 0)." servicios.");
+                $util->setError(0, 'complete', "Se han registrado o actualizado ".($data_explode[2] ?? 0)." pasos.");
+                $util->setError(0, 'complete', "Se han registrado o actualizado ".($data_explode[3] ?? 0)." tareas.");
             }
         } else {
             $util->setError(0, 'error','Error al importar, verifique el archivo excel');
