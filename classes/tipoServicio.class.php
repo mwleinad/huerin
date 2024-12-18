@@ -300,7 +300,7 @@ class TipoServicio extends Main
 	{
 		$this->Util()->DB()->setQuery("SELECT * 
 		FROM tipoServicio
-		WHERE tipoServicioId LIKE '%".$value."%'  ORDER BY tipoServicioId");
+		WHERE (tipoServicioId LIKE '%".$value."%' OR nombreServicio like '%".$value."%')  ORDER BY nombreServicio");
 		$result = $this->Util()->DB()->GetResult();
 		return $result;
 	}
