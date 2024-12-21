@@ -317,6 +317,22 @@ switch($_POST['type']){
 
         $book =  new PHPExcel();
         $global_config_style_cell['style_porcent']['borders'] = [];
+
+        $styleNumberDecimal = array_merge($global_config_style_cell['style_simple_text_whit_border'],array(
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            ],
+            'font' => array(
+                'size' => 10,
+                'name' => 'Aptos',
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_NONE,
+                )
+            )
+        ));
+
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
         $sheet->setTitle('LayoutServicios');
@@ -403,12 +419,29 @@ switch($_POST['type']){
             $jefes = [];
             $rolRes = [];
 
+
+            $sueldoAcumulado = 0;
+            $gerente = null;
+            $supervisor =  null;
+
             if($responsable !== null) {
 
                 $personal->setPersonalId($responsable['personal_id']);
                 $rolRes = $personal->InfoWhitRol();
                 $personal->deepJefesArray($jefes,true);
 
+                $superiores = $personal->superiores($responsable['personal_id']);
+                $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+                $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+
+            }
+            $numPersonasxGerencia = isset($gerente['id']) ? 1 : 0;
+
+            if(isset($gerente['id'])) {
+                $inferiores        = $personal->inferiores($gerente['id']);
+                $numPersonasxGerencia +=count($inferiores);
+                $sueldosInferiores = array_column($inferiores, 'sueldo');
+                $sueldoAcumulado   = array_sum($sueldosInferiores) + $gerente['sueldo'];
             }
 
             foreach($puestos as $puesto) {
@@ -440,9 +473,9 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $serv['Gerente']);
+            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? 'Sin gerente en linea de mando');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $serv['Supervisor'] ?? $serv['Subgerente'] );
+            $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando');
             $col++;
 
             $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -454,10 +487,12 @@ switch($_POST['type']){
             $col++;
 
             //TODO encontrar sumatoria general del sueldo del gerente.
-
-
+            $formula = $numPersonasxGerencia > 0
+                ? "=+((((".$sueldoAcumulado."*(1+(".PORCENTAJE_AUMENTO_SALARIO."/100)))/30)/9)/".$numPersonasxGerencia.") * 3"
+                :"0";
             $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "");
+            $sheet->setCellValueByColumnAndRow($col, $row, $formula)
+                ->getStyle($coorCostoPorHora)->applyFromArray($styleNumberDecimal);
             $col++;
 
             $coorPrecioActual = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -798,13 +833,14 @@ switch($_POST['type']){
                     $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
                 }
                 $sueldoAcumulado = 0;
+                $numPersonasxGerencia = isset($gerente['id']) ? 1 : 0;
                 if(isset($gerente['id'])) {
                     $inferiores        = $personal->inferiores($gerente['id']);
+                    $numPersonasxGerencia +=count($inferiores);
                     $sueldosInferiores = array_column($inferiores, 'sueldo');
                     $sueldoAcumulado   = array_sum($sueldosInferiores) + $gerente['sueldo'];
                 }
 
-                $coorRowInicial =
                 $col = 0;
                 $sheet->setCellValueByColumnAndRow($col, $row, $servicio['contractId'])
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
@@ -850,7 +886,9 @@ switch($_POST['type']){
                 $col++;
 
                 //TODO salario de los subordinados
-                $formula = "=+((((".$sueldoAcumulado."*(1+(".PORCENTAJE_AUMENTO_SALARIO."/100)))/30)/8)/6)";
+                $formula = $numPersonasxGerencia > 0
+                    ? "=+((((".$sueldoAcumulado."*(1+(".PORCENTAJE_AUMENTO_SALARIO."/100)))/30)/9)/".$numPersonasxGerencia.") * 3"
+                    :"0";
                 $coorCostoPorHora = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
                 $sheet->setCellValueByColumnAndRow($col, $row, $formula)
                     ->getStyle($coorCostoPorHora)->applyFromArray($styleNumberDecimal);
