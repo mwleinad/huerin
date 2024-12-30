@@ -100,7 +100,7 @@ class ReportService extends Servicio {
             foreach ($filteredHistory as $hist) {
                $flag =  true;
                $cad =  $var;
-               $fecha = date('Y-m-d', strtotime($hist['fecha']));
+               $fecha = $hist['fecha'];
                if ($_POST['statusSearch']) {
                    if ($_POST['statusSearch'] != $hist['status'])
                        continue;
