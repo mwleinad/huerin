@@ -82,7 +82,22 @@ class ReportService extends Servicio {
             $current_resposables =  $contracts[$contract_id]['responsables_lineal'];
 
             $var['supervisor']  = $personal->findSupervisor($current_resposables[$var['departamentoId']]);
-            foreach ($history as $kh => $hist) {
+
+            //Para filtrar solo el ultimo movimiento
+            $filteredHistory = [];
+            foreach ($history as $hist) {
+                $status = $hist['status'];
+
+                if ($status == 'bajaParcial' && isset($filteredHistory['baja'])) {
+                    continue;
+                }
+
+                if (!isset($filteredHistory[$status]) || strtotime($hist['fecha']) > strtotime($filteredHistory[$status]['fecha'])) {
+                    $filteredHistory[$status] = $hist;
+                }
+            }
+
+            foreach ($filteredHistory as $hist) {
                $flag =  true;
                $cad =  $var;
                $fecha = date('Y-m-d', strtotime($hist['fecha']));
