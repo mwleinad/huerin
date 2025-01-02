@@ -17,7 +17,7 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP PROCEDURE IF EXISTS `sp_importar_pasos_tareas_servicio`;
+DROP PROCEDURE IF EXISTS `huerin`.`sp_importar_pasos_tareas_servicio`;
 delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_importar_pasos_tareas_servicio`(IN `pJsonParam` json, IN pUsuario VARCHAR(255), OUT pDataReturn VARCHAR(255))
 BEGIN
@@ -103,7 +103,15 @@ WHILE vIndex < vItems DO
 SELECT departamentoId FROM departamentos where departamento = vDepartamento LIMIT 1 INTO vDepartamentoId;
 SELECT tipoServicioId FROM tipoServicio where nombreServicio = vNombreCompletoServicio LIMIT 1 INTO vTipoServicioId;
 
-SET vInicioVigenciaPaso = STR_TO_DATE(vInicioVigenciaPaso,"%Y-%m-%d");
+IF ISNULL(vDescripcionPaso) THEN
+		SET vDescripcionPaso = '';
+END IF;
+
+	IF ISNULL(vDescripcionTarea) THEN
+		SET vDescripcionTarea = '';
+END IF;
+
+  SET vInicioVigenciaPaso = STR_TO_DATE(vInicioVigenciaPaso,"%Y-%m-%d");
 	IF vInicioVigenciaPaso = '0000-00-00' || ISNULL(vInicioVigenciaPaso) THEN
 		SET vInicioVigenciaPaso  = '1990-01-01';
 END IF;
@@ -204,7 +212,11 @@ END IF;
 SELECT taskId FROM task where nombreTask = vNombreTarea AND stepId = vStepId LIMIT 1 INTO vTaskId;
 SELECT GROUP_CONCAT(extension) FROM mime_types where FIND_IN_SET(name,vDocumentoAceptado) > 0 INTO vExtensiones;
 
-IF ISNULL(vTaskId) THEN
+IF ISNULL(vExtensiones) THEN
+		SET vExtensiones = '';
+END IF;
+
+	IF ISNULL(vTaskId) THEN
 
 SELECT count(*)+1 as siguiente FROM task where stepId = vStepId INTO vNextPositionTask;
 
