@@ -1350,6 +1350,10 @@ switch ($opcion[0]) {
         $registros = [];
         for ($row = 2; $row <= $highestRow; $row++) {
             $currentRow = $sheet->rangeToArray('A' . $row . ":" . $sheet->getHighestColumn() . $row);
+            /*currentRow[0] = array_map(function($valor) {
+                return trim(preg_replace('/[\n\r\t]+/', '', $valor));
+            }, $currentRow[0]);*/
+
             foreach ($indexExclude as $kex)
                 unset($currentRow[0][$kex]);
 
@@ -1412,9 +1416,11 @@ switch ($opcion[0]) {
             $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
             exit;
         }
-        $jsonParam = json_encode($registros,JSON_UNESCAPED_SLASHES);
+        $jsonParam = json_encode($registros,JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
         $pUsuario = $_SESSION['User']['name'];
-        $store =  "call sp_importar_pasos_tareas_servicio('".$jsonParam."', '".$pUsuario."', @pData)";
+        $store =  "call sp_importar_pasos_tareas_servicio('".$jsonParam."','".$pUsuario."', @pData)";
+
         $db->setQuery($store);
         $res = 0;
 
