@@ -94,7 +94,9 @@ END IF;
 
 SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' INTO vPagosAfactura;
 
-#FECHA DE PAGO SIEMPRE EL ULTIMO
+SET vFechaPago = null;
+
+			#FECHA DE PAGO SIEMPRE EL ULTIMO
 SELECT paymentDate FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' ORDER BY paymentDate DESC LIMIT 1 INTO vFechaPago;
 
 IF(vTotalFactura = vPagosAFactura) THEN
@@ -102,7 +104,6 @@ IF(vTotalFactura = vPagosAFactura) THEN
 ELSE
 				SET vPagado = 'No';
 END IF;
-
 
 			BLOCK2: BEGIN
         DECLARE cursor_conceptos CURSOR FOR SELECT servicioId,valorUnitario FROM concepto WHERE comprobanteId = vComprobanteId;
@@ -138,5 +139,6 @@ END REPEAT itera_comprobante;
 CLOSE cursor_comprobantes;
 
 SELECT * FROM tmp_data_cobranza order by fecha ASC;
-END //
+
+END//
 DELIMITER ;
