@@ -92,7 +92,7 @@ ELSE
 					 SET vEstatusRs = "Suspendido";
 END IF;
 
-SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' INTO vPagosAfactura;
+SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' group by comprobanteId INTO vPagosAfactura;
 
 SET vFechaPago = null;
 
