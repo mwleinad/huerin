@@ -202,8 +202,9 @@ class CobranzaDetallado extends Personal
             $col++;
 
             $colPagos = PHPExcel_Cell::stringFromColumnIndex($col);
-            $costoServicio = $result['costo_servicio'] * 1.16;
-            $sheet->setCellValueByColumnAndRow($col,$row,$result['pagado'] === 'Si' ? number_format($costoServicio,2) : 0)
+            $pagoPorServicio = $result['pago_por_servicio'] * 1.16;
+
+            $sheet->setCellValueByColumnAndRow($col,$row,number_format($pagoPorServicio,2,'.',''))
                   ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleCurrency);
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, "=".$colTotal.$row."-".$colPagos.$row)

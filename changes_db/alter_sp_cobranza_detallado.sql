@@ -27,6 +27,7 @@ BEGIN
 	DECLARE vArea VARCHAR(255);
 	DECLARE vCostoServicio DECIMAL(10,2);
 	DECLARE vPagosAfactura DECIMAL(10,2);
+	DECLARE vPagosPorServicio DECIMAL(10,2);
 	DECLARE vFechaPago DATE;
 	DECLARE vEstatusRs VARCHAR(15);
 	DECLARE vDatosFacturacion LONGTEXT;
@@ -73,7 +74,7 @@ WHERE comprobante.status = '1'
   AND NOT EXISTS (SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId) INTO vTotalRow;
 
 DROP TEMPORARY TABLE IF EXISTS tmp_data_cobranza;
-	CREATE TEMPORARY TABLE IF NOT EXISTS tmp_data_cobranza(fecha DATE, serie VARCHAR(100), `folio` BIGINT, `total_factura` DECIMAL(10,2), cliente VARCHAR(255),razon_social varchar(255), `servicio` VARCHAR(255),`estatus_servicio` VARCHAR(255),`area` VARCHAR(255),`costo_servicio` DECIMAL(10,2),`pagado` VARCHAR(2),`fecha_pago` DATE,`estatus_rs` VARCHAR(15),`datos_facturacion`JSON,`facturador` VARCHAR(255),`responsables` JSON);
+	CREATE TEMPORARY TABLE IF NOT EXISTS tmp_data_cobranza(fecha DATE, serie VARCHAR(100), `folio` BIGINT, `total_factura` DECIMAL(10,2), cliente VARCHAR(255),razon_social varchar(255), `servicio` VARCHAR(255),`estatus_servicio` VARCHAR(255),`area` VARCHAR(255),`costo_servicio` DECIMAL(10,2),`pagado` VARCHAR(2),`pago_por_servicio` DECIMAL(10,2),`fecha_pago` DATE,`estatus_rs` VARCHAR(15),`datos_facturacion`JSON,`facturador` VARCHAR(255),`responsables` JSON);
 
 OPEN cursor_comprobantes;
 itera_comprobante: REPEAT
@@ -92,6 +93,7 @@ ELSE
 					 SET vEstatusRs = "Suspendido";
 END IF;
 
+			SET vPagosAfactura = 0;
 SELECT SUM(amount) FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' group by comprobanteId INTO vPagosAfactura;
 
 SET vFechaPago = null;
@@ -99,10 +101,13 @@ SET vFechaPago = null;
 			#FECHA DE PAGO SIEMPRE EL ULTIMO
 SELECT paymentDate FROM payment WHERE comprobanteId = vComprobanteId AND paymentStatus = 'activo' ORDER BY paymentDate DESC LIMIT 1 INTO vFechaPago;
 
-IF(vTotalFactura = vPagosAFactura) THEN
+set vPagado = null;
+			IF(vTotalFactura = vPagosAfactura) THEN
 				SET vPagado = 'Si';
+			ELSEIF(vPagosAfactura > 0) THEN
+				SET vPagado = 'P';
 ELSE
-				SET vPagado = 'No';
+			  SET vPagado = 'No';
 END IF;
 
 			BLOCK2: BEGIN
@@ -118,8 +123,18 @@ itera_conceptos: loop
 								LEAVE itera_conceptos;
 END IF;
 
-SELECT servicio.status,tipoServicio.nombreServicio,(SELECT departamento FROM departamentos WHERE departamentoId = tipoServicio.departamentoId LIMIT 1) area FROM servicio INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId
-WHERE servicio.servicioId = vServicioId  INTO vStatusServicio,vNombreServicio,vArea;
+							SET vPagosPorServicio = 0;
+CASE
+							 WHEN vPagado = 'Si' THEN
+								SET vPagosPorServicio=vCostoServicio;
+WHEN vPagado = 'P' THEN
+								 SET vPagosPorServicio=vCostoServicio*(vPagosAfactura/vTotalFactura);
+ELSE
+							  SET vPagosPorServicio=0;
+END CASE;
+
+
+SELECT servicio.status,tipoServicio.nombreServicio,(SELECT departamento FROM departamentos WHERE departamentoId = tipoServicio.departamentoId LIMIT 1) area FROM servicio INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId WHERE servicio.servicioId = vServicioId  INTO vStatusServicio,vNombreServicio,vArea;
 
 IF (vStatusServicio = 'activo') THEN
 								 SET vStatusServicio =  'Activo';
@@ -129,7 +144,7 @@ IF (vStatusServicio = 'activo') THEN
 							   SET vStatusServicio =  'Baja Temporal';
 END IF;
 
-INSERT INTO tmp_data_cobranza(fecha,serie,folio,total_factura,cliente,razon_social,servicio,estatus_servicio,area,costo_servicio,pagado,fecha_pago,estatus_rs,datos_facturacion,facturador,responsables)VALUES(vFecha,vSerie,vFolio,vTotalFactura,vCliente,vRazon,vNombreServicio,vStatusServicio,vArea,vCostoServicio,vPagado,vFechaPago,vEstatusRs,vDatosFacturacion,vFacturador,vResponsables);
+INSERT INTO tmp_data_cobranza(fecha,serie,folio,total_factura,cliente,razon_social,servicio,estatus_servicio,area,costo_servicio,pagado,pago_por_servicio,fecha_pago,estatus_rs,datos_facturacion,facturador,responsables)VALUES(vFecha,vSerie,vFolio,vTotalFactura,vCliente,vRazon,vNombreServicio,vStatusServicio,vArea,vCostoServicio,vPagado,vPagosPorServicio,vFechaPago,vEstatusRs,vDatosFacturacion,vFacturador,vResponsables);
 END loop itera_conceptos;
 END BLOCK2;
 
