@@ -36,6 +36,7 @@ class CronServicio extends Contract
         $ultimoWorkflowCreado = $this->Util()->DB()->GetSingle();
 
         //si el cliente es el id 1701 solo debe tener un workflow todas sus empresas;
+        /*
         if ($serv['customerId'] == CUSTOMER_CAPACITACION) {
             if($ultimoWorkflowCreado) {
                 $initDateWorkflow = $this->Util()->getFirstDate($serv['inicioOperaciones']);
@@ -44,6 +45,7 @@ class CronServicio extends Contract
                     return $fechas_workflow;
             }
         }
+        */
         $isWorkflowInicial =  false;
         //si no tiene ultimo workflow se usa como ultimo la fecha de inicio de operaciones y se activa flag que indica que es el primer workflow que se creara
         if(!$ultimoWorkflowCreado)
