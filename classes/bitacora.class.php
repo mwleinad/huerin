@@ -175,7 +175,7 @@ class Bitacora extends Main {
 
     function enviarRecotizacion($id) {
 
-        $sql = "CALL sp_get_data_recotizacion('".$id."')";
+        $sql = "CALL sp_get_data_recotizacion('".$id."','Cuentas por cobrar')";
         $this->Util()->DB()->setQuery($sql);
         $items = $this->Util()->DB()->GetResult();
         $count = 0;
