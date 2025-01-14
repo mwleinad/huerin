@@ -1102,7 +1102,13 @@ switch ($opcion[0]) {
                 continue;
             $jsonData[] = array_combine($keys, $currentRows[0]);
         }
-        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_UNICODE);
+        // quitar coma al atributo costo nuevo final
+        $jsonData = array_map(function($item) {
+            $item['costo_nuevo_final'] = str_replace(',', '', $item['costo_nuevo_final']);
+            return $item;
+        }, $jsonData);
+
+        $jsonParam = json_encode($jsonData,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $pUsuario = $_SESSION['User']['name'];
         $store =  "call sp_actualizar_recotizacion_servicio('".$jsonParam."', '".$_SESSION['User']['userId']."', '".$pUsuario."', @pData)";
         $db->setQuery($store);
