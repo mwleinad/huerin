@@ -180,8 +180,8 @@ class Bitacora extends Main {
         $items = $this->Util()->DB()->GetResult();
         $count = 0;
         foreach($items as $item) {
-            if($item['emailResponsable'] !== 'rtomas@braunhuerin.com.mx')
-                continue;
+            //if($item['emailResponsable'] !== 'rtomas@braunhuerin.com.mx')
+              //  continue;
 
             $item['servicios'] = json_decode($item['servicios'], true);
             $file = $this->generarPdfRecotizacion($item);
