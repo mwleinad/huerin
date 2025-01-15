@@ -5,6 +5,8 @@
   </div>
   <div class="grid_6" id="eventbox" >
     {if in_array(60,$permissions)|| $User.isRoot}
+        <a style="cursor:pointer" title="Exportar catalogo de clientes y empresas para Plataforma 2.0" onclick="ExportParaPlataforma20()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
+
         <a href="javascript:;" title="Exportar a Excel" onclick="printExcel(0, 'xlsx')">
             <img src="{$WEB_ROOT}/images/excel.PNG" width="16" border="0" />
         </a>

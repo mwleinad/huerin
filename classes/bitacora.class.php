@@ -124,7 +124,8 @@ class Bitacora extends Main {
         $currentYear = date('Y', strtotime($data['fecha_importacion']));
         $beforeYear  = date('Y', strtotime('-1 year', strtotime($data['fecha_importacion'])));
         $nextYear  = date('Y', strtotime('+1 year', strtotime($data['fecha_importacion'])));
-        $phpWord->setValue('current_date', $nextYear);
+        $anioAjuste = date('Y', strtotime($data['fecha_importacion']));
+        $phpWord->setValue('current_date', date('Y'));
 
 
         $nombre_empresa = new TextRun();
@@ -141,7 +142,7 @@ class Bitacora extends Main {
         $table->addCell()->addText('RAZON SOCIAL', $headerTable);
         $table->addCell()->addText('SERVICIO', $headerTable);
         $table->addCell()->addText('PRECIO ACTUAL', $headerTable);
-        $table->addCell()->addText('AJUSTE '.$nextYear, $headerTable);
+        $table->addCell()->addText('AJUSTE '.$anioAjuste, $headerTable);
         $table->addCell()->addText('COMENTARIOS', $headerTable);
 
         $bodyTable = array('name' => 'Tw Cen MT', 'size' => 12,'color'=>'767070');
@@ -188,7 +189,7 @@ class Bitacora extends Main {
             $name_file = $item['rfc'].".docx";
             if($file) {
                 $send =  new SendMail();
-                $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'Carta '.$item['rfc'];
+                $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'CARTA NOTIFICACIÓN DE AJUSTE DE PRECIOS '.strtoupper($item['rfc']);
                 $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
                 $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
 
