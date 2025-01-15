@@ -336,3 +336,24 @@ jQ(document).on('click', '.reactiveTemp', function (e) {
         error: function (error) { }
     });
 })
+
+function ExportParaPlataforma20()
+{
+    var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+    if(!resp)
+        return;
+    jQ.ajax({
+        url:WEB_ROOT+'/ajax/report-razon-social.php',
+        type:'post',
+        data:{ 'type':'generar_layout_cliente_empresa'},
+        beforeSend: function () {
+
+        },
+        success:function (response) {
+            window.location = response
+        },
+        error:function () {
+            alert("Error al mostrar informacion!!");
+        }
+    });
+}

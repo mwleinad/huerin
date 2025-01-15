@@ -553,4 +553,233 @@ switch ($_POST['type']) {
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
     break;
+    case 'generar_layout_cliente_empresa':
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('clientes y empresas');
+
+
+        $row=1;
+        $headers = [
+            'Cliente',
+            'Telefono cliente',
+            'Correo cliente',
+            'Fecha de alta cliente',
+            'Razon social',
+            'Tipo persona',
+            'RFC',
+            'Facturador',
+            'Regimen',
+            'Sociedad',
+            'Actividad economica',
+            'Uso CFDI',
+            'Forma de pago',
+            'Direccion',
+            'Calle',
+            'No. Ext',
+            'No. Int',
+            'Colonia',
+            'Codigo postal',
+            'Municipio',
+            'Estado',
+            'Pais',
+            'Representante legal',
+            'Nombre contacto administrativo',
+            'Email contacto administrativo',
+            'Tel. contacto administrativo',
+            'Nombre contacto contabilidad',
+            'Email contacto contabilidad',
+            'Tel. contacto contabilidad',
+            'Nombre contacto directivo',
+            'Email contacto directivo',
+            'Tel. contacto directivo',
+            'Tel. celular directivo',
+            'Clave CIEC',
+            'Clave FIEL',
+            'Clave IDSE',
+            'Clave ISN',
+            'Clasificacion'
+        ];
+
+        $col = 0;
+        foreach($headers as $header) {
+            $sheet->setCellValueByColumnAndRow($col, $row, $header);
+            $col++;
+        }
+
+        $row++;
+
+        $sql = "SELECT REPLACE
+        (
+            REPLACE (
+                REPLACE (
+                    REPLACE (
+                        REPLACE (
+                            REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( customer.nameContact, '\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                            'PATI?O',
+                            'PATIÑO' 
+                        ),
+                        'VILLASE?OR',
+                        'VILLASEÑOR' 
+                    ),
+                    'MAR?A',
+                    'MARÍA' 
+                ),
+                'CA?IZO',
+                'CAÑIZO' 
+            ),
+            'MU?OZ',
+            'MUÑOZ' 
+        ) cliente,
+        TRIM(REGEXP_REPLACE ( customer.phone, '\\s{2,}', ' ' )) cliente_telefono,
+        TRIM(REGEXP_REPLACE( customer.email, '\\s{2,}', ' ')) cliente_email,
+        customer.fechaAlta feha_registro,
+        REPLACE(TRIM( contract.NAME ), '&amp;', '&' ) empresa,
+        TRIM( contract.type ) tipo_persona,
+        TRIM( contract.rfc ) rfc,
+        IF( customer.noFactura13 = 'No', 'Si', 'No' ) factura_13,TRIM( contract.facturador ) facturador,
+        (SELECT nombreRegimen FROM regimen WHERE regimenId = contract.regimenId LIMIT 1) AS regimen,
+        (SELECT nombreSociedad FROM sociedad WHERE sociedadId = contract.sociedadId LIMIT 1) AS sociedad,
+        (SELECT name FROM actividad_comercial WHERE id = contract.actividadComercialId LIMIT 1) AS actividad_economica,
+        contract.claveUsoCfdi uso_cfdi,
+        contract.metodoDePago forma_pago,
+        contract.direccionComercial direccion_comercial,
+        contract.address calle,
+        contract.noExtAddress numero_exterior,
+        contract.noIntAddress numero_interior,
+        contract.coloniaAddress colonia,
+        contract.municipioAddress municipio,
+        contract.estadoAddress estado,
+        contract.paisAddress pais,
+        contract.cpAddress codigo_postal,
+        contract.nameRepresentanteLegal representante_legal,
+        contract.nameContactoAdministrativo nombre_contacto_administrativo,
+        REPLACE ( contract.emailContactoAdministrativo, '?rsteinerh@yahoo.com', 'rsteinerh@yahoo.com' ) email_contacto_administrativo,
+        contract.telefonoContactoAdministrativo telefono_contacto_administrativo,
+        contract.nameContactoContabilidad nombre_contacto_contabilidad,
+        REPLACE ( REPLACE ( contract.emailContactoContabilidad, 'recepci?n', 'recepcion' ), '?rsteinerh@yahoo.com', 'rsteinerh@yahoo.com' ) email_contacto_contabilidad,
+        contract.telefonoContactoContabilidad telefono_contacto_contabilidad,
+        contract.nameContactoDirectivo nombre_contacto_directivo,
+        REPLACE ( REPLACE ( contract.emailContactoDirectivo, 'recepci?n', 'recepcion' ), '?rsteinerh@yahoo.com', 'rsteinerh@yahoo.com' ) email_contacto_directivo,
+        contract.telefonoContactoDirectivo telefono_contacto_directivo,
+        contract.telefonoCelularDirectivo telefono_celular_directivo,
+        contract.claveCiec AS clave_ciec,
+        contract.claveFiel AS clave_fiel,
+        contract.claveIdse AS clave_idse,
+        contract.claveIsn AS clave_isn,
+        contract.activo estatus_empresa,
+        IF(contract.useAlternativeRzForInvoice = 1, 'Si', 'No' ) usa_dato_fiscal_alterno,
+        IF(contract.useAlternativeRzForInvoice = 1, contract.alternativeRzId, NULL ) empresa_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeType, NULL ) tipo_persona_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeRfc, NULL ) rfc_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeRz, NULL ) razon_social_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeCp, NULL ) cp_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeRegimen, NULL ) regimen_alterna,
+        IF(contract.useAlternativeRzForInvoice = 1, contract.createSeparateInvoice, 0 ) generar_factura_independiente,
+        (SELECT nombre FROM tipo_clasificacion WHERE id = contract.idTipoClasificacion LIMIT 1) AS clasificacion
+        FROM
+	        contract
+	    INNER JOIN customer ON contract.customerId = customer.customerId 
+        WHERE
+	    contract.activo = 'Si' 
+	    AND customer.active = '1' 
+        ORDER BY
+	    customer.nameContact ASC,
+	    contract.name ASC";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente_telefono']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente_email']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['fecha_registro']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['tipo_persona']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['rfc']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['facturador']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['regimen']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['sociedad']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['actividad_economica']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['uso_cfdi']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['forma_pago']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['direccion_comercial']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['calle']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['numero_exterior']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['numero_interior']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['colonia']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['codigo_postal']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['municipio']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['estado']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['pais']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['representante_legal']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombre_contacto_administrativo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['email_contacto_administrativo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_contacto_administrativo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombre_contacto_contabilidad']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['email_contacto_contabilidad']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_contacto_contabilidad']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombre_contacto_directivo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['email_contacto_directivo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_contacto_directivo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_celular_directivo']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['clave_ciec']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['clave_fiel']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['clave_idse']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['clave_isn']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['clasificacion']);
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "layout_clientes_empresas_para_v2.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
 }
