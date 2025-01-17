@@ -644,7 +644,7 @@ switch ($_POST['type']) {
         (SELECT nombreSociedad FROM sociedad WHERE sociedadId = contract.sociedadId LIMIT 1) AS sociedad,
         (SELECT name FROM actividad_comercial WHERE id = contract.actividadComercialId LIMIT 1) AS actividad_economica,
         contract.claveUsoCfdi uso_cfdi,
-        (SELECT descripcion FROM c_FormaPago WHERE c_FormaPagoId=contract.metodoDePago LIMIT 1) AS forma_pago,
+        (SELECT descripcion FROM c_FormaPago WHERE c_FormaPago=contract.metodoDePago LIMIT 1) AS forma_pago,
         contract.direccionComercial direccion_comercial,
         contract.address calle,
         contract.noExtAddress numero_exterior,
