@@ -6,6 +6,7 @@
 
   <div class="grid_6" id="eventbox">
       {if in_array(29,$permissions)}
+          <a style="cursor:pointer;" title="Descargar pasos y tareas, formato para plataforma 2.0" onclick="ExportCatalogoPasosTareasV2()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
           <a style="cursor:pointer" title="Exportar catalogo de pasos y tareas" onclick="ExportCatalogoPasosTareas()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
           <a style="cursor:pointer" title="Exportar catalogo de servicio" onclick="ExportCatalogoServicio()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
           <a style="cursor:pointer" title="Exportar matriz de servicio" onclick="ExportMatrizServicio()"><img src="{$WEB_ROOT}/images/catalogos.png" width="16" /></a>
