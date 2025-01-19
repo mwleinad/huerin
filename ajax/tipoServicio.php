@@ -689,9 +689,9 @@ switch($_POST["type"])
                     $valor = 'Archivar';
 
                 if($field['name'] === 'documentos_aceptados') {
-                    $valor = str_replace('Archivo de correo(outlook)', 'Correo', $valor);
                     $valor = str_replace('Archivo de correo(outlook),Archivo de correo EML,Archivo de correo EML-TPL', 'Correo', $valor);
                     $valor = str_replace('Archivo de correo EML,Archivo de correo EML-TPL', 'Correo', $valor);
+                    $valor = str_replace('Archivo de correo(outlook)', 'Correo', $valor);
                     $valor = str_replace('Excel(.xls),Excel(.xlsx),Excel-Macro(.xlsm),Excel-Macro(.xltm),Excel-Macro(.xlsb),Excel-Macro(.xlam)', 'Excel', $valor);
                     $valor = str_replace('Comprimido(.zip),Comprimido(.rar)', 'Comprimidos', $valor);
                     $valor = str_replace('PDF´s', 'PDF', $valor);
