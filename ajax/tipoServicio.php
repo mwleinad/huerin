@@ -531,4 +531,191 @@ switch($_POST["type"])
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
         break;
+    case 'exportarPasosTareasParaV2':
+
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle("Formato Plataforma 2");
+
+        $fields = [
+            [
+                'name' => 'departamento',
+                'title' => 'Departamento',
+            ],
+            [
+                'name' => 'nomenclatura',
+                'title' => 'Nomenclatura de servicio',
+            ],
+            [
+                'name' => 'nombreServicio',
+                'title' => 'Servicio',
+            ],
+            [
+                'name' => 'nombreStep',
+                'title' => 'Nombre de paso',
+            ],
+            [
+                'name' => 'descripcion',
+                'title' => 'Descripcion de paso',
+            ],
+            [
+                'name' => 'ordenStep',
+                'title' => 'Orden de paso',
+            ],
+            [
+                'name' => 'nombreTask',
+                'title' => 'Nombre de tarea',
+            ],
+            [
+                'name' => 'effectiveDateTarea',
+                'title' => 'Inicio de vigencia',
+            ],
+            [
+                'name' => 'finalEffectiveDateTarea',
+                'title' => 'Termino de vigencia',
+            ],
+            [
+                'name' => 'procesable',
+                'title' => 'Es procesable',
+            ],
+            [
+                'name' => 'descarga_archivo_previo',
+                'title' => 'Descargar archivo previo',
+            ],
+            [
+                'name' => 'dia_vencimiento',
+                'title' => 'Dia de vencimiento',
+            ],
+            [
+                'name' => 'dia_prorroga',
+                'title' => 'Dias de prorroga',
+            ],
+            [
+                'name' => 'puesto_quien_realiza',
+                'title' => 'Puesto quien realiza',
+            ],
+            [
+                'name' => 'periodicidad',
+                'title' => 'Periodicidad',
+            ],
+            [
+                'name' => 'ordenTarea',
+                'title' => 'Orden de tarea',
+            ],
+            [
+                'name' => 'control',
+                'title' => 'Descripcion de tarea',
+            ],
+            [
+                'name' => 'accion',
+                'title' => 'Accion que realiza',
+            ],
+            [
+                'name' => 'documentos_aceptados',
+                'title' => 'Documentos aceptados',
+            ],
+            [
+                'name' => 'tareas_a_notificar',
+                'title' => 'Tareas a notificar',
+            ],
+        ];
+
+        $row=1;
+
+        $col = 0;
+        foreach ($fields as $field) {
+            $sheet->setCellValueByColumnAndRow($col, $row, $field['title'])
+                ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+            $col++;
+        }
+
+        $row++;
+
+        $sql = "SELECT
+                    departamentos.departamento,
+                    SUBSTRING_INDEX(tipoServicio.nombreServicio,' ',1) nomenclatura, 
+                    TRIM(SUBSTRING(tipoServicio.nombreServicio, LENGTH(SUBSTRING_INDEX(tipoServicio.nombreServicio,' ',1))+1, LENGTH(tipoServicio.nombreServicio))) as nombreServicio,
+                    step.nombreStep,
+                    step.descripcion,
+                    step.position ordenStep,
+                    IF((ISNULL( STR_TO_DATE( step.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', step.effectiveDate ) effectiveDatePaso,
+                    IF((ISNULL( STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', step.finalEffectiveDate ) finalEffectiveDatePaso,
+                    task.nombreTask,
+                    task.control,
+                    task.taskPosition ordenTarea,
+                   	(SELECT GROUP_CONCAT(name) FROM mime_types where FIND_IN_SET(extension,task.extensiones) > 0) as documentos_aceptados,
+                    IF((ISNULL( STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', task.effectiveDate) effectiveDateTarea,
+                    IF((ISNULL( STR_TO_DATE( task.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', task.finalEffectiveDate) finalEffectiveDateTarea 
+                FROM
+                    task
+                    INNER JOIN step ON task.stepId = step.stepId
+                    INNER JOIN tipoServicio ON step.servicioId = tipoServicio.tipoServicioId
+                    INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId 
+                WHERE
+                    tipoServicio.`status` = '1' 
+                AND step.finalEffectiveDate is null
+                AND task.finalEffectiveDate is null
+                ORDER BY
+                    departamentos.departamento ASC,
+                    tipoServicio.nombreServicio ASC,
+                    step.position DESC,
+                    task.taskPosition DESC";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+
+            $decisiones = ['procesable','descarga_archivo_previo'];
+
+            foreach ($fields as $field) {
+                $valor = $result[$field['name']] ?? '';
+
+                if(in_array($field['name'], $decisiones))
+                    $valor = 'No';
+
+                if($field['name'] == 'periodicidad')
+                    $valor = 'Mensual';
+
+                if(in_array($field['name'], ['dia_vencimiento','dia_prorroga']))
+                    $valor = 5;
+
+                if($field['name'] === 'puesto_quien_realiza')
+                    $valor = 'Encargado';
+
+                if($field['name'] === 'accion')
+                    $valor = 'Archivar';
+
+                if($field['name'] === 'documentos_aceptados') {
+                    $valor = str_replace('Archivo de correo(outlook)', 'Correo', $valor);
+                    $valor = str_replace('Archivo de correo(outlook),Archivo de correo EML,Archivo de correo EML-TPL', 'Correo', $valor);
+                    $valor = str_replace('Archivo de correo EML,Archivo de correo EML-TPL', 'Correo', $valor);
+                    $valor = str_replace('Excel(.xls),Excel(.xlsx),Excel-Macro(.xlsm),Excel-Macro(.xltm),Excel-Macro(.xlsb),Excel-Macro(.xlam)', 'Excel', $valor);
+                    $valor = str_replace('Comprimido(.zip),Comprimido(.rar)', 'Comprimidos', $valor);
+                    $valor = str_replace('PDF´s', 'PDF', $valor);
+                    $valor = str_replace('Texto plano(.txt)', 'Texto', $valor);
+                    $valor = str_replace('Word(.doc),Word(.docx)', 'Word', $valor);
+                    $valor = str_replace('Word(.doc)', 'Word', $valor);
+                }
+
+
+                $sheet->setCellValueByColumnAndRow($col, $row, $valor);
+                $col++;
+            }
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "catalogo_pasos_y_tareas_para_plataforma20.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
 }
