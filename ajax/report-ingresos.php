@@ -379,4 +379,147 @@ switch($_POST["type"])
         $smarty->assign("registros", $results);
         $smarty->display(DOC_ROOT.'/templates/lists/reporte-ab-all.tpl');
     break;
+
+    case 'generarExcelDeServiciosParaP2':
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle("Formato Plataforma 2");
+
+        $fields = [
+            [
+                'name' => 'cliente',
+                'title' => 'Cliente',
+            ],
+            [
+                'name' => 'empresa',
+                'title' => 'Empresa',
+            ],
+            [
+                'name' => 'facturador',
+                'title' => 'Facturador',
+            ],
+            [
+                'name' => 'nomenclatura',
+                'title' => 'Nomenclatura',
+            ],
+            [
+                'name' => 'servicio',
+                'title' => 'Servicio',
+            ],
+            [
+                'name' => 'inicio_operacion',
+                'title' => 'Inicio operacion',
+            ],
+            [
+                'name' => 'inicio_facturacion',
+                'title' => 'Inicio facturacion',
+            ],
+            [
+                'name' => 'costo',
+                'title' => 'Costo',
+            ],
+        ];
+
+        $row=1;
+
+        $col = 0;
+        foreach ($fields as $field) {
+            $sheet->setCellValueByColumnAndRow($col, $row, $field['title'])
+                ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+            $col++;
+        }
+
+        $row++;
+
+        $sql = "SELECT
+	TRIM(
+	REGEXP_REPLACE ( empresas.cliente, '\\s{2,}', '' )) cliente,
+	TRIM(
+		REGEXP_REPLACE ( empresas.razon_social, '\\s{2,}', '' )) empresa,(
+	SELECT
+		razonSocial 
+	FROM
+		rfc 
+	WHERE
+		claveFacturador = empresas.facturador 
+	) facturador,
+	TRIM( servicios.nomenclatura ) nomenclatura,
+	TRIM(
+	REGEXP_REPLACE ( servicios.nombre, '\\s{2,}', '' )) AS servicio,
+IF
+	( DAYNAME( servicios.inicio_operacion ) IS NOT NULL, servicios.inicio_operacion, '' ) inicio_operacion,
+IF
+	( DAYNAME( servicios.inicio_facturacion ) IS NOT NULL, servicios.inicio_facturacion, '' ) inicio_facturacion,
+	servicios.costo 
+FROM
+	(
+	SELECT
+		servicio.servicioId,
+		servicio.`status` estatus_servicio,
+		servicio.costo,
+		servicio.inicioOperaciones inicio_operacion,
+		servicio.inicioFactura inicio_facturacion,
+		servicio.contractId,
+		SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ) AS nomenclatura,
+		TRIM(
+			SUBSTRING(
+				tipoServicio.nombreServicio,
+				LENGTH(
+				SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ))+ 1,
+			LENGTH( tipoServicio.nombreServicio ))) AS nombre 
+	FROM
+		servicio
+		INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
+	WHERE
+		tipoServicio.`status` = '1' 
+		AND servicio.`status` IN ( 'activo' ) 
+		AND tipoServicio.nombreServicio NOT LIKE '%Z*%' 
+		AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+	) servicios
+	INNER JOIN (
+	SELECT
+		customer.nameContact AS cliente,
+		customer.active AS estatus_cliente,
+		contract.contractId,
+		contract.activo AS estatus_empresa,
+		contract.`name` razon_social,
+		contract.facturador 
+	FROM
+		contract
+		INNER JOIN customer ON contract.customerId = customer.customerId 
+	) empresas ON servicios.contractId = empresas.contractId 
+	AND empresas.estatus_empresa = 'Si' 
+	AND empresas.estatus_cliente = '1' 
+	AND empresas.cliente != 'CAPACITACION' 
+	AND empresas.razon_social != 'CAPACITACION' 
+ORDER BY
+	empresas.cliente ASC,
+	empresas.razon_social ASC";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $col = 0;
+
+            foreach ($fields as $field) {
+                $valor = $result[$field['name']] ?? '';
+                $sheet->setCellValueByColumnAndRow($col, $row, $valor);
+                $col++;
+            }
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "formato_servicios_empresas_plataforma_20.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
 }

@@ -172,3 +172,24 @@ function doSearch(){
 	});
 	
 }
+
+function ExportarServiciosParaP2()
+{
+	var resp = confirm("Esta seguro de generar este reporte? El proceso puede tardar varios minutos.");
+	if(!resp)
+		return;
+	jQ.ajax({
+		url:WEB_ROOT+'/ajax/report-ingresos.php',
+		type:'post',
+		data:{ 'type':'generarExcelDeServiciosParaP2' },
+		beforeSend: function () {
+
+		},
+		success:function (response) {
+			window.location = response
+		},
+		error:function () {
+			alert("Error al mostrar informacion!!");
+		}
+	});
+}
