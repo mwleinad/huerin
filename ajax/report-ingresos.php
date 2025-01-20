@@ -434,9 +434,9 @@ switch($_POST["type"])
 
         $sql = "SELECT
 	TRIM(
-	REGEXP_REPLACE ( empresas.cliente, '\\s{2,}', '' )) cliente,
+	REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', '' )) cliente,
 	TRIM(
-		REGEXP_REPLACE ( empresas.razon_social, '\\s{2,}', '' )) empresa,(
+		REGEXP_REPLACE ( empresas.razon_social, '\\\s{2,}', '' )) empresa,(
 	SELECT
 		razonSocial 
 	FROM
@@ -446,7 +446,7 @@ switch($_POST["type"])
 	) facturador,
 	TRIM( servicios.nomenclatura ) nomenclatura,
 	TRIM(
-	REGEXP_REPLACE ( servicios.nombre, '\\s{2,}', '' )) AS servicio,
+	REGEXP_REPLACE ( servicios.nombre, '\\\s{2,}', '' )) AS servicio,
 IF
 	( DAYNAME( servicios.inicio_operacion ) IS NOT NULL, servicios.inicio_operacion, '' ) inicio_operacion,
 IF
@@ -496,6 +496,7 @@ FROM
 ORDER BY
 	empresas.cliente ASC,
 	empresas.razon_social ASC";
+
 
         $db->setQuery($sql);
         $results = $db->GetResult();
