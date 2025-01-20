@@ -161,7 +161,7 @@ switch($_POST["type"])
 
         $row=1;
 
-        $sheet->setCellValueByColumnAndRow(0, $row, 'Area')
+        $sheet->setCellValueByColumnAndRow(0, $row, 'Departamento')
               ->getStyleByColumnAndRow()->getFont()->setBold(true);
 
         $sheet->setCellValueByColumnAndRow(1, $row, 'Nomenclatura')
@@ -176,7 +176,7 @@ switch($_POST["type"])
         $sheet->setCellValueByColumnAndRow(4, $row, 'Periodicidad')
             ->getStyleByColumnAndRow(4, $row)->getFont()->setBold(true);
 
-        $sheet->setCellValueByColumnAndRow(5, $row, 'Periodicidad facturacion')
+        $sheet->setCellValueByColumnAndRow(5, $row, 'Periodicidad de facturacion')
             ->getStyleByColumnAndRow(5, $row)->getFont()->setBold(true);
 
         $sheet->setCellValueByColumnAndRow(6, $row, 'Costo')
