@@ -657,6 +657,7 @@ switch($_POST["type"])
                 AND step.finalEffectiveDate is null
                 AND task.finalEffectiveDate is null
                 AND tipoServicio.nombreServicio NOT LIKE '%Z*%'
+                AND tipoServicio.nombreServicio LIKE '%2025%'
                 ORDER BY
                     departamentos.departamento ASC,
                     tipoServicio.nombreServicio ASC,
