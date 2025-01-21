@@ -493,7 +493,7 @@ FROM
 	WHERE
 		tipoServicio.`status` = '1' 
 		AND servicio.`status` IN ( 'activo' ) 
-		AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  AND tipoServicio.nombreServicio LIKE '2025%'
+		AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  AND tipoServicio.nombreServicio LIKE '%2025%'
 		AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
 	) servicios
 	INNER JOIN (
