@@ -656,6 +656,7 @@ switch($_POST["type"])
                     tipoServicio.`status` = '1' 
                 AND step.finalEffectiveDate is null
                 AND task.finalEffectiveDate is null
+                AND tipoServicio.nombreServicio NOT LIKE '%Z*%'
                 ORDER BY
                     departamentos.departamento ASC,
                     tipoServicio.nombreServicio ASC,
