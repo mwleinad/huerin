@@ -433,10 +433,29 @@ switch($_POST["type"])
         $row++;
 
         $sql = "SELECT
-	TRIM(
-	REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', '' )) cliente,
-	TRIM(
-		REGEXP_REPLACE ( empresas.razon_social, '\\\s{2,}', '' )) empresa,(
+	REPLACE
+        (
+            REPLACE (
+                REPLACE (
+                    REPLACE (
+                        REPLACE (
+                            REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                            'PATI?O',
+                            'PATIÑO' 
+                        ),
+                        'VILLASE?OR',
+                        'VILLASEÑOR' 
+                    ),
+                    'MAR?A',
+                    'MARÍA' 
+                ),
+                'CA?IZO',
+                'CAÑIZO' 
+            ),
+            'MU?OZ',
+            'MUÑOZ' 
+        ) cliente,
+	REPLACE(TRIM(REGEXP_REPLACE (empresas.razon_social, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,(
 	SELECT
 		razonSocial 
 	FROM
