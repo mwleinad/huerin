@@ -186,7 +186,7 @@ function ExportarServiciosParaP2()
 
 		},
 		success:function (response) {
-			//window.location = response
+			window.location = response
 		},
 		error:function () {
 			alert("Error al mostrar informacion!!");
