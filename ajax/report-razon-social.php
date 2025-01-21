@@ -635,7 +635,7 @@ switch ($_POST['type']) {
         TRIM(REGEXP_REPLACE ( customer.phone, '\\\s{2,}', ' ' )) cliente_telefono,
         TRIM(REGEXP_REPLACE( customer.email, '\\\s{2,}', ' ')) cliente_email,
         customer.fechaAlta fecha_registro,
-        REPLACE(TRIM( contract.NAME ), '&amp;', '&' ) empresa,
+        REPLACE(TRIM(REGEXP_REPLACE ( contract.NAME, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,
         TRIM( contract.type ) tipo_persona,
         TRIM( contract.rfc ) rfc,
         IF( customer.noFactura13 = 'No', 'Si', 'No' ) factura_13,
