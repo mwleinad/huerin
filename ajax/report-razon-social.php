@@ -163,6 +163,9 @@ switch ($_POST['type']) {
         $currentRow = 2;
         foreach ($items as $keyItem => $item) {
             foreach ($headers as $keyHead => $header) {
+                if($header['field_excel'] === 'nombreSociedad' && $item['type'] !='Persona Fisica')
+                    continue;
+
                 if($header['validate_date_format'] === true) {
                     $sheet->setCellValueByColumnAndRow($keyHead, $currentRow, $item[$header['field_excel']]);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2);
@@ -173,7 +176,7 @@ switch ($_POST['type']) {
                         $val_cell =  $item[$header['field_excel']];
                     }
 
-                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($val_cell, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($keyHead, $currentRow)->setValueExplicit($val_cell);
                     $sheet->getCellByColumnAndRow($keyHead, $currentRow)->getStyle()->getNumberFormat()->setFormatCode('@');
                 }
             }
