@@ -163,7 +163,7 @@ switch ($_POST['type']) {
         $currentRow = 2;
         foreach ($items as $keyItem => $item) {
             foreach ($headers as $keyHead => $header) {
-                if($header['field_excel'] === 'nombreSociedad' && $item['type'] !='Persona Fisica')
+                if($header['field_excel'] === 'nombreSociedad' && $item['type'] =='Persona Fisica')
                     continue;
 
                 if($header['validate_date_format'] === true) {
