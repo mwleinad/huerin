@@ -100,13 +100,13 @@ class PdfService extends Producto{
         $this->Util()->DB()->setQuery($sql);
         $data["EfectoComprobante"] = strtoupper($this->Util()->DB()->GetSingle());
 
-        $sql = 'SELECT nombreRegimen FROM tipoRegimen
-				WHERE claveRegimen = "'.$xmlData["emisor"]['RegimenFiscal'].'"';
+        $sql = 'SELECT nombreRegimen FROM c_RegimenFiscal
+				WHERE regimenId = "'.$xmlData["emisor"]['RegimenFiscal'].'"';
         $this->Util()->DB()->setQuery($sql);
         $data["RegimenFiscal"] = strtoupper($this->Util()->DB()->GetSingle());
 
-        $sql = 'SELECT nombreRegimen FROM tipoRegimen
-				WHERE claveRegimen = "'.$xmlData["receptor"]['RegimenFiscalReceptor'].'"';
+        $sql = 'SELECT nombreRegimen FROM c_RegimenFiscal
+				WHERE regimenId = "'.$xmlData["receptor"]['RegimenFiscalReceptor'].'"';
         $this->Util()->DB()->setQuery($sql);
         $data["RegimenFiscalReceptor"] = strtoupper($this->Util()->DB()->GetSingle());
 
