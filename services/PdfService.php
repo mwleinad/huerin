@@ -98,17 +98,17 @@ class PdfService extends Producto{
         $sql = 'SELECT tipoDeComprobante FROM tiposComprobante
 				WHERE tiposComprobanteId = "'.$xmlData["serie"]['tiposComprobanteId'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["EfectoComprobante"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["EfectoComprobante"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT nombreRegimen FROM c_RegimenFiscal
 				WHERE regimenId = "'.$xmlData["emisor"]['RegimenFiscal'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["RegimenFiscal"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["RegimenFiscal"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT nombreRegimen FROM c_RegimenFiscal
 				WHERE regimenId = "'.$xmlData["receptor"]['RegimenFiscalReceptor'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["RegimenFiscalReceptor"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["RegimenFiscalReceptor"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT * FROM c_Impuesto';
         $this->Util()->DB()->setQuery($sql);
@@ -122,17 +122,17 @@ class PdfService extends Producto{
         $sql = 'SELECT descripcion FROM c_FormaPago
 				WHERE c_formaPago = "'.$xmlData["cfdi"]['FormaPago'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["FormaPago"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["FormaPago"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT descripcion FROM c_MetodoPago
 				WHERE c_metodoPago = "'.$xmlData["cfdi"]['MetodoPago'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["MetodoPago"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["MetodoPago"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         $sql = 'SELECT descripcion FROM c_UsoCfdi
 				WHERE c_UsoCfdi = "'.$xmlData["receptor"]['UsoCFDI'].'"';
         $this->Util()->DB()->setQuery($sql);
-        $data["UsoCFDI"] = strtoupper($this->Util()->DB()->GetSingle());
+        $data["UsoCFDI"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         return $data;
     }
