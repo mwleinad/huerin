@@ -45,7 +45,7 @@
                             <input x-model="correo_destinatario"
                                    readonly="readonly"
                                    class="largeInput"/>
-                            <small style="display: block; font-size: 12px">Si el correo no es correcto, corregir desde el formulario de la empresa.</small>
+                            <small style="display: block; font-size: 12px">Si el campo esta vacio o el correo es incorrecto, es necesario corregir desde el apartado de Datos de la empresa.</small>
                         </div>
                     </div>
                     <hr/>
