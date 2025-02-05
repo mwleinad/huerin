@@ -24,8 +24,8 @@ $db->setQuery($sql);
 $comprobantes = $db->GetResult();
 $razon = new Razon();
 $enviado = 0;
-echo "------------------------------------------------- ----------------------------".chr(13).chr(10);
-echo "------------ INICIO DE CRONJON ".date("Y-m-d H:i:s")." ----------------".chr(13).chr(10);
+$log = "------------------------------------------------- ----------------------------".chr(13).chr(10);
+$log .="------------ INICIO DE CRONJON ".date("Y-m-d H:i:s")." ----------------".chr(13).chr(10);
 foreach($comprobantes as $Key => $factura) {
 
     if($factura['sent'] === 'no') {
@@ -40,6 +40,7 @@ foreach($comprobantes as $Key => $factura) {
     /*if(!$razon->sendComprobante33($factura["comprobanteId"], false, true))
         echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);*/
 }
-echo "------------ FIN DE CRONJON ".date("Y-m-d H:i:s")." -------------------".chr(13).chr(10);
-echo "------------------------------------------------- ----------------------------".chr(13).chr(10);
+$log .= "------------ FIN DE CRONJON ".date("Y-m-d H:i:s")." -------------------".chr(13).chr(10);
+$log .= "------------------------------------------------- ----------------------------".chr(13).chr(10);
+echo $log;
 ?>
