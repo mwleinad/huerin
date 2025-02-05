@@ -391,7 +391,7 @@ class ContractRep extends Main
         return $contracts;
     }
     public function encargadosArea($contractId){
-        $this->Util()->DB()->setQuery("select b.name,c.departamento,a.personalId,c.departamentoId from contractPermiso a 
+        $this->Util()->DB()->setQuery("select b.name,b.email,c.departamento,a.personalId,c.departamentoId from contractPermiso a 
                                              inner join personal b on a.personalId=b.personalId
                                              inner join departamentos c on a.departamentoId=c.departamentoId
                                              where a.contractId='".$contractId."'

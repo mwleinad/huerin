@@ -186,7 +186,7 @@ class Servicio extends Contract
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
 				WHERE servicio.contractId = '".$this->getContractId()."'					
-				ORDER BY tipoServicio.nombreServicio ASC";
+				ORDER BY servicio.status ASC, servicio.inicioOperaciones ASC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
 
@@ -195,11 +195,18 @@ class Servicio extends Contract
 			$fecha = explode("-", $value["inicioOperaciones"]);
 			$result[$key]["formattedInicioOperaciones"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
 
-			$fecha = explode("-", $value["inicioFactura"]);
-			$result[$key]["formattedInicioFactura"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
-            $fecha = explode("-", $value["lastDateWorkflow"]);
-            $result[$key]["formattedDateLastWorkflow"] = $fecha[2]."/".$months[$fecha[1]]."/".$fecha[0];
+            $result[$key]["formattedInicioFactura"] =  null;
+            if ($this->Util()->isValidateDate($value["inicioFactura"],"Y-m-d")) {
 
+                $fecha = explode("-", $value["inicioFactura"]);
+                $result[$key]["formattedInicioFactura"] = $fecha[2] . "/" . $months[$fecha[1]] . "/" . $fecha[0];
+            }
+
+            $result[$key]["formattedDateLastWorkflow"] = null;
+            if ($this->Util()->isValidateDate($value["lastDateWorkflow"],"Y-m-d")) {
+                $fecha = explode("-", $value["lastDateWorkflow"]);
+                $result[$key]["formattedDateLastWorkflow"] = $fecha[2] . "/" . $months[$fecha[1]] . "/" . $fecha[0];
+            }
 
             $result[$key]['dataJson'] =  json_encode($result[$key], ENT_QUOTES);
 		}

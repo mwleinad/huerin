@@ -9,6 +9,29 @@
                 <td>${$fact.total_formato}</td>
                 <td align="center">{$fact.serie}{$fact.folio}</td>
                 <td align="center">
+                    {if $fact.sent == 'si'}
+                        <span style="background: #02592c;
+                                color:#ffffff;
+                                font-weight: bold;
+                                padding: 3px;
+                                border-radius:2px;
+                                font-size: .65rem;
+                                display: inline-block;
+                                min-width: 100px">Responsable de CxC</span>
+                    {/if}
+                    {if $fact.sentCliente == 'Si'}
+                        <span style="background: #02592c;
+                                color:#ffffff;
+                                font-weight: bold;
+                                padding: 3px;
+                                border-radius:2px;
+                                margin-top: 3px;
+                                font-size: .65rem;
+                                display: inline-block;
+                                min-width: 50px">Cliente</span>
+                    {/if}
+                </td>
+                <td align="center">
                 {if $fact.instanciasLigados|count > 0 || $fact.procedencia eq 'fromInstance'}
                     Factura automatica <br>
                     {foreach from=$fact.instanciasLigados item=ins}
@@ -39,7 +62,7 @@
                     {*enviar correo*}
                     {if (in_array(137,$permissions)|| $User.isRoot)}
                         <a href="javascript:void(0)" title="Enviar correo">
-                            <img src="{$WEB_ROOT}/images/icons/email.png" border="0" onclick="EnviarEmail({$fact.comprobanteId})" width="16" />
+                            <img src="{$WEB_ROOT}/images/icons/email.png" border="0" onclick="OpenEnviarPorCorreo({$fact.comprobanteId})" width="16" />
                         </a>
                     {/if}
 

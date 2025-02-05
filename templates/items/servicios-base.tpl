@@ -16,9 +16,29 @@
         	${$item.costo|number_format:2}
     </td>  
 	<td align="center">{$item.formattedInicioOperaciones}</td>
-    <td align="center">{$item.formattedInicioFactura}</td>
-	<td align="center">{if $item.status == 'bajaParcial'}{$item.formattedDateLastWorkflow}{else}N/A{/if}</td>
-	<td align="center">{$item.estado}</td>
+    <td align="center">{if $item.formattedInicioFactura != '00//0000' && $item.formattedInicioFactura != '//'}{$item.formattedInicioFactura}{/if}</td>
+	<td align="center">
+		{if $item.status == 'activo'}
+		  {assign var='colorStatus' value='#02592c'}
+		{elseif $item.status == 'baja'}
+		  {assign var='colorStatus' value='red'}
+		{elseif $item.status == 'bajaParcial'}
+			{assign var='colorStatus' value='#ba8202'}
+		{else}
+			{assign var='colorStatus' value='grey'}
+		{/if}
+
+		<span style="background: {$colorStatus};
+				color:#ffffff;
+				font-weight: bold;
+				padding: 3px;
+				border-radius:2px;
+				font-size: .65rem;
+				min-width: 200px">{$item.estado}</span>
+
+		{if $item.status == 'bajaParcial'}<span style="background: #ba8202; color:#ffffff;font-weight: bold;padding: 3px;border-radius: 2px;
+		font-size: .65rem; margin-top: 3px; display:inline-block">Desde: {$item.formattedDateLastWorkflow}</span>{/if}
+	</td>
     {if in_array(87,$permissions) || in_array(88,$permissions)|| in_array(89,$permissions) || in_array(90,$permissions) || $User.isRoot}
 		<td align="center">
 		{if $item.status == 'activo' || $item.status == 'readonly'}

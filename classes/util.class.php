@@ -1442,6 +1442,7 @@ class Util extends CustomError
         $email = trim($email);
         $email = str_replace("/", ",", $email);
         $email = str_replace(" ", ",", $email);
+        $email = str_replace("|", ",", $email);
         $email = str_replace(";", ",", $email);
         $email = explode(",", $email);
 
