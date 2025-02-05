@@ -16,10 +16,10 @@ if (!isset($_SESSION)) {
   session_start();
 }
 $_SESSION['empresaId'] = IDEMPRESA;
-$sql  = "SELECT comprobanteId,serie,folio FROM comprobante";
+$sql  = "SELECT comprobanteId,serie,folio,sent,sentCliente FROM comprobante";
 $sql .= " WHERE date_format(fecha,'%Y-%m-%d') > '2022-01-01'";
 $sql .= " AND status = '1' AND tiposComprobanteId  IN (1,10)";
-$sql .= " AND sent='no' ORDER BY comprobanteId ASC LIMIT 5";
+$sql .= " AND (sent='no' OR sentCliente='No') ORDER BY comprobanteId ASC LIMIT 5";
 $db->setQuery($sql);
 $comprobantes = $db->GetResult();
 $razon = new Razon();
@@ -28,10 +28,11 @@ echo "------------------------------------------------- ------------------------
 echo "------------ INICIO DE CRONJON ".date("Y-m-d H:i:s")." ----------------".chr(13).chr(10);
 foreach($comprobantes as $Key => $factura) {
 
-    if (!$razon->enviarComprobante($factura['comprobanteId'],'Responsable CxC', false))
-        echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio']." al Responsable de CxC.".chr(13).chr(10);
-
-    if (SEND_FACT_CUSTOMER == 'SI') {
+    if($factura['sent'] === 'no') {
+        if (!$razon->enviarComprobante($factura['comprobanteId'], 'Responsable CxC', false))
+            echo 'ERROR: Ha ocurrido un error al enviar comprobante ' . $factura['serie'] . $factura['folio'] . " al Responsable de CxC." . chr(13) . chr(10);
+    }
+    if (SEND_FACT_CUSTOMER == 'SI' && $factura['sentCliente'] === 'No') {
         if (!$razon->enviarComprobante($factura['comprobanteId'], 'Cliente', false))
             echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio']." al cliente.".chr(13).chr(10);
     }

@@ -42,8 +42,10 @@
                     <div class="formLine" style="width:100%;display: inline-block">
                         <div style="width:30%;float:left; font-weight: bold"><em style="color:#ff0000">*</em> Correo</div>
                         <div style="width:70%;float:left">
-                            <input x-model="correo_destinatario" class="largeInput" />
-                            <small style="display: block; font-size: 12px">Para el envio a mas de un destinatario, ingrese los correos separados por comas(,) sin espacios.</small>
+                            <input x-model="correo_destinatario"
+                                   readonly="readonly"
+                                   class="largeInput"/>
+                            <small style="display: block; font-size: 12px">Si el correo no es correcto, corregir desde el formulario de la empresa.</small>
                         </div>
                     </div>
                     <hr/>
