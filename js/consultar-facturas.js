@@ -106,6 +106,66 @@ function componenteCancelar () {
         }
 	}
 }
+
+function componenteEnviarCorreo () {
+    return {
+        url_path: WEB_ROOT,
+        tipos_destinatario: [
+            'Responsable CxC',
+            'Cliente',
+        ],
+        comprobante_id: null,
+        nombre_cxc: null,
+        email_cxc: null,
+        correo_empresa:null,
+        tipo_destinatario: 'Responsable CxC',
+        correo_destinatario: null,
+        loading: false,
+        show_btn: false,
+        initData (id,nombre_cxc,email_cxc,correo_empresa) {
+            this.comprobante_id = id;
+            this.nombre_cxc = nombre_cxc;
+            this.email_cxc = email_cxc;
+            this.correo_empresa  = correo_empresa ?? null;
+            this.correo_destinatario = this.email_cxc;
+        },
+        handlerSelectTipoDestinatario(event) {
+            this.correo_destinatario= null
+            if (event.target.value === 'Cliente')
+                this.correo_destinatario = this.correo_empresa;
+            else
+                this.correo_destinatario = this.email_cxc;
+        },
+        async enviarCorreo() {
+            this.loading=  true
+            const data_send = {
+                type: 3,
+                correo_destinatario: this.correo_destinatario,
+                nombre_destinatario: this.nombre_cxc,
+                tipo_destinatario: this.tipo_destinatario,
+                comprobante_id: this.comprobante_id,
+            }
+            fetch(this.url_path + '/ajax/invoice.php', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data_send),
+            }).then(response => response.json())
+                .then((response) => {
+                    this.loading=  false;
+                    ShowStatusPopUp(response.message);
+                    if(response.result === 1) {
+                        document.getElementById('total').innerHTML = response.resumen;
+                        document.getElementById('facturasListDiv').innerHTML = response.lista_invoice;
+                    }
+
+                }).catch((response) => {
+                ShowStatusPopUp(response.errorText)
+            })
+        }
+    }
+}
 function showDetailsPopup(id) {
 
     grayOut(true);
@@ -192,13 +252,11 @@ function EnviarEmail(id) {
             onSuccess: function (transport) {
                 var response = transport.responseText || "no response text";
                 var splitResponse = response.split("[#]");
-                if (splitResponse[0] == "ok") {
+                if (splitResponse[0] === "ok") {
                     ShowStatusPopUp(splitResponse[1])
                 } else {
                     ShowStatusPopUp(splitResponse[1])
                 }
-
-
             },
             onFailure: function () {
                 alert('Something went wrong...')
@@ -206,6 +264,33 @@ function EnviarEmail(id) {
         });
 
 }//EnviarEmail
+
+function OpenEnviarPorCorreo(id) {
+
+    grayOut(true);
+    $('fview').show();
+    if (id == 0) {
+        $('fview').hide();
+        grayOut(false);
+        return;
+    }
+
+    new Ajax.Request(WEB_ROOT + '/ajax/manage-facturas.php', {
+        method: 'post',
+        parameters: {type: "open_enviar_por_email", comprobante_id: id},
+        onSuccess: function (transport) {
+            var response = transport.responseText || "no response text";
+            FViewOffSet(response);
+            Event.observe($('closePopUpDiv'), "click", function () {
+                showDetailsPopup(0);
+            });
+        },
+        onFailure: function () {
+            alert('Something went wrong...')
+        }
+    });
+
+}
 
 function CancelarFactura(id) {
 

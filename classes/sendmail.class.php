@@ -54,10 +54,10 @@ class SendMail extends Main
         return true;
 	}
 
-	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array())
+	public function PrepareMultiple($subject, $body, $to, $toName, $attachment = "", $fileName = "", $attachment2 = "", $fileName2 = "", $from = "avisos@braunhuerin.com.mx", $fromName = "Administrador del Sistema",$cc=array(), $remitenteExterno = false)
 	{
-            $from = $from != 'avisos@braunhuerin.com.mx' ? 'avisos@braunhuerin.com.mx' : $from;
-			$mail = new PHPMailer(true); // defaults to using php "mail()"
+            $from = $remitenteExterno ? 'avisosbh@braunhuerin.com.mx' : 'avisos@braunhuerin.com.mx';
+			$mail = new PHPMailer(true);
             try{
                 $mail->addReplyTo($from, $fromName);
                 $mail->setFrom($from, $fromName);
@@ -88,6 +88,7 @@ class SendMail extends Main
                     }
 
                 }
+                //Si no tienen remitente, se envia por default a desarrollador.
                 if( count($cc) <= 0 && count($to) <= 0)
                     $mail->addAddress(EMAIL_DEV, 'DESARROLLADOR');
 
@@ -96,11 +97,11 @@ class SendMail extends Main
                 $mail->msgHTML($body);
                 $mail->isSMTP();
                 $mail->SMTPAuth   = true;
-                $mail->Host       = SMTP_HOST2;
                 $mail->SMTPAutoTLS  = false;
-                $mail->Port       = SMTP_PORT2;
-                $mail->Username   = SMTP_USER2;
-                $mail->Password   = SMTP_PASS2;
+                $mail->Host       = $remitenteExterno ? SMTP_HOST : SMTP_HOST2;
+                $mail->Port       = $remitenteExterno ? SMTP_PORT : SMTP_PORT2;
+                $mail->Username   = $remitenteExterno ? SMTP_USER : SMTP_USER2;
+                $mail->Password   = $remitenteExterno ? SMTP_PASS : SMTP_PASS2;
                 $mail->SMTPDebug= SMTP_DEBUG;
                 $mail->Timeout=3600;
                 if($attachment != "")

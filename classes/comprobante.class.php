@@ -1298,7 +1298,7 @@ class Comprobante extends Producto
             $row["saldo"] = $row["costo"] - $row["payment"];
             return $row;
         } else {
-            $sqlQuery = "SELECT comprobante.*,contract.facturador FROM comprobante
+            $sqlQuery = "SELECT comprobante.*,contract.facturador,contract.name razon_social,contract.rfc FROM comprobante
 					LEFT JOIN contract ON contract.contractId = comprobante.userId
 						WHERE comprobanteId = '" . $id_comprobante."'";
             $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
@@ -1494,6 +1494,8 @@ class Comprobante extends Producto
                      c.status AS status,
                      c.comprobanteId AS comprobanteId, 
                      c.timbreFiscal,
+                     c.sent,
+                     c.sentCliente,
                      a.name AS name, 
                      a.rfc AS rfc, 
                      a.contractId AS contractId,
@@ -1542,6 +1544,8 @@ class Comprobante extends Producto
             $card['tiposComprobanteId'] = $val['tiposComprobanteId'];
             $card['version'] = $val['version'];
             $card['xml'] = $val['xml'];
+            $card['sent'] = $val['sent'];
+            $card['sentCliente'] = $val['sentCliente'];
             $card['procedencia'] = $val['procedencia'];
             $card['instancias'] = json_decode($val['instancias'], true);
             $card['instanciasLigados'] = json_decode($val['instancias'], true);

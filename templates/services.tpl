@@ -1,6 +1,5 @@
 <input type="hidden" name="contractId" id="contractId" value="{$id}" />
 <div class="grid_16" id="content">
-    
   <div class="grid_9">
     <h1 class="content_edit">Servicios.</h1>
   </div>
@@ -53,4 +52,3 @@
             </div>
         </div>
 </div>
-<div style="position:relative" id="divStatus"></div>

@@ -27,8 +27,17 @@ $enviado = 0;
 echo "------------------------------------------------- ----------------------------".chr(13).chr(10);
 echo "------------ INICIO DE CRONJON ".date("Y-m-d H:i:s")." ----------------".chr(13).chr(10);
 foreach($comprobantes as $Key => $factura) {
-    if(!$razon->sendComprobante33($factura["comprobanteId"], false, true))
-        echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);
+
+    if (!$razon->enviarComprobante($factura['comprobanteId'],'Responsable CxC', false))
+        echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio']." al Responsable de CxC.".chr(13).chr(10);
+
+    if (SEND_FACT_CUSTOMER == 'SI') {
+        if (!$razon->enviarComprobante($factura['comprobanteId'], 'Cliente', false))
+            echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio']." al cliente.".chr(13).chr(10);
+    }
+
+    /*if(!$razon->sendComprobante33($factura["comprobanteId"], false, true))
+        echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);*/
 }
 echo "------------ FIN DE CRONJON ".date("Y-m-d H:i:s")." -------------------".chr(13).chr(10);
 echo "------------------------------------------------- ----------------------------".chr(13).chr(10);

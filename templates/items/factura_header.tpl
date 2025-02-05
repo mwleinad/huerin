@@ -15,6 +15,7 @@
                 <th width="89" scope="col">Iva</th>
                 <th width="89" scope="col">Total</th>
                 <th width="81" scope="col">Folio</th>
+                <th width="81" scope="col">Enviado a</th>
                 <th width="81" scope="col">Servicio Ligado</th>
                 <th width="100" scope="col">UUID</th>
                 <th width="34" scope="col">Acciones</th>

@@ -142,11 +142,45 @@
 				$smarty->assign('DOC_ROOT', DOC_ROOT);
 				$smarty->display(DOC_ROOT.'/templates/lists/facturas.tpl');
 		break;
+
+		case 'open_enviar_por_email':
+			$comprobanteId = $_POST['comprobante_id'];
+
+			$cfdi =  $comprobante->GetInfoComprobante($comprobanteId);
+
+			$contractRep = new ContractRep();
+			$encargados = $contractRep->encargadosArea($cfdi['userId']);
+
+			$responsableCxc = current(array_filter($encargados, function($encargado) use($contractRep) {
+				$respon = explode("@",$encargado['email']);
+				$dominio = $respon[1] ?? '';
+				return $encargado['departamentoId'] == 21 && $contractRep->Util()->ValidateEmail($encargado['email']) && $dominio =='braunhuerin.com.mx';
+
+			}));
+
+			$razon = new Razon;
+			$razon->setContractId($cfdi['userId']);
+			$correosReceptor =  $razon->getEmailContractByArea('administracion');
+			foreach($correosReceptor['allEmails'] ?? [] as $val){
+				$correos[$val] = $correosReceptor["name"];
+			}
+
+			$smarty->assign('responsableCxc', $responsableCxc);
+			$smarty->assign('correosReceptor', implode(',',$correosReceptor['allEmails']));
+			$smarty->assign('comprobanteId', $comprobanteId);
+			$smarty->assign('status', $cfdi['status']);
+			$smarty->assign('rfc', $cfdi['rfc']);
+			$smarty->assign('nombre', $cfdi['razon_social']);
+			$smarty->assign('serie',$cfdi['serie']);
+			$smarty->assign('folio', $cfdi['folio']);
+			$smarty->assign('DOC_ROOT', DOC_ROOT);
+			$smarty->display(DOC_ROOT.'/templates/boxes/enviar-factura-popup.tpl');
+			break;
 		case 'enviar_email':
 			$id_comprobante = $_POST['id_comprobante'];
 			$razon= new Razon;
-			if($razon->sendComprobante33($id_comprobante,true,true)) {
-			echo 'ok[#]';
+			if($razon->enviarComprobante($id_comprobante,'Cliente')) {
+				echo 'ok[#]';
 				$smarty->display(DOC_ROOT.'/templates/boxes/status_on_popup.tpl');
 		  	}
 		  	else {
