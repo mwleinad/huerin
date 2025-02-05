@@ -329,6 +329,20 @@ function CargarConcepto(index) {
         }
     );
 }
+async function ExisteConceptosSinServicio() {
+    const form = new FormData();
+    form.append('type','getListaConceptos');
+
+    const solicitud = await fetch(WEB_ROOT+'/ajax/cfdi33.php', {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json, text/plain, */*',
+        },
+        body:form,
+    });
+    const conceptos =  await solicitud.json();
+    return await conceptos?.filter((concepto) => concepto.servicioId <= 0 || concepto.servicioId === undefined).length > 0;
+}
 
 function BorrarImpuesto(e, id) {
     id = id.strip();
@@ -388,15 +402,24 @@ function UpdateTotalesDesglosados() {
         });
 }
 
-function GenerarComprobante(format) {
+async function GenerarComprobante(format) {
     var modo_factura = $('modo_factura').value
+    //Verificar si hay conceptos sin relacion.
+
     var message = parseInt(modo_factura) === 2
         ? "Estas a punto de generar una factura que sustituira el folio: " + $('serieAnterior').value+$('folioAnterior').value
-        + ', asegurate que la información este correcta.'
-        : "Realmente deseas generar un comprobante. asegurate de que lo estes generando sean con los datos correctos.";
+        + ', asegurate que la información este correcta.\n'
+        : "Realmente deseas generar un comprobante. asegurate de que lo estes generando sean con los datos correctos.\n";
 
     if (!confirm(message)) {
         return;
+    }
+
+    if(await ExisteConceptosSinServicio()) {
+        var message2 = "¡ADVERTENCIA!\n Existen conceptos no vinculados a un servicio de la empresa a facturar.\n\n 1. Si desea vincularlos, Haga click en Cancelar y utilice el icono que esta sin sombrear del lado izquierdo de la fila del concepto. En caso de no encontrar un servicio al cual vincular, solicite la alta del servicio y vuelva a intentar.\n 2. De lo contrario haga click en OK o Aceptar."
+        if (!confirm(message2)) {
+            return;
+        }
     }
 
     $('nuevaFactura').enable();
@@ -647,7 +670,6 @@ function openRelacionEmpresa(id) {
             data:{type:'modalRelacionEmpresa', id, contract:userId},
             success:function (response) {
                 var responseSplit = response.split("|")
-                console.log(responseSplit)
                 if(responseSplit[0] == 'fail') {
                     ShowErrorOnPopup(responseSplit[1]);
                 } else {
