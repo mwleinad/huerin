@@ -593,13 +593,13 @@ class Util extends CustomError
         }//if
 
         if ($total % $items_per_page == 0) {
-            $total_pages = $total / $items_per_page - 1;
+            $total_pages =(int)($total / $items_per_page - 1);
             if ($total_pages < 0) {
                 $total_pages = 0;
             }//if
         }//if
         else {
-            $total_pages = ((int)$total / (int)$items_per_page);
+            $total_pages = (int)($total / $items_per_page);
         }//else
 
         if ($page > 0) {
