@@ -273,9 +273,16 @@ class Producto extends Sucursal
 		global $months;
 		if($this->Util()->PrintErrors())
 			return false;
+		if (!is_array($_SESSION['conceptos']))
+			$_SESSION['conceptos'] =  [];
 
 		end($_SESSION["conceptos"]);
-		$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
+		if (count($_SESSION['conceptos']) > 0) {
+			$conceptos = $key >= 0 ? $key : key($_SESSION["conceptos"]) + 1;
+		} else {
+			$conceptos = 0;
+		}
+
 		if($key >= 0) {
 			if($_SESSION["conceptos"][$conceptos]["noIdentificacion"] != $this->noIdentificacion)
 				if(isset($_SESSION["conceptos"][$conceptos]["servicioId"]))
