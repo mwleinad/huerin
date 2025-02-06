@@ -341,7 +341,7 @@ async function ExisteConceptosSinServicio() {
         body:form,
     });
     const conceptos =  await solicitud.json();
-    return conceptos?.filter((concepto) => concepto.servicioId <= 0 || concepto.servicioId === undefined).length > 0;
+    return await conceptos?.filter((concepto) => concepto.servicioId <= 0 || concepto.servicioId === undefined).length > 0;
 }
 
 function BorrarImpuesto(e, id) {
