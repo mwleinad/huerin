@@ -421,7 +421,7 @@ switch ($_POST["type"]) {
         $sheet->setCellValueByColumnAndRow(++$col, $row, 'Email')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
-        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Paswword')
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Password')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
         $sheet->setCellValueByColumnAndRow(++$col, $row, 'Cuenta inhouse')
@@ -433,7 +433,16 @@ switch ($_POST["type"]) {
         $sheet->setCellValueByColumnAndRow(++$col, $row, 'Usuario aspel')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
-        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Paswword aspel')
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Password aspel')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Tipo de contrato')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Numero de seguro social')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Fecha de nacimiento')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
         $row++;
@@ -459,7 +468,8 @@ switch ($_POST["type"]) {
                 cuentaInhouse,
                 systemAspel,
                 userAspel,
-                passwordAspel
+                passwordAspel,
+                passwd
                 from personal
                 where active = '1' 
                 ORDER BY nombre
@@ -487,11 +497,14 @@ switch ($_POST["type"]) {
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['listaDistribucion']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numberAccountsAllowed']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['email']);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, '');
+            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwd']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['cuentaInhouse']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['systemAspel']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userAspel']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordAspel']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, 'Contrato de trabajo por tiempo indeterminado');
+            $sheet->setCellValueByColumnAndRow(++$col, $row, '');
+            $sheet->setCellValueByColumnAndRow(++$col, $row, '');
             $row++;
         }
         $book->setActiveSheetIndex(0);
