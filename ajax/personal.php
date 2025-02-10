@@ -445,6 +445,9 @@ switch ($_POST["type"]) {
         $sheet->setCellValueByColumnAndRow(++$col,$row, 'Fecha de nacimiento')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
+        $sheet->setCellValueByColumnAndRow(++$col,$row, 'Sexo')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+
         $row++;
 
         $sql = "select personalId codigo, 
@@ -503,6 +506,7 @@ switch ($_POST["type"]) {
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userAspel']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordAspel']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, 'Contrato de trabajo por tiempo indeterminado');
+            $sheet->setCellValueByColumnAndRow(++$col, $row, '');
             $sheet->setCellValueByColumnAndRow(++$col, $row, '');
             $sheet->setCellValueByColumnAndRow(++$col, $row, '');
             $row++;
