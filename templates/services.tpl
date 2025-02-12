@@ -42,7 +42,7 @@
     </div>
  </div>
 <div class="clear"></div>
-</div>
+
 <div id="fview" style="display:none;">	
       <input type="hidden" id="inputs_changed" value="0" />  	
         <div id="fviewload" style="display:block"><img src="{$WEB_ROOT}/images/load.gif" border="0" /></div>
@@ -51,4 +51,6 @@
             <div id="submodal">
             </div>
         </div>
+</div>
+<div style="position: relative" id="divStatus"></div>
 </div>
