@@ -52,7 +52,6 @@ function DownServicio(){
         },
         success: function(response){
             var splitResp = response.split("[#]");
-            console.log(response);
             if(splitResp[0]=='ok')
             {
                 jQ('#contenido').html(splitResp[2]);
@@ -110,7 +109,7 @@ function EditServicioPopup(id)
 			FViewOffSet(response);
 			jQ('select#tipoServicioId').find(':not(:selected)').remove();
 			Event.observe($('closePopUpDiv'), "click", function(){ EditServicioPopup(0); });
-			Event.observe($('editCustomer'), "click", function(){EditServicio();});
+			Event.observe($('editCustomer'), "click",EditServicio);
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
