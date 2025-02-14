@@ -547,7 +547,7 @@ class InvoiceService extends Cfdi{
             if ($responsableCxc) {
                 $body  = "<pre>";
                 $body .= "Ha ocurrido un error al intentar generar la factura  del mes corriente a la empresa ".$this->currentContract['name'].".<br><br>";
-                $body .= "<strong>Descripcion del error </strong>:".utf8_encode($_SESSION['errorPac'])."<br><br>";
+                $body .= "<strong>Descripcion del error </strong>:".utf8_decode($_SESSION['errorPac'])."<br><br>";
                 $body .= "<strong>Datos fiscales que se utilizaron: </strong>:<br>";
                 $body .= "<strong>Usa datos alternos: </strong>:".$usaDatosAlternos."<br>";
                 $body .= "<strong>Nombre o Razon social: </strong> ".$datosFiscales['nombre']."<br>";
