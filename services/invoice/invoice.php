@@ -471,12 +471,65 @@ class InvoiceService extends Cfdi{
     }
 
     function ChangeLastProcessInvoice(){
-        if(!$this->procesoRealizado){
-            //guardar intento del dia
-            $errormsj  =  $_SESSION['errorPac']." DATOS: USOCFDI.".$this->data['usoCfdi']." USAALTERNO:".$this->currentContract['useAlternativeRzForInvoice']." REGIMEN.".$this->currentContract['regimenId']." PERSONA.".$this->currentContract['type'];
-            $errormsj .= $this->currentContract['useAlternativeRzForInvoice'] == 1
-             ? "DATOS ALTERNOS: ".$this->currentContract['alternativeRzId']." USOCFDIALT".$this->currentContract['alternativeUsoCfdi']." REGIMENALT".$this->currentContract['alternativeRegimen']." PERSONAALT.".$this->currentContract['alternativeType']
-             : '';
+
+        global $sendmail;
+
+        if(!$this->procesoRealizado) {
+
+            $contractRep = new ContractRep();
+            $encargados = $contractRep->encargadosArea($this->currentContract['contractId']);
+
+            foreach($encargados ?? [] as $encargado) {
+                $respon = explode("@",$encargado['email']);
+                $dominio = $respon[1] ?? '';
+                if($encargado['departamentoId'] == 21 && $this->Util()->ValidateEmail($encargado['email']) && $dominio =='braunhuerin.com.mx')
+                    $encargadosFiltrados[] = $encargado;
+            }
+            $responsableCxc = $encargadosFiltrados[0] ?? [];
+
+            $usaDatosAlternos = $this->currentContract['useAlternativeRzForInvoice'] == 1 ? "Si" : "No";
+            $usaDatosAlternosRegistrado = $this->currentContract['alternativeRzId'] > 0;
+
+            if ($usaDatosAlternos === 'Si') {
+                if ($usaDatosAlternosRegistrado) {
+                    $query = "SELECT 
+                                name as nombre, 
+                                rfc, 
+                                cpAddress direccionFiscal,
+                                claveUsoCfdi, 
+                                regimenId,
+                                type
+                                from contract where contractId = '".$this->currentContract['alternativeRzId']."'
+                                ";
+                    $this->Util()->DB()->setQuery($query);
+                    $datosFiscales = $this->Util()->DB()->GetRow();
+
+                } else {
+                    $datosFiscales['nombre'] = $this->currentContract['alternativeRz'] ?? '';
+                    $datosFiscales['rfc'] = $this->currentContract['alternativeRfc'] ?? '';
+                    $datosFiscales['direccionFiscal'] = $this->currentContract['alternativeCp'] ?? '';
+                    $datosFiscales['claveUsoCfdi'] = $this->currentContract['alternativeUsoCfdi'] ?? '';
+                    $datosFiscales['regimenId'] = $this->currentContract['alternativeRegimen'] ?? '';
+                    $datosFiscales['type'] = $this->currentContract['alternativeType'] ?? '';
+                }
+            } else {
+                $datosFiscales['nombre'] = $this->currentContract['name'];
+                $datosFiscales['rfc'] = $this->currentContract['rfc'];
+                $datosFiscales['direccionFiscal'] = $this->currentContract['cpAddress'] ?? '';
+                $datosFiscales['claveUsoCfdi'] = $this->currentContract['claveUsoCfdi'] ?? '';
+                $datosFiscales['regimenId'] = $this->currentContract['regimenId'] ?? '';
+                $datosFiscales['type'] = $this->currentContract['type'] ?? '';
+            }
+
+            $errormsj = "Descripcion del error: ".$_SESSION['errorPac']." | ";
+            $errormsj .= "Usa datos alternos: ".$usaDatosAlternos." | ";
+            $errormsj .= "Nombre o Razón social: ".($datosFiscales['nombre'] ?? '')." | ";
+            $errormsj .= "Tipo: ".($datosFiscales['type'] ?? '')." | ";
+            $errormsj .= "RFC: ".($datosFiscales['rfc'] ?? '')." | ";
+            $errormsj .= "Régimen fiscal: ".($datosFiscales['regimenId'] ?? '')." | ";
+            $errormsj .= "Dirección fiscal: ".($datosFiscales['direccionFiscal'] ?? '')." | ";
+            $errormsj .= "Uso de CFDI: ".($datosFiscales['claveUsoCfdi'] ?? '')." | ";
+
             $sql = 'INSERT INTO attempt_create_invoice(
                     contract_id,
                     nombre,
@@ -489,6 +542,26 @@ class InvoiceService extends Cfdi{
                     )';
             $this->Util()->DB()->setQuery($sql);
             $this->Util()->DB()->InsertData();
+
+
+            if ($responsableCxc) {
+                $body  = "<pre>";
+                $body .= "Ha ocurrido un error al intentar generar la factura  del mes corriente a la empresa ".$this->currentContract['name'].".<br><br>";
+                $body .= "<strong>Descripcion del error </strong>:".$_SESSION['errorPac']."<br><br>";
+                $body .= "<strong>Datos fiscales que se utilizaron: </strong>:<br>";
+                $body .= "<strong>Usa datos alternos: </strong>:".$usaDatosAlternos."<br>";
+                $body .= "<strong>Nombre o Razón social: </strong> ".$datosFiscales['nombre']."<br>";
+                $body .= "<strong>Tipo: </strong> ".$datosFiscales['type']."<br>";
+                $body .= "<strong>RFC: </strong> ".$datosFiscales['rfc']."<br>";
+                $body .= "<strong>Clave del régimen fiscal: </strong> ".$datosFiscales['regimenId']."<br>";
+                $body .= "<strong>Dirección fiscal: </strong> ".$datosFiscales['direccionFiscal']."<br>";
+                $body .= "<strong>Clave de Usco CFDI: </strong> ".$datosFiscales['claveUsoCfdi']."<br><br>";
+                $body .= "Si la descripción del error contiene el siguiente mensaje : Error al conectar con el PAC....., asegurese que en realidad no se haya generado la factura desde el apartado de <strong>Facturación >> Comprobantes</strong>, antes de notificar a la administración.<br>";
+                $body .= "<br><br>Este correo se genero de manera automatica, favor de no responder.";
+                $sendmail->Prepare("Error al generar factura automatica", $body,$responsableCxc['email'],$responsableCxc['name']);
+                if (SEND_ERROR_FACT_AUTO_TO_DEV)
+                    $sendmail->Prepare("Error al generar factura automatica", $body,EMAIL_DEV, "Desarrollador");
+            }
             return false;
         }
 
