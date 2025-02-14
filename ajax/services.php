@@ -52,7 +52,7 @@ switch ($_POST["type"]) {
         if (isset($_SESSION["itemsServices"]))
             unset($_SESSION['itemsServices']);
 
-        $tiposDeServicio = $tipoServicio->EnumerateAll();
+        $tiposDeServicio = $tipoServicio->EnumerateOnly2025();
         $smarty->assign("tiposDeServicio", $tiposDeServicio);
         $smarty->assign("post", $_POST);
         $smarty->assign("DOC_ROOT", DOC_ROOT);

@@ -254,6 +254,14 @@ class TipoServicio extends Main
 
 		return $result;
 	}
+
+	public function EnumerateOnly2025()
+	{
+		$this->Util()->DB()->setQuery('SELECT * FROM tipoServicio WHERE status="1" AND nombreServicio like "%2025%" ORDER BY nombreServicio ASC');
+		$result = $this->Util()->DB()->GetResult();
+
+		return $result;
+	}
 	public function getSteps() {
 		$this->Util()->DB()->setQuery("SELECT step.* FROM step 
             INNER JOIN tipoServicio ON step.servicioId = tipoServicio.tipoServicioId
