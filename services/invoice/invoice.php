@@ -547,16 +547,16 @@ class InvoiceService extends Cfdi{
             if ($responsableCxc) {
                 $body  = "<pre>";
                 $body .= "Ha ocurrido un error al intentar generar la factura  del mes corriente a la empresa ".$this->currentContract['name'].".<br><br>";
-                $body .= "<strong>Descripcion del error </strong>:".$_SESSION['errorPac']."<br><br>";
+                $body .= "<strong>Descripcion del error </strong>:".utf8_encode($_SESSION['errorPac'])."<br><br>";
                 $body .= "<strong>Datos fiscales que se utilizaron: </strong>:<br>";
                 $body .= "<strong>Usa datos alternos: </strong>:".$usaDatosAlternos."<br>";
-                $body .= "<strong>Nombre o Razón social: </strong> ".$datosFiscales['nombre']."<br>";
+                $body .= "<strong>Nombre o Razon social: </strong> ".$datosFiscales['nombre']."<br>";
                 $body .= "<strong>Tipo: </strong> ".$datosFiscales['type']."<br>";
                 $body .= "<strong>RFC: </strong> ".$datosFiscales['rfc']."<br>";
-                $body .= "<strong>Clave del régimen fiscal: </strong> ".$datosFiscales['regimenId']."<br>";
-                $body .= "<strong>Dirección fiscal: </strong> ".$datosFiscales['direccionFiscal']."<br>";
+                $body .= "<strong>Clave del regimen fiscal: </strong> ".$datosFiscales['regimenId']."<br>";
+                $body .= "<strong>Direccion fiscal: </strong> ".$datosFiscales['direccionFiscal']."<br>";
                 $body .= "<strong>Clave de Usco CFDI: </strong> ".$datosFiscales['claveUsoCfdi']."<br><br>";
-                $body .= "Si la descripción del error contiene el siguiente mensaje : Error al conectar con el PAC....., asegurese que en realidad no se haya generado la factura desde el apartado de <strong>Facturación >> Comprobantes</strong>, antes de notificar a la administración.<br>";
+                $body .= "Si la descripcion del error contiene el siguiente mensaje : Error al conectar con el PAC....., asegurese que en realidad no se haya generado la factura desde el apartado de <strong>Facturacion >> Comprobantes</strong>, antes de notificar a la administracion.<br>";
                 $body .= "<br><br>Este correo se genero de manera automatica, favor de no responder.";
                 $sendmail->Prepare("Error al generar factura automatica", $body,$responsableCxc['email'],$responsableCxc['name']);
                 if (SEND_ERROR_FACT_AUTO_TO_DEV)
