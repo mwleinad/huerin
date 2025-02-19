@@ -16,10 +16,13 @@ if (!isset($_SESSION)) {
   session_start();
 }
 $_SESSION['empresaId'] = IDEMPRESA;
+
+$condicion = SEND_FACT_CUSTOMER === 'SI' ? " AND (sent='no' OR sentCliente='No') " : " AND sent='no' ";
 $sql  = "SELECT comprobanteId,serie,folio,sent,sentCliente FROM comprobante";
 $sql .= " WHERE date_format(fecha,'%Y-%m-%d') > '2022-01-01'";
 $sql .= " AND status = '1' AND tiposComprobanteId  IN (1,10)";
-$sql .= " AND (sent='no' OR sentCliente='No') ORDER BY comprobanteId ASC LIMIT 12";
+$sql .= $condicion." ORDER BY comprobanteId ASC LIMIT 12";
+
 $db->setQuery($sql);
 $comprobantes = $db->GetResult();
 $razon = new Razon();
@@ -37,8 +40,6 @@ foreach($comprobantes as $Key => $factura) {
             echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio']." al cliente.".chr(13).chr(10);
     }
 
-    /*if(!$razon->sendComprobante33($factura["comprobanteId"], false, true))
-        echo 'ERROR: Ha ocurrido un error al enviar comprobante '.$factura['serie'].$factura['folio'].chr(13).chr(10);*/
 }
 $log .= "------------ FIN DE CRONJON ".date("Y-m-d H:i:s")." -------------------".chr(13).chr(10);
 $log .= "------------------------------------------------- ----------------------------".chr(13).chr(10);
