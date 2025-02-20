@@ -385,7 +385,7 @@ switch($_POST["type"])
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
         $sheet = $book->createSheet(0);
-        $sheet->setTitle("Servicios facturables");
+        $sheet->setTitle("Servicios a facturar");
 
         $mesAnioSiguiente = strtotime( date("Y-m")." +1 month");
         $mesSiguiente = (int)date('m', $mesAnioSiguiente);
@@ -589,7 +589,7 @@ switch($_POST["type"])
             SELECT
                 servicio.servicioId,
                 IF(servicio.`status` = 'bajaParcial', 'Baja temporal','Activo') estatus_servicio,
-                servicio.costo,
+                (servicio.costo * 1.16) costo,
                 servicio.inicioOperaciones inicio_operacion,
                 servicio.inicioFactura inicio_facturacion,
                 servicio.contractId,
@@ -800,7 +800,7 @@ switch($_POST["type"])
                 $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
             }
         }
-        $nameFile = "formato_servicios_empresas_plataforma_20.xlsx";
+        $nameFile = "consolidado_de_servicios_a_facturar.xlsx";
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
         break;
