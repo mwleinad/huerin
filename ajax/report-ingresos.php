@@ -380,6 +380,430 @@ switch($_POST["type"])
         $smarty->display(DOC_ROOT.'/templates/lists/reporte-ab-all.tpl');
     break;
 
+    case 'exportarServiciosPorFacturar':
+        global $monthsIntComplete;
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle("Servicios facturables");
+
+        $mesAnioSiguiente = strtotime( date("Y-m")." +1 month");
+        $mesSiguiente = (int)date('m', $mesAnioSiguiente);
+
+        $styleTotalTexto = [
+            'font' => [
+                'bold' => true,
+                'color' => array('rgb' => '000000'),
+                'size' => 9,
+                'name' => 'Aptos',
+            ],
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => 'D57A29')
+            ),
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
+            ],
+        ];
+
+        $styleHeader = [
+            'font' => [
+                'bold' => true,
+                'color' => array('rgb' => 'FFFFFF'),
+                'size' => 9,
+                'name' => 'Aptos',
+            ],
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => '000000')
+            ),
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
+            ],
+        ];
+
+        $styleTexto = [
+            'font' => [
+                'bold' => false,
+                'color' => array('rgb' => '000000'),
+                'size' => 9,
+                'name' => 'Aptos',
+            ],
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
+            ],
+        ];
+        $styleCurrency = [
+            'font' => [
+                'bold' => false,
+                'color' => array('rgb' => '000000'),
+                'size' => 9,
+                'name' => 'Aptos',
+            ],
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+            ],
+        ];
+
+        $styleTotalCurrency = [
+            'font' => [
+                'bold' => true,
+                'color' => array('rgb' => '000000'),
+                'size' => 9,
+                'name' => 'Aptos',
+            ],
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => 'D57A29')
+            ),
+            'numberformat' => [
+                'code' => PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+            ],
+        ];
+
+        $fields = [
+            [
+                'name' => 'cliente',
+                'title' => 'Cliente',
+            ],
+            [
+                'name' => 'empresa',
+                'title' => 'Empresa',
+            ],
+            [
+                'name' => 'facturador',
+                'title' => 'Facturador',
+            ],
+            [
+                'name' => 'nomenclatura',
+                'title' => 'Nomenclatura',
+            ],
+            [
+                'name' => 'servicio',
+                'title' => 'Servicio',
+            ],
+            [
+                'name' => 'tipo',
+                'title' => 'Tipo',
+            ],
+            [
+                'name' => 'periodicidad',
+                'title' => 'Periodicidad',
+            ],
+            [
+                'name' => 'inicio_operacion',
+                'title' => 'Inicio operacion',
+            ],
+            [
+                'name' => 'inicio_facturacion',
+                'title' => 'Inicio facturacion',
+            ],
+            [
+                'name' => 'estatus_servicio',
+                'title' => 'Estatus',
+            ],
+            [
+                'name' => 'fecha_baja_temporal',
+                'title' => 'Fecha baja temporal',
+            ],
+            [
+                'name' => 'costo',
+                'title' => 'Costo',
+            ],
+        ];
+
+        $row=1;
+
+        $col = 0;
+        foreach ($fields as $field) {
+            $sheet->setCellValueByColumnAndRow($col, $row, $field['title'])
+                ->getStyleByColumnAndRow($col, $row)
+                ->applyFromArray($styleHeader);
+
+            $sheet->setCellValueByColumnAndRow($col, $row + 1, '')
+                ->getStyleByColumnAndRow($col, $row + 1)
+                ->applyFromArray($styleHeader);
+
+            $sheet->setCellValueByColumnAndRow($col, $row + 2, $col===0 ? "FECHA: ".DATE('Y-m-d H:i:s') : "")
+                ->getStyleByColumnAndRow($col, $row + 2)
+                ->applyFromArray($styleHeader);
+
+            $sheet->setCellValueByColumnAndRow($col, $row + 3, $col===0 ? 'REPORTE DE SERVICIOS A FACTURAR CORRESPONDIENTE A '.mb_strtoupper($monthsIntComplete[$mesSiguiente])." ".date('Y') : '')
+                ->getStyleByColumnAndRow($col, $row + 3)
+                ->applyFromArray($styleHeader);
+
+            $sheet->setCellValueByColumnAndRow($col, $row + 4, '')
+                ->getStyleByColumnAndRow($col, $row + 4)
+                ->applyFromArray($styleHeader);
+            $col++;
+        }
+
+
+        $row +=5;
+
+        $sql = "SELECT
+            REPLACE
+                (
+                    REPLACE (
+                        REPLACE (
+                            REPLACE (
+                                REPLACE (
+                                    REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                                    'PATI?O',
+                                    'PATIÑO' 
+                                ),
+                                'VILLASE?OR',
+                                'VILLASEÑOR' 
+                            ),
+                            'MAR?A',
+                            'MARÍA' 
+                        ),
+                        'CA?IZO',
+                        'CAÑIZO' 
+                    ),
+                    'MU?OZ',
+                    'MUÑOZ' 
+                ) cliente,
+            REPLACE(TRIM(REGEXP_REPLACE (empresas.razon_social, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,(
+            SELECT
+                razonSocial 
+            FROM
+                rfc 
+            WHERE
+                claveFacturador = empresas.facturador 
+            ) facturador,
+            TRIM( servicios.nomenclatura ) nomenclatura,
+            TRIM(
+            REGEXP_REPLACE ( servicios.nombre, '\\\s{2,}', '' )) AS servicio,
+        IF
+            ( DAYNAME( servicios.inicio_operacion ) IS NOT NULL, servicios.inicio_operacion, '' ) inicio_operacion,
+        IF
+            ( DAYNAME( servicios.inicio_facturacion ) IS NOT NULL, servicios.inicio_facturacion, '' ) inicio_facturacion,
+            servicios.costo,
+            servicios.periodicidad,
+            servicios.tipo,
+            servicios.estatus_servicio,
+            servicios.fecha_baja_temporal
+        FROM
+            (
+            SELECT
+                servicio.servicioId,
+                IF(servicio.`status` = 'bajaParcial', 'Baja temporal','Activo') estatus_servicio,
+                servicio.costo,
+                servicio.inicioOperaciones inicio_operacion,
+                servicio.inicioFactura inicio_facturacion,
+                servicio.contractId,
+                SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ) AS nomenclatura,
+                TRIM(
+                    SUBSTRING(
+                        tipoServicio.nombreServicio,
+                        LENGTH(
+                        SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ))+ 1,
+                    LENGTH( tipoServicio.nombreServicio ))) AS nombre,
+                tipoServicio.periodicidad,
+                IF(tipoServicio.is_primary,'Primario','Secundario') tipo,
+                IF(servicio.status='bajaParcial',servicio.lastDateWorkflow, null) fecha_baja_temporal
+            FROM
+                servicio
+                INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
+            WHERE
+                tipoServicio.`status` = '1' 
+                AND servicio.`status` IN ( 'activo','bajaParcial') 
+                AND tipoServicio.nombreServicio NOT LIKE '%Z*%' 
+                AND WEEK(inicioFactura) is not null
+                AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+            ) servicios
+            INNER JOIN (
+            SELECT
+                customer.nameContact AS cliente,
+                customer.active AS estatus_cliente,
+                contract.contractId,
+                contract.activo AS estatus_empresa,
+                contract.`name` razon_social,
+                contract.facturador 
+            FROM
+                contract
+                INNER JOIN customer ON contract.customerId = customer.customerId 
+            ) empresas ON servicios.contractId = empresas.contractId 
+            AND empresas.estatus_empresa = 'Si' 
+            AND empresas.estatus_cliente = '1' 
+            AND empresas.cliente != 'CAPACITACION' 
+            AND empresas.razon_social != 'CAPACITACION' 
+        ORDER BY
+            empresas.facturador ASC,
+            empresas.cliente ASC,
+            empresas.razon_social ASC";
+
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        $periodicidades = [
+        [
+            'id' => 'Eventual',
+            'meses' => 0,
+            'texto' => 'Eventual',
+        ],
+        [
+            'id' => 'Mensual',
+            'meses' => 1,
+            'texto' => 'Mensual',
+        ],
+        [
+            'id' => 'Bimestral',
+            'meses' => 2,
+            'texto' => 'Bimestral',
+        ],
+        [
+            'id' => 'Trimestral',
+            'meses' => 3,
+            'texto' => 'Trimestral',
+        ],
+        [
+            'id' => 'Cuatrimestral',
+            'meses' => 4,
+            'texto' => 'Cuatrimestral',
+        ],
+        [
+            'id' => 'Semestral',
+            'meses' => 6,
+            'texto' => 'Semestral',
+        ],
+        [
+            'id' => 'Anual',
+            'meses' => 12,
+            'texto' => 'Anual',
+        ],
+        [
+            'id' => 'Bianual',
+            'meses' => 24,
+            'texto' => 'Bianual',
+        ]
+
+    ];
+
+        $currentEmpresa = $results[0]['empresa'] ?? '';
+        $serviciosPorEmpresa = 0;
+        $rowInicialSuma = $row;
+        $colsSumServiciosPorFacturar = [];
+
+        $colsGranTotalMensual = [];
+
+        $indexColTotal = count($fields)-1;
+
+        foreach($results as $key => $result) {
+            $omitirSuma =  false;
+
+            $col = 0;
+            $mesAnioInicioOperacion   = strtotime(date("Y-m", strtotime($result['inicio_operacion'])));
+            $mesAnioInicioFacturacion = strtotime(date("Y-m", strtotime($result['inicio_facturacion'])));
+
+            $periodicidad = current(array_filter($periodicidades, fn($per) => ($per['id'] === $result['periodicidad'])));
+            $mesesTranscurridos = floor(($mesAnioSiguiente-$mesAnioInicioOperacion)/(30 * 24 * 60 * 60));
+
+            if ( ($periodicidad['id'] === 'Eventual' && $mesAnioInicioOperacion !== $mesAnioSiguiente) || $mesesTranscurridos%$periodicidad['meses'] !==0) {
+
+                if ($currentEmpresa !== $results[$key + 1]['empresa'] && $serviciosPorEmpresa > 0) {
+
+                    $currentEmpresa = $results[$key + 1]['empresa'];
+
+                    $serviciosPorEmpresa = 0;
+
+                    $formula = count($colsSumServiciosPorFacturar) ? "=SUM(".implode("+", $colsSumServiciosPorFacturar).")" : 0;
+                    $colTotal = PHPExcel_Cell::stringFromColumnIndex($indexColTotal).$row;
+                    $sheet->setCellValueByColumnAndRow($indexColTotal, $row, $formula)
+                        ->getStyle($colTotal)
+                        ->applyFromArray($styleTotalCurrency);
+
+                    $colsGranTotalMensual[] = $colTotal;
+
+                    $row++;
+                    $colsSumServiciosPorFacturar = [];
+                }
+                continue;
+            }
+
+
+            $serviciosPorEmpresa++;
+
+            if ($result['estatus_servicio'] === 'Baja temporal') {
+                $mesAnioFechaBajaTemporal = strtotime(date("Y-m",strtotime($result['fecha_baja_temporal'])));
+
+
+                if($mesAnioSiguiente > $mesAnioFechaBajaTemporal)
+                    $omitirSuma = true;
+
+            }
+
+
+
+            $inicioFacturacion = $result['inicio_facturacion'];
+
+            foreach ($fields as $field) {
+                $valor = $result[$field['name']] ?? '';
+
+                 $styles = in_array($field['name'],['costo'])
+                     ? $styleCurrency
+                     : $styleTexto;
+
+                $cordenada = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+                $sheet->setCellValueByColumnAndRow($col, $row, $valor)
+                    ->getStyle($cordenada)
+                    ->applyFromArray($styles);
+
+                $col++;
+            }
+
+            $colTotalServicio = PHPExcel_Cell::stringFromColumnIndex($indexColTotal).$row;
+            if (!$omitirSuma)
+                $colsSumServiciosPorFacturar[] = $colTotalServicio;
+
+            $row++;
+
+            if ($currentEmpresa !== $results[$key + 1]['empresa']) {
+
+                $currentEmpresa = $results[$key + 1]['empresa'];
+
+                $serviciosPorEmpresa = 0;
+
+                $formula = count($colsSumServiciosPorFacturar) ? "=SUM(".implode("+", $colsSumServiciosPorFacturar).")" : 0;
+                $colTotal = PHPExcel_Cell::stringFromColumnIndex($indexColTotal).$row;
+                $sheet->setCellValueByColumnAndRow($indexColTotal, $row, $formula)
+                    ->getStyle($colTotal)
+                    ->applyFromArray($styleTotalCurrency);
+
+                $colsGranTotalMensual[] = $colTotal;
+
+                $row++;
+                $colsSumServiciosPorFacturar = [];
+            }
+        }
+
+        $indexColTextoGranTotal = count($fields)-2;
+        $sheet->setCellValueByColumnAndRow($indexColTextoGranTotal, $row, "GRAN TOTAL")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($indexColTextoGranTotal).$row)
+            ->applyFromArray($styleTotalTexto);
+
+
+        $indexColGranTotal = count($fields)-1;
+        $colGranTotal = PHPExcel_Cell::stringFromColumnIndex($indexColGranTotal).$row;
+        $formula = "=SUM(".implode('+', $colsGranTotalMensual).")";
+        $sheet->setCellValueByColumnAndRow($indexColGranTotal, $row, $formula)
+            ->getStyle($colGranTotal)
+            ->applyFromArray($styleTotalCurrency);
+
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "formato_servicios_empresas_plataforma_20.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
     case 'generarExcelDeServiciosParaP2':
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
@@ -433,88 +857,88 @@ switch($_POST["type"])
         $row++;
 
         $sql = "SELECT
-	REPLACE
-        (
-            REPLACE (
-                REPLACE (
+            REPLACE
+                (
                     REPLACE (
                         REPLACE (
-                            REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
-                            'PATI?O',
-                            'PATIÑO' 
+                            REPLACE (
+                                REPLACE (
+                                    REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( empresas.cliente, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                                    'PATI?O',
+                                    'PATIÑO' 
+                                ),
+                                'VILLASE?OR',
+                                'VILLASEÑOR' 
+                            ),
+                            'MAR?A',
+                            'MARÍA' 
                         ),
-                        'VILLASE?OR',
-                        'VILLASEÑOR' 
+                        'CA?IZO',
+                        'CAÑIZO' 
                     ),
-                    'MAR?A',
-                    'MARÍA' 
-                ),
-                'CA?IZO',
-                'CAÑIZO' 
-            ),
-            'MU?OZ',
-            'MUÑOZ' 
-        ) cliente,
-	REPLACE(TRIM(REGEXP_REPLACE (empresas.razon_social, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,(
-	SELECT
-		razonSocial 
-	FROM
-		rfc 
-	WHERE
-		claveFacturador = empresas.facturador 
-	) facturador,
-	TRIM( servicios.nomenclatura ) nomenclatura,
-	TRIM(
-	REGEXP_REPLACE ( servicios.nombre, '\\\s{2,}', '' )) AS servicio,
-IF
-	( DAYNAME( servicios.inicio_operacion ) IS NOT NULL, servicios.inicio_operacion, '' ) inicio_operacion,
-IF
-	( DAYNAME( servicios.inicio_facturacion ) IS NOT NULL, servicios.inicio_facturacion, '' ) inicio_facturacion,
-	servicios.costo 
-FROM
-	(
-	SELECT
-		servicio.servicioId,
-		servicio.`status` estatus_servicio,
-		servicio.costo,
-		servicio.inicioOperaciones inicio_operacion,
-		servicio.inicioFactura inicio_facturacion,
-		servicio.contractId,
-		SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ) AS nomenclatura,
-		TRIM(
-			SUBSTRING(
-				tipoServicio.nombreServicio,
-				LENGTH(
-				SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ))+ 1,
-			LENGTH( tipoServicio.nombreServicio ))) AS nombre 
-	FROM
-		servicio
-		INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
-	WHERE
-		tipoServicio.`status` = '1' 
-		AND servicio.`status` IN ( 'activo' ) 
-		AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  AND tipoServicio.nombreServicio LIKE '%2025%'
-		AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
-	) servicios
-	INNER JOIN (
-	SELECT
-		customer.nameContact AS cliente,
-		customer.active AS estatus_cliente,
-		contract.contractId,
-		contract.activo AS estatus_empresa,
-		contract.`name` razon_social,
-		contract.facturador 
-	FROM
-		contract
-		INNER JOIN customer ON contract.customerId = customer.customerId 
-	) empresas ON servicios.contractId = empresas.contractId 
-	AND empresas.estatus_empresa = 'Si' 
-	AND empresas.estatus_cliente = '1' 
-	AND empresas.cliente != 'CAPACITACION' 
-	AND empresas.razon_social != 'CAPACITACION' 
-ORDER BY
-	empresas.cliente ASC,
-	empresas.razon_social ASC";
+                    'MU?OZ',
+                    'MUÑOZ' 
+                ) cliente,
+            REPLACE(TRIM(REGEXP_REPLACE (empresas.razon_social, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,(
+            SELECT
+                razonSocial 
+            FROM
+                rfc 
+            WHERE
+                claveFacturador = empresas.facturador 
+            ) facturador,
+            TRIM( servicios.nomenclatura ) nomenclatura,
+            TRIM(
+            REGEXP_REPLACE ( servicios.nombre, '\\\s{2,}', '' )) AS servicio,
+        IF
+            ( DAYNAME( servicios.inicio_operacion ) IS NOT NULL, servicios.inicio_operacion, '' ) inicio_operacion,
+        IF
+            ( DAYNAME( servicios.inicio_facturacion ) IS NOT NULL, servicios.inicio_facturacion, '' ) inicio_facturacion,
+            servicios.costo 
+        FROM
+            (
+            SELECT
+                servicio.servicioId,
+                servicio.`status` estatus_servicio,
+                servicio.costo,
+                servicio.inicioOperaciones inicio_operacion,
+                servicio.inicioFactura inicio_facturacion,
+                servicio.contractId,
+                SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ) AS nomenclatura,
+                TRIM(
+                    SUBSTRING(
+                        tipoServicio.nombreServicio,
+                        LENGTH(
+                        SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ))+ 1,
+                    LENGTH( tipoServicio.nombreServicio ))) AS nombre 
+            FROM
+                servicio
+                INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
+            WHERE
+                tipoServicio.`status` = '1' 
+                AND servicio.`status` IN ( 'activo' ) 
+                AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  AND tipoServicio.nombreServicio LIKE '%2025%'
+                AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+            ) servicios
+            INNER JOIN (
+            SELECT
+                customer.nameContact AS cliente,
+                customer.active AS estatus_cliente,
+                contract.contractId,
+                contract.activo AS estatus_empresa,
+                contract.`name` razon_social,
+                contract.facturador 
+            FROM
+                contract
+                INNER JOIN customer ON contract.customerId = customer.customerId 
+            ) empresas ON servicios.contractId = empresas.contractId 
+            AND empresas.estatus_empresa = 'Si' 
+            AND empresas.estatus_cliente = '1' 
+            AND empresas.cliente != 'CAPACITACION' 
+            AND empresas.razon_social != 'CAPACITACION' 
+        ORDER BY
+            empresas.cliente ASC,
+            empresas.razon_social ASC";
 
 
         $db->setQuery($sql);
