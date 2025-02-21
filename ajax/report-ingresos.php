@@ -610,11 +610,11 @@ switch($_POST["type"])
                 INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
             WHERE
                 tipoServicio.`status` = '1' 
-                AND servicio.`status` IN ( 'activo','bajaParcial') 
+                AND servicio.`status` IN ('activo','bajaParcial') 
                 AND tipoServicio.nombreServicio NOT LIKE '%Z*%' 
                 AND WEEK(inicioFactura) is not null
                 AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
-                HAVING (servicio_temporal_antiguo = false and servicio_eventual_antiguo = false)
+                HAVING (servicio_temporal_antiguo=false and servicio_eventual_antiguo=false)
             ) servicios
             INNER JOIN (
             SELECT
