@@ -516,23 +516,23 @@ switch($_POST["type"])
 
         $col = 0;
         foreach ($fields as $field) {
-            $sheet->setCellValueByColumnAndRow($col, $row, $field['title'])
+            $sheet->setCellValueByColumnAndRow($col, $row, '')
                 ->getStyleByColumnAndRow($col, $row)
                 ->applyFromArray($styleHeader);
 
-            $sheet->setCellValueByColumnAndRow($col, $row + 1, '')
+            $sheet->setCellValueByColumnAndRow($col, $row + 1, $col === 0 ? "FECHA: " . DATE('Y-m-d H:i:s') : "")
                 ->getStyleByColumnAndRow($col, $row + 1)
                 ->applyFromArray($styleHeader);
 
-            $sheet->setCellValueByColumnAndRow($col, $row + 2, $col===0 ? "FECHA: ".DATE('Y-m-d H:i:s') : "")
+            $sheet->setCellValueByColumnAndRow($col, $row + 2, $col === 0 ? 'REPORTE DE SERVICIOS A FACTURAR CORRESPONDIENTE A ' . mb_strtoupper($monthsIntComplete[$mesSiguiente]) . " " . date('Y') : '')
                 ->getStyleByColumnAndRow($col, $row + 2)
                 ->applyFromArray($styleHeader);
 
-            $sheet->setCellValueByColumnAndRow($col, $row + 3, $col===0 ? 'REPORTE DE SERVICIOS A FACTURAR CORRESPONDIENTE A '.mb_strtoupper($monthsIntComplete[$mesSiguiente])." ".date('Y') : '')
+            $sheet->setCellValueByColumnAndRow($col, $row + 3, '')
                 ->getStyleByColumnAndRow($col, $row + 3)
                 ->applyFromArray($styleHeader);
 
-            $sheet->setCellValueByColumnAndRow($col, $row + 4, '')
+            $sheet->setCellValueByColumnAndRow($col, $row + 4, $field['title'])
                 ->getStyleByColumnAndRow($col, $row + 4)
                 ->applyFromArray($styleHeader);
             $col++;
@@ -602,7 +602,9 @@ switch($_POST["type"])
                     LENGTH( tipoServicio.nombreServicio ))) AS nombre,
                 tipoServicio.periodicidad,
                 IF(tipoServicio.is_primary,'Primario','Secundario') tipo,
-                IF(servicio.status='bajaParcial',servicio.lastDateWorkflow, null) fecha_baja_temporal
+                IF(servicio.status='bajaParcial',servicio.lastDateWorkflow, null) fecha_baja_temporal,
+                IF(servicio.status='bajaParcial',DATE_FORMAT(servicio.lastDateWorkflow,'%Y-%m') < '2025-01', false) servicio_temporal_antiguo,
+                IF(tipoServicio.periodicidad='Eventual',DATE_FORMAT(servicio.inicioFactura,'%Y-%m') < '2025-01', false) servicio_eventual_antiguo
             FROM
                 servicio
                 INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
@@ -612,6 +614,7 @@ switch($_POST["type"])
                 AND tipoServicio.nombreServicio NOT LIKE '%Z*%' 
                 AND WEEK(inicioFactura) is not null
                 AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+                HAVING (servicio_temporal_antiguo = false and servicio_eventual_antiguo = false)
             ) servicios
             INNER JOIN (
             SELECT
@@ -638,49 +641,49 @@ switch($_POST["type"])
         $db->setQuery($sql);
         $results = $db->GetResult();
 
-        $periodicidades = [
-        [
-            'id' => 'Eventual',
-            'meses' => 0,
-            'texto' => 'Eventual',
-        ],
-        [
-            'id' => 'Mensual',
-            'meses' => 1,
-            'texto' => 'Mensual',
-        ],
-        [
-            'id' => 'Bimestral',
-            'meses' => 2,
-            'texto' => 'Bimestral',
-        ],
-        [
-            'id' => 'Trimestral',
-            'meses' => 3,
-            'texto' => 'Trimestral',
-        ],
-        [
-            'id' => 'Cuatrimestral',
-            'meses' => 4,
-            'texto' => 'Cuatrimestral',
-        ],
-        [
-            'id' => 'Semestral',
-            'meses' => 6,
-            'texto' => 'Semestral',
-        ],
-        [
-            'id' => 'Anual',
-            'meses' => 12,
-            'texto' => 'Anual',
-        ],
-        [
-            'id' => 'Bianual',
-            'meses' => 24,
-            'texto' => 'Bianual',
-        ]
+            $periodicidades = [
+            [
+                'id' => 'Eventual',
+                'meses' => 0,
+                'texto' => 'Eventual',
+            ],
+            [
+                'id' => 'Mensual',
+                'meses' => 1,
+                'texto' => 'Mensual',
+            ],
+            [
+                'id' => 'Bimestral',
+                'meses' => 2,
+                'texto' => 'Bimestral',
+            ],
+            [
+                'id' => 'Trimestral',
+                'meses' => 3,
+                'texto' => 'Trimestral',
+            ],
+            [
+                'id' => 'Cuatrimestral',
+                'meses' => 4,
+                'texto' => 'Cuatrimestral',
+            ],
+            [
+                'id' => 'Semestral',
+                'meses' => 6,
+                'texto' => 'Semestral',
+            ],
+            [
+                'id' => 'Anual',
+                'meses' => 12,
+                'texto' => 'Anual',
+            ],
+            [
+                'id' => 'Bianual',
+                'meses' => 24,
+                'texto' => 'Bianual',
+            ]
 
-    ];
+        ];
 
         $currentEmpresa = $results[0]['empresa'] ?? '';
         $serviciosPorEmpresa = 0;
@@ -692,7 +695,6 @@ switch($_POST["type"])
         $indexColTotal = count($fields)-1;
 
         foreach($results as $key => $result) {
-            $omitirSuma =  false;
 
             $col = 0;
             $mesAnioInicioOperacion   = strtotime(date("Y-m", strtotime($result['inicio_operacion'])));
@@ -701,44 +703,22 @@ switch($_POST["type"])
             $periodicidad = current(array_filter($periodicidades, fn($per) => ($per['id'] === $result['periodicidad'])));
             $mesesTranscurridos = floor(($mesAnioSiguiente-$mesAnioInicioFacturacion)/(30 * 24 * 60 * 60));
 
-            if ( ($periodicidad['id'] === 'Eventual' && $mesAnioInicioFacturacion !== $mesAnioSiguiente) || $mesesTranscurridos%$periodicidad['meses'] !==0) {
 
-                if ($currentEmpresa !== $results[$key + 1]['empresa'] && $serviciosPorEmpresa > 0) {
+            if ($periodicidad['id'] === 'Eventual') {
 
-                    $currentEmpresa = $results[$key + 1]['empresa'];
+                $realizaFacturaSiguiente = ($mesAnioInicioFacturacion === $mesAnioSiguiente) && $mesAnioInicioFacturacion <= $mesAnioSiguiente;
+            } else {
 
-                    $serviciosPorEmpresa = 0;
+                $realizaFacturaSiguiente = ($mesesTranscurridos%$periodicidad['meses'] ===0) && $mesAnioInicioFacturacion <= $mesAnioSiguiente;
+                if ($result['estatus_servicio'] === 'Baja temporal') {
 
-                    $formula = count($colsSumServiciosPorFacturar) ? "=SUM(".implode("+", $colsSumServiciosPorFacturar).")" : 0;
-                    $colTotal = PHPExcel_Cell::stringFromColumnIndex($indexColTotal).$row;
-                    $sheet->setCellValueByColumnAndRow($indexColTotal, $row, $formula)
-                        ->getStyle($colTotal)
-                        ->applyFromArray($styleTotalCurrency);
-
-                    $colsGranTotalMensual[] = $colTotal;
-
-                    $row++;
-                    $colsSumServiciosPorFacturar = [];
+                    $mesAnioFechaBajaTemporal = strtotime(date("Y-m",strtotime($result['fecha_baja_temporal'])));
+                    $realizaFacturaSiguiente = ($mesAnioSiguiente > $mesAnioFechaBajaTemporal && $mesAnioInicioFacturacion <= $mesAnioSiguiente);
                 }
-                continue;
             }
 
 
             $serviciosPorEmpresa++;
-
-            if ($result['estatus_servicio'] === 'Baja temporal') {
-                $mesAnioFechaBajaTemporal = strtotime(date("Y-m",strtotime($result['fecha_baja_temporal'])));
-
-
-                if($mesAnioSiguiente > $mesAnioFechaBajaTemporal)
-                    $omitirSuma = true;
-
-            }
-
-
-
-            $inicioFacturacion = $result['inicio_facturacion'];
-
             foreach ($fields as $field) {
                 $valor = $result[$field['name']] ?? '';
 
@@ -755,7 +735,7 @@ switch($_POST["type"])
             }
 
             $colTotalServicio = PHPExcel_Cell::stringFromColumnIndex($indexColTotal).$row;
-            if (!$omitirSuma)
+            if ($realizaFacturaSiguiente)
                 $colsSumServiciosPorFacturar[] = $colTotalServicio;
 
             $row++;
