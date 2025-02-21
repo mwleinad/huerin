@@ -589,7 +589,7 @@ switch($_POST["type"])
             SELECT
                 servicio.servicioId,
                 IF(servicio.`status` = 'bajaParcial', 'Baja temporal','Activo') estatus_servicio,
-                (servicio.costo * 1.16) costo,
+                servicio.costo,
                 servicio.inicioOperaciones inicio_operacion,
                 servicio.inicioFactura inicio_facturacion,
                 servicio.contractId,
