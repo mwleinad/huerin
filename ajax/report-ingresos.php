@@ -699,9 +699,9 @@ switch($_POST["type"])
             $mesAnioInicioFacturacion = strtotime(date("Y-m", strtotime($result['inicio_facturacion'])));
 
             $periodicidad = current(array_filter($periodicidades, fn($per) => ($per['id'] === $result['periodicidad'])));
-            $mesesTranscurridos = floor(($mesAnioSiguiente-$mesAnioInicioOperacion)/(30 * 24 * 60 * 60));
+            $mesesTranscurridos = floor(($mesAnioSiguiente-$mesAnioInicioFacturacion)/(30 * 24 * 60 * 60));
 
-            if ( ($periodicidad['id'] === 'Eventual' && $mesAnioInicioOperacion !== $mesAnioSiguiente) || $mesesTranscurridos%$periodicidad['meses'] !==0) {
+            if ( ($periodicidad['id'] === 'Eventual' && $mesAnioInicioFacturacion !== $mesAnioSiguiente) || $mesesTranscurridos%$periodicidad['meses'] !==0) {
 
                 if ($currentEmpresa !== $results[$key + 1]['empresa'] && $serviciosPorEmpresa > 0) {
 
