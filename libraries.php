@@ -285,6 +285,9 @@ $bitacora = new Bitacora;
 include_once(DOC_ROOT."/classes/CobranzaDetallado.class.php");
 $cobranzaDetallado = new CobranzaDetallado;
 
+include_once(DOC_ROOT."/classes/organizacion.class.php");
+$organizacion = new Organizacion;
+
 
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
