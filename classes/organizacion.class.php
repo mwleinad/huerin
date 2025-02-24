@@ -89,17 +89,6 @@ class Organizacion extends Personal
         $resultados = $this->generateData();
         $departamentos = $catalogue->EnumerateCatalogue('departamentos');
 
-        $areasSinCambioDePuesto = [
-            'Administración',
-            'Administracion',
-            'Atención al Cliente',
-            'Atencion al Cliente',
-            'Cuentas por cobrar',
-            'Finanzas',
-            'Fiscal',
-            'Sistemas'
-        ];
-
         $areasAdministrativas = [
             'Administración',
             'Administracion',
@@ -113,7 +102,6 @@ class Organizacion extends Personal
         ];
         $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array(trim($depa['departamento']), $areasAdministrativas));
         $areasOperativas =  array_column($areasOperativas, 'departamento');
-        $areasOperativas =  array_map(fn($item) => trim($item),$areasOperativas);
 
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
@@ -125,6 +113,7 @@ class Organizacion extends Personal
         $puestos = [
             'Director' => 'Director',
             'Gerente' => 'Gerente',
+            'Subgerente' => 'Subgerente',
             'Supervisor' => 'Supervisor',
             'Contador' => 'Encargado',
             'Contador Sr' => 'Encargado',
