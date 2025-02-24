@@ -34,25 +34,9 @@ class Organizacion extends Personal
         return $return;
     }
 
-    public function acumularTotales($padre, $mes)
-    {
-
-        $tree = $this->convertirToArbol($this->resultados, $padre);
-        $lineal = $this->convertirToLineal($tree);
-        $devengados = array_column($lineal, $mes);
-        $trabajados = array_column($lineal, $mes . "_trabajado");
-        $sueldos = array_column($lineal, 'sueldo');
-
-        $acumulados['devengado'] = array_sum($devengados);
-        $acumulados['trabajado'] = array_sum($trabajados);
-        $acumulados['sueldo'] = array_sum($sueldos) * (1 + (PORCENTAJE_AUMENTO_SALARIO / 100));
-        return $acumulados;
-    }
-
     function getInformacionEnCascada()
     {
-
-        $sql = "call sp_get_empleados()";
+        $sql = "call sp_get_organigrama_completo()";
         $this->Util()->DB()->setQuery($sql);
         $resultados = $this->Util()->DB()->GetResult();
         $this->resultados = $resultados;
@@ -71,6 +55,7 @@ class Organizacion extends Personal
 
         return $new;
     }
+
 
     public function getNameReport()
     {
@@ -101,7 +86,6 @@ class Organizacion extends Personal
             'Sistemas'
         ];
         $areasOperativas =  array_filter($departamentos, fn($depa) =>  !in_array(trim($depa['departamento']), $areasAdministrativas));
-        $areasOperativas =  array_column($areasOperativas, 'departamento');
 
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
