@@ -361,12 +361,14 @@ class Producto extends Sucursal
 	function BorrarImpuesto($key)
 	{
 		unset($_SESSION["impuestos"][$key]);
+		$_SESSION['impuestos'] = array_values($_SESSION['impuestos']);
 		return true;
 	}
 
 	function BorrarConcepto($key)
 	{
 		unset($_SESSION["conceptos"][$key]);
+		$_SESSION['conceptos'] = array_values($_SESSION['conceptos']);
 		return true;
 	}
 
