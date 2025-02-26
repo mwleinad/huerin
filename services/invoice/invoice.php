@@ -364,6 +364,7 @@ class InvoiceService extends Cfdi{
             $cad["importe"] = $item["costo"];
             $cad["excentoIva"] = "no";
             $cad["descripcion"] = $descripcion;
+            $cad["nombreServicioOculto"] = trim($item["nombreServicio"]);
             $cad["tasaIva"] = $this->emisor["iva"];
             $cad["claveProdServ"] = $claveProdServ;
             $cad["claveUnidad"] = "E48";
