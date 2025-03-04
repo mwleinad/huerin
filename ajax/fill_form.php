@@ -41,7 +41,7 @@ switch($_POST["type"])
 		echo "{#}";
 		echo "{#}";
 		echo "{#}";
-		echo $result["nameFacturacion"];
+		echo $result["name"];
 		echo "{#}";
 		echo $result["address"];
 		echo "{#}";
@@ -66,9 +66,9 @@ switch($_POST["type"])
 		// echo $result["emailContactoAdministrativo"];
 		echo $result["email"];
 		echo "{#}";
-		echo $result["rfcFacturacion"];
+		echo $result["rfc"];
 		echo "{#}";
-		echo $result["idFacturacion"];
+		echo $result["contractId"];
 		echo "{#}";
 
 	break;
