@@ -61,7 +61,7 @@ class CronServicio extends Contract
                 //si es eventual asegurar siempre que el unico workflow la fecha sea = que la fecha de IO, se obtiene el workflow que este trabajado como prioridad.
                 $sql = "SELECT instanciaServicioId FROM instanciaServicio 
                         WHERE servicioId='".$serv['servicioId']."' 
-                        AND EXISTS(SELECT taskFileId FROM instanciaServicio WHERE servicioId=instanciaServicio.instanciaServicioId)
+                        AND EXISTS(SELECT taskFileId FROM taskFile WHERE servicioId=instanciaServicio.instanciaServicioId)
                         ORDER BY instanciaServicio.instanciaServicioId DESC LIMIT 1";
 
                 $this->Util()->DB()->setQuery($sql);
