@@ -31,6 +31,7 @@ class CronServicio extends Contract
         $fechas_workflow = [];
         $fechaCorriente=  $this->Util()->getFirstDate(date('Y-m-d'));
 
+        // TODO no estamos tomando en cuenta el status en baja
         $sqlLast= "select max(date) from instanciaServicio where servicioId='".$serv['servicioId']."' ";
         $this->Util()->DB()->setQuery($sqlLast);
         $ultimoWorkflowCreado = $this->Util()->DB()->GetSingle();
@@ -57,10 +58,29 @@ class CronServicio extends Contract
             $inicioOperaciones = $this->Util()->getFirstDate($serv['inicioOperaciones']);
             //si ya tiene una instancia y es eventual ya no debe existir meses a crear, se regresa vacio
             if($serv["periodicidad"]=="Eventual"){
-                //si es eventual asegurar siempre que el unico workflow la fecha sea = que la fecha de IO
-                $this->Util()->DB()->setQuery("select instanciaServicioId from instanciaServicio where servicioId='".$serv['servicioId']."' ");
+                //si es eventual asegurar siempre que el unico workflow la fecha sea = que la fecha de IO, se obtiene el workflow que este trabajado como prioridad.
+                $sql = "SELECT instanciaServicioId FROM instanciaServicio 
+                        WHERE servicioId='".$serv['servicioId']."' 
+                        AND EXISTS(SELECT taskFileId FROM instanciaServicio WHERE servicioId=instanciaServicio.instanciaServicioId)
+                        ORDER BY instanciaServicio.instanciaServicioId DESC LIMIT 1";
+
+                $this->Util()->DB()->setQuery($sql);
                 $eventualId = $this->Util()->DB()->GetSingle();
+
+                if (!$eventualId) {
+                    // si no hay ninguno trabajado se toma el ultmo creado
+                    $sql2="SELECT instanciaServicioId FROM instanciaServicio 
+                           WHERE servicioId='".$serv['servicioId']."'
+                           ORDER BY instanciaServicio.instanciaServicioId DESC LIMIT 1";
+                    $this->Util()->DB()->setQuery($sql2);
+                    $eventualId = $this->Util()->DB()->GetSingle();
+                }
+
                 $this->Util()->DB()->setQuery("update instanciaServicio set date='".$inicioOperaciones."' where instanciaServicioId='".$eventualId."' ");
+                $this->Util()->DB()->UpdateData();
+
+                //Aseguramos que todos los demas workflows se den de baja. si mueven las fechas de inicio de operaciones, siempre se empieza de cero.
+                $this->Util()->DB()->setQuery("update instanciaServicio set status='baja' where servicioId='".$serv['servicioId']."' AND instanciaServicioId!='".$eventualId."' ");
                 $this->Util()->DB()->UpdateData();
                 return $fechas_workflow;
             }
