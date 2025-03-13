@@ -270,7 +270,7 @@ class Producto extends Sucursal
 
 	function AgregarConcepto($key = -1)
 	{
-		global $months;
+		global $monthsComplete;
 		if($this->Util()->PrintErrors())
 			return false;
 		if (!is_array($_SESSION['conceptos']))
@@ -298,7 +298,7 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["nombreServicioOculto"] = $_POST["nombreServicioOculto"];
 		if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
 			$fecha = explode("-", $this->fechaCorrespondiente);
-			$fechaText = strtoupper($months[$fecha[1]]." DEL ".$fecha["0"]);
+			$fechaText = strtoupper($monthsComplete[$fecha[1]]." DEL ".$fecha["0"]);
 			$descripcion = $_POST["nombreServicioOculto"]." CORRESPONDIENTE AL MES ".$fechaText;
 		} else {
 			$descripcion = urldecode($this->descripcion);
