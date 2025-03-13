@@ -181,12 +181,18 @@ class Servicio extends Contract
                 WHEN servicio.status = 'baja' THEN 'Baja'
                 WHEN servicio.status = 'bajaParcial' THEN 'Baja temporal'
                 WHEN servicio.status = 'readonly' THEN 'Activo / Solo lectura'
-                END AS estado,servicio.status,servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual 
+                END AS estado,servicio.status,servicio.costo AS costo, tipoServicio.costoVisual, tipoServicio.mostrarCostoVisual,
+                case 
+                WHEN servicio.status = 'activo' THEN 1
+                WHEN servicio.status = 'baja' THEN 3
+                WHEN servicio.status = 'bajaParcial' THEN 2
+                WHEN servicio.status = 'readonly' THEN 4
+                END AS prioridad
 				FROM servicio 
 				LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
 				LEFT JOIN contract ON contract.contractId = servicio.contractId
 				WHERE servicio.contractId = '".$this->getContractId()."'					
-				ORDER BY servicio.status ASC, servicio.inicioOperaciones ASC";
+				ORDER BY servicio.status ASC, servicio.inicioOperaciones DESC";
 		$this->Util()->DB()->setQuery($sql);
 		$result = $this->Util()->DB()->GetResult();
 
