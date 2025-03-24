@@ -987,7 +987,7 @@ class Servicio extends Contract
         }
         if(!empty($serviciosAfectados)) {
             $filtros['sendBraun'] = false;
-            $filtros['sendHuerin'] = true;
+            $filtros['sendHuerin'] = false;
             $filtros['incluirJefes'] = true;
             $filtros['level'] = 5;
             $filtros['departamentos'] = $departamentos;

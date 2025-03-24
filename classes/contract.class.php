@@ -2016,12 +2016,11 @@ class Contract extends Main
     {
         global $personal;
         $jefes = [];
-        $defaultId = [];
+        $defaultId = [0];
         $encargados = [];
         $data = [];
         $departamentos = $filtros['departamentos'] ?? [];
         array_push($defaultId, IDHUERIN);
-        array_push($defaultId, 319);
 
         $filtroDep = "";
         $filtroDepGen = "";
@@ -2055,6 +2054,11 @@ class Contract extends Main
         if (empty($encargados)) {
             if ($filtros['sendBraun'])
                 array_push($defaultId, IDBRAUN);
+            if (!$filtros['sendHuerin']) {
+                $indexFind = array_search(IDHUERIN, $defaultId);
+                if ($indexFind)
+                    unset($defaultId[$indexFind]);
+            }
 
             $sqlo = "SELECT email,name FROM personal  WHERE (LOWER(puesto) LIKE'%gerente%') OR personalId IN (" . implode(',', $defaultId) . ") ".$filtroDepGen;
             $this->Util()->DB()->setQuery($sqlo);
@@ -2068,8 +2072,8 @@ class Contract extends Main
         $correosJefes = array();
         if (!empty($jefes)) {
             //si jefes no esta vacio hay que agregar a ROGELIO y el nuevo socio Ricardo
-            array_push($jefes, 32);
-            array_push($jefes, 319);
+            // array_push($jefes, 32);
+            //array_push($jefes, 319);
             $jefes = array_unique($jefes);
             //comprobar si se excluye a huerin
             if (!$filtros['sendHuerin']) {
