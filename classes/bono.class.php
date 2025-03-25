@@ -1258,6 +1258,7 @@ class Bono extends Personal
         // Condicionar solo si gerente tiene directamente  registros.
         if ($tienePropios)
             $gran_total_only_gerente = $this->drawsTotalesFinal($book, $sheet, $consolidado_final, $months, $row, $jerarquias,$data);
+
         $this->drawGranTotalGerente($book, $sheet, $gran_total_consolidado_gerente, $gran_total_only_gerente, $months, $row, $data);
     }
 
@@ -1360,8 +1361,8 @@ class Bono extends Personal
         $total_consolidado_grupo['row_bono'] = [];
         $total_consolidado_grupo['row_bono_entregado'] = [];
         $total_consolidado_grupo['row_bono_diferencia'] = [];
-
-        foreach($data['row_devengado'] as $key_mes => $total_mes) {
+        $rows_devengados = count($data['row_devengado']) <= 0 ? $data_gerente['row_devengado'] : $data['row_devengado'];
+        foreach($rows_devengados as $key_mes => $total_mes) {
 
             $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
             $data['row_devengado'][$key_mes] = !is_array($data['row_devengado'][$key_mes]) ? [] : $data['row_devengado'][$key_mes];
