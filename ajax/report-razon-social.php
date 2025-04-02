@@ -681,13 +681,31 @@ switch ($_POST['type']) {
         IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeCp, NULL ) cp_alterna,
         IF(contract.useAlternativeRzForInvoice = 1 && contract.alternativeRzId = 0, contract.alternativeRegimen, NULL ) regimen_alterna,
         IF(contract.useAlternativeRzForInvoice = 1, contract.createSeparateInvoice, 0 ) generar_factura_independiente,
-        (SELECT nombre FROM tipo_clasificacion WHERE id = contract.idTipoClasificacion LIMIT 1) AS clasificacion
+        (SELECT nombre FROM tipo_clasificacion WHERE id = contract.idTipoClasificacion LIMIT 1) AS clasificacion,
+        (SELECT count(servicio.servicioId) 
+            FROM servicio 
+            INNER JOIN tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId 
+            WHERE servicio.contractId =contract.contractId
+            AND tipoServicio.periodicidad = 'Eventual'
+            AND servicio.inicioOperaciones >= '2025-04-01'
+            AND tipoServicio.status='1'
+            AND servicio.status = 'activo'
+            ) servicios_eventuales_vigentes,
+        (SELECT count(servicio.servicioId) 
+                    FROM servicio 
+                    INNER JOIN tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId 
+                    WHERE servicio.contractId =contract.contractId
+                    AND tipoServicio.periodicidad != 'Eventual'
+                    AND tipoServicio.status='1'
+					AND servicio.status = 'activo'
+                    ) servicios_vigentes
         FROM
 	        contract
 	    INNER JOIN customer ON contract.customerId = customer.customerId 
         WHERE
 	    contract.activo = 'Si' 
 	    AND customer.active = '1' 
+        HAVING (servicios_eventuales_vigentes + servicios_vigentes) > 0
         ORDER BY
 	    customer.nameContact ASC,
 	    contract.name ASC";
