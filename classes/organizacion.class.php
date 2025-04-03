@@ -301,7 +301,16 @@ class Organizacion extends Personal
             $stylePorcentajeGranTotalLight['fill']['color']['rgb'] = 'FFFFFF';
 
             //AREA
-            $sheet->setCellValueByColumnAndRow($col, $row, trim($resultado['area']))
+            $nombreArea = trim($resultado['area']);
+            switch ($nombreArea) {
+                case 'Atencion al Cliente':
+                    $nombreArea = 'Atención al Cliente';
+                break;
+                case 'Administracion':
+                    $nombreArea = 'Administración';
+                    break;
+            }
+            $sheet->setCellValueByColumnAndRow($col, $row, $nombreArea)
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
 
@@ -316,7 +325,7 @@ class Organizacion extends Personal
                 $styleCurrency['fill']['color']['rgb'] = 'FF0000';
             }
 
-            $sheet->setCellValueByColumnAndRow($col, $row, trim($resultado['departamento']))
+            $sheet->setCellValueByColumnAndRow($col, $row, $nombreArea)
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->applyFromArray($styleSimpleText2);
             $col++;
 
