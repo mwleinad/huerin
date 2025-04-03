@@ -226,6 +226,79 @@ switch($_POST["type"])
 
     break;
 
+    case 'exportarExcelParaV2':
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('Catalogo de servicios');
+
+        $row=1;
+
+        $sheet->setCellValueByColumnAndRow(0, $row, 'Departamento')
+            ->getStyleByColumnAndRow()->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(1, $row, 'Nomenclatura')
+            ->getStyleByColumnAndRow(1, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(2, $row, 'Nombre')
+            ->getStyleByColumnAndRow(2, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(3, $row, 'Clave SAT')
+            ->getStyleByColumnAndRow(3, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(4, $row, 'Periodicidad')
+            ->getStyleByColumnAndRow(4, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(5, $row, 'Periodicidad de facturacion')
+            ->getStyleByColumnAndRow(5, $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(6, $row, 'Costo')
+            ->getStyleByColumnAndRow(6, $row)->getFont()->setBold(true);
+
+        $row++;
+
+        $sql = "select 
+                    (select departamento from departamentos where departamentos.departamentoId = tipoServicio.departamentoId limit 1) as area, 
+                    SUBSTRING_INDEX(nombreServicio,' ',1) nomenclatura, 
+                    TRIM(SUBSTRING(nombreServicio, LENGTH(SUBSTRING_INDEX(nombreServicio,' ',1))+1, LENGTH(nombreServicio))) as nombre,
+                    claveSat clave_sat,
+                    periodicidad,
+                    periodicidad periodicidad_de_facturacion,
+                    costoVisual costo
+                    from tipoServicio
+                where status = '1' 
+                AND is_primary=1    
+                AND nombreServicio NOT LIKE '%Z*%' HAVING area != '' ORDER BY area
+        ";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        foreach($results as $result) {
+            $sheet->setCellValueByColumnAndRow(0, $row, $result['area']);
+            $sheet->setCellValueByColumnAndRow(1, $row, $result['nomenclatura']);
+            $sheet->setCellValueByColumnAndRow(2, $row, $result['nombre']);
+            $sheet->setCellValueByColumnAndRow(3, $row, $result['clave_sat']);
+            $sheet->setCellValueByColumnAndRow(4, $row, $result['periodicidad']);
+            $sheet->setCellValueByColumnAndRow(5, $row, $result['periodicidad']);
+            $sheet->setCellValueByColumnAndRow(6, $row, $result['costo']);
+
+            $row++;
+        }
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "catalogo_servicios_activo.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+
+        break;
+
     case 'matrizServicio':
         global $global_config_style_cell;
         $book = new PHPExcel();
