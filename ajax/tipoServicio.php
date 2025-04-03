@@ -267,7 +267,8 @@ switch($_POST["type"])
                     costoVisual costo
                     from tipoServicio
                 where status = '1' 
-                AND is_primary=1    
+                AND is_primary=1   
+                AND nombreServicio LIKE '%2025%' 
                 AND nombreServicio NOT LIKE '%Z*%' HAVING area != '' ORDER BY area
         ";
 
@@ -727,6 +728,7 @@ switch($_POST["type"])
                     INNER JOIN departamentos ON tipoServicio.departamentoId = departamentos.departamentoId 
                 WHERE
                     tipoServicio.`status` = '1' 
+                AND tipoServicio.is_primary=1  
                 AND step.finalEffectiveDate is null
                 AND task.finalEffectiveDate is null
                 AND tipoServicio.nombreServicio NOT LIKE '%Z*%'
