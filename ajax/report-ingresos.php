@@ -897,7 +897,9 @@ switch($_POST["type"])
             WHERE
                 tipoServicio.`status` = '1' 
                 AND servicio.`status` IN ( 'activo' ) 
-                AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  AND tipoServicio.nombreServicio LIKE '%2025%'
+                AND tipoServicio.nombreServicio NOT LIKE '%Z*%'  
+                AND tipoServicio.nombreServicio LIKE '%2025%'
+                AND tipoServicio.is_primary = 1
                 AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
             ) servicios
             INNER JOIN (
