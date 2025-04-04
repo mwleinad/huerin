@@ -890,7 +890,8 @@ switch($_POST["type"])
                         tipoServicio.nombreServicio,
                         LENGTH(
                         SUBSTRING_INDEX( tipoServicio.nombreServicio, ' ', 1 ))+ 1,
-                    LENGTH( tipoServicio.nombreServicio ))) AS nombre 
+                    LENGTH( tipoServicio.nombreServicio ))) AS nombre,
+                IF(tipoServicio.periodicidad='Eventual',IF(servicio.inicioOperaciones >= '2025-04-01', 1,0), 1) servicio_valido
             FROM
                 servicio
                 INNER JOIN tipoServicio ON servicio.tipoServicioId = tipoServicio.tipoServicioId 
@@ -901,6 +902,7 @@ switch($_POST["type"])
                 AND tipoServicio.nombreServicio LIKE '%2025%'
                 AND tipoServicio.is_primary = 1
                 AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+                having servicio_valido = 1
             ) servicios
             INNER JOIN (
             SELECT
