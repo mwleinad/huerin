@@ -804,4 +804,191 @@ switch ($_POST['type']) {
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
         break;
+    case 'generar_reporte_encargado_comunicacion_cliente':
+
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet = $book->createSheet(0);
+        $sheet->setTitle('clientes y empresas');
+
+        $row=1;
+
+        $col = 0;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Cliente');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Subgerente contabilidad');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Nominas');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Auditoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente Legal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Fiscal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Subgerente Gestoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de cuentas por cobrar');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de atención al cliente');
+        $col++;
+        $row++;
+
+
+        $sql = "SELECT REPLACE( 
+            REPLACE (
+                REPLACE (
+                    REPLACE (
+                        REPLACE (
+                            REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( customer.nameContact, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                            'PATI?O',
+                            'PATIÑO' 
+                        ),
+                        'VILLASE?OR',
+                        'VILLASEÑOR' 
+                    ),
+                    'MAR?A',
+                    'MARÍA' 
+                ),
+                'CA?IZO',
+                'CAÑIZO' 
+            ),
+            'MU?OZ',
+            'MUÑOZ' 
+        ) cliente,
+        REPLACE(
+            TRIM(REGEXP_REPLACE ( contract.name, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,
+        (select CONCAT(
+               '[',
+                GROUP_CONCAT(
+                    CONCAT(
+                        '{\"departamentoId',
+                        '\":\"',
+                        contractPermiso.departamentoId,
+                        '\",\"',
+                        'personalId',
+                        '\":\"',
+                        contractPermiso.personalId,
+                        '\",\"',
+                        'departamento',
+                        '\":\"',
+                        departamentos.departamento,
+                        '\",\"',
+                        'name',
+                        '\":\"',
+                        personal.name,
+                        '\"}'
+                    )
+                ),
+              ']'      
+           ) FROM contractPermiso
+               INNER JOIN personal on personal.personalId=contractPermiso.personalId
+               INNER JOIN departamentos ON departamentos.departamentoId=contractPermiso.departamentoId
+               WHERE contractPermiso.contractId = contract.contractId
+               GROUP BY contractPermiso.contractId
+        ) as encargados,
+        (SELECT count(servicio.servicioId) 
+            FROM servicio 
+            INNER JOIN tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId 
+            WHERE servicio.contractId =contract.contractId
+            AND tipoServicio.periodicidad = 'Eventual'
+            AND servicio.inicioOperaciones >= '2025-04-01'
+            AND tipoServicio.status='1'
+            AND servicio.status = 'activo'
+        ) servicios_eventuales_vigentes,
+        (SELECT count(servicio.servicioId) 
+                    FROM servicio 
+                    INNER JOIN tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId 
+                    WHERE servicio.contractId =contract.contractId
+                    AND tipoServicio.periodicidad != 'Eventual'
+                    AND tipoServicio.status='1'
+					AND servicio.status = 'activo'
+        ) servicios_vigentes
+        FROM
+	        contract
+	    INNER JOIN customer ON contract.customerId = customer.customerId 
+      WHERE
+	    contract.activo = 'Si' 
+	    AND customer.active = '1' 
+        HAVING (servicios_eventuales_vigentes + servicios_vigentes) > 0
+        ORDER BY
+	    customer.nameContact ASC,
+	    contract.name ASC";
+
+        $db->setQuery($sql);
+        $results = $db->GetResult();
+
+        $listaPersonal = $personal->getListaPersonalPuestoAsc();
+
+        foreach($results as $result) {
+
+            $encargados = json_decode($result['encargados'] ??  '[]',1);
+
+            $encargadoContabilidad = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Contabilidad e Impuestos'));
+            $superiores = $personal->findSuperiores($encargadoContabilidad['personalId'], $listaPersonal);
+            $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
+
+            $encargadoNominas = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Nominas y Seguridad Social'));
+            $superiores = $personal->findSuperiores($encargadoNominas['personalId'], $listaPersonal);
+            $supervisorNominas = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+
+            $encargadoAuditoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Auditoria'));
+            $superiores = $personal->findSuperiores($encargadoAuditoria['personalId'], $listaPersonal);
+            $supervisorAuditoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+
+            $encargadoLegal = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Legal'));
+            $superiores = $personal->findSuperiores($encargadoLegal['personalId'], $listaPersonal);
+            $gerenteLegal = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+
+            $encargadoFiscal = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Fiscal'));
+            $superiores = $personal->findSuperiores($encargadoFiscal['personalId'], $listaPersonal);
+            $supervisorFiscal = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+
+            $encargadoGestoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Gestoria'));
+            $superiores = $personal->findSuperiores($encargadoGestoria['personalId'], $listaPersonal);
+            $subgerenteGestoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
+
+            $encargadoCuentasPorCobrar = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Cuentas por cobrar'));
+            $encargadoAtc = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Atencion al Cliente'));
+
+
+
+            $col = 0;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $subgerenteContabilidad['nombre'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $supervisorNominas['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $supervisorAuditoria['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $gerenteLegal['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$supervisorFiscal['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$subgerenteGestoria['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoCuentasPorCobrar['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoAtc['nombre']);
+
+            $row++;
+        }
+
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "responsables_de_comunicacion_con_clientes.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
 }

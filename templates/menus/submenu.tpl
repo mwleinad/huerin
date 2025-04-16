@@ -174,6 +174,10 @@
                     <li><a href="{$WEB_ROOT}/report-account-manager" {if $page == "report-account-manager"}class="current"{/if} target="_blank">
                             <span>Cuentas por gerente</span></a></li>
                 {/if}
+                {if in_array(310,$permissions)|| $User.isRoot}
+                    <li><a href="{$WEB_ROOT}/report-departamento-comunicacion-cliente" {if $page == "report-departamento-comunicacion-cliente"}class="current"{/if} target="_blank">
+                            <span>Responsables de comunicación</span></a></li>
+                {/if}
                 {if in_array(208,$permissions)|| $User.isRoot}
                     <li><a href="{$WEB_ROOT}/report-cobranza-mensual" {if $page == "report-cobranza-mensual"}class="current"{/if} target="_blank">
                     <span>Cobranza mensual</span></a></li>

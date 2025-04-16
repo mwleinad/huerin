@@ -107,6 +107,7 @@ include_once(DOC_ROOT.'/libraries.php');
 		'report-ab-all',
 		'report-company-activity',
 		'report-inventory',
+		'report-departamento-comunicacion-cliente',
 
 		//cafeteria
         'coffe',
