@@ -1088,6 +1088,14 @@ class Personal extends Main
         return $deep;
     }
 
+    function findSuperiores($id, $rows) {
+
+        $deep = [];
+        $this->superioresRecursivo($rows, $id, $deep);
+
+        return $deep;
+    }
+
     function superioresRecursivo(array $nodos, $id, &$nested)
     {
         $current = current(array_filter($nodos, fn($item) => $item['id'] == $id));
