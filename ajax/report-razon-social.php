@@ -950,8 +950,8 @@ switch ($_POST['type']) {
             $superiores = $personal->findSuperiores($encargadoGestoria['personalId'], $listaPersonal);
             $subgerenteGestoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
 
-            $encargadoCuentasPorCobrar = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Cuentas por cobrar'));
-            $encargadoAtc = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Atencion al Cliente'));
+            $encargadoCuentasPorCobrar = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Cuentas por cobrar'));
+            $encargadoAtc = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Atencion al Cliente'));
 
 
 
@@ -972,9 +972,9 @@ switch ($_POST['type']) {
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row,$subgerenteGestoria['nombre']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoCuentasPorCobrar['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoCuentasPorCobrar['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoAtc['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoAtc['name']);
 
             $row++;
         }
