@@ -818,9 +818,9 @@ switch ($_POST['type']) {
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Subgerente contabilidad');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Subgerente contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Nominas');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Supervisor Nominas');
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Auditoria');
         $col++;
@@ -828,7 +828,7 @@ switch ($_POST['type']) {
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Fiscal');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Subgerente Gestoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente Gestoria');
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de cuentas por cobrar');
         $col++;
@@ -930,9 +930,15 @@ switch ($_POST['type']) {
             $superiores = $personal->findSuperiores($encargadoContabilidad['personalId'], $listaPersonal);
             $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
 
+            if (!$subgerenteContabilidad)
+                $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+
             $encargadoNominas = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Nominas y Seguridad Social'));
             $superiores = $personal->findSuperiores($encargadoNominas['personalId'], $listaPersonal);
             $supervisorNominas = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+
+            if (!$supervisorNominas)
+                $supervisorNominas = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
 
             $encargadoAuditoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Auditoria'));
             $superiores = $personal->findSuperiores($encargadoAuditoria['personalId'], $listaPersonal);
@@ -948,7 +954,7 @@ switch ($_POST['type']) {
 
             $encargadoGestoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Gestoria'));
             $superiores = $personal->findSuperiores($encargadoGestoria['personalId'], $listaPersonal);
-            $subgerenteGestoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
+            $subgerenteGestoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
 
             $encargadoCuentasPorCobrar = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Cuentas por cobrar'));
             $encargadoAtc = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Atencion al Cliente'));
