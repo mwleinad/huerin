@@ -926,6 +926,8 @@ switch ($_POST['type']) {
 
             $encargados = json_decode($result['encargados'] ??  '[]',1);
 
+            $encargadoAsociado = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Asociado'));
+
             $encargadoContabilidad = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Contabilidad e Impuestos'));
             $superiores = $personal->findSuperiores($encargadoContabilidad['personalId'], $listaPersonal);
             $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
@@ -965,6 +967,8 @@ switch ($_POST['type']) {
             $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $encargadoAsociado['name'] ?? '');
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $subgerenteContabilidad['nombre'] ?? '');
             $col++;
