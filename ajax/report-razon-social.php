@@ -818,6 +818,8 @@ switch ($_POST['type']) {
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
         $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Asociado');
+        $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Subgerente contabilidad');
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Supervisor Nominas');
