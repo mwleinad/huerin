@@ -227,5 +227,18 @@ function dd($data) {
     print_r($data);
     echo "</pre>";
 }
+function logInfo($archivo, $string)
+{
+
+	$file = DOC_ROOT . "/sendFiles/$archivo.log";
+	$open = fopen($file, "a+");
+	$entry = "DATE: " . date('d-m-Y H:i:s') . chr(10) . chr(13);
+	$entry .= $string . chr(10) . chr(13);
+
+	if ($open)  {
+		fwrite($open, $entry);
+		fclose($open);
+	}
+}
 require 'vendor/autoload.php';
 ?>
