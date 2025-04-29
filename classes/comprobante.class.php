@@ -832,7 +832,8 @@ class Comprobante extends Producto
                 "password" => FINKOK_PASS,
                 "taxpayer_id" => $row["rfc_emisor"],
                 "cer" => $contentCer,
-                "key" => $contentKey
+                "key" => $contentKey,
+                "store_pending" => false,
             ];
         }
 
@@ -971,7 +972,8 @@ class Comprobante extends Producto
                 "password" => FINKOK_PASS,
                 "taxpayer_id" => $rfcEmisor,
                 "cer" => $contentCer,
-                "key" => $contentKey
+                "key" => $contentKey,
+                "store_pending" => false,
             ];
         }
 
