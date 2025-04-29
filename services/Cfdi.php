@@ -479,11 +479,13 @@ class Cfdi extends Comprobante
             }
         }
 
-        if(isset($data['modo_factura'])) {
+        //proceso de cancelacion mandarlo a cron, por que necesita un tiempo transcurrido para realizarlo.
+        /*if(isset($data['modo_factura'])) {
+
             if ($data['modo_factura'] == 2 && $idParent) {
                 $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
             }
-        }
+        }*/
         // condicionar el envio de correo, por default no se envia, se usa un cronjob para esto.
         if ($sendCorreo) {
             $razon = new Razon;
