@@ -683,7 +683,11 @@ switch($_POST["type"])
             ],
             [
                 'name' => 'control',
-                'title' => 'Descripcion de tarea',
+                'title' => 'Descripcion bueno',
+            ],
+            [
+                'name' => 'control2',
+                'title' => 'Descripcion malo',
             ],
             [
                 'name' => 'accion',
@@ -722,6 +726,7 @@ switch($_POST["type"])
                     IF((ISNULL( STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', step.finalEffectiveDate ) finalEffectiveDatePaso,
                     task.nombreTask,
                     task.control,
+                    task.control2,
                     task.taskPosition ordenTarea,
                    	(SELECT GROUP_CONCAT(name) FROM mime_types where FIND_IN_SET(extension,task.extensiones) > 0) as documentos_aceptados,
                     IF((ISNULL( STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', task.effectiveDate) effectiveDateTarea,
@@ -783,6 +788,7 @@ switch($_POST["type"])
                     IF((ISNULL( STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( step.finalEffectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '', step.finalEffectiveDate ) finalEffectiveDatePaso,
                     task.nombreTask,
                     task.control,
+                    task.control2,
                     task.taskPosition ordenTarea,
                    	(SELECT GROUP_CONCAT(name) FROM mime_types where FIND_IN_SET(extension,task.extensiones) > 0) as documentos_aceptados,
                     IF((ISNULL( STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )) OR STR_TO_DATE( task.effectiveDate, '%Y-%m-%d' )= '0000-00-00' ), '1990-01-01', task.effectiveDate) effectiveDateTarea,
