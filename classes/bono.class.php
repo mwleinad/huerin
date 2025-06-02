@@ -977,7 +977,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col_real, $row_nombre, 'Nombre')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
-        $prefix  = $info_grupo['nameLevel'] ?? $prefix;
+        $prefix  = $info_grupo['nameLevel'] ? strtoupper($info_grupo['nameLevel']) : $prefix;
         $sheet->setCellValueByColumnAndRow($col_real + 1, $row_nombre, "GRUPO $prefix ". strtoupper($info_grupo['name']))
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
@@ -1213,7 +1213,7 @@ class Bono extends Personal
         global $global_config_style_cell;
         $sheet = $book->createSheet($hoja);
 
-        $prefix_title =  substr($data["name_level"], 0, 11);
+        $prefix_title =  substr($data["nameLevel"], 0, 11);
         $prefix_title =  $this->Util()->cleanString($prefix_title);
         $prefix_title = str_replace(" ", "", $prefix_title);
 
@@ -1326,6 +1326,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col_real, $row_nombre, 'Nombre')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
+        $preefix  = $info_grupo['nameLevel'] ? strtoupper($info_grupo['nameLevel']) : $preefix;
         $sheet->setCellValueByColumnAndRow($col_real + 1, $row_nombre, "GRAN TOTAL $preefix ". strtoupper($info_grupo['name']))
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
