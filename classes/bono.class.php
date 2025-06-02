@@ -55,7 +55,15 @@ class Bono extends Personal
         // crear vista no agrupada
         $this->setPersonalId($_POST['responsableCuenta']);
         $info = $this->InfoWhitRol();
-        $subordinados = $this->getSubordinadosNoDirectoByLevel([4,5]);
+        $niveles = [];
+        if ($info['nivel'] === 2) {
+            $niveles = [3,4];
+        } elseif($info['nivel'] == 3) {
+            $niveles = [4,5];
+        } elseif($info['nivel'] == 4){
+            $niveles = [5];
+        }
+        $subordinados = $this->getSubordinadosNoDirectoByLevel($niveles);
         $subordinados_filtrados = [];
         //Forzar que solo se obtenga  servicios del departamento del gerente.
         $filtro['departamento_id'] = $_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : $info['departamentoId'];
@@ -202,9 +210,11 @@ class Bono extends Personal
         $subgerentes = [];
         $subgerentesId = [];
 
+
         foreach ($supervisores as $ksup => $supervisor) {
             $ftrDepId = $_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : $supervisor['departamentoId'];
-            if($supervisor['nivel'] == 4) {
+
+            if($supervisor['nivel'] == 4 && $data['nivel'] == 3) {
 
                 if(!in_array($supervisor['personalId'],$subgerentesId)) {
                     $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional(4) : 0;
@@ -214,7 +224,7 @@ class Bono extends Personal
                 continue;
             }
 
-            $tieneSubgerente = $supervisor['jefe']['nivel'] == 4;
+            $tieneSubgerente = $supervisor['jefe']['nivel'] == 4 && $data['nivel'] == 3;
             $jefe = $supervisor['jefe'];
             if($tieneSubgerente && !in_array($jefe['personalId'],$subgerentesId) ) {
 
@@ -311,7 +321,7 @@ class Bono extends Personal
         $prefixChild = 'SUPERVISOR';
         if(count($subgerentes)) {
             $gran_consolidado_gerente = [];
-            $prefixChild =  'SUBGERENTE';
+            $prefixChild = 'SUBGERENTE';
             $this->drawSubgerentes($book, $hoja, $subgerentes, $months, $gran_consolidado_gerente);
         }
 
@@ -967,6 +977,7 @@ class Bono extends Personal
         $sheet->setCellValueByColumnAndRow($col_real, $row_nombre, 'Nombre')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
+        $prefix  = $info_grupo['nameLevel'] ?? $prefix;
         $sheet->setCellValueByColumnAndRow($col_real + 1, $row_nombre, "GRUPO $prefix ". strtoupper($info_grupo['name']))
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col_real + 1) . $row_nombre)->applyFromArray($global_config_style_cell['style_grantotal']);
 
@@ -1201,10 +1212,15 @@ class Bono extends Personal
     function drawPropiosGerente(&$book, $hoja, $data, $col_title_mix, $months, $gran_consolidado_gerente, $jerarquias, $prefixChild= 'SUPERVISOR') {
         global $global_config_style_cell;
         $sheet = $book->createSheet($hoja);
+
+        $prefix_title =  substr($data["name_level"], 0, 11);
+        $prefix_title =  $this->Util()->cleanString($prefix_title);
+        $prefix_title = str_replace(" ", "", $prefix_title);
+
         $name_title =  substr($data["name"], 0, 6);
         $name_title =  $this->Util()->cleanString($name_title);
         $name_title = str_replace(" ", "", $name_title);
-        $name_title = "GERENTE_0_".str_replace("-", "_", $name_title);
+        $name_title = $prefix_title."_0_".str_replace("-", "_", $name_title);
         $title_sheet = strtoupper($name_title);
 
         $tienePropios = count($data['propios'] ?? []) > 0;
