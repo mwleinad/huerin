@@ -18,17 +18,6 @@
                 </div>
             </div>
             <div class="grid_4">
-                <div class="grid_16 text-left"><label for="" class="label-form">Tipo de recurso</label></div>
-                <div class="grid_16">
-                    <select class="largeInput" name="tipo_recurso" id="tipo_recurso">
-                        <option value="">Seleccionar...</option>
-                        <option value="dispositivo" {if $post.tipo_recurso eq "dispositivo"}selected{/if}>Dispositivo</option>
-                        <option value="equipo_computo" {if $post.tipo_recurso eq "equipo_computo"}selected{/if}>Equipo de computo</option>
-                        <option value="inmobiliaria" {if $post.tipo_recurso eq "inmobiliaria"}selected{/if}>Inmobiliaria</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid_4">
                 <div class="grid_16 text-left "><label for="" class="label-form">Fecha  de alta</label></div>
                 <div class="grid_16" style="display: table;border-collapse: separate;position: relative">
                     <input type="text" id="fecha_alta_inicio" name="fecha_alta_inicio" class="largeInput" onclick="CalendarioSimple(this)" style="float: left;display: table-cell!important;"/>
