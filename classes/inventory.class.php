@@ -258,7 +258,16 @@ class Inventory extends Articulo
         if (!$incluirBaja)
             $filtro .= " and a.status ='Activo' ";
 
-        $sql = "select a.*,b.name as nombre, b.email  from responsables_resource_office a
+        $sql = "select a.*,
+                (select departamento from departamentos where departamentoId = b.departamentoId limit 1) departamento,
+                b.name as nombre, 
+                b.email, 
+                b.mailGrupo,
+                b.userComputadora,
+                b.passwordComputadora,
+                b.userAspel,
+                b.passwordAspel
+                from responsables_resource_office a
                 INNER JOIN personal b ON a.personalId = b.personalId
                 WHERE a.office_resource_id = '" . $id . "' $filtro order by a.responsable_resource_id desc, a.fecha_entrega_responsable desc ";
         $this->Util()->DB()->setQuery($sql);
@@ -366,7 +375,7 @@ class Inventory extends Articulo
 
         $like = $_POST['name_descripcion'];
         $responsable = $_POST['responsable'];
-        $tipoRecurso = $_POST['tipo_recurso'];
+        $tipoRecurso = 'Computadora';
         $finit = $_POST['fecha_alta_inicio'];
         $fend = $_POST['fecha_alta_fin'];
         $fcinit = $_POST['fecha_compra_inicio'];
@@ -418,19 +427,18 @@ class Inventory extends Articulo
     private function generateDataReport()
     {
         global $personal;
-        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
-            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
-        $typeSoftwares = ['aspel_coi', 'aspel_noi', 'aspel_facture', 'aspel_sae', 'admin_xml', 'adobe_photoshop', 'adobe_ilustrator', 'microsoft_office'];
+        $typeDispositivos = ['Monitor', 'Hdmi', 'Cable VGA', 'Mouse', 'Teclado',  'Mousepad', 'Ventilador','Adicionales'];
+        $typeSoftwares = ['Aspel COI', 'Aspel NOI', 'Aspel Facture', 'Admin XML', 'Office'. 'Licencia de Windows'];
         $data = $this->searchResource();
         $new = [];
         $puestos = $personal->getPuestos();
         foreach ($data['items'] as $key => $var) {
-            $devices = $var['tipo_recurso'] === 'equipo_computo'
-                ? $this->getDeviceResource($var['office_resource_id'])
+            $devices = $var['tipo_recurso'] === 'Computadora'
+                ? $this->getDeviceResource($var['no_inventario'])
                 : [];
 
-            $softwares = $var['tipo_recurso'] === 'equipo_computo'
-                ? $this->getSoftwareResource($var['office_resource_id'])
+            $softwares = $var['tipo_recurso'] === 'Computadora'
+                ? $this->getSoftwareResource($var['no_inventario'])
                 : [];
 
             $devices = array_column($devices, 'tipo_dispositivo');
@@ -452,10 +460,10 @@ class Inventory extends Articulo
                 }
             }
             foreach ($typeDispositivos as $val)
-                $cad[$val] = in_array($val, $devices) ? true : false;
+                $cad[$val] = in_array($val, $devices);
 
             foreach ($typeSoftwares as $val2)
-                $cad[$val2] = in_array($val2, $softwares) ? true : false;
+                $cad[$val2] = in_array($val2, $softwares);
 
             $new[] = $cad;
         }
@@ -464,43 +472,103 @@ class Inventory extends Articulo
 
     public function generateReport()
     {
-        $typeDispositivos = ['ventilador', 'cable_ventilador', 'hubusb', 'monitor', 'mouse', 'mousepad', 'ethernet', 'teclado',
-            'nobreak', 'hdmi','convertidor_hdmi', 'convertidor_vga'];
-        $typeSoftwares = ['aspel_coi', 'aspel_noi', 'aspel_facture', 'aspel_sae', 'admin_xml', 'adobe_photoshop', 'adobe_ilustrator', 'microsoft_office'];
+        $typeDispositivos = ['Monitor', 'Hdmi', 'Cable VGA', 'Mouse', 'Teclado', 'Mousepad', 'Ventilador','Adicionales'];
+        $typeSoftwares = ['Aspel COI', 'Aspel NOI', 'Aspel Facture', 'Admin XML', 'Licencia de Windows', 'Office'];
         $data = $this->generateDataReport();
         $book = new PHPExcel();
         $book->getProperties()->setCreator('B&H');
         $hoja = 0;
         $sheet = $book->createSheet($hoja);
-        $row = 1;
-        $col = 0;
+
         $sheet->setTitle('Reporte inventario');
-        $sheet->setCellValueByColumnAndRow($col, $row, "NO FISICO")
+
+        $sheet->setCellValueByColumnAndRow(0, 1, "EMPLEADO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(0) . 1)->getFont()->setBold(true);
+        $sheet->mergeCellsByColumnAndRow(0,1,4,1);
+
+        $sheet->setCellValueByColumnAndRow(5, 1, "COMPUTADORA")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(5) . 1)->getFont()->setBold(true);
+        $sheet->mergeCellsByColumnAndRow(5,1,19,1);
+
+        $sheet->setCellValueByColumnAndRow(20, 1, "ACCESORIOS")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(20) . 1)->getFont()->setBold(true);
+        $sheet->mergeCellsByColumnAndRow(20,1,27,1);
+
+        $sheet->setCellValueByColumnAndRow(28, 1, "SISTEMAS")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(28) . 1)->getFont()->setBold(true);
+        $sheet->mergeCellsByColumnAndRow(28,1,33,1);
+
+
+        $sheet->setCellValueByColumnAndRow(34, 1, "CONTRASEÑAS")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(34) . 1)->getFont()->setBold(true);
+        $sheet->mergeCellsByColumnAndRow(34,1,39,1);
+
+
+        $sheet->setCellValueByColumnAndRow(40, 1, "OBSERVACIONES FINALES")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(40) . 1)->getFont()->setBold(true);
+
+        $col = 0;
+        $row=2;
+        $sheet->setCellValueByColumnAndRow($col, $row, "NOMENCLATURA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, "TIPO EQUIPO")
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "NOMBRE RESPONSABLE")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "AREA")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "CORREO INDIVIDUAL")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "CORREO GRUPAL")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "NO FISICO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "ESTATUS")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "UBICACION")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "TIPO EQUIPO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "FECHA DE COMPRA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "COSTO DE COMPRA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, 'COSTO DE RECUPERACIÓN')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "MARCA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "MODELO")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "SERIE")
-        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "PROCESADOR")
-        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $sheet->setCellValueByColumnAndRow(++$col, $row, "MEMORIA RAM")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, "DISCO DURO")
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'VELOCIDAD MHZ')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, "CORREO")
-        ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'TIPO')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'CAPACIDAD DEL DISCO DURO')
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $sheet->setCellValueByColumnAndRow(++$col, $row, "TIPO DE ALMACENAMIENTO")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $col++;
         foreach ($typeDispositivos as $head) {
             $sheet->setCellValueByColumnAndRow($col, $row, strtoupper($head))
@@ -512,27 +580,68 @@ class Inventory extends Articulo
                 ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
             $col++;
         }
-        $sheet->setCellValueByColumnAndRow($col, $row, "SUPERVISOR")
+        $sheet->setCellValueByColumnAndRow($col, $row, "USUARIO COMPUTADORA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, "GERENTE")
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "CONTRASEÑA COMPUTADORA")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(++$col, $row, "USUARIO ANTERIOR")
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "USUARIO ASPEL")
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "CONTRASEÑA ASPEL")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "USUARIO OFFICE")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "CONTRASEÑA OFFICE")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, "OBSERVACIONES")
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row)->getFont()->setBold(true);
+
         $row++;
 
         foreach($data as $kt => $var) {
             $col = 0;
+
+            $stringNombre = $var['responsables'][0]['nombre'];
+            $nombreExp = explode(' ', $var['responsables'][0]['nombre']);
+
+            $nomenclatura =  substr($stringNombre, 0, strlen($nombreExp[0]));
+            $nombre       =  substr($stringNombre, strlen($nombreExp[0]), strlen($stringNombre));
+            $area =  $var['responsables'][0]['departamento'] ?? '';
+            $correo =  $var['responsables'][0]['email'] ?? '';
+            $mailGrupo =  $var['responsables'][0]['mailGrupo'] ?? '';
+
+            $sheet->setCellValueByColumnAndRow($col, $row, $nomenclatura);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $nombre);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $area);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $correo);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $mailGrupo);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['no_inventario'] === '' ? 'En bodega' : $var['no_inventario']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, ucfirst($var['tipo_equipo']));
+            $sheet->setCellValueByColumnAndRow($col, $row,$var['status'] && $var['status'] != 'null' ? $var['status'] : '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['ubicacion']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['tipo_equipo']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['fecha_compra']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['costo_compra']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['costo_recuperacion']);
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['marca']);
             $col++;
@@ -544,11 +653,16 @@ class Inventory extends Articulo
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['memoria_ram']);
             $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['velocidad_procesador']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['tipo_memoria_ram']);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $var['disco_duro']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['email']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['tipo_disco_duro']);
             $col++;
             foreach ($typeDispositivos as $head2) {
+
                 $sheet->setCellValueByColumnAndRow($col, $row, $var[$head2] ? 'Si' : 'No');
                 $col++;
             }
@@ -556,11 +670,19 @@ class Inventory extends Articulo
                 $sheet->setCellValueByColumnAndRow($col, $row, $var[$head3] ? 'Si' : 'No');
                 $col++;
             }
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['jefes']['supervisor']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$var['responsables'][0]['userComputadora'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['jefes']['gerente']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['passwordComputadora'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][1]['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['userAspel'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['passwordAspel'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['userOffice'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $var['responsables'][0]['passwordOffice'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, '');
             $row++;
         }
         $book->setActiveSheetIndex(0);
@@ -719,7 +841,7 @@ class Inventory extends Articulo
 
     private function syncSoftwareToResource($lastId)
     {
-        if (count($_SESSION['software_resource']) <= 0 || $this->getTipoRecurso() !== 'equipo_computo')
+        if (count($_SESSION['software_resource']) <= 0 || $this->getTipoRecurso() !== 'Computadora')
             return false;
 
         foreach ($_SESSION['software_resource'] as $var) {
