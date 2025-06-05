@@ -109,7 +109,8 @@ foreach($razones as $key => $rfc){
         $to = array(EMAIL_DEV=>'Desarrollador');
     else
         $to = array(
-            'rzetina@braunhuerin.com.mx'=>'ROGELIO ZETINA',
+            'rzetina@braunhuerin.com.mx'=>'Rogelio Isaac Zetina Olazagasti',
+            'brivera@braunhuerin.com.mx'=>'Beatriz Edith Rivera Ortega',
              EMAIL_DEV=>'Desarrollador',
         );
 
