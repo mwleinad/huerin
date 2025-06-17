@@ -228,12 +228,12 @@ class Consolidado2023 extends Personal
                             $month_row['class'] = "Parcial";
                             $month_row['costo'] = '';
                         }
-                        $propios_meses[$month]['trabajado'] += in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0
+                        $propios_meses[$month]['trabajado'] += (in_array($month_row['class'], ['Completo', 'CompletoTardio']) && (int)$month_row['secondary_pending'] === 0 && $propio['is_primary'] == 1)
                             ? $month_row['costo']
                             : 0;
-                        $propios_meses[$month]['devengado'] += $month_row['costo'];
+                        $propios_meses[$month]['devengado'] += $propio['is_primary'] == 1 ? $month_row['costo'] : 0;
                         $saldo = $month_row['comprobante_id'] ? $comprobante->GetInfoComprobante($month_row['comprobante_id'])['saldo'] : 0;
-                        $propios_meses[$month]['cobrado'] += $saldo <= 0 && $month_row['comprobante_id']
+                        $propios_meses[$month]['cobrado'] += ($saldo <= 0 && $month_row['comprobante_id'] && $propio['is_primary'] == 1)
                             ? $month_row['costo'] : 0;
                     }
                 }
