@@ -432,6 +432,7 @@ switch($_POST['type']){
 
                 $superiores = $personal->superiores($responsable['personal_id']);
                 $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+                $subgerente = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
                 $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
 
             }
@@ -473,7 +474,7 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? 'Sin gerente en linea de mando');
+            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? ($subgerente['nombre'] ?? 'Sin gerente o subgerente en linea de mando'));
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando');
             $col++;

@@ -390,7 +390,8 @@ class Servicio extends Contract
                                WHERE contractPermiso.contractId = contract.contractId 
                                GROUP BY contractPermiso.contractId) permiso_detallado
 				FROM servicio 
-				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  where a.status='1') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
+				INNER JOIN (select a.*,b.departamento from tipoServicio a INNER JOIN departamentos b   ON a.departamentoId = b.departamentoId  
+				 where a.status='1' and a.is_primary=1 and a.nombreServicio NOT LIKE '%Z*%' and a.nombreServicio LIKE '%2025%') as tipoServicio ON servicio.tipoServicioId=tipoServicio.tipoServicioId
 				INNER JOIN contract ON servicio.contractId = contract.contractId AND contract.permisos!=''
 				INNER JOIN customer ON contract.customerId = customer.customerId
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
