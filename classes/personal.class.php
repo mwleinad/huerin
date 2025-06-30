@@ -1512,23 +1512,43 @@ class Personal extends Main
 					']'
 				)  as responsables
 				from (select a.personalId, a.name, a.departamentoId, b.nivel from personal a inner join roles b on a.roleId=b.rolId) as personal 	
-				inner join departamentos on departamentos.departamentoId = personal.departamentoId
+				INNER JOIN departamentos on departamentos.departamentoId = personal.departamentoId
 				where departamentos.estatus=1   
 				group by personal.departamentoId order by personal.name asc
 				";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
+
         $premerge = [];
         foreach ($result as  $var){
+
             $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
         }
+
+
         foreach($premerge as $key => $value) {
-            if(isset($premerge[$key])) {
-                $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
-                    $premerge[$key], 'name'
-                );
-            }
+            $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
+                $premerge[$key] ?? [], 'name'
+            );
         }
+        $this->Util()->DB()->setQuery("SELECT departamentoId FROM departamentos WHERE upper(departamento)='GERENCIA RESPONSABLE' AND estatus = 1 LIMIT 1");
+        $idDepartamentoGerencia = $this->Util()->DB()->GetSingle();
+        if ($idDepartamentoGerencia) {
+
+            $this->Util()->DB()->setQuery("SELECT 
+                                                a.personalId as id,
+                                                a.name,
+                                                b.nivel,
+                                                (SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1) as departamento
+                                             FROM personal a 
+                                             INNER JOIN roles b ON a.roleId=b.rolId 
+                                             WHERE ((UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) = 'CONTABILIDAD E IMPUESTOS' AND b.nivel IN (3,4))
+                                                 OR (UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) IN ('NOMINAS','AUDITORIA','LEGAL','GESTORIA','FISCAL') AND b.nivel IN (3,5)))
+                                             ORDER BY a.name ASC , b.nivel ASC");
+            $resultGerencia = $this->Util()->DB()->GetResult();
+            $premerge[$idDepartamentoGerencia] = $resultGerencia;
+        }
+
         return $premerge;
     }
 
