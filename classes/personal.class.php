@@ -1535,7 +1535,15 @@ class Personal extends Main
         $idDepartamentoGerencia = $this->Util()->DB()->GetSingle();
         if ($idDepartamentoGerencia) {
 
-            $this->Util()->DB()->setQuery("SELECT 
+            $resultGerencia = $this->getPersonalGerenciaResponsable();
+            $premerge[$idDepartamentoGerencia] = $resultGerencia;
+        }
+
+        return $premerge;
+    }
+
+    public function getPersonalGerenciaResponsable() {
+        $this->Util()->DB()->setQuery("SELECT 
                                                 a.personalId as id,
                                                 a.name,
                                                 b.nivel,
@@ -1545,11 +1553,7 @@ class Personal extends Main
                                              WHERE ((UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) = 'CONTABILIDAD E IMPUESTOS' AND b.nivel IN (3,4))
                                                  OR (UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) IN ('NOMINAS','AUDITORIA','LEGAL','GESTORIA','FISCAL') AND b.nivel IN (3,5)))
                                              ORDER BY a.name ASC , b.nivel ASC");
-            $resultGerencia = $this->Util()->DB()->GetResult();
-            $premerge[$idDepartamentoGerencia] = $resultGerencia;
-        }
-
-        return $premerge;
+        return  $this->Util()->DB()->GetResult();
     }
 
     public function getSubordinadosByLevel ($nivel = 0) {

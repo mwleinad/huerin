@@ -99,8 +99,13 @@ switch ($_POST['type']) {
                         ->getText()->createText("Seleccionar el responsable de la lista que se muestra en las filas.");
                 }
 
-                $personal->setDepartamentoId($dep['departamentoId']);
-                $responsables = $personal->getListPersonalByDepartamento();
+                if (mb_strtoupper($dep['departamento']) === 'GERENCIA RESPONSABLE') {
+                    $responsables =  $personal->getPersonalGerenciaResponsable();
+                } else {
+                    $personal->setDepartamentoId($dep['departamentoId']);
+                    $responsables = $personal->getListPersonalByDepartamento();
+                }
+
 
                 $current_row_catalogue = 2;
                 $current_init_range = PHPExcel_Cell::stringFromColumnIndex($current_col_catalogue) . $current_row_catalogue;
