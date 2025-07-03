@@ -965,8 +965,8 @@ switch ($_POST['type']) {
             $resFiscal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'FISCAL'));
             $resGerenciaGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE GESTORIA'));
             $resGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GESTORIA'));
-            $resCuentasPorCobrar = current(array_filter($encargados, fn($encargado) =>mb_strtoupper($encargado['departamento']) == 'Cuentas por cobrar'));
-            $resAtc = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) == 'Atencion al Cliente'));
+            $resCuentasPorCobrar = current(array_filter($encargados, fn($encargado) =>mb_strtoupper($encargado['departamento']) == 'CUENTAS POR COBRAR'));
+            $resAtc = current(array_filter($encargados, fn($encargado) => (mb_strtoupper($encargado['departamento']) == 'ATENCION AL CLIENTE' || mb_strtoupper($encargado['departamento']) == 'ATENCIÓN AL CLIENTE')));
 
 
 
