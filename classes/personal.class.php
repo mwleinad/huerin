@@ -1488,6 +1488,9 @@ class Personal extends Main
     }
 
     public function GetPersonalGroupByDepartament () {
+
+        $this->Util()->DB()->setQuery("SET SESSION group_concat_max_len = 1000000");
+        $this->Util()->DB()->ExecuteQuery();
         $sql = "select
        			departamentos.departamentoId,
 				departamentos.departamento,
@@ -1511,9 +1514,10 @@ class Personal extends Main
 					),
 					']'
 				)  as responsables
-				from (select a.personalId, a.name, a.departamentoId, b.nivel from personal a inner join roles b on a.roleId=b.rolId) as personal 	
+				FROM (select a.personalId, a.name, a.departamentoId, b.nivel from personal a 
+				INNER JOIN roles b on a.roleId=b.rolId) as personal 	
 				INNER JOIN departamentos on departamentos.departamentoId = personal.departamentoId
-				where departamentos.estatus=1   
+				where departamentos.estatus='1'   
 				group by personal.departamentoId order by personal.name asc
 				";
         $this->Util()->DB()->setQuery($sql);
@@ -1521,28 +1525,103 @@ class Personal extends Main
 
         $premerge = [];
         foreach ($result as  $var){
-
             $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
         }
-
 
         foreach($premerge as $key => $value) {
             $premerge[$key] = $this->Util()->orderMultiDimensionalArray(
                 $premerge[$key] ?? [], 'name'
             );
         }
-        $this->Util()->DB()->setQuery("SELECT departamentoId FROM departamentos WHERE upper(departamento)='GERENCIA RESPONSABLE' AND estatus = 1 LIMIT 1");
-        $idDepartamentoGerencia = $this->Util()->DB()->GetSingle();
-        if ($idDepartamentoGerencia) {
 
-            $resultGerencia = $this->getPersonalGerenciaResponsable();
-            $premerge[$idDepartamentoGerencia] = $resultGerencia;
+        $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA, 'principal');
+
+        $gerencialesMap = array_map(function ($item) {
+            return "'" . $item . "'";
+        }, $gerenciales);
+
+        $implodeDepartamentos = implode(",", $gerencialesMap);
+        $sql = "select departamentoId, departamento from departamentos where departamento in (".$implodeDepartamentos.") and estatus = 1";
+        $this->Util()->DB()->setQuery($sql);
+        $departamentosGerenciales = $this->Util()->DB()->GetResult();
+
+        $responsables = $this->getPersonasParaDepartamentoGerencial();
+
+        foreach($departamentosGerenciales as $depGerencial) {
+
+            $tipoGerencia = current(array_filter(DEPARTAMENTOS_TIPO_GERENCIA,
+                function ($item) use ($depGerencial) {
+                    return $item['principal'] == $depGerencial['departamento'];
+                }
+            ));
+
+            $premerge[$depGerencial['departamentoId']] = $responsables[$tipoGerencia['secundario']] ?? [];
         }
 
         return $premerge;
     }
 
-    public function getPersonalGerenciaResponsable() {
+    public function getPersonasParaDepartamentoGerencial() {
+
+        $this->Util()->DB()->setQuery("SET SESSION group_concat_max_len = 1000000");
+        $this->Util()->DB()->ExecuteQuery();
+
+        $sql = "SELECT 
+                    tbl_main.departamentoId,
+                    (select departamento from departamentos where tbl_main.departamentoId = departamentoId limit 1) as departamento,
+                    CONCAT(
+                        '[',
+                        GROUP_CONCAT(
+                            CONCAT('{\"departamento_id',
+                                '\":\"',
+                                tbl_main.departamentoId,
+                                '\",\"',
+                                'departamento',
+                                '\":\"',
+                                (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1),
+                                '\",\"',
+                                'id',
+                                '\":\"',
+                                tbl_main.personalId,
+                                '\",\"',
+                                'name',
+                                '\":\"',
+                                 tbl_main.name,
+                                '\",\"',
+                                'level',
+                                '\":\"',
+                                 tbl_main.nivel,
+                                '\"}'
+                            )
+                        ),
+                        ']'
+                    )  as personas FROM personal as tbl_main
+                    INNER JOIN roles ON tbl_main.roleId = roles.rolId
+                    WHERE 
+                        (
+                            roles.nivel IN (3,5) 
+                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) != 'Contabilidad e Impuestos'
+                        ) 
+                         OR 
+                        (
+                            (roles.nivel >=3 and roles.nivel <=4) 
+                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) = 'Contabilidad e Impuestos'
+                        )
+                    AND tbl_main.active = '1'
+                    GROUP BY tbl_main.departamentoId ORDER BY tbl_main.name ASC";
+        $this->Util()->DB()->setQuery($sql);
+        $personas = $this->Util()->DB()->GetResult();
+
+        $personasPorDepartamento = [];
+        foreach ($personas as $value) {
+            $personasPorDepartamento[$value['departamento']] = json_decode($value['personas'], true);
+        }
+
+        return $personasPorDepartamento;
+    }
+
+    public function getPersonalGerenciaResponsable($nombreDepartamento, $niveles=[3,4]) {
+
         $this->Util()->DB()->setQuery("SELECT 
                                                 a.personalId as id,
                                                 a.name,
@@ -1550,8 +1629,9 @@ class Personal extends Main
                                                 (SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1) as departamento
                                              FROM personal a 
                                              INNER JOIN roles b ON a.roleId=b.rolId 
-                                             WHERE ((UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) = 'CONTABILIDAD E IMPUESTOS' AND b.nivel IN (3,4))
-                                                 OR (UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) IN ('NOMINAS','AUDITORIA','LEGAL','GESTORIA','FISCAL') AND b.nivel IN (3,5)))
+                                             WHERE 
+                                                ((UPPER((SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1)) = '".$nombreDepartamento."' 
+                                                AND b.nivel IN (" . implode(',', $niveles) . ")) 
                                              ORDER BY a.name ASC , b.nivel ASC");
         return  $this->Util()->DB()->GetResult();
     }

@@ -13,6 +13,7 @@ switch ($_POST['type']) {
         $headers = json_decode($string, true);
         $formas_pago = $catalogo->formasDePago();
         $encargados = $personal->GetIdResponsablesSubordinados($_POST);
+        $responsablesGerenciales = $personal->getPersonasParaDepartamentoGerencial();
         $_POST["encargados"] = $encargados;
         $_POST['selectedResp'] = $_POST['responsableCuenta'] > 0 ? true : false;
         $group_by =  $_POST['type_report'] === 'update_customer' ? 'customerId' : 'contractId';
@@ -99,8 +100,14 @@ switch ($_POST['type']) {
                         ->getText()->createText("Seleccionar el responsable de la lista que se muestra en las filas.");
                 }
 
-                if (mb_strtoupper($dep['departamento']) === 'GERENCIA RESPONSABLE') {
-                    $responsables =  $personal->getPersonalGerenciaResponsable();
+                $tipoGerencia = current(array_filter(DEPARTAMENTOS_TIPO_GERENCIA,
+                    function ($item) use ($dep) {
+                        return $item['principal'] == $dep['departamento'];
+                    }
+                ));
+
+                if (isset($tipoGerencia['secundario']) && $tipoGerencia['secundario']!== '') {
+                    $responsables = $responsablesGerenciales[$tipoGerencia['secundario']] ?? [];
                 } else {
                     $personal->setDepartamentoId($dep['departamentoId']);
                     $responsables = $personal->getListPersonalByDepartamento();
@@ -823,25 +830,35 @@ switch ($_POST['type']) {
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Asociado');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. asociado');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Subgerente contabilidad');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente o Supervisor Nominas');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Contabilidad e Impuestos');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Auditoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable nóminas');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente Legal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Nóminas y Seguridad Social');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Supervisor Fiscal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable auditoria');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Gerente Gestoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Auditoria');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de cuentas por cobrar');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable legal');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de atención al cliente');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Legal');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de Gerencia responsable');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable fiscal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Fiscal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable gestoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gestoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Cuentas por cobrar');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Atención al cliente');
         $col++;
         $row++;
 
@@ -935,41 +952,21 @@ switch ($_POST['type']) {
 
             $encargados = json_decode($result['encargados'] ??  '[]',1);
 
-            $encargadoAsociado = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Asociado'));
-            $encargadoGerencia = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE'));
-
-            $encargadoContabilidad = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Contabilidad e Impuestos'));
-            $superiores = $personal->findSuperiores($encargadoContabilidad['personalId'], $listaPersonal);
-            $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
-
-            if (!$subgerenteContabilidad)
-                $subgerenteContabilidad = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-
-            $encargadoNominas = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Nominas y Seguridad Social'));
-            $superiores = $personal->findSuperiores($encargadoNominas['personalId'], $listaPersonal);
-            $supervisorNominas = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
-
-            if (!$supervisorNominas)
-                $supervisorNominas = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-
-            $encargadoAuditoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Auditoria'));
-            $superiores = $personal->findSuperiores($encargadoAuditoria['personalId'], $listaPersonal);
-            $supervisorAuditoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
-
-            $encargadoLegal = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Legal'));
-            $superiores = $personal->findSuperiores($encargadoLegal['personalId'], $listaPersonal);
-            $gerenteLegal = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-
-            $encargadoFiscal = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Fiscal'));
-            $superiores = $personal->findSuperiores($encargadoFiscal['personalId'], $listaPersonal);
-            $supervisorFiscal = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
-
-            $encargadoGestoria = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] === 'Gestoria'));
-            $superiores = $personal->findSuperiores($encargadoGestoria['personalId'], $listaPersonal);
-            $subgerenteGestoria = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-
-            $encargadoCuentasPorCobrar = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Cuentas por cobrar'));
-            $encargadoAtc = current(array_filter($encargados, fn($encargado) => $encargado['departamento'] == 'Atencion al Cliente'));
+            $resAsociado = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'ASOCIADO'));
+            $resGerenciaContabilidad = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE CONTABILIDAD'));
+            $resContabilidad = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'CONTABILIDAD E IMPUESTOS'));
+            $resGerenciaNominas = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE NOMINAS'));
+            $resNominas = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) ==='NOMINAS Y SEGURIDAD SOCIAL'));
+            $resGerenciaAuditoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE AUDITORIA'));
+            $resAuditoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'AUDITORIA'));
+            $resGerenciaLegal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE LEGAL'));
+            $resLegal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'LEGAL'));
+            $resGerenciaFiscal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE FISCAL'));
+            $resFiscal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'FISCAL'));
+            $resGerenciaGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE GESTORIA'));
+            $resGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GESTORIA'));
+            $resCuentasPorCobrar = current(array_filter($encargados, fn($encargado) =>mb_strtoupper($encargado['departamento']) == 'Cuentas por cobrar'));
+            $resAtc = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) == 'Atencion al Cliente'));
 
 
 
@@ -978,25 +975,35 @@ switch ($_POST['type']) {
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $encargadoAsociado['name'] ?? '');
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['name'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $subgerenteContabilidad['nombre'] ?? '');
+            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['name'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $supervisorNominas['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $supervisorAuditoria['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaNominas['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $gerenteLegal['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resNominas['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$supervisorFiscal['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaAuditoria['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$subgerenteGestoria['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$resAuditoria['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoCuentasPorCobrar['name']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaLegal['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoAtc['name']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$resLegal['name']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$encargadoGerencia['name']);
+            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaFiscal['name']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$resFiscal['name']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaGestoria['name']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$resGestoria['name']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$resCuentasPorCobrar['name']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row,$resAtc['name']);
 
             $row++;
         }
