@@ -546,6 +546,8 @@ class Bono extends Personal
                     $return['totales_mes'][$month]['coordenada_trabajado'] = [];
                     $return['totales_mes'][$month]['cantidad_workflow_trabajado'] = 0;
                     $return['totales_mes'][$month]['cantidad_workflow_devengado'] = 0;
+                    $return['totales_mes'][$month]['total_trabajado'] = 0;
+                    $return['totales_mes'][$month]['total_devengado'] = 0;
                 }
 
                 // inicializar array coordenadas devengados
@@ -686,7 +688,7 @@ class Bono extends Personal
             foreach ($total['totales']['totales_mes'] as $key_month => $total_mes) {
 
                 $cordinate_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
-                $formula = count($total_mes['coordenada_devengado']) ? '=+'.implode('+', $total_mes['coordenada_devengado']) : '';
+                $formula = (count($total_mes['coordenada_devengado']) > 0) ? '=+'.implode('+', $total_mes['coordenada_devengado']) : '=0';
                 $formula = $esInmediatoSup ? '' : $formula;
                 $sheet->setCellValueByColumnAndRow($col, $row_devengado, $formula)
                     ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
@@ -717,7 +719,7 @@ class Bono extends Personal
                 }
 
                 $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
-                $formula = count($total_mes['coordenada_trabajado']) ? '=+'.implode('+', $total_mes['coordenada_trabajado']) : '';
+                $formula = (count($total_mes['coordenada_trabajado']) > 0) ? '=+'.implode('+', $total_mes['coordenada_trabajado']) : '=0';
                 $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -807,7 +809,7 @@ class Bono extends Personal
                     ->getStyle($cordinate_bono_diferencia)->applyFromArray($global_config_style_cell['style_currency']);
 
                 //$formula_efectividad = '=IFERROR((+'.$total_mes['cantidad_workflow_trabajado'].'/'.$total_mes['cantidad_workflow_devengado'].'),0)';
-                $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
+                $formula_efectividad = '=IFERROR(+'.$cordinate_trabajado.'/'.$cordinate_devengado.',0)';
                 $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
                 $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                     ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -839,7 +841,7 @@ class Bono extends Personal
         foreach ($coorRecalculables as $coorRecalculable) {
 
             foreach ($coorRecalculable as $recal) {
-                $formula    = count($recal['celdas']) > 0 ? '=+'.implode('+', $recal['celdas']) : '';
+                $formula    = (count($recal['celdas']) > 0) ? '=+'.implode('+', $recal['celdas']) : '=0';
                 $current_cordinate = PHPExcel_Cell::stringFromColumnIndex($recal['col']) . $recal['row'];
                 $sheet->setCellValueByColumnAndRow($recal['col'],$recal['row'], $formula)
                     ->getStyle($current_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
@@ -849,7 +851,7 @@ class Bono extends Personal
         foreach ($coorRecalculablesTrabajado as $coorRecalculableT) {
 
             foreach ($coorRecalculableT as $recalT) {
-                $formula = count($recalT['celdas']) > 0 ? '=+' . implode('+', $recalT['celdas']) : '';
+                $formula = (count($recalT['celdas']) > 0) ? '=+' . implode('+', $recalT['celdas']) : '=0';
                 $current_cordinateT = PHPExcel_Cell::stringFromColumnIndex($recalT['col']) . $recalT['row'];
                 $sheet->setCellValueByColumnAndRow($recalT['col'], $recalT['row'], $formula)
                     ->getStyle($current_cordinateT)->applyFromArray($global_config_style_cell['style_currency']);
@@ -859,7 +861,7 @@ class Bono extends Personal
         foreach ($coorRecalculablesGastos as $coorRecalculableG) {
 
             foreach ($coorRecalculableG as $recalG) {
-                $formula = count($recalG['celdas']) > 0 ? '+' . implode('+', $recalG['celdas']) : '';
+                $formula = (count($recalG['celdas']) > 0) ? '+' . implode('+', $recalG['celdas']) : '';
                 $formula1 = '=+' . $recalG['sueldo_propio'].$formula;
                 $current_cordinateG = PHPExcel_Cell::stringFromColumnIndex($recalG['col']) . $recalG['row'];
                 $sheet->setCellValueByColumnAndRow($recalG['col'], $recalG['row'], $formula1)
@@ -914,11 +916,11 @@ class Bono extends Personal
         $col++;
         foreach ($totales['total_concentrado_vertical_meses'] as $total) {
             $coor_total_trabajado =  PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $formula = count($total['trabajados']) ? '=+'.implode('+', $total['trabajados']) : '';
+            $formula = (count($total['trabajados']) > 0) ? '=+'.implode('+', $total['trabajados']) : '=0';
             $sheet->setCellValueByColumnAndRow($col, $row,  $formula)
                 ->getStyle($coor_total_trabajado)->applyFromArray($style_currency);
             $coor_total_devengado =  PHPExcel_Cell::stringFromColumnIndex($col) . ($row + 1);
-            $formula = count($total['devengados']) ? '=+'.implode('+', $total['devengados']) : '';
+            $formula = (count($total['devengados']) > 0) ? '=+'.implode('+', $total['devengados']) : '=0';
             $sheet->setCellValueByColumnAndRow($col, $row + 1, $formula)
                 ->getStyle($coor_total_devengado)->applyFromArray($style_currency);
             $col++;
@@ -927,9 +929,9 @@ class Bono extends Personal
         $coord_sum_vertical_total_hor_dev =  PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
         $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray($style_currency);
-        $formula = count($totales['sum_vertical_total_horizontal_devengado'])
+        $formula = (count($totales['sum_vertical_total_horizontal_devengado']) > 0)
                 ? '=+'.implode('+', $totales['sum_vertical_total_horizontal_devengado'])
-                : '';
+                : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_devengado, $formula)
             ->getStyle($coord_sum_vertical_total_hor_dev)->applyFromArray($style_currency);
 
@@ -937,9 +939,9 @@ class Bono extends Personal
         $coord_sum_vertical_total_hor_trab =  PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
         $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray($style_currency);
-        $formula = count($totales['sum_vertical_total_horizontal_trabajado'])
+        $formula = (count($totales['sum_vertical_total_horizontal_trabajado']) > 0)
             ? '=+'.implode('+', $totales['sum_vertical_total_horizontal_trabajado'])
-            : '';
+            : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_devengado,  $formula)
             ->getStyle($coord_sum_vertical_total_hor_trab)->applyFromArray($style_currency);
 
@@ -947,9 +949,9 @@ class Bono extends Personal
         $coord_sum_vertical_total_hor_dif =  PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengado;
         $sheet->setCellValueByColumnAndRow($col, $row_trabajado, '')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado)->applyFromArray(  $style_currency );
-        $formula = count($totales['sum_vertical_total_horizontal_diferencia'])
+        $formula = (count($totales['sum_vertical_total_horizontal_diferencia']) > 0)
             ? '=+'.implode('+', $totales['sum_vertical_total_horizontal_diferencia'])
-            : '';
+            : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_devengado,  $formula)
             ->getStyle($coord_sum_vertical_total_hor_dif)->applyFromArray($style_currency);
 
@@ -1066,10 +1068,10 @@ class Bono extends Personal
             if($sumarSueldoPropio)
                 array_push($gastosMes, $sueldoPropio);
 
-            $formulaGasto = "";
-            if(count($gastosMes) > 0)
-                $formulaGasto .= "=+".$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes);
-            $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formulaGasto)
+            $formula = (count($gastosMes) > 0) 
+                ? "=+".$prefix_sheet.implode('+'.$prefix_sheet, $gastosMes)
+                : "=0";
+            $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
             if(!is_array($gran_total_gerente['row_gasto'][$key_mes])) $gran_total_gerente['row_gasto'][$key_mes]= [];
@@ -1159,17 +1161,17 @@ class Bono extends Personal
         }
 
         $coord_horizontal_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
-        $formula =  is_array($total_hor_devengado) ? "=".implode('+', $total_hor_devengado) : '';
+        $formula =  (is_array($total_hor_devengado) && count($total_hor_devengado) > 0) ? "=".implode('+', $total_hor_devengado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
             ->getStyle($coord_horizontal_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
-        $formula =  is_array($total_hor_trabajado) ? "=".implode('+', $total_hor_trabajado) : '';
+        $formula =  (is_array($total_hor_trabajado) && count($total_hor_trabajado) > 0) ? "=".implode('+', $total_hor_trabajado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
             ->getStyle($coord_horizontal_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-        $formula =  is_array($total_hor_gasto) ? "=".implode('+', $total_hor_gasto) : '';
+        $formula =  (is_array($total_hor_gasto) && count($total_hor_gasto) > 0) ? "=".implode('+', $total_hor_gasto) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
             ->getStyle($coord_horizontal_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -1179,12 +1181,12 @@ class Bono extends Personal
             ->getStyle($coord_horizontal_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
-        $formula = is_array($total_hor_bono) ? "=".implode('+', $total_hor_bono) : '';
+        $formula = (is_array($total_hor_bono) && count($total_hor_bono) > 0) ? "=".implode('+', $total_hor_bono) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual, $formula)
             ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
-        $formula = is_array($total_hor_bono_entregado) ? "=".implode('+', $total_hor_bono_entregado) : '';
+        $formula = (is_array($total_hor_bono_entregado) && count($total_hor_bono_entregado) > 0) ? "=".implode('+', $total_hor_bono_entregado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, $formula)
             ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -1385,14 +1387,14 @@ class Bono extends Personal
             $data['row_devengado'][$key_mes] = !is_array($data['row_devengado'][$key_mes]) ? [] : $data['row_devengado'][$key_mes];
             $data_gerente['row_devengado'][$key_mes] = !is_array($data_gerente['row_devengado'][$key_mes]) ? [] : $data_gerente['row_devengado'][$key_mes];
             $celdas_devengado = array_merge_recursive($data['row_devengado'][$key_mes], $data_gerente['row_devengado'][$key_mes]);
-            $formula = count($celdas_devengado) ? '=+'.implode('+', $celdas_devengado) : '';
+            $formula = (count($celdas_devengado) > 0) ? '=+'.implode('+', $celdas_devengado) : '=0';
             $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
                 ->getStyle($cordinate_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
             $data['row_trabajado'][$key_mes] = !is_array($data['row_trabajado'][$key_mes]) ? [] : $data['row_trabajado'][$key_mes];
             $data_gerente['row_trabajado'][$key_mes] = !is_array($data_gerente['row_trabajado'][$key_mes]) ? [] : $data_gerente['row_trabajado'][$key_mes];
             $celdas_trabajado = array_merge_recursive($data['row_trabajado'][$key_mes], $data_gerente['row_trabajado'][$key_mes]);
-            $formula = count($celdas_trabajado) ? '=+'.implode('+', $celdas_trabajado) : '';
+            $formula = (count($celdas_trabajado) > 0) ? '=+'.implode('+', $celdas_trabajado) : '=0';
             $cordinate_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
             $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
                 ->getStyle($cordinate_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
@@ -1403,7 +1405,7 @@ class Bono extends Personal
             $sueldo_gerente = $info_grupo['sueldo'] * (1 + (PORCENTAJE_AUMENTO_SALARIO/100));
             $celdas_gasto = array_merge_recursive($data['row_gasto'][$key_mes], $data_gerente['row_gasto'][$key_mes], [$sueldo_gerente]);
             $cordinate_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-            $formula = count($celdas_gasto) ? '=+'.implode('+', $celdas_gasto) : '';
+            $formula = (count($celdas_gasto) > 0) ? '=+'.implode('+', $celdas_gasto) : '=0';
             $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
                 ->getStyle($cordinate_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -1435,7 +1437,7 @@ class Bono extends Personal
             $cantidad_workflow_devengado = $data['cantidad_workflow_devengado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_devengado'][$key_mes]['total'];
             $cantidad_workflow_trabajado = $data['cantidad_workflow_trabajado'][$key_mes]['total'] + $data_gerente['gran_cantidad_workflow_trabajado'][$key_mes]['total'];
 
-            $formula_efectividad = '=+'.$cordinate_trabajado.'/'.$cordinate_devengado;
+            $formula_efectividad = '=IFERROR(+'.$cordinate_trabajado.'/'.$cordinate_devengado.',0)';
             $cordinate_porcentefectividad = PHPExcel_Cell::stringFromColumnIndex($col) . $row_porcentefectividad;
             $sheet->setCellValueByColumnAndRow($col, $row_porcentefectividad, $formula_efectividad)
                 ->getStyle($cordinate_porcentefectividad)->applyFromArray($global_config_style_cell['style_porcent']);
@@ -1488,17 +1490,17 @@ class Bono extends Personal
         }
 
         $coord_horizontal_devengado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_devengando;
-        $formula =  is_array($total_hor_devengado) ? "=".implode('+', $total_hor_devengado) : '';
+        $formula =  (is_array($total_hor_devengado) && count($total_hor_devengado) > 0) ? "=".implode('+', $total_hor_devengado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_devengando, $formula)
             ->getStyle($coord_horizontal_devengado)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_trabajado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_trabajado;
-        $formula =  is_array($total_hor_trabajado) ? "=".implode('+', $total_hor_trabajado) : '';
+        $formula =  (is_array($total_hor_trabajado) && count($total_hor_trabajado) > 0) ? "=".implode('+', $total_hor_trabajado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_trabajado, $formula)
             ->getStyle($coord_horizontal_trabajado)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_gasto = PHPExcel_Cell::stringFromColumnIndex($col) . $row_gasto;
-        $formula =  is_array($total_hor_gasto) ? "=".implode('+', $total_hor_gasto) : '';
+        $formula =  (is_array($total_hor_gasto) && count($total_hor_gasto) > 0) ? "=".implode('+', $total_hor_gasto) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_gasto, $formula)
             ->getStyle($coord_horizontal_gasto)->applyFromArray($global_config_style_cell['style_currency']);
 
@@ -1508,12 +1510,12 @@ class Bono extends Personal
             ->getStyle($coord_horizontal_utilidad)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_bono = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_mensual;
-        $formula = is_array($total_hor_bono) ? "=".implode('+', $total_hor_bono) : '';
+        $formula = (is_array($total_hor_bono) && count($total_hor_bono) > 0) ? "=".implode('+', $total_hor_bono) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_bono_mensual, $formula)
             ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
         $coord_horizontal_bono_entregado = PHPExcel_Cell::stringFromColumnIndex($col) . $row_bono_entregado;
-        $formula = is_array($total_hor_bono_entregado) ? "=".implode('+', $total_hor_bono_entregado) : '';
+        $formula = (is_array($total_hor_bono_entregado) && count($total_hor_bono_entregado) > 0) ? "=".implode('+', $total_hor_bono_entregado) : '=0';
         $sheet->setCellValueByColumnAndRow($col, $row_bono_entregado, $formula)
             ->getStyle($coord_horizontal_bono)->applyFromArray($global_config_style_cell['style_currency']);
 
