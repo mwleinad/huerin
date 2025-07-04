@@ -837,21 +837,24 @@ class Bono extends Personal
             $row += 2;
             $row_hide_final = $row;
         }
-
         foreach ($coorRecalculables as $coorRecalculable) {
-
             foreach ($coorRecalculable as $recal) {
-                $formula    = (count($recal['celdas']) > 0) ? '=+'.implode('+', $recal['celdas']) : '=0';
+                if(!is_numeric($recal['col']) || !is_numeric($recal['row']) || $recal['row'] <= 0 || $recal['col'] < 0)
+                    continue;
+
+                $formula = (count($recal['celdas']) > 0) ? '=+'.implode('+', $recal['celdas']) : '=0';
                 $current_cordinate = PHPExcel_Cell::stringFromColumnIndex($recal['col']) . $recal['row'];
-                $sheet->setCellValueByColumnAndRow($recal['col'],$recal['row'], $formula)
+                $sheet->setCellValueByColumnAndRow($recal['col'], $recal['row'], $formula)
                     ->getStyle($current_cordinate)->applyFromArray($global_config_style_cell['style_currency']);
             }
         }
 
         foreach ($coorRecalculablesTrabajado as $coorRecalculableT) {
-
             foreach ($coorRecalculableT as $recalT) {
-                $formula = (count($recalT['celdas']) > 0) ? '=+' . implode('+', $recalT['celdas']) : '=0';
+                if(!is_numeric($recalT['col']) || !is_numeric($recalT['row']) || $recalT['row'] <= 0 || $recalT['col'] < 0)
+                    continue;
+
+                $formula = (count($recalT['celdas']) > 0) ? '=+'.implode('+', $recalT['celdas']) : '=0';
                 $current_cordinateT = PHPExcel_Cell::stringFromColumnIndex($recalT['col']) . $recalT['row'];
                 $sheet->setCellValueByColumnAndRow($recalT['col'], $recalT['row'], $formula)
                     ->getStyle($current_cordinateT)->applyFromArray($global_config_style_cell['style_currency']);
@@ -859,10 +862,12 @@ class Bono extends Personal
         }
 
         foreach ($coorRecalculablesGastos as $coorRecalculableG) {
-
             foreach ($coorRecalculableG as $recalG) {
-                $formula = (count($recalG['celdas']) > 0) ? '+' . implode('+', $recalG['celdas']) : '';
-                $formula1 = '=+' . $recalG['sueldo_propio'].$formula;
+                if(!is_numeric($recalG['col']) || !is_numeric($recalG['row']) || $recalG['row'] <= 0 || $recalG['col'] < 0)
+                    continue;
+
+                $formula = (count($recalG['celdas']) > 0) ? '+'.implode('+', $recalG['celdas']) : '';
+                $formula1 = '=+'.$recalG['sueldo_propio'].$formula;
                 $current_cordinateG = PHPExcel_Cell::stringFromColumnIndex($recalG['col']) . $recalG['row'];
                 $sheet->setCellValueByColumnAndRow($recalG['col'], $recalG['row'], $formula1)
                     ->getStyle($current_cordinateG)->applyFromArray($global_config_style_cell['style_currency']);
