@@ -842,7 +842,7 @@ class Comprobante extends Producto
             202 => "El documento ya ha ha sido cancelado anteriormente.",
             708 => "No se ha podido conectar con el sat, intente mas tarde. recuerde que solo tiene 3 intentos para cancelar un comprobante.",
             798 => "Ya existe una solicitud previa, para volver a mandar la petición esperar 72 horas",
-            799 => "Se ha excedido el límite de 5 intentos para cancelar el comprobante, contactar con el sporte del.",
+            799 => "Se ha excedido el límite máximo de intentos para cancelar el comprobante, contactar con el soporte técnico del PAC.",
         ];
         $SESSION = $_SESSION;
         $statusActions = [
