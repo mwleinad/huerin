@@ -1,5 +1,5 @@
 DELIMITER //
-DROP PROCEDURE IF EXISTS `huerin`.`sp_get_data_reporte_cobranza_detallado`;
+DROP PROCEDURE IF EXISTS `sp_get_data_reporte_cobranza_detallado`;
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_data_reporte_cobranza_detallado`(IN `anio` INT, IN `mes` INT)
 BEGIN
@@ -60,7 +60,7 @@ FROM comprobante INNER JOIN (
 WHERE comprobante.status = '1'
   AND year(comprobante.fecha) = anio
   AND comprobante.tiposComprobanteId = 1
-  AND NOT EXISTS (SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId);
+  AND NOT EXISTS (SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId AND deleted_at IS NULL AND status = 'Pending');
 
 SELECT count(*)
 FROM comprobante INNER JOIN (
@@ -71,7 +71,7 @@ FROM comprobante INNER JOIN (
 WHERE comprobante.status = '1'
     AND year(comprobante.fecha) = anio
   AND comprobante.tiposComprobanteId = 1
-  AND NOT EXISTS (SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId) INTO vTotalRow;
+  AND NOT EXISTS (SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId AND deleted_at IS NULL AND status = 'Pending') INTO vTotalRow;
 
 DROP TEMPORARY TABLE IF EXISTS tmp_data_cobranza;
 	CREATE TEMPORARY TABLE IF NOT EXISTS tmp_data_cobranza(fecha DATE, serie VARCHAR(100), `folio` BIGINT, `total_factura` DECIMAL(10,2), cliente VARCHAR(255),razon_social varchar(255), `servicio` VARCHAR(255),`estatus_servicio` VARCHAR(255),`area` VARCHAR(255),`costo_servicio` DECIMAL(10,2),`pagado` VARCHAR(2),`pago_por_servicio` DECIMAL(10,2),`fecha_pago` DATE,`estatus_rs` VARCHAR(15),`datos_facturacion`JSON,`facturador` VARCHAR(255),`responsables` JSON);

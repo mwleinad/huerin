@@ -7,53 +7,135 @@ class Cancelation extends Main
     const CANCELLED_WITHOUT_ACCEPT = 'Cancelado con aceptación';
     const CANCELLED_WITH_ACCEPT = 'Cancelado sin aceptación';
     const NOCANCELABLE = 'No cancelable';
-    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotiveSat, $uuidSubstitution, $cancelationMotive){
-        $sql = "delete from pending_cfdi_cancel where cfdi_id = '".$cfdiId."' ";
+    public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotiveSat, $uuidSubstitution, $cancelationMotive, $status = CFDI_CANCEL_STATUS_PENDING){
+        // Verificar si ya existe una petición pendiente (no eliminada)
+        $sql = "SELECT solicitud_cancelacion_id, attempts FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' AND deleted_at IS NULL";
         $this->Util()->DB()->setQuery($sql);
-        $this->Util()->DB()->DeleteData();
-
-        $this->Util()->DB()->setQuery("
-			INSERT INTO
-				pending_cfdi_cancel
-			(
-				`user_cancelation`,
-				`date_petition`,
-				`cfdi_id`,
-				`rfc_e`,
-				`rfc_r`,
-				`uuid`,
-				`total`,
-				`cancelation_motive`,
-				`cancelation_motive_sat`,
-				`uuid_substitution`
-		    )
-            VALUES
-		    (
-
-				'".$userId."',
-				'".date("Y-m-d H:i:s")."',
-				'".$cfdiId."',
-				'".$taxPayerId."',
-				'".$rTaxPayerId."',
-				'".$uuid."',
-				'".$total."',
-				'".$cancelationMotive."',
-				'".$cancelationMotiveSat."',
-				'".$uuidSubstitution."'
-
-		);");
-        return $this->Util()->DB()->InsertData();
+        $existingPetition = $this->Util()->DB()->GetRow();
+        
+        if($existingPetition) {
+            // Si ya existe, verificar intentos
+            if($existingPetition['attempts'] >= MAXIMO_INTENTOS_CANCELACION) {
+                throw new Exception('Has excedido el máximo de intentos de cancelación ('.MAXIMO_INTENTOS_CANCELACION.') para esta factura.');
+            }
+            
+            // Incrementar intentos y actualizar (incluyendo status si es diferente de pending)
+            $updateSql = "UPDATE pending_cfdi_cancel SET 
+                            attempts = attempts + 1,
+                            last_attempt_at = '".date("Y-m-d H:i:s")."',
+                            cancelation_motive = '".$cancelationMotive."',
+                            cancelation_motive_sat = '".$cancelationMotiveSat."',
+                            uuid_substitution = '".$uuidSubstitution."',
+                            status = '".$status."'
+                          WHERE cfdi_id = '".$cfdiId."' AND deleted_at IS NULL";
+            $this->Util()->DB()->setQuery($updateSql);
+            return $this->Util()->DB()->UpdateData();
+        } else {
+            // Si no existe, crear nuevo registro
+            $this->Util()->DB()->setQuery("
+                INSERT INTO
+                    pending_cfdi_cancel
+                (
+                    `user_cancelation`,
+                    `date_petition`,
+                    `cfdi_id`,
+                    `rfc_e`,
+                    `rfc_r`,
+                    `uuid`,
+                    `total`,
+                    `cancelation_motive`,
+                    `cancelation_motive_sat`,
+                    `uuid_substitution`,
+                    `attempts`,
+                    `last_attempt_at`,
+                    `status`
+                )
+                VALUES
+                (
+                    '".$userId."',
+                    '".date("Y-m-d H:i:s")."',
+                    '".$cfdiId."',
+                    '".$taxPayerId."',
+                    '".$rTaxPayerId."',
+                    '".$uuid."',
+                    '".$total."',
+                    '".$cancelationMotive."',
+                    '".$cancelationMotiveSat."',
+                    '".$uuidSubstitution."',
+                    1,
+                    '".date("Y-m-d H:i:s")."',
+                    '".$status."'
+                );");
+            return $this->Util()->DB()->InsertData();
+        }
     }
+    
+    public function getCancelationAttempts($cfdiId) {
+        $sql = "SELECT attempts, date_petition, last_attempt_at FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' AND deleted_at IS NULL";
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetRow();
+        
+        return $result ? $result['attempts'] : 0;
+    }
+    
+    // Método para obtener el historial completo de intentos de cancelación (incluyendo eliminados)
+    public function getCancelationHistory($cfdiId) {
+        $sql = "SELECT * FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' ORDER BY date_petition DESC";
+        $this->Util()->DB()->setQuery($sql);
+        return $this->Util()->DB()->GetResult();
+    }
+    
+    // Método para obtener solo peticiones activas (no eliminadas)
+    public function getActiveCancelationPetitions($cfdiId = null) {
+        $sql = "SELECT * FROM pending_cfdi_cancel WHERE deleted_at IS NULL";
+        if($cfdiId) {
+            $sql .= " AND cfdi_id = '".$cfdiId."'";
+        }
+        $sql .= " ORDER BY date_petition DESC";
+        $this->Util()->DB()->setQuery($sql);
+        return $cfdiId ? $this->Util()->DB()->GetRow() : $this->Util()->DB()->GetResult();
+    }
+    
+    // Método para restaurar una petición eliminada (si es necesario)
+    public function restoreCancelRequest($id) {
+        $this->Util()->DB()->setQuery("
+            UPDATE
+                pending_cfdi_cancel
+            SET
+                deleted_at = NULL
+            WHERE
+                solicitud_cancelacion_id = '".$id."'
+        ");
+        return $this->Util()->DB()->UpdateData();
+    }
+    
     public function getStatus($rfcE, $rfcR, $uuid, $total) {
 
-        $qr="?re=$rfcE&rr=$rfcR&tt=$total&id=$uuid";
-        $consulta= array('expresionImpresa'=>$qr);
-
         try {
+
+            if(empty($rfcE) || empty($rfcR) || empty($uuid) || empty($total)) {
+                throw new Exception('Datos insuficientes para consultar el estatus de cancelación.');
+            }
+      
+            if(PROJECT_STATUS == 'test') {
+                return (object) [
+                    'ConsultaResult' => (object) [
+                        'EstatusCancelacion' => 'S - Comprobante obtenido satisfactoriamente.',
+                        'EsCancelable' =>'Cancelable con aceptación',
+                        'Estado' => 'Vigente',
+                        'ValidacionEFOS' => '200',
+                    ]
+                ];
+            }
+
+            $qr="?re=$rfcE&rr=$rfcR&tt=$total&id=$uuid";
+            $consulta= array('expresionImpresa'=>$qr);
             $client = new SoapClient('https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?WSDL');
             $response =  $client->Consulta($consulta);
+            
             return $response;
         } catch( Throwable $e ) {
+                echo "Error al consultar el estatus de cancelación: " . $e->getMessage() . "\n";
             return false;
         }
     }
@@ -96,11 +178,13 @@ class Cancelation extends Main
 
     private function deleteCancelRequest($id) {
         $this->Util()->DB()->setQuery("
-			DELETE FROM
+			UPDATE
 				pending_cfdi_cancel
+			SET
+				deleted_at = '".date("Y-m-d H:i:s")."'
 			WHERE
 				solicitud_cancelacion_id = '".$id."'");
-        $this->Util()->DB()->DeleteData();
+        $this->Util()->DB()->UpdateData();
     }
 
     /*

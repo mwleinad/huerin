@@ -1052,3 +1052,99 @@ table.setting th {
 	text-decoration:underline;
 }
 
+/* Ocultar elementos Alpine.js hasta que se inicialice */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Estilos para validación de UUID */
+.uuid-validation-message {
+    margin-top: 5px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.uuid-validation-success {
+    color: #28a745;
+}
+
+.uuid-validation-warning {
+    color: #ffc107;
+}
+
+.uuid-validation-error {
+    color: #dc3545;
+}
+
+.uuid-validation-loading {
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.uuid-validation-loading img {
+    width: 16px;
+    height: 16px;
+}
+
+/* Estilos para inputs con validación */
+.input-validation-success {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.input-validation-warning {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.input-validation-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Panel de información de cancelación */
+.cancelacion-info-panel {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid;
+}
+
+.cancelacion-info-sat {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #31708f;
+}
+
+.cancelacion-info-intentos {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+
+.cancelacion-info-intentos.max-reached {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+.cancelacion-blocked {
+    padding: 15px;
+    text-align: center;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    border-radius: 4px;
+    color: #a94442;
+}
+
+/* Transiciones suaves para feedback visual */
+.largeInput {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+

@@ -756,12 +756,11 @@ class Comprobante extends Producto
             comprobante.tiposComprobanteId,version,
             comprobante.total, comprobante.fecha
             FROM comprobante
-			LEFT JOIN contract ON contract.contractId = comprobante.userId
-			WHERE comprobanteId = " . $id_comprobante);
+            LEFT JOIN contract ON contract.contractId = comprobante.userId
+            WHERE comprobanteId = " . $id_comprobante);
 
         $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
         $xml = $row["xml"];
-
         $rfcActivo = $row["rfcId"];
 
         $xmlReaderService = new XmlReaderService;
@@ -802,7 +801,6 @@ class Comprobante extends Producto
 
         $metodo = 'cancel';
         if($rfcProvCertif === 'EME000602QR9') {
-
             $data = [
                 'xml' => $contentXml,
                 "username" => FINKOK_USER,
@@ -815,9 +813,7 @@ class Comprobante extends Producto
                 "folio_sustitucion" => $uuidSustitucion
             ];
             $metodo = 'out_cancel';
-
         } else {
-
             $uuidItem = [
                 "UUID" => $uuid,
                 "Motivo" => $motivoSat,
@@ -838,29 +834,61 @@ class Comprobante extends Producto
         }
 
         $response = $pac->Cancelar($data, $metodo);
-
-        $responseCancel = $metodo === 'cancel' ?  $response->cancelResult : $response->out_cancelResult;
-        if (in_array($responseCancel->Folios->Folio->EstatusUUID, [201,202,798])) {
-
-            switch ($responseCancel->Folios->Folio->EstatusUUID) {
-                case 201:
-                    $cancelation->addPetition($_SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion);
-                    break;
-                case 798:// 798, 799 se excedio y necesita reseteo y 702 el motivo no es el correcto.
-                case 202:
-                    $this->actualizarRegistroComprobante($id_comprobante, $row['userId'],$motivoSat, $motivo_cancelacion, $uuidSustitucion);
-                    break;
+        $responseCancel = $metodo === 'cancel' ? $response->cancelResult : $response->out_cancelResult;
+        
+        // Define status codes and their actions
+        $mensajes = [
+            201 => "La cancelación se ha realizado correctamente.",
+            202 => "El documento ya ha ha sido cancelado anteriormente.",
+            708 => "No se ha podido conectar con el sat, intente mas tarde. recuerde que solo tiene 3 intentos para cancelar un comprobante.",
+            798 => "Ya existe una solicitud previa, para volver a mandar la petición esperar 72 horas",
+            799 => "Se ha excedido el límite de 5 intentos para cancelar el comprobante, contactar con el sporte del.",
+        ];
+        $SESSION = $_SESSION;
+        $statusActions = [
+            201 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_PENDING);
+                return true;
+            },
+            202 => function() use ($id_comprobante, $row, $motivoSat, $motivo_cancelacion, $uuidSustitucion) {
+                //no actualiza el pending_cfdi_cancel por que lo hace atravez del cron.
+                $this->actualizarRegistroComprobante($id_comprobante, $row['userId'], $motivoSat, $motivo_cancelacion, $uuidSustitucion);
+                return true;
+            },
+            // Se quema el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
+            708 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_708);
+                return false;
+            },
+            798 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_798);
+                return false;
+            },
+            // Con el control de intentos desde el front esto no deberia de suceder
+            799 => function() {
+                return false;
+            },
+            // Add more status codes here as needed
+            'default' => function($codEstatus) {
+                $errorMsg = "Ha ocurrido un error, intente nuevamente. " . ($codEstatus ?? '');
+                return $errorMsg;
             }
+        ];
 
-            $this->Util()->setError('', "complete", 'Cancelación realizado correctamente.');
+        $statusCode = $responseCancel->Folios->Folio->EstatusUUID;
+        
+        if (isset($statusActions[$statusCode])) {
+            $result = $statusActions[$statusCode]();
+            $this->Util()->setError('', $result === true ? 'complete' : 'error', $mensajes[$statusCode]);
             $this->Util()->PrintErrors();
-            return true;
+            return $result === true;
         } else {
-            $this->Util()->setError('', "error", "Ha ocurrido un error, intente nuevamente. ". ($responseCancel->CodEstatus ?? ''));
+            $errorMsg = $statusActions['default']($responseCancel->CodEstatus);
+            $this->Util()->setError('', "error", $errorMsg);
             $this->Util()->PrintErrors();
             return false;
         }
-    }//CancelarComprobante
+    }
 
     function actualizarRegistroComprobante($comprobanteId, $empresaId, $motivoSat, $motivoCancelacion, $uuidSustitucion) {
 
@@ -1273,6 +1301,31 @@ class Comprobante extends Producto
         return $row;
     }
 
+    function GetInfoFactura($id_comprobante)
+    {
+      
+        $sqlQuery = "SELECT comprobante.serie, 
+                    comprobante.folio, 
+                    comprobante.timbreFiscal, 
+                    comprobante.status,
+                    comprobante.total,
+                    rfc.rfc AS rfcEmisor, 
+                    contract.name AS razonSocial, 
+                    contract.rfc AS rfcReceptor  
+                 FROM comprobante
+                 LEFT JOIN rfc ON rfc.rfcId = comprobante.rfcId 
+                 LEFT JOIN contract ON contract.contractId = comprobante.userId
+                 WHERE comprobante.comprobanteId = '" . $id_comprobante . "'";
+
+        $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sqlQuery);
+        $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
+
+        // Deserializar el timbre fiscal y obtener el UUID
+        $timbreFiscal = unserialize($row['timbreFiscal']);
+        $row['uuid'] = $timbreFiscal['UUID'];
+
+        return $row;
+    }   
     function GetInfoComprobante($id_comprobante, $efectivo = false)
     {
 
@@ -1334,21 +1387,27 @@ class Comprobante extends Producto
         $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
 
         $sqlQuery = "SELECT *, comprobante.status AS status, comprobante.comprobanteId AS comprobanteId,
-                     CONCAT(
-                       '[',
-                        GROUP_CONCAT(
-                            CONCAT(
-                                '{\"id',
-                                '\":\"',
-                                instanciaServicio.instanciaServicioId,
-                                '\"}'
-                            )
-                        ),
-                      ']'      
-                     )  as instancias
-                     FROM comprobante
-		             LEFT JOIN instanciaServicio ON instanciaServicio.comprobanteId = comprobante.comprobanteId 
-	                 GROUP BY comprobante.comprobanteId ORDER BY fecha DESC, serie DESC, folio DESC " . $sqlAdd;
+                 (SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = comprobante.comprobanteId and deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."' LIMIT 1) as cfdi_cancel_status,
+                 (SELECT CONCAT(
+                   '[',
+                GROUP_CONCAT(
+                    CONCAT(
+                    '{\"id',
+                    '\":\"',
+                    instanciaServicio.instanciaServicioId,
+                    '\"}'
+                    )
+                ),
+                  ']'      
+                 )  FROM instanciaServicio 
+                 WHERE instanciaServicio.comprobanteId = comprobante.comprobanteId 
+                 GROUP BY instanciaServicio.comprobanteId) as instancias,
+                 contract.rfc as rfc,
+                 contract.name as nombre
+                 FROM comprobante
+                 INNER JOIN contract ON comprobante.userId = contract.contractId
+                 GROUP BY comprobante.comprobanteId 
+                 ORDER BY fecha DESC, serie DESC, folio DESC " . $sqlAdd;
 
         $id_empresa = $_SESSION['empresaId'];
 
@@ -1357,10 +1416,8 @@ class Comprobante extends Producto
 
         $info = array();
         foreach ($comprobantes as $key => $val) {
-            $user->setUserId($val['userId'], 1);
-            $usr = $user->GetUserInfo();
-            $card['rfc'] = $usr['rfc'];
-            $card['nombre'] = $usr['nombre'];
+            $card['rfc'] = $val['rfc'];
+            $card['nombre'] = $val['nombre'];
             $card['fecha'] = date('d-m-Y', strtotime($val['fecha']));
             $card['subTotal'] = $val["subTotal"];
             $card['total'] = $val["total"];
@@ -1381,8 +1438,7 @@ class Comprobante extends Producto
             $card['procedencia'] = $val['procedencia'];
             $timbreFiscal = unserialize($val['timbreFiscal']);
             $card["uuid"] = $timbreFiscal["UUID"];
-            $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '" . $val['comprobanteId'] . "' ");
-            $card["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
+            $card["cfdi_cancel_status"] = $val['cfdi_cancel_status'];
 
             $info[$key] = $card;
 
@@ -1513,7 +1569,7 @@ class Comprobante extends Producto
                         ),
                       ']'      
                      )  FROM instanciaServicio where instanciaServicio.comprobanteId = c.comprobanteId GROUP BY instanciaServicio.comprobanteId ) as instancias,
-                    (SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = c.comprobanteId limit 1) cfdi_cancel_status
+                    (SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = c.comprobanteId AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."' limit 1) cfdi_cancel_status
                     FROM comprobante as c
                     LEFT JOIN (select contract.contractId,contract.name,contract.rfc,customer.nameContact FROM contract INNER JOIN customer on contract.customerId = customer.customerId) a ON a.contractId = c.userId 
                     $innerpermisos
@@ -2138,7 +2194,7 @@ class Comprobante extends Producto
 
         $sql = "select a.comprobanteId,concat(a.serie,a.folio) as folio, a.rfcId, a.fecha,a.total,a.xml,a.status,a.empresaId,a.version,a.timbreFiscal,a.noCertificado,a.tiposComprobanteId,b.name,b.rfc,b.type as tipoPersona from comprobante a 
                 inner join contract b on a.userId=b.contractId
-                where a.comprobanteId in (select cfdi_id from pending_cfdi_cancel)";
+                where a.comprobanteId in (select cfdi_id from pending_cfdi_cancel WHERE deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."')";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         if (!is_array($result))

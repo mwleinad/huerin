@@ -79,24 +79,26 @@ function FViewOffSet(response, modal = 'fview')
         handle:"#draganddrop"
     });
 }
-function ShowErrorOnPopup(message,error)
-{
-    var closed ='<div id="centeredDivOnPopup" style="margin:auto; position:fixed; top:50%; left:50%; margin-top:-150px;margin-left:-275px;z-index:3000">' +
-                '<div style="width:548px;  border:solid; border-color:#999;border-width:1px; background-color:#ccc; padding-left:5px; padding-top:5px; padding-bottom:5px">' +
-                    '<div style="width:500px;  border:solid; border-color:#999;border-width:1px; background-color:#FFF; padding:20px">' +
-                        '<div id="close_icon" style="position:absolute;top: 10px; left: 500px">' +
-                            '<img src="'+WEB_ROOT+'/images/close_icon.gif"  style="cursor: pointer" onclick="ToogleStatusDivOnPopup()" />' +
-                        '</div>';
-    if(!error)
-        var bdy = '<h3><img src="'+WEB_ROOT+'/images/ok.gif" /></h3>';
-    else
-        var bdy = '<h3><img src="'+WEB_ROOT+'/images/error.gif" /></h3>';
+function ShowErrorOnPopup(message, error) {
+  const popupContent = `
+    <div id="centeredDivOnPopup" style="margin:auto; position:fixed; top:50%; left:50%; margin-top:-150px;margin-left:-275px;z-index:3000">
+      <div style="width:548px; border:solid; border-color:#999;border-width:1px; background-color:#ccc; padding-left:5px; padding-top:5px; padding-bottom:5px">
+        <div style="width:500px; border:solid; border-color:#999;border-width:1px; background-color:#FFF; padding:20px">
+          <div id="close_icon" style="position:absolute;top: 10px; left: 500px">
+            <img src="${WEB_ROOT}/images/close_icon.gif" style="cursor: pointer" onclick="ToogleStatusDivOnPopup()" />
+          </div>
+          <h3>
+            <img src="${WEB_ROOT}/images/${error ? 'error' : 'ok'}.gif" />
+          </h3>
+          <div style="position:relative;top:-40px;left:50px; font-size:16px;text-align:justify;width:400px;overflow-wrap:break-word;">
+            ${message}
+          </div>
+        </div>
+      </div>
+    </div>`;
 
-    var bo = '<div style="position:relative;top:-40px;left:50px; font-size:16px;text-align:justify;">'+message+'</div> </div></div></div>';
-    var pop = closed.concat(bdy,bo);
-    $('divStatus').innerHTML = pop;
-    $('centeredDivOnPopup').show();
-    grayOut(true);
-
+  $('divStatus').innerHTML = popupContent;
+  $('centeredDivOnPopup').show();
+  grayOut(true);
 }
 

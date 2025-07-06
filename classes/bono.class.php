@@ -56,7 +56,7 @@ class Bono extends Personal
         $this->setPersonalId($_POST['responsableCuenta']);
         $info = $this->InfoWhitRol();
         $niveles = [];
-        if ($info['nivel'] === 2) {
+        if ($info['nivel'] == 2) {
             $niveles = [3,4];
         } elseif($info['nivel'] == 3) {
             $niveles = [4,5];

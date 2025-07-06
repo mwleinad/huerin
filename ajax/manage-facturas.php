@@ -36,9 +36,7 @@
 
 			$serie = $compInfo['serie'];
 			$folio = $compInfo['folio'];
-			$status = $compInfo['status'];
 
-			$smarty->assign('status', $status);
 			$smarty->assign('id_comprobante', $id_comprobante);
 			$smarty->assign('rfc', $nomRfc);
 			$smarty->assign('serie', $serie);
@@ -46,7 +44,100 @@
 			$smarty->assign('DOC_ROOT', DOC_ROOT);
 			$smarty->display(DOC_ROOT.'/templates/boxes/cancelar-factura-popup.tpl');
 		break;
+		case 'get_cancelacion_info':
+			$id_comprobante = $_POST['id_item'];
+			$response = ['success' => false, 'data' => []];
+			
+			try {
+				$compInfo = $comprobante->GetInfoFactura($id_comprobante);
+				$status = $compInfo['status'];
+				
+				// Verificar intentos de cancelación usando el método de la clase
+				$cancelation = new Cancelation();
+				$intentos_cancelacion = $cancelation->getCancelationAttempts($id_comprobante);
+				
+				// Verificar estatus en SAT
+				$sat_message = '';
+				if($status == 1) {
+					$sat_response = $cancelation->getStatus($compInfo['rfcEmisor'], $compInfo['rfcReceptor'], $compInfo['uuid'], $compInfo['total']);
+
+					if($sat_response && isset($sat_response->ConsultaResult)) {
+						$sat_status = $sat_response->ConsultaResult->Estado ?? 'No disponible';
+						$es_cancelable = $sat_response->ConsultaResult->EsCancelable ?? 'No disponible';
+						$estatus_cancelacion = $sat_response->ConsultaResult->EstatusCancelacion ?? '';
+						
+						$sat_message = "$sat_status";
+						if($es_cancelable) {
+							$sat_message .= " | Es cancelable: $es_cancelable";
+						}
+						if($estatus_cancelacion) {
+							$sat_message .= " | Estatus cancelación: $estatus_cancelacion";
+						}
+					} else {
+						$sat_message = "No se pudo consultar el estatus en el SAT, la factura es muy reciente o no está disponible, intente más tarde.";
+					}
+				}
+				
+				$response = [
+					'success' => true,
+					'data' => [
+						'status' => $status,
+						'sat_message' => $sat_message,
+						'intentos_cancelacion' => $intentos_cancelacion,
+						'max_intentos' => MAXIMO_INTENTOS_CANCELACION
+					]
+				];
+				
+			} catch (Exception $e) {
+				$response = [
+					'success' => false,
+					'error' => 'Error al obtener información de cancelación'
+				];
+			}
+			
+			echo json_encode($response);
+		break;
+		/* VALIDACIÓN UUID TEMPORALMENTE DESHABILITADA
+		case 'validar_uuid':
+			$uuid = $_POST['uuid'] ?? '';
+			$response = ['valid' => false, 'exists' => false, 'message' => ''];
+			
+			// Validar formato UUID
+			if(!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid)) {
+				$response['message'] = 'Formato de UUID inválido';
+				echo json_encode($response);
+				break;
+			}
+			
+			$response['valid'] = true;
+			
+			// Verificar si el UUID existe en el sistema
+			$sqlUuid = "SELECT comprobanteId, serie, folio, status FROM comprobante WHERE uuid = '$uuid' AND empresaId = '".$_SESSION['empresaId']."'";
+			$comprobante->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sqlUuid);
+			$uuidExists = $comprobante->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
+			
+			if($uuidExists) {
+				$response['exists'] = true;
+				$response['message'] = "UUID encontrado - Serie: {$uuidExists['serie']}, Folio: {$uuidExists['folio']}, Status: " . 
+									  ($uuidExists['status'] == 1 ? 'Activa' : 'Cancelada');
+			} else {
+				$response['message'] = 'UUID no encontrado en el sistema';
+			}
+			
+			echo json_encode($response);
+		break;
+		*/
 		case 'cancelar_factura':
+			// Verificar intentos de cancelación antes de procesar
+			$id_comprobante = $_POST['id_comprobante'];
+			$cancelation = new Cancelation();
+			$intentos_cancelacion = $cancelation->getCancelationAttempts($id_comprobante);
+			
+			if($intentos_cancelacion >= 2) {
+				echo 'fail[#]<div class="alert alert-danger">Has excedido el máximo de intentos de cancelación (2) para esta factura.</div>';
+				break;
+			}
+			
 			$empresa->setComprobanteId($_POST['id_comprobante']);
 			$empresa->setMotivoCancelacionSat($_POST['motivo_sat']);
 			if(in_array($_POST['motivo_sat'], ['01', '04']))

@@ -17,12 +17,15 @@
     </div>
 </div>
 <div class="wrapper">
-    {* if $status == 1}
-        {include file="{$DOC_ROOT}/templates/forms/motivo-cancelacion.tpl"}
-    {else}
-        <div class="m">La factura ya fue cancelada.</div>
-    {/if *}
-    <div x-data="componenteCancelar()" x-init="initData({$id_comprobante})">
+    <div x-data="componenteCancelar()" x-init="initData({$id_comprobante})" x-cloak>
+        <!-- Mensaje si se excedieron los intentos -->
+        <div class="cancelacion-blocked" x-show="sat_info.intentos_cancelacion >= sat_info.max_intentos && sat_info.status === 1">
+            <strong>No se puede procesar más cancelaciones para esta factura.</strong><br/>
+            Has excedido el límite máximo de intentos de cancelación.
+        </div>
+
+        <!-- Formulario de cancelación (solo si está permitido) -->
+        <div x-show="sat_info.status === 1 && sat_info.intentos_cancelacion < sat_info.max_intentos">
         <fieldset>
             <div class="container_16">
                 <div class="grid_16">
@@ -82,8 +85,28 @@
                                     <input  :readonly="current_cancelacion.uuid_sustitucion !== null
                                                        && current_cancelacion.origen_sustitucion == 2"
                                             x-model="current_cancelacion.uuid_sustitucion"
+                                            @input="validateUUID"
+                                            :class="'largeInput ' + 
+                                                   (uuid_validation.status === 'success' ? 'input-validation-success' : 
+                                                   uuid_validation.status === 'warning' ? 'input-validation-warning' : 
+                                                   uuid_validation.status === 'error' ? 'input-validation-error' : '')"
                                             type="text"
-                                            class="largeInput">
+                                            placeholder="Ingrese el UUID (formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
+                                            maxlength="36">
+                                    
+                                    <!-- Mensaje de validación -->
+                                    <div x-show="uuid_validation.message && !uuid_validation.is_checking" 
+                                         :class="'uuid-validation-message uuid-validation-' + uuid_validation.status">
+                                        <span x-show="uuid_validation.status === 'success'">✓</span>
+                                        <span x-show="uuid_validation.status === 'warning'">⚠</span>
+                                        <span x-show="uuid_validation.status === 'error'">✗</span>
+                                        <span x-text="uuid_validation.message"></span>
+                                    </div>
+                                    
+                                    <!-- Loading de validación -->
+                                    <div x-show="uuid_validation.is_checking" class="uuid-validation-loading">
+                                        <img src="{$WEB_ROOT}/images/loading.gif"> Validando UUID...
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -101,6 +124,36 @@
                     <hr/>
                 </div>
             </div>
+             <div class="container_16" style="margin-top: 15px;margin-bottom: 15px;" x-show="loading_consultado_estatus_sat">
+                <div class="grid_16">
+                    <!-- mostrar loading consultando estatus -->
+                    <p>Consultando estatus en el SAT... 
+                    <img src="{$WEB_ROOT}/images/loading.gif" x-show="loading_consultado_estatus_sat"/>
+                    </p>
+                </div>
+             </div>
+             <!-- Panel de información de estatus SAT e intentos -->
+            <div class="container_16" style="margin-top: 15px;margin-bottom: 15px;" x-show="sat_info.show_info && !loading_consultado_estatus_sat">
+                <div class="grid_16" x-show="sat_info.sat_message">
+                    <div class="cancelacion-info-panel cancelacion-info-sat">
+                        <strong>Estatus en el SAT:</strong> <span x-text="sat_info.sat_message"></span>
+                    </div>
+                </div>
+                <div class="grid_16">
+                    <div class="cancelacion-info-panel cancelacion-info-intentos" 
+                        :class="sat_info.intentos_cancelacion >= sat_info.max_intentos ? 'max-reached' : ''">
+                        <strong>Intentos de cancelación:</strong> 
+                        <span>Has realizado </span>
+                        <span x-text="sat_info.intentos_cancelacion"></span> intentos de <span x-text="sat_info.max_intentos"></span> máximo
+                        <div x-show="sat_info.intentos_cancelacion >= sat_info.max_intentos">
+                            <br/><strong>¡Has alcanzado el máximo de intentos permitidos!</strong>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- Mensaje si la factura ya fue cancelada -->
+        <div class="m" x-show="sat_info.status === 0">La factura ya fue cancelada.</div>
         </fieldset>
         <div class="actionPopup">
             <span class="msjRequired"><em style="color:#ff0000">*</em> Campos requeridos </span><br>
@@ -116,5 +169,6 @@
                 </a>
             </div>
         </div>
+        </div> <!-- Cierre del formulario de cancelación -->
     </div>
 </div>
