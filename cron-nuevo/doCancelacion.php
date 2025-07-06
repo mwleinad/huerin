@@ -16,7 +16,7 @@ define('DOC_ROOT', $docRoot);
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
-$db->setQuery("SELECT * FROM pending_cfdi_cancel WHERE status = 'pending'");
+$db->setQuery("SELECT * FROM pending_cfdi_cancel WHERE status = '".CFDI_CANCEL_STATUS_PENDING."' AND deleted_at IS NULL");
 $result = $db->GetResult();
 foreach($result as $key => $row) {
 

@@ -757,7 +757,7 @@ class InvoiceService extends Cfdi{
             $row['setTipoComprobante'] = $row['tiposComprobanteId']."-".$serieId;
 
             //pending_cfdi_cancel si tiene un registro esta en proceso de cancelacion.
-            $sqlp = "SELECT count(*) FROM pending_cfdi_cancel WHERE cfdi_id= '".$row['comprobanteId']."' ";
+            $sqlp = "SELECT count(*) FROM pending_cfdi_cancel WHERE cfdi_id= '".$row['comprobanteId']."' AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."'";
             $this->Util()->DB()->setQuery($sqlp);
             $existProceso = $this->Util()->DB()->GetSingle();
             if($existProceso > 0)

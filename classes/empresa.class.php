@@ -687,7 +687,7 @@ class Empresa extends Main
        				 a.data,
        				 a.conceptos, 
        				 a.userId,
-       				 a.serie,
+       				 a.serie, 
        				 a.folio,
        				 b.name,	
                      CASE a.tiposComprobanteId

@@ -26,7 +26,7 @@ class XmlReaderService extends Comprobante
 				WHERE comprobanteId ='$id' ";
         $this->Util()->DBSelect($empresaId)->setQuery($sql);
         $data["db"] = $this->Util()->DBSelect($empresaId)->GetRow();
-        $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$data["db"]['comprobanteId']."'");
+        $this->Util()->DB()->setQuery("SELECT status FROM pending_cfdi_cancel WHERE cfdi_id = '".$data["db"]['comprobanteId']."' AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."'");
         $data["db"]["cfdi_cancel_status"] = $this->Util()->DB()->GetSingle();
 
         if($_SESSION['observaciones']){

@@ -75,7 +75,7 @@ class CxC extends Producto
                 $card["uuid"] = $timbreFiscal["UUID"];
 
                 //si tiene solicitud de cancelacion se debe omitir.
-                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' ";
+                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."'";
                 $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
                 $requestCancel = $this->Util()->DBSelect($id_empresa)->GetSingle();
                 if($requestCancel)
@@ -129,7 +129,7 @@ class CxC extends Producto
                 $card['efectivo'] = true;
                 $card['facturador'] = 'Efectivo';
                 //si tiene solicitud de cancelacion se debe omitir.
-                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' ";
+                $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."'";
                 $this->Util()->DBSelect($id_empresa)->setQuery($sqlQuery);
                 $requestCancel = $this->Util()->DBSelect($id_empresa)->GetSingle();
                 if($requestCancel)
