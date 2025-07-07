@@ -141,7 +141,7 @@ class Bono extends Personal
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
 
-          $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
+        $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
                 HAVING tienePermiso > 0 ".$ftr_departamento."
                 ORDER BY a.name ASC, a.name_service ASC ";
 
@@ -226,7 +226,7 @@ class Bono extends Personal
         foreach ($supervisores as $ksup => $supervisor) {
             $ftrDepId = $_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : $supervisor['departamentoId'];
 
-            if($supervisor['nivel'] == 4 && $data['nivel'] == 3) {
+            if($supervisor['nivel'] == 4 && $data['gerente']['nivel'] == 3) {
 
                 if(!in_array($supervisor['personalId'],$subgerentesId)) {
                     $supervisor['gasto_adicional'] = !$ftrDepId ? $this->gastoAdicional(4) : 0;
@@ -236,7 +236,7 @@ class Bono extends Personal
                 continue;
             }
 
-            $tieneSubgerente = $supervisor['jefe']['nivel'] == 4 && $data['nivel'] == 3;
+            $tieneSubgerente = $supervisor['jefe']['nivel'] == 4 && $data['gerente']['nivel'] == 3;
             $jefe = $supervisor['jefe'];
             if($tieneSubgerente && !in_array($jefe['personalId'],$subgerentesId) ) {
 
