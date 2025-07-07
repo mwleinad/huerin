@@ -99,13 +99,13 @@ class Bono extends Personal
         }
 
         $data['subordinados'] = $subordinados_filtrados;
-        $info['propios'] = $this->getRowsBySheet($info, $name_view, $filtro);
+        $info['propios'] = $this->getRowsBySheet($info, $name_view, $filtro, false);
         $data['gerente'] = $info;
 
         return $data;
     }
 
-    public function getRowsBySheet($encargado, $view, $ftr = [])
+    public function getRowsBySheet($encargado, $view, $ftr = [], $incluirSubordinados = true)
     {
         $ftr_departamento   = $ftr['departamento_id'] ? " and a.departamento_id in(" . $ftr['departamento_id'] . ") " : "";
 
@@ -117,11 +117,16 @@ class Bono extends Personal
                                WHERE contractPermiso.contractId = a.contract_id 
                                GROUP BY contractPermiso.contractId) permiso_detallado ";
 
-        $encargados =  [];
-        $this->setPersonalId($encargado['personalId']);
-        $encargados =  $this->Subordinados();
-        $encargados =  !is_array($encargados) ? [] : array_column($encargados, 'personalId');
+
         $encargados = [];
+
+        if ($incluirSubordinados) {
+
+            $this->setPersonalId($encargado['personalId']);
+            $encargados = $this->Subordinados();
+            $encargados =  !is_array($encargados) ? [] : array_column($encargados, 'personalId');
+        }
+
         array_push($encargados, $encargado['personalId']);
         $stringEncargados =  "0,".implode(',', $encargados);
 
