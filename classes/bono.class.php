@@ -110,7 +110,8 @@ class Bono extends Personal
         $ftr_departamento   = $ftr['departamento_id'] ? " and a.departamento_id in(" . $ftr['departamento_id'] . ") " : "";
 
         $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA, 'principal');
-        $ftrExcludeGerenciales = "";
+
+        $subqueryPermiso = "";
         if (count($gerenciales) >= 0) {
 
             $gerencialesMap = array_map(function ($item) {
@@ -118,7 +119,8 @@ class Bono extends Personal
             }, $gerenciales);
 
             $implodeGerenciales = implode(",", $gerencialesMap);
-            $ftrExcludeGerenciales =  " and departamentos.departamento not in(" . $implodeGerenciales . ") ";
+
+            $subqueryPermiso = " AND EXISTS(select departamentoId from departamentos where departamentos.departamentoId = sd.departamentoId AND departamentos.departamento not in(" . $implodeGerenciales . ")) ";
         }
 
         $queryPermiso       = " (SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
@@ -127,7 +129,6 @@ class Bono extends Personal
                                INNER JOIN personal ON contractPermiso.personalId = personal.personalId  
                                INNER JOIN departamentos ON contractPermiso.departamentoId = departamentos.departamentoId
                                WHERE contractPermiso.contractId = a.contract_id 
-                               ". $ftrExcludeGerenciales . "
                                GROUP BY contractPermiso.contractId) permiso_detallado ";
 
 
@@ -145,6 +146,7 @@ class Bono extends Personal
 
         $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
                             WHERE sd.personalId IN(". $stringEncargados .")
+                            ".$subqueryPermiso." 
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
         $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
