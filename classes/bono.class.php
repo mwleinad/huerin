@@ -111,14 +111,14 @@ class Bono extends Personal
 
         $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA, 'principal');
         $ftrExcludeGerenciales = "";
-        if (count($gerenciales) <= 0) {
+        if (count($gerenciales) >= 0) {
 
             $gerencialesMap = array_map(function ($item) {
                 return "'" . $item . "'";
             }, $gerenciales);
 
             $implodeGerenciales = implode(",", $gerencialesMap);
-            $ftrExcludeGerenciales =  " and a.departamento_id not in(" . $implodeGerenciales . ") ";
+            $ftrExcludeGerenciales =  " and departamentos.departamento not in(" . $implodeGerenciales . ") ";
         }
 
         $queryPermiso       = " (SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
