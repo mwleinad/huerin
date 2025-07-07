@@ -107,7 +107,7 @@ class Bono extends Personal
 
     public function getRowsBySheet($encargado, $view, $ftr = [])
     {
-        $ftr_departamento   = $_POST['departamentoId'] ? " and a.departamento_id in(" . $_POST['departamentoId'] . ") " : "";
+        $ftr_departamento   = $ftr['departamento_id'] ? " and a.departamento_id in(" . $ftr['departamento_id'] . ") " : "";
 
         $queryPermiso       = " (SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
                                departamentos.departamento, 'personal_id', contractPermiso.personalId, 'nombre', personal.name)), ']') 
