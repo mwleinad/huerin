@@ -109,19 +109,9 @@ class Bono extends Personal
     {
         $ftr_departamento   = $ftr['departamento_id'] ? " and a.departamento_id in(" . $ftr['departamento_id'] . ") " : "";
 
-        $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA, 'principal');
+        $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA ?? [], 'principal');
 
-        $subqueryPermiso = "";
-        if (count($gerenciales) > 0) {
-
-            $gerencialesMap = array_map(function ($item) {
-                return "'" . $item . "'";
-            }, $gerenciales);
-
-            $implodeGerenciales = implode(",", $gerencialesMap);
-
-            $subqueryPermiso = " AND sd.departamentoId IN(select departamentoId from departamentos where departamentos.departamento not in(" . $implodeGerenciales . ")) ";
-        }
+        $implodeGerenciales = is_array($gerenciales) ? implode(',', array_map(function($item) { return "'".$item."'"; }, $gerenciales)) : '0';
 
         $queryPermiso       = " (SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
                                departamentos.departamento, 'personal_id', contractPermiso.personalId, 'nombre', personal.name)), ']') 
@@ -145,12 +135,13 @@ class Bono extends Personal
         $stringEncargados =  "0,".implode(',', $encargados);
 
         $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
+                            INNER JOIN departamentos dep ON sd.departamentoId = dep.departamentoId
                             WHERE sd.personalId IN(". $stringEncargados .")
-                            ".$subqueryPermiso." 
+                            AND dep.departamento NOT IN (".$implodeGerenciales.") 
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
 
-        $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
+          $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
                 HAVING tienePermiso > 0 ".$ftr_departamento."
                 ORDER BY a.name ASC, a.name_service ASC ";
 
