@@ -76,12 +76,13 @@ BEGIN
 							FROM contract 
 							INNER JOIN customer ON contract.customerId =  customer.customerId 
 							WHERE EXISTS(
-								SELECT 
-								contractPermiso.personalId 
-								FROM contractPermiso 
-								WHERE 
-									contractPermiso.personalId IN (pEmpleado)
-								AND contractPermiso.contractId=contract.contractId
+                                SELECT
+                                tb_cp.personalId
+                                FROM contractPermiso tb_cp
+                                INNER JOIN departamentos tb_dp ON tb_cp.departamentoId = tb_dp.departamentoId
+                                WHERE tb_cp.personalId IN (pEmpleado)
+                                    AND tb_dp.esGerencial = 0
+                                    AND tb_cp.contractId=contract.contractId
 							)
 							AND customer.active = '1'
 							AND contract.activo = 'Si'
@@ -188,12 +189,13 @@ BEGIN
 							FROM contract 
 							INNER JOIN customer ON contract.customerId =  customer.customerId 
 							WHERE EXISTS(
-								SELECT 
-								contractPermiso.personalId 
-								FROM contractPermiso 
-								WHERE 
-									contractPermiso.personalId IN (pEmpleado)
-								AND contractPermiso.contractId=contract.contractId
+                                SELECT
+                                    tb_cp.personalId
+                                FROM contractPermiso tb_cp
+                                         INNER JOIN departamentos tb_dp ON tb_cp.departamentoId = tb_dp.departamentoId
+                                WHERE tb_cp.personalId IN (pEmpleado)
+                                  AND tb_dp.esGerencial = 0
+                                  AND tb_cp.contractId=contract.contractId
 							)
 							AND customer.active = '1'
 							AND contract.activo = 'Si'
@@ -299,12 +301,13 @@ BEGIN
 							FROM contract 
 							INNER JOIN customer ON contract.customerId =  customer.customerId 
 							WHERE EXISTS(
-								SELECT 
-								contractPermiso.personalId 
-								FROM contractPermiso 
-								WHERE 
-									contractPermiso.personalId IN (pEmpleado)
-								AND contractPermiso.contractId=contract.contractId
+                                SELECT
+                                    tb_cp.personalId
+                                FROM contractPermiso tb_cp
+                                         INNER JOIN departamentos tb_dp ON tb_cp.departamentoId = tb_dp.departamentoId
+                                WHERE tb_cp.personalId IN (pEmpleado)
+                                  AND tb_dp.esGerencial = 0
+                                  AND tb_cp.contractId=contract.contractId
 							)
 							AND customer.active = '1'
 							AND contract.activo = 'Si'
@@ -412,12 +415,13 @@ BEGIN
 							FROM contract 
 							INNER JOIN customer ON contract.customerId =  customer.customerId 
 							WHERE EXISTS(
-								SELECT 
-								contractPermiso.personalId 
-								FROM contractPermiso 
-								WHERE 
-									contractPermiso.personalId IN (pEmpleado)
-								AND contractPermiso.contractId=contract.contractId
+                                SELECT
+                                    tb_cp.personalId
+                                FROM contractPermiso tb_cp
+                                         INNER JOIN departamentos tb_dp ON tb_cp.departamentoId = tb_dp.departamentoId
+                                WHERE tb_cp.personalId IN (pEmpleado)
+                                  AND tb_dp.esGerencial = 0
+                                  AND tb_cp.contractId=contract.contractId
 							)
 							AND customer.active = '1'
 							AND contract.activo = 'Si'
