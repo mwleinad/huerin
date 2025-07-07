@@ -73,7 +73,7 @@ class Bono extends Personal
             $this->setPersonalId($sub['jefeInmediato']);
             $cad['jefe'] = $this->InfoWhitRol();
 
-            $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro);
+            $propios_sub    = $this->getRowsBySheet($sub, $name_view, $filtro, false);
             $cad['propios'] = $propios_sub;
             $this->setPersonalId($sub['personalId']);
             $childs             = $this->GetCascadeSubordinates();
