@@ -112,7 +112,7 @@ class Bono extends Personal
         $gerenciales= array_column(DEPARTAMENTOS_TIPO_GERENCIA, 'principal');
 
         $subqueryPermiso = "";
-        if (count($gerenciales) >= 0) {
+        if (count($gerenciales) > 0) {
 
             $gerencialesMap = array_map(function ($item) {
                 return "'" . $item . "'";
@@ -120,7 +120,7 @@ class Bono extends Personal
 
             $implodeGerenciales = implode(",", $gerencialesMap);
 
-            $subqueryPermiso = " AND EXISTS(select departamentoId from departamentos where departamentos.departamentoId = sd.departamentoId AND departamentos.departamento not in(" . $implodeGerenciales . ")) ";
+            $subqueryPermiso = " AND sd.departamentoId IN(select departamentoId from departamentos where departamentos.departamento not in(" . $implodeGerenciales . ")) ";
         }
 
         $queryPermiso       = " (SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',
@@ -148,6 +148,7 @@ class Bono extends Personal
                             WHERE sd.personalId IN(". $stringEncargados .")
                             ".$subqueryPermiso." 
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
+
 
         $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
                 HAVING tienePermiso > 0 ".$ftr_departamento."
