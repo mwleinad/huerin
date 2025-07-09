@@ -840,6 +840,8 @@ class Comprobante extends Producto
         $mensajes = [
             201 => "La cancelación se ha realizado correctamente.",
             202 => "El documento ya ha ha sido cancelado anteriormente.",
+            207 => "Motivo de cancelacion invalido o Relacion de CFDI incorrecta, si es una cancelacion por sustitucion, favor de ingresar el UUID del CFDI que sustituye y asegurar que el tipo de relacion sea 04.",
+            'no_cancelable' =>"La factura contiene CFDI relacionados, Se recomienda revisar las relaciones de la factura, para determinar el proceso de cancelación.",
             708 => "No se ha podido conectar con el sat, intente mas tarde. recuerde que solo tiene 3 intentos para cancelar un comprobante.",
             798 => "Ya existe una solicitud previa, para volver a mandar la petición esperar 72 horas",
             799 => "Se ha excedido el límite máximo de intentos para cancelar el comprobante, contactar con el soporte técnico del PAC.",
@@ -855,7 +857,15 @@ class Comprobante extends Producto
                 $this->actualizarRegistroComprobante($id_comprobante, $row['userId'], $motivoSat, $motivo_cancelacion, $uuidSustitucion);
                 return true;
             },
-            // Se quema el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
+            // Se queman el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
+            207 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_207);
+                return false;
+            },
+            'no_cancelable' => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_NO_CANCELABLE);
+                return false;
+            },
             708 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_708);
                 return false;
