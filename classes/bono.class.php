@@ -87,7 +87,7 @@ class Bono extends Personal
                 $child['jefe'] = $this->InfoWhitRol();
 
                 $cad_child =  $child;
-                $propios_child = $this->getRowsBySheet($child, $name_view, $filtro);
+                $propios_child = $this->getRowsBySheet($child, $name_view, $filtro,false);
                 $cad_child['propios'] = $propios_child;
                 //if(count($propios_child) > 0)
                     array_push($childs_filtrados, $cad_child);
