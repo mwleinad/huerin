@@ -58,7 +58,7 @@ BEGIN
 		personal.phone,
 		personal.ext,
 		personal.jefeInmediato,
-		(SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as puesto,
+		IF(roles.name ='Coordinador', 'Director', (SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1)) as puesto,
 		personal.departamentoId as area_id,
 		(SELECT departamento from departamentos WHERE departamentoId = personal.departamentoId LIMIT 1) as area,
 		personal.grupo departamento,
@@ -72,7 +72,7 @@ BEGIN
 		personal.active
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
-		WHERE roles.nivel > 1
+		WHERE  (roles.nivel > 1 or roles.name = 'Coordinador')
         ORDER BY roles.nivel ASC, area ASC ,departamento ASC, personal.name ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_empleados;
