@@ -61,13 +61,11 @@ class Consolidado2023 extends Personal
         $cleaned_gerentes = [];
         foreach ($gerentes as $gerente) {
             $filtroDeps = [$gerente['departamentoId']];
-            if($gerente['departamentoId'] == 1)
-                array_push($filtroDeps, 31);
-
+            
             $this->setPersonalId($gerente['personalId']);
-            $subordinadosSubSup = $this->getSubordinadosNoDirectoByLevel(5); //
+            $subordinados = $this->getSubordinadosNoDirectoByLevel([4,5]); //
 
-            if(count($subordinadosSubSup) <= 0)
+            if(count($subordinados) <= 0)
                 continue;
 
             $conRegistros  = 0;
@@ -79,21 +77,53 @@ class Consolidado2023 extends Personal
 
             array_push($cleaned_subordinados, $gerente);
 
-            foreach ($subordinadosSubSup as $key => $subSup) {
-                $this->setPersonalId($subSup['personalId']);
-                $subordinados =  $this->GetCascadeSubordinates();
-                $subordinadosLineal =  is_array($subordinados) ?  array_column($subordinados, 'personalId') : [];
-                //$subordinadosLineal = [];
-                $sueldosSubs =  is_array($subordinados) ?  array_column($subordinados, 'sueldo') : [];
-                $subSup['sueldo'] = $subSup['sueldo'] + array_sum($sueldosSubs);
-                array_push($subordinadosLineal, $subSup['personalId']);
+            foreach ($subordinados as $key => $sub) {
 
-                unset($subSup['children']);
-                $subSup['propios'] = $this->getRowsPropios($subordinadosLineal, $name_view, $filtroDeps);
-                if(count($subSup['propios']) > 0)
-                    $conRegistros +=1;
+                if ($sub['nivel'] == 4) { // Subgerente
+                    $item_subgerente = $sub;
+                    // Obtener supervisores bajo este subgerente
+                    $this->setPersonalId($sub['personalId']);
+                    $supervisores = $this->getSubordinadosNoDirectoByLevel(5);
 
-                array_push($cleaned_subordinados, $subSup);
+                    $item_subgerente['propios'] = $this->getRowsPropios($sub['personalId'], $name_view, $filtroDeps);
+                    $item_subgerente['tipoPersonal'] = 'Subgerente';
+                    $cleaned_subordinados[] = $item_subgerente;
+
+                    if(count($item_subgerente['propios']) > 0)
+                            $conRegistros +=1;
+
+            
+                    foreach ($supervisores as $supervisor) {
+                        $item_supervisor = $supervisor;
+                        
+                        $this->setPersonalId($supervisor['personalId']);
+                        $childs = $this->GetCascadeSubordinates();
+
+                        $childsId = array_map(function($s) { return $s['personalId']; }, $childs);
+                        $item_supervisor['sueldo'] += array_sum(is_array($childs) ? array_column($childs, 'sueldo') : []);
+                        $item_supervisor['propios'] = $this->getRowsPropios($childsId, $name_view, $filtroDeps);
+                        $item_supervisor['tipoPersonal'] = 'Supervisor';
+                        if(count($item_supervisor['propios']) > 0)
+                            $conRegistros +=1;
+                        $cleaned_subordinados[] = $item_supervisor;
+                        
+                    }
+                } elseif ($sub['nivel'] == 5) { // Supervisor directo del gerente
+                    $item_supervisor = $sub;
+
+                    $this->setPersonalId($sub['personalId']);
+                    $childs = $this->GetCascadeSubordinates();
+
+                    $childsId = array_map(function($s) { return $s['personalId']; }, $childs);
+                    $item_supervisor['sueldo'] += array_sum(is_array($childs) ? array_column($childs, 'sueldo') : []);
+                    $item_supervisor['propios'] = $this->getRowsPropios($childsId, $name_view, $filtroDeps);
+                    $item_supervisor['tipoPersonal'] = 'Supervisor';
+                    if(count($item_supervisor['propios']) > 0)
+                        $conRegistros +=1;
+
+                    $cleaned_subordinados[] = $item_supervisor;
+                }
+            
             }
             $item_gerente['subordinados_cascada'] = $cleaned_subordinados;
 
@@ -121,7 +151,9 @@ class Consolidado2023 extends Personal
         $id =  is_array($id) ?  implode(',', $id) : $id;
 
         $tienePermiso     = ", (SELECT COUNT(*) total FROM contractPermiso sd 
+                            INNER JOIN departamentos dep ON sd.departamentoId = dep.departamentoId
                             WHERE sd.personalId IN(". $id .")
+                            AND dep.esGerencial = 0
                             AND   sd.contractId = a.contract_id) as tienePermiso ";
 
         $queryPermiso       = ",(SELECT CONCAT('[',GROUP_CONCAT(JSON_OBJECT('departamento_id', contractPermiso.departamentoId, 'departamento',

@@ -143,7 +143,7 @@ class Bono extends Personal
 
         $sql = "SELECT a.*, ". $queryPermiso.$tienePermiso." FROM " . $view ." a 
                 HAVING tienePermiso > 0 ".$ftr_departamento."
-                ORDER BY a.name ASC, a.name_service ASC ";
+                ORDER BY a.customer ASC, a.name ASC, a.name_service ASC ";
 
         $this->Util()->DB()->setQuery($sql);
         $res = $this->Util()->DB()->GetResult();
