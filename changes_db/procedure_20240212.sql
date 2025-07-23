@@ -73,7 +73,9 @@ BEGIN
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
 		WHERE  (roles.nivel > 1 or roles.name = 'Coordinador')
-        ORDER BY roles.nivel ASC, area ASC ,departamento ASC, personal.name ASC;
+        ORDER BY CASE 
+		  	WHEN roles.name = 'Coordinador' THEN 2
+			ELSE roles.nivel END ASC, area ASC ,departamento ASC, personal.name ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_empleados;
 		

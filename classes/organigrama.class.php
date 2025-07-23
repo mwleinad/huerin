@@ -72,11 +72,6 @@ class organigrama extends Personal
         return $new;
     }
 
-    function agruparPorDepartamento($items) {
-
-    }
-
-
     public function getNameReport()
     {
         return $this->nameReport;

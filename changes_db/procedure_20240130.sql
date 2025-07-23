@@ -561,7 +561,7 @@ BEGIN
 		personal.personalId,
 		personal.name,
 		personal.jefeInmediato,
-		(SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as puesto,
+		IF(roles.name ='Coordinador', 'Director', (SELECT name from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1)) as puesto,
 		personal.departamentoId as departamentoId,
 		(SELECT departamento from departamentos WHERE departamentoId = personal.departamentoId LIMIT 1) as departamento,
 		personal.fechaIngreso,
@@ -570,8 +570,10 @@ BEGIN
 		(SELECT monto from porcentajesBonos WHERE categoria = roles.nivel LIMIT 1) as monto_bono_efectivo
 		FROM personal 
 		INNER JOIN roles ON personal.roleId = roles.rolId
-		WHERE roles.nivel > 1
-		ORDER BY roles.nivel ASC, departamento ASC;
+		WHERE (roles.nivel > 1 or roles.name = 'Coordinador')
+		ORDER BY CASE 
+		  WHEN roles.name = 'Coordinador' THEN 2
+			ELSE roles.nivel END ASC, departamento ASC;
 		
 		DROP TEMPORARY TABLE IF EXISTS tmp_personal_bono;
 		
