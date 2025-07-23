@@ -1522,10 +1522,30 @@ class Personal extends Main
 				";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
+        
+        // Cargar responsables por departamento
 
         $premerge = [];
         foreach ($result as  $var){
-            $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
+            if(in_array(mb_strtolower($var['departamento']), ['asociado', 'asociada', 'asociados', 'asociadas'])) {
+
+               $responsablesPropios = json_decode($var['responsables'], true);
+
+               $operativos = array_filter($result, function($item) {
+                   return !in_array($item['departamento'], AREAS_NO_OPERATIVAS);
+               });
+
+               $directoresOperativos = array_map(function($item) {
+                   $responsables = json_decode($item['responsables'], true);
+                   return array_filter($responsables, function($resp) {
+                       return $resp['level'] == 2; // filtrar por nivel 2
+                   });
+               }, $operativos);
+
+               $premerge[$var['departamentoId']] = array_merge($responsablesPropios, ...$directoresOperativos);
+            } else {
+               $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
+            }
         }
 
         foreach($premerge as $key => $value) {
