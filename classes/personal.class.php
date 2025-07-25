@@ -1532,7 +1532,8 @@ class Personal extends Main
                $responsablesPropios = json_decode($var['responsables'], true);
 
                $operativos = array_filter($result, function($item) {
-                   return !in_array($item['departamento'], AREAS_NO_OPERATIVAS);
+                   return !in_array($item['departamento'], AREAS_NO_OPERATIVAS)
+                          && !in_array(mb_strtolower($item['departamento']), ['asociado', 'asociada', 'asociados', 'asociadas']);
                });
 
                $directoresOperativos = array_map(function($item) {
