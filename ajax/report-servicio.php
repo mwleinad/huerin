@@ -92,7 +92,9 @@ switch($_POST["type"])
 
 						$deptoId = $serv['departamentoId'];
 						$serv['responsable'] = $con['resDepName'][$deptoId];
-						$serv['supervisadoBy'] = $personal->findSupervisor($con['resDepId'][$deptoId]);
+						$serv['resComunicacion'] = $con['resComunicacion'][$deptoId];
+						$serv['resAsociado'] = $con['resAsociado'];
+						//$serv['supervisadoBy'] = $personal->findSupervisor($con['resDepId'][$deptoId]);
 						if($formValues['atrasados'])
 						{
 							$atrasados = $instanciaServicio->getInstanciaAtrasado($serv['servicioId'],$year,$serv['inicioOperaciones'],$isParcial);
@@ -127,7 +129,8 @@ switch($_POST["type"])
 							$card["nameContact"] = $cliente["nameContact"];
 							$card["tipoPersonal"] = $servicio["responsable"]["tipoPersonal"];
 							$card["responsable"] = $servicio["responsable"];
-                            $card["supervisadoBy"] = $servicio["supervisadoBy"];
+							$card["resAsociado"] = $servicio["resAsociado"];
+							$card["resComunicacion"] = $servicio["resComunicacion"];
 							$card["name"] = $contract["name"];
                             $card["contractId"] = $contract["contractId"];
                             $card["anio"] = $year;
