@@ -108,8 +108,45 @@ class ContractRep extends Main
             if($encontrado == false &&!$skip) {
                 continue;
             }
-            $res['resDepName'] =  $this->encargadosCustomKey('departamentoId', 'name', $res['contractId']);
-            $res['resDepId'] =  $this->encargadosCustomKey('departamentoId', 'personalId', $res['contractId']);
+            $responsables = $this->encargadosArea($res['contractId']);
+          
+            $responsablesXnombreDepartamento = [];
+            $responsablesNombre = [];
+            $responsablesId = [];
+            $responsablesComunicacion = [];
+            
+            foreach($responsables as $responsable) {
+
+                $responsablesXnombreDepartamento[$responsable['departamento']] =  $responsable['name'];
+                $responsablesNombre[$responsable['departamentoId']] = $responsable['name'];
+                $responsablesId[$responsable['departamentoId']] = $responsable['personalId'];
+            }
+
+            $res['resAsociado'] = '';
+            if(isset($responsablesXnombreDepartamento['Asociado']))
+                $res['resAsociado'] = $responsablesXnombreDepartamento['Asociado'];
+
+            foreach(DEPARTAMENTOS_TIPO_GERENCIA as $depGerencia) {
+                $depPrincipal = $depGerencia['principal'];
+                $depSecundario = $depGerencia['secundario'];
+
+                $responsablePrincipal = current(array_filter($responsables, function($resp) use ($depPrincipal) {
+                    return $resp['departamento'] == $depPrincipal;
+                }));
+                $responsableSecundario = current(array_filter($responsables, function($resp) use ($depSecundario) {
+                    return $resp['departamento'] == $depSecundario;
+                }));
+
+                
+                if($responsableSecundario && !empty($responsableSecundario['name'])) {
+                    $responsablesComunicacion[$responsableSecundario['departamentoId']] = $responsablePrincipal['name'] ?? '';
+                }
+            }
+            
+            $res['resDepName'] =  $responsablesNombre;
+            $res['resDepId'] =  $responsablesId;
+            $res['resComunicacion'] = $responsablesComunicacion;
+
             if(in_array($res["contractId"], explode(',', CONTRACTS_EXECPTION)))
                 $noInclude="";
             //Checamos Servicios

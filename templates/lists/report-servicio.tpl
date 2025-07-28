@@ -3,8 +3,9 @@
 	<tr>
 		<th align="center" width="60">Cliente</th>
 		<th align="center" width="60">Razon Social</th>
-		<th align="center" width="60">C. Asignado</th>
-		<th align="center" width="60">Supervisor</th>
+		<th align="center" width="60">Encargado de servicio</th>
+		<th align="center" width="60">Resp. de comunicación</th>
+		<th align="center" width="60">Asociado</th>
 		<th align="center" width="50">Ene</th>
 		<th align="center" width="50">Feb</th>
 		<th align="center" width="50">Mar</th>
@@ -26,7 +27,7 @@
 		{foreach from=$cleanedArray item=item key=key}
 		{if $item.isRowCobranza && (in_array(210,$permissions) ||$User.isRoot)}
 			<tr>
-				<td colspan="4" align="center"><b>Total cobranza mensual</b></td>
+				<td colspan="5" align="center"><b>Total cobranza mensual</b></td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio}
                     {if $instanciaServicio.class == '#000000'}
                         <td style="text-align: center;">
@@ -66,8 +67,9 @@
 		<tr>
     		<td align="center" class="" title="">{$item.nameContact}</td>
     		<td align="center" class="" title="">{$item.name}</td>
-			<td align="center" class="" title="{$item.responsable}">{$item.responsable}</td>
-			<td align="center" class="" title="{$item.supervisadoBy}">{$item.supervisadoBy}</td>
+			<td align="center" class="" title="{$item.responsable}">{if $item.responsable} {$item.responsable} {else} Responsable no configurado {/if}</td>
+			<td align="center" class="" title="{$item.resComunicacion}">{if $item.resComunicacion} {$item.resComunicacion} {else} Responsable no configurado {/if}</td>
+			<td align="center" class="" title="{$item.resAsociado}">{if $item.resAsociado} {$item.resAsociado} {else} Responsable no configurado {/if}</td>
 				{foreach from=$item.instanciasServicio item=instanciaServicio name=instancias}
 					<td align="center"
 					  class="
@@ -95,7 +97,7 @@
 						{/if}
 					</td>
 				{/foreach}
-			{if $instanciaServicio.instanciaServicioId && (in_array(248,$permissions)||$User.isRoot)}
+			{if $item.instanciasServicio && (in_array(248,$permissions)||$User.isRoot)}
 				<td>
 					<a href="javascript:;" class="spanDownloadFiles spanAll" title="Descargar archivos anual" data-id="{$item.servicioId}" data-month="" data-type="downloadFilesYear" data-contrato="{$item.contractId}" data-year="{$item.anio}">
 						<img src="{$WEB_ROOT}/images/icons/downFile.png" class="no-clickable">
@@ -106,7 +108,7 @@
 		{/if}
 		{foreachelse}
 		<tr>
-			<td colspan="{if in_array(248,$permissions)||$User.isRoot}17{else}16{/if}">Ning&uacuten registro encontrado</td>
+			<td colspan="{if in_array(248,$permissions)||$User.isRoot}18{else}16{/if}" style="text-align: center;">Ning&uacuten registro encontrado</td>
 		</tr>
 		{/foreach}
 </tbody>
