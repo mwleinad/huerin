@@ -1641,6 +1641,21 @@ class Customer extends Main
         return $serviciosContrato;
     }
 
+     function GetServiciosActivosById($id)
+    {
+        $ftrStatus = " AND servicio.status IN ('activo') ";
+
+        $this->Util()->DB()->setQuery(
+            "SELECT servicioId, nombreServicio, departamentoId,servicio.status,servicio.costo,servicio.inicioFactura,servicio.inicioOperaciones,servicio.lastDateWorkflow
+          FROM servicio 
+          LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+          WHERE contractId = '" . $id . "' $ftrStatus and tipoServicio.status='1'        
+          ORDER BY nombreServicio ASC"
+        );
+        $serviciosContrato = $this->Util()->DB()->GetResult();
+        return $serviciosContrato;
+    }
+
     function HowManyRazonesSociales($customerId, $activo = 'Si')
     {
         $sql = "SELECT COUNT(*)
