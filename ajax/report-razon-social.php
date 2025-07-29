@@ -830,35 +830,51 @@ switch ($_POST['type']) {
         $col++;
         $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. asociado');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono del cliente');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable contabilidad');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo del cliente');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Contabilidad e Impuestos');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Asociado');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable nóminas');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono asociado');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Nóminas y Seguridad Social');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo asociado');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable auditoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación de contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Auditoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono responsable de comunicación de contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable legal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo responsable de comunicación de contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Legal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable fiscal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono encargado del servicio de contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Fiscal');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo encargado del servicio de contabilidad');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gerencia responsable gestoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación nóminas');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Gestoria');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio nóminas');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Cuentas por cobrar');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación auditoria');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Resp. Atención al cliente');
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio auditoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación legal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio legal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación fiscal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio fiscal');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación gestoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio gestoria');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado cuentas por cobrar');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado atención al cliente');
         $col++;
         $row++;
 
@@ -884,6 +900,8 @@ switch ($_POST['type']) {
             'MU?OZ',
             'MUÑOZ' 
         ) cliente,
+        TRIM(REGEXP_REPLACE ( customer.phone, '\\\s{2,}', ' ' )) telefono_cliente,
+        TRIM(REGEXP_REPLACE( customer.email, '\\\s{2,}', ' ')) correo_cliente,
         REPLACE(
             TRIM(REGEXP_REPLACE ( contract.name, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,
         (select CONCAT(
@@ -905,6 +923,14 @@ switch ($_POST['type']) {
                         'name',
                         '\":\"',
                         personal.name,
+                        '\",\"',
+                        'phone',
+                        '\":\"',
+                        personal.phone,
+                        '\",\"',
+                        'email',
+                        '\":\"',
+                        personal.email,
                         '\"}'
                     )
                 ),
@@ -975,13 +1001,29 @@ switch ($_POST['type']) {
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
             $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_cliente']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['correo_cliente']);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['name'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['phone'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['email'] ?? '');
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['name'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['name']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['phone'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaNominas['name']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['email'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['name'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['phone'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['email'] ?? '');
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaNominas['name'] ?? '');
             $col++;
             $sheet->setCellValueByColumnAndRow($col, $row, $resNominas['name']);
             $col++;
