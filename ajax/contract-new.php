@@ -14,6 +14,10 @@ switch($_POST["action"])
 			{
 				$_POST['regimenId'] = $_POST['regimenIdMoral'];
 			}
+
+			if($_POST["action"] == "edit") {
+				$contract->setContractId($_POST['contractId']);
+			}
 			//informacion basica
 			$contract->setType($_POST['type']);
 			$contract->setFacturador($_POST['facturador']);
@@ -23,6 +27,11 @@ switch($_POST["action"])
 			$contract->setRegimenId($_POST['regimenId']);
 			if(isset($_POST['actividad_comercial']))
 				$contract->setActividadComercialId($_POST['actividad_comercial']);
+			
+			// Agregar permisos desde POST
+			if(isset($_POST['permisos']) && is_array($_POST['permisos'])) {
+				$contract->setPermisos($_POST['permisos']);
+			}
 			//direccion fiscal
 			$contract->setAddress($_POST['address']);
 			$contract->setNoExtAddress($_POST['noExtAddress']);
