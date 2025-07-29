@@ -289,6 +289,9 @@ include_once(DOC_ROOT."/classes/organizacion.class.php");
 $organizacion = new Organizacion;
 
 
+include_once(DOC_ROOT."/classes/ContractValidator.php");
+
+
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];
 $infoUser = $user->Info();

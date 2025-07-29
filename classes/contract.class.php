@@ -1557,6 +1557,14 @@ class Contract extends Main
      */
     public function Validate()
     {
+        
+        $empresa = $this->info();
+        $validator = new ContractValidator($empresa);
+        $isValid = $validator->validate();
+        if (!$isValid) {
+            $this->Util()->setError(10001, "error",  implode("<br>", $validator->getErrors()));
+        }   
+    
         if ($this->Util()->PrintErrors()) {
             return 0;
         }
