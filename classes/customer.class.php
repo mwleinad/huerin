@@ -1641,17 +1641,37 @@ class Customer extends Main
         return $serviciosContrato;
     }
 
-     function GetServiciosActivosById($id)
+    /**
+     * Obtener servicios activos por id de empresa
+     * se filtran los servicios con los siguientes filtros
+     * Que sean activos
+     * El tipo de servicio debe estar activo
+     * Si es de tipo eventual solo seran considerados si tienen fecha de inicio de operaciones apartir del 2025-05-01.
+     * Aplicar filtro finalEffectiveDate se aplica para asegurar que servicios que ya no esten con tareas vigentes no sean considerados activos, sin importar su periodicidad.
+     */
+    function GetServiciosActivosById($id)
     {
-        $ftrStatus = " AND servicio.status IN ('activo') ";
 
-        $this->Util()->DB()->setQuery(
-            "SELECT servicioId, nombreServicio, departamentoId,servicio.status,servicio.costo,servicio.inicioFactura,servicio.inicioOperaciones,servicio.lastDateWorkflow
-          FROM servicio 
-          LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
-          WHERE contractId = '" . $id . "' $ftrStatus and tipoServicio.status='1'        
-          ORDER BY nombreServicio ASC"
-        );
+        $sql = "SELECT servicioId, 
+                       nombreServicio, 
+                       departamentoId,
+                       servicio.status,
+                       servicio.costo,
+                       servicio.inicioFactura,
+                       servicio.inicioOperaciones,
+                       servicio.lastDateWorkflow,
+                       IF(tipoServicio.periodicidad='Eventual',IF(servicio.inicioOperaciones >= '2025-05-01', 1,0), 1) servicio_valido
+                FROM servicio
+                LEFT JOIN tipoServicio ON tipoServicio.tipoServicioId = servicio.tipoServicioId
+                WHERE
+                     contractId = '" . $id . "' 
+                AND servicio.status IN('activo')     
+                AND tipoServicio.status='1' 
+                AND exists (select * from task where ISNULL(finalEffectiveDate) and stepId in (select stepId from step where servicioId=tipoServicio.tipoServicioId))
+                HAVING servicio_valido = 1       
+                ORDER BY nombreServicio ASC";
+
+        $this->Util()->DB()->setQuery($sql);
         $serviciosContrato = $this->Util()->DB()->GetResult();
         return $serviciosContrato;
     }
