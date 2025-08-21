@@ -537,7 +537,7 @@ class Xml4 extends Producto{
             // 01 – No objeto de impuesto.
             // 02 – Si objeto de impuesto
             // 03 – Si objeto del impuesto y bo obligado al desglose.
-            if($concepto["totalIva"] + $concepto["totalIeps"] > 0 || $concepto['excentoIva']) {
+            if($concepto["totalIva"] + $concepto["totalIeps"] > 0 || $concepto['excentoIva'] || $concepto['tasaIva'] == 0) {
                 $conceptoData["ObjetoImp"] = $this->Util()->CadenaOriginalVariableFormat("02",false,false);
             } else {
                 $conceptoData["ObjetoImp"] = $this->Util()->CadenaOriginalVariableFormat("01",false,false);
@@ -550,7 +550,7 @@ class Xml4 extends Producto{
 
             if(!$this->isPago() && !$this->isNomina()) {
                 //Si alguno de los impuestos o retenciones existe o es excento de iva, este nodo debe existir de lo contrario no.
-                if($concepto["totalIva"] + $concepto["totalIeps"] > 0 || ($this->totales["retIva"] + $this->totales["retIsr"] > 0) || $concepto['excentoIva'] == 'si') {
+                if(($concepto["totalIva"] + $concepto["totalIeps"]) > 0 || $concepto['tasaIva'] == 0 || ($this->totales["retIva"] + $this->totales["retIsr"] > 0) || $concepto['excentoIva'] == 'si') {
                     $impuestosConcepto = $this->xml->createElement("cfdi:Impuestos");
                     $impuestosConcepto = $myConcepto->appendChild($impuestosConcepto);
                 }
@@ -562,7 +562,7 @@ class Xml4 extends Producto{
                 }
 
                 //Si alguno de los impuestos existe el siguiente nodo debe de existir
-                if($concepto["totalIva"] > 0 || $concepto["porcentajeIeps"] > 0 || $concepto['excentoIva'] == 'si') {
+                if($concepto["totalIva"] > 0 || $concepto["tasaIva"] == 0 || $concepto["porcentajeIeps"] > 0 || $concepto['excentoIva'] == 'si') {
                     $trasladosConcepto = $this->xml->createElement("cfdi:Traslados");
                     $trasladosConcepto = $impuestosConcepto->appendChild($trasladosConcepto);
 
@@ -579,7 +579,7 @@ class Xml4 extends Producto{
                         $this->CargaAtt($trasladoConcepto, $exentoIvaAttr );
                     }
 
-                    if($concepto["totalIva"] > 0) {
+                    if($concepto["totalIva"] > 0 || $concepto["tasaIva"] == 0) {
                         $trasladoConcepto = $this->xml->createElement("cfdi:Traslado");
                         $trasladoConcepto = $trasladosConcepto->appendChild($trasladoConcepto);
 
