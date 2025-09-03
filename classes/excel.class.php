@@ -4,6 +4,10 @@ class Excel
 {
     public function ConvertToExcel($htmltable, $type, $debug = false, $fileName = 'exportar', $wrap = false, $finWrap = 'D')
     {
+        // Configurar límites PHP para grandes volúmenes
+        ini_set('memory_limit', '4096M');
+        ini_set('max_execution_time', 300);
+        
         if ($debug === false) {
             $debug = false;
         } else {
@@ -11,6 +15,9 @@ class Excel
             $file_log = DOC_ROOT . "/sendFiles/debug_phpexcel.txt";
             $handle = fopen($file_log, "w");
         }
+        
+        // Validación y preparación temprana
+        $htmltable = $this->validateAndPrepareData($htmltable);
 
         if (strlen($htmltable) == strlen(strip_tags($htmltable))) {
             echo "<br />Invalid HTML Table after Stripping Tags, nothing to Export.";
@@ -44,6 +51,10 @@ class Excel
         if ($debug) {
             fwrite($handle, "\nTable Count: " . $tables->length);
         }
+        
+        // Configuración para manejo de tablas grandes
+        $limit = 1000; // Límite de tablas a procesar
+        
         $tbcnt = $tables->length - 1;                 // count minus 1 for 0 indexed loop over tables
         if ($tbcnt > $limit) {
             $tbcnt = $limit;
@@ -62,7 +73,7 @@ class Excel
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->getDefaultStyle()->getFont()->setName('Arial');
         $objPHPExcel->getDefaultStyle()->getFont()->setSize(9);
-        $tm = date(YmdHis);
+        $tm = date('YmdHis');
         $pos = strpos($usermail, "@");
         $user = substr($usermail, 0, $pos);
         $user = str_replace(".", "", $user);
@@ -107,17 +118,17 @@ class Excel
                         for ($x = 0; $x <= $nodes; $x++) {
                             $thishdg = $ths->item($x)->nodeValue;
                             $headrows[$h]['th'][] = $thishdg;
-                            $headrows[$h]['bold'][] = findBoldText(innerHTML($ths->item($x)));
+                            $headrows[$h]['bold'][] = $this->findBoldText($this->innerHTML($ths->item($x)));
                             if ($ths->item($x)->hasAttribute('style')) {
                                 $style = $ths->item($x)->getAttribute('style');
-                                $stylecolor = findStyleColor($style);
+                                $stylecolor = $this->getColorFromStyle($style);
                                 if ($stylecolor == '') {
-                                    $headrows[$h]['color'][] = findSpanColor(innerHTML($ths->item($x)));
+                                    $headrows[$h]['color'][] = $this->findSpanColor($this->innerHTML($ths->item($x)));
                                 } else {
                                     $headrows[$h]['color'][] = $stylecolor;
                                 }
                             } else {
-                                $headrows[$h]['color'][] = findSpanColor(innerHTML($ths->item($x)));
+                                $headrows[$h]['color'][] = $this->findSpanColor($this->innerHTML($ths->item($x)));
                             }
                             if ($ths->item($x)->hasAttribute('colspan')) {
                                 $headrows[$h]['colspan'][] = $ths->item($x)->getAttribute('colspan');
@@ -171,22 +182,22 @@ class Excel
                             $isBg = false;
                             $thistxt = $tds->item($x)->nodeValue;
                             $bodyrows[$r]['td'][] = preg_replace('/[\s\t\n]{2,}/', ' ', $thistxt);
-                            $bodyrows[$r]['bold'][] = findBoldText(innerHTML($tds->item($x)));
+                            $bodyrows[$r]['bold'][] = $this->findBoldText($this->innerHTML($tds->item($x)));
                             if ($tds->item($x)->hasAttribute('style')) {
                                 $style = $tds->item($x)->getAttribute('style');
-                                $stylecolor = findStyleColor($style);
+                                $stylecolor = $this->getColorFromStyle($style);
                                 if ($stylecolor == '') {
-                                    $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
+                                    $bodyrows[$r]['color'][] = $this->findSpanColor($this->innerHTML($tds->item($x)));
                                 } else {
                                     $bodyrows[$r]['color'][] = $stylecolor;
                                 }
-                                $bgColor = findStyleColor($style, 'background');
+                                $bgColor = $this->getColorFromStyle($style, 'background');
                                 if ($bgColor != '') {
                                     $bodyrows[$r]['bgcolor'][] = $bgColor;
                                     $isBg = true;
                                 }
                             } else {
-                                $bodyrows[$r]['color'][] = findSpanColor(innerHTML($tds->item($x)));
+                                $bodyrows[$r]['color'][] = $this->findSpanColor($this->innerHTML($tds->item($x)));
                             }
                             if ($tds->item($x)->hasAttribute('colspan')) {
                                 $bodyrows[$r]['colspan'][] = $tds->item($x)->getAttribute('colspan');
@@ -468,59 +479,79 @@ class Excel
         }
     }
 
-}
-
-function innerHTML($node)
-{
-    $doc = $node->ownerDocument;
-    $frag = $doc->createDocumentFragment();
-    foreach ($node->childNodes as $child) {
-        $frag->appendChild($child->cloneNode(TRUE));
+    /**
+     * Valida y prepara los datos HTML antes del procesamiento
+     */
+    private function validateAndPrepareData($htmltable)
+    {
+        if (empty($htmltable)) {
+            return '';
+        }
+        
+        // Limpiar HTML básico y normalizar
+        $htmltable = trim($htmltable);
+        
+        // Validar que contenga estructura de tabla mínima
+        if (strpos($htmltable, '<table') === false || strpos($htmltable, '</table>') === false) {
+            return $htmltable; // Retorna tal como está para validación posterior
+        }
+        
+        return $htmltable;
     }
-    return $doc->saveXML($frag);
-}
 
-function findSpanColor($node)
-{
-    $pos = stripos($node, "color:");       // ie: looking for style='color: #FF0000;'
-    if ($pos === false) {                  //                        12345678911111
-        return '000000';                     //                                 01234
+    function innerHTML($node)
+    {
+        $doc = $node->ownerDocument;
+        $frag = $doc->createDocumentFragment();
+        foreach ($node->childNodes as $child) {
+            $frag->appendChild($child->cloneNode(TRUE));
+        }
+        return $doc->saveXML($frag);
     }
-    $node = substr($node, $pos);           // truncate to color: start
-    $start = "#";                          // looking for html color string
-    $end = ";";                            // should end with semicolon
-    $node = " " . $node;                     // prefix node with blank
-    $ini = stripos($node, $start);          // look for #
-    if ($ini === false) return "000000";   // not found, return default color of black
-    $ini += strlen($start);                // get 1 byte past start string
-    $len = stripos($node, $end, $ini) - $ini; // grab substr between start and end positions
-    return substr($node, $ini, $len);        // return the RGB color without # sign
-}
 
-function findStyleColor($style, $needle = "color:")
-{
-    $pos = stripos($style, $needle);      // ie: looking for style='color: #FF0000;'
-    if ($pos === false) {                  //                        12345678911111
-        return '';                           //                                 01234
+    function findSpanColor($node)
+    {
+        $pos = stripos($node, "color:");       // ie: looking for style='color: #FF0000;'
+        if ($pos === false) {                  //                        12345678911111
+            return '000000';                     //                                 01234
+        }
+        $node = substr($node, $pos);           // truncate to color: start
+        $start = "#";                          // looking for html color string
+        $end = ";";                            // should end with semicolon
+        $node = " " . $node;                     // prefix node with blank
+        $ini = stripos($node, $start);          // look for #
+        if ($ini === false) return "000000";         // not found, return default color of black
+        $ini += strlen($start);                // get 1 byte past start string
+        $len = stripos($node, $end, $ini) - $ini; // grab substr between start and end positions
+        return substr($node, $ini, $len);        // return the RGB color without # sign
     }
-    $style = substr($style, $pos);           // truncate to color: start
-    $start = "#";                          // looking for html color string
-    $end = ";";                            // should end with semicolon
-    $style = " " . $style;                     // prefix node with blank
-    $ini = stripos($style, $start);          // look for #
-    if ($ini === false) return "";         // not found, return default color of black
-    $ini += strlen($start);                // get 1 byte past start string
-    $len = stripos($style, $end, $ini) - $ini; // grab substr between start and end positions
-    return substr($style, $ini, $len);        // return the RGB color without # sign
-}
 
-function findBoldText($node)
-{
-    $pos = stripos($node, "<b>");          // ie: looking for bolded text
-    if ($pos === false) {                  //                        12345678911111
-        return false;                        //                                 01234
+    function getColorFromStyle($style, $needle = "color:")
+    {
+        $pos = stripos($style, $needle);      // ie: looking for style='color: #FF0000;'
+        if ($pos === false) {                  //                        12345678911111
+            return '';                           //                                 01234
+        }
+        $style = substr($style, $pos);           // truncate to color: start
+        $start = "#";                          // looking for html color string
+        $end = ";";                            // should end with semicolon
+        $style = " " . $style;                     // prefix node with blank
+        $ini = stripos($style, $start);          // look for #
+        if ($ini === false) return "";         // not found, return default color of black
+        $ini += strlen($start);                // get 1 byte past start string
+        $len = stripos($style, $end, $ini) - $ini; // grab substr between start and end positions
+        return substr($style, $ini, $len);        // return the RGB color without # sign
     }
-    return true;                           // found <b>
+
+    function findBoldText($node)
+    {
+        $pos = stripos($node, "<b>");          // ie: looking for bolded text
+        if ($pos === false) {                  //                        12345678911111
+            return false;                        //                                 01234
+        }
+        return true;                           // found <b>
+    }
+
 }
 
 ?>
