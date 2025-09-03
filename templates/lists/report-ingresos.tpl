@@ -32,7 +32,7 @@
         <td align="center">${$servicio.costo|number_format:2}</td>
         <td align="center">${$servicio.costoVisual}</td>
         {foreach from=$puestos item=puesto key=keyPuesto}
-            <th align="center" width="60">{if $servicio[$puesto.name] eq ''}--{else}{$servicio[$puesto.name]} {/if}</th>
+            <td align="center" width="60">{if $servicio[$puesto.name] eq ''}--{else}{$servicio[$puesto.name]} {/if}</td>
         {/foreach}
     </tr>
     {/foreach}
