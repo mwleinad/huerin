@@ -6,7 +6,6 @@ class Excel
     {
         // Configurar límites PHP para grandes volúmenes
         ini_set('memory_limit', '4096M');
-        ini_set('max_execution_time', 300);
         
         if ($debug === false) {
             $debug = false;
