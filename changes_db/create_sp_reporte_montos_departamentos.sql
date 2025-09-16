@@ -68,12 +68,12 @@ BEGIN
     -- Obtener todos los departamentos existentes (tengan o no servicios)
     INSERT INTO temp_departamentos (departamentoId, departamento)
     SELECT DISTINCT d.departamentoId, 
-           REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(d.departamento,
+           LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(d.departamento,
            'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'), 
            'Á', 'A'), 'É', 'E'), 'Í', 'I'), 'Ó', 'O'), 'Ú', 'U'), 
            'ñ', 'n'), 'Ñ', 'N'), 'ü', 'u'), 'Ü', 'U'), 
            'ç', 'c'), 'Ç', 'C'), 'à', 'a'), 'è', 'e'), 'ì', 'i'), 'ò', 'o'), 'ù', 'u'), 
-           'À', 'A'), 'È', 'E'), 'Ì', 'I'), 'Ò', 'O'), 'Ù', 'U'), 'â', 'a'), 'ê', 'e') AS departamento
+           'À', 'A'), 'È', 'E'), 'Ì', 'I'), 'Ò', 'O'), 'Ù', 'U'), 'â', 'a'), 'ê', 'e')) AS departamento
     FROM departamentos d
     WHERE (p_departamento_id IS NULL OR d.departamentoId = p_departamento_id)
     ORDER BY d.departamento;
