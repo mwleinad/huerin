@@ -1,19 +1,20 @@
  <div align="center"  id="divForm">
  
 <form name="frmSearch" id="frmSearch" action="" method="post">
-<input type="hidden" name="type" id="type" value="search" />
+<input type="hidden" name="type" id="type" value="reporteIngresosToExcel" />
 <input type="hidden" name="customerId" id="customerId" value="0" />
 <input type="hidden" name="contractId" id="contractId" value="0" />
-<table width="60%" align="center">
+<table width="90%" align="center">
 <tr style="background-color:#CCC">
-    <td colspan="6" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
+    <td colspan="8" bgcolor="#CCCCCC" align="center"><b>Filtro de B&uacute;squeda</b></td>
 </tr>
 <tr>
     <td align="center">Cliente:</td>
     <td align="center">Raz&oacute;n Social:</td>
     <td align="center">Responsable:</td>
-    <td align="center">Incluir Subordinados:</td>
     <td align="center">Departamento:</td>
+    <td align="center">Mes:</td>
+    <td align="center">Año:</td>
 </tr>
 <tr>	
     <td align="center" style="padding-left: 5px; padding-right: 5px">
@@ -34,17 +35,34 @@
 		</td>
         <td align="center" style="padding-left: 5px; padding-right: 5px">
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-personal.tpl"}
-		</td>    
-		<td align="center" style="padding-left: 5px; padding-right: 5px">
-			<input name="deep" id="deep" type="checkbox" value="1" style="width: 90%;"/>
-		</td>     	
+		</td>       	
 		<td align="center" style="padding-left: 5px; padding-right: 5px">
             {include file="{$DOC_ROOT}/templates/forms/comp-filter-dep.tpl"}
 		</td>
+		<td align="center">
+			<select name="period" id="period"  class="largeInput"  style="width: 90%;">
+				<option value="">Todos</option>
+				<option value="1">Enero</option>
+				<option value="2">Febrero</option>
+				<option value="3">Marzo</option>
+				<option value="4">Abril</option>
+				<option value="5">Mayo</option>
+				<option value="6">Junio</option>
+				<option value="7">Julio</option>
+				<option value="8">Agosto</option>
+				<option value="9">Septiembre</option>
+				<option value="10">Octubre</option>
+				<option value="11">Noviembre</option>
+				<option value="12">Diciembre</option>
+			</select>
+		</td>
+		<td align="center">
+			{include file="{$DOC_ROOT}/templates/forms/comp-filter-year.tpl"}
+		</td>
 </tr>        
 <tr>
-    <td align="center" colspan="5">
-        <div style="margin: 0 415px 0 415px">
+    <td style="text-align: center;" colspan="6">
+        <div style="margin: 0 500px 0 500px">
         <a class="button_grey" id="btnBuscar" onclick="doSearch()"><span>Buscar</span></a>
         </div>
     </td>

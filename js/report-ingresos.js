@@ -150,7 +150,7 @@ function SuggestUser2()
 
 function doSearch(){
 	
-	$('type').value = "search";
+	$('type').value = "reporteIngresosToExcel";
 
 	new Ajax.Request(WEB_ROOT+'/ajax/report-ingresos.php',
 	{
@@ -165,8 +165,9 @@ function doSearch(){
 			var response = transport.responseText || "no response text";
 			var splitResponse = response.split("[#]");
 
-			$("loading").style.display = "none";						
-			$('contenido').innerHTML = splitResponse[1];
+			$("loading").style.display = "none";			
+			window.location = response			
+			//$('contenido').innerHTML = splitResponse[1];
 		},
 		onFailure: function(){ alert('Something went wrong...') }
 	});
