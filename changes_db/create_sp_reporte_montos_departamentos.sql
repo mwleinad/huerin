@@ -53,7 +53,11 @@ BEGIN
         -- Limpiar la última coma
         SET subordinados_list = TRIM(TRAILING ',' FROM subordinados_list);
     END IF;
-    
+
+    DROP TEMPORARY TABLE IF EXISTS temp_departamentos;
+    DROP TEMPORARY TABLE IF EXISTS temp_servicio_costos;
+    DROP TEMPORARY TABLE IF EXISTS temp_costos_agrupados;
+
     -- Crear tabla temporal para almacenar departamentos únicos
     CREATE TEMPORARY TABLE temp_departamentos (
         departamentoId INT,
@@ -63,7 +67,13 @@ BEGIN
     
     -- Obtener todos los departamentos existentes (tengan o no servicios)
     INSERT INTO temp_departamentos (departamentoId, departamento)
-    SELECT DISTINCT d.departamentoId, d.departamento
+    SELECT DISTINCT d.departamentoId, 
+           REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(d.departamento,
+           'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'), 
+           'Á', 'A'), 'É', 'E'), 'Í', 'I'), 'Ó', 'O'), 'Ú', 'U'), 
+           'ñ', 'n'), 'Ñ', 'N'), 'ü', 'u'), 'Ü', 'U'), 
+           'ç', 'c'), 'Ç', 'C'), 'à', 'a'), 'è', 'e'), 'ì', 'i'), 'ò', 'o'), 'ù', 'u'), 
+           'À', 'A'), 'È', 'E'), 'Ì', 'I'), 'Ò', 'O'), 'Ù', 'U'), 'â', 'a'), 'ê', 'e') AS departamento
     FROM departamentos d
     WHERE (p_departamento_id IS NULL OR d.departamentoId = p_departamento_id)
     ORDER BY d.departamento;
@@ -144,7 +154,7 @@ BEGIN
         
         SET departamento_columns = CONCAT(departamento_columns, 
             'COALESCE(SUM(CASE WHEN tca.departamentoId = ', v_departamentoId, 
-            ' THEN tca.total_departamento ELSE 0 END), 0) AS `', REPLACE(v_departamento, ' ', '_'), '`');
+            ' THEN tca.total_departamento ELSE 0 END), 0) AS `', REPLACE(REPLACE(v_departamento, ' ', '_'), '-', '_'), '`');
             
     END LOOP;
     CLOSE cur_departamentos;
