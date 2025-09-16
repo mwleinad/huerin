@@ -7,10 +7,6 @@
     <div class="grid_6" id="eventbox">
         <a style="cursor:pointer" title="Servicios a facturar del mes siguiente" onclick="ExportarServiciosPorFacturar()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
         <a style="cursor:pointer" title="Exportar servicios de empresa para plataforma 2.0" onclick="ExportarServiciosParaP2()"><img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
-        <a style="cursor:pointer" title="Exportar a Excel" onclick="printExcel('contenido')">
-        <img src="{$WEB_ROOT}/images/excel.PNG" width="16" /></a>
-		<a style="cursor:pointer" title="Exportar a PDF" onclick="printExcel('contenido', 'pdf')">
-        <img src="{$WEB_ROOT}/images/pdf_icon.png" width="16" /></a>
         
   		<div id="loadPrint">
   		</div>
