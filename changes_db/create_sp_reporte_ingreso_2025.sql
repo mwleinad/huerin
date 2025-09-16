@@ -46,8 +46,56 @@ BEGIN
     
     -- Query principal del reporte
     SELECT 
-        trim(c.nameContact) AS cliente,
-        trim(ct.name) AS empresa,
+        REPLACE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        REPLACE(
+                                            REPLACE(
+                                                REPLACE(
+                                                    REPLACE(
+                                                        TRIM(REGEXP_REPLACE(c.nameContact, '\\s{2,}', ' ')),
+                                                        'LE?N', 'LEÓN'
+                                                    ),
+                                                    'NU?EZ', 'NUÑEZ'
+                                                ),
+                                                'PATI?O', 'PATIÑO'
+                                            ),
+                                            'VILLASE?OR', 'VILLASEÑOR'
+                                        ),
+                                        'MAR?A', 'MARÍA'
+                                    ),
+                                    'CA?IZO', 'CAÑIZO'
+                                ),
+                                'MU?OZ', 'MUÑOZ'
+                            ),
+                            'JIM?NEZ', 'JIMÉNEZ'
+                        ),
+                        'G?MEZ', 'GÓMEZ'
+                    ),
+                    'HERV?S', 'HERVÁS'
+                ),
+                'P?REZ', 'PÉREZ'
+            ),
+            'MART?NEZ', 'MARTÍNEZ'
+        ) AS cliente,
+        REPLACE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        TRIM(REGEXP_REPLACE(ct.name, '\\s{2,}', ' ')),
+                        '&amp;', '&'
+                    ),
+                    'LE?N', 'LEÓN'
+                ),
+                'ADMINISTRACI?N', 'ADMINISTRACIÓN'
+            ),
+            'CONSTRUCCI?N', 'CONSTRUCCIÓN'
+        ) AS empresa,
         COALESCE(trim(p.name), 'Sin Encargado') AS encargado,
         trim(ts.nombreServicio) AS servicio,
         s.status AS estatus,
@@ -300,9 +348,9 @@ BEGIN
     )
     
     ORDER BY 
-        c.nameContact,
-        ct.name,
-        ts.nombreServicio;
+        cliente,
+        empresa,
+        servicio;
     
 END$$
 
