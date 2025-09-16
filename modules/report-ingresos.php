@@ -18,6 +18,7 @@
 
   	$personals = $personal->Enumerate();
 	$departamentos = $departamentos->Enumerate();
+	$smarty->assign("year", date('Y'));
 
 	$smarty->assign("personals", $personals);
 	$smarty->assign("departamentos", $departamentos);

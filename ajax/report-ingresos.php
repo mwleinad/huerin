@@ -950,4 +950,229 @@ switch($_POST["type"])
         $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
         echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
         break;
+
+    case 'reporteIngresosToExcel':
+        $book = new PHPExcel();
+        $book->getProperties()->setCreator('B&H');
+        $sheet1 = $book->createSheet(0);
+        $sheet1->setTitle("Resumen");
+        
+
+        $sheet2 = $book->createSheet(1);
+        $sheet2->setTitle("Reporte detallado");
+
+        $anio = $_POST['year'] ?? 2025;
+        $mes = $_POST['period'] ? (($_POST['period'] > 0) ? $_POST['period'] : 'NULL') : 'NULL';
+        $responsableId = $_POST['responsableCuenta'] ? ($_POST['responsableCuenta'] > 0 ? $_POST['responsableCuenta'] : 'NULL') : 'NULL';
+        $departamentoId = $_POST['departamentoId'] ? ($_POST['departamentoId'] > 0 ? $_POST['departamentoId'] : 'NULL') : 'NULL';
+        $nombreCliente = $_POST['like_customer_name'] ? (strlen($_POST['like_customer_name']) > 0 ? $_POST['like_customer_name'] : 'NULL') : 'NULL';
+        $nombreEmpresa = $_POST['like_contract_name'] ? (strlen($_POST['like_contract_name']) > 0 ? $_POST['like_contract_name'] : 'NULL') : 'NULL';
+
+        $sql = "call sp_reporte_montos_por_departamento($anio,$mes,$responsableId,$departamentoId,$nombreCliente,$nombreEmpresa)";
+        $util->DB()->setQuery($sql);
+        $resultsResumen =  $util->DB()->GetResult();
+
+         $fields = [
+            [
+                'name' => 'cliente',
+                'title' => 'Cliente',
+            ],
+            [
+                'name' => 'empresa',
+                'title' => 'Empresa',
+            ],
+            [
+                'name' => 'contabilidad_e_impuestos',
+                'title' => 'Contabilidad e Impuestos',
+            ],
+            [
+                'name' => 'nominas_y_seguridad_social',
+                'title' => 'Nóminas y Seguridad Social',
+            ],
+            [
+                'name' => 'legal',
+                'title' => 'Legal',
+            ],
+            [
+                'name' => 'gestoria',
+                'title' => 'Gestoría',
+            ],
+            [
+                'name' => 'fiscal',
+                'title' => 'Fiscal',
+            ],
+            [
+                'name' => 'auditoria',
+                'title' => 'Auditoría',
+            ]
+        ];
+
+        $row=1;
+        $col = 0;
+        foreach ($fields as $field) {
+            // agregar formato numero a los campos de montos a excecpion de cliente y empresa
+            $sheet1->setCellValueByColumnAndRow($col, $row, $field['title'])
+                ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+            $col++;
+        }
+        $sheet1->setCellValueByColumnAndRow($col, $row, 'Total')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $row++;
+
+        foreach($resultsResumen as $resultResumen) {
+            $col = 0;
+
+            foreach ($fields as $field) {
+                if (!in_array($field['name'], ['cliente', 'empresa'])) {
+                    $sheet1->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode('#,##0.00');
+                }
+                
+                $valor = $resultResumen[$field['name']] ?? '';
+                
+                $sheet1->setCellValueByColumnAndRow($col, $row, $valor);
+                $col++;
+            }
+            // sumar la fila en la columna total
+            $colTotal = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+            $sheet1->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet1->setCellValue($colTotal, '=SUM('.PHPExcel_Cell::stringFromColumnIndex(2).$row.':'.PHPExcel_Cell::stringFromColumnIndex($col-1).$row.')');
+            $row++;
+        }
+        // haz la sumatoria vertical de cada columna de montos de la hoja 1
+        $rowTotal = $row;
+        $sheet1->setCellValueByColumnAndRow(1, $rowTotal, 'TOTAL')
+            ->getStyleByColumnAndRow(1, $rowTotal)->getFont()->setBold(true);
+        for ($c=2; $c<$col; $c++) {
+            $colLetra = PHPExcel_Cell::stringFromColumnIndex($c);
+            $sheet1->getStyleByColumnAndRow($c, $rowTotal)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet1->setCellValueByColumnAndRow($c, $rowTotal, '=SUM('.$colLetra.'2:'.$colLetra.($rowTotal-1).')')
+                ->getStyleByColumnAndRow($c, $rowTotal)->getFont()->setBold(true);  
+        }
+        // cambiar tipo de letra de la hoja resumen
+        $sheet1->getStyle($sheet1->calculateWorksheetDimension())->getFont()->setName('Aptos')->setSize(9);
+
+        // Segunda hoja
+
+        $sql = "call sp_reporte_ingreso_anual($anio,$responsableId,$departamentoId,$nombreCliente,$nombreEmpresa,$mes)";
+        $util->DB()->setQuery($sql);
+        $resultsDetallado =  $util->DB()->GetResult();
+
+        // construir fields, si el mes es null, agregar los meses del año, si no , hasta el mes seleccionado
+        $fieldsDetallado = [
+            [
+                'name' => 'cliente',
+                'title' => 'Cliente',
+            ],
+            [
+                'name' => 'empresa',
+                'title' => 'Razon social',
+            ],
+            [
+                'name' => 'encargado',
+                'title' => 'Encargado de area',
+            ],
+            [
+                'name' => 'servicio',
+                'title' => 'Servicio',
+            ],
+            [
+                'name' => 'estatus',
+                'title' => 'Estatus',
+            ],
+            [
+                'name' => 'departamento',
+                'title' => 'Area',
+            ],
+            [
+                'name' => 'periodicidad',
+                'title' => 'Periodicidad',
+            ],
+            
+        ];
+        $mesesDelAnio = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
+        ];
+        if ($mes === 'NULL') {
+            foreach ($mesesDelAnio as $numMes => $nombreMes) {
+                $fieldsDetallado[] = [
+                    'name' => strtolower($nombreMes),
+                    'title' => substr($nombreMes, 0, 3),
+                ];
+            }
+        } else {
+            for ($m=1; $m<=$mes; $m++) {
+                $fieldsDetallado[] = [
+                    'name' => strtolower($mesesDelAnio[$m]),
+                    'title' => substr($mesesDelAnio[$m], 0, 3),
+                ];
+            }
+        }
+
+        $col = 0;
+        $row=1;
+        foreach ($fieldsDetallado as $field) {
+            $sheet2->setCellValueByColumnAndRow($col, $row, $field['title'])
+                ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+            $col++;
+        }
+        // total
+        $sheet2->setCellValueByColumnAndRow($col, $row, 'Total')
+            ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
+        $row++;
+        foreach($resultsDetallado as $resultDetallado) {
+            $col = 0;
+
+            foreach ($fieldsDetallado as $field) {
+                if (!in_array($field['name'], ['cliente', 'empresa', 'departamento', 'servicio', 'estatus', 'area', 'periodicidad'])) {
+                    $sheet2->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode('#,##0.00');
+                }
+                
+                $valor = $resultDetallado[$field['name']] ?? '';
+                
+                $sheet2->setCellValueByColumnAndRow($col, $row, $valor);
+                $col++;
+            }
+            // sumar la fila en la columna total
+            $colTotal = PHPExcel_Cell::stringFromColumnIndex($col).$row;
+            $sheet2->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet2->setCellValue($colTotal, '=SUM('.PHPExcel_Cell::stringFromColumnIndex(7).$row.':'.PHPExcel_Cell::stringFromColumnIndex($col-1).$row.')');   
+            $row++;
+        }
+         // haz la sumatoria vertical de cada columna de montos de la hoja 2
+        $rowTotal = $row;
+        $sheet2->setCellValueByColumnAndRow(6, $rowTotal, 'TOTAL')
+            ->getStyleByColumnAndRow(6, $rowTotal)->getFont()->setBold(true);
+        for ($c=7; $c<$col; $c++) {
+            $colLetra = PHPExcel_Cell::stringFromColumnIndex($c);
+            $sheet2->getStyleByColumnAndRow($c, $rowTotal)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet2->setCellValueByColumnAndRow($c, $rowTotal, '=SUM('.$colLetra.'2:'.$colLetra.($rowTotal-1).')')
+                ->getStyleByColumnAndRow($c, $rowTotal)->getFont()->setBold(true); 
+        }
+        // cambiar tipo de letra de la hoja detallado
+        $sheet2->getStyle($sheet2->calculateWorksheetDimension())->getFont()->setName('Aptos')->setSize(9);
+        
+        $book->setActiveSheetIndex(0);
+        $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
+        $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        foreach ($book->getAllSheets() as $sheet1) {
+            for ($col = 0; $col < PHPExcel_Cell::columnIndexFromString($sheet1->getHighestDataColumn()); $col++) {
+                $sheet1->getColumnDimensionByColumn($col)->setAutoSize(true);
+            }
+        }
+        $nameFile = "reporte_de_ingresos_resumen_detallado.xlsx";
+        $writer->save(DOC_ROOT . "/sendFiles/" . $nameFile);
+        echo WEB_ROOT . "/download.php?file=" . WEB_ROOT . "/sendFiles/" . $nameFile;
+        break;
+
 }
