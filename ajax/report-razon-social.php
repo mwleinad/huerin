@@ -825,57 +825,106 @@ switch ($_POST['type']) {
 
         $row=1;
 
+        // Configuración de departamentos para generar columnas dinámicamente
+        $departamentos_config = [
+            [
+                'nombre' => 'contabilidad',
+                'titulo' => 'contabilidad',
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE CONTABILIDAD',
+                'servicio_departamento' => 'CONTABILIDAD E IMPUESTOS'
+            ],
+            [
+                'nombre' => 'nóminas',
+                'titulo' => 'nóminas', 
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE NOMINAS',
+                'servicio_departamento' => 'NOMINAS Y SEGURIDAD SOCIAL'
+            ],
+            [
+                'nombre' => 'auditoria',
+                'titulo' => 'auditoria',
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE AUDITORIA', 
+                'servicio_departamento' => 'AUDITORIA'
+            ],
+            [
+                'nombre' => 'legal',
+                'titulo' => 'legal',
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE LEGAL',
+                'servicio_departamento' => 'LEGAL'
+            ],
+            [
+                'nombre' => 'fiscal',
+                'titulo' => 'fiscal',
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE FISCAL',
+                'servicio_departamento' => 'FISCAL'
+            ],
+            [
+                'nombre' => 'gestoria',
+                'titulo' => 'gestoria',
+                'gerencia_departamento' => 'GERENCIA RESPONSABLE GESTORIA',
+                'servicio_departamento' => 'GESTORIA'
+            ]
+        ];
+
+        // Departamentos especiales (sin patrón gerencia/servicio)
+        $departamentos_especiales = [
+            [
+                'nombre' => 'cuentas_por_cobrar',
+                'titulo' => 'cuentas por cobrar',
+                'departamento' => 'CUENTAS POR COBRAR'
+            ],
+            [
+                'nombre' => 'atencion_cliente', 
+                'titulo' => 'atención al cliente',
+                'departamento' => ['ATENCION AL CLIENTE', 'ATENCIÓN AL CLIENTE']
+            ]
+        ];
+
+        // Headers base
+        $headers = [
+            'Cliente',
+            'Razón social', 
+            'Telefono del cliente',
+            'Correo del cliente',
+            'Asociado',
+            'Telefono asociado',
+            'Correo asociado'
+        ];
+
+        // Generar headers dinámicamente para departamentos con patrón gerencia/servicio
+        foreach($departamentos_config as $dept) {
+            $headers = array_merge($headers, [
+                "Responsable de comunicación de {$dept['titulo']}",
+                "Telefono responsable de comunicación de {$dept['titulo']}", 
+                "Correo responsable de comunicación de {$dept['titulo']}",
+                "Encargado de servicio {$dept['titulo']}",
+                "Telefono encargado de servicio {$dept['titulo']}",
+                "Correo encargado de servicio {$dept['titulo']}"
+            ]);
+        }
+
+        // Agregar headers para departamentos especiales
+        foreach($departamentos_especiales as $dept) {
+            $headers = array_merge($headers, [
+                "Encargado {$dept['titulo']}",
+                "Telefono encargado {$dept['titulo']}",
+                "Correo encargado {$dept['titulo']}"
+            ]);
+        }
+
         $col = 0;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Cliente');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Razón social');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono del cliente');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo del cliente');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Asociado');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono asociado');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo asociado');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación de contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono responsable de comunicación de contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo responsable de comunicación de contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Telefono encargado del servicio de contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Correo encargado del servicio de contabilidad');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación nóminas');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio nóminas');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación auditoria');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio auditoria');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación legal');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio legal');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación fiscal');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio fiscal');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Responsable de comunicación gestoria');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado de servicio gestoria');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado cuentas por cobrar');
-        $col++;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Encargado atención al cliente');
-        $col++;
+        foreach($headers as $header) {
+            // Establecer encabezados en la primera en negritas y fondo gris claro
+            
+            $sheet->setCellValueByColumnAndRow($col, $row, $header);
+            $sheet->getStyleByColumnAndRow($col, $row)->applyFromArray([
+                'font' => ['bold' => true],
+                'fill' => [
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startcolor' => ['rgb' => 'D3D3D3']
+                ]
+            ]);
+            $col++;
+        }
         $row++;
 
 
@@ -900,10 +949,10 @@ switch ($_POST['type']) {
             'MU?OZ',
             'MUÑOZ' 
         ) cliente,
-        TRIM(REGEXP_REPLACE ( customer.phone, '\\\s{2,}', ' ' )) telefono_cliente,
+        TRIM(REGEXP_REPLACE ( customer.phone, '\\\s{2,}', ' ')) telefono_cliente,
         TRIM(REGEXP_REPLACE( customer.email, '\\\s{2,}', ' ')) correo_cliente,
-        REPLACE(
-            TRIM(REGEXP_REPLACE ( contract.name, '\\\s{2,}', '' )), '&amp;', '&' ) empresa,
+        REPLACE(REPLACE(
+            TRIM(REGEXP_REPLACE ( contract.name, '\\\s{2,}', '')), '&amp;', '&' ),'&#039;','\'') empresa,
         (select CONCAT(
                '[',
                 GROUP_CONCAT(
@@ -978,77 +1027,86 @@ switch ($_POST['type']) {
 
             $encargados = json_decode($result['encargados'] ??  '[]',1);
 
-            $resAsociado = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'ASOCIADO'));
-            $resGerenciaContabilidad = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE CONTABILIDAD'));
-            $resContabilidad = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'CONTABILIDAD E IMPUESTOS'));
-            $resGerenciaNominas = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE NOMINAS'));
-            $resNominas = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) ==='NOMINAS Y SEGURIDAD SOCIAL'));
-            $resGerenciaAuditoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE AUDITORIA'));
-            $resAuditoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'AUDITORIA'));
-            $resGerenciaLegal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE LEGAL'));
-            $resLegal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'LEGAL'));
-            $resGerenciaFiscal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE FISCAL'));
-            $resFiscal = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'FISCAL'));
-            $resGerenciaGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GERENCIA RESPONSABLE GESTORIA'));
-            $resGestoria = current(array_filter($encargados, fn($encargado) => mb_strtoupper($encargado['departamento']) === 'GESTORIA'));
-            $resCuentasPorCobrar = current(array_filter($encargados, fn($encargado) =>mb_strtoupper($encargado['departamento']) == 'CUENTAS POR COBRAR'));
-            $resAtc = current(array_filter($encargados, fn($encargado) => (mb_strtoupper($encargado['departamento']) == 'ATENCION AL CLIENTE' || mb_strtoupper($encargado['departamento']) == 'ATENCIÓN AL CLIENTE')));
+            // Función para buscar encargado por departamento(s)
+            $buscarEncargado = function($departamentos) use ($encargados) {
+                if (!is_array($departamentos)) {
+                    $departamentos = [$departamentos];
+                }
+                
+                foreach($departamentos as $dept) {
+                    $resultado = current(array_filter($encargados, fn($encargado) => 
+                        mb_strtoupper($encargado['departamento']) === mb_strtoupper($dept)
+                    ));
+                    if ($resultado) {
+                        return $resultado;
+                    }
+                }
+                return null;
+            };
 
+            // Buscar encargados usando la configuración
+            $resAsociado = $buscarEncargado('ASOCIADO');
+            
+            // Procesar departamentos con patrón gerencia/servicio
+            $encargados_departamentos = [];
+            foreach($departamentos_config as $dept) {
+                $encargados_departamentos[$dept['nombre']] = [
+                    'gerencia' => $buscarEncargado($dept['gerencia_departamento']),
+                    'servicio' => $buscarEncargado($dept['servicio_departamento'])
+                ];
+            }
+            
+            // Procesar departamentos especiales
+            $encargados_especiales = [];
+            foreach($departamentos_especiales as $dept) {
+                $encargados_especiales[$dept['nombre']] = $buscarEncargado($dept['departamento']);
+            }
 
-
+            // Llenar datos en Excel
             $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_cliente']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $result['correo_cliente']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['name'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['phone'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['email'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['name'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['phone'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaContabilidad['email'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['name'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['phone'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resContabilidad['email'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resGerenciaNominas['name'] ?? '');
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row, $resNominas['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaAuditoria['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resAuditoria['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaLegal['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resLegal['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaFiscal['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resFiscal['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resGerenciaGestoria['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resGestoria['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resCuentasPorCobrar['name']);
-            $col++;
-            $sheet->setCellValueByColumnAndRow($col, $row,$resAtc['name']);
+            
+            // Datos base
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['cliente']); $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['empresa']); $col++;
+          
+            $sheet->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['telefono_cliente'])
+            ->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT); $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['correo_cliente']); $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['name'] ?? ''); $col++;
+            $sheet->getStyleByColumnAndRow($col, $row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['phone'] ?? ''); $col++;
+            $sheet->setCellValueByColumnAndRow($col, $row, $resAsociado['email'] ?? ''); $col++;
+
+            // Datos de departamentos con patrón gerencia/servicio
+            foreach($departamentos_config as $dept) {
+                $gerencia = $encargados_departamentos[$dept['nombre']]['gerencia'];
+                $servicio = $encargados_departamentos[$dept['nombre']]['servicio'];
+                
+                // Responsable de comunicación (gerencia)
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerencia['name'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerencia['phone'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerencia['email'] ?? ''); $col++;
+                
+                // Encargado de servicio
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['name'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['phone'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $servicio['email'] ?? ''); $col++;
+            }
+
+            // Datos de departamentos especiales
+            foreach($departamentos_especiales as $dept) {
+                $encargado = $encargados_especiales[$dept['nombre']];
+                
+                $sheet->setCellValueByColumnAndRow($col, $row, $encargado['name'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $encargado['phone'] ?? ''); $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $encargado['email'] ?? ''); $col++;
+            }
 
             $row++;
         }
+        // cambiar el tipo de letra a la hoja activa a Aptos 9
+        $sheet->getStyle($sheet->calculateWorksheetDimension())->getFont()->setName('Aptos')->setSize(9);
 
         $book->setActiveSheetIndex(0);
         $book->removeSheetByIndex($book->getIndex($book->getSheetByName('Worksheet')));
