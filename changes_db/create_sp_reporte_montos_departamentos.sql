@@ -207,10 +207,10 @@ BEGIN
             REPLACE(
                 REPLACE(
                     REPLACE(
-                        REPLACE(
+                       REPLACE(REPLACE(
                             TRIM(REGEXP_REPLACE(ct.name, "\\\\s{2,}", " ")),
                             "&amp;", "&"
-                        ),
+                        ),"&#039;","\'"),
                         "LE?N", "LEÓN"
                     ),
                     "ADMINISTRACI?N", "ADMINISTRACIÓN"
