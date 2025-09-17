@@ -167,8 +167,56 @@ BEGIN
     -- Construir la consulta dinámica
     SET sql_query = CONCAT('
         SELECT 
-            trim(c.nameContact) AS cliente,
-            trim(ct.name) AS empresa,
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        REPLACE(
+                                            REPLACE(
+                                                REPLACE(
+                                                    REPLACE(
+                                                        REPLACE(
+                                                            TRIM(REGEXP_REPLACE(c.nameContact, "\\\\s{2,}", " ")),
+                                                            "LE?N", "LEÓN"
+                                                        ),
+                                                        "NU?EZ", "NUÑEZ"
+                                                    ),
+                                                    "PATI?O", "PATIÑO"
+                                                ),
+                                                "VILLASE?OR", "VILLASEÑOR"
+                                            ),
+                                            "MAR?A", "MARÍA"
+                                        ),
+                                        "CA?IZO", "CAÑIZO"
+                                    ),
+                                    "MU?OZ", "MUÑOZ"
+                                ),
+                                "JIM?NEZ", "JIMÉNEZ"
+                            ),
+                            "G?MEZ", "GÓMEZ"
+                        ),
+                        "HERV?S", "HERVÁS"
+                    ),
+                    "P?REZ", "PÉREZ"
+                ),
+                "MART?NEZ", "MARTÍNEZ"
+            ) AS cliente,
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            TRIM(REGEXP_REPLACE(ct.name, "\\\\s{2,}", " ")),
+                            "&amp;", "&"
+                        ),
+                        "LE?N", "LEÓN"
+                    ),
+                    "ADMINISTRACI?N", "ADMINISTRACIÓN"
+                ),
+                "CONSTRUCCI?N", "CONSTRUCCIÓN"
+            ) AS empresa,
             ', departamento_columns, '
         FROM contract ct
         INNER JOIN customer c ON ct.customerId = c.customerId

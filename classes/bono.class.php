@@ -27,7 +27,30 @@ class Bono extends Personal
 
         $add_fields_no_group    = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
 
-        $select_general     ="select c.contractId, c.name, c.customer_name, b.servicioId, b.nombreServicio, b.departamentoId, b.status,
+        $select_general     ="select c.contractId, REPLACE(TRIM(REGEXP_REPLACE ( c.name, '\\\s{2,}', '' )), '&amp;', '&' ) as name, 
+         REPLACE
+        (
+            REPLACE (
+                REPLACE (
+                    REPLACE (
+                        REPLACE (
+                            REPLACE ( REPLACE ( TRIM( REGEXP_REPLACE ( c.customer_name, '\\\s{2,}', ' ' )), 'LE?N', 'LEÓN' ), 'NU?EZ', 'NUÑEZ' ),
+                            'PATI?O',
+                            'PATIÑO' 
+                        ),
+                        'VILLASE?OR',
+                        'VILLASEÑOR' 
+                    ),
+                    'MAR?A',
+                    'MARÍA' 
+                ),
+                'CA?IZO',
+                'CAÑIZO' 
+            ),
+            'MU?OZ',
+            'MUÑOZ' 
+        ) customer_name,
+        b.servicioId, b.nombreServicio, b.departamentoId, b.status,
                               b.is_primary, b.lastDateWorkflow, b.fio, b.fif ";
         $select_nogroup     = ", b.tipoServicioId, a.instanciaServicioId as instancia_id, a.status, a.class, a.costoWorkflow as costo, a.date as fecha, a.comprobanteId as comprobante_id ";
         $select_group       = ",concat('[', group_concat(JSON_OBJECT('servicio_id',a.servicioId,'instancia_id',a.instanciaServicioId,'status',a.status,'class',a.class, 
