@@ -27,7 +27,7 @@ class Bono extends Personal
 
         $add_fields_no_group    = ['tipo_servicio_id', 'instancia_id', 'status', 'class', 'costo', 'fecha', 'comprobante_id'];
 
-        $select_general     ="select c.contractId, REPLACE(TRIM(REGEXP_REPLACE ( c.name, '\\\s{2,}', '' )), '&amp;', '&' ) as name, 
+        $select_general     ="select c.contractId, REPLACE(REPLACE(TRIM(REGEXP_REPLACE ( c.name, '\\\s{2,}', '' )), '&amp;', '&' ),'&#039;','\'') as name, 
          REPLACE
         (
             REPLACE (
