@@ -829,38 +829,38 @@ switch ($_POST['type']) {
         $departamentos_config = [
             [
                 'nombre' => 'contabilidad',
-                'titulo' => 'contabilidad',
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE CONTABILIDAD',
+                'titulo' => 'Contabilidad e Impuestos',
+                'gerencia_departamento' => 'CONTABILIDAD E IMPUESTOS RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'CONTABILIDAD E IMPUESTOS'
             ],
             [
                 'nombre' => 'nóminas',
-                'titulo' => 'nóminas', 
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE NOMINAS',
+                'titulo' => 'Nóminas y Seguridad Social', 
+                'gerencia_departamento' => 'NOMINAS Y SEGURIDAD SOCIAL RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'NOMINAS Y SEGURIDAD SOCIAL'
             ],
             [
                 'nombre' => 'auditoria',
-                'titulo' => 'auditoria',
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE AUDITORIA', 
+                'titulo' => 'Auditoria',
+                'gerencia_departamento' => 'AUDITORIA RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'AUDITORIA'
             ],
             [
                 'nombre' => 'legal',
-                'titulo' => 'legal',
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE LEGAL',
+                'titulo' => 'Legal',
+                'gerencia_departamento' => 'LEGAL RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'LEGAL'
             ],
             [
                 'nombre' => 'fiscal',
-                'titulo' => 'fiscal',
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE FISCAL',
+                'titulo' => 'Fiscal',
+                'gerencia_departamento' => 'FISCAL RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'FISCAL'
             ],
             [
                 'nombre' => 'gestoria',
-                'titulo' => 'gestoria',
-                'gerencia_departamento' => 'GERENCIA RESPONSABLE GESTORIA',
+                'titulo' => 'Gestoria',
+                'gerencia_departamento' => 'GESTORIA RESPONSABLE DE COMUNICACION',
                 'servicio_departamento' => 'GESTORIA'
             ]
         ];
@@ -869,14 +869,14 @@ switch ($_POST['type']) {
         $departamentos_especiales = [
             [
                 'nombre' => 'cuentas_por_cobrar',
-                'titulo' => 'cuentas por cobrar',
+                'titulo' => 'Cuentas por cobrar',
                 'departamento' => 'CUENTAS POR COBRAR'
             ],
             [
-                'nombre' => 'atencion_cliente', 
-                'titulo' => 'atención al cliente',
-                'departamento' => ['ATENCION AL CLIENTE', 'ATENCIÓN AL CLIENTE']
-            ]
+                'nombre' => 'asistente', 
+                'titulo' => 'Asistente',
+                'departamento' => ['ASISTENTE', 'ASISTENTE']
+            ],   
         ];
 
         // Headers base
@@ -893,9 +893,9 @@ switch ($_POST['type']) {
         // Generar headers dinámicamente para departamentos con patrón gerencia/servicio
         foreach($departamentos_config as $dept) {
             $headers = array_merge($headers, [
-                "Responsable de comunicación de {$dept['titulo']}",
-                "Telefono responsable de comunicación de {$dept['titulo']}", 
-                "Correo responsable de comunicación de {$dept['titulo']}",
+                "{$dept['titulo']} Responsable de Comunicación ",
+                "Telefono {$dept['titulo']} Responsable de Comunicación", 
+                "Correo {$dept['titulo']} Responsable de Comunicación",
                 "Encargado de servicio {$dept['titulo']}",
                 "Telefono encargado de servicio {$dept['titulo']}",
                 "Correo encargado de servicio {$dept['titulo']}"
