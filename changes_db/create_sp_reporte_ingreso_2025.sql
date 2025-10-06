@@ -344,7 +344,7 @@ BEGIN
             COALESCE(Enero, 0), COALESCE(Febrero, 0), COALESCE(Marzo, 0), COALESCE(Abril, 0),
             COALESCE(Mayo, 0), COALESCE(Junio, 0), COALESCE(Julio, 0), COALESCE(Agosto, 0),
             COALESCE(Septiembre, 0), COALESCE(Octubre, 0), COALESCE(Noviembre, 0), COALESCE(Diciembre, 0)
-        ) > 0
+        ) >= 0
     )
     
     ORDER BY 

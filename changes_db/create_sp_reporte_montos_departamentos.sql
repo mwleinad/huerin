@@ -257,10 +257,10 @@ BEGIN
             AND ct.name LIKE "%', p_empresa_nombre, '%"');
     END IF;
     
-    -- Agregar GROUP BY y ORDER BY
+    -- Agregar GROUP BY y ORDER BY obtener todos los departamentos aunque no tengan costos
     SET sql_query = CONCAT(sql_query, '
         GROUP BY ct.contractId, c.customerId, c.nameContact, ct.name
-        HAVING COALESCE(SUM(tca.total_departamento), 0) > 0
+        HAVING COALESCE(SUM(tca.total_departamento), 0) >= 0
         ORDER BY c.nameContact ASC, ct.name ASC');
     
     -- Ejecutar la consulta dinámica
