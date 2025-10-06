@@ -370,10 +370,10 @@ switch ($_POST["type"]) {
 
         $row=1;
         $col = 0;
-        $sheet->setCellValueByColumnAndRow($col, $row, 'Codigo')
+        $sheet->setCellValueByColumnAndRow($col, $row, 'Nombre')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
-        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Nombre')
+        $sheet->setCellValueByColumnAndRow(++$col, $row, 'Empleador')
             ->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
 
         $sheet->setCellValueByColumnAndRow(++$col,$row, 'Fecha de ingreso')
@@ -483,8 +483,8 @@ switch ($_POST["type"]) {
 
         foreach($results as $result) {
             $col = 0;
-            $sheet->setCellValueByColumnAndRow($col, $row, $result['codigo']);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['nombre']);
+            $sheet->setCellValueByColumnAndRow($col, $row, $result['nombre']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, 'BRAUN HUERIN CONTADORES PUBLICOS');
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['fechaIngreso']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['celphone']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['phone']);
