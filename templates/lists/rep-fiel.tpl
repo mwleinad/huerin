@@ -2,13 +2,13 @@
 <thead>
 <tr rowspan="10">
     <th colspan="3" class="divInside" align="center">
-        ARCHIVOS VENCIDOS O PROXIMO A VENCER DE CLIENTES A CUENTA DE {$namePersonal|upper} Y SUBORDINADOS DEL AREA DE {$depto|upper}
+        ARCHIVOS VENCIDOS O PROXIMOS A VENCER DEL AREA DE {$depto|upper}, DE EMPRESAS EN LAS QUE SE ENCUENTRA A CARGO {$namePersonal|upper} Y/O A TRABEZ DE SUS SUBORDINADOS
     </th>
 </tr>
 <tr>
     <th align="center"  class="cabeceraTabla">#</th>
     <th align="center"  class="cabeceraTabla">CLIENTE</th>
-    <th align="center" class="cabeceraTabla">RAZON SOCIAL</th>
+    <th align="center" class="cabeceraTabla">EMPRESA</th>
 </tr>
 </thead>
 <tbody>
