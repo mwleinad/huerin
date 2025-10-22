@@ -424,7 +424,7 @@ class Personal extends Main
 
     public function InfoWhitRol()
     {
-        $this->Util()->DB()->setQuery("SELECT a.personalId,a.name,a.roleId,b.name as nameRol,b.nivel,a.sueldo,a.jefeInmediato, a.departamentoId,
+        $this->Util()->DB()->setQuery("SELECT a.personalId, a.name, a.roleId, b.name as nameRol, b.nivel, a.sueldo, a.fechaIngreso, a.jefeInmediato, a.departamentoId,
                                              CASE 
                                              WHEN (b.nivel = 1 AND a.roleId = 5) THEN 'Coordinador'
                                              WHEN b.nivel = 100 THEN (SELECT name from porcentajesBonos order by categoria DESC LIMIT 1)

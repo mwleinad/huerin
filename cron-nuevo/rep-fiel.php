@@ -3,34 +3,60 @@ ini_set('memory_limit','3G');
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
-}
-if($_SERVER['DOCUMENT_ROOT'] != "/var/www/mainplatform/public_html")
-{
-    $docRoot = $_SERVER['DOCUMENT_ROOT']."/huerin";
-}
-else
-{
+} else {
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
+
 define('DOC_ROOT', $docRoot);
 
 include_once(DOC_ROOT.'/init.php');
 include_once(DOC_ROOT.'/config.php');
 include_once(DOC_ROOT.'/libraries.php');
 
-echo 'Inicio ejecucion : '.date('Y-m-d H:i:s',time())."\n";
-$sql = "SELECT * FROM personal WHERE (puesto like'%gerente%' OR  puesto like'%Gerente%' OR puesto like'%supervisor%' OR  puesto like'%Supervisor%')  AND active='1' 
-         ORDER BY personalId ASC";
+echo 'Inicio ejecucion : '.date('Y-m-d H:i:s',time()).chr(10).chr(13);
+$logFile = DOC_ROOT . "/sendFiles/log_envios_" . date('Y-m-d_H-i-s') . ".txt";
+file_put_contents($logFile, "Registro de envios - " . date('Y-m-d H:i:s') . "\n\n");
+
+$sql = "SELECT personal.personalId,
+            personal.name,
+            personal.email,
+            personal.lastSendArchivo,
+            personal.departamentoId,
+            personal.lastSendArchivo,
+            departamentos.departamento as departamento,
+            roles.name as rol,
+            roles.nivel 
+        FROM personal
+        INNER JOIN departamentos ON personal.departamentoId=departamentos.departamentoId
+        INNER JOIN roles ON personal.roleId=roles.rolId 
+        WHERE  personal.active='1'
+        AND roles.name NOT IN ('Socio','Asociado')
+        AND DATE_ADD(IF(personal.lastSendArchivo = '0000-00-00' OR personal.lastSendArchivo IS NULL, '1900-01-01', personal.lastSendArchivo), INTERVAL 1 WEEK) <= CURDATE()
+        ORDER BY roles.nivel ASC LIMIT 50";
+
 $db->setQuery($sql);
-$employees = $db->GetResult($sql);
+$employees = $db->GetResult();
 foreach($employees as $key=>$itemEmploye){
     $persons = array();
     $personal->setPersonalId($itemEmploye['personalId']);
     $subordinados = $personal->Subordinados(true);
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
-
     array_unshift($persons, $itemEmploye['personalId']);
-    $contracts = $contractRep->SearchOnlyContract($persons, true);
+
+    $sql  = "SELECT DISTINCT contract.contractId,
+                customer.nameContact,
+                contract.name
+            FROM  contract
+            INNER JOIN customer ON contract.customerId=customer.customerId
+            INNER JOIN contractPermiso ON contract.contractId=contractPermiso.contractId
+            WHERE contractPermiso.personalId IN (".implode(',', $persons).")
+            AND contract.activo='Si' and customer.active='1' ";
+    $db->setQuery($sql);
+    $contracts = $db->GetResult();
+
+    if (count($contracts)<=0)
+        continue;
+
     foreach ($contracts as $kc=>$vc){
         $filesExp = $contractRep->CheckExpirationFiel($vc,$itemEmploye['departamentoId']);
         if(empty($filesExp))
@@ -40,26 +66,17 @@ foreach($employees as $key=>$itemEmploye){
         }
 
         $contracts[$kc]['filesExpirate'] = $filesExp;
-
-        $personal->setPersonalId($vc['respContabilidad']);
-        $contracts[$kc]['responsableContabilidad'] = $personal->GetNameById();
-        $personal->setPersonalId($vc['respJuridico']);
-        $contracts[$kc]['responsableJuridico'] = $personal->GetNameById();
     }
     $sortedArray = $util->orderMultiDimensionalArray($contracts,'nameContact');
     if(count($sortedArray)<=0)
         continue;
 
-    //se comprueba que la ultima notifiacion de vencimiento ya haya pasado una semana
-    if($itemEmploye['lastSendArchivo']!='0000-00-00' && $itemEmploye['lastSendArchivo']!=''){
-        $last = strtotime('+1 week',strtotime($itemEmploye['lastSendArchivo']));
-        $addweek = date('Y-m-d',$last);
-        if(date('Y-m-d')<$addweek)
-        {
-            echo "No se envia correo a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo']."\n";;
-            continue;
-        }
+    $numContracts = count($sortedArray);
+    $numFilesExp = 0;
+    foreach($sortedArray as $contract){
+        $numFilesExp += count($contract['filesExpirate']);
     }
+
     $html = '<html>
 			<head>
 				<title>Cupon</title>
@@ -98,8 +115,7 @@ foreach($employees as $key=>$itemEmploye){
 				</style>
 			</head>
 			';
-    $departamentos->setDepartamentoId($itemEmploye['departamentoId']);
-    $depto =  $departamentos->GetNameById();
+    $depto = $itemEmploye['departamento'];
     $smarty->assign("depto", $depto);
     $smarty->assign("namePersonal", $itemEmploye['name']);
     $smarty->assign("registros", $sortedArray);
@@ -109,28 +125,34 @@ foreach($employees as $key=>$itemEmploye){
     $excel->ConvertToExcel($html, 'xlsx', false, $file,true,100);
 
     $subject= $file;
-    $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMOS A VENCER DE CLIENTES BAJO SU RESPONSABILIDAD
+    $body   = "ESTIMADO USUARIO : SE HACE LLEGAR EL REPORTE DE ARCHIVOS VENCIDOS O PROXIMOS A VENCER DE LAS EMPRESAS QUE SE ENCUENTRAN BAJO SU RESPONSABILIDAD
           <br><br>
           Este correo se genero automaticamente favor de no responder";
     $sendmail = new SendMail;
 
-    if(REP_STATUS=='test')
-        $to = array(EMAIL_DEV=>'Desarrollador');
-    else
-        $to = array($itemEmploye["email"]=>$itemEmploye['name'],EMAIL_DEV=>'Desarrollador');
+    $to =[];
+    if(PROJECT_STATUS !== 'test')
+        $to = array($itemEmploye["email"]=>$itemEmploye['name']);
 
     $toName = $itemEmploye['name'];
     $attachment = DOC_ROOT . "/sendFiles/".$file.".xlsx";
 
-    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", $attachment2, $fileName2,'noreply@braunhuerin.com.mx' , "ARCHIVOS") ;
-    if(REP_STATUS!='test')
-    {
-        $up = 'UPDATE personal SET lastSendArchivo=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
-        $db->setQuery($up);
-        $db->UpdateData();
-    }
+    $sendmail->PrepareMultiple($subject, $body, $to, $toName, $attachment, $file.".xlsx", '', '','noreply@braunhuerin.com.mx' , "Notificacion de archivos vencidos o por vencer"); ;
+
+    $up = 'UPDATE personal SET lastSendArchivo=" '.date("Y-m-d").' " WHERE personalId='.$itemEmploye["personalId"].' ';
+    $db->setQuery($up);
+    $db->UpdateData();
+
     unlink($attachment);
-    echo "Reporte enviado a ".$itemEmploye['name'].": ultimo envio ".$itemEmploye['lastSendArchivo'].", envio reciente ".date('Y-m-d')."\n";
+    $logEntry = "Enviado a: {$itemEmploye['name']} ({$itemEmploye['email']}) - Contratos: $numContracts, Archivos expirados: $numFilesExp\n";
+    file_put_contents($logFile, $logEntry, FILE_APPEND);
     echo "<br>";
 }
+$subjectLog = "Registro de envios - " . date('Y-m-d');
+$bodyLog = "Adjunto el registro de envios realizados.";
+$sendmailLog = new SendMail;
+$toLog = array(EMAIL_DEV=>'Desarrollador');
+$toNameLog = 'Desarrollador';
+$attachmentLog = $logFile;
+$sendmailLog->PrepareMultiple($subjectLog, $bodyLog, $toLog, $toNameLog, $attachmentLog, basename($logFile), '', '','noreply@braunhuerin.com.mx' , "Registro de envios de notificacion");
 echo 'Final ejecucion : '.date('Y-m-d H:i:s',time());
