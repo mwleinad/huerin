@@ -3,10 +3,9 @@ ini_set('memory_limit','3G');
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
     $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__).'/..');
-} else {
-    $docRoot = $_SERVER['DOCUMENT_ROOT'];
 }
 
+$docRoot = $_SERVER['DOCUMENT_ROOT'];
 define('DOC_ROOT', $docRoot);
 
 include_once(DOC_ROOT.'/init.php');
