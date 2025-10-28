@@ -496,10 +496,13 @@ switch ($_POST["type"]) {
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['sueldo']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['userComputadora']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwordComputadora']);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['mailGrupo']);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['listaDistribucion']);
+            $mailGrupo = trim($result['mailGrupo']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, filter_var($mailGrupo, FILTER_VALIDATE_EMAIL) ? $mailGrupo : '');
+            $listaDistribucion = trim($result['listaDistribucion']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, filter_var($listaDistribucion, FILTER_VALIDATE_EMAIL) ? $listaDistribucion : '');
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['numberAccountsAllowed']);
-            $sheet->setCellValueByColumnAndRow(++$col, $row, $result['email']);
+            $email = trim($result['email']);
+            $sheet->setCellValueByColumnAndRow(++$col, $row, filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : '');
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['passwd']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['cuentaInhouse']);
             $sheet->setCellValueByColumnAndRow(++$col, $row, $result['systemAspel']);
