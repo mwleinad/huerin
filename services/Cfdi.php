@@ -22,6 +22,10 @@ class Cfdi extends Comprobante
         $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
         $currentRfc = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
         $empresa['empresaId'] = $currentRfc['empresaId'];
+        // Obtener el id del emisor que va a timbrar
+        $activeRfc = $currentRfc['rfcId'];
+        $this->setRfcId($activeRfc);
+        $nodoEmisorRfc = $this->InfoRfc();
 
         $vs = new User;
         include_once(DOC_ROOT."/addendas/addenda_campos.php");
@@ -39,9 +43,10 @@ class Cfdi extends Comprobante
         if(count($_SESSION["conceptos"]) < 1) {
             $vs->Util()->setError(10040, "error", "Debe agregar por lo menos un concepto");
         }
-        // validar aca que si es modo factura 2  todos deben traer un servicio ligado
+        // Validaciones para facturas por sustitucion
         if(isset($data['modo_factura'])) {
-            if((int)$data['modo_factura'] === 2){
+            if((int)$data['modo_factura'] === 2) {
+                //  Validar que todos los conceptos tengan servicioId y fechaCorrespondiente valida, cuando la factura es por sustitucion
                 foreach($_SESSION['conceptos'] as $itemConcepto) {
                     if((int)$itemConcepto['servicioId'] <= 0 ||
                         !$vs->Util()->isValidateDate($itemConcepto['fechaCorrespondiente'], 'Y-m-d')) {
@@ -50,6 +55,15 @@ class Cfdi extends Comprobante
                         $vs->Util()->setError(0, "error", $mensaje);
                         break;
                     }
+                }
+                
+                $validacionCfdiRelacionado = $this->validarCfdiRelacionados($data['serieAnterior'], $data['folioAnterior'], $nodoEmisorRfc);
+                if ($validacionCfdiRelacionado['error']) {
+                    $vs->Util()->setError(10040, "error", $validacionCfdiRelacionado['message']);
+                } else {
+                    // Aseguramos que la factura a crear por sustitucion se genera con cfdi relacionado de tipo 04
+                    $data['cfdiRelacionadoId'] = $validacionCfdiRelacionado['comprobante']['comprobanteId'];
+                    $data['tipoRelacion'] = '04';
                 }
             }
         }
@@ -61,57 +75,36 @@ class Cfdi extends Comprobante
         if($data["folioSobre"] != "") {
             $vs->Util()->ValidateInteger($data["folioSobre"], 1000000000, 1);
         }
-        // validar nuevamente que el folio anterior que viene de factura manual, se encuentre registrado.
-        if(isset($data['modo_factura'])) {
-            if ($data['modo_factura'] == 2) {
-                $serifolioanterior = $data['serieAnterior'] . $data['folioAnterior'];
-                $sql = "SELECT comprobanteId FROM comprobante 
-                        WHERE LOWER(CONCAT(serie,folio)) = '" . strtolower($serifolioanterior) . "' 
-                        AND status ='1' ";
-                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-                $folioAnterior = $this->Util()->DBSelect($_SESSION['empresaId'])->GetSingle();
-                if (!$folioAnterior)
-                    $vs->Util()->setError(10040, "error", "La factura con folio : " . $serifolioanterior . " no se encuentra en el sistema.");
-                else {
-                    // Aseguramos que la factura a crear por sustitucion se genera con cfdi relacionado de tipo 04
-                    $data['cfdiRelacionadoId'] = $folioAnterior;
-                    $data['tipoRelacion'] = '04';
-                }
-            }
-        }
-
+     
         // sustitucion de cfdis previos, encontrar los workflowId para su actualizacion de comprobanteId
         // corroborar si esto aun queda o se quitara definitivamente.
         if ($data['cfdiRelacionadoSerie'] != "" && $data['cfdiRelacionadoFolio'] != "" && in_array($data['tiposComprobanteId'], [1,2])) {
 
-            $rfolio = $data['cfdiRelacionadoSerie'].$data['cfdiRelacionadoFolio'];
-            $sql ="SELECT comprobanteId, status FROM comprobante WHERE LOWER(CONCAT(serie,folio)) = '".strtolower($rfolio)."'";
-            $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-            $cfdiRelacionado = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
-            if ($cfdiRelacionado) {
-                if($data['tiposComprobanteId'] == 1) {
-                    if ($cfdiRelacionado['status'] == '1') {
-                        $vs->Util()->setError(10040, "error", "El CFDI relacionado debe estar cancelado: " . $rfolio);
-                    } else {
-                        $data['cfdiRelacionadoId'] = $cfdiRelacionado['comprobanteId'];
-                        $sql = "select instanciaServicio.instanciaServicioId, servicio.inicioFactura, instanciaServicio.factura from instanciaServicio 
-                           inner join servicio on instanciaServicio.servicioId=servicio.servicioId
-                           where instanciaServicio.comprobanteId = '" . $cfdiRelacionado['comprobanteId'] . "' ";
-                        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
-                        $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
-                        $data['workflowsIdUpdateInvoice'] = $affects;
-                    }
-
-                } else  {
-                    $data['cfdiRelacionadoId'] = $cfdiRelacionado['comprobanteId'];
-                }
-
-                if ($data["tipoRelacion"] == "") {
-                    $vs->Util()->setError(0, "error", "Seleccionar un tipo de relacion, para el cfdi relacionado");
-                }
-
+            $validacionCfdiRelacionado = $this->validarCfdiRelacionados($data['cfdiRelacionadoSerie'], $data['cfdiRelacionadoFolio'], $nodoEmisorRfc);
+            if ($validacionCfdiRelacionado['error']) {
+                $vs->Util()->setError(10040, "error", $validacionCfdiRelacionado['message']);
             } else {
-                    $vs->Util()->setError(10040, "error", "El CFDI con folio ".$rfolio." no se encuentra registrado.");
+               // Si la factura es de tipoComprobanteId 1 o 2, se debe asegurar que el cfdiRelacionado este cancelado
+               if($data['tiposComprobanteId'] == 1) {
+                  
+                    if ($validacionCfdiRelacionado['comprobante']['status'] == '1') {
+                        $vs->Util()->setError(10040, "error", "El CFDI relacionado debe estar cancelado: " . $data['cfdiRelacionadoSerie'] . $data['cfdiRelacionadoFolio']);
+                     } else {
+                        $data['cfdiRelacionadoId'] = $validacionCfdiRelacionado['comprobante']['comprobanteId'];
+                        $sql = "select instanciaServicio.instanciaServicioId, servicio.inicioFactura, instanciaServicio.factura from instanciaServicio 
+                                inner join servicio on instanciaServicio.servicioId=servicio.servicioId
+                                where instanciaServicio.comprobanteId = '" . $cfdiRelacionado['comprobanteId'] . "' ";
+                                $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+                                $affects = $this->Util()->DBSelect($_SESSION['empresaId'])->GetResult();
+                                $data['workflowsIdUpdateInvoice'] = $affects;
+                    }         
+               } else {
+                    $data['cfdiRelacionadoId'] = $validacionCfdiRelacionado['comprobante']['comprobanteId'];
+               }
+
+               if ($data["tipoRelacion"] == "") {
+                    $vs->Util()->setError(0, "error", "Seleccionar un tipo de relacion, para el cfdi relacionado");
+               }
             }
         }
         $sobreescribirFecha = false;
@@ -139,8 +132,7 @@ class Cfdi extends Comprobante
         if(!$data["porcentajeIEPS"])
             $data["porcentajeIEPS"] = "0";
 
-        //get active rfc
-        $activeRfc = $currentRfc['rfcId'];
+        
         //get datos serie de acuerdo al tipo de comprobabte expedido.
 
         if(!$data["metodoDePago"])
@@ -190,6 +182,7 @@ class Cfdi extends Comprobante
         else
             $folio = $serie["consecutivo"];
 
+        // restar un dia al tiempo
         $fecha = $this->Util()->FormatDateAndTime(time());
         $fechaPago = $this->Util()->FormatDate(time());
 
@@ -209,10 +202,9 @@ class Cfdi extends Comprobante
         $myEmpresa->setSucursalId($data["sucursalId"]);
         $nodoEmisor = $myEmpresa->GetSucursalInfo();
 
-        $this->setRfcId($activeRfc);
-        $nodoEmisorRfc = $this->InfoRfc();
+        
         $data["nodoEmisor"]["sucursal"] = $nodoEmisor;
-        $data["nodoEmisor"]["rfc"]      = $nodoEmisorRfc;
+        $data["nodoEmisor"]["rfc"] = $nodoEmisorRfc;
 
         if(!$data["nodoEmisor"]["rfc"]["regimenFiscal"]) {
             $vs->Util()->setError(10047, "error", "Necesitas el Regimen Fiscal, esto se actualiza en Datos Generales, en la opcion de edicion.");
@@ -479,13 +471,6 @@ class Cfdi extends Comprobante
             }
         }
 
-        //proceso de cancelacion mandarlo a cron, por que necesita un tiempo transcurrido para realizarlo.
-        /*if(isset($data['modo_factura'])) {
-
-            if ($data['modo_factura'] == 2 && $idParent) {
-                $this->CancelarCfdiFromSustitucion($idParent, $comprobanteId);
-            }
-        }*/
         // condicionar el envio de correo, por default no se envia, se usa un cronjob para esto.
         if ($sendCorreo) {
             $razon = new Razon;
@@ -564,5 +549,61 @@ class Cfdi extends Comprobante
         $response['xmlSignedFile'] = $root."SIGN_".$fileName.".xml";
         return $response;
     }
+
+    /**
+     * Valida que los CFDI relacionados existan y pertenezcan al mismo emisor.
+     * @param string $serieAnterior
+     * @param string $folioAnterior
+     * @param array $nodoEmisorRfc
+     * @return array|false Retorna el comprobante anterior si es válido, o false si no lo es.
+     */
+    public function validarCfdiRelacionados($serieAnterior, $folioAnterior, $nodoEmisorRfc)
+    {
+        $serifolioanterior = $serieAnterior . $folioAnterior;
+        $sql = "SELECT comprobanteId, xml, empresaId, rfcId FROM comprobante 
+                WHERE LOWER(CONCAT(serie,folio)) = '" . strtolower($serifolioanterior) . "' 
+                AND status ='1' ";
+        $this->Util()->DBSelect($_SESSION['empresaId'])->setQuery($sql);
+        $comprobanteAnterior = $this->Util()->DBSelect($_SESSION['empresaId'])->GetRow();
+
+        if (!$comprobanteAnterior) {
+            return [
+                'error' => true,
+                'message' => "La factura con folio : " . $serifolioanterior . " no se encuentra en el sistema."
+            ];
+        }
+
+        // Validar mediante su XML que sea del mismo Emisor
+        try {
+            $xmlReaderService = new XmlReaderService;
+            $xmlPath = DOC_ROOT . '/empresas/' . $comprobanteAnterior['empresaId'] . '/certificados/' . $comprobanteAnterior['rfcId'] . '/facturas/xml/' . $comprobanteAnterior['xml'] . ".xml";
+            if (!is_file($xmlPath)) {
+                return [
+                    'error' => true,
+                    'message' => "No se encontro el XML de la factura con folio : " . $serifolioanterior . " para su validacion."
+                ];
+            } else {
+                $xmlData = $xmlReaderService->execute($xmlPath, $comprobanteAnterior['empresaId'], $comprobanteAnterior['comprobanteId']);
+                $rfcEmisorAnterior = (string)$xmlData['emisor']['Rfc'];
+                if ($rfcEmisorAnterior != $nodoEmisorRfc['rfc']) {
+                    return [
+                        'error' => true,
+                        'message' => "La factura con folio : " . $serifolioanterior . " no pertenece al mismo emisor que la factura a generar."
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            return [
+                'error' => true,
+                'message' => "Ha ocurrido un error al validar el XML de la factura con folio : " . $serifolioanterior
+            ];
+        }
+
+        return [
+            'error' => false,
+            'comprobante' => $comprobanteAnterior
+        ];
+    }
+
 }
 ?>

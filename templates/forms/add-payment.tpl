@@ -4,7 +4,7 @@
 		<input type="hidden" id="efectivo" name="efectivo" value="{if isset($smarty.get.id)}0{else}1{/if}" class="largeInput"/>
 		<fieldset>
 			<div class="formLine" style="width:100%; text-align:left">
-			<div style="width:30%;float:left">* Metodo de Pago:</div>
+			<div style="width:30%;float:left">* Forma de Pago:</div>
 			<select name="metodoDePago" id="metodoDePago" class="largeInput">
 					{foreach from=$formasDePago item=formaDePago}
 						{if $formaDePago.c_FormaPago != '99'}
@@ -33,11 +33,16 @@
 				<input class="largeInput medium" name="deposito" id="deposito" type="text" value="" size="50" maxlength="15"/>
 			</div>
 
-			{if $post.version == '3.3' ||  $post.version == '4.0'}
+			{if ($post.version == '3.3' ||  $post.version == '4.0') && $post.metodoDePago === 'PPD'}
 				<div class="formLine" style="width:100%; text-align:left">
 					<div style="width:25%;float:left; color:#f00">Generar comprobante con complemento de pago por este importe?</div>
 					<!-- CAMPO generarComprobantePago   -->
 					<input type="checkbox" name="generarComprobantePago" checked id="generarComprobantePago">
+				</div>
+			{else}
+				<div class="formLine">
+					<input type="hidden" name="generarComprobantePago" id="generarComprobantePago">
+					<p style="color: rgb(30, 46, 197); padding:3px">Las facturas generadas con Metodo de Pago diferentes a PPD no pueden generar complemento de pago, proceda unicamente a registrar el pago efectuado</p>
 				</div>
 			{/if}
 
