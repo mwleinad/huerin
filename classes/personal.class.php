@@ -1621,12 +1621,12 @@ class Personal extends Main
                     WHERE 
                         (
                             roles.nivel IN (3,5) 
-                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) != 'Contabilidad e Impuestos'
+                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) NOT IN ('Contabilidad e Impuestos', 'Auditoria')
                         ) 
                          OR 
                         (
                             (roles.nivel >=3 and roles.nivel <=4) 
-                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) = 'Contabilidad e Impuestos'
+                            AND (SELECT tbl_dep.departamento FROM departamentos tbl_dep WHERE tbl_main.departamentoId = tbl_dep.departamentoId LIMIT 1) IN ('Contabilidad e Impuestos', 'Auditoria')
                         )
                     AND tbl_main.active = '1'
                     GROUP BY tbl_main.departamentoId ORDER BY tbl_main.name ASC";
