@@ -404,7 +404,7 @@ switch($_POST['type']){
             if($value['is_primary'] != 1 || $value['status'] == 'bajaParcial')
                 continue;
 
-            $encargados = json_decode($result['permiso_detallado'] ??  '[]',1);
+            $encargados = json_decode($value['permiso_detallado'] ??  '[]',1);
 
             // ENCONTRAR LOS EL RESPONSABLE DE ATC
             $current_permisos = json_decode($value['permiso_detallado'], true);
@@ -499,15 +499,15 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$value['inicioFactura']);
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
+            $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row,$asociado['nombre']);
+            $sheet->setCellValueByColumnAndRow($col,$row,$asociado['nombre'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row,$asistente['nombre']);
+            $sheet->setCellValueByColumnAndRow($col,$row,$asistente['nombre'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? ($subgerente['nombre'] ?? 'Sin gerente o subgerente en linea de mando'));
+            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? ($subgerente['nombre'] ?? ''));
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando');
+            $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? '');
             $col++;
 
             $coorPrecioCartera = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
@@ -843,7 +843,7 @@ switch($_POST['type']){
                 if ($servicio['is_primary'] != 1 || $servicio['status'] == 'bajaParcial')
                     continue;
 
-                $encargados = json_decode($result['permiso_detallado'] ??  '[]',1);
+                $encargados = json_decode($servicio['permiso_detallado'] ??  '[]',1);
 
                 // Función para buscar encargado por departamento(s)
                 $buscarEncargado = function($departamentos) use ($encargados) {
@@ -928,19 +928,19 @@ switch($_POST['type']){
                 $sheet->setCellValueByColumnAndRow($col, $row, $servicio['inicioFactura'])
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre'])
+                $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $asociado['nombre'] ?? 'Sin asociado en linea de mando')
+                $sheet->setCellValueByColumnAndRow($col, $row, $asociado['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $asistente['nombre'] ?? 'Sin asistente en linea de mando')
+                $sheet->setCellValueByColumnAndRow($col, $row, $asistente['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? 'Sin gerente o subgerente en linea de mando')
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando')
+                $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['nombre']  ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
 
@@ -1036,7 +1036,7 @@ switch($_POST['type']){
 
             $coorTotalPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(13) . $row;
             $coorTotalCostoActual   = PHPExcel_Cell::stringFromColumnIndex(16) . $row;
-            $coorTotalUtilidadActual= PHPExcel_Cell::stringFromColumnIndex(18) . $row;
+            $coorTotalUtilidadActual= PHPExcel_Cell::stringFromColumnIndex(17) . $row;
             $coorTotalFactor        = PHPExcel_Cell::stringFromColumnIndex(19) . $row;
             $coorTotalCostoNuevo    = PHPExcel_Cell::stringFromColumnIndex(20) . $row;
             $coorTotalCostoNuevoFinal  = PHPExcel_Cell::stringFromColumnIndex(21) . $row;
