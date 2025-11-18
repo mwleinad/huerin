@@ -355,7 +355,11 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
+        $sheet->setCellValueByColumnAndRow($col,1,'Asociado');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Asistente');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Gerente o Subgerente');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Supervisor del servicio');
         $col++;
@@ -399,6 +403,9 @@ switch($_POST['type']){
         foreach($servicios as $key=>$value) {
             if($value['is_primary'] != 1 || $value['status'] == 'bajaParcial')
                 continue;
+
+            $encargados = json_decode($result['permiso_detallado'] ??  '[]',1);
+
             // ENCONTRAR LOS EL RESPONSABLE DE ATC
             $current_permisos = json_decode($value['permiso_detallado'], true);
             $current_permisos =  !is_array($current_permisos) ? [] : $current_permisos;
@@ -409,6 +416,26 @@ switch($_POST['type']){
                 $permisos_normalizado[strtolower($current_permiso['departamento'])] = $current_permiso;
                 $permisos_normalizado2[$current_permiso['departamento_id']] = $current_permiso;
             }
+
+            // Función para buscar encargado por departamento(s)
+            $buscarEncargado = function($departamentos) use ($encargados) {
+                if (!is_array($departamentos)) {
+                    $departamentos = [$departamentos];
+                }
+                
+                foreach($departamentos as $dept) {
+                    $resultado = current(array_filter($encargados, fn($encargado) => 
+                        mb_strtoupper($encargado['departamento']) === mb_strtoupper($dept)
+                    ));
+                    if ($resultado) {
+                        return $resultado;
+                    }
+                }
+                    return null;
+            };
+
+            $asociado = $buscarEncargado(['Asociado', 'Asociados']);
+            $asistente = $buscarEncargado(['Asistente', 'Asistentes']);
 
 
             //ENCONTRAR RESPONSABLES
@@ -474,6 +501,10 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$permisos_normalizado['atencion al cliente']['nombre']);
             $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$asociado['nombre']);
+            $col++;
+            $sheet->setCellValueByColumnAndRow($col,$row,$asistente['nombre']);
+            $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? ($subgerente['nombre'] ?? 'Sin gerente o subgerente en linea de mando'));
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando');
@@ -527,7 +558,7 @@ switch($_POST['type']){
             $col++;
 
             $coorPorUtilidadNuevo  = PHPExcel_Cell::stringFromColumnIndex($col) . $row;
-            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorCostoNuevoFinal/$coorCostoNuevo),0)")
+            $sheet->setCellValueByColumnAndRow($col,$row, "=IFERROR((+$coorUtilidadNuevo/$coorCostoNuevoFinal),0)")
                 ->getStyle($coorPorUtilidadNuevo)->applyFromArray($global_config_style_cell['style_porcent']);
             $col++;
 
@@ -744,7 +775,11 @@ switch($_POST['type']){
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Responsable ATC');
         $col++;
-        $sheet->setCellValueByColumnAndRow($col,1,'Gerente del servicio');
+        $sheet->setCellValueByColumnAndRow($col,1,'Asociado');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Asistente');
+        $col++;
+        $sheet->setCellValueByColumnAndRow($col,1,'Gerente o Subgerente');
         $col++;
         $sheet->setCellValueByColumnAndRow($col,1,'Supervisor del servicio');
         $col++;
@@ -808,6 +843,25 @@ switch($_POST['type']){
                 if ($servicio['is_primary'] != 1 || $servicio['status'] == 'bajaParcial')
                     continue;
 
+                $encargados = json_decode($result['permiso_detallado'] ??  '[]',1);
+
+                // Función para buscar encargado por departamento(s)
+                $buscarEncargado = function($departamentos) use ($encargados) {
+                    if (!is_array($departamentos)) {
+                        $departamentos = [$departamentos];
+                    }
+                    
+                    foreach($departamentos as $dept) {
+                        $resultado = current(array_filter($encargados, fn($encargado) => 
+                            mb_strtoupper($encargado['departamento']) === mb_strtoupper($dept)
+                        ));
+                        if ($resultado) {
+                            return $resultado;
+                        }
+                    }
+                        return null;
+                };
+
                 // ENCONTRAR LOS EL RESPONSABLE DE ATC
                 $current_permisos = json_decode($servicio['permiso_detallado'], true);
                 $current_permisos = !is_array($current_permisos) ? [] : $current_permisos;
@@ -830,9 +884,16 @@ switch($_POST['type']){
 
                 if ($responsable) {
                     $superiores = $personal->superiores($responsable['personal_id']);
-                    $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+                    $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
+                    if (!isset($gerente['id'])) {
+                        $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
+                    }
                     $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
                 }
+                // Asociado y Asistente
+                $asociado = $buscarEncargado('Asociado');
+                $asistente = $buscarEncargado('Asistente');
+
                 $sueldoAcumulado = 0;
                 $numPersonasxGerencia = isset($gerente['id']) ? 1 : 0;
                 if(isset($gerente['id'])) {
@@ -870,7 +931,13 @@ switch($_POST['type']){
                 $sheet->setCellValueByColumnAndRow($col, $row, $permisos_normalizado['atencion al cliente']['nombre'])
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? 'Sin gerente en linea de mando')
+                $sheet->setCellValueByColumnAndRow($col, $row, $asociado['nombre'] ?? 'Sin asociado en linea de mando')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $asistente['nombre'] ?? 'Sin asistente en linea de mando')
+                    ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
+                $col++;
+                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? 'Sin gerente o subgerente en linea de mando')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
                 $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['nombre']  ?? 'Sin supervisor en linea de mando')
@@ -957,69 +1024,49 @@ switch($_POST['type']){
 
             $rowFinGrupoCliente = $row - 1;
 
-            for($ii=0; $ii <= 8; $ii++) {
+            for($ii=0; $ii <= 10; $ii++) {
                 $sheet->setCellValueByColumnAndRow($ii, $row,'')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
             }
-            $sheet->setCellValueByColumnAndRow(9, $row,$cliente['nombre'])
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(9) . $row)->applyFromArray($styleTotalCliente);
-            $sheet->setCellValueByColumnAndRow(10, $row,'SUBTOTAL')
-                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(10) . $row)->applyFromArray($styleTotalCliente);
+            $sheet->setCellValueByColumnAndRow(11, $row,$cliente['nombre'])
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(11) . $row)->applyFromArray($styleTotalCliente);
+            $sheet->setCellValueByColumnAndRow(12, $row,'SUBTOTAL')
+                ->getStyle(PHPExcel_Cell::stringFromColumnIndex(12) . $row)->applyFromArray($styleTotalCliente);
 
 
-            $coorTotalPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(11) . $row;
-            $coorTotalCostoActual   = PHPExcel_Cell::stringFromColumnIndex(14) . $row;
-            $coorTotalUtilidadActual= PHPExcel_Cell::stringFromColumnIndex(15) . $row;
-            $coorTotalFactor        = PHPExcel_Cell::stringFromColumnIndex(17) . $row;
-            $coorTotalCostoNuevo    = PHPExcel_Cell::stringFromColumnIndex(18) . $row;
-            $coorTotalCostoNuevoFinal  = PHPExcel_Cell::stringFromColumnIndex(19) . $row;
-            $coorTotalUtilidadFinal    = PHPExcel_Cell::stringFromColumnIndex(20) . $row;
-            $coorTotalPorUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(21) . $row;
-            $coorTotalIncremento = PHPExcel_Cell::stringFromColumnIndex(22) . $row;
+            $coorTotalPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(13) . $row;
+            $coorTotalCostoActual   = PHPExcel_Cell::stringFromColumnIndex(16) . $row;
+            $coorTotalUtilidadActual= PHPExcel_Cell::stringFromColumnIndex(18) . $row;
+            $coorTotalFactor        = PHPExcel_Cell::stringFromColumnIndex(19) . $row;
+            $coorTotalCostoNuevo    = PHPExcel_Cell::stringFromColumnIndex(20) . $row;
+            $coorTotalCostoNuevoFinal  = PHPExcel_Cell::stringFromColumnIndex(21) . $row;
+            $coorTotalUtilidadFinal    = PHPExcel_Cell::stringFromColumnIndex(22) . $row;
+            $coorTotalPorUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(23) . $row;
+            $coorTotalIncremento = PHPExcel_Cell::stringFromColumnIndex(24) . $row;
 
             array_push($coorVerticalTotalPrecioCartera, $coorTotalPrecioCartera);
 
-            for($ii=11; $ii < 24; $ii++) {
+            for($ii=13; $ii < 26; $ii++) {
                 $coorInicio = PHPExcel_Cell::stringFromColumnIndex($ii) . $rowInicioGrupoCliente;
                 $coorFin    = PHPExcel_Cell::stringFromColumnIndex($ii) . $rowFinGrupoCliente;
 
                 switch($ii) {
-                    case 16:
+                    case 18:
                         $formula =  "=IFERROR(".$coorTotalUtilidadActual."/".$coorTotalPrecioCartera.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalClientePorcentaje);
                         break;
-                    case 17:
+                    case 19:
                         $formula =  1.05;
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
                         break;
-                    /*case 18:
-                        $formula = $formula =  "=IFERROR(".$coorTotalPrecioCartera."*".$coorTotalFactor.",0)";
-                        $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;
-                    case 19:
-                        $formula = "=CEILING($coorTotalCostoNuevo,100)";
-                        $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;
-                    case 20:
-                        $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."-".$coorTotalCostoActual.",0)";
-                        $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;*/
-                    case 21:
-                        $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."/".$coorTotalUtilidadFinal.",0)";
+                    case 23:
+                        $formula =  "=IFERROR(".$coorTotalUtilidadFinal."/".$coorTotalCostoNuevoFinal.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalClientePorcentaje);
                         break;
-                   /* case 22:
-                        $formula =  "=IFERROR(".$coorTotalCostoNuevoFinal."-".$coorTotalPrecioCartera.",0)";
-                        $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
-                            ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
-                        break;*/
-                    case 23:
+                    case 25:
                         $formula =  "=IFERROR(".$coorTotalIncremento."/".$coorTotalPrecioCartera.",0)";
                         $sheet->setCellValueByColumnAndRow($ii, $row, $formula)
                             ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalClientePorcentaje);
@@ -1032,104 +1079,99 @@ switch($_POST['type']){
                 }
 
             }
-            for($ii=24; $ii <= 27; $ii++) {
+            for($ii=26; $ii <= 28; $ii++) {
                 $sheet->setCellValueByColumnAndRow($ii, $row,'')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($ii) . $row)->applyFromArray($styleTotalCliente);
             }
             $row++;
         }
 
-        $coorInicioBaseVertical = PHPExcel_Cell::stringFromColumnIndex(10)."2";
-        $coorFinBaseVertical    = PHPExcel_Cell::stringFromColumnIndex(10).($row-1);
+        $coorInicioBaseVertical = PHPExcel_Cell::stringFromColumnIndex(12)."2";
+        $coorFinBaseVertical    = PHPExcel_Cell::stringFromColumnIndex(12).($row-1);
 
-        $coorTotalVerticalPrecioCatera = PHPExcel_Cell::stringFromColumnIndex(11).$row;
-        $coorInicioTotalVerticalPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(11)."2";
-        $coorFinTotalVerticalPrecioCartera    = PHPExcel_Cell::stringFromColumnIndex(11).($row-1);
+        $coorTotalVerticalPrecioCatera = PHPExcel_Cell::stringFromColumnIndex(13).$row;
+        $coorInicioTotalVerticalPrecioCartera = PHPExcel_Cell::stringFromColumnIndex(13)."2";
+        $coorFinTotalVerticalPrecioCartera    = PHPExcel_Cell::stringFromColumnIndex(13).($row-1);
 
-        $coorInicioTotalVerticalHrsInvertidas = PHPExcel_Cell::stringFromColumnIndex(12)."2";
-        $coorFinTotalVerticalHrsInvertidas   = PHPExcel_Cell::stringFromColumnIndex(12).($row-1);
+        $coorInicioTotalVerticalHrsInvertidas = PHPExcel_Cell::stringFromColumnIndex(14)."2";
+        $coorFinTotalVerticalHrsInvertidas   = PHPExcel_Cell::stringFromColumnIndex(14).($row-1);
 
-        $coorInicioTotalVerticalCostoPorHora = PHPExcel_Cell::stringFromColumnIndex(13)."2";
-        $coorFinTotalVerticalCostoPorHora   = PHPExcel_Cell::stringFromColumnIndex(13).($row-1);
+        $coorInicioTotalVerticalCostoPorHora = PHPExcel_Cell::stringFromColumnIndex(15)."2";
+        $coorFinTotalVerticalCostoPorHora   = PHPExcel_Cell::stringFromColumnIndex(15).($row-1);
 
-        $coorInicioTotalVerticalCostoActual = PHPExcel_Cell::stringFromColumnIndex(14)."2";
-        $coorFinTotalVerticalCostoActual   = PHPExcel_Cell::stringFromColumnIndex(14).($row-1);
+        $coorInicioTotalVerticalCostoActual = PHPExcel_Cell::stringFromColumnIndex(16)."2";
+        $coorFinTotalVerticalCostoActual   = PHPExcel_Cell::stringFromColumnIndex(16).($row-1);
 
-        $coorTotalVerticalUtilidadActual = PHPExcel_Cell::stringFromColumnIndex(15).$row;
-        $coorInicioTotalVerticalUtilidadActual = PHPExcel_Cell::stringFromColumnIndex(15)."2";
-        $coorFinTotalVerticalUtilidadActual   = PHPExcel_Cell::stringFromColumnIndex(15).($row-1);
+        $coorTotalVerticalUtilidadActual = PHPExcel_Cell::stringFromColumnIndex(17).$row;
+        $coorInicioTotalVerticalUtilidadActual = PHPExcel_Cell::stringFromColumnIndex(17)."2";
+        $coorFinTotalVerticalUtilidadActual   = PHPExcel_Cell::stringFromColumnIndex(17).($row-1);
 
-        $coorTotalVerticalCostoNuevo = PHPExcel_Cell::stringFromColumnIndex(18).$row;
-        $coorInicioTotalVerticalCostoNuevo = PHPExcel_Cell::stringFromColumnIndex(18)."2";
-        $coorFinTotalVerticalCostoNuevo   = PHPExcel_Cell::stringFromColumnIndex(18).($row-1);
+        $coorTotalVerticalCostoNuevo = PHPExcel_Cell::stringFromColumnIndex(20).$row;
+        $coorInicioTotalVerticalCostoNuevo = PHPExcel_Cell::stringFromColumnIndex(20)."2";
+        $coorFinTotalVerticalCostoNuevo   = PHPExcel_Cell::stringFromColumnIndex(20).($row-1);
 
-        $coorTotalVerticalCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex(19).$row;
-        $coorInicioTotalVerticalCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex(19)."2";
-        $coorFinTotalVerticalCostoNuevoFinal   = PHPExcel_Cell::stringFromColumnIndex(19).($row-1);
+        $coorTotalVerticalCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex(21).$row;
+        $coorInicioTotalVerticalCostoNuevoFinal = PHPExcel_Cell::stringFromColumnIndex(21)."2";
+        $coorFinTotalVerticalCostoNuevoFinal   = PHPExcel_Cell::stringFromColumnIndex(21).($row-1);
 
-        $coorTotalVerticalUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(20).$row;
-        $coorInicioTotalVerticalUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(20)."2";
-        $coorFinTotalVerticalUtilidadFinal   = PHPExcel_Cell::stringFromColumnIndex(20).($row-1);
+        $coorTotalVerticalUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(22).$row;
+        $coorInicioTotalVerticalUtilidadFinal = PHPExcel_Cell::stringFromColumnIndex(22)."2";
+        $coorFinTotalVerticalUtilidadFinal   = PHPExcel_Cell::stringFromColumnIndex(22).($row-1);
+        $coorTotalVerticalIncremento = PHPExcel_Cell::stringFromColumnIndex(23).$row;
+        $coorInicioTotalVerticalIncremento = PHPExcel_Cell::stringFromColumnIndex(23)."2";
+        $coorFinTotalVerticalIncremento   = PHPExcel_Cell::stringFromColumnIndex(23).($row-1);
 
-        $coorTotalVerticalIncremento = PHPExcel_Cell::stringFromColumnIndex(22).$row;
-        $coorInicioTotalVerticalIncremento = PHPExcel_Cell::stringFromColumnIndex(22)."2";
-        $coorFinTotalVerticalIncremento   = PHPExcel_Cell::stringFromColumnIndex(22).($row-1);
-
-        $sheet->setCellValueByColumnAndRow(10, $row,'TOTALES')
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(10) . $row)->applyFromArray($styleTotalCliente);
-
-        $formula = "=SUMIFS({$coorInicioTotalVerticalPrecioCartera}:{$coorFinTotalVerticalPrecioCartera},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
-        $sheet->setCellValueByColumnAndRow(11, $row, $formula)
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(11) . $row)->applyFromArray($styleTotalCliente);
-
-        $formula = "=SUMIFS({$coorInicioTotalVerticalHrsInvertidas}:{$coorFinTotalVerticalHrsInvertidas},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
-        $sheet->setCellValueByColumnAndRow(12, $row, $formula)
+        $sheet->setCellValueByColumnAndRow(12, $row,'TOTALES')
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(12) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoPorHora}:{$coorFinTotalVerticalCostoPorHora},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalPrecioCartera}:{$coorFinTotalVerticalPrecioCartera},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(13, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(13) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoActual}:{$coorFinTotalVerticalCostoActual},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalHrsInvertidas}:{$coorFinTotalVerticalHrsInvertidas},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(14, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(14) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "=SUMIFS({$coorInicioTotalVerticalUtilidadActual}:{$coorFinTotalVerticalUtilidadActual},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoPorHora}:{$coorFinTotalVerticalCostoPorHora},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(15, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(15) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "=IFERROR({$coorTotalVerticalUtilidadActual}/{$coorTotalVerticalPrecioCatera},0)";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoActual}:{$coorFinTotalVerticalCostoActual},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(16, $row, $formula)
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(16) . $row)->applyFromArray($styleTotalClientePorcentaje);
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(16) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "1.05";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalUtilidadActual}:{$coorFinTotalVerticalUtilidadActual},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(17, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(17) . $row)->applyFromArray($styleTotalCliente);
-
-        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoNuevo}:{$coorFinTotalVerticalCostoNuevo},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=IFERROR({$coorTotalVerticalUtilidadActual}/{$coorTotalVerticalPrecioCatera},0)";
         $sheet->setCellValueByColumnAndRow(18, $row, $formula)
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(18) . $row)->applyFromArray($styleTotalCliente);
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(18) . $row)->applyFromArray($styleTotalClientePorcentaje);
 
-
-        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoNuevoFinal}:{$coorFinTotalVerticalCostoNuevoFinal},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "1.05";
         $sheet->setCellValueByColumnAndRow(19, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(19) . $row)->applyFromArray($styleTotalCliente);
-
-        $formula = "=SUMIFS({$coorInicioTotalVerticalUtilidadFinal}:{$coorFinTotalVerticalUtilidadFinal},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoNuevo}:{$coorFinTotalVerticalCostoNuevo},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(20, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(20) . $row)->applyFromArray($styleTotalCliente);
 
-        $formula = "=IFERROR({$coorTotalVerticalUtilidadFinal}/{$coorTotalVerticalCostoNuevoFinal},0)";
-        $sheet->setCellValueByColumnAndRow(21, $row, $formula)
-            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(21) . $row)->applyFromArray($styleTotalClientePorcentaje);
 
-        $formula = "=SUMIFS({$coorInicioTotalVerticalIncremento}:{$coorFinTotalVerticalIncremento},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $formula = "=SUMIFS({$coorInicioTotalVerticalCostoNuevoFinal}:{$coorFinTotalVerticalCostoNuevoFinal},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $sheet->setCellValueByColumnAndRow(21, $row, $formula)
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(21) . $row)->applyFromArray($styleTotalCliente);
+
+        $formula = "=SUMIFS({$coorInicioTotalVerticalUtilidadFinal}:{$coorFinTotalVerticalUtilidadFinal},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
         $sheet->setCellValueByColumnAndRow(22, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(22) . $row)->applyFromArray($styleTotalCliente);
-
-        $formula = "=IFERROR({$coorTotalVerticalIncremento}/{$coorTotalVerticalPrecioCatera},0)";
+        $formula = "=IFERROR({$coorTotalVerticalUtilidadFinal}/{$coorTotalVerticalCostoNuevoFinal},0)";
         $sheet->setCellValueByColumnAndRow(23, $row, $formula)
             ->getStyle(PHPExcel_Cell::stringFromColumnIndex(23) . $row)->applyFromArray($styleTotalClientePorcentaje);
+
+        $formula = "=SUMIFS({$coorInicioTotalVerticalIncremento}:{$coorFinTotalVerticalIncremento},{$coorInicioBaseVertical}:{$coorFinBaseVertical},\"SUBTOTAL\")";
+        $sheet->setCellValueByColumnAndRow(24, $row, $formula)
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(24) . $row)->applyFromArray($styleTotalCliente);
+        $formula = "=IFERROR({$coorTotalVerticalIncremento}/{$coorTotalVerticalPrecioCatera},0)";
+        $sheet->setCellValueByColumnAndRow(25, $row, $formula)
+            ->getStyle(PHPExcel_Cell::stringFromColumnIndex(25) . $row)->applyFromArray($styleTotalClientePorcentaje);
 
 
         $book->setActiveSheetIndex(0);
