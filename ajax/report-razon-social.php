@@ -975,7 +975,7 @@ switch ($_POST['type']) {
                         '\",\"',
                         'phone',
                         '\":\"',
-                        personal.phone,
+                        personal.numeroTelefonicoWebex,
                         '\",\"',
                         'email',
                         '\":\"',
