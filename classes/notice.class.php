@@ -206,7 +206,7 @@ class Notice extends Main
 
         $this->Util()->DB()->setQuery($sqlQuery);
         $noticeId = $this->Util()->DB()->InsertData();
-        //guardar los permisos
+        //guardar los permisos, los que no tengan departamento el id sera 0
         if ($noticeId && !empty($owners)) {
             $sqlOwn = "INSERT INTO noticeOwners VALUES";
             foreach ($owners as $ko => $vo) {
@@ -247,35 +247,41 @@ class Notice extends Main
                 $this->Util()->DB()->setQuery($sqlOwn);
                 $this->Util()->DB()->ExecuteQuery();
                 $this->Util()->DB()->CleanQuery();
-                $sqlQuery = "SELECT * FROM personal WHERE active='1' ";
+
+                $whereCondition = "";
+
+                // Quitar a IDHUERIN de la lista de notificaciones
+                if(!SEND_LOG_HUERIN) {
+                    $whereCondition .= " AND personal.personalId <> " . IDHUERIN . " ";
+                }
+
+                if(!SEND_LOG_BRAUN) {
+                    $whereCondition .= " AND personal.personalId <> " . IDBRAUN . " ";
+                }
+
+                $sqlQuery = "SELECT 
+                    personal.personalId, 
+                    personal.email,
+                    personal.name,
+                    personal.roleId,
+                    roles.departamentoId departamentoRolId
+                    FROM personal 
+                    INNER JOIN roles ON roles.rolId = personal.roleId
+                    WHERE personal.active='1'" . $whereCondition;
                 $this->Util()->DB()->setQuery($sqlQuery);
                 $personal = $this->Util()->DB()->GetResult();
-                // quitar a huerin
-                if(!SEND_LOG_HUERIN) {
-                    $personal = !is_array($personal) ? [] : $personal;
-                    $personalLine =  array_column($personal, 'personalId');
-                    $personalLine = !is_array($personalLine) ? [] : $personalLine;
-                    $keyFind = array_search(IDHUERIN, $personalLine);
-                    if($keyFind !== false)
-                        unset($personal[$keyFind]);
-                }
+               
                 $subject = "AVISO  NUEVO DE " . $this->usuario;
                 $sendmail = new SendMail();
                 $mails = array();
-                foreach ($personal as $key => $usuario) {
-                    // comprobar a que area pertenece el rol del personal
-                    $rol->setTitulo($usuario['tipoPersonal']);
-                    $rolId = $rol->GetIdByName();
-                    $roleId = $rolId <= 0 ? $usuario['roleId'] : $rolId;
-                    if ($roleId) {
-                        $rol->setRolId($roleId);
-                        $infoRol = $rol->Info();
-                    }
-                    $depId = !$infoRol['departamentoId'] ? $usuario['departamentoId'] : $infoRol['departamentoId'];
-                    if ((array_key_exists($depId, $owners) && in_array($roleId, $owners[$depId])) || ($usuario['tipoPersonal'] == 'Socio' || $usuario['tipoPersonal'] == 'Coordinador'))
+                foreach ($personal  as $usuario) {
+                  
+                    $depId = $usuario['departamentoRolId'];
+                    $roleId = $usuario['roleId'];
+                    // se valida si el departamento del rol y el rol estan permitidos para recibir el aviso
+                    if (array_key_exists($depId, $owners) && in_array($roleId, $owners[$depId]))
                         if ($this->Util()->ValidateEmail($usuario['email']))
                             $mails[$usuario['email']] = $usuario['name'];
-
                 }
 
                 $body = "<pre> " . nl2br(utf8_decode($this->description));
@@ -287,6 +293,7 @@ class Notice extends Main
                     array_push($adjuntos, $cad);
                     $body .= "<br><br>El aviso tiene un archivo que puedes descargar dentro del sistema";
                 }
+                
                 $sendmail->SendMultipleNotice($subject, $body, $mails, $adjuntos, 'noreply@braunhuerin.com.mx', 'AVISO DE PLATAFORMA', true);
             }
         }

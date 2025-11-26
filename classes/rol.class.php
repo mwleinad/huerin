@@ -171,25 +171,38 @@ class Rol extends main
         return $result;
     }
     public function GetRolesGroupByDep(){
-       $res = $this->EnumerateAll();
-       $groups = array();
-       $deps = array();
-       foreach($res as $key => $item){
-           if(!$item['departamentoId'])
-               continue;
+        $res = $this->EnumerateAll();
+        $groups = array();
+        $deps = array();
+        foreach($res as $key => $item) {
+            // Rol con nombre Clientes,Customers,Cliente, Customer se ignora
+            if (in_array(strtolower($item['name']), ['cliente', 'customer', 'clientes', 'customers']))
+                continue;
 
-           $depId = $item['departamentoId'];
+            // Si no tiene departamentoId o es <= 0, agrupar como 'SIN DEPARTAMENTO'
+            if(empty($item['departamentoId']) || $item['departamentoId'] <= 0){
+                $depKey = 'sin_departamento';
+                if(!isset($groups[$depKey])){
+                    $groups[$depKey]['departamento'] = 'SIN DEPARTAMENTO';
+                    $groups[$depKey]['departamentoId'] = 0;
+                    $groups[$depKey]['roles'] = array();
+                }
+                $groups[$depKey]['roles'][] = $item;
+                continue;
+            }
 
-           if(in_array($depId,$deps)){
-               $groups[$depId]['roles'][] = $item;
-           }else{
-               array_push($deps,$depId);
-               $groups[$depId]['departamento'] =$item['departamento'];
-               $groups[$depId]['departamentoId'] =$item['departamentoId'];
-               $groups[$depId]['roles'][] =$item;
-           }
-       }
-       return $groups;
+            $depId = $item['departamentoId'];
+
+            if(in_array($depId, $deps)){
+                $groups[$depId]['roles'][] = $item;
+            }else{
+                array_push($deps, $depId);
+                $groups[$depId]['departamento'] = $item['departamento'];
+                $groups[$depId]['departamentoId'] = $item['departamentoId'];
+                $groups[$depId]['roles'][] = $item;
+            }
+        }
+        return $groups;
     }
     public function Save(){
         $sql = "SELECT * FROM  roles WHERE LOWER(name)='".strtolower($this->name)."' ";

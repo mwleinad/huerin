@@ -434,14 +434,30 @@ switch($_POST['type']){
                     return null;
             };
 
-            $asociado = $buscarEncargado(['Asociado', 'Asociados']);
-            $asistente = $buscarEncargado(['Asistente', 'Asistentes']);
+            
 
 
             //ENCONTRAR RESPONSABLES
             $departamentoId = $value["departamentoId"];
+            $nombreDepartamento = $value["departamento"];
             $responsable = isset($permisos_normalizado2[$departamentoId]) > 0 ? $permisos_normalizado2[$departamentoId] : null ;
 
+            // Buscar el departamento de gerencia principal relacionado con el departamento actual
+            $deptoGerencia = null;
+            foreach (DEPARTAMENTOS_TIPO_GERENCIA as $depto) {
+                if (
+                    isset($depto['secundario']) &&
+                    mb_strtolower(trim($depto['secundario'])) === mb_strtolower(trim($nombreDepartamento))
+                ) {
+                    $deptoGerencia = $depto;
+                    break;
+                }
+            }
+
+            $asociado = $buscarEncargado(['Asociado', 'Asociados']);
+            $asistente = $buscarEncargado(['Asistente', 'Asistentes']);
+            $responsableGerencia = $deptoGerencia ? $buscarEncargado([$deptoGerencia['principal']]) : null;
+            
             $serv = [];
             $jefes = [];
             $rolRes = [];
@@ -458,11 +474,10 @@ switch($_POST['type']){
                 $personal->deepJefesArray($jefes,true);
 
                 $superiores = $personal->superiores($responsable['personal_id']);
-                $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-                $subgerente = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
+                $gerente    = current(array_filter($superiores, fn($item) => in_array($item['puesto'], ['Gerente'])));
                 $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
-
             }
+
             $numPersonasxGerencia = isset($gerente['id']) ? 1 : 0;
 
             if(isset($gerente['id'])) {
@@ -505,7 +520,7 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$asistente['nombre'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $subgerente['nombre'] ?? ($gerente['nombre'] ?? ''));
+            $sheet->setCellValueByColumnAndRow($col,$row, $responsableGerencia['nombre'] ?? '');
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? '');
             $col++;
@@ -876,6 +891,7 @@ switch($_POST['type']){
 
                 //ENCONTRAR RESPONSABLES
                 $departamentoId = $servicio["departamentoId"];
+                $nombreDepartamento = $servicio["departamento"];
                 $responsable = isset($permisos_normalizado2[$departamentoId]) > 0 ? $permisos_normalizado2[$departamentoId] : null;
 
                 $sueldoAcumulado = 0;
@@ -884,15 +900,24 @@ switch($_POST['type']){
 
                 if ($responsable) {
                     $superiores = $personal->superiores($responsable['personal_id']);
-                    $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Subgerente'));
-                    if (!isset($gerente['id'])) {
-                        $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
-                    }
+                    $gerente  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Gerente'));
                     $supervisor  = current(array_filter($superiores, fn($item) => $item['puesto'] == 'Supervisor'));
+                }
+
+                $deptoGerencia = null;
+                foreach (DEPARTAMENTOS_TIPO_GERENCIA as $depto) {
+                    if (
+                        isset($depto['secundario']) &&
+                        mb_strtolower(trim($depto['secundario'])) === mb_strtolower(trim($nombreDepartamento))
+                    ) {
+                        $deptoGerencia = $depto;
+                        break;
+                    }
                 }
                 // Asociado y Asistente
                 $asociado = $buscarEncargado('Asociado');
                 $asistente = $buscarEncargado('Asistente');
+                $responsableGerencia = $deptoGerencia ? $buscarEncargado($deptoGerencia['principal']) : null;
 
                 $sueldoAcumulado = 0;
                 $numPersonasxGerencia = isset($gerente['id']) ? 1 : 0;
@@ -937,7 +962,7 @@ switch($_POST['type']){
                 $sheet->setCellValueByColumnAndRow($col, $row, $asistente['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
-                $sheet->setCellValueByColumnAndRow($col, $row, $gerente['nombre'] ?? '')
+                $sheet->setCellValueByColumnAndRow($col, $row, $responsableGerencia['nombre'] ?? '')
                     ->getStyle(PHPExcel_Cell::stringFromColumnIndex($col).$row)->applyFromArray($styleSimpleText);
                 $col++;
                 $sheet->setCellValueByColumnAndRow($col, $row, $supervisor['nombre']  ?? '')
