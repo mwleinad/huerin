@@ -505,7 +505,7 @@ switch($_POST['type']){
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row,$asistente['nombre'] ?? '');
             $col++;
-            $sheet->setCellValueByColumnAndRow($col,$row, $gerente['nombre'] ?? ($subgerente['nombre'] ?? ''));
+            $sheet->setCellValueByColumnAndRow($col,$row, $subgerente['nombre'] ?? ($gerente['nombre'] ?? ''));
             $col++;
             $sheet->setCellValueByColumnAndRow($col,$row, $supervisor['nombre']  ?? '');
             $col++;
