@@ -396,7 +396,7 @@ class Servicio extends Contract
 				INNER JOIN customer ON contract.customerId = customer.customerId
 				LEFT JOIN personal AS responsableCuenta ON  contract.responsableCuenta =responsableCuenta.personalId
 				WHERE (servicio.status = 'activo' OR servicio.status ='bajaParcial') AND tipoServicio.periodicidad != 'Eventual'
-				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ORDER BY contract.name ASC,tipoServicio.nombreServicio ASC ";
+				".$sqlCustomer.$sqlContract.$depto.$sqlRespCta." ORDER BY customer.nameContact asc,contract.name ASC,tipoServicio.nombreServicio ASC ";
         $this->Util()->DB()->setQuery($sql);
         $result = $this->Util()->DB()->GetResult();
         return $result;
