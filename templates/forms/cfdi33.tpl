@@ -234,6 +234,15 @@
                 {/foreach}
               </select>
           </div>
+          <div class="titleLabel">Fecha de timbrado:</div>
+          <div class="controlLg">
+                <select name="fechaTimbrado" id="fechaTimbrado" class="largeInput" style="width:315px">
+                    <option value="">Fecha actual</option>
+                    <option value="24">24 horas anterior</option>
+                    <option value="48">48 horas anterior</option>
+                    <option value="72">72 horas anterior</option>
+                </select>
+          </div>
        	 <div style="clear:both"></div>
       </div>
       <div class="formLineFact normalInvoice noShow">

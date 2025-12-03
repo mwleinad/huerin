@@ -182,8 +182,14 @@ class Cfdi extends Comprobante
         else
             $folio = $serie["consecutivo"];
 
-        // restar un dia al tiempo
-        $fecha = $this->Util()->FormatDateAndTime(time());
+        // calculame la fecha con base a si viene en $data["fechaTimbrado"] ,si no viene o es vacio la fecha y hora es actual, si viene 24,48,72 horas atras se calcula
+        if(isset($data["fechaTimbrado"]) && in_array($data["fechaTimbrado"], ['24', '48', '72'])) {
+           $fecha = date('Y-m-d H:i:s', strtotime('-'.$data["fechaTimbrado"].' hours'));
+          
+        } else {
+            $fecha = date('Y-m-d H:i:s');
+        }
+        
         $fechaPago = $this->Util()->FormatDate(time());
 
         $data["fechaPago"] = $fechaPago;
