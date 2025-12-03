@@ -234,7 +234,7 @@
                 {/foreach}
               </select>
           </div>
-          <div class="titleLabel">Fecha de timbrado:</div>
+          <div class="titleLabel">Fecha de emisión:</div>
           <div class="controlLg">
                 <select name="fechaTimbrado" id="fechaTimbrado" class="largeInput" style="width:315px">
                     <option value="">Fecha actual</option>
