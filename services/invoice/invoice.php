@@ -317,11 +317,16 @@ class InvoiceService extends Cfdi{
         global $monthsComplete;
         $conceptos = [];
         foreach($this->getServiciosToConceptos() as $item){
-             if($item["isRifNoInstance"]&&!$this->month13){
+            // si seesta generando mes 13 no incluir los conceptos de unica ocasion o eventuales
+            if($this->month13 && ((int)$item["uniqueInvoice"] === 1 || strtolower($item["periodicidad"]) === 'eventual'))
+                continue;
+
+            if($item["isRifNoInstance"]&&!$this->month13){
                 $this->isRifNoInstance();
                 $this->data["servicioId"] = $item["servicioId"];
                 $this->data["fechaRif"] = $item["date"];
             }
+
             if($item["workflowId"])
                 $this->workflows[] = $item["workflowId"];
 
@@ -421,11 +426,16 @@ class InvoiceService extends Cfdi{
         if(date("m",strtotime($firstDayCurrentDate))!=12)
             return false;
 
+        // volver a obtenr los servicios para facturar para filtrar eventuales o de unica ocasion para mes 13
+
         if(!count($this->getServiciosToConceptos()))
             return false;
 
         $this->setMonth13(true);
         $_SESSION["conceptos"] = $this->GenerateConceptos();
+        if(!count($_SESSION["conceptos"]))
+            return false;
+        
         $this->GenerateArrayData();
         $result = $this->Generar($this->data);
         if(!$result){
