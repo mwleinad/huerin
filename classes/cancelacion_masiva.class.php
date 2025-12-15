@@ -218,7 +218,7 @@ class CancelacionMasiva
                 $this->util->DB()->setQuery("
                     SELECT * FROM comprobante 
                     WHERE comprobanteId = '" . $comprobanteId . "' 
-                    AND status = 'activo'
+                    AND status = '1'
                 ");
                 
                 $comprobanteData = $this->util->DB()->GetRow();
