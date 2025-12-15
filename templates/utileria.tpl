@@ -55,6 +55,14 @@
                       </a>
                   </td>
               </tr>
+              <tr>
+                  <td style="width: 20%">Cancelación masiva de comprobantes con archivo Excel (XLSX)</td>
+                  <td style="width: 2%;text-align: left">
+                      <a href="javascript:;" class="spanAll spanOpenModalCheck" title="Cancelar CFDI´S masivamente" data-type="open_cancel_cfdi_from_excel">
+                          <img src="{$WEB_ROOT}/images/icons/action_check.gif">
+                      </a>
+                  </td>
+              </tr>
               </tbody>
           </table>
       </div>
