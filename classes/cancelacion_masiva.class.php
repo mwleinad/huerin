@@ -205,6 +205,7 @@ class CancelacionMasiva
         try {
             $cancelados = array();
             $errores = array();
+            $actualizados = array(); // Para comprobantes ya cancelados
             
             // Incluir la clase Comprobante si no está incluida
             if (!class_exists('Comprobante')) {
@@ -214,11 +215,17 @@ class CancelacionMasiva
             $comprobante = new Comprobante();
             
             foreach ($comprobantesIds as $comprobanteId) {
-                // Verificar que el comprobante existe y está activo
+                // Obtener todos los datos necesarios en una sola consulta
                 $this->util->DB()->setQuery("
-                    SELECT * FROM comprobante 
-                    WHERE comprobanteId = '" . $comprobanteId . "' 
-                    AND status = '1'
+                    SELECT 
+                        c.*,
+                        e.rfc as rfc_emisor,
+                        co.rfc as rfc_receptor
+                    FROM comprobante c
+                    LEFT JOIN rfc e ON c.rfcId = e.rfcId  
+                    LEFT JOIN contract co ON c.userId = co.contractId
+                    WHERE c.comprobanteId = '" . $comprobanteId . "' 
+                    AND c.status = '1'
                 ");
                 
                 $comprobanteData = $this->util->DB()->GetRow();
@@ -237,6 +244,69 @@ class CancelacionMasiva
                     ob_start();
                     
                     try {
+                        // Verificar estatus del CFDI antes de cancelar
+                        if ($comprobanteData && $uuid != 'N/A') {
+                            $rfcE = $comprobanteData['rfc_emisor'];
+                            $rfcR = $comprobanteData['rfc_receptor'];
+                            $total = $comprobanteData['total'];
+                            
+                            // Consultar estatus en SAT
+                            try {
+                                $qr = "?re=$rfcE&rr=$rfcR&tt=$total&id=$uuid";
+                                $consulta = array('expresionImpresa' => $qr);
+                                $client = new SoapClient('https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?WSDL');
+                                $response = $client->Consulta($consulta);
+                                
+                                // Verificar si es cancelable
+                                if (isset($response->ConsultaResult->EsCancelable) && 
+                                    $response->ConsultaResult->EsCancelable === 'No cancelable') {
+                                    $errores[] = array(
+                                        'comprobanteId' => $comprobanteId,
+                                        'uuid' => $uuid,
+                                        'mensaje' => 'El comprobante no es cancelable según SAT'
+                                    );
+                                    ob_end_clean();
+                                    continue;
+                                }
+                                
+                                // Verificar si ya está cancelado
+                                if (isset($response->ConsultaResult->Estado) && 
+                                    in_array($response->ConsultaResult->Estado, ['Cancelado', 'Cancelado con aceptación', 'Cancelado sin aceptación'])) {
+                                    
+                                    // Si está cancelado en SAT pero activo en BD, actualizar status
+                                    $fueActualizado = false;
+                                    if ($comprobanteData['status'] == '1') {
+                                        $this->util->DB()->setQuery("
+                                            UPDATE comprobante 
+                                            SET status = '0', 
+                                                fechaCancelacion = '" . date('Y-m-d') . "',
+                                                motivoCancelacion = 'Actualizado por cancelación masiva',
+                                                motivoCancelacionSat = '" . $motivo . "'
+                                            WHERE comprobanteId = '" . $comprobanteId . "'
+                                        ");
+                                        $this->util->DB()->UpdateData();
+                                        $fueActualizado = true;
+                                    }
+                                    
+                                    // Agregar a la lista de actualizados (no cancelados nuevos)
+                                    $actualizados[] = array(
+                                        'comprobanteId' => $comprobanteId,
+                                        'uuid' => $uuid,
+                                        'mensaje' => 'Ya cancelado en SAT: ' . $response->ConsultaResult->Estado . 
+                                                   ($fueActualizado ? ' (Status sincronizado)' : ' (Ya sincronizado)')
+                                    );
+                                    
+                                    // Limpiar buffer y saltar al siguiente comprobante SIN solicitar cancelación
+                                    ob_end_clean();
+                                    continue;
+                                }
+                                
+                            } catch (Exception $statusEx) {
+                                // Si falla la consulta de estatus, continuar con la cancelación
+                                // pero registrar el intento
+                            }
+                        }
+                        
                         // Usar CancelarCfdi sin mostrar notificaciones
                         $resultado = $comprobante->CancelarCfdi($comprobanteId, $motivo, false, '', 'Cancelación masiva de complementos de pago duplicados');
                         
@@ -276,9 +346,11 @@ class CancelacionMasiva
             return array(
                 'success' => true,
                 'cancelados' => $cancelados,
+                'actualizados' => $actualizados,
                 'errores' => $errores,
                 'total_procesados' => count($comprobantesIds),
-                'total_cancelados' => count($cancelados)
+                'total_cancelados' => count($cancelados),
+                'total_actualizados' => count($actualizados)
             );
             
         } catch (Exception $e) {

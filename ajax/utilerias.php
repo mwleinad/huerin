@@ -184,30 +184,43 @@ switch($_POST["type"]){
         );
         
         if ($resultado['success']) {
-            $mensaje = "Cancelación procesada exitosamente\n";
+            $mensaje = "Procesamiento completado exitosamente\n";
             $mensaje .= "Total procesados: " . $resultado['total_procesados'] . "\n";
-            $mensaje .= "Cancelaciones exitosas: " . $resultado['total_cancelados'];
-            
-            if (!empty($resultado['errores'])) {
-                $mensaje .= "\n\nErrores encontrados:\n";
-                foreach ($resultado['errores'] as $error) {
-                    if (is_array($error)) {
-                        $mensaje .= "• Comprobante ID " . $error['comprobanteId'] . 
-                                   " (UUID: " . $error['uuid'] . "): " . $error['mensaje'] . "\n";
-                    } else {
-                        $mensaje .= "• " . $error . "\n";
-                    }
-                }
-            }
+            $mensaje .= "Cancelaciones nuevas: " . $resultado['total_cancelados'] . "\n";
+            $mensaje .= "Ya cancelados (actualizados): " . $resultado['total_actualizados'];
             
             if (!empty($resultado['cancelados'])) {
-                $mensaje .= "\n\nComprobantes cancelados exitosamente:\n";
+                $mensaje .= "\n\n=== CANCELACIONES NUEVAS ===\n";
                 foreach ($resultado['cancelados'] as $cancelado) {
                     if (is_array($cancelado)) {
                         $mensaje .= "✓ Comprobante ID " . $cancelado['comprobanteId'] . 
                                    " (UUID: " . $cancelado['uuid'] . "): " . $cancelado['mensaje'] . "\n";
                     } else {
                         $mensaje .= "✓ Comprobante ID: " . $cancelado . "\n";
+                    }
+                }
+            }
+            
+            if (!empty($resultado['actualizados'])) {
+                $mensaje .= "\n=== COMPROBANTES YA CANCELADOS ===\n";
+                foreach ($resultado['actualizados'] as $actualizado) {
+                    if (is_array($actualizado)) {
+                        $mensaje .= "⚡ Comprobante ID " . $actualizado['comprobanteId'] . 
+                                   " (UUID: " . $actualizado['uuid'] . "): " . $actualizado['mensaje'] . "\n";
+                    } else {
+                        $mensaje .= "⚡ Comprobante ID: " . $actualizado . "\n";
+                    }
+                }
+            }
+            
+            if (!empty($resultado['errores'])) {
+                $mensaje .= "\n=== ERRORES ENCONTRADOS ===\n";
+                foreach ($resultado['errores'] as $error) {
+                    if (is_array($error)) {
+                        $mensaje .= "• Comprobante ID " . $error['comprobanteId'] . 
+                                   " (UUID: " . $error['uuid'] . "): " . $error['mensaje'] . "\n";
+                    } else {
+                        $mensaje .= "• " . $error . "\n";
                     }
                 }
             }
