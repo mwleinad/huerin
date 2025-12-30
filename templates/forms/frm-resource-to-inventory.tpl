@@ -140,7 +140,9 @@
 								<option value="Ventilador" {if $post.tipo_dispositivo eq "Ventilador"}selected{/if}>Ventilador</option>
 								<option value="Monitor" {if $post.tipo_dispositivo eq "Monitor"}selected{/if}>Monitor</option>
 								<option value="Cable VGA" {if $post.tipo_dispositivo eq "Cable VGA"}selected{/if}>Cable VGA</option>
-								<option value="Adicionales" {if $post.tipo_dispositivo eq "Adicionales"}selected{/if}>Cable VGA</option>
+								<option value="Adaptador" {if $post.tipo_dispositivo eq "Adaptador"}selected{/if}>Adaptador</option>
+								<option value="Adicionales" {if $post.tipo_dispositivo eq "Adicionales"}selected{/if}>Adicionales</option>
+								
 							</select>
 						</div>
 					</div>
