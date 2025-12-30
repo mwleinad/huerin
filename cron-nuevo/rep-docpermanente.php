@@ -42,7 +42,16 @@ foreach($employees as $key=>$itemEmploye) {
     $persons = $util->ConvertToLineal($subordinados, 'personalId');
     array_unshift($persons, $itemEmploye['personalId']);
     $contracts = $contractRep->SearchOnlyContract($persons,true);
-    foreach($contracts as $kc=>$itemContract){
+    foreach($contracts as $kc=>$itemContract) {
+
+	  // validar de servicios activos avanzado
+	   $serviciosActivos = $customer->GetServiciosActivosById($itemContract['contractId']);
+	   if(count($serviciosActivos)<=0){
+		   unset($contracts[$kc]);	
+		   continue;
+	   }
+
+
        $documento->setContractId($itemContract['contractId']);
        $documentos = $documento->GetDocContract($itemContract,$itemEmploye['departamentoId']);
        if($documentos['noFiles']<=0 || $documentos['totalTipos']<=0)

@@ -49,7 +49,8 @@ foreach($employees as $key=>$itemEmploye){
             INNER JOIN customer ON contract.customerId=customer.customerId
             INNER JOIN contractPermiso ON contract.contractId=contractPermiso.contractId
             WHERE contractPermiso.personalId IN (".implode(',', $persons).")
-            AND contract.activo='Si' and customer.active='1' ";
+            AND contract.activo='Si' and customer.active='1' 
+            ";
     $db->setQuery($sql);
     $contracts = $db->GetResult();
 
@@ -57,6 +58,14 @@ foreach($employees as $key=>$itemEmploye){
         continue;
 
     foreach ($contracts as $kc=>$vc){
+
+        // Validacion de servicios activos avanzada.
+        $serviciosActivos = $customer->GetServiciosActivosById($vc['contractId']);
+        if(count($serviciosActivos) <=0) {
+            unset($contracts[$kc]);
+            continue;
+        }
+
         $filesExp = $contractRep->CheckExpirationFiel($vc,$itemEmploye['departamentoId']);
         if(empty($filesExp))
         {
