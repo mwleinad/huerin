@@ -4,9 +4,9 @@
                 <td width="34">{$fact.rfc}</td>
                 <td>{$fact.nombre}</td>
                 <td align="center">{$fact.fecha}</td>
-                <td>${$fact.subtotal_formato}</td>
-                <td>${$fact.iva_formato}</td>
-                <td>${$fact.total_formato}</td>
+                <td>$ {$fact.subtotal_formato} {$fact.moneda}</td>
+                <td>$ {$fact.iva_formato} {$fact.moneda}</td>
+                <td>$ {$fact.total_formato} {$fact.moneda}</td>
                 <td align="center">{$fact.serie}{$fact.folio}</td>
                 <td align="center">
                     {if $fact.sent == 'si'}
@@ -29,6 +29,16 @@
                                 font-size: .65rem;
                                 display: inline-block;
                                 min-width: 50px">Cliente</span>
+                    {/if}
+                    {if $fact.sent != 'si' && $fact.sentCliente != 'Si'}
+                        <span style="background: #808080;
+                                color:#ffffff;
+                                font-weight: bold;
+                                padding: 3px;
+                                border-radius:2px;
+                                font-size: .65rem;
+                                display: inline-block;
+                                min-width: 100px">No enviado</span>
                     {/if}
                 </td>
                 <td align="center">

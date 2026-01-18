@@ -785,7 +785,7 @@ class Xml4 extends Producto{
         $this->totalesPagos = $this->pagos->appendChild($this->totalesPagos);
 
         $totalesData = [
-            "MontoTotalPagos"  => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false)
+            // "MontoTotalPagos" will be set later after conversion
         ];
 
         // fin cambio v4
@@ -800,67 +800,76 @@ class Xml4 extends Producto{
 
         $fechaPago = $this->data['infoPago']->fecha.'T12:00:00';
 
-        switch($this->data['tiposDeMonedaPago']) {
-            case "peso": $tipoDeMoneda = "MXN"; break;
-            case "dolar": $tipoDeMoneda = "USD"; break;
-            case "euro": $tipoDeMoneda = "EUR"; break;
-        }
-
+        // Datos del pago
         $pagoData = [
             "FechaPago" => $fechaPago,
-            "FormaDePagoP" => $this->data['infoPago']->metodoPago,
-            "TipoCambioP" => '1',
-            "MonedaP" => $tipoDeMoneda,
+            "FormaDePagoP" => $this->data['infoPago']->formaDePago,
+            "TipoCambioP" => 1,
+            "MonedaP" => $this->data['infoPago']->tipoDeMoneda,
             "Monto" => $this->Util()->CadenaOriginalFormat($this->data['infoPago']->amount,2,false),
             "NumOperacion" => $this->data['infoPago']->operacion,
         ];
 
-        if($this->data['tiposDeMonedaPago'] != 'peso'){
-            $pagoData['TipoCambioP'] = $this->Util()->CadenaOriginalFormat($this->data['tiposDeCambioPago'],4,false);
+        //Si la moneda del pago es diferente a moneda nacional (MXN) se debe especificar el tipo de cambio
+        if($pagoData['MonedaP'] != 'MXN') {
+            $pagoData['TipoCambioP'] = $this->Util()->CadenaOriginalFormat($this->data['infoPago']->tipoDeCambio,6,false);
         }
         $this->CargaAtt($pago, $pagoData);
 
+        // Calcular MontoTotalPagos en MXN
+        $montoTotalPagos = $this->data['infoPago']->amount;
+        if ($pagoData['MonedaP'] != 'MXN') {
+            $montoTotalPagos *= $this->data['infoPago']->tipoDeCambio;
+        }
+        $totalesData["MontoTotalPagos"] = $this->Util()->CadenaOriginalFormat($montoTotalPagos, 2, false);
+
         $doctoRelacionado = $this->xml->createElement("pago20:DoctoRelacionado");
         $doctoRelacionado = $pago->appendChild($doctoRelacionado);
+        
+        // Calcular EquivalenciaDR primero para obtener montoPagoConvertido
+        $equivalenciaDR = $this->data['infoPago']->equivalenciaDR;
+        $montoPagoConvertido = $this->data['infoPago']->impPagado;
 
         //si el pago es desde xml se realiza otro procedimiento
         if(!$this->data['fromXml']){
             $comprobante = $this->cfdiUtil->getInfoComprobanteRelacionado($this->data['cfdiRelacionadoId']);
-            $infoPagos = $this->comprobantePago->getPagos($comprobante, $this->data['infoPago']->amount);
+            $infoPagos = $this->comprobantePago->getPagos($comprobante, (float)$montoPagoConvertido);
             $IdDocumento =  $this->uuidRelacionado;
         }else{
             $IdDocumento =  $this->data['uuid'];
-            $infoPagos = $this->comprobantePago->getPagosFromXml($this->data, $this->data['infoPago']->amount);
+            $infoPagos = $this->comprobantePago->getPagosFromXml($this->data, (float)$montoPagoConvertido);
         }
 
         $doctoRelacionadoData = [
             "IdDocumento" => $IdDocumento,
             "Serie" => $this->data['cfdiRelacionadoSerie'],
             "Folio" => $this->data['cfdiRelacionadoFolio'],
-            "MonedaDR" => $tipoDeMoneda,
-            "EquivalenciaDR" => '1', // add cambio v4
+            "MonedaDR" => $this->data['tipoDeMonedaDR'],
+            "EquivalenciaDR" => $equivalenciaDR, // add cambio v4
             "ObjetoImpDR" => DESGLOSAR_IMPUESTOS_COMPLEMENTO_PAGO ? '02' : '01', // add cambio v4
             "NumParcialidad" => $infoPagos['numParcialidad'],
             'ImpSaldoAnt' => $this->Util()->CadenaOriginalFormat($infoPagos['impSaldoAnt'],2,false),
             'ImpPagado' => $this->Util()->CadenaOriginalFormat($infoPagos['impPagado'],2,false),
             'ImpSaldoInsoluto' => $this->Util()->CadenaOriginalFormat($infoPagos['impSaldoInsoluto'],2,false),
         ];
-        //solo se cumple si el tipo de moneda con el que se va pagar es diferente a pesos pero ademas los campos monedaDR y monedaP sean diferentes
-        if($this->data['tiposDeMonedaPago'] != 'peso'&&$doctoRelacionadoData['MonedaDR']!=$pagoData['MonedaP']){
-            $doctoRelacionadoData['TipoCambioDR'] = $this->Util()->CadenaOriginalFormat($this->data['tiposDeCambioPago'],4,false);
-        }
 
         $this->CargaAtt($doctoRelacionado, $doctoRelacionadoData);
 
         $impuestosTraslados = $this->data['infoPago']->impuestosDR['traslados'] ?? [];
-        $totalTrasladosBaseIva16 = 0;
-        $totalTrasladosImpuestoIva16 = 0;
-        $totalTrasladosBaseIva8      = 0;
-        $totalTrasladosImpuestoIva8  = 0;
-        $totalTrasladosBaseIva0      = 0;
-        $totalTrasladosImpuestoIva0  = 0;
-        $totalTrasladosBaseIvaExento= 0;
+        $impuestosTrasladosPagos = $this->data['infoPago']->impuestosP['traslados'] ?? [];
 
+        $totals = [
+            '0.160000' => ['base' => 0, 'impuesto' => 0],
+            '0.080000' => ['base' => 0, 'impuesto' => 0],
+        ];
+        $totalTrasladosBaseIvaExento = 0;
+
+        $rateMap = [
+            '0.160000' => ['base' => 'TotalTrasladosBaseIVA16', 'impuesto' => 'TotalTrasladosImpuestoIVA16'],
+            '0.080000' => ['base' => 'TotalTrasladosBaseIVA8', 'impuesto' => 'TotalTrasladosImpuestoIVA8'],
+        ];
+
+        // Agregar los nodos de impuestos traslados del documento relacionado si se indica desglose de impuestos
         if(count($impuestosTraslados) > 0) {
 
             $impuestosDr = $this->xml->createElement("pago20:ImpuestosDR");
@@ -869,85 +878,66 @@ class Xml4 extends Producto{
             $trasladosDr = $this->xml->createElement("pago20:TrasladosDR");
             $trasladosDr = $impuestosDr->appendChild($trasladosDr);
 
-            $impuestosP  = $this->xml->createElement("pago20:ImpuestosP");
-            $impuestosP  = $pago->appendChild($impuestosP);
-
-
-            $trasladosP  = $this->xml->createElement("pago20:TrasladosP");
-            $trasladosP  = $impuestosP->appendChild($trasladosP);
-
-
+        
             foreach ($impuestosTraslados as $item) {
 
                 $trasladoDr = $this->xml->createElement("pago20:TrasladoDR");
                 $trasladoDr = $trasladosDr->appendChild($trasladoDr);
 
+                $item['BaseDR'] = $this->Util()->CadenaOriginalFormat($item['BaseDR'],2,false);
+                $item['ImporteDR'] = $this->Util()->CadenaOriginalFormat($item['ImporteDR'],2,false);
+
+                $this->CargaAtt($trasladoDr, $item);
+            }
+        }
+        // Agregar los nodos de impuestos traslados del pago si se indica desglose de impuestos
+        if(count($impuestosTrasladosPagos) > 0) {   
+
+            $impuestosP  = $this->xml->createElement("pago20:ImpuestosP");
+            $impuestosP  = $pago->appendChild($impuestosP);
+
+            $trasladosP  = $this->xml->createElement("pago20:TrasladosP");
+            $trasladosP  = $impuestosP->appendChild($trasladosP);
+
+            foreach ($impuestosTrasladosPagos as $item) {
+
                 $trasladoP = $this->xml->createElement("pago20:TrasladoP");
                 $trasladoP = $trasladosP->appendChild($trasladoP);
 
-                switch ($item['ImpuestoDR']) {
-                    case '002':
-                        if ($item['TipoFactorDR'] === 'Exento') {
-                            $totalTrasladosBaseIvaExento += $item['BaseDR'];
-                        } elseif ($item['TipoFactorDR'] === 'Tasa') {
-                            $porcentaje = number_format($item['TasaOCuotaDR'] * 100, 2);
-                            if ($porcentaje == 16.00) {
-                                $totalTrasladosBaseIva16 += $item['BaseDR'];
-                                $totalTrasladosImpuestoIva16 += $item['ImporteDR'];
-                            }
+                $item['BaseP'] = $this->Util()->CadenaOriginalFormat($item['BaseP'],2,false);
+                $item['ImporteP'] = $this->Util()->CadenaOriginalFormat($item['ImporteP'],2,false);
 
-                            if ($porcentaje == 8.00) {
-                                $totalTrasladosBaseIva8 += $item['BaseDR'];
-                                $totalTrasladosImpuestoIva8 += $item['ImporteDR'];
-                            }
+                $this->CargaAtt($trasladoP, $item);
 
-                            if ($porcentaje == 0.00) {
-                                $totalTrasladosBaseIva0 += $item['BaseDR'];
-                                $totalTrasladosImpuestoIva0 += $item['ImporteDR'];
-                            }
-                        }
-                        break;
+                // Calculo de totales para el nodo totales
+                if ($item['ImpuestoP'] == '002') {
+                    if ($item['TipoFactorP'] == 'Exento') {
+                        $totalTrasladosBaseIvaExento += $item['BaseP'];
+                    } elseif (isset($totals[$item['TasaOCuotaP']])) {
+                        $totals[$item['TasaOCuotaP']]['base'] += $item['BaseP'];
+                        $totals[$item['TasaOCuotaP']]['impuesto'] += $item['ImporteP'];
+                    }
                 }
-
-                $item['BaseDR'] = $this->Util()->CadenaOriginalFormat($item['BaseDR'],2,false);
-                $item['ImporteDR'] = $this->Util()->CadenaOriginalFormat($item['ImporteDR'],6,false);
-
-                $this->CargaAtt($trasladoDr, $item);
-
-                $itemP['BaseP']       = $item['BaseDR'];
-                $itemP['ImpuestoP']   = $item['ImpuestoDR'];
-                $itemP['TipoFactorP'] = $item['TipoFactorDR'];
-
-                if ($itemP['TipoFactorP'] !== 'Exento') {
-
-                    $itemP['TasaOCuotaP'] = $item['TasaOCuotaDR'];
-                    $itemP['ImporteP'] = $item['ImporteDR'];
+            }
+            foreach ($totals as $rate => $data) {
+                if ($data['base'] > 0) {
+                    $totalesData[$rateMap[$rate]['base']] = $this->Util()->CadenaOriginalFormat($data['base'], 2, false);
+                    $totalesData[$rateMap[$rate]['impuesto']] = $this->Util()->CadenaOriginalFormat($data['impuesto'], 2, false);
                 }
-
-                $this->CargaAtt($trasladoP, $itemP);
             }
-
-            if ($totalTrasladosBaseIva16 > 0) {
-
-                $totalesData['TotalTrasladosBaseIVA16'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva16, 2, false);
-                $totalesData['TotalTrasladosImpuestoIVA16'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva16, 2, false);
-            }
-
-            if ($totalTrasladosBaseIva8 > 0) {
-
-                $totalesData['TotalTrasladosBaseIVA8'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva8, 2, false);
-                $totalesData['TotalTrasladosImpuestoIVA8'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva8, 2, false);
-            }
-
-            if ($totalTrasladosBaseIva0 > 0) {
-
-                $totalesData['TotalTrasladosBaseIVA0'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIva0, 2, false);
-                $totalesData['TotalTrasladosImpuestoIVA0'] = $this->Util()->CadenaOriginalFormat($totalTrasladosImpuestoIva0, 2, false);
-            }
-
+            // Agregar total de traslados exento si aplica, no desglose de impuestos
             if ($totalTrasladosBaseIvaExento > 0) {
-
                 $totalesData['TotalTrasladosBaseIVAExento'] = $this->Util()->CadenaOriginalFormat($totalTrasladosBaseIvaExento, 2, false);
+            }
+
+            // Convertir los totales a MXN si la moneda del pago no es MXN
+            if ($pagoData['MonedaP'] != 'MXN') {
+                $tipoCambio = $this->data['infoPago']->tipoDeCambio;
+                foreach ($totalesData as $key => $value) {
+                    if ($key != 'MontoTotalPagos') { // Ya convertido
+                        $totalesData[$key] = $this->Util()->CadenaOriginalFormat($value * $tipoCambio, 2, false);
+                    }
+                }
             }
         }
 

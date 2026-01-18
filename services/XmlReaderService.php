@@ -148,12 +148,13 @@ class XmlReaderService extends Comprobante
                     $trasladosP  = $pago[0]->xpath('//pago20:ImpuestosP//pago20:TrasladosP');
                     foreach ($trasladosP as $trasladoP)
                         $impuestosP[] = $trasladoP[0]->xpath('//pago20:TrasladoP')[0];
+                    $card['TrasladosP'] = $impuestosP;
 
                 }
 
                 $data["pagos"][] = $card;
             }
-            $data['impuestosP'] =  $impuestosP;
+            //$data['impuestosP'] =  $impuestosP;
         }
         // end cambio v4
 

@@ -83,21 +83,30 @@ class ComprobantePago extends Comprobante {
 
         $this->addConcept();
 
+      
+        switch($comprobante['tipoDeMoneda']){ 
+            case "peso": $tipoDeMoneda = "MXN"; break;
+            case "dolar": $tipoDeMoneda = "USD"; break;
+            case "euro": $tipoDeMoneda = "EUR"; break;
+            default: $tipoDeMoneda = "XXX"; break;  
+        }
+
         $data = [
             'formatoNormal' => 0,
             'tiposComprobanteId' => '10-'.$serieId,
-            'tiposDeMoneda' => 'XXX',
+            'tiposDeMoneda' =>  'XXX', // Para el nodo cfdi:Comprobante del xml siempre se usa la moneda en la que se emitio el comprobante otiginal
             'cfdiRelacionadoSerie' => $comprobante["serie"],
             'cfdiRelacionadoFolio' => $comprobante["folio"],
             'cfdiRelacionadoId' => $comprobante["comprobanteId"],
             'tipoRelacion' => '04',
             'userId' => $comprobante['userId'],
             'usoCfdi' =>  'CP01', // quitar $comprobante['version'] == '3.3' ? 'P01' :
-            'formaDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
+            'formaDePago' => $infoPago->formaDePago, //esto lo quita en la clase xml, pero la clase cfdi espera un valor
             'metodoDePago' => 'NO DEBE EXISTIR', //esto lo quita en la clase xml, pero la clase cfdi espera un valor
             'infoPago' => $infoPago,
-            'tiposDeMonedaPago' => $comprobante['tipoDeMoneda'],
-            'tiposDeCambioPago' => $comprobante['tipoDeCambio'],
+            'tiposDeMonedaPago' => $infoPago->tipoDeMoneda,
+            'tiposDeCambioPago' => $infoPago->tipoDeCambio,
+            'tipoDeMonedaDR' => $tipoDeMoneda,
             'versionDR' => $comprobante['version'], // control interno para aplicar complemento 1.0 o 2.0
         ];
 
@@ -147,13 +156,13 @@ class ComprobantePago extends Comprobante {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
-        $impSaldoAnt = $comprobante['total'] - $infoPagos['totalPagado'];
-        $impSaldoInsoluto = $impSaldoAnt - $impPagado;
+        $impSaldoAnt = bcsub((string)$comprobante['total'], (string)$infoPagos['totalPagado'], 2);
+        $impSaldoInsoluto = bcsub((string)$impSaldoAnt, (string)$impPagado, 2);
 
         $data["numParcialidad"] = $infoPagos['pagos'] + 1;
-        $data["impSaldoAnt"] = $impSaldoAnt;
-        $data["impPagado"] = $impPagado;
-        $data["impSaldoInsoluto"] = $impSaldoInsoluto;
+        $data["impSaldoAnt"] = (float)$impSaldoAnt;
+        $data["impPagado"] = (float)$impPagado;
+        $data["impSaldoInsoluto"] = (float)$impSaldoInsoluto;
 
         if($data["impSaldoInsoluto"] < 0){
             $data["impSaldoInsoluto"] = 0;
@@ -175,13 +184,13 @@ class ComprobantePago extends Comprobante {
 
         $totalPagado = $infoPagos['totalPagado']+$infoPagos2['totalPagado'];
 
-        $impSaldoAnt = $comprobante['totalFactura'] - $totalPagado;
-        $impSaldoInsoluto = $impSaldoAnt - $impPagado;
+        $impSaldoAnt = bcsub((string)$comprobante['totalFactura'], (string)$totalPagado, 2);
+        $impSaldoInsoluto = bcsub((string)$impSaldoAnt, (string)$impPagado, 2);
 
         $data["numParcialidad"] = $infoPagos['pagos'] + $infoPagos2['pagos'] + 1;
-        $data["impSaldoAnt"] = $impSaldoAnt;
-        $data["impPagado"] = $impPagado;
-        $data["impSaldoInsoluto"] = $impSaldoInsoluto;
+        $data["impSaldoAnt"] = (float)$impSaldoAnt;
+        $data["impPagado"] = (float)$impPagado;
+        $data["impSaldoInsoluto"] = (float)$impSaldoInsoluto;
 
         if($data["impSaldoInsoluto"] < 0){
             $data["impSaldoInsoluto"] = 0;

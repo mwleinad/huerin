@@ -325,7 +325,7 @@
         </table>
     {/if}
     {*Complemento de pagos*}
-    {include file="{$DOC_ROOT}/templates/pdf/complementoPago.tpl"}
+    {include file="{$DOC_ROOT}/templates/pdf/complementoPago.tpl" formasPagoMap=$formasPagoMap}
 
     {*Complemento de nomina*}
     {include file="{$DOC_ROOT}/templates/pdf/complementoNomina.tpl"}
