@@ -192,6 +192,8 @@ include_once(DOC_ROOT."/services/ControlFromXml.php");
 $controlFromXml = new ControlFromXml;
 include_once(DOC_ROOT."/services/Cancelation.php");
 $cancelation = new Cancelation;
+include_once(DOC_ROOT."/services/CurrencyConverter.php");
+include_once(DOC_ROOT."/services/TaxCalculator.php");
 
 $lang = $util->ReturnLang();
 $User = $_SESSION['User'];

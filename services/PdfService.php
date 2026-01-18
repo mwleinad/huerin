@@ -72,6 +72,9 @@ class PdfService extends Producto{
         $catalogos = $this->getFromCatalogo($xmlData, $empresaId);
         $this->smarty->assign('catalogos', $catalogos);
 
+        $formasPagoMap = $this->mapCatalog('c_FormaPago', 'c_FormaPago', 'descripcion');
+        $this->smarty->assign('formasPagoMap', $formasPagoMap);
+
         //Uncomment if you want to see a html version
         //$this->smarty->display(DOC_ROOT.'/templates/pdf/basico.tpl');exit;
         ob_clean();
@@ -135,6 +138,16 @@ class PdfService extends Producto{
         $data["UsoCFDI"] = mb_strtoupper($this->Util()->DB()->GetSingle());
 
         return $data;
+    }
+    private function mapCatalog($table, $keyField, $valueField) {
+        $sql = 'SELECT '.$keyField.', '.$valueField.' FROM '.$table;
+        $this->Util()->DB()->setQuery($sql);
+        $result = $this->Util()->DB()->GetResult();
+        $map = [];
+        foreach($result as $row) {
+            $map[$row[$keyField]] = $row[$valueField];
+        }
+        return $map;
     }
 }
 ?>

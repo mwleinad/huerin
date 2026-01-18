@@ -73,6 +73,13 @@ class CxC extends Producto
                 $card['instanciaServicioId'] = $val['instanciaServicioId'];
                 $timbreFiscal = unserialize($val['timbreFiscal']);
                 $card["uuid"] = $timbreFiscal["UUID"];
+				$monedaComprobante = "";
+				switch($val['tipoDeMoneda']){ 
+					case "peso": $monedaComprobante = "MXN"; break;
+					case "dolar": $monedaComprobante = "USD"; break;
+					case "euro": $monedaComprobante = "EUR"; break;
+				}
+             	$card["moneda"] = $monedaComprobante;
 
                 //si tiene solicitud de cancelacion se debe omitir.
                 $sqlQuery = "SELECT solicitud_cancelacion_id FROM pending_cfdi_cancel  WHERE cfdi_id = '".$val["comprobanteId"]."' AND deleted_at IS NULL AND status = '".CFDI_CANCEL_STATUS_PENDING."'";
@@ -141,6 +148,14 @@ class CxC extends Producto
                 $card["payment"] = $this->Util()->DBSelect($id_empresa)->GetSingle();
 
                 $card['saldo'] = $card["total_formato"] - $card["payment"];
+				$monedaComprobante = "";
+				switch($val['tipoDeMoneda']){ 
+					case "peso": $monedaComprobante = "MXN"; break;
+					case "dolar": $monedaComprobante = "USD"; break;
+					case "euro": $monedaComprobante = "EUR"; break;
+				}
+             	$card["moneda"] = $monedaComprobante;
+
                 if($val['costo'] > 0)
                     $info[$key] = $card;
             }
@@ -516,7 +531,7 @@ class CxC extends Producto
 		return true;
 	}
 
-	public function AddPayment($id, $metodoDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago)
+	public function AddPayment($id, $formaDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago, $tipoDeMoneda='MXN', $tipoCambio=1, $confirmAmount = null)
 	{
 	    $amount = $this->Util()->limpiaNumero($amount);
         $deposito = $this->Util()->limpiaNumero($deposito);
@@ -536,19 +551,79 @@ class CxC extends Producto
 			return false;
 		}
 
-		if($metodoDePago!="Saldo a Favor")
-            if($deposito<$amount)
-            {
-                $this->Util()->setError(10046, "error", "El monto de pago no debe ser mayor al deposito");
-                $this->Util()->PrintErrors();
-                return false;
-            }
+		// Obtener confirmAmount del parámetro
+		$confirmAmount = $confirmAmount !== null ? $this->Util()->limpiaNumero($confirmAmount) : null;
+
 		$comprobante = new Comprobante;
 
 		if($efectivo)
 			$compInfo = $comprobante->GetInfoComprobante($id,true);
 		else
 			$compInfo = $comprobante->GetInfoComprobante($id);
+
+		// Guardar el monto original capturado
+		$originalAmount = $amount;
+		
+		// Validar que el monto no exceda el saldo (con conversión de moneda si aplica)
+		$monedaComprobante = "";
+		switch($compInfo['tipoDeMoneda']){ 
+            case "peso": $monedaComprobante = "MXN"; break;
+            case "dolar": $monedaComprobante = "USD"; break;
+            case "euro": $monedaComprobante = "EUR"; break;
+        }
+		if(empty($monedaComprobante)) {
+			$this->Util()->setError(10046, "error", "Moneda del comprobante no reconocida");
+			$this->Util()->PrintErrors();
+			return false;
+		}
+		
+		// Validar que no se soporten pagos entre EUR y USD
+		if (($tipoDeMoneda == 'EUR' && $monedaComprobante == 'USD') || ($tipoDeMoneda == 'USD' && $monedaComprobante == 'EUR')) {
+			$this->Util()->setError(10046, "error", "Pagos entre EUR y USD no están soportados");
+			$this->Util()->PrintErrors();
+			return false;
+		}
+		
+		// Validar confirmAmount si monedas diferentes
+		if ($tipoDeMoneda != $monedaComprobante) {
+			if ($confirmAmount === null || $confirmAmount <= 0) {
+				$this->Util()->setError(10046, "error", "Importe de confirmación en {$monedaComprobante} es requerido");
+				$this->Util()->PrintErrors();
+				return false;
+			}
+		}
+		
+
+		$currencyConverter = new CurrencyConverter();
+		// Calcular equivalenciaDR directamente usando confirmAmount si monedas diferentes
+		if ($tipoDeMoneda != $monedaComprobante) {
+			$equivalenciaDR = $currencyConverter->calculateEquivalenciaDRFromAmount($confirmAmount, $amount);
+			$impPagado = $confirmAmount;
+		} else {
+			$equivalenciaDR = 1; // Misma moneda, no hay conversión
+			$impPagado = $amount;
+		}
+		
+		// Validación para asegurar que la conversión es consistente
+		$impInverso = $currencyConverter->reverseConvertAmount($impPagado, $equivalenciaDR);
+		if (abs($impInverso - $amount) > 0.1) {
+			$this->Util()->setError(10046, "error", "Error en la conversión de moneda. Importe original: ".number_format($amount,2)." ".$tipoDeMoneda.". Importe invertido: ".number_format($impInverso, 2)." ".$tipoDeMoneda.".");
+			$this->Util()->PrintErrors();
+			return false;
+		}
+		// Validar que el monto convertido no exceda el saldo
+		if($impPagado > $compInfo["saldo"])
+		{
+			if($tipoDeMoneda != $monedaComprobante) {
+				$this->Util()->setError(10046, "error", "El importe convertido (".number_format($impPagado, 4)." ".$monedaComprobante.") excede el saldo disponible (".number_format($compInfo["saldo"], 2)." ".$monedaComprobante.")");
+			} else {
+				$this->Util()->setError(10046, "error", "El importe no puede ser mayor al saldo disponible (".number_format($compInfo["saldo"], 2).")");
+			}
+			$this->Util()->PrintErrors();
+			return false;
+		}
+		
+		// Usar el monto convertido para reducir saldos
 
         $xmlReader = new XmlReaderService;
         $empresaId = $compInfo['empresaId'];
@@ -567,32 +642,20 @@ class CxC extends Producto
         $xmlData = $xmlReader->execute($xmlPath, $empresaId,$compInfo['comprobanteId']);
         $totalDR = $xmlData['cfdi']['Total'];
 
-        $retenciones = [];
-        $traslados   = [];
+        // Calcular impuestos usando el servicio TaxCalculator
+        $taxCalculator = new TaxCalculator();
 
-        if(DESGLOSAR_IMPUESTOS_COMPLEMENTO_PAGO) {
-            foreach ($xmlData['impuestos']['traslados'] ?? [] as $traslado) {
-                $tras = array_values(json_decode(json_encode($traslado), true));
-                $currentTraslado = $tras[0];
-                $porcentaje = (($currentTraslado['Base'] + $currentTraslado['Importe']) / $totalDR);
-                $montoProporcional = $amount * $porcentaje;
+		$traslados = $xmlData['impuestos']['traslados'];
+        $result = $taxCalculator->calculateTaxes($traslados, $totalDR, (float)$impPagado, $equivalenciaDR,(float)$amount);
 
-                // Todos los impuestos son  TipoFactor  = "Tasa"
-                $trasladoP['BaseDR'] = $montoProporcional / (1 + ($currentTraslado['TasaOCuota']));
-                $trasladoP['ImpuestoDR'] = $currentTraslado['Impuesto'];
-                $trasladoP['TipoFactorDR'] = $currentTraslado['TipoFactor'];
+        $impuestosDR = [
+            'retenciones' => [], // por si se requiere en el futuro
+            'traslados'   => $result['trasladosDR']
+        ];
 
-                if ($trasladoP['TipoFactorDR'] !== 'Exento') {
-                    $trasladoP['TasaOCuotaDR'] = $currentTraslado['TasaOCuota'];
-                    $trasladoP['ImporteDR'] = $trasladoP['BaseDR'] * $trasladoP['TasaOCuotaDR'];
-                }
-                $traslados[] = $trasladoP;
-            }
-        }
-
-        $impuestos = [
-            'retenciones' => $retenciones,
-            'traslados'   => $traslados
+        $impuestosP = [
+            'retenciones' => [], // por si se requiere en el futuro
+            'traslados'   => $result['trasladosP']
         ];
 
 		$user = new User;
@@ -601,38 +664,22 @@ class CxC extends Producto
 		$user->setUserId($compInfo['contractId'],1);
 		else
 		$user->setUserId($compInfo['userId'],1);
-		$usr = $user->GetUserInfo();
-
-        if($metodoDePago == "Saldo a Favor")
-        {
-            if($usr["cxcSaldoFavor"] < $amount)
-            {
-                $this->Util()->setError(10046, "error", "El Saldo a Favor del cliente no es suficiente para cubrir el importe del pago.");
-                $this->Util()->PrintErrors();
-                return false;
-            }
-            else
-            {
-                $this->Util()->DB()->setQuery("
-					UPDATE
-						customer
-					SET
-						`cxcSaldoFavor` = cxcSaldoFavor - '".$amount."'
-					WHERE customerId = '".$usr["customerId"]."'");
-                $this->Util()->DB()->UpdateData();
-
-            }
-        }
 
         $comprobanteId = null;
 		if($comprobantePago){
 			$comprobantePago = new ComprobantePago();
 
 			$infoPago = new stdClass();
-            $infoPago->impuestosDR = $impuestos;
+            $infoPago->impuestosDR = $impuestosDR;
+            $infoPago->impuestosP = $impuestosP;
 			$infoPago->fecha = $fecha;
-			$infoPago->amount = $amount;
-			$infoPago->metodoPago = $metodoDePago;
+			$infoPago->amount = $originalAmount; // El monto original en la moneda de pago
+			$infoPago->impPagado = $impPagado; // Monto confirmado en moneda del comprobante
+			$infoPago->equivalenciaDR = $equivalenciaDR;
+			$infoPago->metodoDePago = 'NO DEBE EXISTIR';
+			$infoPago->formaDePago = $formaDePago;
+			$infoPago->tipoDeCambio = $tipoCambio;
+			$infoPago->tipoDeMoneda = $tipoDeMoneda;
 			$infoPago->operacion = uniqid();
 			$comprobanteId = $comprobantePago->generar($compInfo, $infoPago);
 
@@ -643,57 +690,51 @@ class CxC extends Producto
 			}
 		}
 
-
-		if($metodoDePago != "Saldo a Favor")
-		{
-			if($amount > $compInfo["saldo"])
-			{
-				$rest = $amount - $compInfo["saldo"];
-				$amount = $compInfo["saldo"];
-
-				$this->Util()->DB()->setQuery("
-					UPDATE
-						customer
-					SET
-						`cxcSaldoFavor` = cxcSaldoFavor + '".$rest."'
-					WHERE customerId = '".$usr["customerId"]."'");
-				$this->Util()->DB()->UpdateData();
-			}
-		}
-
 		$ext = strtolower(end(explode('.', $_FILES["comprobante"]['name'])));
 
 		$campo=($efectivo)?"instanciaServicioId":"comprobanteId";
 
-		$this->Util()->DB()->setQuery("
-			INSERT INTO  `payment` (
-				`".$campo."` ,
-				`metodoDePago` ,
-				`amount` ,
-				`deposito` ,
-				`ext` ,
-				`comprobantePagoId`,
-				`paymentDate`
-				)
-				VALUES (
-				'".$id."',
-				'".$metodoDePago."',
-				'".$amount."',
-				'".$deposito."',
-				'".$ext."',
-				'".$comprobanteId."',
-				'".$fecha."'
-			)");
-		$paymentId = $this->Util()->DB()->InsertData();
+		try {
+			$this->Util()->DB()->setQuery("
+				INSERT INTO  `payment` (
+					`".$campo."` ,
+					`metodoDePago` ,
+					`amount` ,
+					`deposito` ,
+					`ext` ,
+					`comprobantePagoId`,
+					`paymentDate`,
+					`tipoDeMoneda`,
+					`tipoCambio`,
+					`originalAmount`
+					)
+					VALUES (
+					'".$id."',
+					'".$formaDePago."',
+					'".$impPagado."',
+					'".$deposito."',
+					'".$ext."',
+					'".$comprobanteId."',
+					'".$fecha."',
+					'".$tipoDeMoneda."',
+					'".$tipoCambio."',
+					'".$originalAmount."'
+				)");
+			$paymentId = $this->Util()->DB()->InsertData();
 
-		$folder = DOC_ROOT."/payments";
-		$target_path = $folder ."/".$paymentId.".".$ext;
+			$folder = DOC_ROOT."/payments";
+			$target_path = $folder ."/".$paymentId.".".$ext;
 
-		@move_uploaded_file($_FILES["comprobante"]['tmp_name'], $target_path);
+			@move_uploaded_file($_FILES["comprobante"]['tmp_name'], $target_path);
 
-		$this->Util()->setError(10046, "complete", "Has Agregado un Pago correctamente");
-        $this->Util()->PrintErrors();
-		return true;
+			$this->Util()->setError(10046, "complete", "Has Agregado un Pago correctamente");
+			$this->Util()->PrintErrors();
+			return true;
+		} catch (Exception $e) {
+			$this->Util()->setError(10046, "error", "Error al insertar el pago: " . $e->getMessage());
+			$this->Util()->PrintErrors();
+			return false;
+		}
 	}
     public function AddPaymentFromXml($file_xml, $metodoDePago,$amount,$deposito=0,$fecha,$efectivo=false, $comprobantePago)
     {

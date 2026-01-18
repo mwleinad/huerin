@@ -4,10 +4,6 @@
 $user->allowAccess();
 /* End Session Control */
 
-if ($_POST) {
-    $cxc->AddPayment($_POST["comprobanteId"], $_POST["metodoDePago"], $_POST["amount"], $_POST["paymentDate"], $_POST['efectivo'], $_POST['generarComprobantePago']);
-
-}
 $smarty->assign('mainMnu', 'cxc');
 
 if ($_GET['id']) {
@@ -37,6 +33,12 @@ $nomRfc = $usr['rfc'];
 
 $formasDePago = $catalogo->formasDePago();
 $smarty->assign("formasDePago", $formasDePago);
+$tiposDeMoneda = $main->ListTipoDeMoneda33();
+$smarty->assign("tiposDeMoneda", $tiposDeMoneda);
+$monedaComprobante = current(array_filter($tiposDeMoneda, function ($moneda) use ($compInfo) {
+    return strtolower($moneda['moneda']) == $compInfo['tipoDeMoneda'];
+}));
+$smarty->assign("monedaComprobante", $monedaComprobante);
 
 $smarty->assign('id_comprobante', $id_comprobante);
 $smarty->assign('post', $compInfo);

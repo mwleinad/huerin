@@ -3,9 +3,9 @@
                 <td>{$fact.nameContact}</td>
                 <td>{$fact.nombre}</td>
                 <td align="center">{$fact.fecha}</td>
-                <td align="right">${$fact.total_formato}</td>
-                <td align="right">${$fact.payment}</td>
-                <td align="right" style="{if $fact.saldo > 0.01}color:#930{else}color:#090{/if}">${$fact.saldo|number_format:2}</td>
+                <td align="right">$ {$fact.total_formato} {$fact.moneda}</td>
+                <td align="right">$ {$fact.payment|number_format:2} {$fact.moneda}</td>
+                <td align="right" style="{if $fact.saldo > 0.01}color:#930{else}color:#090{/if}">$ {$fact.saldo|number_format:2} {$fact.moneda}</td>
                 <td width="90">
                 {if $fact.status == 1}
                   {if in_array(123,$permissions) || $User.isRoot}

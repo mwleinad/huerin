@@ -1524,6 +1524,7 @@ class Comprobante extends Producto
             $sqlSearch .= ' AND c.tiposComprobanteId!=10 ';
         //orden por default cuando venga de reporte.
         $orderBy = " ORDER BY c.fecha DESC, c.serie ASC, c.folio DESC";
+        
         if (is_numeric($this->page)) {
             $orderBy = "";
             $sqlQuery = " SELECT c.comprobanteId
@@ -1535,8 +1536,10 @@ class Comprobante extends Producto
             $total = count($this->Util()->DB()->GetResult());
             $pages = $this->Util->HandleMultipages($this->page, $total, WEB_ROOT . "/sistema/consultar-facturas");
             $sqlAdd = "LIMIT " . $pages["start"] . ", " . $pages["items_per_page"];
-            $orderBy = " ORDER BY c.fecha DESC, c.serie ASC , c.folio DESC ";
+            // para el listado solo ordenar por fecha desc
+            $orderBy = " ORDER BY c.fecha DESC ";
         }
+        // Se Quita group by comprobanteId para optimizar consulta
          $sqlQuery = "SELECT 
                      c.comprobanteId,
                      c.serie,
@@ -1583,7 +1586,7 @@ class Comprobante extends Producto
                     FROM comprobante as c
                     LEFT JOIN (select contract.contractId,contract.name,contract.rfc,customer.nameContact FROM contract INNER JOIN customer on contract.customerId = customer.customerId) a ON a.contractId = c.userId 
                     $innerpermisos
-                    WHERE 1 $wherepermisos $sqlSearch  GROUP BY c.comprobanteId $orderBy " . $sqlAdd;
+                    WHERE 1 $wherepermisos $sqlSearch $orderBy " . $sqlAdd;
         $this->Util()->DB()->setQuery($sqlQuery);
         $comprobantes = $this->Util()->DB()->GetResult();
         $info = array();
@@ -1621,6 +1624,13 @@ class Comprobante extends Producto
             $timbreFiscal = unserialize($val['timbreFiscal']);
             $card["uuid"] = $timbreFiscal["UUID"];
             $card["cfdi_cancel_status"] = $val['cfdi_cancel_status'];
+            $monedaComprobante = "";
+            switch($val['tipoDeMoneda']){ 
+                case "peso": $monedaComprobante = "MXN"; break;
+                case "dolar": $monedaComprobante = "USD"; break;
+                case "euro": $monedaComprobante = "EUR"; break;
+            }
+             $card["moneda"] = $monedaComprobante;
             $info[$key] = $card;
         }//foreach
         $data["items"] = $info;

@@ -4,21 +4,50 @@
         <table width="100%" class="outline-table">
             <tbody>
             <tr class="border-bottom border-right center font-smallest">
-                <td class="border-top" width="20%"><strong>Fecha pago</strong></td>
-                <td class="border-top" width="20%"><strong>Forma pago</strong></td>
-                <td class="border-top" width="20%"><strong>Moneda</strong></td>
-                <td class="border-top" width="20%"><strong>Monto</strong></td>
+                <td class="border-top" width="15%"><strong>Fecha pago</strong></td>
+                <td class="border-top" width="35%"><strong>Forma pago</strong></td>
+                <td class="border-top" width="10%"><strong>Moneda</strong></td>
+                <td class="border-top" width="10%"><strong>Monto</strong></td>
+                <td class="border-top" width="10%"><strong>Tipo de cambio</strong></td>
                 <td class="border-top" width="20%"><strong># Operacion</strong></td>
             </tr>
-            <tr class="border-right border-bottom">
+            <tr class="border-right border-bottom font-smallest">
                 <td class="left">{$pago.pago.FechaPago|replace:"T":" "}</td>
-                <td class="left">{$pago.pago.FormaDePagoP}</td>
+                <td class="left ">{$pago.pago.FormaDePagoP} - {$formasPagoMap[(string)$pago.pago.FormaDePagoP]}</td>
                 <td class="left">{$pago.pago.MonedaP}</td>
                 <td class="left">{$pago.pago.Monto|number}</td>
+                <td class="left">{$pago.pago.TipoCambioP}</td>
                 <td class="left">{$pago.pago.NumOperacion}</td>
             </tr>
+            {if $pago.TrasladosP|count > 0}
+                <tr class="border-right">
+                    <td style="border:0px">&nbsp;</td>
+                    <td colspan="5">
+                        <table style="width: 100%;" class="outline-table no-border">
+                            <tbody>
+                            <tr class="border-bottom border-top center font-smallest">
+                                <td class="border-left" style="width: 10%"><strong>Base</strong></td>
+                                <td style="width: 10%"><strong>Impuesto</strong></td>
+                                <td style="width: 10%"><strong>Factor</strong></td>
+                                <td style="width: 10%"><strong>Tasa / Cuota</strong></td>
+                                <td style="width: 10%"><strong>Importe</strong></td>
+                            </tr>
+                            {foreach from=$pago.TrasladosP item=trasladoP}
+                                <tr class="border-right font-smallest">
+                                    <td class="center border-bottom border-left">{$trasladoP.BaseP|number}</td>
+                                    <td class="center border-bottom border-left">Traslado ({$catalogos.impuestos[{$trasladoP.ImpuestoP}]})</td>
+                                    <td class="center border-bottom">{$trasladoP.TipoFactorP}</td>
+                                    <td class="center border-bottom">{$trasladoP.TasaOCuotaP}</td>
+                                    <td class="center border-bottom">{$trasladoP.ImporteP|number}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            {/if}
             <tr class="border-right">
-                <td colspan="5" style="width: 100%; padding-left: 15px" class="pad-left no-border-left padding-vertical">
+                <td colspan="6" style="width: 100%; padding-left: 15px" class="pad-left no-border-left padding-vertical">
                     <table width="100%" class="outline-table no-border">
                         <tbody>
                         <tr class="border-bottom">

@@ -14,10 +14,10 @@
               </tr>
             </thead>
               <tr>
-                <td>${$subtotal}</td>
-                <td>${$iva}</td>
-                <td>${$isr}</td>
-                <td>${$total}</td>
+                <td>$ {$subtotal}</td>
+                <td>$ {$iva}</td>
+                <td>$ {$isr}</td>
+                <td>$ {$total}</td>
               </tr>
             </tbody>            
             <tbody>    
