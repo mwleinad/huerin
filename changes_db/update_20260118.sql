@@ -1,11 +1,7 @@
-ALTER TABLE `personal`
-ADD COLUMN `numeroCelularInstitucional` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `skype`,
-ADD COLUMN `numeroTelefonicoWebex` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `numeroCelularInstitucional`,
-ADD COLUMN `extensionWebex` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `numeroTelefonicoWebex`;
-ALTER TABLE `personal` ADD COLUMN `fechaPromocion` date NULL DEFAULT NULL AFTER `extensionWebex`;
+ALTER TABLE `payment`
+ADD COLUMN `tipoDeMoneda` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'MXN' AFTER `paymentDate`,
+ADD COLUMN `tipoCambio` decimal(10,4) NULL DEFAULT 1.0000 AFTER `tipoDeMoneda`,
+ADD COLUMN `originalAmount` decimal(14,4) NULL DEFAULT NULL AFTER `tipoCambio`;
 
-INSERT INTO `permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Número celular institucional', 224, 3);
-INSERT INTO `permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Número telefónico de Webex', 224, 3);
-INSERT INTO `permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Extensión Webex', 224, 3);
-INSERT INTO `permisos` (`titulo`, `parentId`, `levelDeep`) VALUES ('Fecha de Promoción', 224, 3);
-
+ALTER TABLE `comprobante` 
+MODIFY COLUMN `tipoDeCambio` decimal(20, 6) UNSIGNED NOT NULL DEFAULT 1.000000 AFTER `tipoDeMoneda`;
