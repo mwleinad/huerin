@@ -187,7 +187,7 @@ class Cfdi extends Comprobante
            $fecha = date('Y-m-d H:i:s', strtotime('-'.$data["fechaTimbrado"].' hours'));
           
         } else {
-            $fecha = date('Y-m-d H:i:s', strtotime('-6 hours'));
+            $fecha = date('Y-m-d H:i:s');
         }
         
         $fechaPago = $this->Util()->FormatDate(time());
