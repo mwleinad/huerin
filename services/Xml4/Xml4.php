@@ -861,6 +861,7 @@ class Xml4 extends Producto{
         $totals = [
             '0.160000' => ['base' => 0, 'impuesto' => 0],
             '0.080000' => ['base' => 0, 'impuesto' => 0],
+            '0.000000' => ['base' => 0, 'impuesto' => 0],
         ];
         $totalTrasladosBaseIvaExento = 0;
 
