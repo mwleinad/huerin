@@ -867,6 +867,7 @@ class Xml4 extends Producto{
         $rateMap = [
             '0.160000' => ['base' => 'TotalTrasladosBaseIVA16', 'impuesto' => 'TotalTrasladosImpuestoIVA16'],
             '0.080000' => ['base' => 'TotalTrasladosBaseIVA8', 'impuesto' => 'TotalTrasladosImpuestoIVA8'],
+            '0.000000' => ['base' => 'TotalTrasladosBaseIVA0', 'impuesto' => 'TotalTrasladosImpuestoIVA0'],
         ];
 
         // Agregar los nodos de impuestos traslados del documento relacionado si se indica desglose de impuestos
