@@ -1104,7 +1104,10 @@ switch ($opcion[0]) {
         }
         // quitar coma al atributo costo nuevo final
         $jsonData = array_map(function($item) {
-            $item['costo_nuevo_final'] = str_replace(',', '', $item['costo_nuevo_final']);
+            $item['costo_nuevo_final'] = trim(str_replace(',', '', $item['costo_nuevo_final']));
+            if (!is_numeric($item['costo_nuevo_final'])) {
+                $item['costo_nuevo_final'] = 0;
+            }
             return $item;
         }, $jsonData);
 
@@ -1132,6 +1135,7 @@ switch ($opcion[0]) {
         } else {
             $util->setError(0, 'error','Error al actualizar registros');
         }
+        
         echo $res ? 'ok[#]' : 'fail[#]';
         $util->PrintErrors();
         $smarty->display(DOC_ROOT . '/templates/boxes/status_on_popup.tpl');
