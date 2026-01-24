@@ -28,6 +28,12 @@ function cargarListaImportacion(page = 0) {
 
 function enviarRecotizacion () {
     var form = jQ(this).parents('form:first');
+    if(form.find('#mes_inicio').val() == ''){
+        form.find('#error-mes_inicio').text('Por favor seleccione un mes.').show();
+        return;
+    } else {
+        form.find('#error-mes_inicio').hide();
+    }
     jQ.ajax({
         url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
         data: form.serialize(true),
@@ -40,11 +46,17 @@ function enviarRecotizacion () {
             var splitResp = response.split('[#]')
             jQ('#btn-enviar-recotizacion').show();
             jQ('#loading-img').hide();
-            ShowStatusPopUp(splitResp[1]);
-            close_popup();
+            if(splitResp[0] == 'ok') { 
+                ShowStatusPopUp(splitResp[1]);
+                close_popup();
+            } else {
+                 ShowStatusPopUp(splitResp[1]);
+            }
         },
         error: function () {
-            alert('error')
+            ShowStatusPopUp('Error al enviar la recotización');
+            jQ('#btn-enviar-recotizacion').show();
+            jQ('#loading-img').hide();
         }
     });
 }

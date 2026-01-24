@@ -92,7 +92,8 @@ class Bitacora extends Main {
         }
     }
 
-    function generarPdfRecotizacion($data = []) {
+    function generarPdfRecotizacion($data = [], $mesPersonalizado) {
+        try {
         global $monthsComplete;
         $tableStyles = array(
             'borderSize' => 1,
@@ -135,6 +136,7 @@ class Bitacora extends Main {
                 'name'=>'Tw Cen MT',
                 'size'=>16 ));
         $phpWord->setComplexValue('nombre_empresa', $nombre_empresa);
+        $phpWord->setValue('mes_inicio_efecto', $mesPersonalizado);
 
         $table = new Table($tableStyles);
         $headerTable = array('name' => 'Tw Cen MT', 'size' => 12, 'bold' => true,'color'=>'767070');
@@ -170,41 +172,55 @@ class Bitacora extends Main {
         $name_file = uniqid();
         $file = DOC_ROOT.'/sendFiles/'.$name_file.'.docx';
         $phpWord->saveAs($file);
-
         return is_file($file) ?  $file : false;
+        return $file;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
-    function enviarRecotizacion($id) {
+    function enviarRecotizacion($id, $mesPersonalizado) {
 
-        $sql = "CALL sp_get_data_recotizacion('".$id."','Cuentas por cobrar')";
-        $this->Util()->DB()->setQuery($sql);
-        $items = $this->Util()->DB()->GetResult();
-        $count = 0;
-        foreach($items as $item) {
-            //if($item['emailResponsable'] !== 'rtomas@braunhuerin.com.mx')
-              //  continue;
+        try { 
+            
+            $sql = "CALL sp_get_data_recotizacion('".$id."','Cuentas por cobrar')";
+            $this->Util()->DB()->setQuery($sql);
+            $items = $this->Util()->DB()->GetResult();
 
-            $item['servicios'] = json_decode($item['servicios'], true);
-            $file = $this->generarPdfRecotizacion($item);
-            $name_file = $item['rfc'].".docx";
-            if($file) {
-                $send =  new SendMail();
-                $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'CARTA NOTIFICACIÓN DE AJUSTE DE PRECIOS '.strtoupper($item['rfc']);
-                $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
-                $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
-
-                $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
-                if ($send->Prepare($subject, $body, $correo,
-                    $name, $file,$name_file)) {
-                    $count++;
-                }
-                unlink($file);
+            if(!count($items)) {
+              $this->Util()->setError(0,'error', 'No se encontro información para realizar el envio de recotización.');
+              $this->Util()->PrintErrors();
+              return false;
             }
-        }
 
-        $this->Util()->setError(0,'complete', $count.' correos enviados.');
-        $this->Util()->PrintErrors();
-        return true;
+            $enviados = 0;
+            foreach($items as $item) {
+                $item['servicios'] = json_decode($item['servicios'], true);
+                $file = $this->generarPdfRecotizacion($item, $mesPersonalizado);
+                $name_file = $item['rfc'].".docx";
+                if($file) {
+                    $send =  new SendMail();
+                    $subject = PROJECT_STATUS === 'test' ? 'Carta test '. $item['rfc'] : 'CARTA NOTIFICACIÓN DE AJUSTE DE PRECIOS '.strtoupper($item['rfc']);
+                    $correo = PROJECT_STATUS === 'test' ? 'hbcruz@braunhuerin.com.mx' : $item['emailResponsable'];
+                    $name = PROJECT_STATUS === 'test' ? 'Rogelio Z. Test' : $item['nameResponsable'];
+
+                    $body = "Se envia, carta de ajuste de precios de la empresa ". $item['name'];
+                    if ($send->Prepare($subject, $body, $correo,
+                        $name, $file,$name_file)) {
+                        $enviados++;
+                    }
+                    unlink($file);
+                }
+            }
+            
+            $this->Util()->setError(0,'complete', $enviados.' correos enviados.');
+            $this->Util()->PrintErrors();
+            return true;
+        } catch (Exception $e) {
+            $this->Util()->setError(0,'error', $e->getMessage());
+            $this->Util()->PrintErrors();
+            return false;
+        } 
     }
 
 }
