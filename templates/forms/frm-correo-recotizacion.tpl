@@ -7,11 +7,35 @@
                 <div class="grid_16">
                   <p style="font-family: 'Tw Cen MT'; font-size: 16px; color: #767070; text-align: justify">
                       <b>IMPORTANTE!!. </b>
-                      Este apartado de plataforma, hace llegar por correo al responsable de atencion al cliente, la carta de
-                      ajuste de precios en los servicios de las empresas.
-                  </p>
+                      Este proceso realiza el envio de la carta de ajuste de precios en los servicios, al correo de los responsables de Cuentas por cobrar
+                      de cada empresa.
+                  </p> 
                 </div>
-                <hr>
+                <div class="grid_16">
+                    <p style="font-family: 'Tw Cen MT'; font-size: 16px; color: #767070; text-align: justify">
+                        Favor de seleccionar el mes a partir del cual tendra efecto el ajuste de precios, para incluirlo en la carta.
+                    </p> 
+                    <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:100%;float: left;">
+                                <select name="mes_inicio" id="mes_inicio" class="largeInput">
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="enero">Enero</option>
+                                    <option value="febrero">Febrero</option>
+                                    <option value="marzo">Marzo</option>
+                                    <option value="abril">Abril</option>
+                                    <option value="mayo">Mayo</option>
+                                    <option value="junio">Junio</option>
+                                    <option value="julio">Julio</option>
+                                    <option value="agosto">Agosto</option>
+                                    <option value="septiembre">Septiembre</option>
+                                    <option value="octubre">Octubre</option>
+                                    <option value="noviembre">Noviembre</option>
+                                    <option value="diciembre">Diciembre</option>
+                                </select>
+                                <div id="error-mes_inicio" style="color: red; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid_16" style="text-align: center">
                     <img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
                 </div>
