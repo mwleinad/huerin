@@ -179,14 +179,14 @@ class Bitacora extends Main {
         }
     }
 
-    function enviarRecotizacion($id, $mesPersonalizado) {
+    function enviarRecotizacion($id, $mesPersonalizado, $departamentoPersonalizado) {
 
         try { 
             
-            $sql = "CALL sp_get_data_recotizacion('".$id."','Cuentas por cobrar')";
+            $sql = "CALL sp_get_data_recotizacion('".$id."','".$departamentoPersonalizado."')";
             $this->Util()->DB()->setQuery($sql);
             $items = $this->Util()->DB()->GetResult();
-
+            
             if(!count($items)) {
               $this->Util()->setError(0,'error', 'No se encontro información para realizar el envio de recotización.');
               $this->Util()->PrintErrors();
