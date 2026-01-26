@@ -36,6 +36,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="grid_16">
+                    <p style="font-family: 'Tw Cen MT'; font-size: 16px; color: #767070; text-align: justify">
+                        Favor de seleccionar el departamento de los encargados a cual se enviara la cara.
+                    </p> 
+                    <div class="formLine" style="width:100%;  display: inline-block;">
+                        <div style="width:100%;float: left;">
+                               <select name="departamento" id="departamento"  class="largeInput">
+                                <option value="">Seleccione...</option>
+                                {foreach from=$departamentos item=departamento}
+                                    <option value="{$departamento.departamento}">{$departamento.departamento}</option>
+                                {/foreach}
+                            </select>
+                                <div id="error-departamento" style="color: red; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid_16" style="text-align: center">
                     <img src="{$WEB_ROOT}/images/loading.gif"  style="display:none" id="loading-img"/>
                 </div>

@@ -34,6 +34,12 @@ function enviarRecotizacion () {
     } else {
         form.find('#error-mes_inicio').hide();
     }
+    if(form.find('#departamento').val() == ''){
+        form.find('#error-departamento').text('Por favor seleccione un departamento.').show();
+        return;
+    } else {
+        form.find('#error-departamento').hide();
+    }
     jQ.ajax({
         url: WEB_ROOT + '/ajax/bitacoraImportacion.php',
         data: form.serialize(true),
