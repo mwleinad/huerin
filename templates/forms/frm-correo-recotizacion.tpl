@@ -38,7 +38,7 @@
                 </div>
                 <div class="grid_16">
                     <p style="font-family: 'Tw Cen MT'; font-size: 16px; color: #767070; text-align: justify">
-                        Favor de seleccionar el departamento de los encargados a cual se enviara la cara.
+                        Favor de seleccionar el departamento de los encargados a cual se enviara la carta.
                     </p> 
                     <div class="formLine" style="width:100%;  display: inline-block;">
                         <div style="width:100%;float: left;">
