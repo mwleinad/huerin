@@ -296,13 +296,14 @@ class Producto extends Sucursal
 		$_SESSION["conceptos"][$conceptos]["importe"] = $this->importe;
 		$_SESSION["conceptos"][$conceptos]["excentoIva"] = $this->excentoIva;
 		$_SESSION["conceptos"][$conceptos]["nombreServicioOculto"] = $_POST["nombreServicioOculto"];
-		if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
+		/*if($this->Util()->isValidateDate($this->fechaCorrespondiente, 'Y-m-d')) {
 			$fecha = explode("-", $this->fechaCorrespondiente);
 			$fechaText = strtoupper($monthsComplete[$fecha[1]]." DEL ".$fecha["0"]);
-			$descripcion = $_POST["nombreServicioOculto"]." CORRESPONDIENTE AL MES ".$fechaText;
+			$descripcion = $_POST["nombreServicioOculto"];
 		} else {
 			$descripcion = urldecode($this->descripcion);
-		}
+		}*/
+		$descripcion = urldecode(trim($this->descripcion));
 		$_SESSION["conceptos"][$conceptos]["descripcion"] = $descripcion;
 		$_SESSION["conceptos"][$conceptos]["categoriaConcepto"] = urldecode($this->categoriaConcepto);
 		$_SESSION["conceptos"][$conceptos]["claveProdServ"] = $this->claveProdServ;
