@@ -338,9 +338,16 @@ class InvoiceService extends Cfdi{
             ? date("Y-m-d",strtotime($item['date']." - 1 month"))
             : $item['date'] ;
 
+            $nombreServicio = trim($item["nombreServicio"]);
+            // Asumiendo que todos los servicios traen nomenclatura como prefijo en su nombre
+            // Ejemplo: CODG1 HONORARIOS DE ASESORIA CONTABLE
+            // Remover el codigo y quedarse con el nombre
+            $posEspacio = strpos($nombreServicio, " ");
+            $nombreServicio = substr($nombreServicio, $posEspacio + 1);
+
             $fecha_corriente_explode = explode("-", $item['date']);
             $fecha_explode = explode("-", $fecha_real_correspondiente);
-            if((int)$item['concepto_mes_vencido'] === 1) {
+            /* if((int)$item['concepto_mes_vencido'] === 1) {
                 $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
                 $sufix = $this->month13
                     ? "MES 13 DEL " . $fecha_explode[0]
@@ -352,7 +359,8 @@ class InvoiceService extends Cfdi{
                     ? "13 DEL " . $fecha_explode[0] :
                     "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
                 $descripcion = trim($item["nombreServicio"]) . " CORRESPONDIENTE AL MES " . $sufix;
-            }
+            }*/
+            $descripcion = trim($nombreServicio);
 
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
                 $claveProdServ =  trim($item['claveSat']);
@@ -369,7 +377,7 @@ class InvoiceService extends Cfdi{
             $cad["importe"] = $item["costo"];
             $cad["excentoIva"] = "no";
             $cad["descripcion"] = $descripcion;
-            $cad["nombreServicioOculto"] = trim($item["nombreServicio"]);
+            $cad["nombreServicioOculto"] = $nombreServicio;
             $cad["tasaIva"] = $this->emisor["iva"];
             $cad["claveProdServ"] = $claveProdServ;
             $cad["claveUnidad"] = "E48";
