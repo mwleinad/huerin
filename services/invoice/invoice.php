@@ -334,7 +334,7 @@ class InvoiceService extends Cfdi{
             $subtotal += $item["costo"] + $iva;
 
 
-            $fecha_real_correspondiente =(int)$item['concepto_mes_vencido'] === 1
+            $fecha_mes_vencido =(int)$item['concepto_mes_vencido'] === 1
             ? date("Y-m-d",strtotime($item['date']." - 1 month"))
             : $item['date'] ;
 
@@ -343,24 +343,27 @@ class InvoiceService extends Cfdi{
             // Ejemplo: CODG1 HONORARIOS DE ASESORIA CONTABLE
             // Remover el codigo y quedarse con el nombre
             $posEspacio = strpos($nombreServicio, " ");
-            $nombreServicio = substr($nombreServicio, $posEspacio + 1);
+            $nombreServicio = trim(substr($nombreServicio, $posEspacio + 1));
 
             $fecha_corriente_explode = explode("-", $item['date']);
-            $fecha_explode = explode("-", $fecha_real_correspondiente);
-            /* if((int)$item['concepto_mes_vencido'] === 1) {
-                $prefix = "HONORARIOS DE ". strtoupper($monthsComplete[$fecha_corriente_explode[1]]). " " . $fecha_corriente_explode[0];
-                $sufix = $this->month13
-                    ? "MES 13 DEL " . $fecha_explode[0]
-                    : "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = " CORRESPONDIENTES A ". trim($item["nombreServicio"]) . " " . $sufix;
-                $descripcion = $prefix.$descripcion;
+            $fecha_mes_vencido_explode = explode("-", $fecha_mes_vencido);
+            $descripcion = "";
+            if($item["periodicidad"] == "eventual") {
+                $descripcion = $nombreServicio;
             } else {
-                $sufix = $this->month13
-                    ? "13 DEL " . $fecha_explode[0] :
-                    "DE " . strtoupper($monthsComplete[$fecha_explode[1]]) . " " . $fecha_explode[0];
-                $descripcion = trim($item["nombreServicio"]) . " CORRESPONDIENTE AL MES " . $sufix;
-            }*/
-            $descripcion = trim($nombreServicio);
+                if($this->month13) {
+                    $sufix = "MES 13 " . $fecha_corriente_explode[0]; 
+                } else {    
+                    $sufix = (int) $item['concepto_mes_vencido'] === 1 
+                    ? strtoupper($monthsComplete[$fecha_mes_vencido_explode[1]]) . " " . $fecha_mes_vencido_explode[0]
+                    : strtoupper($monthsComplete[$fecha_corriente_explode[1]]) . " " . $fecha_corriente_explode[0];
+
+                }
+               
+                $descripcion = $nombreServicio . " " . $sufix;
+            }
+
+            $descripcion = trim($descripcion);
 
             if($this->Util()->ValidateOnlyNumeric($item["claveSat"],""))
                 $claveProdServ =  trim($item['claveSat']);
