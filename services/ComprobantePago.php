@@ -156,8 +156,8 @@ class ComprobantePago extends Comprobante {
         $this->Util()->DBSelect($_SESSION["empresaId"])->setQuery($sql);
         $infoPagos = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
 
-        $impSaldoAnt = bcsub((string)$comprobante['total'], (string)$infoPagos['totalPagado'], 2);
-        $impSaldoInsoluto = bcsub((string)$impSaldoAnt, (string)$impPagado, 2);
+        $impSaldoAnt = $this->Util()->bcround(bcsub((string)$comprobante['total'], (string)$infoPagos['totalPagado'], 4), 2);
+        $impSaldoInsoluto = $this->Util()->bcround(bcsub((string)$impSaldoAnt, (string)$impPagado, 4), 2);
 
         $data["numParcialidad"] = $infoPagos['pagos'] + 1;
         $data["impSaldoAnt"] = (float)$impSaldoAnt;

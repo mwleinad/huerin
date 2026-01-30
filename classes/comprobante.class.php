@@ -1360,7 +1360,7 @@ class Comprobante extends Producto
             $row['cxcAmountDiscount'] = $row['costo'] * ($row['cxcDiscount'] / 100);
             $row['costo'] = $row['costo'] - $row['cxcAmountDiscount'];
 
-            $row["saldo"] = $row["costo"] - $row["payment"];
+            $row["saldo"] = $this->Util()->bcround(bcsub($row["total"], $row["payment"], 4), 2);
             return $row;
         } else {
             $sqlQuery = "SELECT comprobante.*,contract.facturador,contract.name razon_social,contract.rfc FROM comprobante
@@ -1380,7 +1380,7 @@ class Comprobante extends Producto
             $row['cxcAmountDiscount'] = $row['total'] * ($row['cxcDiscount'] / 100);
             $row['total'] = $row['total'] - $row['cxcAmountDiscount'];
 
-            $row["saldo"] = $row["total"] - $row["payment"];
+            $row["saldo"] = $this->Util()->bcround(bcsub($row["total"], $row["payment"], 4), 2);
             return $row;
         }
     }//GetInfoComprobante
