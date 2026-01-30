@@ -1857,6 +1857,15 @@ class Util extends CustomError
     function isUtf8Aplly($str) {
         return mb_detect_encoding($str,"UTF-8, ISO-8859-1") == "UTF-8";
     }
+
+    function bcround($number, $precision = 2) {
+        $adjust = '0.' . str_repeat('0', $precision) . '5';
+        return $number >= 0 
+            ? bcadd($number, $adjust, $precision) 
+            : bcsub($number, $adjust, $precision);
+    }
+
+
 }
 
 ?>
