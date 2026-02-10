@@ -8,6 +8,11 @@ class ContractValidator extends Util {
     }
 
     public function validate() {
+        if($_SESSION['User']['isRoot'])
+        {
+            // Si el usuario es root, no se aplican validaciones
+            return true;
+        }
         $permisos = $_POST['permisos'] ?? [];  // Obtener directamente del POST
         if(empty($permisos)) {
             // si no hay permisos, no se puede validar,es valido por defecto
