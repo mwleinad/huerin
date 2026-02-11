@@ -29,12 +29,16 @@ class ContractValidator extends Util {
         // Validar Contabilidad/Fiscal
         $contabilidadId = $this->getDepartamentoId('Contabilidad e Impuestos');
         $fiscalId = $this->getDepartamentoId('Fiscal');
+        $finanzasId = $this->getDepartamentoId('Finanzas');
+        $tieneEncargadoFinanzas = isset($departamentoPersonalMap[$finanzasId]);
 
-        
-        if(isset($departamentoPersonalMap[$contabilidadId]) && 
-           !isset($departamentoPersonalMap[$fiscalId])) {
-            $this->errors[] = "El responsable del departamento de Fiscal es requerido si el de Contabilidad e Impuestos está asignado";
+        // Si no hay encargado de Finanzas, entonces validar que si hay encargado de Contabilidad, también haya de Fiscal
+        if(!$tieneEncargadoFinanzas) {
+            if(isset($departamentoPersonalMap[$contabilidadId]) && !isset($departamentoPersonalMap[$fiscalId])) {
+                $this->errors[] = "El responsable del departamento de Fiscal es requerido si el de Contabilidad e Impuestos está asignado";
+            }
         }
+        
 
         // Validar Nóminas/Gestoría
         $nominasId = $this->getDepartamentoId('Nominas y Seguridad Social');
@@ -47,6 +51,11 @@ class ContractValidator extends Util {
         foreach(DEPARTAMENTOS_TIPO_GERENCIA as $depto) {
             $principalId = $this->getDepartamentoId($depto['principal']);
             $secundarioId = $this->getDepartamentoId($depto['secundario']);
+            if($depto['secundario'] === 'Contabilidad e Impuestos' && $tieneEncargadoFinanzas) {
+                // No se valida la relación de Contabilidad e Impuestos con su gerencia responsable si hay encargado de Finanzas, 
+                // porque no es necesario que haya responsable de Contabilidad e Impuestos en ese caso
+                continue;
+            }
 
             if(isset($departamentoPersonalMap[$secundarioId]) && 
                !isset($departamentoPersonalMap[$principalId])) {
@@ -62,6 +71,11 @@ class ContractValidator extends Util {
             foreach($departamentosQueRequierenResponsable as $departamentoId) {
                 if(!isset($departamentoPersonalMap[$departamentoId])) {
                     $nombreDepartamento = $this->getNombreDepartamento($departamentoId);
+                    if($nombreDepartamento === 'Contabilidad e Impuestos' && $tieneEncargadoFinanzas) {
+                        // No se requiere responsable de Contabilidad e Impuestos si hay encargado de Finanzas, 
+                        // porque no es necesario que haya responsable de Contabilidad e Impuestos en ese caso
+                        continue;
+                    }
                     $this->errors[] = "El responsable del departamento ".$nombreDepartamento." es requerido cuando tenga servicios asignados del mismo";
                 }
             }
