@@ -819,34 +819,53 @@ class CxC extends Producto
 
 	public function DeletePayment($id)
 	{
-		$payment = $this->PaymentInfo($id);
+		try {
 
-		$eliminarPago = true;
-		if($payment["comprobantePagoId"]) {
+			$payment = $this->PaymentInfo($id);
 
-			$empresa = new Empresa();
-			$empresa->setComprobanteId($payment["comprobantePagoId"]);
-			$empresa->setMotivoCancelacion("Pago eliminado");
-            $empresa->setMotivoCancelacionSat('02');
+			$eliminarPago = true;
+			$comprobantePagoId = $payment["comprobantePagoId"];
+			if($comprobantePagoId) {
 
-			if(!$empresa->CancelarComprobante()){
-				$eliminarPago = false;
+				$cancelation = new Cancelation();
+				$intentos_cancelacion = $cancelation->getCancelationAttempts($comprobantePagoId);
+				if($intentos_cancelacion >= MAXIMO_INTENTOS_CANCELACION) {
+					$this->Util()->setError(10046, "error", "Se ha alcanzado el número máximo de intentos de cancelación para este comprobante de pago. No se puede cancelar el pago, contacte al administrador.");
+					$this->Util()->PrintErrors();
+					return false;
+				}
+
+				$empresa = new Empresa();
+				$empresa->setComprobanteId($comprobantePagoId);
+				$empresa->setMotivoCancelacion("Pago eliminado");
+				$empresa->setMotivoCancelacionSat('02');
+
+				if(!$empresa->CancelarComprobante()){
+					$eliminarPago = false;
+				}
 			}
-		}
 
-		if(!$eliminarPago){
-			$this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
+			if(!$eliminarPago) {
+				$this->Util()->setError(10046, "error", "Hubo un problema al cancelar el comprobante de pago, el pago no fue cancelado");
+				$this->Util()->PrintErrors();
+				return false;
+			}
+			$estatusPayment = 'cancelado';	
+			$this->Util()->DB()->setQuery("UPDATE payment set paymentStatus='".$estatusPayment."' WHERE paymentId = '".$id."'");
+			$this->Util()->DB()->UpdateData();
+		
+			$this->Util()->setError(10046, "complete", "El pago fue cancelado correctamente");
+			$this->Util()->PrintErrors();
+			return true;
+
+		} catch (Exception $e) {
+
+			$this->Util()->setError(10046, "error", "Error al eliminar el pago: " . $e->getMessage());
 			$this->Util()->PrintErrors();
 			return false;
 		}
-
-		$this->Util()->DB()->setQuery("UPDATE payment set paymentStatus='cancelado' WHERE paymentId = '".$id."'");
-		$this->Util()->DB()->DeleteData();
-
-		$this->Util()->setError(10046, "complete", "El pago fue cancelado correctamente");
-		$this->Util()->PrintErrors();
-		return true;
 	}
+
     public function DeletePaymentFromXml($id)
     {
         $payment = $this->PaymentInfoFromXml($id);

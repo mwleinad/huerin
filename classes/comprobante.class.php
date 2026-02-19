@@ -840,6 +840,7 @@ class Comprobante extends Producto
         $mensajes = [
             201 => "La cancelación se ha realizado correctamente.",
             202 => "El documento ya ha ha sido cancelado anteriormente.",
+            205 => "Si el documento es reciente, es posible que el SAT aún no lo haya registrado, por lo que se recomienda esperar un momento y volver a intentar la cancelación.",
             207 => "Motivo de cancelacion invalido o Relacion de CFDI incorrecta, si es una cancelacion por sustitucion, favor de ingresar el UUID del CFDI que sustituye y asegurar que el tipo de relacion sea 04.",
             'no_cancelable' =>"La factura contiene CFDI relacionados, Se recomienda revisar las relaciones de la factura, para determinar el proceso de cancelación.",
             708 => "No se ha podido conectar con el sat, intente mas tarde. recuerde que solo tiene 3 intentos para cancelar un comprobante.",
@@ -860,6 +861,10 @@ class Comprobante extends Producto
             // Se queman el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
             207 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_207);
+                return false;
+            },
+            205 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_205);
                 return false;
             },
             'no_cancelable' => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
