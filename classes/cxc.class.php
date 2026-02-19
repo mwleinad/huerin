@@ -830,7 +830,7 @@ class CxC extends Producto
 				$cancelation = new Cancelation();
 				$intentos_cancelacion = $cancelation->getCancelationAttempts($comprobantePagoId);
 				if($intentos_cancelacion >= MAXIMO_INTENTOS_CANCELACION) {
-					$this->Util()->setError(10046, "error", "Se ha alcanzado el número máximo de intentos de cancelación para este comprobante de pago. No se puede cancelar el pago, contacte al administrador.");
+					$this->Util()->setError(10046, "error", "Has excedido el máximo de intentos de cancelación (".MAXIMO_INTENTOS_CANCELACION.") para esta factura.");
 					$this->Util()->PrintErrors();
 					return false;
 				}

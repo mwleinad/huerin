@@ -8,17 +8,13 @@ class Cancelation extends Main
     const CANCELLED_WITH_ACCEPT = 'Cancelado sin aceptación';
     const NOCANCELABLE = 'No cancelable';
     public function addPetition($userId, $cfdiId, $taxPayerId, $rTaxPayerId, $uuid, $total, $cancelationMotiveSat, $uuidSubstitution, $cancelationMotive, $status = CFDI_CANCEL_STATUS_PENDING){
-        // Verificar si ya existe una petición pendiente (no eliminada)
+        // Verificar si ya existe una petición pendiente (no eliminada, las eliminadas no cuentan por que son rechazos, pero si computan en intentos) para el mismo cfdiId
         $sql = "SELECT solicitud_cancelacion_id, attempts FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' AND deleted_at IS NULL";
         $this->Util()->DB()->setQuery($sql);
         $existingPetition = $this->Util()->DB()->GetRow();
         
         if($existingPetition) {
-            // Si ya existe, verificar intentos
-            if($existingPetition['attempts'] >= MAXIMO_INTENTOS_CANCELACION) {
-                throw new Exception('Has excedido el máximo de intentos de cancelación ('.MAXIMO_INTENTOS_CANCELACION.') para esta factura.');
-            }
-            
+          
             // Incrementar intentos y actualizar (incluyendo status si es diferente de pending)
             $updateSql = "UPDATE pending_cfdi_cancel SET 
                             attempts = attempts + 1,
