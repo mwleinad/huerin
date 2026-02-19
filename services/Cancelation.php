@@ -70,12 +70,13 @@ class Cancelation extends Main
         }
     }
     
+    // Sumar intentos rechazados eliminados por que FINKOK los contabiliza
     public function getCancelationAttempts($cfdiId) {
-        $sql = "SELECT attempts, date_petition, last_attempt_at FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' AND deleted_at IS NULL";
+        $sql = "SELECT SUM(attempts) AS attempts FROM pending_cfdi_cancel WHERE cfdi_id = '".$cfdiId."' GROUP BY cfdi_id";
         $this->Util()->DB()->setQuery($sql);
-        $result = $this->Util()->DB()->GetRow();
+        $attempts = $this->Util()->DB()->GetSingle();
         
-        return $result ? $result['attempts'] : 0;
+        return (int) $attempts;
     }
     
     // Método para obtener el historial completo de intentos de cancelación (incluyendo eliminados)
@@ -169,10 +170,13 @@ class Cancelation extends Main
             $row = $this->Util()->DBSelect($_SESSION["empresaId"])->GetRow();
             if($row)
                 $servicio->resetDateLastProcessInvoice($row['userId']);
+
             if($affects > 0) {
                 $this->updateInstanciaIfExist($cfdi['cfdi_id']);
+                //$this->updatePaymentIfExists($cfdi['cfdi_id']);
                 $this->deleteCancelRequest($cfdi["solicitud_cancelacion_id"]);
             }
+
         }
     }
 
@@ -213,6 +217,12 @@ class Cancelation extends Main
                 $servicio->resetDateLastProcessInvoice($row['userId']);
         }
         return true;
+    }
+
+    public function updatePaymentIfExists($id) {
+
+        $this->Util()->DB()->setQuery("UPDATE payment set paymentStatus='cancelado' WHERE comprobantePagoId = '".$id."'");
+        $this->Util()->DB()->UpdateData();
     }
 }
 ?>
