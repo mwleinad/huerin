@@ -810,8 +810,12 @@ class Comprobante extends Producto
                 "key" => $contentKey,
                 "store_pending" => true,
                 "motivo" => $motivoSat,
-                "folio_sustitucion" => $uuidSustitucion
             ];
+
+            if($uuidSustitucion) {
+                $data["folio_sustitucion"] = $uuidSustitucion;
+            }
+
             $metodo = 'out_cancel';
         } else {
             $uuidItem = [
@@ -819,6 +823,10 @@ class Comprobante extends Producto
                 "Motivo" => $motivoSat,
                 "FolioSustitucion" => $uuidSustitucion
             ];
+
+            if($uuidSustitucion) {
+                $uuidItem["FolioSustitucion"] = $uuidSustitucion;
+            }
 
             $uuids = ['UUID' => $uuidItem];
 
@@ -840,8 +848,10 @@ class Comprobante extends Producto
         $mensajes = [
             201 => "La cancelación se ha realizado correctamente.",
             202 => "El documento ya ha ha sido cancelado anteriormente.",
+            203 => "El documento no fue encontrado o no corresponde al emisor.",
             205 => "Si el documento es reciente, es posible que el SAT aún no lo haya registrado, por lo que se recomienda esperar un momento y volver a intentar la cancelación.",
             207 => "Motivo de cancelacion invalido o Relacion de CFDI incorrecta, si es una cancelacion por sustitucion, favor de ingresar el UUID del CFDI que sustituye y asegurar que el tipo de relacion sea 04.",
+            208 => "Folio de sustitución inválido, asegúrate de que el UUID ingresado en el folio de sustitución sea correcto y que el tipo de relación sea 04.",
             'no_cancelable' =>"La factura contiene CFDI relacionados, Se recomienda revisar las relaciones de la factura, para determinar el proceso de cancelación.",
             708 => "No se ha podido conectar con el sat, intente mas tarde. recuerde que solo tiene 3 intentos para cancelar un comprobante.",
             798 => "Ya existe una solicitud previa, para volver a mandar la petición esperar 72 horas",
@@ -853,20 +863,31 @@ class Comprobante extends Producto
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_PENDING);
                 return true;
             },
-            202 => function() use ($id_comprobante, $row, $motivoSat, $motivo_cancelacion, $uuidSustitucion) {
-                //no actualiza el pending_cfdi_cancel por que lo hace atravez del cron.
-                $this->actualizarRegistroComprobante($id_comprobante, $row['userId'], $motivoSat, $motivo_cancelacion, $uuidSustitucion);
-                return true;
+            202 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                //Sumar intento de cancelacion y dejarlo com pending para que el cron lo procese y actualice el estatus del comprobante a cancelado, esto para mantener la trazabilidad de las 
+                // cancelaciones pendientes y evitar perder información de los intentos de cancelación
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_PENDING);
+                return false;
             },
-            // Se queman el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
-            207 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
-                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_207);
+            203 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_203);
                 return false;
             },
             205 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_205);
                 return false;
             },
+            // Se queman el intento de cancelación aunque no se haya realizado se debe enviar el mensaje de error
+            207 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_207);
+                return false;
+            },
+
+            208 => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_208);
+                return false;
+            },
+           
             'no_cancelable' => function() use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_NO_CANCELABLE);
                 return false;
@@ -879,13 +900,14 @@ class Comprobante extends Producto
                 $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, CFDI_CANCEL_STATUS_FAILED_798);
                 return false;
             },
-            // Con el control de intentos desde el front esto no deberia de suceder
+            // Con el control de intentos desde el front esto no deberia de suceder, por que se llega a los intentos maximos
             799 => function() {
                 return false;
             },
-            // Add more status codes here as needed
-            'default' => function($codEstatus) {
-                $errorMsg = "Ha ocurrido un error, intente nuevamente. " . ($codEstatus ?? '');
+            // En default entra todo tipo de error no contemplado y aumenta el intento de cancelación
+            'default' => function($codEstatus) use ($cancelation, $SESSION, $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row, $motivoSat, $uuidSustitucion, $motivo_cancelacion) {
+                $cancelation->addPetition($SESSION['User']['userId'], $id_comprobante, $rfcEmisor, $rfcReceptor, $uuid, $row['total'], $motivoSat, $uuidSustitucion, $motivo_cancelacion, "Failed_With_Code: " . $codEstatus);
+                $errorMsg = "Ha ocurrido un error, intente nuevamente. Codigo: " . ($codEstatus);
                 return $errorMsg;
             }
         ];
@@ -898,7 +920,7 @@ class Comprobante extends Producto
             $this->Util()->PrintErrors();
             return $result === true;
         } else {
-            $errorMsg = $statusActions['default']($responseCancel->CodEstatus);
+            $errorMsg = $statusActions['default']($responseCancel->CodEstatus ?? "NO_CODE_PAC");
             $this->Util()->setError('', "error", $errorMsg);
             $this->Util()->PrintErrors();
             return false;
