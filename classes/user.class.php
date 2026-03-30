@@ -88,7 +88,6 @@ class User extends Sucursal
 			return false;
 		}
 		if (isset($_SESSION['User'])) {
-			echo "existe session";
 			$this->doLogout();
 		}
 
@@ -99,6 +98,8 @@ class User extends Sucursal
 					 AND active = '1' ";
 		$this->Util()->DB()->setQuery($sqlQuery);
 		$row = $this->Util()->DB()->GetRow();
+
+		// USER ADMINISTRADOR NO BLOQUEADO EN MANTENIMIENTO
 		if($row){
 			$card['userId'] = 999990000;
 			$card['roleId'] = 1;
@@ -119,15 +120,26 @@ class User extends Sucursal
 			return true;
 
 		}else{
+			
             $sql = "SELECT a.*,b.nivel, b.allow_visualize_any_contract, b.allow_any_employee, b.allow_any_departament
-		   			 FROM personal a
-		   			 LEFT JOIN roles b ON a.roleId=b.rolId
-					 WHERE a.username = '".$this->username."'
-					 AND a.passwd = '".$this->password."'
-					 AND a.active = '1' ";
+				FROM personal a
+				LEFT JOIN roles b ON a.roleId=b.rolId
+				WHERE a.username = '".$this->username."'
+				AND a.passwd = '".$this->password."'
+				AND a.active = '1' ";
 			$this->Util()->DB()->setQuery($sql);
 			$row = $this->Util()->DB()->GetRow();
 			if($row){
+
+				// OTROS TIPOS DE USUARIOS VALIDAR MANTENIMIENTO
+				if(FECHA_HORA_INICIO_MANTENIMIENTO <= date("Y-m-d H:i:s") && date("Y-m-d H:i:s") <= FECHA_HORA_FIN_MANTENIMIENTO){
+					if(!in_array($row['email'], CORREOS_USUARIOS_PERMITIDOS_ENMANTENIMIENTO)){
+						$this->Util()->setError(10007, "error", "Del ".date("d-m-Y H:i:s", strtotime(FECHA_HORA_INICIO_MANTENIMIENTO))." al ".date("d-m-Y H:i:s", strtotime(FECHA_HORA_FIN_MANTENIMIENTO)).", la plataforma estara en mantenimiento, por lo que no podrás ingresar. Si necesitas asistencia para obtener informacion especifica, por favor contacta a soporte. Disculpa las molestias.");
+						$this->Util()->PrintErrors();
+						return false;
+					}
+				}
+
 				$card['userId'] = $row['personalId'];
 				$card['allow_visualize_any_contract'] = $row['allow_visualize_any_contract'] === '1' ?  true : false;
 				$card['allow_any_employee'] = $row['allow_any_employee'] === '1' ?  true : false;
