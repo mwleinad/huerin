@@ -207,7 +207,6 @@ if($User['isRoot']) {
     // Forzar cierre de sesion para usuarios que no son root por venta de mantenimiento 
 	if(FECHA_HORA_INICIO_MANTENIMIENTO <= date("Y-m-d H:i:s") && date("Y-m-d H:i:s") <= FECHA_HORA_FIN_MANTENIMIENTO && !in_array($infoUser['email'], CORREOS_USUARIOS_PERMITIDOS_ENMANTENIMIENTO)) {
 		$user->doLogout();
-		header("Location: ".WEB_ROOT."/login");
 		exit();
 	}
     $rol->setRolId($infoUser['roleId']);
