@@ -62,6 +62,16 @@ class User extends Sucursal
 			exit();
 		}
 
+			// Forzar cierre de sesion para usuarios que no son root por venta de mantenimiento 
+		if(FECHA_HORA_INICIO_MANTENIMIENTO <= date("Y-m-d H:i:s") && date("Y-m-d H:i:s") <= FECHA_HORA_FIN_MANTENIMIENTO) {
+			$userInfo = $this->Info();
+			if (!$User['isRoot'] && !in_array($userInfo['email'], CORREOS_USUARIOS_PERMITIDOS_ENMANTENIMIENTO)) {
+				$this->doLogout();
+				header("Location: ".WEB_ROOT."/login");
+				exit();
+			}
+		}
+
 		if($page != ''&&!$User['isRoot']){
 			if(!$this->allow_access_module($page)){
 				header('Location: '.WEB_ROOT);
