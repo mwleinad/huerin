@@ -50,7 +50,7 @@ class PacFinkok extends Util
         } catch (Throwable $error) {
 
             $return['worked']   = false;
-            $return['response']['faultstring'] = "Error al conectar con el PAC ".$error->getMessage().".$error-".$error->getCode()." - xml: ".$xmlData;
+            $return['response']['faultstring'] = "Error al conectar con el PAC ".$error->getMessage()." ".$error->getCode()." - xml: ".$xmlData;
             return $return;
         }
     }
