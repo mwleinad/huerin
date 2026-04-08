@@ -29,7 +29,9 @@ class PacFinkok extends Util
             if(count($response->stampResult->Incidencias->Incidencia)) {
 
                 $return['worked'] = false;
-                $return['response']['faultstring'] = utf8_decode($response->stampResult->Incidencias->Incidencia->MensajeIncidencia);
+                $codigo =  $response->stampResult->Incidencias->Incidencia->CodigoError ?? "Sin codigo de error";
+                $mensaje = $response->stampResult->Incidencias->Incidencia->MensajeIncidencia ?? "Sin mensaje de error";
+                $return['response']['faultstring'] = "Codigo: ".$codigo." - ".utf8_decode($mensaje);
 
                 return $return;
             }
