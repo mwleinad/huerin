@@ -31,7 +31,8 @@ class PacFinkok extends Util
                 $return['worked'] = false;
                 $codigo =  $response->stampResult->Incidencias->Incidencia->CodigoError ?? "Sin codigo de error";
                 $mensaje = $response->stampResult->Incidencias->Incidencia->MensajeIncidencia ?? "Sin mensaje de error";
-                $return['response']['faultstring'] = "Codigo: ".$codigo." - ".utf8_decode($mensaje);
+                
+                $return['response']['faultstring'] = "FINKOK-ERROR Codigo: ".$codigo." - ".utf8_decode($mensaje)." - xml: ".$xmlData;
 
                 return $return;
             }
@@ -49,7 +50,7 @@ class PacFinkok extends Util
         } catch (Throwable $error) {
 
             $return['worked']   = false;
-            $return['response']['faultstring'] = "Error al conectar con el PAC ".$error->getMessage();
+            $return['response']['faultstring'] = "Error al conectar con el PAC ".$error->getMessage().".$error-".$error->getCode()." - xml: ".$xmlData;
             return $return;
         }
     }
