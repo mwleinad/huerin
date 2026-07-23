@@ -84,7 +84,9 @@ foreach ($bloques as $bloque => $recurso) {
             'existeEnDisco' => $existe,
             'bytes'        => $bytes,
             'mimeType'     => api_mime_from_name($fila['path']),
-            'urlDescarga'  => WEB_ROOT . '/api/v1/descargar.php?tipo=' . $recurso . '&id=' . (int)$fila['id'],
+            // URL ya firmada (HMAC + vencimiento): el navegador la abre
+            // directo, sin cabecera Authorization. Caduca en API_SIGN_TTL.
+            'urlDescarga'  => api_signed_download_url($recurso, (int)$fila['id']),
         );
 
         if ($meta['aliasFecha'] !== null) {
