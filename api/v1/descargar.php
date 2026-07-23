@@ -10,14 +10,17 @@
  *   tipo  documento | archivo | requerimiento
  *   id    Entero, el id de esa tabla.
  *
- * Requiere: Authorization: Bearer <token>
+ * Autenticacion, dos vias:
+ *   a) URL firmada: &exp=<timestamp>&firma=<hmac>  (la que emite el
+ *      manifiesto; el navegador la abre sin cabeceras). Vence pronto.
+ *   b) Authorization: Bearer <token>  (para consumidores API puros).
+ *
+ * Si llega una firma se valida esa via; si no, se exige Bearer.
  */
 
 require_once(dirname(__FILE__) . '/bootstrap.php');
 
 api_require_method('GET');
-
-$auth = api_require_token();
 
 $mapa = api_resource_map();
 $tipo = isset($_GET['tipo']) ? (string)$_GET['tipo'] : '';
@@ -30,6 +33,27 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($id <= 0) {
     api_fail(400, 'bad_request', 'Falta el parametro id o no es un entero valido.');
+}
+
+// --- Autenticacion: firma vigente O Bearer -------------------------------
+if (isset($_GET['firma']) && $_GET['firma'] !== '') {
+    $exp = isset($_GET['exp']) ? $_GET['exp'] : 0;
+
+    if (!api_verify_signature($tipo, $id, $exp, $_GET['firma'])) {
+        api_log('denied', array(
+            'resourceType' => $tipo,
+            'resourceId'   => $id,
+            'detail'       => 'firma invalida o vencida',
+        ));
+        api_require_https();
+        api_fail(403, 'invalid_signature', 'La URL de descarga es invalida o ya vencio. Solicita un manifiesto nuevo.');
+    }
+
+    // Autenticado por firma: no hay cliente/token asociado.
+    $auth = array('apiClientId' => null, 'apiTokenId' => null, 'via' => 'firma');
+} else {
+    $auth = api_require_token();
+    $auth['via'] = 'token';
 }
 
 $meta = $mapa[$tipo];
@@ -79,6 +103,7 @@ api_log('download', array(
     'resourceType' => $tipo,
     'resourceId'   => $id,
     'bytes'        => $bytes,
+    'detail'       => 'via ' . $auth['via'],
 ));
 
 // Se sirve siempre como octet-stream: aunque el archivo sea HTML o SVG, el

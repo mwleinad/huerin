@@ -10,13 +10,17 @@ Todo endpoint salvo la emision del token exige `Authorization: Bearer <token>`.
 
 ## Instalacion
 
-1. Aplicar la migracion:
+1. Aplicar las migraciones:
 
    ```
    mysql -uroot -h127.0.0.1 huerin < changes_db/update_20260722_api.sql
+   mysql -uroot -h127.0.0.1 huerin < changes_db/update_20260722_api_urlfirmada.sql
    ```
 
-   Crea `api_client`, `api_token` y `api_log`. No toca ninguna tabla existente.
+   La primera crea `api_client`, `api_token` y `api_log`. La segunda crea
+   `api_setting`, donde se guarda el secreto de las URLs firmadas (se genera
+   solo la primera vez; no hay que editar `config.php`). Ninguna toca tablas
+   existentes.
 
 2. Generar la credencial del consumidor:
 
@@ -116,6 +120,9 @@ curl -s "http://<host>/api/v1/manifiesto.php?rfc=ITB190308MW8" \
 
 `version` va de 1 (la mas antigua) a N (la vigente, marcada con `esUltima`).
 
+Cada `urlDescarga` viene **ya firmada** y lista para abrirse en el navegador
+(ver abajo). No hay que armar la URL a mano ni adjuntar el token.
+
 ### `GET /api/v1/descargar.php?tipo=documento&id=19776`
 
 Devuelve el binario. `tipo` es lista blanca (`documento`, `archivo`,
@@ -123,7 +130,24 @@ Devuelve el binario. `tipo` es lista blanca (`documento`, `archivo`,
 `application/octet-stream` con `Content-Disposition: attachment`, de modo que un
 HTML o SVG almacenado no se ejecute en el dominio del sistema.
 
-Si el registro existe pero el archivo se perdio, responde `410 file_missing`.
+Acepta **dos vias de autenticacion**:
+
+1. **URL firmada** — la que emite `manifiesto.php` en cada `urlDescarga`:
+   `descargar.php?tipo=..&id=..&exp=<timestamp>&firma=<hmac>`. La firma es un
+   HMAC-SHA256 sobre `tipo|id|exp` con un secreto que solo vive en el servidor.
+   El navegador la abre directo, **sin cabecera Authorization**. Vence a los
+   **15 minutos** (`API_SIGN_TTL`), asi que se usa desde el manifiesto recien
+   pedido. Si se altera cualquier campo o vence, responde `403 invalid_signature`.
+2. **`Authorization: Bearer <token>`** — para consumidores API que ya manejan el
+   token y prefieren no depender de la URL firmada.
+
+Si llega `firma`, se valida esa via; si no, se exige Bearer. Si el registro
+existe pero el archivo se perdio, responde `410 file_missing`.
+
+```bash
+# via firma: copiar la urlDescarga del manifiesto y abrirla, sin headers
+curl -sL "http://<host>/api/v1/descargar.php?tipo=documento&id=19776&exp=1784773576&firma=c919b2..." -o documento.pdf
+```
 
 ---
 
@@ -139,6 +163,7 @@ Si el registro existe pero el archivo se perdio, responde `410 file_missing`.
 | 403 | `client_inactive` | La credencial fue dada de baja |
 | 404 | `not_found` | La empresa o el registro no existe |
 | 405 | `method_not_allowed` | Metodo HTTP equivocado |
+| 403 | `invalid_signature` | URL de descarga firmada invalida o vencida |
 | 410 | `file_missing` | Registro en BD sin archivo en disco |
 | 429 | `too_many_attempts` | Limite de intentos por IP |
 
@@ -163,7 +188,15 @@ la carpeta esperada.
 permite cortar el acceso al instante en lugar de esperar 8 horas.
 
 **Auditoria.** `api_log` registra autenticaciones, manifiestos y descargas con
-cliente, empresa, recurso, bytes e IP.
+cliente, empresa, recurso, bytes e IP. En las descargas, `detail` distingue si
+fue `via token` o `via firma`.
+
+**URLs firmadas de vida corta.** El manifiesto entrega cada descarga como una
+URL con HMAC y `exp` a 15 minutos, de modo que el navegador la abre sin exponer
+el token en la barra de direcciones ni en el historial. El secreto vive en
+`api_setting` (nunca sale del servidor). Para rotarlo — lo que invalida al
+instante toda URL ya emitida — basta con borrar el renglon:
+`DELETE FROM api_setting WHERE name = 'url_secret';` (se regenera solo).
 
 ---
 

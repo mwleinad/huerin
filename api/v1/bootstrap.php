@@ -22,6 +22,13 @@ if (!defined('API_BOOTSTRAP')) {
     define('API_AUTH_WINDOW', 15 * 60);
 
     /**
+     * Vigencia de las URLs de descarga firmadas, en segundos. 15 minutos.
+     * Es corta a proposito: la firma viaja en la URL (queda en historial,
+     * logs de proxy, Referer), asi que debe caducar pronto.
+     */
+    define('API_SIGN_TTL', 30 * 60);
+
+    /**
      * Exigir HTTPS. Se deja en false porque config.php arma WEB_ROOT como
      * "http://..." y el sitio hoy corre sin TLS: activarlo dejaria la API
      * inservible de inmediato. Ponerlo en true en cuanto haya certificado.
@@ -550,4 +557,94 @@ function api_mime_from_name($name)
     $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
     return isset($map[$ext]) ? $map[$ext] : 'application/octet-stream';
+}
+
+/**
+ * Secreto con el que se firman las URLs de descarga.
+ *
+ * Vive solo en el servidor (tabla api_setting) y se genera la primera vez.
+ * No se pone en config.php para no tener que editar cada entorno ni arriesgar
+ * que se copie a un repo. Quien lo tenga puede firmar cualquier descarga.
+ */
+function api_url_secret()
+{
+    static $secret = null;
+
+    if ($secret !== null) {
+        return $secret;
+    }
+
+    $db = api_db();
+    $db->setQuery("SELECT value FROM api_setting WHERE name = 'url_secret' LIMIT 1");
+    $row = $db->GetRow();
+
+    if ($row && !empty($row['value'])) {
+        $secret = $row['value'];
+        return $secret;
+    }
+
+    // Primera vez: se genera y se guarda. INSERT IGNORE evita una carrera si
+    // dos peticiones lo crean a la vez; tras el intento se relee el valor que
+    // haya quedado, sea el nuestro o el del otro proceso.
+    $nuevo = api_random_hex(32);
+    api_write("INSERT IGNORE INTO api_setting (name, value, createdAt)
+               VALUES ('url_secret', '" . api_escape($nuevo) . "', NOW())");
+
+    $db->setQuery("SELECT value FROM api_setting WHERE name = 'url_secret' LIMIT 1");
+    $row = $db->GetRow();
+
+    $secret = ($row && !empty($row['value'])) ? $row['value'] : $nuevo;
+
+    return $secret;
+}
+
+/**
+ * Firma HMAC-SHA256 sobre "tipo|id|exp". Cualquier cambio en uno de los tres
+ * campos invalida la firma.
+ */
+function api_sign($tipo, $id, $exp)
+{
+    $mensaje = $tipo . '|' . (int)$id . '|' . (int)$exp;
+
+    return hash_hmac('sha256', $mensaje, api_url_secret());
+}
+
+/**
+ * URL absoluta de descarga ya firmada, valida durante API_SIGN_TTL segundos.
+ * Es la que consume el navegador directamente, sin cabecera Authorization.
+ */
+function api_signed_download_url($tipo, $id)
+{
+    $exp   = time() + (int)API_SIGN_TTL;
+    $firma = api_sign($tipo, $id, $exp);
+
+    return WEB_ROOT . '/api/v1/descargar.php'
+         . '?tipo=' . rawurlencode($tipo)
+         . '&id='   . (int)$id
+         . '&exp='  . $exp
+         . '&firma=' . $firma;
+}
+
+/**
+ * Valida una firma de descarga. Devuelve true solo si la firma corresponde
+ * exactamente a tipo|id|exp y aun no vence.
+ *
+ * Se usa hash_equals para comparar en tiempo constante y no filtrar, por el
+ * tiempo de respuesta, que tan "cerca" estuvo una firma incorrecta.
+ */
+function api_verify_signature($tipo, $id, $exp, $firma)
+{
+    $exp = (int)$exp;
+
+    if ($exp <= 0 || !is_string($firma) || !preg_match('/^[a-f0-9]{64}$/', $firma)) {
+        return false;
+    }
+
+    if ($exp < time()) {
+        return false;   // vencida
+    }
+
+    $esperada = api_sign($tipo, $id, $exp);
+
+    return hash_equals($esperada, $firma);
 }
