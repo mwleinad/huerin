@@ -175,11 +175,15 @@ cliente, empresa, recurso, bytes e IP.
    en `false` porque activarlo sin certificado deja la API inservible. **Ponerlo
    en `true` en cuanto haya HTTPS.**
 
-2. **`download.php` de la raiz sigue siendo un LFI abierto.** No valida sesion ni
-   sanitiza `$_GET['file']`; `download.php?file=config.php` entrega las
-   credenciales SMTP y de BD. La API nueva no lo usa, pero el agujero sigue ahi.
-
-3. **`util/download.php`** tiene el mismo problema.
-
-4. **Limpieza de tokens vencidos.** Conviene un cron:
+2. **Limpieza de tokens vencidos.** Conviene un cron:
    `DELETE FROM api_token WHERE expiresAt < DATE_SUB(NOW(), INTERVAL 30 DAY)`.
+
+---
+
+## Resuelto aparte: LFI en los descargadores por ruta
+
+`download.php` y `util/download.php` servian cualquier ruta sin validar sesion
+(`download.php?file=config.php` entregaba las credenciales de BD y SMTP). Ambos
+usan ahora `util/download-guard.php`: exigen sesion iniciada y solo sirven
+archivos dentro de una lista blanca de carpetas. La API no depende de ellos
+—`descargar.php` resuelve la ruta desde la BD—, pero el agujero ya esta cerrado.
