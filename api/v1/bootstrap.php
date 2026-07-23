@@ -446,6 +446,11 @@ function api_resolve_contract($auth)
 /**
  * Metadatos de los tres tipos de recurso. Centralizado para que los
  * endpoints nunca reciban nombres de tabla o carpeta desde el cliente.
+ *
+ * OJO con las mayusculas de 'tablaTipo': en Linux los nombres de tabla
+ * distinguen mayusculas (lower_case_table_names=0), asi que deben escribirse
+ * igual que en produccion: tipoDocumento, tipoArchivo, tipoRequerimiento.
+ * En Windows daria igual, pero ahi es donde se cuela el error.
  */
 function api_resource_map()
 {
@@ -454,7 +459,7 @@ function api_resource_map()
             'tabla'       => 'documento',
             'pk'          => 'documentoId',
             'fkTipo'      => 'tipoDocumentoId',
-            'tablaTipo'   => 'tipodocumento',
+            'tablaTipo'   => 'tipoDocumento',
             'campoTipo'   => 'nombre',
             'carpeta'     => 'documentos',
             'campoFecha'  => 'dateExpiration',
@@ -464,7 +469,7 @@ function api_resource_map()
             'tabla'       => 'archivo',
             'pk'          => 'archivoId',
             'fkTipo'      => 'tipoArchivoId',
-            'tablaTipo'   => 'tipoarchivo',
+            'tablaTipo'   => 'tipoArchivo',
             'campoTipo'   => 'descripcion',
             'carpeta'     => 'archivos',
             'campoFecha'  => 'date',
@@ -474,7 +479,7 @@ function api_resource_map()
             'tabla'       => 'requerimiento',
             'pk'          => 'requerimientoId',
             'fkTipo'      => 'tipoRequerimientoId',
-            'tablaTipo'   => 'tiporequerimiento',
+            'tablaTipo'   => 'tipoRequerimiento',
             'campoTipo'   => 'nombre',
             'carpeta'     => 'requerimientos',
             'campoFecha'  => null,

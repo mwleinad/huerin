@@ -1,22 +1,32 @@
 <?php
-	include_once('../init_files.php');
-	include_once('../config.php');
-include_once(DOC_ROOT."/properties/errors.es.php");
+/**
+ * Descarga de archivos por ruta (variante con ruta partida en tres).
+ *
+ * Uso historico (sin cambios para quien lo invoca):
+ *   /util/download.php?file=<ruta>
+ *   /util/download.php?path=<...>&secPath=<...>&filename=<...>
+ *
+ * Antes servia cualquier ruta sin validar sesion. Ahora exige sesion
+ * iniciada y solo sirve archivos dentro de la lista blanca de
+ * util/download-guard.php.
+ *
+ * El parametro contentType que mandan algunas plantillas se sigue
+ * ignorando: el tipo se deduce de la extension real del archivo.
+ */
 
-if(!$_GET["file"])
-{
-	$_GET["file"] = $_GET["path"]."/".$_GET["secPath"]."/".$_GET["filename"];
+include_once('../init_files.php');
+include_once('../config.php');
+include_once(DOC_ROOT . '/properties/errors.es.php');
+include_once(DOC_ROOT . '/util/download-guard.php');
+
+$file = isset($_GET['file']) ? $_GET['file'] : '';
+
+if ($file === '') {
+    $file = (isset($_GET['path']) ? $_GET['path'] : '')
+          . '/' . (isset($_GET['secPath']) ? $_GET['secPath'] : '')
+          . '/' . (isset($_GET['filename']) ? $_GET['filename'] : '');
 }
 
-$ext = @strtolower(end(explode('.', $_GET["file"])));
-$mime = $mime_types[$ext];
-$file = explode("/", $_GET["file"]);
-header('Content-disposition: attachment; filename='.end($file));
-header('Content-type:'.$mime);
-//readfile(urldecode($_GET["file"]));
-//echo $_GET["file"];
-$_GET["file"] = str_replace(WEB_ROOT,"", $_GET["file"]);
-//echo DOC_ROOT."/".$_GET["file"];
-readfile(urldecode(DOC_ROOT."/".$_GET["file"]));
+$real = dl_resolve($file);
 
-?>
+dl_serve($real, isset($mime_types) ? $mime_types : array());

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p sendFiles)",
+      "Bash(printf 'REPORTE-DEMO-OK\\\\n')",
+      "Bash(cat)",
+      "Bash(\"/c/laragon/bin/php/php-7.4.33/php.exe\" -S 127.0.0.1:8797 -t \"c:/laragon/www/huerin\")",
+      "Bash(rm -f _tmp_login_test.php sendFiles/prueba-guard.xlsx \"empresas/21/certificados/34/facturas/xml/SIGN_21_A_1.xml\")",
+      "Bash(rmdir -p \"empresas/21/certificados/34/facturas/xml\")",
+      "Bash(rmdir sendFiles)",
+      "Bash(git check-ignore *)",
+      "Bash(\"/c/laragon/bin/php/php-8.2.9/php.exe\" -S 127.0.0.1:8796 -t \"c:/laragon/www/huerin\")",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'DELETE FROM api_log; DELETE FROM api_token; DELETE FROM api_client; ALTER TABLE api_client AUTO_INCREMENT=1;')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT contractId,rfc,name,activo FROM contract WHERE rfc='\\\\''DPS0804175F7'\\\\'';')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT c.contractId,\\(SELECT COUNT\\(*\\) FROM documento d WHERE d.contractId=c.contractId\\) docs,\\(SELECT COUNT\\(*\\) FROM archivo a WHERE a.contractId=c.contractId\\) arch,\\(SELECT COUNT\\(*\\) FROM requerimiento r WHERE r.contractId=c.contractId\\) req FROM contract c WHERE c.rfc='\\\\''DPS0804175F7'\\\\'';')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT contractId,CONCAT\\('\\\\''['\\\\'',rfc,'\\\\'']'\\\\''\\) rfc,name,activo FROM contract WHERE rfc LIKE '\\\\''%DPS0804175F7%'\\\\'' OR REPLACE\\(rfc,'\\\\'' '\\\\'','\\\\'''\\\\''\\)='\\\\''DPS0804175F7'\\\\'' OR rfc LIKE '\\\\''%DPS080417%'\\\\'';')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'DESCRIBE rfc;')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT contractId,CONCAT\\('\\\\''['\\\\'',rfc,'\\\\'']'\\\\''\\) rfc,name,activo FROM contract WHERE rfc='\\\\''GKI230427T25'\\\\'';')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT contractId,CONCAT\\('\\\\''['\\\\'',rfc,'\\\\'']'\\\\''\\) rfc,name FROM contract WHERE rfc LIKE '\\\\''%GKI230427%'\\\\'';')",
+      "Bash(/c/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe -uroot -h127.0.0.1 huerin -e 'SELECT MAX\\(contractId\\) ultimo_contractId, COUNT\\(*\\) total FROM contract; SELECT contractId,rfc,name,fechaAlta FROM contract ORDER BY contractId DESC LIMIT 5;')",
+      "Bash(grep -rhoiE \"\\(FROM|JOIN\\)[[:space:]]+\\\\`?\\(tipo\\(documento|archivo|requerimiento\\)\\)\\\\`?\" classes/ modules/ ajax/)",
+      "Bash(grep -rhoiE \"\\(FROM|JOIN|INTO|UPDATE\\)[[:space:]]+\\\\`?\\(documento|archivo|requerimiento|contract\\)\\\\`?[[:space:]]\" classes/ modules/ ajax/)",
+      "Bash(grep -oiE \"\\(documento|archivo|requerimiento|contract\\)$|\\(documento|archivo|requerimiento|contract\\)[[:space:]]\")",
+      "Bash(grep -rhoiE \"\\(CREATE TABLE|ALTER TABLE|INSERT INTO|FROM|JOIN\\)[[:space:]]+\\\\`?tipo\\(documento|archivo|requerimiento\\)\\\\`?\" db/ changes_db/)",
+      "Bash(\"/c/laragon/bin/php/php-8.2.9/php.exe\" -S 127.0.0.1:8794 -t \"c:/laragon/www/huerin\")",
+      "Bash(git rm *)"
+    ]
+  }
+}
