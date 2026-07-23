@@ -1,0 +1,5 @@
+{
+  "php.executablePath": "C:/laragon/bin/php/php-7.4.33/php.exe",  
+  "php.validate.executablePath": "C:/laragon/bin/php/php-7.4.33/php.exe",
+  "intelephense.environment.phpVersion": "7.4.33",
+}

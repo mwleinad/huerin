@@ -1,0 +1,9 @@
+# Las reglas de reescritura de la raiz mandan cualquier ruta sin punto a
+# index.php?page=... Aqui se apagan para que /api/v1/*.php llegue directo.
+RewriteEngine Off
+
+# bootstrap.php solo define funciones, pero no tiene por que ser alcanzable.
+<Files "bootstrap.php">
+    Order Allow,Deny
+    Deny from All
+</Files>

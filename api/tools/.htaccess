@@ -1,0 +1,3 @@
+# Herramientas de linea de comandos. Nunca accesibles por HTTP.
+Order Allow,Deny
+Deny from All
