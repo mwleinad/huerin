@@ -200,6 +200,48 @@ instante toda URL ya emitida — basta con borrar el renglon:
 
 ---
 
+## Legacy en HTTP detras de un consumidor HTTPS (Mixed Content)
+
+Cuando este servidor se sirve por HTTP y quien consume la API corre sobre
+HTTPS, el navegador bloquea la descarga: *"Mixed Content: the file ... was
+loaded over an insecure connection"*. No es CORS y no se puede desactivar
+desde el servidor — lo impone el navegador.
+
+La solucion no requiere HTTPS aqui ni abrir el puerto 443: se hace que la
+descarga pase por el mismo proxy HTTPS que ya consume el manifiesto.
+
+```
+navegador → https://api.braunhuerin.com/legacy/descargar.php?...   (HTTPS)
+                     ↓  proxy inverso, servidor a servidor
+            http://braunhuerin.dynalias.net/api/v1/descargar.php?... (HTTP)
+```
+
+**En este servidor**, agregar a `config.php`:
+
+```php
+define('API_PUBLIC_DOWNLOAD_BASE', 'https://api.braunhuerin.com/legacy');
+```
+
+Con eso `manifiesto.php` emite cada `urlDescarga` apuntando al proxy. La
+firma HMAC cubre solo `tipo|id|exp` —no el host—, asi que sigue validando
+cuando la peticion llega aqui a traves del proxy. Si la constante no se
+define, todo sigue igual que antes (URLs a este mismo host).
+
+**En el proxy** (nginx), mapear la ruta:
+
+```nginx
+location /legacy/ {
+    proxy_pass http://braunhuerin.dynalias.net/api/v1/;
+    proxy_set_header Host braunhuerin.dynalias.net;
+    proxy_buffering off;          # descargas grandes sin llenar el buffer
+}
+```
+
+`API_REQUIRE_HTTPS` debe permanecer en `false`: la peticion proxeada llega
+a este servidor por HTTP.
+
+---
+
 ## Pendientes que quedan fuera de este cambio
 
 1. **La API corre sobre HTTP.** `config.php:2` arma `WEB_ROOT` como `http://`, o
