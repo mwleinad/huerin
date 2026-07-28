@@ -618,11 +618,33 @@ function api_signed_download_url($tipo, $id)
     $exp   = time() + (int)API_SIGN_TTL;
     $firma = api_sign($tipo, $id, $exp);
 
-    return WEB_ROOT . '/api/v1/descargar.php'
+    return api_download_base() . '/descargar.php'
          . '?tipo=' . rawurlencode($tipo)
          . '&id='   . (int)$id
          . '&exp='  . $exp
          . '&firma=' . $firma;
+}
+
+/**
+ * Base publica sobre la que se arman las URLs de descarga.
+ *
+ * Por omision es este mismo servidor (WEB_ROOT). Pero cuando el legacy se
+ * sirve por HTTP y quien consume la API corre sobre HTTPS, el navegador
+ * bloquea la descarga por "Mixed Content". Para ese caso se define en
+ * config.php una base publica que apunte a un proxy HTTPS:
+ *
+ *   define('API_PUBLIC_DOWNLOAD_BASE', 'https://api.braunhuerin.com/legacy');
+ *
+ * La firma no incluye el host -solo tipo|id|exp-, asi que la URL puede
+ * apuntar al proxy y seguir validando al llegar aqui.
+ */
+function api_download_base()
+{
+    if (defined('API_PUBLIC_DOWNLOAD_BASE') && API_PUBLIC_DOWNLOAD_BASE !== '') {
+        return rtrim(API_PUBLIC_DOWNLOAD_BASE, '/');
+    }
+
+    return WEB_ROOT . '/api/v1';
 }
 
 /**
