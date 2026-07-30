@@ -162,5 +162,5 @@ $sendmailLog = new SendMail;
 $toLog = array(EMAIL_DEV=>'Desarrollador');
 $toNameLog = 'Desarrollador';
 $attachmentLog = $logFile;
-$sendmailLog->PrepareMultiple($subjectLog, $bodyLog, $toLog, $toNameLog, $attachmentLog, basename($logFile), '', '','noreply@braunhuerin.com.mx' , "Registro de envios de notificacion");
+//$sendmailLog->PrepareMultiple($subjectLog, $bodyLog, $toLog, $toNameLog, $attachmentLog, basename($logFile), '', '','noreply@braunhuerin.com.mx' , "Registro de envios de notificacion");
 echo 'Final ejecucion : '.date('Y-m-d H:i:s',time());
