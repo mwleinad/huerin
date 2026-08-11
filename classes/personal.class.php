@@ -1537,13 +1537,21 @@ class Personal extends Main
                });
 
                $directoresOperativos = array_map(function($item) {
-                   $responsables = json_decode($item['responsables'], true);
-                   return array_filter($responsables, function($resp) {
-                       return $resp['level'] == 2; // filtrar por nivel 2
-                   });
-               }, $operativos);
+                    $responsables = json_decode($item['responsables'], true);
+                    if (!is_array($responsables)) {
+                        error_log('GetPersonalGroupByDepartament: JSON invalido en departamento '
+                                . $item['departamento'] . ' -> ' . json_last_error_msg());
+                        return [];                    // <-- ya no contamina el merge
+                    }
+                    return array_filter($responsables, function($resp) {
+                        return $resp['level'] == 2;
+                    });
+                }, $operativos);
 
-               $premerge[$var['departamentoId']] = array_merge($responsablesPropios, ...$directoresOperativos);
+                $premerge[$var['departamentoId']] = array_merge(
+                    is_array($responsablesPropios) ? $responsablesPropios : [],
+                    ...array_values($directoresOperativos)
+                );
             } else {
                $premerge[$var['departamentoId']] = json_decode($var['responsables'], true);
             }
