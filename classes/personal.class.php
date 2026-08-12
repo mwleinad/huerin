@@ -1504,7 +1504,7 @@ class Personal extends Main
 							'\",\"',
 							'name',
 							'\":\"',
-							 personal.name,
+							 trim(personal.name),
 						    '\",\"',
 						    'level',
 						    '\":\"',
@@ -1615,7 +1615,7 @@ class Personal extends Main
                                 '\",\"',
                                 'name',
                                 '\":\"',
-                                 tbl_main.name,
+                                 trim(tbl_main.name),
                                 '\",\"',
                                 'level',
                                 '\":\"',
@@ -1653,7 +1653,7 @@ class Personal extends Main
 
         $this->Util()->DB()->setQuery("SELECT 
                                                 a.personalId as id,
-                                                a.name,
+                                                trim(a.name) as name,
                                                 b.nivel,
                                                 (SELECT departamento FROM departamentos WHERE departamentoId = a.departamentoId LIMIT 1) as departamento
                                              FROM personal a 
