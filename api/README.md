@@ -1,8 +1,12 @@
-# API v1 — descarga de archivos por empresa
+# API v1 — descarga de archivos por empresa y de expedientes del personal
 
 Expone el inventario de **documentos, archivos y requerimientos** de una empresa
 (tabla `contract`), agrupado por tipo y con las N versiones de cada uno, mas la
 descarga individual de cada version.
+
+Expone tambien el **expediente de cada empleado** (tabla `personalExpedientes`):
+que documentos le corresponden, cuales ya tiene cargados y la descarga de cada
+uno, consultables **por nombre** del empleado y del documento.
 
 Todo endpoint salvo la emision del token exige `Authorization: Bearer <token>`.
 
@@ -30,6 +34,10 @@ Todo endpoint salvo la emision del token exige `Authorization: Bearer <token>`.
 
    Imprime `client_id` y `client_secret`. **El secret se muestra una sola vez**;
    en la BD queda unicamente su `password_hash()`.
+
+Los expedientes del personal no necesitan migracion: leen las tablas que ya usa
+el modulo de personal (`personal`, `expedientes`, `personalExpedientes`) y los
+archivos que ya estan en `/expedientes/<personalId>/`.
 
 ---
 
@@ -123,10 +131,95 @@ curl -s "http://<host>/api/v1/manifiesto.php?rfc=ITB190308MW8" \
 Cada `urlDescarga` viene **ya firmada** y lista para abrirse en el navegador
 (ver abajo). No hay que armar la URL a mano ni adjuntar el token.
 
+### `GET /api/v1/empleados.php`
+
+Localiza el `personalId` que consume `expedientes.php`, y de paso dice cuantos
+documentos lleva cargados cada empleado. Filtros combinables: `personal_id`,
+`q` (texto libre sobre nombre / puesto / email), `nombre` (solo el nombre),
+`departamento_id`, `activo` (`1`/`0`), `con_archivos=1` (solo quien ya tiene al
+menos un expediente cargado), `page`, `per_page` (1..200, default 50).
+
+```bash
+curl -s "http://<host>/api/v1/empleados.php?nombre=Rogelio" \
+  -H "Authorization: Bearer <token>"
+```
+
+```json
+{
+  "paginacion": { "page": 1, "perPage": 50, "total": 1, "paginas": 1 },
+  "empleados": [
+    {
+      "personalId": 32,
+      "nombre": "FINGER1 Rogelio Isaac Zetina Olazagasti",
+      "puesto": "Coordinador",
+      "email": "rzetina@braunhuerin.com.mx",
+      "departamento": "Finanzas",
+      "tipoPersonal": "Coordinador",
+      "fechaIngreso": "2007-07-09",
+      "activo": true,
+      "expedientes": { "asignados": 14, "conArchivo": 13, "pendientes": 1 }
+    }
+  ]
+}
+```
+
+Los conteos solo consideran tipos **vigentes** del catalogo: los dados de baja
+siguen en `personalExpedientes` pero ya no se piden, y contarlos inventaria
+faltantes que no existen. Cuentan lo registrado en la BD, sin tocar disco —para
+saber si el archivo sigue ahi esta `existeEnDisco` en `expedientes.php`—, porque
+comprobar cada archivo de cada empleado en un listado paginado seria lentisimo.
+
+### `GET /api/v1/expedientes.php?personal_id=32`
+
+Expediente de un empleado: los tipos de documento asignados, cuales tienen
+archivo y la URL firmada de cada uno.
+
+En vez de `personal_id` se puede pasar `empleado=<nombre o parte del nombre>`.
+La busqueda es parcial porque el sistema guarda claves internas dentro del
+nombre (`"CIGER3 Miguel Angel Brito Garcia"`); si coincide con mas de un
+empleado responde `409 empleado_ambiguo` con los `candidatos` para reintentar
+con `personal_id`.
+
+Opcionales: `expediente=<nombre>` o `expediente_id=<id>` para un solo documento
+(un nombre ambiguo da `409 expediente_ambiguo`), `solo_existentes=1` para omitir
+los que aun no se cargan, `incluir_baja=1` para incluir tipos dados de baja del
+catalogo que todavia conservan archivo, y `catalogo=1` para devolver unicamente
+el catalogo de tipos de expediente, sin empleado.
+
+```bash
+curl -s "http://<host>/api/v1/expedientes.php?empleado=Rogelio%20Isaac&expediente=CURP" \
+  -H "Authorization: Bearer <token>"
+```
+
+```json
+{
+  "empleado": { "personalId": 32, "nombre": "FINGER1 Rogelio Isaac Zetina Olazagasti" },
+  "resumen": { "asignados": 1, "conArchivo": 1, "faltantes": 0, "bytes": 51233 },
+  "expedientes": [
+    {
+      "expedienteId": 7,
+      "nombre": "CURP",
+      "status": "activo",
+      "extensionEsperada": ".pdf",
+      "tieneArchivo": true,
+      "existeEnDisco": true,
+      "nombreArchivo": "CURP - FINGER1 Rogelio Isaac Zetina Olazagasti.pdf",
+      "bytes": 51233,
+      "mimeType": "application/pdf",
+      "fecha": "2019-10-02",
+      "urlDescarga": "http://<host>/api/v1/descargar.php?tipo=expediente&id=32-7&exp=...&firma=..."
+    }
+  ]
+}
+```
+
+`tieneArchivo` dice que la BD tiene un archivo registrado; `existeEnDisco` dice
+que ademas sigue ahi. Cuando no existe, `urlDescarga` viene en `null`.
+
 ### `GET /api/v1/descargar.php?tipo=documento&id=19776`
 
 Devuelve el binario. `tipo` es lista blanca (`documento`, `archivo`,
-`requerimiento`); `id` es entero. Se sirve siempre como
+`requerimiento`, `expediente`); `id` es entero. Se sirve siempre como
 `application/octet-stream` con `Content-Disposition: attachment`, de modo que un
 HTML o SVG almacenado no se ejecute en el dominio del sistema.
 
@@ -149,6 +242,29 @@ existe pero el archivo se perdio, responde `410 file_missing`.
 curl -sL "http://<host>/api/v1/descargar.php?tipo=documento&id=19776&exp=1784773576&firma=c919b2..." -o documento.pdf
 ```
 
+#### `tipo=expediente`: id compuesto y descarga por nombre
+
+`personalExpedientes` tiene llave compuesta, asi que el id del expediente es
+`"<personalId>-<expedienteId>"` (`id=32-7`). Va completo dentro de la firma: no
+se puede cambiar el empleado ni el documento sin invalidarla.
+
+Con `Authorization: Bearer` se puede **descargar por nombre**, sin pasar antes
+por `expedientes.php`:
+
+```bash
+curl -sL "http://<host>/api/v1/descargar.php?tipo=expediente&empleado=Rogelio%20Isaac&expediente=CURP" \
+  -H "Authorization: Bearer <token>" -o curp.pdf
+```
+
+`personal_id` y `expediente_id` sirven igual que sus versiones por nombre, y se
+pueden mezclar. Un nombre ambiguo responde `409` con los candidatos, igual que
+en `expedientes.php`. Esta via **no funciona con URL firmada** a proposito: la
+firma cubre el id ya resuelto, y resolver nombres antes de autenticar
+convertiria el endpoint en un buscador de personal abierto.
+
+El archivo se entrega con un nombre legible —`"CURP - Nombre Del Empleado.pdf"`—
+en vez del `employe_file327.pdf` con el que se guarda en disco.
+
 ---
 
 ## Codigos de error
@@ -161,9 +277,12 @@ curl -sL "http://<host>/api/v1/descargar.php?tipo=documento&id=19776&exp=1784773
 | 401 | `token_revoked` | Revocado antes de vencer |
 | 401 | `invalid_client` | client_id o client_secret incorrectos |
 | 403 | `client_inactive` | La credencial fue dada de baja |
-| 404 | `not_found` | La empresa o el registro no existe |
+| 404 | `not_found` | La empresa, el empleado o el registro no existe |
 | 405 | `method_not_allowed` | Metodo HTTP equivocado |
 | 403 | `invalid_signature` | URL de descarga firmada invalida o vencida |
+| 409 | `rfc_ambiguo` | El RFC corresponde a varias empresas — reintentar con `contract_id` |
+| 409 | `empleado_ambiguo` | El nombre coincide con varios empleados — reintentar con `personal_id` |
+| 409 | `expediente_ambiguo` | El nombre coincide con varios tipos — reintentar con `expediente_id` |
 | 410 | `file_missing` | Registro en BD sin archivo en disco |
 | 429 | `too_many_attempts` | Limite de intentos por IP |
 
@@ -182,7 +301,16 @@ usa `password_hash()` y se revoca sin afectar a ningun humano.
 
 **El cliente nunca manda rutas.** `api_resource_path()` arma la ruta desde la BD,
 aplica `basename()` y verifica con `realpath()` que el resultado quede dentro de
-la carpeta esperada.
+la carpeta esperada. `api_expediente_path()` hace lo mismo para
+`/expedientes/<personalId>/`.
+
+**Los expedientes son datos personales.** Actas de nacimiento, CURP, contratos y
+domicilios del personal quedan expuestos a quien tenga la credencial, asi que
+conviene emitir una credencial aparte para el consumidor que los necesite y
+revocarla cuando termine la integracion. La API no devuelve sueldo, contraseñas
+ni ningun otro campo de `personal` fuera de la identificacion basica. Cada
+consulta y cada descarga queda en `api_log` con `resourceType = 'expediente'`,
+el `expedienteId` en `resourceId` y el `personalId` en `detail`.
 
 **Tokens revocables.** Se guarda `sha256` del token, no el token. `api_token`
 permite cortar el acceso al instante en lugar de esperar 8 horas.
