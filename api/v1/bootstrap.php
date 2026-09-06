@@ -154,7 +154,7 @@ function api_random_hex($bytes)
  */
 function api_log($event, $fields = array())
 {
-    $columns = array('documento', 'archivo', 'requerimiento');
+    $columns = array('documento', 'archivo', 'requerimiento', 'expediente');
     $type    = isset($fields['resourceType']) && in_array($fields['resourceType'], $columns, true)
         ? "'" . $fields['resourceType'] . "'"
         : 'NULL';
@@ -604,9 +604,44 @@ function api_url_secret()
  */
 function api_sign($tipo, $id, $exp)
 {
-    $mensaje = $tipo . '|' . (int)$id . '|' . (int)$exp;
+    $mensaje = $tipo . '|' . api_canonical_resource_id($tipo, $id) . '|' . (int)$exp;
 
     return hash_hmac('sha256', $mensaje, api_url_secret());
+}
+
+/**
+ * Forma canonica del id de un recurso dentro de la URL y de la firma.
+ *
+ * Documento, archivo y requerimiento tienen llave primaria de una columna, asi
+ * que su id es el entero tal cual. El expediente de un empleado vive en
+ * personalExpedientes, cuya llave es compuesta (personalId, expedienteId): se
+ * representa como "<personalId>-<expedienteId>" para que quepa en el mismo
+ * parametro id y quede cubierto por la firma completo, sin que se pueda
+ * cambiar el expediente sin invalidarla.
+ *
+ * Devuelve null si el id no tiene la forma esperada.
+ */
+function api_canonical_resource_id($tipo, $id)
+{
+    $id = (string)$id;
+
+    if ($tipo === 'expediente') {
+        if (!preg_match('/^([0-9]{1,10})-([0-9]{1,10})$/', $id, $m)) {
+            return null;
+        }
+
+        if ((int)$m[1] <= 0 || (int)$m[2] <= 0) {
+            return null;
+        }
+
+        return ((int)$m[1]) . '-' . ((int)$m[2]);
+    }
+
+    if (!preg_match('/^[0-9]{1,10}$/', $id) || (int)$id <= 0) {
+        return null;
+    }
+
+    return (string)(int)$id;
 }
 
 /**
@@ -620,7 +655,7 @@ function api_signed_download_url($tipo, $id)
 
     return api_download_base() . '/descargar.php'
          . '?tipo=' . rawurlencode($tipo)
-         . '&id='   . (int)$id
+         . '&id='   . rawurlencode(api_canonical_resource_id($tipo, $id))
          . '&exp='  . $exp
          . '&firma=' . $firma;
 }
@@ -669,4 +704,276 @@ function api_verify_signature($tipo, $id, $exp, $firma)
     $esperada = api_sign($tipo, $id, $exp);
 
     return hash_equals($esperada, $firma);
+}
+
+// -------------------------------------------------------------------------
+// Expedientes del personal
+//
+// A diferencia de documento/archivo/requerimiento -que cuelgan de una empresa
+// y viven en DOC_ROOT/<carpeta>/<contractId>_<archivo>-, el expediente de un
+// empleado vive en DOC_ROOT/expedientes/<personalId>/<archivo> y su registro
+// esta en personalExpedientes, con llave compuesta (personalId, expedienteId).
+// Por eso no entra en api_resource_map() y tiene sus propias funciones.
+// -------------------------------------------------------------------------
+
+/**
+ * Ruta absoluta del archivo de un expediente, o null si no esta en disco.
+ *
+ * Misma defensa que api_resource_path(): el nombre sale de la BD, aun asi se
+ * pasa por basename() y se verifica con realpath() que el resultado quede
+ * dentro de la carpeta del empleado.
+ */
+function api_expediente_path($personalId, $path)
+{
+    $personalId = (int)$personalId;
+
+    if ($personalId <= 0 || $path === null || $path === '') {
+        return null;
+    }
+
+    $base = api_files_root() . '/expedientes/' . $personalId;
+    $name = basename(str_replace('\\', '/', (string)$path));
+
+    if ($name === '' || $name === '.' || $name === '..') {
+        return null;
+    }
+
+    $full = $base . '/' . $name;
+
+    if (!is_file($full)) {
+        return null;
+    }
+
+    $realFull = realpath($full);
+    $realBase = realpath($base);
+
+    if ($realFull === false || $realBase === false) {
+        return null;
+    }
+
+    $realFull = str_replace('\\', '/', $realFull);
+    $realBase = rtrim(str_replace('\\', '/', $realBase), '/');
+
+    if (strpos($realFull, $realBase . '/') !== 0) {
+        return null;
+    }
+
+    return $realFull;
+}
+
+/** URL de descarga firmada de un expediente concreto de un empleado. */
+function api_expediente_signed_url($personalId, $expedienteId)
+{
+    return api_signed_download_url('expediente', ((int)$personalId) . '-' . ((int)$expedienteId));
+}
+
+/**
+ * Localiza a un empleado por id o por nombre.
+ *
+ * El nombre se busca por coincidencia parcial (LIKE) porque el sistema guarda
+ * el nombre completo con prefijos de clave interna ("CIGER3 Miguel Angel..."),
+ * asi que exigir el nombre exacto lo volveria inservible. Si la busqueda
+ * devuelve mas de un empleado NO se adivina: responde 409 con los candidatos
+ * para que el cliente reintente con personal_id.
+ *
+ * $nombre puede ser null cuando se envio personal_id.
+ */
+function api_resolve_empleado($auth, $personalId = null, $nombre = null)
+{
+    $db     = api_db();
+    $campos = 'p.personalId, p.name, p.puesto, p.email, p.active, p.tipoPersonal,
+               p.fechaIngreso, p.departamentoId, d.departamento';
+    $join   = ' FROM personal p
+                LEFT JOIN departamentos d ON d.departamentoId = p.departamentoId';
+
+    if ($personalId !== null && $personalId !== '') {
+        $personalId = (int)$personalId;
+
+        if ($personalId <= 0) {
+            api_fail(400, 'bad_request', 'El parametro personal_id debe ser un entero valido.');
+        }
+
+        $db->setQuery('SELECT ' . $campos . $join . ' WHERE p.personalId = ' . $personalId . ' LIMIT 1');
+        $row = $db->GetRow();
+
+        if (!$row) {
+            api_log('denied', array(
+                'apiClientId' => $auth['apiClientId'],
+                'apiTokenId'  => $auth['apiTokenId'],
+                'detail'      => 'empleado inexistente (' . $personalId . ')',
+            ));
+            api_fail(404, 'not_found', 'No existe un empleado con personal_id ' . $personalId . '.');
+        }
+
+        return $row;
+    }
+
+    if ($nombre === null || trim($nombre) === '') {
+        api_fail(400, 'bad_request', 'Se requiere personal_id o empleado (nombre).');
+    }
+
+    $nombre = trim($nombre);
+
+    if (strlen($nombre) < 3) {
+        api_fail(400, 'bad_request', 'El nombre del empleado debe tener al menos 3 caracteres.');
+    }
+
+    $like = api_escape($nombre);
+
+    // Se privilegia la coincidencia exacta: si existe, ya no hay ambiguedad.
+    $db->setQuery('SELECT ' . $campos . $join . " WHERE p.name = '" . $like . "'
+                    ORDER BY p.active DESC, p.personalId ASC");
+    $rows = $db->GetResult();
+
+    if (!$rows) {
+        $db->setQuery('SELECT ' . $campos . $join . " WHERE p.name LIKE '%" . $like . "%'
+                        ORDER BY p.active DESC, p.name ASC");
+        $rows = $db->GetResult();
+    }
+
+    if (!$rows) {
+        api_log('denied', array(
+            'apiClientId' => $auth['apiClientId'],
+            'apiTokenId'  => $auth['apiTokenId'],
+            'detail'      => 'empleado inexistente por nombre',
+        ));
+        api_fail(404, 'not_found', 'Ningun empleado coincide con "' . $nombre . '".');
+    }
+
+    if (count($rows) > 1) {
+        $candidatos = array();
+
+        foreach ($rows as $r) {
+            $candidatos[] = api_empleado_publico($r);
+        }
+
+        api_log('denied', array(
+            'apiClientId' => $auth['apiClientId'],
+            'apiTokenId'  => $auth['apiTokenId'],
+            'detail'      => 'empleado ambiguo (' . count($rows) . ' coincidencias)',
+        ));
+
+        api_json(array(
+            'error'      => 'empleado_ambiguo',
+            'message'    => '"' . $nombre . '" coincide con ' . count($rows)
+                          . ' empleados. Reintenta con personal_id.',
+            'candidatos' => $candidatos,
+        ), 409);
+    }
+
+    return $rows[0];
+}
+
+/**
+ * Localiza un tipo de expediente del catalogo (tabla expedientes) por id o por
+ * nombre. Igual que con el empleado, si el nombre coincide con varios responde
+ * 409 con los candidatos en lugar de elegir uno.
+ */
+function api_resolve_tipo_expediente($auth, $expedienteId = null, $nombre = null)
+{
+    $db = api_db();
+
+    if ($expedienteId !== null && $expedienteId !== '') {
+        $expedienteId = (int)$expedienteId;
+
+        if ($expedienteId <= 0) {
+            api_fail(400, 'bad_request', 'El parametro expediente_id debe ser un entero valido.');
+        }
+
+        $db->setQuery('SELECT expedienteId, name, status, extension
+                         FROM expedientes
+                        WHERE expedienteId = ' . $expedienteId . ' LIMIT 1');
+        $row = $db->GetRow();
+
+        if (!$row) {
+            api_fail(404, 'not_found', 'No existe un tipo de expediente con id ' . $expedienteId . '.');
+        }
+
+        return $row;
+    }
+
+    if ($nombre === null || trim($nombre) === '') {
+        api_fail(400, 'bad_request', 'Se requiere expediente_id o expediente (nombre).');
+    }
+
+    $nombre = trim($nombre);
+    $like   = api_escape($nombre);
+
+    $db->setQuery("SELECT expedienteId, name, status, extension
+                     FROM expedientes
+                    WHERE name = '" . $like . "'
+                    ORDER BY status ASC, expedienteId ASC");
+    $rows = $db->GetResult();
+
+    if (!$rows) {
+        $db->setQuery("SELECT expedienteId, name, status, extension
+                         FROM expedientes
+                        WHERE name LIKE '%" . $like . "%'
+                        ORDER BY status ASC, name ASC");
+        $rows = $db->GetResult();
+    }
+
+    if (!$rows) {
+        api_fail(404, 'not_found', 'Ningun tipo de expediente coincide con "' . $nombre . '".');
+    }
+
+    if (count($rows) > 1) {
+        $candidatos = array();
+
+        foreach ($rows as $r) {
+            $candidatos[] = array(
+                'expedienteId' => (int)$r['expedienteId'],
+                'nombre'       => $r['name'],
+                'status'       => $r['status'],
+            );
+        }
+
+        api_json(array(
+            'error'      => 'expediente_ambiguo',
+            'message'    => '"' . $nombre . '" coincide con ' . count($rows)
+                          . ' tipos de expediente. Reintenta con expediente_id.',
+            'candidatos' => $candidatos,
+        ), 409);
+    }
+
+    return $rows[0];
+}
+
+/** Representacion publica de un empleado. Solo datos de identificacion. */
+function api_empleado_publico($row)
+{
+    return array(
+        'personalId'   => (int)$row['personalId'],
+        'nombre'       => $row['name'],
+        'puesto'       => isset($row['puesto']) ? $row['puesto'] : null,
+        'email'        => isset($row['email']) ? $row['email'] : null,
+        'departamento' => isset($row['departamento']) ? $row['departamento'] : null,
+        'tipoPersonal' => isset($row['tipoPersonal']) ? $row['tipoPersonal'] : null,
+        'fechaIngreso' => isset($row['fechaIngreso']) && $row['fechaIngreso'] !== '' ? $row['fechaIngreso'] : null,
+        'activo'       => isset($row['active']) ? ((string)$row['active'] === '1') : null,
+    );
+}
+
+/**
+ * Nombre con el que se entrega el archivo de un expediente.
+ *
+ * En disco se llama "employe_file<idp><ide>.pdf", que no le dice nada a quien
+ * lo descarga. Se arma uno legible -"ACTA DE NACIMIENTO - Juan Perez.pdf"-
+ * limitado a caracteres inocuos para la cabecera Content-Disposition.
+ */
+function api_expediente_filename($tipoNombre, $empleadoNombre, $path)
+{
+    $ext = strtolower(pathinfo((string)$path, PATHINFO_EXTENSION));
+    $ext = preg_replace('/[^a-z0-9]/', '', $ext);
+
+    $base = trim($tipoNombre) . ' - ' . trim($empleadoNombre);
+    $base = preg_replace('/[^A-Za-z0-9 ._-]/', '_', $base);
+    $base = trim(preg_replace('/\s+/', ' ', $base));
+    $base = substr($base, 0, 120);
+
+    if ($base === '') {
+        $base = 'expediente';
+    }
+
+    return $ext !== '' ? $base . '.' . $ext : $base;
 }
