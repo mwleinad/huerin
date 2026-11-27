@@ -1,4 +1,5 @@
 <?php
+if (php_sapi_name() !== 'cli') { http_response_code(403); exit('Solo CLI'); }
 /**
  * Created by PhpStorm.
  * User: RAGNAR

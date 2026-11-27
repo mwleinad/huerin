@@ -1,4 +1,5 @@
 <?php
+if (php_sapi_name() !== 'cli') { http_response_code(403); exit('Solo CLI'); }
 ini_set('memory_limit','3G');
 if(!$_SERVER["DOCUMENT_ROOT"])
 {
